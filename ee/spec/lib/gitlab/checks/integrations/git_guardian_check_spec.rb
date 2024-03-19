@@ -91,6 +91,16 @@ RSpec.describe Gitlab::Checks::Integrations::GitGuardianCheck, feature_category:
             expect { git_guardian_check.validate! }
               .to raise_error(::Gitlab::GitAccess::ForbiddenError, policy_breaks_message)
           end
+
+          context 'when a commit contains a special flag' do
+            it 'does not raise an error' do
+              allow(changes_access.commits.first).to receive(:safe_message).and_return(
+                "#{changes_access.commits.first.safe_message}\n[skip secret detection]"
+              )
+
+              expect { git_guardian_check.validate! }.not_to raise_error
+            end
+          end
         end
       end
     end
