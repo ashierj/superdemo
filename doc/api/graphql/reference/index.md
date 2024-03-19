@@ -8429,6 +8429,30 @@ Input type: `UserAchievementsDeleteInput`
 | <a id="mutationuserachievementsdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationuserachievementsdeleteuserachievement"></a>`userAchievement` | [`UserAchievement`](#userachievement) | Deleted user achievement. |
 
+### `Mutation.userAddOnAssignmentBulkCreate`
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Input type: `UserAddOnAssignmentBulkCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationuseraddonassignmentbulkcreateaddonpurchaseid"></a>`addOnPurchaseId` | [`GitlabSubscriptionsAddOnPurchaseID!`](#gitlabsubscriptionsaddonpurchaseid) | Global ID of AddOnPurchase to be assigned to. |
+| <a id="mutationuseraddonassignmentbulkcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationuseraddonassignmentbulkcreateuserids"></a>`userIds` | [`[UserID!]!`](#userid) | Global IDs of user to be assigned. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationuseraddonassignmentbulkcreateaddonpurchase"></a>`addOnPurchase` | [`AddOnPurchase`](#addonpurchase) | AddOnPurchase state after mutation. |
+| <a id="mutationuseraddonassignmentbulkcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationuseraddonassignmentbulkcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.userAddOnAssignmentCreate`
 
 DETAILS:
