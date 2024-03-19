@@ -223,23 +223,221 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
             end
 
             context 'with synced epic work items' do
-              let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
-              let(:work_item) { WorkItem.find(epic_issue2.issue.id) }
+              context 'when moving to a new parent' do
+                let(:new_parent_id) { GitlabSchema.id_from_object(new_parent) }
+                let(:work_item_1) { WorkItem.find(issue1.id) }
+                let(:work_item_2) { WorkItem.find(issue2.id) }
+                let(:adjacent_reference_id) { nil }
+                let(:moving_object_id) { GitlabSchema.id_from_object(epic_issue2) }
+                let(:moving_epic_issue) { epic_issue2 }
+                let(:moving_parent_link) { work_item_2 }
 
-              let_it_be(:new_epic) { create(:epic, :with_synced_work_item, group: group) }
-              let_it_be(:old_epic) { create(:epic, :with_synced_work_item, group: group) }
+                let_it_be(:old_parent) { create(:epic, :with_synced_work_item, group: group) }
+                let_it_be(:new_parent) { create(:epic, :with_synced_work_item, group: group) }
+                let_it_be_with_reload(:epic1) { old_parent }
+                let_it_be_with_reload(:epic) { new_parent }
 
-              let_it_be_with_reload(:epic) { new_epic }
-              let_it_be_with_reload(:epic1) { old_epic }
+                let(:params) do
+                  {
+                    base_epic_id: GitlabSchema.id_from_object(old_parent),
+                    adjacent_reference_id: adjacent_reference_id,
+                    relative_position: relative_position,
+                    new_parent_id: new_parent_id
+                  }
+                end
 
-              before do
-                epic_issue2.update!(epic: old_epic)
-                create(:parent_link, work_item_parent: old_epic.work_item, work_item: work_item)
+                context 'when new parent has no children' do
+                  before do
+                    epic_issue1.update!(epic: old_parent)
+                    create(:parent_link,
+                      work_item_parent: old_parent.work_item, work_item: work_item_1, relative_position: 30
+                    )
+
+                    epic_issue2.update!(epic: old_parent)
+                    create(:parent_link,
+                      work_item_parent: old_parent.work_item, work_item: work_item_2, relative_position: 40
+                    )
+                  end
+
+                  it 'sets a new work item parent' do
+                    expect { subject }.to change { moving_epic_issue.reload.epic }.from(old_parent).to(new_parent)
+                    .and change {
+                           moving_parent_link.reload.work_item_parent
+                         }.from(old_parent.work_item).to(new_parent.work_item)
+
+                    expect(moving_epic_issue.relative_position).to eq(moving_parent_link.relative_position)
+
+                    expect(subject[:status]).to eq(:success)
+                  end
+
+                  context 'when feature flag is turned off' do
+                    before do
+                      stub_feature_flags(sync_epic_work_item_order: false)
+                    end
+
+                    it 'only sets the new parent for the epic_issue' do
+                      expect { subject }.to change { moving_epic_issue.reload.epic }.from(old_parent).to(new_parent)
+                      expect { subject }.to not_change { moving_parent_link.reload.work_item_parent }
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when the new parent has no synced work item' do
+                    let_it_be_with_reload(:new_parent) { create(:epic, group: group) }
+
+                    it 'only sets the new parent for the epic_issue' do
+                      expect { subject }.to change { moving_epic_issue.reload.epic }.from(old_parent).to(new_parent)
+                      expect { subject }.to not_change { moving_parent_link.reload.work_item_parent }
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when syncing to the work item fails' do
+                    before do
+                      allow_next_instance_of(WorkItems::ParentLinks::CreateService) do |instance|
+                        allow(instance).to receive(:execute).and_return({ status: :error, message: 'error message' })
+                      end
+                    end
+
+                    it 'does not set new work item parent' do
+                      expect { subject }.not_to change { moving_epic_issue.reload.epic }
+                      expect { subject }.not_to change { moving_parent_link.reload.work_item_parent }
+                      expect(subject[:status]).to eq(:error)
+                    end
+                  end
+                end
+
+                context 'when new parent has children' do
+                  let(:adjacent_reference_id) { GitlabSchema.id_from_object(epic_issue1) }
+
+                  before do
+                    epic_issue1.update!(epic: new_parent)
+                    epic_issue2.update!(epic: old_parent)
+                  end
+
+                  context 'when relative_position is before' do
+                    let(:relative_position) { 'before' }
+
+                    it 'updates the work item parent and sets it after the adjecent item', :aggregate_failures do
+                      parent_link1 = create(:parent_link, work_item_parent: new_parent.work_item,
+                        work_item: work_item_1)
+                      parent_link2 = create(:parent_link, work_item_parent: old_parent.work_item,
+                        work_item: work_item_2)
+
+                      expect { subject }.to change { moving_epic_issue.reload.epic }.from(old_parent).to(new_parent)
+                        .and change { work_item_2.reload.work_item_parent }
+                        .from(old_parent.work_item).to(new_parent.work_item)
+
+                      expect(epic_issue2.reload.relative_position).to be > epic_issue1.reload.relative_position
+                      expect(parent_link2.reload.relative_position).to be > parent_link1.reload.relative_position
+                      expect(parent_link2.relative_position).to eq(epic_issue2.reload.relative_position)
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when relative_position is after' do
+                    let(:relative_position) { 'after' }
+
+                    it 'updates the work item parent and sets it before the adjacent item' do
+                      parent_link1 = create(:parent_link, work_item_parent: new_parent.work_item,
+                        work_item: work_item_1)
+                      parent_link2 = create(:parent_link, work_item_parent: old_parent.work_item,
+                        work_item: work_item_2)
+
+                      expect { subject }.to change { moving_epic_issue.reload.epic }.from(old_parent).to(new_parent)
+                        .and change { work_item_2.reload.work_item_parent }
+                          .from(old_parent.work_item).to(new_parent.work_item)
+
+                      expect(parent_link2.reload.relative_position).to be < parent_link1.reload.relative_position
+                      expect(parent_link2.relative_position).to eq(epic_issue2.reload.relative_position)
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when syncing to the work item fails' do
+                    before do
+                      allow_next_instance_of(WorkItems::ParentLinks::ReorderService) do |instance|
+                        allow(instance).to receive(:execute).and_return({ status: :error, message: 'error message' })
+                      end
+                    end
+
+                    it 'does not set new work item parent' do
+                      expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+                        instance_of(Epics::SyncAsWorkItem::SyncAsWorkItemError),
+                        { moving_object_id: moving_epic_issue.id,
+                          moving_object_class: 'EpicIssue' }
+                      )
+
+                      parent_link1 = create(:parent_link, work_item_parent: new_parent.work_item,
+                        work_item: work_item_1)
+                      parent_link2 = create(:parent_link, work_item_parent: old_parent.work_item,
+                        work_item: work_item_2)
+
+                      expect { subject }.not_to change { parent_link1.reload.relative_position }
+                      expect { subject }.not_to change { work_item_1.reload.work_item_parent }
+                      expect { subject }.not_to change { parent_link2.reload.relative_position }
+                      expect { subject }.not_to change { work_item_2.reload.work_item_parent }
+                      expect(subject).to eq(
+                        status: :error, message: "Couldn't perform re-order due to an internal error.", http_status: 422
+                      )
+                    end
+                  end
+                end
               end
 
-              it 'updates the parent' do
-                expect { subject }.to change { tree_object_2.reload.epic }.from(old_epic).to(new_epic)
-                .and change { work_item.reload.work_item_parent }.from(old_epic.work_item).to(new_epic.work_item)
+              context 'when reordering within the same parent' do
+                let(:relative_position) { 'after' }
+
+                let_it_be(:synced_epic) { create(:epic, :with_synced_work_item, group: group) }
+                let_it_be(:issue1) { create(:issue, project: project) }
+                let_it_be(:issue2) { create(:issue, project: project) }
+
+                let_it_be(:epic_issue1) { create(:epic_issue, epic: synced_epic, issue: issue1, relative_position: 10) }
+                let_it_be(:epic_issue2) do
+                  create(:epic_issue, epic: synced_epic, issue: issue2, relative_position: 20)
+                end
+
+                let_it_be(:parent_link1) do
+                  create(:parent_link, work_item_parent: synced_epic.work_item,
+                    work_item: WorkItem.find_by_id(issue1.id), relative_position: 10)
+                end
+
+                let_it_be(:parent_link2) do
+                  create(:parent_link, work_item_parent: synced_epic.work_item,
+                    work_item: WorkItem.find_by_id(issue2.id), relative_position: 20)
+                end
+
+                let(:params) do
+                  {
+                    base_epic_id: GitlabSchema.id_from_object(synced_epic),
+                    adjacent_reference_id: GitlabSchema.id_from_object(epic_issue1),
+                    relative_position: relative_position
+                  }
+                end
+
+                context 'when relative_position is after' do
+                  let(:relative_position) { 'after' }
+
+                  it 'updates the relative positions', :aggregate_failures do
+                    subject
+
+                    expect(epic_issue1.reload.relative_position).to be > epic_issue2.reload.relative_position
+                    expect(parent_link1.reload.relative_position).to be > parent_link2.reload.relative_position
+                    expect(parent_link1.reload.relative_position).to eq(epic_issue1.relative_position)
+                  end
+                end
+
+                context 'when relative_position is before' do
+                  let(:relative_position) { 'before' }
+
+                  it 'updates the relative positions', :aggregate_failures do
+                    subject
+
+                    expect(epic_issue1.reload.relative_position).to be < epic_issue2.reload.relative_position
+                    expect(parent_link1.reload.relative_position).to be < parent_link2.reload.relative_position
+                    expect(parent_link1.reload.relative_position).to eq(epic_issue1.relative_position)
+                  end
+                end
               end
             end
           end
@@ -386,6 +584,258 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
                 it 'creates system notes' do
                   expect { subject }.to change { Note.system.count }.by(3)
+                end
+              end
+
+              context 'with synced epic work items' do
+                context 'when moving to a new parent' do
+                  let(:new_parent_id) { GitlabSchema.id_from_object(new_parent) }
+                  let(:adjacent_reference_id) { nil }
+                  let(:moving_object_id) { GitlabSchema.id_from_object(moving_epic) }
+
+                  let_it_be(:old_parent) { create(:epic, :with_synced_work_item, group: group) }
+                  let_it_be(:new_parent) { create(:epic, :with_synced_work_item, group: group) }
+
+                  let_it_be_with_reload(:moving_epic) do
+                    create(:epic, :with_synced_work_item, group: group, parent: old_parent, relative_position: 20)
+                  end
+
+                  let_it_be_with_reload(:new_parent_parent_link) do
+                    create(:parent_link, work_item_parent: old_parent.work_item, work_item: new_parent.work_item)
+                  end
+
+                  let_it_be_with_reload(:moving_object_parent_link) do
+                    create(:parent_link, work_item_parent: old_parent.work_item, work_item: moving_epic.work_item,
+                      relative_position: 20)
+                  end
+
+                  let(:params) do
+                    {
+                      base_epic_id: GitlabSchema.id_from_object(old_parent),
+                      adjacent_reference_id: adjacent_reference_id,
+                      relative_position: relative_position,
+                      new_parent_id: new_parent_id
+                    }
+                  end
+
+                  context 'when new parent has no children' do
+                    it 'sets a new work item parent' do
+                      expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
+                        .and change {
+                               moving_object_parent_link.reload.work_item_parent
+                             }.from(old_parent.work_item).to(new_parent.work_item)
+
+                      expect(moving_epic.relative_position).to eq(moving_object_parent_link.relative_position)
+                      expect(subject[:status]).to eq(:success)
+                    end
+
+                    context 'when the new parent has no synced work item' do
+                      let_it_be_with_reload(:new_parent) { create(:epic, group: group) }
+
+                      it 'only sets the new parent for the epic' do
+                        expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
+                          .and not_change { moving_object_parent_link.reload.work_item_parent }
+                        expect(subject[:status]).to eq(:success)
+                      end
+                    end
+
+                    context 'when syncing to the work item fails' do
+                      before do
+                        allow_next_instance_of(WorkItems::ParentLinks::CreateService) do |instance|
+                          allow(instance).to receive(:execute).and_return({ status: :error, message: 'error message' })
+                        end
+                      end
+
+                      it 'does not set new epic or work item parent' do
+                        expect { subject }.to not_change { moving_epic.reload.parent }
+                          .and not_change { moving_object_parent_link.reload.work_item_parent }
+                        expect(subject[:status]).to eq(:error)
+                      end
+                    end
+                  end
+
+                  context 'when new parent has children' do
+                    let_it_be(:adjacent_epic) do
+                      create(:epic, :with_synced_work_item, parent: new_parent, group: group, relative_position: 10)
+                    end
+
+                    let_it_be(:adjacent_parent_link) do
+                      create(:parent_link, work_item_parent: new_parent.work_item, work_item: adjacent_epic.work_item)
+                    end
+
+                    let(:adjacent_reference_id) { GitlabSchema.id_from_object(adjacent_epic) }
+
+                    context 'when relative_position is before' do
+                      let(:relative_position) { 'before' }
+
+                      it 'updates the work item parent and sets it after the adjecent item', :aggregate_failures do
+                        expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
+                          .and change { moving_epic.work_item.reload.work_item_parent }
+                          .from(old_parent.work_item).to(new_parent.work_item)
+
+                        expect(adjacent_epic.reload.relative_position).to be < moving_epic.reload.relative_position
+                        expect(adjacent_parent_link.reload.relative_position)
+                          .to be < moving_object_parent_link.reload.relative_position
+
+                        expect(moving_object_parent_link.reload.relative_position)
+                          .to eq(moving_epic.reload.relative_position)
+
+                        expect(subject[:status]).to eq(:success)
+                      end
+                    end
+
+                    context 'when relative_position is after' do
+                      let(:relative_position) { 'after' }
+
+                      it 'updates the work item parent and sets it before the adjecent item', :aggregate_failures do
+                        expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
+                          .and change { moving_epic.work_item.reload.work_item_parent }
+                          .from(old_parent.work_item).to(new_parent.work_item)
+
+                        expect(adjacent_epic.reload.relative_position).to be > moving_epic.reload.relative_position
+                        expect(adjacent_parent_link.reload.relative_position)
+                          .to be > moving_object_parent_link.reload.relative_position
+
+                        expect(moving_object_parent_link.reload.relative_position)
+                          .to eq(moving_epic.reload.relative_position)
+
+                        expect(subject[:status]).to eq(:success)
+                      end
+                    end
+                  end
+                end
+
+                context 'when reordering within the same parent' do
+                  let(:relative_position) { 'after' }
+                  let(:moving_object_id) { GitlabSchema.id_from_object(moving_epic) }
+                  let(:adjacent_reference_id) { GitlabSchema.id_from_object(adjacent_epic) }
+
+                  let_it_be(:parent) { create(:epic, :with_synced_work_item, group: group) }
+
+                  let_it_be_with_reload(:adjacent_epic) do
+                    create(:epic, :with_synced_work_item, parent: parent, group: group, relative_position: 10)
+                  end
+
+                  let_it_be_with_reload(:adjacent_parent_link) do
+                    create(:parent_link, work_item_parent: parent.work_item, work_item: adjacent_epic.work_item,
+                      relative_position: 10)
+                  end
+
+                  let_it_be_with_reload(:moving_epic) do
+                    create(:epic, :with_synced_work_item, group: group, parent: parent, relative_position: 20)
+                  end
+
+                  let_it_be_with_reload(:moving_object_parent_link) do
+                    create(:parent_link, work_item_parent: parent.work_item, work_item: moving_epic.work_item,
+                      relative_position: 20)
+                  end
+
+                  let(:params) do
+                    {
+                      base_epic_id: GitlabSchema.id_from_object(parent),
+                      adjacent_reference_id: adjacent_reference_id,
+                      relative_position: relative_position
+                    }
+                  end
+
+                  context 'when relative_position is after' do
+                    let(:relative_position) { 'after' }
+
+                    it 'updates the relative positions', :aggregate_failures do
+                      subject
+
+                      expect(adjacent_epic.reload.relative_position).to be > moving_epic.reload.relative_position
+                      expect(adjacent_parent_link.reload.relative_position)
+                        .to be > moving_object_parent_link.reload.relative_position
+
+                      expect(moving_object_parent_link.reload.relative_position)
+                        .to eq(moving_epic.reload.relative_position)
+
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when relative_position is before' do
+                    let(:relative_position) { 'before' }
+
+                    it 'updates the relative positions', :aggregate_failures do
+                      subject
+
+                      expect(adjacent_epic.reload.relative_position).to be < moving_epic.reload.relative_position
+                      expect(adjacent_parent_link.reload.relative_position)
+                        .to be < moving_object_parent_link.reload.relative_position
+
+                      expect(moving_object_parent_link.reload.relative_position)
+                        .to eq(moving_epic.reload.relative_position)
+
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when the feature flag is turned off' do
+                    before do
+                      stub_feature_flags(sync_epic_work_item_order: false)
+                    end
+
+                    it 'only changes the position of the epics' do
+                      expect { subject }.to change { moving_epic.reload.relative_position }
+                        .and not_change { moving_object_parent_link.reload.relative_position }
+
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when the moving epic has no correlating work item' do
+                    let_it_be_with_reload(:moving_epic) do
+                      create(:epic, group: group, parent: parent, relative_position: 20)
+                    end
+
+                    let_it_be_with_reload(:moving_object_parent_link) { nil }
+
+                    it 'successfully changes the position of the epic' do
+                      expect(WorkItems::ParentLinks::ReorderService).not_to receive(:new)
+                      expect { subject }.to change { moving_epic.reload.relative_position }
+                    end
+                  end
+
+                  context 'when the adjacent epic has no correlating work item' do
+                    let_it_be_with_reload(:adjacent_epic) do
+                      create(:epic, group: group, parent: parent, relative_position: 20)
+                    end
+
+                    let_it_be_with_reload(:adjacent_parent_link) { nil }
+
+                    it 'successfully changes the position of the epic' do
+                      expect(WorkItems::ParentLinks::ReorderService).not_to receive(:new)
+                      expect { subject }.to change { moving_epic.reload.relative_position }
+                      expect(subject[:status]).to eq(:success)
+                    end
+                  end
+
+                  context 'when syncing to the work item fails' do
+                    before do
+                      allow_next_instance_of(WorkItems::ParentLinks::ReorderService) do |instance|
+                        allow(instance).to receive(:execute).and_return({ status: :error, message: 'error message' })
+                      end
+                    end
+
+                    it 'does not change the position' do
+                      expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+                        instance_of(Epics::SyncAsWorkItem::SyncAsWorkItemError),
+                        { moving_object_id: moving_epic.id,
+                          moving_object_class: 'Epic' }
+                      )
+
+                      expect { subject }.to not_change { moving_object_parent_link.reload.relative_position }
+                        .and not_change { moving_epic.reload.relative_position }
+                        .and not_change { adjacent_epic.reload.relative_position }
+                        .and not_change { adjacent_parent_link.reload.relative_position }
+
+                      expect(subject).to eq(
+                        status: :error, message: "Couldn't perform re-order due to an internal error.", http_status: 422
+                      )
+                    end
+                  end
                 end
               end
             end

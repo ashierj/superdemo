@@ -11,6 +11,7 @@ class EpicIssue < ApplicationRecord
 
   belongs_to :epic
   belongs_to :issue
+  belongs_to :work_item, foreign_key: 'issue_id'  # rubocop: disable Rails/InverseOf -- this relation is not present on WorkItem
 
   alias_attribute :parent_ids, :epic_id
   alias_attribute :parent, :epic
