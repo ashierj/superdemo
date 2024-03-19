@@ -14,8 +14,18 @@ describe('GroupProjectsDropdown', () => {
   let requestHandlers;
 
   const defaultNodes = [
-    { id: convertToGraphQLId(TYPENAME_PROJECT, 1), name: '1', fullPath: 'project-1-full-path' },
-    { id: convertToGraphQLId(TYPENAME_PROJECT, 2), name: '2', fullPath: 'project-2-full-path' },
+    {
+      id: convertToGraphQLId(TYPENAME_PROJECT, 1),
+      name: '1',
+      fullPath: 'project-1-full-path',
+      repository: { rootRef: 'main' },
+    },
+    {
+      id: convertToGraphQLId(TYPENAME_PROJECT, 2),
+      name: '2',
+      fullPath: 'project-2-full-path',
+      repository: { rootRef: 'main' },
+    },
   ];
 
   const defaultNodesIds = defaultNodes.map(({ id }) => id);

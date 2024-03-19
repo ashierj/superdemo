@@ -8,6 +8,9 @@ query getGroupProjects($fullPath: ID!, $search: String, $after: String, $project
         id
         name
         fullPath
+        repository {
+          rootRef
+        }
       }
       pageInfo {
         ...PageInfo
