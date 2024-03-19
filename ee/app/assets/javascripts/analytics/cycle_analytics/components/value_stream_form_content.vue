@@ -420,7 +420,6 @@ export default {
               :index="activeStageIndex"
               :total-stages="stages.length"
               :errors="fieldErrors(activeStageIndex)"
-              :default-group-labels="defaultGroupLabels"
               @move="handleMove"
               @remove="onRemove"
               @input="onFieldInput(activeStageIndex, $event)"

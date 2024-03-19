@@ -43,11 +43,6 @@ export default {
       type: Array,
       required: true,
     },
-    defaultGroupLabels: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
   },
   data() {
     return {

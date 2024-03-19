@@ -4,7 +4,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { GlAlert, GlIcon, GlTooltip } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import { uniqById, generateFilterTextDescription } from '../utils';
+import { generateFilterTextDescription } from '../utils';
 import { formattedDate } from '../../shared/utils';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../constants';
 import TasksByTypeChart from './tasks_by_type/chart.vue';
@@ -30,7 +30,6 @@ export default {
       'isLoadingTasksByTypeChart',
       'isLoadingTasksByTypeChartTopLabels',
       'errorMessage',
-      'topRankedLabels',
     ]),
     ...mapGetters('typeOfWork', [
       'selectedTasksByTypeFilters',
@@ -75,9 +74,6 @@ export default {
         TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS[TASKS_BY_TYPE_SUBJECT_ISSUE]
       );
     },
-    initialGroupLabels() {
-      return uniqById(this.topRankedLabels);
-    },
   },
   methods: {
     ...mapActions('typeOfWork', ['setTasksByTypeFilters']),
@@ -102,7 +98,6 @@ export default {
           </gl-tooltip>
         </h4>
         <tasks-by-type-filters
-          :default-group-labels="initialGroupLabels"
           :selected-label-names="selectedLabelNames"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"

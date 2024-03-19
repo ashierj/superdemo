@@ -99,8 +99,8 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
 
         it 'can update the filters' do
           page.within filters_selector do
-            find('.dropdown-toggle').click
-            first_selected_label = all('[data-testid="type-of-work-filters-label"] .dropdown-item.active').first
+            find_by_testid('base-dropdown-toggle').click
+            first_selected_label = all('.gl-new-dropdown-item').first
             first_selected_label.click
           end
 
@@ -108,7 +108,7 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
           expect(page).to have_text('Shows issues and 1 label')
 
           page.within filters_selector do
-            find('.dropdown-toggle').click
+            find_by_testid('base-dropdown-toggle').click
             find('[data-testid="type-of-work-filters-subject"] label', text: 'Merge Requests').click
           end
 

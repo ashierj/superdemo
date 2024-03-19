@@ -11,7 +11,6 @@ import {
   labelStartEvent,
   labelEndEvent,
   customStageEndEvents as endEvents,
-  groupLabels as defaultGroupLabels,
 } from '../../mock_data';
 import { emptyState, emptyErrorsState, firstLabel } from './mock_data';
 
@@ -38,7 +37,6 @@ describe('CustomStageFields', () => {
     return extendedWrapper(
       shallowMount(CustomStageFields, {
         propsData: {
-          defaultGroupLabels,
           stage,
           errors,
           stageEvents,

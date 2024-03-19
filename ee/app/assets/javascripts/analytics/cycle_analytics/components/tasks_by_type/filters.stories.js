@@ -28,7 +28,6 @@ Default.args = {
   maxLabels: TASKS_BY_TYPE_MAX_LABELS,
   selectedLabelNames: [],
   subjectFilter,
-  defaultGroupLabels,
 };
 
 export const SelectedLabels = Template.bind({});
@@ -36,5 +35,4 @@ SelectedLabels.args = {
   maxLabels: TASKS_BY_TYPE_MAX_LABELS,
   selectedLabelNames: ['ready', 'done'],
   subjectFilter,
-  defaultGroupLabels,
 };
