@@ -31,7 +31,11 @@ module Projects
       end
 
       def track_usage
-        ::Gitlab::UsageDataCounters::ProductAnalyticsCounter.count(:view_dashboard)
+        Gitlab::InternalEvents.track_event(
+          'analytics_dashboard_viewed',
+          project: project,
+          user: current_user
+        )
       end
     end
   end

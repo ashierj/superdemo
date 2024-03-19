@@ -21,7 +21,7 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
       end
 
       it 'does not increment counter' do
-        expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).not_to receive(:count)
+        expect(Gitlab::InternalEvents).not_to receive(:track_event)
 
         send_dashboards_request
       end
@@ -34,10 +34,10 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
         expect(response).to have_gitlab_http_status(:ok)
       end
 
-      it 'increments counter' do
-        expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).to receive(:count).with(:view_dashboard)
+      it_behaves_like 'internal event tracking' do
+        let(:event) { 'analytics_dashboard_viewed' }
 
-        send_dashboards_request
+        subject(:track_event) { send_dashboards_request }
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
           end
 
           it 'does not count views for the dashboard listing' do
-            expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).not_to receive(:count)
+            expect(Gitlab::InternalEvents).not_to receive(:track_event)
 
             get project_analytics_dashboards_path(project)
           end
