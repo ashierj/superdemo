@@ -19,6 +19,13 @@ module Epics
 
       move!
       success
+    rescue Epics::SyncAsWorkItem::SyncAsWorkItemError => error
+      Gitlab::ErrorTracking.track_exception(
+        error, moving_object_id: moving_object.id, moving_object_class: moving_object.class.name
+      )
+      Gitlab::EpicWorkItemSync::Logger.error(error: error)
+
+      error("Couldn't perform re-order due to an internal error.", 422)
     end
 
     private
@@ -59,7 +66,10 @@ module Epics
         moving_object.move_to_start
       end
 
-      moving_object.save!(touch: false)
+      ApplicationRecord.transaction do
+        moving_object.save!(touch: false)
+        sync_move_to_work_item!
+      end
     end
 
     def before_object
@@ -181,6 +191,45 @@ module Epics
 
     def find_object(id)
       GitlabSchema.find_by_gid(id)
+    end
+
+    def sync_move_to_work_item!
+      return unless Feature.enabled?(:sync_epic_work_item_order, base_epic.group)
+      return if new_parent_has_no_adjacent_item? || not_all_items_have_a_work_item?
+
+      result = WorkItems::ParentLinks::ReorderService.new(work_item_parent, current_user,
+        work_item_reorder_params).execute
+
+      raise SyncAsWorkItem::SyncAsWorkItemError, result[:message] if result[:status] == :error
+    end
+
+    # No need to sync the relative_position if we move the work item to a new parent without an adjacent reference.
+    def new_parent_has_no_adjacent_item?
+      new_parent.present? && adjacent_reference.nil?
+    end
+
+    # We can't sync the moving object when its parent or adjacent has no synced work item because we can't determine the
+    # correct relative position.
+    def not_all_items_have_a_work_item?
+      adjacent_reference&.work_item.nil? || moving_object.work_item.nil? || work_item_parent.nil?
+    end
+
+    def work_item_parent
+      @work_item_parent ||= new_parent ? new_parent.work_item : moving_object.work_item&.work_item_parent
+    end
+
+    def work_item_reorder_params
+      # We changed the API for WorkItems::ParentLinks:
+      # 1. The `relative_position` is uppercase
+      # 2. The logic of the `relative_position`` is about the work item, instead of the adjacent objet.
+      #    e.g. if relative_position is `AFTER` then the work item will be after the given adjacent object. Compared to
+      #    the Epics::TreeReorderService where the adjacent object will be placed after the work item.
+      {
+        adjacent_work_item: adjacent_reference.work_item,
+        target_issuable: moving_object.work_item,
+        synced_work_item: true,
+        relative_position: params[:relative_position] == 'after' ? 'BEFORE' : 'AFTER'
+      }
     end
   end
 end

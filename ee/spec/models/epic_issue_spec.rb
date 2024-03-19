@@ -9,6 +9,10 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:issue) { create(:issue, project: project) }
 
+  describe "associations" do
+    it { is_expected.to belong_to(:work_item) }
+  end
+
   describe 'validations' do
     let(:epic) { build(:epic, group: group) }
     let(:confidential_epic) { build(:epic, :confidential, group: group) }
