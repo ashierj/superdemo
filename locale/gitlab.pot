@@ -43479,6 +43479,9 @@ msgstr ""
 msgid "Runners|Machine type"
 msgstr ""
 
+msgid "Runners|Machine type help"
+msgstr ""
+
 msgid "Runners|Machine type is required."
 msgstr ""
 
@@ -43640,6 +43643,9 @@ msgid "Runners|Recommended"
 msgstr ""
 
 msgid "Runners|Region"
+msgstr ""
+
+msgid "Runners|Region help"
 msgstr ""
 
 msgid "Runners|Region is required."
@@ -44103,6 +44109,9 @@ msgid "Runners|Your runner is online and ready to run jobs."
 msgstr ""
 
 msgid "Runners|Zone"
+msgstr ""
+
+msgid "Runners|Zone help"
 msgstr ""
 
 msgid "Runners|Zone is required."
