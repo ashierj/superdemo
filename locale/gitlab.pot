@@ -1923,6 +1923,9 @@ msgstr ""
 msgid "A title is required"
 msgstr ""
 
+msgid "A user must associate with at least one organization"
+msgstr ""
+
 msgid "A user with write access to the source branch selected this option"
 msgstr ""
 
