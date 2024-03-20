@@ -1,6 +1,7 @@
 <script>
+import { updateHistory, getParameterByName, setUrlParams } from '~/lib/utils/url_utility';
 import getProjectSecretsQuery from '../graphql/queries/client/get_project_secrets.query.graphql';
-import { PAGE_SIZE } from '../constants';
+import { INITIAL_PAGE, PAGE_SIZE } from '../constants';
 
 export default {
   name: 'ProjectSecretsApp',
@@ -18,14 +19,14 @@ export default {
   },
   data() {
     return {
-      offset: 0,
+      page: INITIAL_PAGE,
     };
   },
   computed: {
     queryVariables() {
       return {
         fullPath: this.projectPath,
-        offset: this.offset,
+        offset: (this.page - 1) * PAGE_SIZE,
         limit: PAGE_SIZE,
       };
     },
@@ -41,14 +42,27 @@ export default {
       },
     },
   },
+  created() {
+    this.updateQueryParamsFromUrl();
+
+    window.addEventListener('popstate', this.updateQueryParamsFromUrl);
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.updateQueryParamsFromUrl);
+  },
   methods: {
+    updateQueryParamsFromUrl() {
+      this.page = Number(getParameterByName('page')) || INITIAL_PAGE;
+    },
     handlePageChange(page) {
-      this.offset = (page - 1) * PAGE_SIZE;
-      this.$apollo.queries.secrets.fetchMore(this.queryVariables);
+      this.page = page;
+      updateHistory({
+        url: setUrlParams({ page }),
+      });
     },
   },
 };
 </script>
 <template>
-  <router-view ref="router-view" :secrets="secrets" @onPageChange="handlePageChange" />
+  <router-view ref="router-view" :secrets="secrets" :page="page" @onPageChange="handlePageChange" />
 </template>

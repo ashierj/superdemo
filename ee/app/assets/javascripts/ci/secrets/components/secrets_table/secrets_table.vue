@@ -34,11 +34,11 @@ export default {
       required: false,
       default: () => {},
     },
-  },
-  data() {
-    return {
-      currentPage: INITIAL_PAGE,
-    };
+    page: {
+      type: Number,
+      required: false,
+      default: () => INITIAL_PAGE,
+    },
   },
   computed: {
     secretsCount() {
@@ -152,7 +152,7 @@ export default {
     </gl-card>
     <gl-pagination
       v-if="showPagination"
-      v-model="currentPage"
+      :value="page"
       :per-page="$options.PAGE_SIZE"
       :total-items="secretsCount"
       :prev-text="__('Prev')"
