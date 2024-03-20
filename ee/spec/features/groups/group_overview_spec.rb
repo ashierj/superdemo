@@ -22,7 +22,7 @@ RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: 
       page.within(find('.content')) do
         expect(page).to have_content _('Subgroups and projects')
         expect(page).to have_content _('Shared projects')
-        expect(page).to have_content _('Archived projects')
+        expect(page).to have_content _('Inactive')
       end
     end
   end

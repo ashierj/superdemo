@@ -6606,9 +6606,6 @@ msgstr ""
 msgid "Archived in this version"
 msgstr ""
 
-msgid "Archived projects"
-msgstr ""
-
 msgid "Archiving the project makes it entirely read-only. It is hidden from the dashboard and doesn't display in searches. %{strong_start}The repository cannot be committed to, and no issues, comments, or other entities can be created.%{strong_end} %{link_start}Learn more.%{link_end}"
 msgstr ""
 
@@ -24712,10 +24709,10 @@ msgstr ""
 msgid "GroupsEmptyState|If you organize your projects under a group, it works like a folder. You can manage your group member's permissions and access to each project in the group."
 msgstr ""
 
-msgid "GroupsEmptyState|No archived projects."
+msgid "GroupsEmptyState|No groups found"
 msgstr ""
 
-msgid "GroupsEmptyState|No groups found"
+msgid "GroupsEmptyState|No inactive projects."
 msgstr ""
 
 msgid "GroupsEmptyState|No shared projects."
