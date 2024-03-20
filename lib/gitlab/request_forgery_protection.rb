@@ -31,11 +31,10 @@ module Gitlab
     end
 
     def self.verified?(env)
-      minimal_env = env.slice('REQUEST_METHOD', 'rack.session', 'HTTP_X_CSRF_TOKEN')
-                      .merge('rack.input' => '')
+      minimal_env = env.slice('REQUEST_METHOD', 'rack.session', 'HTTP_X_CSRF_TOKEN', 'rack.input')
 
       # TODO: Need to add some explanation
-      minimal_env['HTTP_X_CSRF_TOKEN'] ||= Rack::Request.new(env).params['authenticity_token']
+      minimal_env['HTTP_X_CSRF_TOKEN'] ||= Rack::Request.new(minimal_env).params['authenticity_token']
 
       call(minimal_env)
 
