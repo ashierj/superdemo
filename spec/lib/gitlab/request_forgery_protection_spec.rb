@@ -3,9 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::RequestForgeryProtection, :allow_forgery_protection do
-  let(:csrf_token) do
-    SecureRandom.urlsafe_base64(ActionController::RequestForgeryProtection::AUTHENTICITY_TOKEN_LENGTH)
-  end
+  let(:csrf_token) { 'YAYvO6dOQJGvIp/7DnZSa42h8AjB5mp0cXGIBgciby8=' }
 
   let(:env) do
     {
