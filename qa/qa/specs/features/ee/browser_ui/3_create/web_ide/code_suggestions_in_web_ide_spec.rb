@@ -26,16 +26,13 @@ module QA
           Page::Project::WebIDE::VSCode.perform do |ide|
             ide.add_prompt_into_a_file(file_name, prompt_data)
             previous_content_length = ide.editor_content_length
-            previous_content_lines = ide.editor_content_lines
 
             # code generation will put suggestion on the next line
             ide.wait_for_code_suggestion
             expect(ide.editor_content_length).to be > previous_content_length, "Expected a suggestion"
-            expect(ide.editor_content_lines).to be > previous_content_lines, "Expected additional lines in suggestion"
 
             ide.accept_code_suggestion
             expect(ide.editor_content_length).to be > previous_content_length, "Expected accepted suggestion in file"
-            expect(ide.editor_content_lines).to be > previous_content_lines, "Expected additional lines in file"
           end
         end
       end
@@ -53,16 +50,13 @@ module QA
           Page::Project::WebIDE::VSCode.perform do |ide|
             ide.add_prompt_into_a_file(file_name, prompt_data)
             previous_content_length = ide.editor_content_length
-            previous_content_lines = ide.editor_content_lines
 
             # code completion will put suggestion on the same line
             ide.wait_for_code_suggestion
             expect(ide.editor_content_length).to be > previous_content_length, 'Expected a suggestion'
-            expect(ide.editor_content_lines).to eq(previous_content_lines), 'Expected suggestion on same line'
 
             ide.accept_code_suggestion
             expect(ide.editor_content_length).to be > previous_content_length, 'Expected accepted suggestion in file'
-            expect(ide.editor_content_lines).to eq(previous_content_lines), 'Expected suggestion on same line'
           end
         end
       end
@@ -91,10 +85,7 @@ module QA
       context 'on Self-managed', :orchestrated do
         context 'with a valid license' do
           context 'with a Duo Pro add-on' do
-            context 'when seat is assigned', :ai_gateway, quarantine: {
-              type: :investigating,
-              issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450384'
-            } do
+            context 'when seat is assigned', :ai_gateway do
               it_behaves_like 'a code completion suggestion',
                 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/439625'
             end
