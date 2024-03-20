@@ -2727,6 +2727,9 @@ msgstr ""
 msgid "Achievements|Achievements"
 msgstr ""
 
+msgid "Achievements|Avatar"
+msgstr ""
+
 msgid "Achievements|Awarded %{timeAgo} by %{namespace}"
 msgstr ""
 
