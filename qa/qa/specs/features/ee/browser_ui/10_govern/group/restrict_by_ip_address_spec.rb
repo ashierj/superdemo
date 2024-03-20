@@ -56,11 +56,11 @@ module QA
         context 'with API' do
           it 'denies access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347922' do
             request = create_request("/groups/#{sandbox_group.id}")
-            response = get request.url
+            response = Support::API.get request.url
             expect(response.code).to eq(404)
 
             request = create_request("/groups/#{group.id}")
-            response = get request.url
+            response = Support::API.get request.url
             expect(response.code).to eq(404)
           end
         end
@@ -102,11 +102,11 @@ module QA
         context 'with API' do
           it 'allows access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347925' do
             request = create_request("/groups/#{sandbox_group.id}")
-            response = get request.url
+            response = Support::API.get request.url
             expect(response.code).to eq(200)
 
             request = create_request("/groups/#{group.id}")
-            response = get request.url
+            response = Support::API.get request.url
             expect(response.code).to eq(200)
           end
         end
