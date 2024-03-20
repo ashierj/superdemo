@@ -171,7 +171,7 @@ describe('TestCaseShowRoot', () => {
           trigger();
           await waitForPromises();
 
-          expect(wrapper.vm.testCase).toBe(updateTestCase);
+          expect(findIssuableShow().props('issuable')).toEqual(updateTestCase);
         });
 
         it('sets `testCaseStateChangeInProgress` prop to false', async () => {
@@ -184,10 +184,11 @@ describe('TestCaseShowRoot', () => {
     });
 
     describe('handleEditTestCase', () => {
-      it('sets `editTestCaseFormVisible` prop to true', () => {
+      it('sets `editTestCaseFormVisible` prop to true', async () => {
         wrapper.vm.handleEditTestCase();
+        await nextTick();
 
-        expect(wrapper.vm.editTestCaseFormVisible).toBe(true);
+        expect(findIssuableShow().props('editFormVisible')).toBe(true);
       });
     });
 
@@ -233,8 +234,8 @@ describe('TestCaseShowRoot', () => {
             issuableDescription: 'Bar',
           })
           .then(() => {
-            expect(wrapper.vm.testCase).toBe(updateTestCase);
-            expect(wrapper.vm.editTestCaseFormVisible).toBe(false);
+            expect(findIssuableShow().props('issuable')).toEqual(updateTestCase);
+            expect(findIssuableShow().props('editFormVisible')).toBe(false);
             expect(IssuableEventHub.$emit).toHaveBeenCalledWith('update.issuable');
           });
       });
@@ -259,21 +260,22 @@ describe('TestCaseShowRoot', () => {
 
         wrapper.vm.handleCancelClick();
 
-        expect(wrapper.vm.editTestCaseFormVisible).toBe(false);
+        expect(findIssuableShow().props('editFormVisible')).toBe(false);
         expect(IssuableEventHub.$emit).toHaveBeenCalledWith('close.form');
       });
     });
 
     describe('handleTestCaseUpdated', () => {
-      it('assigns value of provided testCase param to `testCase` prop', () => {
+      it('assigns value of provided testCase param to `testCase` prop', async () => {
         const updatedTestCase = {
           ...mockTestCase,
           title: 'Foo',
         };
 
         wrapper.vm.handleTestCaseUpdated(updatedTestCase);
+        await nextTick();
 
-        expect(wrapper.vm.testCase).toBe(updatedTestCase);
+        expect(findIssuableShow().props('issuable')).toEqual(updatedTestCase);
       });
     });
   });
