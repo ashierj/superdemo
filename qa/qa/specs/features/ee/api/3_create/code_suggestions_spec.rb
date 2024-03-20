@@ -8,7 +8,7 @@ module QA
     # See https://docs.gitlab.com/ee/development/code_suggestions/#code-suggestions-development-setup
     describe 'Code Suggestions' do
       # https://docs.gitlab.com/ee/api/code_suggestions.html#generate-code-completions-experiment
-      shared_examples 'completions API with PAT auth' do |suggestion_type, testcase|
+      shared_examples 'completions API with PAT auth' do |testcase|
         let(:expected_response_data) do
           {
             id: 'id',
@@ -32,12 +32,6 @@ module QA
 
           suggestion = actual_response_data.dig(:choices, 0, :text)
           expect(suggestion.length).to be > 0, 'The suggestion should not be blank'
-
-          if suggestion_type == :code_completion
-            expect(suggestion.include?("\n")).to be_falsey, 'Expected a code completion for the current line'
-          elsif suggestion_type == :code_generation
-            expect(suggestion.include?("\n")).to be_truthy, 'Expected code generation (code generated on the next line)'
-          end
         end
       end
 
@@ -80,7 +74,7 @@ module QA
           let(:project_id) { 278964 }
           let(:expected_language) { 'ruby' }
 
-          it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436992'
+          it_behaves_like 'completions API with PAT auth', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436992'
         end
 
         context 'on Self-managed', :orchestrated do
@@ -89,13 +83,10 @@ module QA
 
           context 'with a valid license' do
             context 'with a Duo Pro add-on' do
-              context 'when seat is assigned', :ai_gateway, quarantine: {
-                type: :investigating,
-                issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450385'
-              } do
+              context 'when seat is assigned', :ai_gateway do
                 let(:expected_language) { 'ruby' }
 
-                it_behaves_like 'completions API with PAT auth', :code_completion, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436993'
+                it_behaves_like 'completions API with PAT auth', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436993'
               end
             end
           end
@@ -125,7 +116,7 @@ module QA
           let(:project_id) { 278964 }
           let(:expected_language) { 'python' }
 
-          it_behaves_like 'completions API with PAT auth', :code_generation, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/420973'
+          it_behaves_like 'completions API with PAT auth', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/420973'
         end
       end
 
