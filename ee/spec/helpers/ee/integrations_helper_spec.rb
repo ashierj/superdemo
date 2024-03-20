@@ -56,7 +56,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       end
     end
 
-    context 'with Google Artifact Registry integration', :sidekiq_inline do
+    context 'with Google Artifact Registry integration' do
       let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
 
       shared_examples 'excludes wlif related fields' do
@@ -71,73 +71,19 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
         end
       end
 
-      it 'includes Google Artifact Registry fields' do
-        is_expected.to include(
-          artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
-          personal_access_tokens_path: user_settings_personal_access_tokens_path,
-          operating: 'true',
-          editable: 'false',
-          workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
-        )
-      end
-
-      context 'with Google Cloud IAM integration at group level' do
-        before do
-          group_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group)
-          # propagate the integrations to the nested levels
-          ::Integrations::PropagateService.new(group_integration).execute
-        end
-
-        it_behaves_like 'excludes wlif related fields'
-      end
-
-      context 'with inactive Google Cloud IAM integration at group level' do
-        before do
-          group_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group, active: false)
-          # propagate the integrations to the nested levels
-          ::Integrations::PropagateService.new(group_integration).execute
-        end
-
-        it 'includes Google Cloud Artifact Registry fields' do
+      context 'when Google Cloud IAM integration does not exist' do
+        it 'includes Google Artifact Registry fields' do
           is_expected.to include(
+            artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
+            personal_access_tokens_path: user_settings_personal_access_tokens_path,
+            operating: 'true',
             editable: 'false',
             workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
           )
         end
       end
 
-      context 'with Google Cloud IAM integration at parent group level' do
-        let(:sub_group) { create(:group, parent: group) }
-
-        before do
-          parent_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group)
-          project.update!(group: sub_group)
-          # propagate the integrations to the nested levels
-          ::Integrations::PropagateService.new(parent_integration).execute
-        end
-
-        it_behaves_like 'excludes wlif related fields'
-      end
-
-      context 'with inactive Google Cloud IAM integration at parent group level' do
-        let(:sub_group) { create(:group, parent: group) }
-
-        before do
-          parent_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group, active: false)
-          project.update!(group: sub_group)
-          # propagate the integrations to the nested levels
-          ::Integrations::PropagateService.new(parent_integration).execute
-        end
-
-        it 'includes Google Cloud Artifact Registry fields' do
-          is_expected.to include(
-            editable: 'false',
-            workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
-          )
-        end
-      end
-
-      context 'with Google Cloud IAM integration at project level' do
+      context 'with active Google Cloud IAM integration' do
         before do
           create(:google_cloud_platform_workload_identity_federation_integration, project: project)
         end
@@ -151,22 +97,6 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
         end
 
         it 'includes Google Artifact Registry fields' do
-          is_expected.to include(
-            editable: 'false',
-            workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
-          )
-        end
-      end
-
-      context 'with active group level Google Cloud IAM integration & inactive Google Cloud IAM integration at project level' do
-        before do
-          group_integration = create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group)
-          # propagate the integrations to the nested levels
-          ::Integrations::PropagateService.new(group_integration).execute
-          project.google_cloud_platform_workload_identity_federation_integration.update_column(:active, false)
-        end
-
-        it 'includes Google Cloud Artifact Registry fields' do
           is_expected.to include(
             editable: 'false',
             workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
