@@ -53,6 +53,7 @@ describe('Secrets router', () => {
   it.each`
     path               | componentNames                     | components
     ${'/'}             | ${'SecretsTable'}                  | ${[SecretsTable]}
+    ${'/?page=2'}      | ${'SecretsTable'}                  | ${[SecretsTable]}
     ${'/new'}          | ${'SecretFormWrapper'}             | ${[SecretFormWrapper]}
     ${'/key/details'}  | ${'SecretTabs and SecretDetails'}  | ${[SecretTabs, SecretDetails]}
     ${'/key/auditlog'} | ${'SecretTabs and SecretAuditLog'} | ${[SecretTabs, SecretAuditLog]}

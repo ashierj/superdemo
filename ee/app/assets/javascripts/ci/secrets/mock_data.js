@@ -1,7 +1,7 @@
 const mockSecretsData = [
   {
     name: 'runner-token-windows',
-    labels: [],
+    labels: ['windows', 'env::production'],
     lastAccessed: '2024-03-19T20:55:08.551Z',
     createdAt: '2024-03-11T01:33:06.258Z',
   },

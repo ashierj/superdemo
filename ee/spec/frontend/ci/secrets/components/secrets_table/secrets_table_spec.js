@@ -1,4 +1,4 @@
-import { GlTableLite, GlLabel } from '@gitlab/ui';
+import { GlTableLite, GlLabel, GlPagination } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME, EDIT_ROUTE_NAME } from 'ee/ci/secrets/constants';
@@ -18,6 +18,7 @@ describe('SecretsTable component', () => {
   const findSecretLastAccessed = () => wrapper.findByTestId('secret-last-accessed');
   const findSecretCreatedAt = () => wrapper.findByTestId('secret-created-at');
   const findSecretActionsCell = () => wrapper.findComponent(SecretActionsCell);
+  const findPagination = () => wrapper.findComponent(GlPagination);
 
   const createComponent = (props) => {
     wrapper = mountExtended(SecretsTable, {
@@ -38,7 +39,7 @@ describe('SecretsTable component', () => {
     const secret = secretsMockData[0];
 
     beforeEach(() => {
-      createComponent({ secrets: secretsMockData });
+      createComponent({ secrets: { count: secretsMockData.length, nodes: secretsMockData } });
     });
 
     it('shows a total count of secrets', () => {
@@ -82,6 +83,16 @@ describe('SecretsTable component', () => {
           name: EDIT_ROUTE_NAME,
           params: { key: secret.key },
         },
+      });
+    });
+
+    describe('pagination', () => {
+      it('emits onPageChange event', () => {
+        const page = 2;
+
+        findPagination().vm.$emit('input', page);
+
+        expect(wrapper.emitted('onPageChange')).toEqual([[page]]);
       });
     });
   });
