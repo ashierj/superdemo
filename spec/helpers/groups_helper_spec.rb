@@ -691,4 +691,18 @@ RSpec.describe GroupsHelper, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#show_prevent_inviting_groups_outside_hierarchy_setting?' do
+    let_it_be(:group) { create(:group) }
+
+    it 'returns true for a root group' do
+      expect(helper.show_prevent_inviting_groups_outside_hierarchy_setting?(group)).to eq(true)
+    end
+
+    it 'returns false for a subgroup' do
+      subgroup = create(:group, parent: group)
+
+      expect(helper.show_prevent_inviting_groups_outside_hierarchy_setting?(subgroup)).to eq(false)
+    end
+  end
 end

@@ -29,6 +29,10 @@ module GroupsHelper
     false
   end
 
+  def show_prevent_inviting_groups_outside_hierarchy_setting?(group)
+    group.root?
+  end
+
   def group_icon_url(group, options = {})
     if group.is_a?(String)
       group = Group.find_by_full_path(group)
