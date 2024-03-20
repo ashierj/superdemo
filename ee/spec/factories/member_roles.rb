@@ -29,6 +29,10 @@ FactoryBot.define do
       read_code { true }
     end
 
+    trait :read_dependency do
+      read_dependency { true }
+    end
+
     # this trait can be used only for self-managed
     trait(:instance) { namespace { nil } }
   end
