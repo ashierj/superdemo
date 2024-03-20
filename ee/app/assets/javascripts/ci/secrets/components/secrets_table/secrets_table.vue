@@ -77,7 +77,7 @@ export default {
     {
       key: 'actions',
       label: '',
-      tdClass: 'gl-py-3! gl-px-0!',
+      tdClass: 'gl-text-right gl-p-3!',
     },
   ],
   LONG_DATE_FORMAT_WITH_TZ,
