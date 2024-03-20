@@ -27,7 +27,8 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
   end
 
   describe 'callbacks' do
-    let_it_be(:another_enabled_namespace) { create(:zoekt_enabled_namespace) }
+    let_it_be(:namespace_2) { create(:group) }
+    let_it_be(:another_enabled_namespace) { create(:zoekt_enabled_namespace, namespace: namespace_2) }
 
     describe '#create!' do
       it 'triggers indexing for the namespace' do
@@ -48,6 +49,16 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
           .with(another_enabled_namespace.root_namespace_id, :delete, another_zoekt_index.zoekt_node_id)
 
         another_zoekt_index.destroy!
+      end
+
+      it 'removes index when the enabled namespace record is destroyed' do
+        another_zoekt_index = create(:zoekt_index, zoekt_enabled_namespace: another_enabled_namespace,
+          namespace_id: another_enabled_namespace.root_namespace_id)
+
+        expect(::Search::Zoekt::NamespaceIndexerWorker).to receive(:perform_async)
+          .with(namespace_2.id, :delete, another_zoekt_index.zoekt_node_id)
+
+        another_enabled_namespace.destroy!
       end
     end
   end
