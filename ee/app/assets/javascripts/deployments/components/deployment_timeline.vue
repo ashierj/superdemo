@@ -86,7 +86,7 @@ export default {
                 <span class="note-headline-light">@{{ approval.user.username }}</span>
               </gl-link>
               <span class="note-headline-light"> &middot; </span>
-              <gl-badge :variant="badgeVariant(approval)">
+              <gl-badge :variant="badgeVariant(approval)" size="sm">
                 {{ badgeText(approval) }}
               </gl-badge>
               <span class="note-headline-light"> &middot; </span>
