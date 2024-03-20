@@ -19,7 +19,7 @@ RSpec.describe Groups::DiscoversController, :saas, feature_category: :activation
 
   describe 'GET show' do
     before do
-      allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+      stub_saas_features(subscriptions_trials: true)
     end
 
     subject { response }
@@ -108,8 +108,8 @@ RSpec.describe Groups::DiscoversController, :saas, feature_category: :activation
       end
     end
 
-    it 'renders 404 when the namespace check is disabled' do
-      allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(false)
+    it 'renders 404 when saas feature subscriptions_trials not available' do
+      stub_saas_features(subscriptions_trials: false)
       stub_experiments(trial_discover_page: :candidate)
       sign_in(owner)
 
