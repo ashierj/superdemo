@@ -6921,16 +6921,7 @@ msgstr ""
 msgid "Assign"
 msgstr ""
 
-msgid "Assign Iteration"
-msgstr ""
-
-msgid "Assign To"
-msgstr ""
-
 msgid "Assign custom color like #FF0000"
-msgstr ""
-
-msgid "Assign labels"
 msgstr ""
 
 msgid "Assign reviewer"
@@ -6943,9 +6934,6 @@ msgid "Assign severity"
 msgstr ""
 
 msgid "Assign some issues to this milestone."
-msgstr ""
-
-msgid "Assign to"
 msgstr ""
 
 msgid "Assign to commenting user"
@@ -18640,9 +18628,6 @@ msgstr ""
 msgid "DropdownWidget|An error occurred while fetching the assigned %{issuableAttribute} of the selected %{issuableType}."
 msgstr ""
 
-msgid "DropdownWidget|Assign %{issuableAttribute}"
-msgstr ""
-
 msgid "DropdownWidget|Cancel"
 msgstr ""
 
@@ -18662,6 +18647,9 @@ msgid "DropdownWidget|No %{issuableAttribute} found"
 msgstr ""
 
 msgid "DropdownWidget|No open %{issuableAttribute} found"
+msgstr ""
+
+msgid "DropdownWidget|Select %{issuableAttribute}"
 msgstr ""
 
 msgid "DropdownWidget|You do not have permission to view the currently assigned %{issuableAttribute} and will not be able to choose it again if you reassign it."
@@ -46525,6 +46513,9 @@ msgstr ""
 msgid "Select Git revision"
 msgstr ""
 
+msgid "Select Iteration"
+msgstr ""
+
 msgid "Select Profile"
 msgstr ""
 
@@ -47661,9 +47652,6 @@ msgstr ""
 msgid "Sidebar|%{name}: %{value}"
 msgstr ""
 
-msgid "Sidebar|Assign health status"
-msgstr ""
-
 msgid "Sidebar|Health status"
 msgstr ""
 
@@ -47671,6 +47659,9 @@ msgid "Sidebar|No status"
 msgstr ""
 
 msgid "Sidebar|None"
+msgstr ""
+
+msgid "Sidebar|Select health status"
 msgstr ""
 
 msgid "Sidekiq job compression threshold (bytes)"

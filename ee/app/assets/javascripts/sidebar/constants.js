@@ -18,7 +18,7 @@ export { Tracking, defaultEpicSort, epicIidPattern };
 export const edit = __('Edit');
 export const none = __('None');
 
-export const HEALTH_STATUS_I18N_ASSIGN_HEALTH_STATUS = s__('Sidebar|Assign health status');
+export const HEALTH_STATUS_I18N_ASSIGN_HEALTH_STATUS = s__('Sidebar|Select health status');
 export const HEALTH_STATUS_I18N_FETCH_ERROR = __(
   'An error occurred while fetching the health status.',
 );
@@ -69,7 +69,7 @@ export const healthStatusTracking = {
 export const iterationSelectTextMap = {
   iteration: __('Iteration'),
   noIteration: __('No iteration'),
-  assignIteration: __('Assign Iteration'),
+  assignIteration: __('Select iteration'),
   iterationSelectFail: __('Failed to set iteration on this issue. Please try again.'),
   currentIterationFetchError: __('Failed to fetch the iteration for this issue. Please try again.'),
   iterationsFetchError: __('Failed to fetch the iterations for the group. Please try again.'),

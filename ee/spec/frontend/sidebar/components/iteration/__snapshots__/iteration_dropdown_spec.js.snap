@@ -4,7 +4,7 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
 <gl-collapsible-listbox-stub
   block="true"
   category="primary"
-  headertext="Assign Iteration"
+  headertext="Select Iteration"
   icon=""
   ischeckcentered="true"
   items="[object Object]"
