@@ -39,9 +39,9 @@ module Audit
 
       case action_name.to_sym
       when :add
-        "Added #{target_name}#{@details[:as] ? " as #{@details[:as]}" : ''}"
+        "Added #{target_name}#{@details[:as] && " as #{@details[:as]}"}"
       when :remove
-        "Removed #{target_name}"
+        "Removed #{target_name}#{@details[:as] && " as #{@details[:as]}"}"
       when :failed_login
         "Failed to login with #{oauth_label} authentication"
       when :updated_ref

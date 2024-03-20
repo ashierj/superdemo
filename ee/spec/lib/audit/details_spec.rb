@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::Details do
+RSpec.describe Audit::Details, feature_category: :compliance_management do
   let(:user) { create(:user) }
 
   describe '.humanize' do
@@ -62,6 +62,61 @@ RSpec.describe Audit::Details do
           string = described_class.humanize(member_access_action)
 
           expect(string).to eq('Added user access as Developer')
+        end
+
+        context "without role" do
+          let(:member_access_action) do
+            {
+              add: 'user_access',
+              author_name: user.name,
+              target_id: member.id,
+              target_type: 'User',
+              target_details: member.user.name
+            }
+          end
+
+          it 'humanizes add project member access action without mentioning role' do
+            string = described_class.humanize(member_access_action)
+
+            expect(string).to eq('Added user access')
+          end
+        end
+      end
+
+      context 'remove member' do
+        let(:member_access_action) do
+          {
+            remove: 'user_access',
+            as: Gitlab::Access.options_with_owner.key(member.access_level.to_i),
+            author_name: user.name,
+            target_id: member.id,
+            target_type: 'User',
+            target_details: member.user.name
+          }
+        end
+
+        it 'humanizes the removal with role' do
+          expect(described_class.humanize(member_access_action)).to eq(
+            'Removed user access as Developer'
+          )
+        end
+
+        context "without role" do
+          let(:member_access_action) do
+            {
+              remove: 'user_access',
+              author_name: user.name,
+              target_id: member.id,
+              target_type: 'User',
+              target_details: member.user.name
+            }
+          end
+
+          it 'humanizes the removal without mentioning role' do
+            expect(described_class.humanize(member_access_action)).to eq(
+              'Removed user access'
+            )
+          end
         end
       end
 
