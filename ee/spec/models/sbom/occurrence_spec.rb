@@ -470,6 +470,27 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
         it { is_expected.to match_array(expected_occurrences) }
       end
     end
+
+    context "when a member of a custom role with :read_dependency enabled" do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:role) { create(:member_role, :read_dependency, namespace: group_a) }
+
+      context "on a project level" do
+        let_it_be(:membership) { create(:project_member, :guest, source: project_b, member_role: role, user: user) }
+
+        it { is_expected.to match_array([occurrence_b]) }
+      end
+
+      context "on a group level" do
+        let_it_be(:membership) { create(:group_member, :guest, source: group_a, member_role: role, user: user) }
+
+        it { is_expected.to match_array([occurrence_a]) }
+      end
+
+      context "when the role is not assigned" do
+        it { is_expected.to be_empty }
+      end
+    end
   end
 
   describe '#name' do
