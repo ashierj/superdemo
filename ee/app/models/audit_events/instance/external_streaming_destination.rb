@@ -11,6 +11,8 @@ module AuditEvents
       self.table_name = 'audit_events_instance_external_streaming_destinations'
 
       validates :name, uniqueness: true
+
+      has_many :event_type_filters, class_name: 'AuditEvents::Instance::EventTypeFilter'
     end
   end
 end
