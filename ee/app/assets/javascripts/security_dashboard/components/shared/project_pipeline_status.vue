@@ -1,9 +1,7 @@
 <script>
 import { GlLink, GlIcon } from '@gitlab/ui';
-import projectAutoFixMrsCountQuery from 'ee/security_dashboard/graphql/queries/project_auto_fix_mrs_count.query.graphql';
 import { __, s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import PipelineStatusBadge from './pipeline_status_badge.vue';
 
 export default {
@@ -12,24 +10,6 @@ export default {
     GlIcon,
     TimeAgoTooltip,
     PipelineStatusBadge,
-  },
-  mixins: [glFeatureFlagsMixin()],
-  inject: ['projectFullPath', 'autoFixMrsPath'],
-  apollo: {
-    autoFixMrsCount: {
-      query: projectAutoFixMrsCountQuery,
-      variables() {
-        return {
-          fullPath: this.projectFullPath,
-        };
-      },
-      update(data) {
-        return data?.project?.mergeRequests?.count || 0;
-      },
-      skip() {
-        return !this.glFeatures.securityAutoFix;
-      },
-    },
   },
   props: {
     pipeline: { type: Object, required: true },
@@ -68,8 +48,6 @@ export default {
     hasParsingErrorsAndWarnings: s__('SecurityReports|Parsing errors and warnings in pipeline'),
     hasParsingErrors: s__('SecurityReports|Parsing errors in pipeline'),
     hasParsingWarnings: s__('SecurityReports|Parsing warnings in pipeline'),
-    autoFixSolutions: s__('AutoRemediation|Auto-fix solutions'),
-    autoFixMrsLink: s__('AutoRemediation|%{mrsCount} ready for review'),
     sbomLastUpdated: __('SBOMs last updated'),
   },
 };
@@ -96,12 +74,6 @@ export default {
         data-testid="parsing-status-notice"
       >
         <gl-icon name="warning" class="gl-mr-3" />{{ parsingStatusMessage }}
-      </div>
-      <div v-if="autoFixMrsCount" class="gl-md-ml-3" data-testid="auto-fix-mrs-link">
-        <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.autoFixSolutions }}</span>
-        <gl-link :href="autoFixMrsPath" class="gl-white-space-nowrap">{{
-          sprintf($options.i18n.autoFixMrsLink, { mrsCount: autoFixMrsCount })
-        }}</gl-link>
       </div>
     </div>
 

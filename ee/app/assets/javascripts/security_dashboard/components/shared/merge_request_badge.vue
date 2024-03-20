@@ -30,9 +30,7 @@ export default {
   },
   computed: {
     mergeRequestIdString() {
-      return this.mergeRequest.securityAutoFix
-        ? s__('AutoRemediation|!%{mergeRequestIid}: Auto-fix')
-        : s__('AutoRemediation|!%{mergeRequestIid}');
+      return s__('AutoRemediation|!%{mergeRequestIid}');
     },
   },
   methods: {
