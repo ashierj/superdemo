@@ -18,7 +18,8 @@ module RemoteDevelopment
           default_branch_name: [UNDEFINED, String],
           default_max_hours_before_termination: [24, Integer],
           max_hours_before_termination_limit: [120, Integer],
-          project_cloner_image: ['alpine/git:2.36.3', String]
+          project_cloner_image: ['alpine/git:2.36.3', String],
+          tools_injector_image: ["registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:9", String]
         }
       end
 

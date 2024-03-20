@@ -12,46 +12,61 @@ module RemoteDevelopment
           value => {
             processed_devfile: Hash => processed_devfile,
             volume_mounts: Hash => volume_mounts,
-            params: Hash => params
+            settings: Hash => settings
           }
           volume_mounts => { data_volume: Hash => data_volume }
           data_volume => { path: String => volume_path }
-          params => { agent: Clusters::Agent => agent }
+          settings => { tools_injector_image: String => image_from_settings }
 
           editor_port = WorkspaceCreator::WORKSPACE_PORT
           ssh_port = 60022
           tools_dir = "#{volume_path}/.gl-tools"
-          enable_marketplace = Feature.enabled?(
-            :allow_extensions_marketplace_in_workspace,
-            agent.project.root_namespace,
-            type: :beta
-          )
+          enable_marketplace = allow_extensions_marketplace_in_workspace_feature_enabled?(value: value)
 
+          # NOTE: We will always have exactly one tools_component found, because we have already
+          #       validated this in post_flatten_devfile_validator.rb
           tools_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
-          use_vscode_1_81_attribute = tools_component.fetch('attributes', {}).fetch('gl/use-vscode-1-81', false)
-          use_vscode_1_81 = [true, "true"].include? use_vscode_1_81_attribute
-          inject_tools_component(processed_devfile, tools_dir, use_vscode_1_81)
 
-          if tools_component
-            override_main_container(
-              tools_component,
-              tools_dir,
-              editor_port,
-              ssh_port,
-              enable_marketplace
-            )
-          end
+          # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
+          image = vscode_1_81_image_override(tools_component: tools_component) || image_from_settings
+
+          inject_tools_components(processed_devfile: processed_devfile, tools_dir: tools_dir, image: image)
+
+          override_main_container(
+            tools_component: tools_component,
+            tools_dir: tools_dir,
+            editor_port: editor_port,
+            ssh_port: ssh_port,
+            enable_marketplace: enable_marketplace
+          )
 
           value
         end
 
-        # @param [Hash] component
+        # @param [Hash] value
+        # @return [Boolean]
+        def self.allow_extensions_marketplace_in_workspace_feature_enabled?(value:)
+          Feature.enabled?(
+            :allow_extensions_marketplace_in_workspace,
+            value.fetch(:params).fetch(:agent).project.root_namespace,
+            type: :beta
+          )
+        end
+
+        # @param [Hash] tools_component
+        # @return [String | false]
+        def self.vscode_1_81_image_override(tools_component:)
+          override_image = tools_component.fetch("attributes", {})["gl/use-vscode-1-81"].to_s == "true"
+          "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7" if override_image
+        end
+
+        # @param [Hash] tools_component
         # @param [String] tools_dir
         # @param [Integer] editor_port
         # @param [Integer] ssh_port
         # @param [Boolean] enable_marketplace
-        # @return [Hash]
-        def self.override_main_container(component, tools_dir, editor_port, ssh_port, enable_marketplace)
+        # @return [void]
+        def self.override_main_container(tools_component:, tools_dir:, editor_port:, ssh_port:, enable_marketplace:)
           # This overrides the main container's command
           # Open issue to support both starting the editor and running the default command:
           # https://gitlab.com/gitlab-org/gitlab/-/issues/392853
@@ -65,10 +80,10 @@ module RemoteDevelopment
             fi
             ${GL_TOOLS_DIR}/init_tools.sh
           SH
-          component['container']['command'] = %w[/bin/sh -c]
-          component['container']['args'] = [container_args]
-          component['container']['env'] = [] if component['container']['env'].nil?
-          component['container']['env'] += [
+          tools_component['container']['command'] = %w[/bin/sh -c]
+          tools_component['container']['args'] = [container_args]
+          tools_component['container']['env'] = [] if tools_component['container']['env'].nil?
+          tools_component['container']['env'] += [
             {
               'name' => 'GL_TOOLS_DIR',
               'value' => tools_dir
@@ -91,8 +106,8 @@ module RemoteDevelopment
             }
           ]
 
-          component['container']['endpoints'] = [] if component['container']['endpoints'].nil?
-          component['container']['endpoints'].append(
+          tools_component['container']['endpoints'] = [] if tools_component['container']['endpoints'].nil?
+          tools_component['container']['endpoints'].append(
             {
               'name' => 'editor-server',
               'targetPort' => editor_port,
@@ -107,15 +122,14 @@ module RemoteDevelopment
               'secure' => true
             }
           )
-          component
         end
 
         # @param [Hash] processed_devfile
         # @param [String] tools_dir
-        # @param [Boolean] use_vscode_1_81
+        # @param [String] image
         # @return [Array]
-        def self.inject_tools_component(processed_devfile, tools_dir, use_vscode_1_81)
-          processed_devfile['components'] += tools_components(tools_dir, use_vscode_1_81)
+        def self.inject_tools_components(processed_devfile:, tools_dir:, image:)
+          processed_devfile['components'] += tools_components(tools_dir: tools_dir, image: image)
 
           processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
           processed_devfile['commands'] += [{
@@ -131,18 +145,14 @@ module RemoteDevelopment
         end
 
         # @param [String] tools_dir
-        # @param [Boolean] use_vscode_1_81
+        # @param [String] image
         # @return [Array]
-        def self.tools_components(tools_dir, use_vscode_1_81)
-          # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
-          image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
-          image_tag = use_vscode_1_81 ? '7' : '9'
-
+        def self.tools_components(tools_dir:, image:)
           [
             {
               'name' => 'gl-tools-injector',
               'container' => {
-                'image' => "#{image_name}:#{image_tag}",
+                'image' => image,
                 'env' => [
                   {
                     'name' => 'GL_TOOLS_DIR',

@@ -44,9 +44,14 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
     }
   end
 
+  let(:tools_injector_image_from_settings) do
+    "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:9"
+  end
+
   let(:settings) do
     {
-      project_cloner_image: 'alpine/git:2.36.3'
+      project_cloner_image: 'alpine/git:2.36.3',
+      tools_injector_image: tools_injector_image_from_settings
     }
   end
 
@@ -150,6 +155,23 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
           reason: :bad_request
         })
       end
+    end
+  end
+
+  context "when allow_extensions_marketplace_in_workspace feature flag is disabled" do
+    let(:tools_injector_image_from_settings) { 'my/awesome/image:42' }
+
+    before do
+      stub_feature_flags(allow_extensions_marketplace_in_workspace: false)
+    end
+
+    it 'uses image override' do
+      workspace = response.fetch(:payload).fetch(:workspace)
+      processed_devfile = YAML.safe_load(workspace.processed_devfile).to_h
+      image_from_processed_devfile = processed_devfile["components"]
+                                       &.find { |component| component['name'] == 'gl-tools-injector' }
+                                       &.dig('container', 'image')
+      expect(image_from_processed_devfile).to eq(tools_injector_image_from_settings)
     end
   end
 end

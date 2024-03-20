@@ -11,7 +11,7 @@
 - [Railway Oriented Programming and the Result Class](#railway-oriented-programming-and-the-result-class)
 - [Benefits](#benefits)
 - [Differences from standard GitLab patterns](#differences-from-standard-gitlab-patterns)
-- [Remote Development Settings](#settings)
+- [Remote Development Settings](#remote-development-settings)
 - [FAQ](#faq)
 
 ## TL;DR and Quickstart
@@ -421,9 +421,9 @@ order of the steps in the
 
 1. First, the default value is used
 1. Next, one of the following values are used if defined and not `nil`:
-   1.`::Gitlab::CurrentSettings`
-   1.`::Gitlab::Settings` (not yet implemented)
-   1. Cascading settings via `CascadingNamespaceSettingAttribute` (not yet implemented)
+    1. `::Gitlab::CurrentSettings`
+    1. `::Gitlab::Settings` (not yet implemented)
+    1. Cascading settings via `CascadingNamespaceSettingAttribute` (not yet implemented)
 1. Next, an ENV values is used if defined (i.e. not `nil`). The ENV var is intentionally placed as
    the last step and highest precedence, so it can always be used to easily override any settings for
    local or temporary testing.
