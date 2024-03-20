@@ -89,8 +89,8 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
     shared_examples 'permanent deletion message' do
       it 'returns the message related to permanent deletion' do
-        expect(subject).to include("You are going to remove #{group.name}")
-        expect(subject).to include("Removed groups CANNOT be restored!")
+        expect(subject).to include("You are about to remove the group #{group.name}")
+        expect(subject).to include("After you remove a group, you <strong>cannot</strong> restore it or its components.")
       end
     end
 
@@ -147,6 +147,70 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       end
 
       it_behaves_like 'permanent deletion message'
+    end
+  end
+
+  describe '#additional_removed_items' do
+    let(:group) { build(:group) }
+
+    it 'returns a list of subgroups, active projects, and archived projects when all exist' do
+      allow(group).to receive(:subgroup_count).and_return(2)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(5)
+      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(3)
+
+      group_children = '<span> This action will also remove:</span><ul>' \
+                       '<li>2 subgroups</li>' \
+                       '<li>5 active projects</li>' \
+                       '<li>3 archived projects</li>' \
+                       '</ul>'
+
+      expect(helper.additional_removed_items(group)).to eq(group_children)
+    end
+
+    it 'returns a list of only subgroups' do
+      allow(group).to receive(:subgroup_count).and_return(2)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(0)
+
+      group_children = '<span> This action will also remove:</span><ul>' \
+                       '<li>2 subgroups</li>' \
+                       '</ul>'
+
+      expect(helper.additional_removed_items(group)).to eq(group_children)
+    end
+
+    it 'returns a list of only active projects' do
+      allow(group).to receive(:subgroup_count).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(5)
+      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(0)
+
+      group_children = '<span> This action will also remove:</span><ul>' \
+                       '<li>5 active projects</li>' \
+                       '</ul>'
+
+      expect(helper.additional_removed_items(group)).to eq(group_children)
+    end
+
+    it 'returns a list of only archived projects' do
+      allow(group).to receive(:subgroup_count).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(3)
+
+      group_children = '<span> This action will also remove:</span><ul>' \
+                       '<li>3 archived projects</li>' \
+                       '</ul>'
+
+      expect(helper.additional_removed_items(group)).to eq(group_children)
+    end
+
+    it 'does not return a list when there are no subgroups or projects' do
+      allow(group).to receive(:subgroup_count).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(0)
+
+      group_children = ''
+
+      expect(helper.additional_removed_items(group)).to eq(group_children)
     end
   end
 
