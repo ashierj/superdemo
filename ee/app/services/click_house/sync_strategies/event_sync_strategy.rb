@@ -55,7 +55,9 @@ module ClickHouse
       end
 
       def enabled?
-        super && Feature.enabled?(:event_sync_worker_for_click_house)
+        super &&
+          Gitlab::ClickHouse.globally_enabled_for_analytics? &&
+          Feature.enabled?(:event_sync_worker_for_click_house)
       end
     end
   end

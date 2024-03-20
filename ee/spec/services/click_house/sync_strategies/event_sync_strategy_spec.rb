@@ -8,6 +8,10 @@ RSpec.describe ClickHouse::SyncStrategies::EventSyncStrategy, feature_category: 
   describe '#execute' do
     subject(:execute) { strategy.execute }
 
+    before do
+      stub_application_setting(use_clickhouse_for_analytics: true)
+    end
+
     context 'when syncing records', :click_house do
       let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, group: group) }
@@ -30,7 +34,7 @@ RSpec.describe ClickHouse::SyncStrategies::EventSyncStrategy, feature_category: 
             'target_type' => 'Issue')
         ]
 
-        events = ClickHouse::Client.select('SELECT * FROM events ORDER BY id', :main)
+        events = ClickHouse::Client.select('SELECT * FROM events FINAL ORDER BY id', :main)
 
         expect(events).to match(expected_records)
 
@@ -93,20 +97,10 @@ RSpec.describe ClickHouse::SyncStrategies::EventSyncStrategy, feature_category: 
   end
 
   describe '#enabled?' do
-    context 'when the clickhouse database is configured the feature flag is enabled' do
+    context 'when ClickHouse is disabled' do
       before do
+        stub_application_setting(use_clickhouse_for_analytics: false)
         allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
-        stub_feature_flags(event_sync_worker_for_click_house: true)
-      end
-
-      it 'returns true' do
-        expect(strategy.send(:enabled?)).to be_truthy
-      end
-    end
-
-    context 'when the clickhouse database is not configured' do
-      before do
-        allow(Gitlab::ClickHouse).to receive(:configured?).and_return(false)
       end
 
       it 'returns false' do
@@ -114,14 +108,41 @@ RSpec.describe ClickHouse::SyncStrategies::EventSyncStrategy, feature_category: 
       end
     end
 
-    context 'when the feature flag is disabled' do
+    context 'when ClickHouse is enabled' do
       before do
-        allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
-        stub_feature_flags(event_sync_worker_for_click_house: false)
+        stub_application_setting(use_clickhouse_for_analytics: true)
       end
 
-      it 'returns false' do
-        expect(strategy.send(:enabled?)).to be_falsey
+      context 'when the clickhouse database is configured the feature flag is enabled' do
+        before do
+          allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
+          stub_feature_flags(event_sync_worker_for_click_house: true)
+        end
+
+        it 'returns true' do
+          expect(strategy.send(:enabled?)).to be_truthy
+        end
+      end
+
+      context 'when the clickhouse database is not configured' do
+        before do
+          allow(Gitlab::ClickHouse).to receive(:configured?).and_return(false)
+        end
+
+        it 'returns false' do
+          expect(strategy.send(:enabled?)).to be_falsey
+        end
+      end
+
+      context 'when the feature flag is disabled' do
+        before do
+          allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
+          stub_feature_flags(event_sync_worker_for_click_house: false)
+        end
+
+        it 'returns false' do
+          expect(strategy.send(:enabled?)).to be_falsey
+        end
       end
     end
   end
