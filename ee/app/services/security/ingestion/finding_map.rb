@@ -50,7 +50,9 @@ module Security
                         primary_identifier_id: identifier_ids.first,
                         location: report_finding.location_data,
                         location_fingerprint: report_finding.location_fingerprint,
-                        project_id: project_id
+                        project_id: project_id,
+                        initial_pipeline_id: pipeline.id,
+                        latest_pipeline_id: pipeline.id
                       )
       end
 
