@@ -1445,6 +1445,8 @@ DETAILS:
 
 Creates a service account user. You can specify username and name. If you do not specify these attributes, the default name is `Service account user` and the username is automatically generated.
 
+This API endpoint works on top-level groups only. It does not work on subgroups.
+
 ```plaintext
 POST /groups/:id/service_accounts
 ```
@@ -1478,6 +1480,8 @@ Example response:
 POST /groups/:id/service_accounts/:user_id/personal_access_tokens
 ```
 
+This API endpoint works on top-level groups only. It does not work on subgroups.
+
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/groups/35/service_accounts/71/personal_access_tokens" --data "scopes[]=api" --data "name=service_accounts_token"
 ```
@@ -1510,6 +1514,8 @@ Example response:
 ```plaintext
 POST /groups/:id/service_accounts/:user_id/personal_access_tokens/:token_id/rotate
 ```
+
+This API endpoint works on top-level groups only. It does not work on subgroups.
 
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/groups/35/service_accounts/71/personal_access_tokens/6/rotate"
