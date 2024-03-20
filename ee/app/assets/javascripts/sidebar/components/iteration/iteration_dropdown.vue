@@ -81,7 +81,7 @@ export default {
       return this.currentIteration?.period || __('Select iteration');
     },
     dropdownHeaderText() {
-      return __('Assign Iteration');
+      return __('Select Iteration');
     },
   },
   created() {
