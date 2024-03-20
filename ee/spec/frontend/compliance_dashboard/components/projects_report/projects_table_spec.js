@@ -51,8 +51,9 @@ describe('ProjectsTable component', () => {
   const findCreateModal = () => findModalByModalId('create-framework-form-modal');
   const findEditModal = () => findModalByModalId('edit-framework-form-modal');
 
-  const findSelectAllCheckbox = () => 
-    findTable().findAll('th > div').at(0).findComponent(GlFormCheckbox);  const findSelectedRows = () => findTable().findAll('.b-table-row-selected');
+  const findSelectAllCheckbox = () =>
+    findTable().findAll('th > div').at(0).findComponent(GlFormCheckbox);
+  const findSelectedRows = () => findTable().findAll('.b-table-row-selected');
 
   const isIndeterminate = (glFormCheckbox) => glFormCheckbox.vm.$attrs.indeterminate;
 
