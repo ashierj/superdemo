@@ -23,7 +23,7 @@ describe('FrameworksTable component', () => {
   const GlModalStub = stubComponent(GlModal, { methods: { show: jest.fn(), hide: jest.fn() } });
 
   const findTable = () => wrapper.findComponent(GlTable);
-  const findTableHeaders = () => findTable().findAll('th > div');
+  const findTableHeaders = () => findTable().findAll('th > div > span');
   const findTableRow = (idx) => findTable().findAll('tbody > tr').at(idx);
   const findTableRowData = (idx) => findTableRow(idx).findAll('td');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);

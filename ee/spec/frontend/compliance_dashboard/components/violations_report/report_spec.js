@@ -59,7 +59,7 @@ describe('ComplianceViolationsReport component', () => {
   const findViolationFilter = () => wrapper.findComponent(ViolationFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
 
-  const findTableHeaders = () => findViolationsTable().findAll('th > div');
+  const findTableHeaders = () => findViolationsTable().findAll('th > div > span');
   const findTableRowData = (idx) =>
     findViolationsTable().findAll('tbody > tr').at(idx).findAll('td');
   const findSelectedRows = () => findViolationsTable().findAll('tr.b-table-row-selected');
