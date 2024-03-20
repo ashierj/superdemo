@@ -1,6 +1,6 @@
 <script>
 import { updateHistory, getParameterByName, setUrlParams } from '~/lib/utils/url_utility';
-import getProjectSecretsQuery from '../graphql/queries/client/get_project_secrets.query.graphql';
+import getSecretsQuery from '../graphql/queries/client/get_secrets.query.graphql';
 import { INITIAL_PAGE, PAGE_SIZE } from '../constants';
 
 export default {
@@ -26,6 +26,7 @@ export default {
     queryVariables() {
       return {
         fullPath: this.projectPath,
+        isProject: true,
         offset: (this.page - 1) * PAGE_SIZE,
         limit: PAGE_SIZE,
       };
@@ -33,7 +34,7 @@ export default {
   },
   apollo: {
     secrets: {
-      query: getProjectSecretsQuery,
+      query: getSecretsQuery,
       variables() {
         return this.queryVariables;
       },

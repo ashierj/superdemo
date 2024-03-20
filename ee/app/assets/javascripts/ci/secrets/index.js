@@ -5,8 +5,8 @@ import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
 import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { resolvers, cacheConfig } from './graphql/settings';
-import getGroupSecretsQuery from './graphql/queries/client/get_group_secrets.query.graphql';
-import getProjectSecretsQuery from './graphql/queries/client/get_project_secrets.query.graphql';
+import getSecretsQuery from './graphql/queries/client/get_secrets.query.graphql';
+
 import createRouter from './router';
 
 import GroupSecretsApp from './components/group_secrets_app.vue';
@@ -47,8 +47,8 @@ export const initGroupSecretsApp = () => {
   const { groupPath, groupId, basePath } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
-    query: getGroupSecretsQuery,
-    variables: { fullPath: groupPath },
+    query: getSecretsQuery,
+    variables: { fullPath: groupPath, isGroup: true },
     data: {
       group: {
         id: convertToGraphQLId(TYPENAME_GROUP, groupId),
@@ -74,8 +74,8 @@ export const initProjectSecretsApp = () => {
   const { projectPath, projectId, basePath } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
-    query: getProjectSecretsQuery,
-    variables: { fullPath: projectPath },
+    query: getSecretsQuery,
+    variables: { fullPath: projectPath, isProject: true },
     data: {
       project: {
         id: convertToGraphQLId(TYPENAME_PROJECT, projectId),

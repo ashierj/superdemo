@@ -1,5 +1,4 @@
-import getGroupSecretsQuery from './queries/client/get_group_secrets.query.graphql';
-import getProjectSecretsQuery from './queries/client/get_project_secrets.query.graphql';
+import getSecretsQuery from './queries/client/get_secrets.query.graphql';
 
 export const cacheConfig = {
   typePolicies: {
@@ -33,8 +32,8 @@ export const resolvers = {
   Group: {
     secrets({ fullPath }, { offset, limit }, { cache }) {
       const sourceData = cache.readQuery({
-        query: getGroupSecretsQuery,
-        variables: { fullPath },
+        query: getSecretsQuery,
+        variables: { fullPath, isGroup: true },
       }).group.secrets;
 
       return clientSidePaginate(sourceData, offset, limit);
@@ -43,8 +42,8 @@ export const resolvers = {
   Project: {
     secrets({ fullPath }, { offset, limit }, { cache }) {
       const sourceData = cache.readQuery({
-        query: getProjectSecretsQuery,
-        variables: { fullPath },
+        query: getSecretsQuery,
+        variables: { fullPath, isProject: true },
       }).project.secrets;
 
       return clientSidePaginate(sourceData, offset, limit);
