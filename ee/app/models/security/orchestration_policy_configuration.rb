@@ -127,7 +127,7 @@ module Security
 
     def deprecated_properties
       deprecated_properties = Set.new
-      scan_result_policies = policy_yaml&.[](:scan_result_policy)
+      scan_result_policies = policy_yaml&.[](:scan_result_policy) || policy_yaml&.[](:approval_policy)
 
       return deprecated_properties.to_a unless scan_result_policies.present?
 

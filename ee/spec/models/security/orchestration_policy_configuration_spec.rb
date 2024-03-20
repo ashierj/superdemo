@@ -1749,11 +1749,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
     end
 
-    context 'when the policy is a scan_result_policy' do
-      let(:policy_yaml) do
-        build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, rules: rules)])
-      end
-
+    shared_examples 'approval policies' do
       context 'when the policy has no rules' do
         let(:rules) { nil }
 
@@ -1821,6 +1817,22 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           end
         end
       end
+    end
+
+    context 'when the policy is a scan_result_policy' do
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, rules: rules)])
+      end
+
+      it_behaves_like 'approval policies'
+    end
+
+    context 'when the policy is a approval_policy' do
+      let(:policy_yaml) do
+        build(:orchestration_policy_yaml, approval_policy: [build(:approval_policy, rules: rules)])
+      end
+
+      it_behaves_like 'approval policies'
     end
   end
 
