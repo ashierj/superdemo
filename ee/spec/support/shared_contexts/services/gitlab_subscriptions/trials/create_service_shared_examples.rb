@@ -294,7 +294,7 @@ RSpec.shared_examples 'when on trial step' do
           expect { execute }.not_to change { Group.count }
           expect(execute).to be_error
           expect(execute.reason).to eq(:namespace_create_failed)
-          expect(execute.message.to_sentence).to match(/^Group URL must not start or end with a special character/)
+          expect(execute.message.to_sentence).to match(/^Group URL can only include non-accented letters/)
           expect(execute.payload[:namespace_id]).to eq('0')
         end
       end
