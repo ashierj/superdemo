@@ -9,6 +9,7 @@ module Search
         dot_com_rollout
         remove_expired_subscriptions
         node_assignment
+        mark_indices_as_ready
       ].freeze
 
       BUFFER_FACTOR = 3
@@ -152,6 +153,23 @@ module Search
               message: 'Could not save Search::Zoekt::Index', zoekt_index: zoekt_index.attributes.compact))
           end
         end
+      end
+
+      def mark_indices_as_ready
+        initializing_indices = Search::Zoekt::Index.initializing
+        if initializing_indices.empty?
+          logger.info(build_structured_payload(task: :mark_indices_as_ready, message: 'Set indices ready', count: 0))
+          return
+        end
+
+        count = 0
+        initializing_indices.each_batch do |batch|
+          records = batch.with_all_repositories_ready
+          next if records.empty?
+
+          count += records.update_all(state: :ready)
+        end
+        logger.info(build_structured_payload(task: :mark_indices_as_ready, message: 'Set indices ready', count: count))
       end
     end
   end

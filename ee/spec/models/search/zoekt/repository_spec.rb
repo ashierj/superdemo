@@ -37,4 +37,15 @@ RSpec.describe ::Search::Zoekt::Repository, feature_category: :global_search do
       expect(zoekt_repo1.valid?).to be_falsey
     end
   end
+
+  describe 'scope' do
+    describe '.non_ready' do
+      let_it_be(:zoekt_repository) { create(:zoekt_repository) }
+
+      it 'returns non ready records' do
+        create(:zoekt_repository, state: :ready)
+        expect(described_class.non_ready).to contain_exactly zoekt_repository
+      end
+    end
+  end
 end

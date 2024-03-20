@@ -258,4 +258,49 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
       end
     end
   end
+
+  describe '#mark_indices_as_ready' do
+    let(:logger) { instance_double(::Zoekt::Logger) }
+    let(:task) { :mark_indices_as_ready }
+    let_it_be(:idx) { create(:zoekt_index, state: :initializing) } # It has some pending zoekt_repositories
+    let_it_be(:idx2) { create(:zoekt_index, state: :initializing) } # It has all ready zoekt_repositories
+    let_it_be(:idx3) { create(:zoekt_index, state: :initializing) } # It does not have zoekt_repositories
+    let_it_be(:idx4) { create(:zoekt_index) } # It has all ready zoekt_repositories but zoekt_index is pending
+    let_it_be(:idx_project) { create(:project, namespace_id: idx.namespace_id) }
+    let_it_be(:idx_project2) { create(:project, namespace_id: idx.namespace_id) }
+    let_it_be(:idx2_project2) { create(:project, namespace_id: idx2.namespace_id) }
+    let_it_be(:idx4_project) { create(:project, namespace_id: idx4.namespace_id) }
+
+    before do
+      allow(::Zoekt::Logger).to receive(:build).and_return(logger)
+    end
+
+    context 'when indices can not be moved to ready' do
+      it 'does not change any state' do
+        initial_indices_state = [idx, idx2, idx3, idx4].map { |i| i.reload.state }
+        expect(logger).to receive(:info).with({ 'class' => described_class.to_s, 'task' => task, 'count' => 0,
+                                                'message' => 'Set indices ready' }
+        )
+        execute_task
+        expect([idx, idx2, idx3, idx4].map { |i| i.reload.state }).to eq(initial_indices_state)
+      end
+    end
+
+    context 'when indices can be moved to ready' do
+      before do
+        idx.zoekt_repositories.create!(zoekt_index: idx, project: idx_project, state: :pending)
+        idx.zoekt_repositories.create!(zoekt_index: idx, project: idx_project2, state: :ready)
+        idx2.zoekt_repositories.create!(zoekt_index: idx2, project: idx2_project2, state: :ready)
+        idx4.zoekt_repositories.create!(zoekt_index: idx4, project: idx4_project, state: :ready)
+      end
+
+      it 'moves to ready only those initializing indices that have all ready zoekt_repositories' do
+        expect(logger).to receive(:info).with({ 'class' => described_class.to_s, 'task' => task, 'count' => 1,
+                                                'message' => 'Set indices ready' }
+        )
+        execute_task
+        expect([idx, idx2, idx3, idx4].map { |i| i.reload.state }).to eq(%w[initializing ready initializing pending])
+      end
+    end
+  end
 end
