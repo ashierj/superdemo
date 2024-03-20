@@ -40,8 +40,17 @@ export const getHttpString = (httpData) => {
   return `${methodOrStatusCode} ${urlOrReasonPhrase}\n${headerString}\n\n${bodyWithFallBack(body)}`;
 };
 
-export const getCreatedIssueForVulnerability = (vulnerability) =>
-  vulnerability.issue_links?.find((link) => link.link_type === 'created');
+export const getCreatedIssueForVulnerability = (vulnerability) => {
+  const isJiraIssueCreationEnabled = Boolean(vulnerability.create_jira_issue_url);
+
+  if (isJiraIssueCreationEnabled && vulnerability.external_issue_links?.length > 0) {
+    return vulnerability.external_issue_links.find(
+      (link) => link.external_issue_details.external_tracker === 'jira',
+    );
+  }
+
+  return vulnerability.issue_links?.find((link) => link.link_type === 'created');
+};
 
 export const getDismissalTransitionForVulnerability = (vulnerability) => {
   const latestTransition = vulnerability.state_transitions?.at(-1);

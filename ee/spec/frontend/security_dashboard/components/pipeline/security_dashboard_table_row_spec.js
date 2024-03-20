@@ -1,5 +1,5 @@
-import { GlFormCheckbox, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
-import { mount, shallowMount, createWrapper } from '@vue/test-utils';
+import { GlFormCheckbox, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { createWrapper, mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
@@ -25,7 +25,7 @@ describe('Security Dashboard Table Row', () => {
   const createComponent = (mountFunc, { props = {}, canAdminVulnerability = true } = {}) => {
     wrapper = mountFunc(SecurityDashboardTableRow, {
       store,
-      provide: { canAdminVulnerability },
+      provide: { canAdminVulnerability, projectFullPath: 'group/project', pipeline: { iid: 1 } },
       propsData: {
         ...props,
       },
@@ -268,6 +268,43 @@ describe('Security Dashboard Table Row', () => {
       });
     },
   );
+
+  describe('with Jira issue-integration enabled and an existing Jira issue', () => {
+    const jiraIssueDetails = {
+      external_issue_details: {
+        external_tracker: 'jira',
+        web_url: 'http://jira.example.com/GTA-1',
+        references: {
+          relative: 'GTA#1',
+        },
+      },
+    };
+
+    beforeEach(() => {
+      const vulnerability = {
+        ...mockDataVulnerabilities[1],
+        external_issue_links: [jiraIssueDetails],
+      };
+      vulnerability.create_jira_issue_url = 'http://foo.bar';
+
+      createComponent(shallowMountExtended, { props: { vulnerability } });
+    });
+
+    it('renders a Jira logo with a tooltip to let the user know that there is an existing issue', () => {
+      expect(wrapper.findByTestId('jira-issue-icon').attributes('title')).toBe(
+        'Jira Issue Created',
+      );
+    });
+
+    it('renders a link to the Jira issue that opens in a new tab', () => {
+      const jiraIssueLink = wrapper.findByTestId('jira-issue-link');
+
+      expect(jiraIssueLink.props('href')).toBe(
+        jiraIssueDetails.external_issue_details.references.web_url,
+      );
+      expect(jiraIssueLink.attributes('target')).toBe('_blank');
+    });
+  });
 
   describe('can admin vulnerability', () => {
     it.each([true, false])(

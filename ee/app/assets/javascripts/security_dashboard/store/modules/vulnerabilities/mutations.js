@@ -210,4 +210,14 @@ export default {
     Vue.set(state.modal, 'isCommentingOnDismissal', false);
     Vue.set(state.modal, 'isShowingDeleteButtons', false);
   },
+  [types.SET_IS_CREATING_ISSUE](state, isCreatingIssue) {
+    state.isCreatingIssue = isCreatingIssue;
+  },
+  [types.SET_EXTERNAL_ISSUE_LINKS](state, payload) {
+    const vulnerability = state.vulnerabilities.find((vuln) =>
+      isSameVulnerability(vuln, payload.vulnerability),
+    );
+
+    vulnerability.external_issue_links.push({ external_issue_details: payload.externalIssue });
+  },
 };

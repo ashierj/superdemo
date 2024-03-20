@@ -687,7 +687,9 @@ export const securityFindingCreateExternalIssueMutationResponse = {
 };
 
 export const getVulnerabilityExternalIssuesQueryResponse = ({
-  externalIssues = [{ id: '1', externalIssue: { webUrl: 'https://jira.com/1' } }],
+  externalIssues = [
+    { id: '1', externalIssue: { webUrl: 'https://jira.com/1', relativeReference: 'GTL#1' } },
+  ],
 } = {}) => ({
   data: {
     vulnerability: {
