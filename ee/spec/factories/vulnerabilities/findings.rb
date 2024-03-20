@@ -153,6 +153,15 @@ FactoryBot.define do
       }.to_json
     end
 
+    before(:create) do |finding, evaluator|
+      if evaluator.pipeline
+        pipeline_id = evaluator.pipeline.id
+
+        finding.initial_pipeline_id = finding.initial_pipeline_id.presence || pipeline_id
+        finding.latest_pipeline_id = finding.latest_pipeline_id.presence || pipeline_id
+      end
+    end
+
     after(:create) do |finding, evaluator|
       if evaluator.pipeline
         create(
@@ -165,9 +174,6 @@ FactoryBot.define do
 
     trait :with_pipeline do
       pipeline { association(:ci_pipeline, project: project) }
-
-      initial_pipeline_id { pipeline.id }
-      latest_pipeline_id { pipeline.id }
     end
 
     trait :detected do
