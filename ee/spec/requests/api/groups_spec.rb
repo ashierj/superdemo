@@ -560,6 +560,28 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
         end
       end
     end
+
+    context 'prevent_sharing_groups_outside_hierarchy' do
+      context 'when block seat overages is enabled for the group', :saas do
+        before_all do
+          create(:gitlab_subscription, :premium, namespace: group)
+        end
+
+        before do
+          stub_saas_features(gitlab_com_subscriptions: true)
+          stub_feature_flags(block_seat_overages: true)
+        end
+
+        it 'will not set prevent_sharing_groups_outside_hierarchy to false' do
+          put api("/groups/#{group.id}", user), params: { description: 'it works', prevent_sharing_groups_outside_hierarchy: false }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['description']).to eq('it works')
+          expect(json_response['prevent_sharing_groups_outside_hierarchy']).to eq(true)
+          expect(group.reload.prevent_sharing_groups_outside_hierarchy).to eq(true)
+        end
+      end
+    end
   end
 
   describe "POST /groups" do
@@ -1846,6 +1868,38 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
         expect(response).to have_gitlab_http_status(:created)
         expect(json_response['title']).to eq('ssh cert from post request')
         expect(json_response['key']).to include('ssh-rsa ')
+      end
+    end
+  end
+
+  describe "POST /groups/:id/share" do
+    let_it_be(:invited_group) { create(:group) }
+
+    context 'when block seat overages is enabled', :saas do
+      before_all do
+        create(:gitlab_subscription, :premium, namespace: group)
+      end
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+        stub_feature_flags(block_seat_overages: true)
+      end
+
+      it 'does not allow sharing with a group outside the hierarchy' do
+        post api("/groups/#{group.id}/share", user), params: { group_id: invited_group.id, group_access: Gitlab::Access::DEVELOPER }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(json_response).to eq({ 'message' => 'Not Found' })
+        expect(group.reload.shared_with_groups).to be_empty
+      end
+
+      it 'does allow sharing with a group within the hierarchy' do
+        subgroup = create(:group, parent: group)
+        other_subgroup = create(:group, parent: group)
+        post api("/groups/#{subgroup.id}/share", user), params: { group_id: other_subgroup.id, group_access: Gitlab::Access::DEVELOPER }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(subgroup.reload.shared_with_groups).to eq([other_subgroup])
       end
     end
   end

@@ -13,7 +13,7 @@ RSpec.describe Gitlab::Sitemaps::Generator do
 
   context 'when env is .com' do
     before do
-      expect(Gitlab).to receive(:com?).and_return(true)
+      expect(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     end
 
     it 'returns error if group gitlab-org is not found' do

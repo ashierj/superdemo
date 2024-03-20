@@ -713,6 +713,24 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
     end
   end
 
+  describe 'prevent sharing outside group hierarchy setting' do
+    context 'when block seat overages is enabled', :saas do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group) }
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+        stub_feature_flags(block_seat_overages: true)
+      end
+
+      it 'is not present' do
+        visit edit_group_path(group)
+
+        expect(page).to have_text "Permissions"
+        expect(page).not_to have_selector('#group_prevent_sharing_groups_outside_hierarchy')
+      end
+    end
+  end
+
   def save_permissions_group
     page.within('.gs-permissions') do
       click_button 'Save changes'

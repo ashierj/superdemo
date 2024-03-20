@@ -3,6 +3,7 @@
 module EE
   module NamespaceSetting
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       cascading_attr :duo_features_enabled
@@ -31,7 +32,7 @@ module EE
 
       before_validation :disable_product_analytics, if: :should_disable_product_analytics?
 
-      before_save :set_prevent_sharing_groups_outside_hierarchy, if: -> { user_cap_enabled? }
+      before_save :set_prevent_sharing_groups_outside_hierarchy
       after_save :disable_project_sharing!, if: -> { user_cap_enabled? }
 
       delegate :root_ancestor, to: :namespace
@@ -111,7 +112,9 @@ module EE
       end
 
       def set_prevent_sharing_groups_outside_hierarchy
-        self.prevent_sharing_groups_outside_hierarchy = true
+        if user_cap_enabled? || (namespace.block_seat_overages? && prevent_sharing_groups_outside_hierarchy_changed?)
+          self.prevent_sharing_groups_outside_hierarchy = true
+        end
       end
 
       def disable_project_sharing!
@@ -185,6 +188,11 @@ module EE
       def allowed_namespace_settings_params
         super + EE_NAMESPACE_SETTINGS_PARAMS
       end
+    end
+
+    override :prevent_sharing_groups_outside_hierarchy
+    def prevent_sharing_groups_outside_hierarchy
+      namespace.root_ancestor.block_seat_overages? || super
     end
   end
 end
