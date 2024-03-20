@@ -1,11 +1,21 @@
 <script>
-import { GlButton, GlFormCheckbox, GlSkeletonLoader, GlSprintf, GlIcon } from '@gitlab/ui';
+import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg?raw';
+import {
+  GlButton,
+  GlFormCheckbox,
+  GlSkeletonLoader,
+  GlSprintf,
+  GlIcon,
+  GlLink,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
 import getPrimaryIdentifier from 'ee/vue_shared/security_reports/store/utils/get_primary_identifier';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -23,9 +33,14 @@ export default {
     GlSkeletonLoader,
     GlSprintf,
     GlIcon,
+    GlLink,
     SeverityBadge,
     VulnerabilityActionButtons,
     VulnerabilityIssueLink,
+  },
+  directives: {
+    SafeHtml,
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['canAdminVulnerability'],
@@ -60,7 +75,31 @@ export default {
       return getCreatedIssueForVulnerability(this.vulnerability);
     },
     hasIssue() {
-      return Boolean(this.issueData);
+      return Boolean(this.issueData || this.jiraIssueData);
+    },
+    jiraIssueData() {
+      const jiraIssue = this.vulnerability.external_issue_links?.find(
+        (link) => link.external_issue_details.external_tracker === 'jira',
+      );
+
+      if (!jiraIssue) {
+        return null;
+      }
+
+      const {
+        external_issue_details: {
+          web_url: webUrl,
+          references: { relative: title },
+        },
+      } = jiraIssue;
+
+      return {
+        webUrl,
+        title,
+      };
+    },
+    isJiraIssueCreationEnabled() {
+      return Boolean(this.vulnerability.create_jira_issue_url);
     },
     canDismissVulnerability() {
       const path = this.vulnerability.create_vulnerability_feedback_dismissal_path;
@@ -113,6 +152,7 @@ export default {
       this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
     },
   },
+  jiraLogo,
 };
 </script>
 
@@ -165,8 +205,28 @@ export default {
             <gl-icon v-if="dismissalComment" name="comment" class="text-warning" />
             <span class="text-uppercase">{{ s__('vulnerability|dismissed') }}</span>
           </span>
+          <span
+            v-if="isJiraIssueCreationEnabled && jiraIssueData"
+            class="gl-display-inline-flex gl-align-items-baseline"
+          >
+            <span
+              v-safe-html="$options.jiraLogo"
+              v-gl-tooltip
+              :title="s__('SecurityReports|Jira Issue Created')"
+              class="gl-align-self-end gl-mr-2"
+              data-testid="jira-issue-icon"
+            >
+            </span>
+            <gl-link
+              :href="jiraIssueData.webUrl"
+              target="_blank"
+              class="vertical-align-middle"
+              data-testid="jira-issue-link"
+              >{{ jiraIssueData.title }}</gl-link
+            >
+          </span>
           <vulnerability-issue-link
-            v-if="hasIssue"
+            v-if="!isJiraIssueCreationEnabled && hasIssue"
             class="text-nowrap"
             :issue="issueData"
             :project-name="vulnerability.project.name"

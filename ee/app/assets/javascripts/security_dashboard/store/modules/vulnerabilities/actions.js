@@ -109,6 +109,15 @@ export const setModalData = ({ commit }, payload = {}) => {
   commit(types.SET_MODAL_DATA, payload);
 };
 
+export const createJiraIssueStart = ({ commit }) => {
+  commit(types.SET_IS_CREATING_ISSUE, true);
+};
+
+export const createJiraIssueSuccess = ({ commit }, payload) => {
+  commit(types.SET_IS_CREATING_ISSUE, false);
+  commit(types.SET_EXTERNAL_ISSUE_LINKS, payload);
+};
+
 export const createIssue = ({ dispatch }, { vulnerability, flashError }) => {
   dispatch('requestCreateIssue');
 

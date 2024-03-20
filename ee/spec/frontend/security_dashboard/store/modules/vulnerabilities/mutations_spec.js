@@ -605,4 +605,37 @@ describe('vulnerabilities module mutations', () => {
       expect(state.modal.isShowingDeleteButtons).toBe(false);
     });
   });
+
+  describe('SET_IS_CREATING_ISSUE', () => {
+    it(`should set isCreatingIssue to "true"`, () => {
+      expect(state.isCreatingIssue).toBe(false);
+
+      mutations[types.SET_IS_CREATING_ISSUE](state, true);
+
+      expect(state.isCreatingIssue).toBe(true);
+    });
+  });
+
+  describe('SET_EXTERNAL_ISSUE_LINKS', () => {
+    const vulnerability = { ...mockData[0] };
+    const payload = {
+      vulnerability,
+      externalIssue: {
+        webUrl: 'http://jira.com/issue/1',
+      },
+    };
+
+    it('should add the external issue to the given vulnerability', () => {
+      state.vulnerabilities = mockData;
+      expect(vulnerability.external_issue_links).toHaveLength(0);
+
+      mutations[types.SET_EXTERNAL_ISSUE_LINKS](state, payload);
+
+      expect(vulnerability.external_issue_links).toEqual([
+        {
+          external_issue_details: payload.externalIssue,
+        },
+      ]);
+    });
+  });
 });

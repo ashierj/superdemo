@@ -396,6 +396,34 @@ describe('vulnerability actions', () => {
         ]);
       });
     });
+
+    describe('createJiraIssueStart', () => {
+      it('should commit the "SET_IS_CREATING_ISSUE" mutation with "true"', () => {
+        return testAction(actions.createJiraIssueStart, {}, state, [
+          {
+            type: types.SET_IS_CREATING_ISSUE,
+            payload: true,
+          },
+        ]);
+      });
+    });
+
+    describe('createJiraIssueSuccess', () => {
+      it('should commit the "SET_IS_CREATING_ISSUE" mutation with "false" and set the external issue link', () => {
+        const payload = {};
+
+        return testAction(actions.createJiraIssueSuccess, payload, state, [
+          {
+            type: types.SET_IS_CREATING_ISSUE,
+            payload: false,
+          },
+          {
+            type: types.SET_EXTERNAL_ISSUE_LINKS,
+            payload,
+          },
+        ]);
+      });
+    });
   });
 
   describe('merge request creation', () => {
