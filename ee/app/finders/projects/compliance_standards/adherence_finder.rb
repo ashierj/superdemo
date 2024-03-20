@@ -3,6 +3,8 @@
 module Projects
   module ComplianceStandards
     class AdherenceFinder
+      LIMIT = 100
+
       def initialize(group, current_user, params = {})
         @group = group
         @current_user = current_user
@@ -60,7 +62,7 @@ module Projects
           array_scope: group.self_and_descendant_ids,
           array_mapping_scope: ::Projects::ComplianceStandards::Adherence.method(:in_optimization_array_mapping_scope),
           finder_query: ::Projects::ComplianceStandards::Adherence.method(:in_optimization_finder_query)
-        ).execute.limit(50)
+        ).execute.limit(LIMIT)
       end
 
       def filter_by_projects(adherence_records)
