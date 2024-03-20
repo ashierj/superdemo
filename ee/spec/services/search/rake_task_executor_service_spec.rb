@@ -271,10 +271,10 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
   describe '#index_users' do
     subject(:task) { service.execute(:index_users) }
 
-    let!(:users) { create_list(:user, 2) }
-
     it 'queues jobs for all users' do
-      expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*users).once
+      user_1 = create(:user)
+      user_2 = create(:user)
+      expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(user_1, user_2).once
 
       task
     end
