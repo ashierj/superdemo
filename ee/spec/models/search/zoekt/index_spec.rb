@@ -83,5 +83,24 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
           .to be_empty
       end
     end
+
+    describe '#with_all_repositories_ready' do
+      let_it_be(:idx) { create(:zoekt_index) } # It has some pending zoekt_repositories
+      let_it_be(:idx2) { create(:zoekt_index) } # It has all ready zoekt_repositories
+      let_it_be(:idx3) { create(:zoekt_index) } # It does not have zoekt_repositories
+      let_it_be(:idx_project) { create(:project, namespace_id: idx.namespace_id) }
+      let_it_be(:idx_project2) { create(:project, namespace_id: idx.namespace_id) }
+      let_it_be(:idx2_project2) { create(:project, namespace_id: idx2.namespace_id) }
+
+      before do
+        idx.zoekt_repositories.create!(zoekt_index: idx, project: idx_project, state: :pending)
+        idx.zoekt_repositories.create!(zoekt_index: idx, project: idx_project2, state: :ready)
+        idx2.zoekt_repositories.create!(zoekt_index: idx2, project: idx2_project2, state: :ready)
+      end
+
+      it 'returns all the indices whose all zoekt_repositories are ready' do
+        expect(described_class.with_all_repositories_ready).to contain_exactly(idx2)
+      end
+    end
   end
 end

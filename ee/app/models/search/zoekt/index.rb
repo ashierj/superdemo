@@ -4,6 +4,7 @@ module Search
   module Zoekt
     class Index < ApplicationRecord
       self.table_name = 'zoekt_indices'
+      include EachBatch
 
       belongs_to :zoekt_enabled_namespace, inverse_of: :indices, class_name: '::Search::Zoekt::EnabledNamespace'
       belongs_to :node, foreign_key: :zoekt_node_id, inverse_of: :indices, class_name: '::Search::Zoekt::Node'
@@ -34,6 +35,11 @@ module Search
         for_root_namespace_id(root_namespace_id)
           .joins(:zoekt_enabled_namespace)
           .where(zoekt_enabled_namespace: { search: true })
+      end
+
+      scope :with_all_repositories_ready, -> do
+        where_not_exists(Repository.non_ready.where(Repository.arel_table[:zoekt_index_id].eq(Index.arel_table[:id])))
+          .where_exists(Repository.where(Repository.arel_table[:zoekt_index_id].eq(Index.arel_table[:id])))
       end
 
       private

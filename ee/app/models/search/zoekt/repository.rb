@@ -27,6 +27,8 @@ module Search
         ready: 10
       }
 
+      scope :non_ready, -> { where.not(state: :ready) }
+
       private
 
       def project_id_matches_project_identifier
