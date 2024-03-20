@@ -22,6 +22,8 @@ module Vulnerabilities
     sha_attribute :project_fingerprint
     sha_attribute :location_fingerprint
 
+    attr_readonly :initial_pipeline_id
+
     belongs_to :project, inverse_of: :vulnerability_findings
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner'
     belongs_to :primary_identifier, class_name: 'Vulnerabilities::Identifier', inverse_of: :primary_findings, foreign_key: 'primary_identifier_id'

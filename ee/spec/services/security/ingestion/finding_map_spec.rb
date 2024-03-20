@@ -62,7 +62,9 @@ RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability
           "method" => "insecureCypher",
           "start_line" => 29
         },
-        project_id: pipeline.project_id
+        project_id: pipeline.project_id,
+        initial_pipeline_id: pipeline.id,
+        latest_pipeline_id: pipeline.id
       }
     end
 

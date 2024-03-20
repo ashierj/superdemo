@@ -55,6 +55,8 @@ feature_category: :vulnerability_management do
       expect(subject.payload[:vulnerability_finding].uuid).to eq(security_finding_uuid)
       expect(subject.payload[:vulnerability_finding].severity).to eq(security_finding.severity)
       expect(subject.payload[:vulnerability_finding].confidence).to eq(security_finding.confidence)
+      expect(subject.payload[:vulnerability_finding].initial_pipeline_id).to eq(security_finding.pipeline.id)
+      expect(subject.payload[:vulnerability_finding].latest_pipeline_id).to eq(security_finding.pipeline.id)
     end
   end
 
