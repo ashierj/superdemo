@@ -57,17 +57,17 @@ module RemoteDevelopment
 
           return err(_('No components present in devfile')) if components.blank?
 
-          inject_tools_components = components.select do |component|
+          injected_tools_components = components.select do |component|
             component.dig('attributes', 'gl/inject-editor')
           end
 
-          return err(_("No component has 'gl/inject-editor' attribute")) if inject_tools_components.empty?
+          return err(_("No component has 'gl/inject-editor' attribute")) if injected_tools_components.empty?
 
-          if inject_tools_components.length > 1
+          if injected_tools_components.length > 1
             return err(
               format(
                 _("Multiple components '%{name}' have 'gl/inject-editor' attribute"),
-                name: inject_tools_components.pluck('name') # rubocop:disable CodeReuse/ActiveRecord -- this pluck isn't from ActiveRecord, it's from ActiveSupport
+                name: injected_tools_components.pluck('name') # rubocop:disable CodeReuse/ActiveRecord -- this pluck isn't from ActiveRecord, it's from ActiveSupport
               )
             )
           end

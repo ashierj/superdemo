@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require_relative 'fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::UnmatchedResultError, feature_category: :remote_development do
   let(:unmatched_message_class) { stub_const('UnmatchedMessage', Class.new(RemoteDevelopment::Message)) }
