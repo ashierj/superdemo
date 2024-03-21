@@ -1,0 +1,9 @@
+fragment RolledupDatesFragment on WorkItemWidgetRolledupDates {
+  type
+  dueDate
+  dueDateFixed
+  dueDateIsFixed
+  startDate
+  startDateFixed
+  startDateIsFixed
+}

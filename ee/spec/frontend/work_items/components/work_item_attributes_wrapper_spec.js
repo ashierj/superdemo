@@ -10,10 +10,10 @@ import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inli
 import WorkItemIterationInline from 'ee/work_items/components/work_item_iteration_inline.vue';
 import WorkItemColorInline from 'ee/work_items/components/work_item_color_inline.vue';
 import WorkItemColorWithEdit from 'ee/work_items/components/work_item_color_with_edit.vue';
+import WorkItemRolledupDates from 'ee/work_items/components/work_item_rolledup_dates.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { workItemResponseFactory } from 'jest/work_items/mock_data';
-
+import { workItemResponseFactory, epicType } from 'jest/work_items/mock_data';
 import WorkItemAttributesWrapper from '~/work_items/components/work_item_attributes_wrapper.vue';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
@@ -40,12 +40,13 @@ describe('EE WorkItemAttributesWrapper component', () => {
   const findWorkItemColorWithEdit = () => wrapper.findComponent(WorkItemColorWithEdit);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
   const findWorkItemHealthStatusInline = () => wrapper.findComponent(WorkItemHealthStatusInline);
+  const findWorkItemRolledupDates = () => wrapper.findComponent(WorkItemRolledupDates);
 
   const createComponent = ({
     workItem = workItemQueryResponse.data.workItem,
     handler = successHandler,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
-    workItemsBeta = true,
+    featureFlags = { workItemsBeta: true, workItemsRolledupDates: true },
   } = {}) => {
     wrapper = shallowMount(WorkItemAttributesWrapper, {
       apolloProvider: createMockApollo([
@@ -63,9 +64,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         hasOkrsFeature: true,
         hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
-        glFeatures: {
-          workItemsBeta,
-        },
+        glFeatures: featureFlags,
       },
     });
   };
@@ -80,7 +79,10 @@ describe('EE WorkItemAttributesWrapper component', () => {
         iterationWidgetPresent ? 'renders' : 'does not render'
       } iteration component`, async () => {
         const response = workItemResponseFactory({ iterationWidgetPresent });
-        createComponent({ workItem: response.data.workItem, workItemsBeta: false });
+        createComponent({
+          workItem: response.data.workItem,
+          featureFlags: { workItemsBeta: false },
+        });
         await waitForPromises();
 
         expect(findWorkItemIterationInline().exists()).toBe(exists);
@@ -88,7 +90,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     });
 
     it('emits an error event to the wrapper', async () => {
-      createComponent({ workItemsBeta: false });
+      createComponent({ featureFlags: { workItemsBeta: false } });
       const updateError = 'Failed to update';
 
       findWorkItemIterationInline().vm.$emit('error', updateError);
@@ -124,7 +126,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     });
 
     it('renders WorkItemWeightInline when workItemsBeta disabled', async () => {
-      createComponent({ workItemsBeta: false });
+      createComponent({ featureFlags: { workItemsBeta: false } });
 
       await waitForPromises();
 
@@ -172,7 +174,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     });
 
     it('renders WorkItemHealthStatusInline when workItemsBeta disabled', async () => {
-      createComponent({ workItemsBeta: false });
+      createComponent({ featureFlags: { workItemsBeta: false } });
 
       await waitForPromises();
 
@@ -216,7 +218,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     });
 
     it('renders WorkItemProgressInline when workItemsBeta disabled', async () => {
-      createComponent({ workItemsBeta: false });
+      createComponent({ featureFlags: { workItemsBeta: false } });
 
       await waitForPromises();
 
@@ -261,7 +263,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     });
 
     it('renders WorkItemColorInline when workItemsBeta disabled', async () => {
-      createComponent({ workItemsBeta: false });
+      createComponent({ featureFlags: { workItemsBeta: false } });
 
       await waitForPromises();
 
@@ -278,6 +280,34 @@ describe('EE WorkItemAttributesWrapper component', () => {
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);
+    });
+  });
+
+  describe('rolledup dates widget', () => {
+    const createComponentWithRolledupDates = async ({ featureFlag = true } = {}) => {
+      const response = workItemResponseFactory({
+        rolledupDatesWidgetPresent: true,
+        datesWidgetPresent: false,
+        workItemType: epicType,
+      });
+
+      createComponent({
+        workItem: response.data.workItem,
+        handler: jest.fn().mockResolvedValue(workItemQueryResponse),
+        featureFlags: { workItemsRolledupDates: featureFlag },
+      });
+
+      await waitForPromises();
+    };
+
+    it.each`
+      description                                                              | featureFlag | exists
+      ${'renders rolledup dates widget when feature flag is enabled'}          | ${true}     | ${true}
+      ${'does not render rolledup dates widget when feature flag is disabled'} | ${false}    | ${false}
+    `('$description', async ({ featureFlag, exists }) => {
+      await createComponentWithRolledupDates({ featureFlag });
+
+      expect(findWorkItemRolledupDates().exists()).toBe(exists);
     });
   });
 });
