@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../fast_spec_helper'
+require_relative '../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Settings::DefaultsInitializer, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Settings::DefaultsInitializer, :rd_fast, feature_category: :remote_development do
   let(:value) { {} }
 
   subject(:returned_value) do

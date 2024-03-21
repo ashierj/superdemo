@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'fast_spec_helper'
+require_relative 'rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::MessageSupport, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::MessageSupport, :rd_fast, feature_category: :remote_development do
   let(:object) { Object.new.extend(described_class) }
 
   describe '.generate_error_response_from_message' do

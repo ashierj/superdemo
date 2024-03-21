@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../../fast_spec_helper'
+require_relative '../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Create::VolumeDefiner, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Create::VolumeDefiner, :rd_fast, feature_category: :remote_development do
   let(:value) { { params: 1 } }
 
   subject(:returned_value) do

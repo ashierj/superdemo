@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../../../fast_spec_helper'
+require_relative '../../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator, :rd_fast, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
   describe '.calculate_actual_state' do

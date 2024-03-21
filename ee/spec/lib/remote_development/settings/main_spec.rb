@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../fast_spec_helper'
+require_relative '../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Settings::Main, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :remote_development do
   include RemoteDevelopment::RailwayOrientedProgrammingHelpers
 
   let(:value) { {} }
