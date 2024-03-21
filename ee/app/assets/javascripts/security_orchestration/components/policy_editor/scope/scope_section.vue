@@ -138,9 +138,8 @@ export default {
 
     const { projects = [] } = this.policyScope || {};
 
-    if (projects?.excluding) {
-      selectedExceptionType =
-        projects?.excluding?.length > 0 ? EXCEPT_PROJECTS : WITHOUT_EXCEPTIONS;
+    if (projects?.excluding && projects.excluding.length > 0) {
+      selectedExceptionType = EXCEPT_PROJECTS;
     }
 
     if (this.policyScope?.compliance_frameworks) {
@@ -306,9 +305,15 @@ export default {
     setDefaultScope() {
       this.triggerChanged({ projects: { excluding: [] } });
     },
+    setDefaultSelectorValues() {
+      this.selectedProjectScopeType = ALL_PROJECTS_IN_GROUP;
+      this.selectedExceptionType = WITHOUT_EXCEPTIONS;
+      this.projectsPayloadKey = EXCLUDING;
+    },
     updateScopeSelection(value) {
       if (value) {
         this.$emit('remove');
+        this.setDefaultSelectorValues();
       } else {
         this.setDefaultScope();
       }

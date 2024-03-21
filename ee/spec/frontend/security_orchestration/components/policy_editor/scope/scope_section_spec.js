@@ -364,6 +364,16 @@ describe('PolicyScope', () => {
           it('does not emit default policy scope on load', () => {
             expect(wrapper.emitted('changed')).toEqual(undefined);
           });
+
+          it('resets the selectors when default scope is checked', async () => {
+            await findDefaultScopeSelector().vm.$emit('change');
+            await findProjectScopeTypeDropdown().vm.$emit('select', SPECIFIC_PROJECTS);
+            expect(findProjectScopeTypeDropdown().props('selected')).toBe(SPECIFIC_PROJECTS);
+            expect(findExceptionTypeDropdown().exists()).toBe(false);
+            await findDefaultScopeSelector().vm.$emit('change', true);
+            expect(findProjectScopeTypeDropdown().props('selected')).toBe(ALL_PROJECTS_IN_GROUP);
+            expect(findExceptionTypeDropdown().exists()).toBe(true);
+          });
         });
       });
     });
