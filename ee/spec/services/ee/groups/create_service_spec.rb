@@ -14,7 +14,7 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
   end
 
   let(:extra_params) { {} }
-  let(:created_group) { response }
+  let(:created_group) { response[:group] }
 
   subject(:response) { described_class.new(current_user, group_params).execute }
 

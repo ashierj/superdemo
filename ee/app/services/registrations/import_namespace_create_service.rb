@@ -3,9 +3,10 @@
 module Registrations
   class ImportNamespaceCreateService < BaseNamespaceCreateService
     def execute
-      @group = Groups::CreateService.new(user, modified_group_params).execute
+      response = Groups::CreateService.new(user, modified_group_params).execute
+      @group = response[:group]
 
-      if group.persisted?
+      if response.success?
         after_successful_group_creation(group_track_action: 'create_group_import')
 
         ServiceResponse.success(payload: { group: group })

@@ -23,9 +23,10 @@ module Registrations
     end
 
     def create_with_new_group_flow
-      @group = Groups::CreateService.new(user, modified_group_params).execute
+      response = Groups::CreateService.new(user, modified_group_params).execute
+      @group = response[:group]
 
-      if group.persisted?
+      if response.success?
         after_successful_group_creation(group_track_action: 'create_group')
         create_project_flow
       else

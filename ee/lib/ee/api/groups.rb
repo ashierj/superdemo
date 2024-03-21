@@ -25,17 +25,18 @@ module EE
 
             authenticated_as_admin! if params[:shared_runners_minutes_limit]
 
-            group = super
+            response = super
+            group = response[:group]
 
             # NOTE: add backwards compatibility for single ldap link
-            if group.persisted? && ldap_link_attrs[:cn].present?
+            if response.success? && ldap_link_attrs[:cn].present?
               group.ldap_group_links.create(
                 cn: ldap_link_attrs[:cn],
                 group_access: ldap_link_attrs[:group_access]
               )
             end
 
-            group
+            response
           end
 
           override :update_group

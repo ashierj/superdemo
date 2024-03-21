@@ -222,7 +222,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
       before do
         allow_next_instance_of(::Groups::CreateService) do |service|
-          allow(service).to receive(:execute).and_return(group)
+          allow(service).to receive(:execute).and_return(ServiceResponse.success(payload: { group: group }))
         end
       end
 
