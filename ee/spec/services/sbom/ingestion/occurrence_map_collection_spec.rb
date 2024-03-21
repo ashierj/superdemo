@@ -48,6 +48,9 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection, feature_category: :depe
       { name: "libreadline8", version: "8.1-1", type: "library",
         purl: "pkg:deb/debian/libreadline8@8.1-1?distro=debian-11.4",
         ref: "pkg:deb/debian/libreadline8@8.1-1?distro=debian-11.4" },
+      { name: "readline-common", version: "8.1-1", type: "library", purl: nil, ref: "ref" },
+      { name: "readline-common", version: "8.1-1", type: "library",
+        purl: "pkg:npm/readline-common@8.1-1", ref: "pkg:npm/readline-common@8.1-1" },
       { name: "readline-common", version: nil, type: "library",
         purl: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4",
         ref: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" },
@@ -56,10 +59,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection, feature_category: :depe
         ref: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" },
       { name: "readline-common", version: "9.1-1", type: "library",
         purl: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4",
-        ref: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" },
-      { name: "readline-common", version: "8.1-1", type: "library", purl: nil, ref: "ref" },
-      { name: "readline-common", version: "8.1-1", type: "library",
-        purl: "pkg:npm/readline-common@8.1-1", ref: "pkg:npm/readline-common@8.1-1" }
+        ref: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" }
     ].map do |attributes|
       component = Gitlab::Ci::Reports::Sbom::Component.new(**component_attributes(attributes))
       an_occurrence_map(Sbom::Ingestion::OccurrenceMap.new(component, sbom_report.source, vulnerability_info))
