@@ -137,6 +137,57 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '.for_management_project_within_descendants' do
+    let_it_be(:top_level_group) { create(:group) }
+    let_it_be(:subgroup_a) { create(:group, parent: top_level_group) }
+    let_it_be(:subgroup_b) { create(:group, parent: subgroup_a) }
+
+    let_it_be(:top_level_group_project) { create(:project, group: top_level_group) }
+    let_it_be(:subgroup_project) { create(:project, group: subgroup_a) }
+
+    let!(:policy_configuration_a) do
+      create(
+        :security_orchestration_policy_configuration,
+        :namespace,
+        namespace_id: top_level_group.id)
+    end
+
+    let!(:policy_configuration_b) do
+      create(
+        :security_orchestration_policy_configuration,
+        :namespace,
+        namespace_id: subgroup_b.id,
+        security_policy_management_project_id: policy_project_id)
+    end
+
+    let!(:policy_configuration_c) do
+      create(
+        :security_orchestration_policy_configuration,
+        project: top_level_group_project,
+        security_policy_management_project_id: policy_project_id)
+    end
+
+    let!(:policy_configuration_d) do
+      create(
+        :security_orchestration_policy_configuration,
+        project: subgroup_project,
+        security_policy_management_project_id: policy_project_id)
+    end
+
+    let!(:other_policy_configuration) do
+      create(
+        :security_orchestration_policy_configuration,
+        :namespace,
+        namespace_id: subgroup_a.id)
+    end
+
+    let(:policy_project_id) { policy_configuration_a.security_policy_management_project_id }
+
+    subject { described_class.for_management_project_within_descendants(policy_project_id, top_level_group) }
+
+    it { is_expected.to contain_exactly(policy_configuration_b, policy_configuration_c, policy_configuration_d) }
+  end
+
   describe '.policy_management_project?' do
     before do
       create(:security_orchestration_policy_configuration, security_policy_management_project: security_policy_management_project)
@@ -1934,6 +1985,27 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#delete_software_license_policies' do
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
+
+    let_it_be(:read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration) }
+    let_it_be(:other_read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration) }
+
+    let_it_be(:policy) { create(:software_license_policy, scan_result_policy_read: read) }
+    let_it_be(:other_policy) { create(:software_license_policy, scan_result_policy_read: other_read) }
+
+    subject(:delete) { configuration.delete_software_license_policies }
+
+    it "deletes software license policies" do
+      expect { delete }.to change { SoftwareLicensePolicy.exists?(policy.id) }.to(false)
+    end
+
+    it "does not delete other software license policies" do
+      expect { delete }.not_to change { SoftwareLicensePolicy.exists?(other_policy.id) }.from(true)
+    end
+  end
+
+  describe '#delete_software_license_policies_for_project' do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:project) { create(:project, namespace: namespace) }
     let_it_be(:other_project) { create(:project, namespace: namespace) }
@@ -1972,7 +2044,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
 
     it 'deletes project scan_result_policy_reads' do
-      configuration.delete_software_license_policies(project)
+      configuration.delete_software_license_policies_for_project(project)
 
       software_license_policies = SoftwareLicensePolicy.where(project_id: project.id)
       other_project_software_license_policies = SoftwareLicensePolicy.where(project_id: other_project.id)
@@ -1983,6 +2055,27 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#delete_policy_violations' do
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
+
+    let_it_be(:read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration) }
+    let_it_be(:other_read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration) }
+
+    let_it_be(:violation) { create(:scan_result_policy_violation, scan_result_policy_read: read) }
+    let_it_be(:other_violation) { create(:scan_result_policy_violation, scan_result_policy_read: other_read) }
+
+    subject(:delete) { configuration.delete_policy_violations }
+
+    it "deletes configuration's scan result policy violations" do
+      expect { delete }.to change { Security::ScanResultPolicyViolation.exists?(violation.id) }.to(false)
+    end
+
+    it "does not delete other scan result policy violations" do
+      expect { delete }.not_to change { Security::ScanResultPolicyViolation.exists?(other_violation.id) }.from(true)
+    end
+  end
+
+  describe '#delete_policy_violations_for_project' do
     let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
     let_it_be(:inherited_configuration) { create(:security_orchestration_policy_configuration, namespace: configuration.project.group) }
     let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
@@ -2039,7 +2132,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
 
     it 'deletes scan_result_policy_violations related to the project and configuration' do
-      configuration.delete_policy_violations(project)
+      configuration.delete_policy_violations_for_project(project)
 
       project_violations = project.scan_result_policy_violations.where(scan_result_policy_id: scan_result_policy_read.id)
       inherited_violations = project.scan_result_policy_violations.where(scan_result_policy_id: inherited_scan_result_policy_read.id)
@@ -2050,11 +2143,29 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
 
     it 'changes policy violation count only for the configuration' do
-      expect { configuration.delete_policy_violations(project) }.to change { project.scan_result_policy_violations.count }.by(-1)
+      expect { configuration.delete_policy_violations_for_project(project) }.to change { project.scan_result_policy_violations.count }.by(-1)
     end
   end
 
   describe '#delete_scan_result_policy_reads' do
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
+
+    let_it_be(:read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration) }
+    let_it_be(:other_read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration) }
+
+    subject(:delete) { configuration.delete_scan_result_policy_reads }
+
+    it "deletes scan_result_policy_reads" do
+      expect { delete }.to change { Security::ScanResultPolicyRead.exists?(read.id) }.to(false)
+    end
+
+    it "does not delete other scan_result_policy_reads" do
+      expect { delete }.not_to change { Security::ScanResultPolicyRead.exists?(other_read.id) }.from(true)
+    end
+  end
+
+  describe '#delete_scan_result_policy_reads_for_project' do
     let_it_be(:project) { create(:project) }
     let_it_be(:other_project) { create(:project) }
 
@@ -2064,7 +2175,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     let!(:read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: project) }
     let_it_be(:other_read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: other_project) }
 
-    subject(:delete) { configuration.delete_scan_result_policy_reads(project) }
+    subject(:delete) { configuration.delete_scan_result_policy_reads_for_project(project) }
 
     it "deletes a project's scan_result_policy_reads" do
       expect { delete }.to change { project.scan_result_policy_reads.count }.by(-1)

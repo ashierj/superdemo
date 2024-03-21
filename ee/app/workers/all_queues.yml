@@ -1983,6 +1983,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_delete_orchestration_configuration
+  :worker_name: Security::DeleteOrchestrationConfigurationWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: security_generate_policy_violation_comment
   :worker_name: Security::GeneratePolicyViolationCommentWorker
   :feature_category: :security_policy_management
@@ -2111,6 +2120,15 @@
   :tags: []
 - :name: security_sync_scan_policies
   :worker_name: Security::SyncScanPoliciesWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: security_unassign_redundant_policy_configurations
+  :worker_name: Security::UnassignRedundantPolicyConfigurationsWorker
   :feature_category: :security_policy_management
   :has_external_dependencies: false
   :urgency: :low

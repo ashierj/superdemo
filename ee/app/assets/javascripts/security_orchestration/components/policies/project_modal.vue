@@ -18,7 +18,7 @@ export default {
     },
     save: {
       okLink: s__('SecurityOrchestration|Security policy project was linked successfully'),
-      okUnlink: s__('SecurityOrchestration|Security policy project was unlinked successfully'),
+      okUnlink: s__('SecurityOrchestration|Security policy project will be unlinked soon'),
       errorLink: s__(
         'SecurityOrchestration|An error occurred assigning your security policy project',
       ),

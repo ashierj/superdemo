@@ -126,9 +126,9 @@ describe('ProjectModal Component', () => {
     });
 
     it.each`
-      mutationType | expectedVariant | expectedText                                           | expectedHasPolicyProject | expectedSelectedProject
-      ${'success'} | ${'success'}    | ${'Security policy project was unlinked successfully'} | ${false}                 | ${null}
-      ${'failure'} | ${'danger'}     | ${'unlink failed'}                                     | ${true}                  | ${assignedPolicyProject}
+      mutationType | expectedVariant | expectedText                                       | expectedHasPolicyProject | expectedSelectedProject
+      ${'success'} | ${'success'}    | ${'Security policy project will be unlinked soon'} | ${false}                 | ${null}
+      ${'failure'} | ${'danger'}     | ${'unlink failed'}                                 | ${true}                  | ${assignedPolicyProject}
     `(
       'unlinks a project and handles $mutationType case',
       async ({

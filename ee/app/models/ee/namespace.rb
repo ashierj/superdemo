@@ -527,10 +527,15 @@ module EE
       false
     end
 
-    def all_security_orchestration_policy_configurations
+    def delete_redundant_policy_projects?
+      ::Feature.enabled?(:security_policies_unassign_redundant_policy_projects, self)
+    end
+    strong_memoize_attr :delete_redundant_policy_projects?
+
+    def all_security_orchestration_policy_configurations(include_invalid: false)
       return Array.wrap(security_orchestration_policy_configuration) if self_and_ancestor_ids.blank?
 
-      security_orchestration_policies_for_namespaces(self_and_ancestor_ids)
+      security_orchestration_policies_for_namespaces(self_and_ancestor_ids, include_invalid: include_invalid)
     end
 
     def all_inherited_security_orchestration_policy_configurations
@@ -576,11 +581,14 @@ module EE
 
     private
 
-    def security_orchestration_policies_for_namespaces(namespace_ids)
-      ::Security::OrchestrationPolicyConfiguration
+    def security_orchestration_policies_for_namespaces(namespace_ids, include_invalid: false)
+      configurations = ::Security::OrchestrationPolicyConfiguration
         .for_namespace(namespace_ids)
         .with_project_and_namespace
-        .select { |configuration| configuration&.policy_configuration_valid? }
+
+      return configurations if include_invalid
+
+      configurations.select { |configuration| configuration&.policy_configuration_valid? }
     end
 
     def any_project_with_shared_runners_enabled_with_cte?

@@ -1146,16 +1146,16 @@ module EE
       ci_cd_settings.auto_rollback_enabled?
     end
 
-    def all_security_orchestration_policy_configurations
+    def all_security_orchestration_policy_configurations(include_invalid: false)
       all_parent_groups = group&.self_and_ancestor_ids
-      return [] if all_parent_groups.blank? && !security_orchestration_policy_configuration&.policy_configuration_valid?
+      return [] if all_parent_groups.blank? && !security_orchestration_policy_configuration&.policy_configuration_valid? && !include_invalid
       return Array.wrap(security_orchestration_policy_configuration) if all_parent_groups.blank?
 
       security_policies = ::Security::OrchestrationPolicyConfiguration
         .for_project(id)
         .or(::Security::OrchestrationPolicyConfiguration.for_namespace(all_parent_groups))
 
-      security_orchestration_policies_for_scope(security_policies)
+      security_orchestration_policies_for_scope(security_policies, include_invalid: include_invalid)
     end
 
     def all_security_orchestration_policy_configuration_ids
@@ -1269,10 +1269,12 @@ module EE
       project_setting.legacy_open_source_license_available = false
     end
 
-    def security_orchestration_policies_for_scope(scope)
-      scope
-        .with_project_and_namespace
-        .select { |configuration| configuration&.policy_configuration_valid? }
+    def security_orchestration_policies_for_scope(scope, include_invalid: false)
+      configurations = scope.with_project_and_namespace
+
+      return configurations if include_invalid
+
+      configurations.select { |configuration| configuration&.policy_configuration_valid? }
     end
 
     def ci_minutes_project_usage

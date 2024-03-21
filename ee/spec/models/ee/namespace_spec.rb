@@ -1810,6 +1810,12 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       it 'returns empty list' do
         expect(subject).to be_empty
       end
+
+      context 'when including invalid configurations' do
+        subject { child_group_2.all_security_orchestration_policy_configurations(include_invalid: true) }
+
+        it { is_expected.to contain_exactly(parent_security_orchestration_policy_configuration, child_security_orchestration_policy_configuration) }
+      end
     end
 
     context 'when configuration is valid' do

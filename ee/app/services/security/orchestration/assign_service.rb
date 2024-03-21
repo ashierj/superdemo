@@ -6,10 +6,16 @@ module Security
       def execute
         validate_access!
 
-        res = create_or_update_security_policy_configuration
+        if policy_project_inherited?
+          return error(_("You don't need to link the security policy projects from the group. " \
+                         "All policies in the security policy projects are inherited already."))
+        end
 
-        return success if res
+        if create_or_update_security_policy_configuration
+          unassign_redundant_configurations if group_container?
 
+          success
+        end
       rescue ActiveRecord::RecordNotFound => _
         error(_('Policy project doesn\'t exist'))
       rescue ActiveRecord::RecordInvalid => _
@@ -25,7 +31,7 @@ module Security
       end
 
       def create_or_update_security_policy_configuration
-        return unassign_policy_project if policy_project_id.blank? && has_existing_policy?
+        return unassign_policy_project if unassigning? && has_existing_policy?
 
         policy_project = Project.find(policy_project_id)
 
@@ -111,6 +117,33 @@ module Security
             Security::OrchestrationConfigurationCreateBotWorker.perform_async(project_id, current_user.id)
           end
         end
+      end
+
+      def unassign_redundant_configurations
+        return unless container.root_ancestor.delete_redundant_policy_projects?
+
+        ::Security::UnassignRedundantPolicyConfigurationsWorker
+          .perform_async(container.id, policy_project_id, current_user.id)
+      end
+
+      def policy_project_inherited?
+        return false unless container.root_ancestor.delete_redundant_policy_projects?
+
+        all_effective_policy_project_ids.include?(policy_project_id)
+      end
+
+      def all_effective_policy_project_ids
+        # rubocop:disable Database/AvoidUsingPluckWithoutLimit -- plucking an Array
+        # rubocop:disable CodeReuse/ActiveRecord -- plucking an Array
+        container
+          .all_security_orchestration_policy_configurations(include_invalid: true)
+          .pluck(:security_policy_management_project_id)
+        # rubocop:enable Database/AvoidUsingPluckWithoutLimit
+        # rubocop:enable CodeReuse/ActiveRecord
+      end
+
+      def unassigning?
+        policy_project_id.blank?
       end
     end
   end
