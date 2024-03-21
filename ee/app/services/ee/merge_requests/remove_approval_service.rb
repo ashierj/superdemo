@@ -13,10 +13,12 @@ module EE
       end
 
       override :trigger_approval_hooks
-      def trigger_approval_hooks(merge_request)
+      def trigger_approval_hooks(merge_request, skip_notification)
         currently_approved = merge_request.approved?
 
         yield
+
+        return if skip_notification
 
         if currently_approved
           notification_service.async.unapprove_mr(merge_request, current_user)
