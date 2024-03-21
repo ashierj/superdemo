@@ -35,6 +35,17 @@ module EE
       data
     end
 
+    override :new_comment_template_paths
+    def new_comment_template_paths(group)
+      return super unless group
+      return super unless can?(current_user, :create_saved_replies, group)
+
+      super(group) + [{
+        text: _('Manage group comment templates'),
+        path: group_comment_templates_path(group)
+      }]
+    end
+
     private
 
     override :issue_only_initial_data
