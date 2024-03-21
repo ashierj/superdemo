@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../fast_spec_helper"
+require_relative "../rd_fast_spec_helper"
 
-RSpec.describe RemoteDevelopment::Settings::EnvVarReader, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_category: :remote_development do
   include ResultMatchers
 
   let(:default_setting_value) { 42 }

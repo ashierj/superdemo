@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../../fast_spec_helper"
+require_relative "../../rd_fast_spec_helper"
 
-RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables,
+RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_fast,
   feature_category: :remote_development do
   let(:name) { "name" }
   let(:dns_zone) { "example.dns.zone" }
