@@ -8,31 +8,24 @@ module EE
       AUDIT_EVENT_TYPE = 'group_created'
       AUDIT_EVENT_MESSAGE = 'Added group'
 
-      override :execute
-      def execute
-        super.tap do |group|
-          next unless group&.persisted?
-
-          log_audit_event
-        end
-      end
-
       private
 
       override :after_build_hook
-      def after_build_hook(group, params)
+      def after_build_hook
+        super
+
         # Repository size limit comes as MB from the view
         limit = params.delete(:repository_size_limit)
         group.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
       end
 
-      override :after_create_hook
-      def after_create_hook
+      override :after_successful_creation_hook
+      def after_successful_creation_hook
         super
 
-        group.persisted? &&
-          create_event &&
-          ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
+        create_event && ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
+
+        log_audit_event
       end
 
       override :remove_unallowed_params

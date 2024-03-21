@@ -100,9 +100,10 @@ module Gitlab
             path: args[:root_group_path],
             visibility_level: ::Featurable::ENABLED
           }
-          group = Groups::CreateService.new(current_user, group_params).execute
+          response = Groups::CreateService.new(current_user, group_params).execute
+          group = response[:group]
 
-          raise "Failed to create a group: #{group.errors.full_messages}" unless group.persisted?
+          raise "Failed to create a group: #{group.errors.full_messages}" if response.error?
 
           group
         end

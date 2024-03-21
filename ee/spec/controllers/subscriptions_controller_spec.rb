@@ -332,7 +332,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
           allow(instance).to receive(:execute).and_return(service_response)
         end
         allow_next_instance_of(Groups::CreateService) do |instance|
-          allow(instance).to receive(:execute).and_return(group)
+          allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: { group: group }))
         end
       end
 
@@ -358,7 +358,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
         it 'creates a group based on the company' do
           expect(Namespace).to receive(:clean_name).with(params.dig(:customer, :company)).and_call_original
           expect_next_instance_of(Groups::CreateService) do |instance|
-            expect(instance).to receive(:execute)
+            expect(instance).to receive(:execute).and_call_original
           end
 
           subject
@@ -408,7 +408,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
         it 'creates a group based on the user' do
           expect(Namespace).to receive(:clean_name).with(user.name).and_call_original
           expect_next_instance_of(Groups::CreateService) do |instance|
-            expect(instance).to receive(:execute)
+            expect(instance).to receive(:execute).and_call_original
           end
 
           subject
