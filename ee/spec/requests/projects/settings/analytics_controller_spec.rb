@@ -136,14 +136,7 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
         end
 
         it 'updates dashboard pointer project reference and does not clean up instrumentation key' do
-          params = {
-            project: {
-              analytics_dashboards_pointer_attributes: {
-                target_project_id: pointer_project.id
-              }
-            }
-          }
-
+          params = settings_params(pointer_project.id)
           expect do
             patch project_settings_analytics_path(project, params)
           end.to change {
@@ -154,14 +147,7 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
       end
 
       it 'updates dashboard pointer project reference' do
-        params = {
-          project: {
-            analytics_dashboards_pointer_attributes: {
-              target_project_id: pointer_project.id
-            }
-          }
-        }
-
+        params = settings_params(pointer_project.id)
         expect do
           patch project_settings_analytics_path(project, params)
         end.to change {
@@ -189,6 +175,29 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
           expect(response).to have_gitlab_http_status(:found)
           expect(response).to redirect_to(project_settings_analytics_path(project))
           expect(flash[:alert]).to eq('failed')
+        end
+      end
+
+      context 'with existing dashboard pointer reference' do
+        before do
+          params = settings_params(project.id)
+          patch project_settings_analytics_path(project, params)
+        end
+
+        it 'updates dashboard pointer reference' do
+          params = {
+            project: {
+              analytics_dashboards_pointer_attributes: {
+                target_project_id: pointer_project.id,
+                id: project.analytics_dashboards_pointer.id
+              }
+            }
+          }
+          expect do
+            patch project_settings_analytics_path(project, params)
+          end.to change {
+            project.reload.analytics_dashboards_configuration_project
+          }.to(pointer_project)
         end
       end
     end
@@ -277,5 +286,15 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
       }
     }
     patch project_settings_analytics_path(project, params)
+  end
+
+  def settings_params(target_project_id)
+    {
+      project: {
+        analytics_dashboards_pointer_attributes: {
+          target_project_id: target_project_id
+        }
+      }
+    }
   end
 end

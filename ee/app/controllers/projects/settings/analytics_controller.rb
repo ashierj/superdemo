@@ -44,7 +44,7 @@ module Projects
             :product_analytics_configurator_connection_string, :product_analytics_data_collector_host,
             :cube_api_base_url, :cube_api_key
           ],
-          analytics_dashboards_pointer_attributes: [:target_project_id]
+          analytics_dashboards_pointer_attributes: [:target_project_id, :id]
         ]
       end
 
