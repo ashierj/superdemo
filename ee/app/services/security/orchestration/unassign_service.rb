@@ -3,16 +3,29 @@
 module Security
   module Orchestration
     class UnassignService < ::BaseContainerService
-      def execute
+      def execute(delete_bot: true)
         return error(_('Policy project doesn\'t exist')) unless security_orchestration_policy_configuration
 
         old_policy_project = security_orchestration_policy_configuration.security_policy_management_project
 
-        remove_bot
+        remove_bot if delete_bot
 
-        result = security_orchestration_policy_configuration.delete
+        delete_configuration(security_orchestration_policy_configuration, old_policy_project)
+      end
 
-        if result
+      private
+
+      delegate :security_orchestration_policy_configuration, to: :container
+
+      def delete_configuration(configuration, old_policy_project)
+        if container.root_ancestor.delete_redundant_policy_projects?
+          Security::DeleteOrchestrationConfigurationWorker.perform_async(
+            configuration.id, current_user.id, old_policy_project.id)
+
+          return success
+        end
+
+        if configuration.delete
           ::Gitlab::Audit::Auditor.audit(
             name: 'policy_project_updated',
             author: current_user,
@@ -20,15 +33,12 @@ module Security
             target: old_policy_project,
             message: "Unlinked #{old_policy_project.name} as the security policy project"
           )
+
           return success
         end
 
-        error(container.security_orchestration_policy_configuration.errors.full_messages.to_sentence)
+        error(security_orchestration_policy_configuration.errors.full_messages.to_sentence)
       end
-
-      private
-
-      delegate :security_orchestration_policy_configuration, to: :container
 
       def success
         ServiceResponse.success

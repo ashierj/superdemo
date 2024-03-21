@@ -26,7 +26,7 @@ RSpec.describe Mutations::SecurityPolicy::UnassignSecurityPolicyProject do
 
         context 'when user is an owner of the project' do
           context 'when policy project is assigned to a container' do
-            it 'unassigns the security policy project' do
+            it 'unassigns the security policy project', :sidekiq_inline do
               result = subject
 
               expect(result[:errors]).to be_empty

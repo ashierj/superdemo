@@ -45707,7 +45707,7 @@ msgstr ""
 msgid "SecurityOrchestration|Security policy project was linked successfully"
 msgstr ""
 
-msgid "SecurityOrchestration|Security policy project was unlinked successfully"
+msgid "SecurityOrchestration|Security policy project will be unlinked soon"
 msgstr ""
 
 msgid "SecurityOrchestration|Security policy projects store your organization's security policies. They are identified when policies are created, or when a project is linked as a security policy project. %{linkStart}Learn more%{linkEnd}."
@@ -58269,6 +58269,9 @@ msgid "You don't have the %{role} role for any groups in this instance."
 msgstr ""
 
 msgid "You don't have write access to the source branch."
+msgstr ""
+
+msgid "You don't need to link the security policy projects from the group. All policies in the security policy projects are inherited already."
 msgstr ""
 
 msgid "You don’t have access to Productivity Analytics in this group"

@@ -39,10 +39,9 @@ module Security
 
     def sync_policies(project, configuration, active_scan_result_policies)
       configuration.delete_scan_finding_rules_for_project(project.id)
-      configuration.delete_software_license_policies(project)
-      configuration.delete_policy_violations(project)
-
-      configuration.delete_scan_result_policy_reads(project)
+      configuration.delete_software_license_policies_for_project(project)
+      configuration.delete_policy_violations_for_project(project)
+      configuration.delete_scan_result_policy_reads_for_project(project)
 
       active_scan_result_policies.each_with_index do |policy, policy_index|
         Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService

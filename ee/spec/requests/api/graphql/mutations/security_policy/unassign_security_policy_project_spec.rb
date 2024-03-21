@@ -50,7 +50,7 @@ RSpec.describe 'Unassigns scan execution policy project from a project/namespace
         end
 
         context 'when security policy project is assigned to the container' do
-          it 'unassigns the security policy project', :aggregate_failures do
+          it 'unassigns the security policy project', :aggregate_failures, :sidekiq_inline do
             expect { subject }.to change { ::Security::OrchestrationPolicyConfiguration.count }.by(-1)
 
             expect(response).to have_gitlab_http_status(:success)

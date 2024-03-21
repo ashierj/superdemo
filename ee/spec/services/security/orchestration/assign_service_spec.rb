@@ -25,6 +25,29 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       stub_licensed_features(security_orchestration_policies: true)
     end
 
+    shared_context 'when policy project is already inherited' do
+      let(:parent_group) { create(:group) }
+
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 3) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+        end
+
+        parent_group.add_owner(current_user)
+
+        case container
+        when Project then container.update!(group: parent_group)
+        when Group then container.update!(parent: parent_group)
+        end
+
+        container.reload
+
+        Security::OrchestrationPolicyConfiguration.create!(
+          security_policy_management_project_id: policy_project.id,
+          namespace_id: parent_group.id)
+      end
+    end
+
     shared_examples 'executes assign service' do
       it 'raises AccessDeniedError if user does not have permission' do
         expect { service }.to raise_error Gitlab::Access::AccessDeniedError
@@ -73,6 +96,36 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
               described_class.new(container: another_container, current_user: current_user, params: { policy_project_id: policy_project.id }).execute
             expect(repeated_service).to be_success
           end
+
+          context 'when policy project is already inherited' do
+            include_context 'when policy project is already inherited'
+
+            it 'errors' do
+              expect(service.to_h.slice(:status, :message).values).to match_array([:error, "You don't need to link the security policy projects from the group. All policies in the security policy projects are inherited already."])
+            end
+
+            context 'with feature disabled' do
+              before do
+                stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
+              end
+
+              it 'succeeds' do
+                expect(service).to be_success
+              end
+            end
+
+            context 'when already inherited configuration is invalid' do
+              before do
+                allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 3) do |configuration|
+                  allow(configuration).to receive(:policy_configuration_valid?).and_return(false)
+                end
+              end
+
+              it 'errors' do
+                expect(service.to_h.slice(:status, :message).values).to match_array([:error, "You don't need to link the security policy projects from the group. All policies in the security policy projects are inherited already."])
+              end
+            end
+          end
         end
 
         context 'when policy project is unassigned' do
@@ -82,13 +135,13 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
 
           let(:repeated_service) { described_class.new(container: container, current_user: current_user, params: { policy_project_id: nil }).execute }
 
-          it 'unassigns project' do
+          it 'unassigns project', :sidekiq_inline do
             expect { repeated_service }.to change {
               container.reload.security_orchestration_policy_configuration
             }.to(nil)
           end
 
-          it 'logs audit event' do
+          it 'logs audit event', :sidekiq_inline do
             old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
             audit_context = {
               name: "policy_project_updated",
@@ -100,7 +153,19 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
 
             expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
+            if container.is_a?(Project)
+              expect(::Gitlab::Audit::Auditor).to receive(:audit).with(include(name: "user_destroyed")) # policy bot user
+            end
+
             repeated_service
+          end
+
+          context 'when policy project is inherited' do
+            include_context 'when policy project is already inherited'
+
+            it 'succeeds' do
+              expect(service).to be_success
+            end
           end
         end
 
@@ -143,7 +208,9 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
             dbl =
               double(
                 'Security::OrchestrationPolicyConfiguration',
-                security_orchestration_policy_configuration: dbl_error
+                security_orchestration_policy_configuration: dbl_error,
+                all_security_orchestration_policy_configurations: [],
+                root_ancestor: instance_double(Group, delete_redundant_policy_projects?: true)
               )
 
             allow(current_user).to receive(:can?).with(:modify_security_policy, dbl).and_return(true)
@@ -226,6 +293,32 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       it_behaves_like 'executes assign service'
       it_behaves_like 'triggers bot user create worker' do
         let!(:expected_projects) { create_list(:project, 2, group: container) }
+      end
+
+      describe 'redundant policy configurations within namespace' do
+        before do
+          container.add_owner(current_user)
+        end
+
+        it 'unassigns redundant configurations' do
+          expect(::Security::UnassignRedundantPolicyConfigurationsWorker).to receive(:perform_async).with(container.id, policy_project.id, current_user.id)
+
+          service
+        end
+
+        context 'with feature disabled' do
+          before do
+            stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
+
+            container.root_ancestor.clear_memoization(:delete_redundant_policy_projects?)
+          end
+
+          it 'does not unassign redundant configurations' do
+            expect(::Security::UnassignRedundantPolicyConfigurationsWorker).not_to receive(:perform_async)
+
+            service
+          end
+        end
       end
     end
   end

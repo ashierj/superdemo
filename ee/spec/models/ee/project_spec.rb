@@ -3659,6 +3659,12 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         end
 
         it { is_expected.to be_empty }
+
+        context 'when including invalid configurations' do
+          subject { project.all_security_orchestration_policy_configurations(include_invalid: true) }
+
+          it { is_expected.to contain_exactly(project_security_orchestration_policy_configuration) }
+        end
       end
 
       context 'when configuration is valid' do

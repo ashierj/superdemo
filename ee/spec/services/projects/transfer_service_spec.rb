@@ -69,7 +69,7 @@ RSpec.describe Projects::TransferService, feature_category: :groups_and_projects
     context 'when project has policy project' do
       let!(:configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
-      it 'unassigns the policy project' do
+      it 'unassigns the policy project', :sidekiq_inline do
         subject.execute(group)
 
         expect { configuration.reload }.to raise_exception(ActiveRecord::RecordNotFound)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Orchestration::UnassignService, feature_category: :security_policy_management do
+RSpec.describe Security::Orchestration::UnassignService, :sidekiq_inline, feature_category: :security_policy_management do
   describe '#execute' do
     subject(:result) { service.execute }
 
@@ -19,11 +19,40 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
 
         it 'unassigns policy project from the project', :aggregate_failures do
           expect(result).to be_success
-          expect(container.security_orchestration_policy_configuration).to be_destroyed
+          exists = Security::OrchestrationPolicyConfiguration.exists?(
+            container.security_orchestration_policy_configuration.id)
+          expect(exists).to be(false)
         end
 
         it 'deletes rule schedules related to the project' do
           expect { result }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(0)
+        end
+
+        describe 'deletion' do
+          let(:policy_configuration) { container.security_orchestration_policy_configuration }
+
+          context 'with feature enabled' do
+            it 'enqueues for deletion' do
+              expect(Security::DeleteOrchestrationConfigurationWorker).to receive(:perform_async).with(
+                policy_configuration.id, current_user.id, policy_configuration.security_policy_management_project.id)
+
+              result
+            end
+          end
+
+          context 'with feature disabled' do
+            before do
+              stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
+
+              container.root_ancestor.clear_memoization(:delete_redundant_policy_projects?)
+            end
+
+            it 'deletes immediately' do
+              expect(policy_configuration).to receive(:delete).once
+
+              result
+            end
+          end
         end
 
         it 'logs audit event' do
@@ -41,21 +70,27 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
           result
         end
 
-        context 'when destroy fails' do
+        context 'when deleting configuration synchronously' do
           before do
-            allow(container.security_orchestration_policy_configuration).to receive(:delete).and_return(false)
+            stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
           end
 
-          it { is_expected.not_to be_success }
+          context 'when destroy fails' do
+            before do
+              allow(container.security_orchestration_policy_configuration).to receive(:delete).and_return(false)
+            end
 
-          it 'does not delete rule schedules related to the project' do
-            expect { result }.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
-          end
+            it { is_expected.not_to be_success }
 
-          it 'does not log audit event' do
-            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+            it 'does not delete rule schedules related to the project' do
+              expect { result }.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
+            end
 
-            result
+            it 'does not log audit event' do
+              expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+              result
+            end
           end
         end
       end
@@ -127,7 +162,19 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
                                                                            .with(container.id, current_user.id)
           expect(result).to be_success
 
-          expect(container.security_orchestration_policy_configuration).to be_destroyed
+          exists = Security::OrchestrationPolicyConfiguration.exists?(
+            container.security_orchestration_policy_configuration.id)
+          expect(exists).to be(false)
+        end
+
+        context 'when keeping the bot' do
+          subject(:result) { service.execute(delete_bot: false) }
+
+          it 'does not enqueue the bot removal worker' do
+            expect(Security::OrchestrationConfigurationRemoveBotWorker).not_to receive(:perform_async)
+
+            result
+          end
         end
       end
 
@@ -155,7 +202,9 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
                                                                              .with(project.id, current_user.id)
           end
           expect(result).to be_success
-          expect(container.security_orchestration_policy_configuration).to be_destroyed
+          exists = Security::OrchestrationPolicyConfiguration.exists?(
+            container.security_orchestration_policy_configuration.id)
+          expect(exists).to be(false)
         end
       end
 

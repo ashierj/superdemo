@@ -32,13 +32,17 @@ module Security
         foreign_key: 'security_orchestration_policy_configuration_id',
         inverse_of: :security_orchestration_policy_configuration
 
-      def delete_scan_finding_rules
-        delete_in_batches(approval_merge_request_rules.for_unmerged_merge_requests)
-        delete_in_batches(approval_project_rules)
+      def delete_scan_result_policy_reads
+        delete_in_batches(scan_result_policy_reads)
       end
 
-      def delete_scan_result_policy_reads(project_id)
+      def delete_scan_result_policy_reads_for_project(project_id)
         scan_result_policy_reads.where(project_id: project_id).delete_all
+      end
+
+      def delete_scan_finding_rules
+        delete_in_batches(approval_project_rules)
+        delete_in_batches(approval_merge_request_rules.for_unmerged_merge_requests)
       end
 
       def delete_scan_finding_rules_for_project(project_id)
@@ -48,7 +52,15 @@ module Security
                             .for_merge_request_project(project_id))
       end
 
-      def delete_software_license_policies(project)
+      def delete_software_license_policies
+        Security::ScanResultPolicyRead
+          .where(security_orchestration_policy_configuration_id: id)
+          .each_batch(order_hint: :updated_at) do |batch|
+          delete_in_batches(SoftwareLicensePolicy.where(scan_result_policy_id: batch.select(:id)))
+        end
+      end
+
+      def delete_software_license_policies_for_project(project)
         delete_in_batches(
           project
             .software_license_policies
@@ -56,7 +68,15 @@ module Security
         )
       end
 
-      def delete_policy_violations(project)
+      def delete_policy_violations
+        Security::ScanResultPolicyRead
+          .where(security_orchestration_policy_configuration_id: id)
+          .each_batch(order_hint: :updated_at) do |batch|
+          delete_in_batches(Security::ScanResultPolicyViolation.where(scan_result_policy_id: batch.select(:id)))
+        end
+      end
+
+      def delete_policy_violations_for_project(project)
         # scan_result_policy_violations does not store security_orchestration_policy_configuration_id
         # so we need to scope them through scan_resul_policy_reads in order to delete through policy_configuration
         delete_in_batches(

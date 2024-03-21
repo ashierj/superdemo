@@ -8,6 +8,7 @@ module Security
     include EachBatch
     include Gitlab::Utils::StrongMemoize
     include IgnorableColumns
+    include FromUnion
 
     self.table_name = 'security_orchestration_policy_configurations'
 
@@ -44,6 +45,13 @@ module Security
     scope :with_outdated_configuration, -> do
       joins(:security_policy_management_project)
         .where(arel_table[:configured_at].lt(Project.arel_table[:last_repository_updated_at]).or(arel_table[:configured_at].eq(nil)))
+    end
+    scope :for_management_project_within_descendants, -> (management_project_id, group) do
+      groups = group.descendants
+      projects = group.all_projects
+
+      from_union([for_namespace(groups.select(:id)), for_project(projects.select(:id))])
+        .merge(for_management_project(management_project_id))
     end
 
     delegate :actual_limits, :actual_plan_name, :actual_plan, to: :source
