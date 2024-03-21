@@ -1,6 +1,7 @@
 #import "~/graphql_shared/fragments/label.fragment.graphql"
 #import "~/graphql_shared/fragments/user.fragment.graphql"
 #import "~/work_items/graphql/milestone.fragment.graphql"
+#import "./rolledup_dates.fragment.graphql"
 
 fragment WorkItemMetadataWidgets on WorkItemWidget {
   type
@@ -8,6 +9,7 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
     dueDate
     startDate
   }
+  ...RolledupDatesFragment
   ... on WorkItemWidgetWeight {
     weight
   }
