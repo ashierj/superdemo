@@ -177,5 +177,35 @@ RSpec.describe 'UserAddOnAssignmentBulkCreate', feature_category: :seat_cost_man
         it_behaves_like 'error response', 'INVALID_USER_ID_PRESENT'
       end
     end
+
+    context 'when a user is already assigned' do
+      let_it_be(:assignee_user_3) { create(:user) }
+      let(:user3_id) { global_id_of(assignee_user_3) }
+      let(:input) do
+        {
+          user_ids: [user_id, user2_id, user3_id],
+          add_on_purchase_id: add_on_purchase_id
+        }
+      end
+
+      let(:updated_add_on_purchase) do
+        {
+          "assignedQuantity" => 3,
+          "id" => "gid://gitlab/GitlabSubscriptions::AddOnPurchase/#{add_on_purchase.id}",
+          "purchasedQuantity" => 3,
+          "name" => 'CODE_SUGGESTIONS'
+        }
+      end
+
+      before_all do
+        add_on_purchase.update!(quantity: 3)
+        namespace.add_developer(assignee_user_3)
+        create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: assignee_user_3)
+      end
+
+      context 'with excluding the assigned user when checking seats available' do
+        include_examples 'success response'
+      end
+    end
   end
 end
