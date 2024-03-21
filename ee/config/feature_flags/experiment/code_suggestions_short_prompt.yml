@@ -1,9 +1,0 @@
----
-name: code_suggestions_short_prompt
-feature_issue_url:
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145661
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/442892
-milestone: '16.10'
-group: group::code creation
-type: experiment
-default_enabled: false

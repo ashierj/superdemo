@@ -26,7 +26,6 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
   let(:instruction) { '' }
   let(:file_name) { 'main.go' }
   let(:model_name) { 'claude-2.1' }
-  let(:prompt_limit) { nil }
 
   let(:unsafe_params) do
     {
@@ -43,8 +42,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       prefix: prefix,
       instruction: instruction,
       current_file: unsafe_params['current_file'].with_indifferent_access,
-      model_name: model_name,
-      prompt_limit: prompt_limit
+      model_name: model_name
     }
   end
 
@@ -409,7 +407,10 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
     context 'when prefix is bigger than prompt limit' do
       let(:examples) { [] }
-      let(:prompt_limit) { 9 }
+
+      before do
+        stub_const("#{described_class}::MAX_INPUT_CHARS", 9)
+      end
 
       it 'returns expected request params' do
         request_params = {
