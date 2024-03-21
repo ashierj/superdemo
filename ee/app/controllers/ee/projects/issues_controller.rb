@@ -12,6 +12,11 @@ module EE
         include DescriptionDiffActions
         include GeoInstrumentation
         include GitlabSubscriptions::SeatCountAlert
+        include IframeYoutubeVideoCSP
+
+        before_action only: :index do
+          experiment(:issues_mrs_empty_state, type: :experiment, actor: current_user).publish
+        end
 
         before_action :disable_query_limiting_ee, only: [:update]
         before_action only: [:new, :create] do

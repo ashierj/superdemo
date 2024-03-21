@@ -19000,6 +19000,9 @@ msgstr ""
 msgid "Email a new %{name} to this project"
 msgstr ""
 
+msgid "Email a new issue"
+msgstr ""
+
 msgid "Email address copied"
 msgstr ""
 
@@ -19154,6 +19157,9 @@ msgid "Enable Gitpod?"
 msgstr ""
 
 msgid "Enable Invisible Captcha during sign up"
+msgstr ""
+
+msgid "Enable Jira integration"
 msgstr ""
 
 msgid "Enable Kroki"
@@ -25913,6 +25919,9 @@ msgstr ""
 msgid "Import and export settings"
 msgstr ""
 
+msgid "Import existing issues"
+msgstr ""
+
 msgid "Import from"
 msgstr ""
 
@@ -29491,6 +29500,9 @@ msgid "Learn more about group-level project templates"
 msgstr ""
 
 msgid "Learn more about groups."
+msgstr ""
+
+msgid "Learn more about issues"
 msgstr ""
 
 msgid "Learn more about issues."
@@ -41300,6 +41312,9 @@ msgstr ""
 msgid "Read more about GitLab at %{link_to_promo}."
 msgstr ""
 
+msgid "Read our documentation"
+msgstr ""
+
 msgid "Read the documentation before applying changes."
 msgstr ""
 
@@ -51723,6 +51738,9 @@ msgstr ""
 msgid "This feature is only allowed in groups or projects that enable this feature."
 msgstr ""
 
+msgid "This feature is only available on paid plans."
+msgstr ""
+
 msgid "This feature requires local storage to be enabled"
 msgstr ""
 
@@ -57179,6 +57197,9 @@ msgid "Will deploy to"
 msgstr ""
 
 msgid "Wireframe"
+msgstr ""
+
+msgid "With issues you can discuss the implementation of an idea, track tasks and work status, elaborate on code implementations, and accept feature proposals, questions, support requests, or bug reports."
 msgstr ""
 
 msgid "With requirements, you can set criteria to check your products against."
