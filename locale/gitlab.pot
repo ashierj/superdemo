@@ -21461,9 +21461,6 @@ msgstr ""
 msgid "File added"
 msgstr ""
 
-msgid "File browser"
-msgstr ""
-
 msgid "File deleted"
 msgstr ""
 
