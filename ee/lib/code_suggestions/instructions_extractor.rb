@@ -22,17 +22,10 @@ module CodeSuggestions
     end
 
     def extract
-      return {} if intent == INTENT_COMPLETION
+      return if intent == INTENT_COMPLETION
 
       comment_block = comment(file_content.lines_above_cursor)
-      generation, instruction = get_instruction(comment_block)
-
-      return {} if !generation && intent != INTENT_GENERATION
-
-      {
-        prefix: file_content.content_above_cursor,
-        instruction: instruction
-      }
+      get_instruction(comment_block)
     end
 
     private
@@ -54,30 +47,22 @@ module CodeSuggestions
     end
 
     def get_instruction(comment_block)
-      if comment_block.first&.match(first_line_regex)
-        instruction = comment_block
-        .map { |line| line.gsub(language.single_line_comment_format, '').strip }
-        .join("\n")
-        .gsub(/GitLab Duo Generate:\s?/, '')
+      type = if comment_block.first&.match(first_line_regex)
+               :comment
+             elsif file_content.small?
+               :small_file
+             elsif language.cursor_inside_empty_function?(
+               file_content.content_above_cursor, file_content.content_below_cursor)
+               :empty_function
+             elsif intent == INTENT_GENERATION
+               # on client side intent is currently detected only for comments, so
+               # it's safe to assume that when intent is sent, it's because of comment
+               :comment
+             end
 
-        return true, '' if instruction
-      end
+      return unless type
 
-      if file_content.small?
-        return true, <<~PROMPT
-          Create more new code for this file. If the cursor is inside an empty function,
-          generate its most likely contents based on the function name and signature.
-        PROMPT
-      end
-
-      if language.cursor_inside_empty_function?(file_content.content_above_cursor, file_content.content_below_cursor)
-        return true, <<~PROMPT
-          Complete the empty function and generate contents based on the function name and signature.
-          Do not repeat the code. Only return the method contents.
-        PROMPT
-      end
-
-      [false, nil]
+      Instruction.new(trigger_type: type)
     end
 
     def first_line_regex

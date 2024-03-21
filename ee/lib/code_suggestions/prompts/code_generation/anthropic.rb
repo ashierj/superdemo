@@ -63,7 +63,7 @@ module CodeSuggestions
         end
 
         def instructions
-          params[:instruction].presence || 'Generate the best possible code based on instructions.'
+          params[:instruction]&.instruction.presence || 'Generate the best possible code based on instructions.'
         end
 
         def existing_code_block
@@ -127,7 +127,7 @@ module CodeSuggestions
           </examples>
           EXAMPLES
 
-          examples_array = language.generation_examples
+          examples_array = language.generation_examples(type: params[:instruction]&.trigger_type)
           return if examples_array.empty?
 
           ERB.new(examples_template).result(binding)

@@ -413,8 +413,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
                   <example>
                   H: <existing_code>
-                       # get the current user's name from the session data
-                def get_user(session):
+                       def get_user(session):
+                  # get the current user's name from the session data
                 {{cursor}}
 
                 # is the current user an admin
@@ -569,8 +569,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
                   <example>
                   H: <existing_code>
-                       # get the current user's name from the session data
-                def get_user(session):
+                       def get_user(session):
+                  # get the current user's name from the session data
                 {{cursor}}
 
                 # is the current user an admin

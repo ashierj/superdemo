@@ -20,10 +20,10 @@ module CodeSuggestions
 
     def task
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
-      instructions = CodeSuggestions::InstructionsExtractor
+      instruction = CodeSuggestions::InstructionsExtractor
         .new(file_content, intent).extract
 
-      if instructions.empty?
+      unless instruction
         return CodeSuggestions::Tasks::CodeCompletion.new(
           params: params,
           unsafe_passthrough_params: unsafe_passthrough_params
@@ -31,7 +31,7 @@ module CodeSuggestions
       end
 
       CodeSuggestions::Tasks::CodeGeneration.new(
-        params: code_generation_params(instructions),
+        params: code_generation_params(instruction),
         unsafe_passthrough_params: unsafe_passthrough_params
       )
     end
@@ -45,10 +45,10 @@ module CodeSuggestions
     end
     strong_memoize_attr(:language)
 
-    def code_generation_params(instructions)
+    def code_generation_params(instruction)
       params.merge(
-        prefix: instructions[:prefix],
-        instruction: instructions[:instruction],
+        prefix: prefix,
+        instruction: instruction,
         project: project,
         model_name: ANTHROPIC_MODEL,
         current_user: current_user

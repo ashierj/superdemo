@@ -51,7 +51,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
       before do
         allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
-          allow(instance).to receive(:extract).and_return({})
+          allow(instance).to receive(:extract).and_return(nil)
         end
       end
 
@@ -64,8 +64,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
       let(:expected_params) do
         {
           params: params.merge(
-            instruction: 'instruction',
-            prefix: 'trimmed prefix',
+            instruction: instruction,
+            prefix: prefix,
             project: expected_project,
             model_name: described_class::ANTHROPIC_MODEL,
             current_user: current_user
@@ -74,11 +74,13 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         }
       end
 
+      let(:instruction) do
+        instance_double(CodeSuggestions::Instruction, instruction: 'instruction', trigger_type: 'comment')
+      end
+
       before do
         allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
-          allow(instance)
-            .to receive(:extract)
-            .and_return({ instruction: 'instruction', prefix: 'trimmed prefix' })
+          allow(instance).to receive(:extract).and_return(instruction)
         end
       end
 
