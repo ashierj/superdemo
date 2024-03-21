@@ -22,6 +22,9 @@ export default () => {
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
     securityPoliciesPolicyScopeToggleEnabled,
+    featurePipelineMaintenanceModeEnabled,
+    pipelineExecutionPolicyPath,
+    migratePipelineToPolicyPath,
     disableScanPolicyUpdate,
   } = el.dataset;
 
@@ -52,11 +55,14 @@ export default () => {
       securityPoliciesPolicyScopeToggleEnabled: parseBoolean(
         securityPoliciesPolicyScopeToggleEnabled,
       ),
+      featurePipelineMaintenanceModeEnabled: parseBoolean(featurePipelineMaintenanceModeEnabled),
       disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       mergeCommitsCsvExportPath,
       violationsCsvExportPath,
       projectFrameworksCsvExportPath,
       adherencesCsvExportPath,
+      pipelineExecutionPolicyPath,
+      migratePipelineToPolicyPath,
     },
     render: (createElement) => createElement('router-view'),
   });
