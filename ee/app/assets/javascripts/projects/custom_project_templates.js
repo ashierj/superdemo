@@ -135,11 +135,31 @@ export default () => {
   const groupNavElement = document.querySelector('.js-custom-group-project-templates-nav-link');
   const groupTabContent = document.querySelector(GROUP_TAB_CONTENT_SELECTOR);
 
+  const initPagination = (content, handler) => {
+    // This is a temporary workaround as part of a P1 bug fix
+    // In a future iteration the pagination should be implemented on the frontend
+    const el = content.querySelector('.js-custom-group-project-templates-tab-content .pagination');
+    if (!el) return;
+
+    el.querySelectorAll('a').forEach((anchor) => anchor.addEventListener('click', handler));
+  };
+
+  const handlePaginate = async (e) => {
+    e.preventDefault();
+    const response = await axios.get(e.currentTarget.href);
+    const secureContent = sanitize(response.data);
+
+    groupTabContent.innerHTML = secureContent;
+    initPagination(groupTabContent, handlePaginate);
+    bindEvents();
+  };
+
   const fetchHtmlForTabContent = async (content) => {
     const response = await axios.get(content.dataset.initialTemplates);
     const secureContent = sanitize(response.data);
     // eslint-disable-next-line no-param-reassign
     content.innerHTML = secureContent;
+    initPagination(groupTabContent, handlePaginate);
     bindEvents();
   };
 
