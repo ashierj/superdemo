@@ -1,7 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -13,7 +12,6 @@ import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/frame
 import complianceFrameworks from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 
 import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
-import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
 
 Vue.use(VueApollo);
 
@@ -29,9 +27,10 @@ describe('ComplianceFrameworksReport component', () => {
   const mockFrameworksGraphQlSuccess = jest.fn().mockResolvedValue(frameworksResponse);
   const mockGraphQlError = jest.fn().mockRejectedValue(sentryError);
 
-  const findErrorMessage = () => wrapper.findComponent(GlAlert);
-  const findFrameworksTable = () => wrapper.findComponent(FrameworksTable);
-  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
+  const findQueryError = () => wrapper.findComponentByTestId('query-error-alert');
+  const findMaintenanceAlert = () => wrapper.findComponentByTestId('maintenance-mode-alert');
+  const findFrameworksTable = () => wrapper.findComponent({ name: 'FrameworksTable' });
+  const findPagination = () => wrapper.findComponent({ name: 'GlKeysetPagination' });
 
   const defaultPagination = () => ({
     before: null,
@@ -39,6 +38,12 @@ describe('ComplianceFrameworksReport component', () => {
     first: 20,
     search: '',
   });
+
+  const defaultInjects = {
+    featurePipelineMaintenanceModeEnabled: false,
+    migratePipelineToPolicyPath: '/migrate-pipeline--to-policy-example-path',
+    pipelineExecutionPolicyPath: '/pipeline-execution-policy-example-path',
+  };
 
   function createMockApolloProvider(complianceFrameworksResolverMock) {
     return createMockApollo([[complianceFrameworks, complianceFrameworksResolverMock]]);
@@ -49,6 +54,7 @@ describe('ComplianceFrameworksReport component', () => {
     props = {},
     complianceFrameworksResolverMock = mockGraphQlLoading,
     queryParams = {},
+    provide = {},
   ) {
     const currentQueryParams = { ...queryParams };
     $router = {
@@ -66,6 +72,10 @@ describe('ComplianceFrameworksReport component', () => {
           groupPath: fullPath,
           ...props,
         },
+        provide: {
+          defaultInjects,
+          ...provide,
+        },
         mocks: {
           $router,
           $route: {
@@ -82,7 +92,40 @@ describe('ComplianceFrameworksReport component', () => {
     });
 
     it('does not render an error message', () => {
-      expect(findErrorMessage().exists()).toBe(false);
+      expect(findQueryError().exists()).toBe(false);
+    });
+
+    it('does not render the maintenance-mode-alert', () => {
+      expect(findMaintenanceAlert().exists()).toBe(false);
+    });
+  });
+
+  describe('when feature flag for pipeline maintenance mode is enabled', () => {
+    beforeEach(() => {
+      createComponent(
+        mount,
+        {},
+        mockGraphQlLoading,
+        {},
+        { featurePipelineMaintenanceModeEnabled: true },
+      );
+    });
+
+    it('renders the maintenance-mode-alert', () => {
+      const maintenanceAlert = findMaintenanceAlert();
+
+      expect(maintenanceAlert.exists()).toBe(true);
+      expect(maintenanceAlert.text()).toContain('Compliance pipelines are now in maintenance mode');
+    });
+
+    it('can dismiss the maintenance-mode-alert', async () => {
+      const maintenanceAlert = findMaintenanceAlert();
+      expect(maintenanceAlert.exists()).toBe(true);
+
+      maintenanceAlert.vm.$emit('dismiss');
+      await nextTick();
+
+      expect(maintenanceAlert.exists()).toBe(false);
     });
   });
 
@@ -170,14 +213,15 @@ describe('ComplianceFrameworksReport component', () => {
   describe('when the frameworks query fails', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
-      createComponent(shallowMount, {}, mockGraphQlError);
+      createComponent(shallowMount, { props: {} }, mockGraphQlError);
     });
 
     it('renders the error message', async () => {
       await waitForPromises();
+      const error = findQueryError();
 
-      expect(findErrorMessage().exists()).toBe(true);
-      expect(findErrorMessage().text()).toBe(
+      expect(error.exists()).toBe(true);
+      expect(error.text()).toBe(
         'Unable to load the compliance framework report. Refresh the page and try again.',
       );
       expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
@@ -186,7 +230,7 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when there are frameworks', () => {
     beforeEach(async () => {
-      createComponent(mount, {}, mockFrameworksGraphQlSuccess);
+      createComponent(mount, { props: {} }, mockFrameworksGraphQlSuccess);
       await waitForPromises();
     });
 

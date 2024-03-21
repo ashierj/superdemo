@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlLink, GlSprintf, GlKeysetPagination } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
@@ -13,8 +13,25 @@ export default {
   name: 'ComplianceProjectsReport',
   components: {
     GlAlert,
+    GlLink,
     GlKeysetPagination,
+    GlSprintf,
     FrameworksTable,
+  },
+  inject: {
+    featurePipelineMaintenanceModeEnabled: {
+      taype: Boolean,
+      default: false,
+    },
+    migratePipelineToPolicyPath: {
+      type: String,
+      default: '#',
+    },
+    pipelineExecutionPolicyPath: {
+      type: String,
+      required: false,
+      default: '#',
+    },
   },
   props: {
     groupPath: {
@@ -27,6 +44,7 @@ export default {
       hasQueryError: false,
       frameworks: { nodes: [] },
       searchString: '',
+      maintenanceModeDismissed: false,
       cursor: {
         before: null,
         after: null,
@@ -58,6 +76,9 @@ export default {
     isLoading() {
       return Boolean(this.$apollo.queries.frameworks.loading);
     },
+    showMaintenanceModeAlert() {
+      return this.featurePipelineMaintenanceModeEnabled && !this.maintenanceModeDismissed;
+    },
   },
   methods: {
     onPrevPage() {
@@ -81,8 +102,20 @@ export default {
       };
       this.searchString = searchString;
     },
+    handleOnDismissMaintenanceMode() {
+      this.maintenanceModeDismissed = true;
+    },
   },
   i18n: {
+    deprecationWarning: {
+      title: s__('ComplianceReport|Compliance pipelines are now in maintenance mode'),
+      message: s__(
+        'ComplianceReport|You can still edit existing compliance pipelines, but cannot create new compliance pipelines. %{linkStart}Pipeline execution policy%{linkEnd} actions provide the ability to enforce CI/CD jobs, execute security scans, and better manage compliance. You should migrate as soon as possible.',
+      ),
+      details: s__(
+        'ComplianceReport|For more information, see %{linkStart}how to migrate from compliance pipelines to pipeline execution policy actions%{linkEnd}.',
+      ),
+    },
     queryError: s__(
       'ComplianceReport|Unable to load the compliance framework report. Refresh the page and try again.',
     ),
@@ -92,7 +125,37 @@ export default {
 
 <template>
   <section class="gl-display-flex gl-flex-direction-column">
-    <gl-alert v-if="hasQueryError" variant="danger" class="gl-my-3" :dismissible="false">
+    <gl-alert
+      v-if="showMaintenanceModeAlert"
+      variant="warning"
+      class="gl-my-3"
+      data-testid="maintenance-mode-alert"
+      :dismissible="true"
+      :title="$options.i18n.deprecationWarning.title"
+      @dismiss="handleOnDismissMaintenanceMode"
+    >
+      <p>
+        <gl-sprintf :message="$options.i18n.deprecationWarning.message">
+          <template #link="{ content }">
+            <gl-link :href="pipelineExecutionPolicyPath" target="_blank">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </p>
+
+      <gl-sprintf :message="$options.i18n.deprecationWarning.details">
+        <template #link="{ content }">
+          <gl-link :href="migratePipelineToPolicyPath" target="_blank">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </gl-alert>
+
+    <gl-alert
+      v-if="hasQueryError"
+      variant="danger"
+      class="gl-my-3"
+      :dismissible="false"
+      data-testid="query-error-alert"
+    >
       {{ $options.i18n.queryError }}
     </gl-alert>
 
