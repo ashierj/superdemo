@@ -40,7 +40,7 @@ describe('ProjectsTable component', () => {
   const ROW_WITHOUT_FRAMEWORK_IDX = 1;
 
   const findTable = () => wrapper.findComponent(GlTable);
-  const findTableHeaders = () => findTable().findAll('th > div');
+  const findTableHeaders = () => findTable().findAll('th > div > span');
   const findTableRowData = (idx) => findTable().findAll('tbody > tr').at(idx).findAll('td');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findByTestId('projects-table-empty-state');
@@ -51,7 +51,8 @@ describe('ProjectsTable component', () => {
   const findCreateModal = () => findModalByModalId('create-framework-form-modal');
   const findEditModal = () => findModalByModalId('edit-framework-form-modal');
 
-  const findSelectAllCheckbox = () => findTableHeaders().at(0).findComponent(GlFormCheckbox);
+  const findSelectAllCheckbox = () =>
+    findTable().findAll('th > div').at(0).findComponent(GlFormCheckbox);
   const findSelectedRows = () => findTable().findAll('.b-table-row-selected');
 
   const isIndeterminate = (glFormCheckbox) => glFormCheckbox.vm.$attrs.indeterminate;
@@ -113,12 +114,7 @@ describe('ProjectsTable component', () => {
       wrapper = createComponent({ projects: [], isLoading: false });
       const headerTexts = findTableHeaders().wrappers.map((h) => h.text());
 
-      expect(headerTexts).toStrictEqual([
-        '',
-        'Project name',
-        'Project path',
-        'Compliance framework',
-      ]);
+      expect(headerTexts).toStrictEqual(['Project name', 'Project path', 'Compliance framework']);
     });
   });
 
