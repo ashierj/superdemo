@@ -182,6 +182,30 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
         end
       end
 
+      context 'when importing project into a group' do
+        let(:group) { create(:group) }
+        let(:more_params) { { namespace_id: group.id } }
+
+        context 'without permissions' do
+          it 'fails' do
+            expect(created_project).not_to be_persisted
+            expect(created_project.errors.full_messages).to include('User is not allowed to import projects')
+          end
+        end
+
+        context 'with sufficient permissions' do
+          before do
+            group.add_maintainer(user)
+          end
+
+          it 'creates a project with a pull mirroring' do
+            expect(created_project).to be_persisted
+            expect(created_project.mirror).to be true
+            expect(created_project.mirror_user_id).to eq(user.id)
+          end
+        end
+      end
+
       context 'with checks on the namespace' do
         before do
           enable_namespace_license_check!
