@@ -18,8 +18,8 @@ module EE
         @security_policy_target_project_id = @params.delete(:security_policy_target_project_id)
         @security_policy_target_namespace_id = @params.delete(:security_policy_target_namespace_id)
 
-        @mirror = ::Gitlab::Utils.to_boolean(@params.delete(:mirror))
-        @mirror_trigger_builds = ::Gitlab::Utils.to_boolean(@params.delete(:mirror_trigger_builds))
+        @mirror = ::Gitlab::Utils.to_boolean(@params.delete(:mirror), default: false)
+        @mirror_trigger_builds = ::Gitlab::Utils.to_boolean(@params.delete(:mirror_trigger_builds), default: false)
       end
 
       override :execute
