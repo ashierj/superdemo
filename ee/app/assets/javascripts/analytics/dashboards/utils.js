@@ -238,39 +238,48 @@ export const generateSparklineCharts = (timePeriods) =>
  * @returns {Array} Tuple of time periods
  */
 export const generateDateRanges = (now) => {
-  const currentMonthStart = getStartOfDay(dateAtFirstDayOfMonth(now));
-  const previousMonthStart = nMonthsBefore(currentMonthStart, 1);
-  const previousMonthEnd = nSecondsBefore(currentMonthStart, 1);
+  const dateRanges = [];
 
-  return [
-    {
-      key: 'thisMonth',
-      label: s__('DORA4Metrics|Month to date'),
-      start: getStartOfDay(dateAtFirstDayOfMonth(now)),
-      end: now,
-      thClass: thWidthPercent(20),
-    },
-    {
-      key: 'lastMonth',
-      label: monthInWords(nMonthsBefore(now, 1)),
-      start: previousMonthStart,
-      end: previousMonthEnd,
-      thClass: thWidthPercent(20),
-    },
-    {
-      key: 'twoMonthsAgo',
-      label: monthInWords(nMonthsBefore(now, 2)),
-      start: nMonthsBefore(previousMonthStart, 1),
-      end: nSecondsBefore(previousMonthStart, 1),
-      thClass: thWidthPercent(20),
-    },
-    {
-      key: 'threeMonthsAgo',
-      label: monthInWords(nMonthsBefore(now, 3)),
-      start: nMonthsBefore(previousMonthStart, 2),
-      end: nSecondsBefore(nMonthsBefore(previousMonthStart, 1), 1),
-    },
-  ];
+  const startOfDay = getStartOfDay(now);
+  const thisMonthStart = dateAtFirstDayOfMonth(startOfDay);
+  dateRanges.push({
+    key: 'thisMonth',
+    label: s__('DORA4Metrics|Month to date'),
+    start: thisMonthStart,
+    end: now,
+    thClass: thWidthPercent(20),
+  });
+
+  const lastMonthStart = nMonthsBefore(thisMonthStart, 1);
+  const lastMonthEnd = nSecondsBefore(thisMonthStart, 1);
+  dateRanges.push({
+    key: 'lastMonth',
+    label: monthInWords(lastMonthStart),
+    start: lastMonthStart,
+    end: lastMonthEnd,
+    thClass: thWidthPercent(20),
+  });
+
+  const twoMonthsAgoStart = nMonthsBefore(lastMonthStart, 1);
+  const twoMonthsAgoEnd = nSecondsBefore(lastMonthStart, 1);
+  dateRanges.push({
+    key: 'twoMonthsAgo',
+    label: monthInWords(twoMonthsAgoStart),
+    start: twoMonthsAgoStart,
+    end: twoMonthsAgoEnd,
+    thClass: thWidthPercent(20),
+  });
+
+  const threeMonthsAgoStart = nMonthsBefore(twoMonthsAgoStart, 1);
+  const threeMonthsAgoEnd = nSecondsBefore(twoMonthsAgoStart, 1);
+  dateRanges.push({
+    key: 'threeMonthsAgo',
+    label: monthInWords(threeMonthsAgoStart),
+    start: threeMonthsAgoStart,
+    end: threeMonthsAgoEnd,
+  });
+
+  return dateRanges;
 };
 
 /**
