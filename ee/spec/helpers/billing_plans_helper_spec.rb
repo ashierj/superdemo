@@ -432,12 +432,6 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
     context 'with cs_connect_with_sales enabled' do
       it { is_expected.to eq(true) }
 
-      context 'when namespace is on a trial' do
-        let(:namespace) { build(:namespace, gitlab_subscription: build(:gitlab_subscription, :active_trial)) }
-
-        it { is_expected.to eq(false) }
-      end
-
       context 'when namespace has an active code suggestions add_on' do
         let(:namespace) { create(:gitlab_subscription_add_on_purchase, :active, :gitlab_duo_pro).namespace }
 

@@ -28,6 +28,9 @@
 
   - if namespace.trial_active?
     .gl-mb-9.gl-mx-auto.billing-plan-divider
+      - if show_code_suggestions_card?(@group)
+        = render 'paid_and_trial_plan_duo_pro_card'
+
       #js-billing-plans{ data: subscription_plan_data_attributes(@group, current_plan, read_only: read_only) }
 
   .gl-font-lg.gl-mb-5

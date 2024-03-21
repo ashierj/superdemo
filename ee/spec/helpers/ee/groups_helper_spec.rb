@@ -553,7 +553,8 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
           {
             'data-testid': 'code_suggestions_hand_raise_lead_button',
             category: 'tertiary',
-            variant: 'confirm'
+            variant: 'confirm',
+            class: 'gl-w-full'
           }.to_json
       }
 

@@ -137,7 +137,6 @@ module BillingPlansHelper
 
   def show_code_suggestions_card?(namespace)
     Feature.enabled?(:cs_connect_with_sales, namespace) &&
-      !namespace.trial? &&
       namespace.subscription_add_on_purchases.active.for_gitlab_duo_pro.none?
   end
 
