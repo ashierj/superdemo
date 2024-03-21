@@ -184,6 +184,23 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
         expect(described_class.new(language_name).completion_examples).to all(include('example', 'response'))
         expect(described_class.new(language_name).generation_examples).to all(include('example', 'response'))
       end
+
+      context 'when filtering generation examples by type' do
+        let(:type) { 'comment' }
+
+        subject(:examples) { described_class.new(language_name).generation_examples(type: type) }
+
+        it 'returns only examples matching the type' do
+          expect(examples).not_to be_empty
+          expect(examples).to all(include('trigger_type' => type))
+        end
+
+        context 'when there are no examples for the type' do
+          let(:type) { 'small_file' }
+
+          it { is_expected.to be_empty }
+        end
+      end
     end
   end
 

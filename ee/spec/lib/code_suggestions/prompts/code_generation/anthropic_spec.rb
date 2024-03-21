@@ -23,9 +23,10 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
     PREFIX
   end
 
-  let(:instruction) { '' }
   let(:file_name) { 'main.go' }
   let(:model_name) { 'claude-2.1' }
+  let(:comment) { '' }
+  let(:instruction) { instance_double(CodeSuggestions::Instruction, instruction: comment, trigger_type: 'comment') }
 
   let(:unsafe_params) do
     {
@@ -54,7 +55,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
     # https://docs.gitlab.com/ee/user/project/repository/code_suggestions/
     # stub method examples on double language in a way
     # that returns let examples
-    allow(language).to receive(:generation_examples).and_return(examples)
+    allow(language).to receive(:generation_examples).with(type: instruction.trigger_type).and_return(examples)
     # stubs method name on language double to return language_name
     allow(language).to receive(:name).and_return(language_name)
   end
@@ -63,7 +64,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
   describe '#request_params' do
     context 'when instruction is present' do
-      let(:instruction) { 'Print a hello world message' }
+      let(:comment) { 'Print a hello world message' }
 
       it 'returns expected request params' do
         request_params = {
@@ -116,7 +117,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            #{instruction}
+            #{comment}
 
             Assistant: <new_code>
           PROMPT

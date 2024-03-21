@@ -199,8 +199,12 @@ module CodeSuggestions
       LANGUAGE_XRAY_NAMING[name]
     end
 
-    def generation_examples
-      LANGUAGE_CODE_GENERATION_EXAMPLES[name] || []
+    def generation_examples(type: nil)
+      examples = LANGUAGE_CODE_GENERATION_EXAMPLES[name] || []
+      return examples unless type
+
+      type = type.to_s
+      examples.select { |example| example['trigger_type'] == type }
     end
 
     def cursor_inside_empty_function?(content, suffix)

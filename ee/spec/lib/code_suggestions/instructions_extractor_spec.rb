@@ -3,12 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_suggestions do
+  shared_examples 'extracted instruction' do
+    it 'sets create instruction and trigger_type', :aggregate_failures do
+      expect(subject.instruction).to eq(instruction)
+      expect(subject.trigger_type).to eq(trigger_type)
+    end
+  end
+
   describe '.extract' do
     let(:language) do
       CodeSuggestions::ProgrammingLanguage.new(CodeSuggestions::ProgrammingLanguage::DEFAULT_NAME)
     end
 
-    let(:default_instruction) do
+    let(:instruction) do
       <<~PROMPT
         Create more new code for this file. If the cursor is inside an empty function,
         generate its most likely contents based on the function name and signature.
@@ -26,11 +33,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     context 'when content is nil' do
       let(:content) { nil }
 
-      it 'sets create instruction' do
-        is_expected.to eq({
-          prefix: content,
-          instruction: default_instruction
-        })
+      it_behaves_like 'extracted instruction' do
+        let(:trigger_type) { :small_file }
       end
     end
 
@@ -53,30 +57,16 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       context 'when content uses generic prefix sign' do
         let(:comment_sign) { '#' }
 
-        it 'finds instruction' do
-          is_expected.to eq({
-            instruction: "",
-            prefix: <<~CODE
-              full_name()
-              address()
-              street()
-              city()
-              state()
-              pincode()
-
-              #{comment_sign}Generate me a function
-              #{comment_sign}with 2 arguments
-            CODE
-          })
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { :comment }
         end
       end
 
       context 'when content uses special prefix sign' do
         let(:comment_sign) { '!' }
 
-        it 'does not find instruction' do
-          is_expected.to eq({})
-        end
+        it { is_expected.to be_nil }
       end
     end
 
@@ -87,19 +77,15 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         CODE
       end
 
-      it 'ignores the instruction and sends the code directly' do
-        is_expected.to eq({
-          instruction: '',
-          prefix: content
-        })
+      it_behaves_like 'extracted instruction' do
+        let(:instruction) { '' }
+        let(:trigger_type) { :comment }
       end
 
       context 'when intent is completion' do
         let(:intent) { 'completion' }
 
-        it 'ignores the instruction' do
-          is_expected.to be_empty
-        end
+        it { is_expected.to be_nil }
       end
     end
 
@@ -115,16 +101,14 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         CODE
       end
 
-      it { is_expected.to be_empty }
+      it { is_expected.to be_nil }
 
       context 'when intent is generation' do
         let(:intent) { 'generation' }
 
-        it 'returns prefix and nil instruction' do
-          is_expected.to eq({
-            instruction: nil,
-            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()\n"
-          })
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { :comment }
         end
       end
     end
@@ -137,11 +121,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        specify do
-          is_expected.to eq(
-            instruction: '',
-            prefix: "#{comment_sign}Generate me a function\n"
-          )
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { :comment }
         end
       end
 
@@ -152,11 +134,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it 'sets create instruction' do
-          is_expected.to eq({
-            prefix: content,
-            instruction: default_instruction
-          })
+        it_behaves_like 'extracted instruction' do
+          let(:trigger_type) { :small_file }
         end
       end
 
@@ -170,11 +149,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it 'uses the default instruction' do
-          is_expected.to eq({
-            prefix: content,
-            instruction: default_instruction
-          })
+        it_behaves_like 'extracted instruction' do
+          let(:trigger_type) { :small_file }
         end
       end
 
@@ -188,11 +164,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        specify do
-          is_expected.to eq(
-            instruction: "",
-            prefix: "full_name()\naddress()\n\n#{comment_sign}Generate me a function\n"
-          )
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { :comment }
         end
       end
 
@@ -208,18 +182,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        specify do
-          is_expected.to eq(
-            instruction: "",
-            prefix: <<~CODE
-              full_name()
-              address()
-
-              #{comment_sign}Generate me a function
-              #{comment_sign}with 2 arguments
-              #{comment_sign}first and last
-            CODE
-          )
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { :comment }
         end
       end
 
@@ -237,19 +202,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           # rubocop:enable Layout/TrailingWhitespace
         end
 
-        specify do
-          is_expected.to eq(
-            instruction: "",
-            prefix: <<~CODE
-              full_name()
-              address()
-
-              #{comment_sign}Generate me a function
-              #{comment_sign}with 2 arguments
-              #{comment_sign}first and last
-
-            CODE
-          )
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { :comment }
         end
       end
 
@@ -271,7 +226,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it { is_expected.to be_empty }
+        it { is_expected.to be_nil }
       end
 
       context 'when there are several comments in a row followed by other code' do
@@ -291,44 +246,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it { is_expected.to be_empty }
-      end
-
-      context 'when there is another multiline comment above' do
-        let(:content) do
-          <<~CODE
-            full_name()
-            address()
-
-            #{comment_sign}just some comment
-            #{comment_sign}explaining something
-            another_function()
-
-            #{comment_sign}Generate me a function
-            #{comment_sign}with 2 arguments
-            #{comment_sign}first and last
-          CODE
-        end
-
-        specify do
-          expected_prefix = <<~CODE
-            full_name()
-            address()
-
-            #{comment_sign}just some comment
-            #{comment_sign}explaining something
-            another_function()
-
-            #{comment_sign}Generate me a function
-            #{comment_sign}with 2 arguments
-            #{comment_sign}first and last
-          CODE
-
-          is_expected.to eq(
-            instruction: "",
-            prefix: expected_prefix
-          )
-        end
+        it { is_expected.to be_nil }
       end
 
       context 'when the first line of multiline comment does not meet requirements' do
@@ -359,11 +277,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it "sets the create instruction" do
-          is_expected.to eq({
-            prefix: content,
-            instruction: default_instruction
-          })
+        it_behaves_like 'extracted instruction' do
+          let(:trigger_type) { :small_file }
         end
       end
 
@@ -386,7 +301,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
 
         it "does not find instruction" do
-          is_expected.to eq({})
+          is_expected.to be_nil
         end
       end
     end
@@ -435,11 +350,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       context 'when it is at the end of the file' do
         let(:suffix) { '' }
 
-        specify do
-          is_expected.to eq(
-            prefix: content,
-            instruction: instruction
-          )
+        it_behaves_like 'extracted instruction' do
+          let(:trigger_type) { :empty_function }
         end
       end
 
@@ -454,11 +366,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           SUFFIX
         end
 
-        specify do
-          is_expected.to eq(
-            prefix: content,
-            instruction: instruction
-          )
+        it_behaves_like 'extracted instruction' do
+          let(:trigger_type) { :empty_function }
         end
       end
 
@@ -472,7 +381,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           SUFFIX
         end
 
-        it { is_expected.to be_empty }
+        it { is_expected.to be_nil }
       end
     end
   end
