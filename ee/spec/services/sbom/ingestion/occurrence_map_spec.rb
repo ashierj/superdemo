@@ -297,7 +297,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
           :with_dependency_scanning_metadata,
           project: pipeline.project,
           file: occurrence_map.input_file_path,
-          package: report_component.name_without_namespace,
+          package: report_component.purl.name,
           version: occurrence_map.version,
           pipeline: pipeline
         )

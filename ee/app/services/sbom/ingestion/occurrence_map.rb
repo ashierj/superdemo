@@ -66,13 +66,7 @@ module Sbom
       private
 
       def vulnerabilities_info
-        package_name = if container_scanning_component?
-                         report_component.name_without_namespace
-                       else
-                         name
-                       end
-
-        @vulnerabilities.fetch(package_name, version, input_file_path)
+        @vulnerabilities.fetch(name, version, input_file_path)
       end
       strong_memoize_attr :vulnerabilities_info
 
