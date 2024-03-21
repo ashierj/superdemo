@@ -2,6 +2,8 @@
 
 module CodeSuggestions
   class FileContent
+    include Gitlab::Utils::StrongMemoize
+
     MIN_LINES_OF_CODE = 5
 
     def initialize(language, content_above_cursor, content_below_cursor = '')
@@ -14,16 +16,22 @@ module CodeSuggestions
 
     # A content is small then there are no or too few lines of code to retrieve suggestion instructions.
     def small?
-      non_comment_lines(lines_above_cursor).count + non_comment_lines(lines_below_cursor).count < MIN_LINES_OF_CODE
+      sum = non_comment_lines(lines_above_cursor).count
+      return false if sum > MIN_LINES_OF_CODE
+
+      sum += non_comment_lines(lines_below_cursor).count
+      sum < MIN_LINES_OF_CODE
     end
 
     def lines_above_cursor
       content_above_cursor.to_s.lines
     end
+    strong_memoize_attr :lines_above_cursor
 
     def lines_below_cursor
       content_below_cursor.to_s.lines
     end
+    strong_memoize_attr :lines_below_cursor
 
     private
 
