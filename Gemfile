@@ -500,7 +500,7 @@ end
 group :test do
   gem 'fuubar', '~> 2.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rspec-retry', '~> 0.6.2', feature_category: :tooling
-  gem 'rspec_profiling', '~> 0.0.8', feature_category: :tooling
+  gem 'rspec_profiling', '~> 0.0.9', feature_category: :tooling
   gem 'rspec-benchmark', '~> 0.6.0', feature_category: :tooling
   gem 'rspec-parameterized', '~> 1.0', require: false, feature_category: :tooling
   gem 'os', '~> 1.1', '>= 1.1.4', feature_category: :tooling
