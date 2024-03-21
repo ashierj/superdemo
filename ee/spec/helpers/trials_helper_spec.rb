@@ -271,11 +271,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       }
     end
 
-    before do
-      allow(helper).to receive(:trial_eligible_namespaces).and_return(trial_eligible_namespaces)
-    end
-
-    subject { helper.namespace_options_for_listbox }
+    subject { helper.namespace_options_for_listbox(trial_eligible_namespaces) }
 
     context 'when there is no eligible group' do
       it 'returns just the "New" option group', :aggregate_failures do
@@ -316,6 +312,61 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
 
     with_them do
       it { is_expected.to eq(text) }
+    end
+  end
+
+  context 'with namespace_selector_data', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:free) { create(:group) }
+
+    let_it_be(:premium_subscription) do
+      create(:gitlab_subscription, :premium, namespace: create(:group))
+    end
+
+    let_it_be(:ultimate_subscription) do
+      create(:gitlab_subscription, :ultimate, namespace: create(:group))
+    end
+
+    let_it_be(:ultimate_trial_subscription) do
+      create(:gitlab_subscription, :ultimate_trial, namespace: create(:group))
+    end
+
+    let_it_be(:all_groups) do
+      [
+        free,
+        premium_subscription.namespace,
+        ultimate_subscription.namespace,
+        ultimate_trial_subscription.namespace
+      ]
+    end
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+      all_groups.map { |group| group.add_owner(user) }
+    end
+
+    describe '#trial_namespace_selector_data' do
+      subject { helper.trial_namespace_selector_data(nil) }
+
+      it 'returns free group' do
+        group_options = [{ 'text' => free.name, 'value' => free.id.to_s }]
+
+        is_expected.to include(any_trial_eligible_namespaces: 'true')
+        expect(Gitlab::Json.parse(subject[:items])[1]['options']).to eq(group_options)
+      end
+    end
+
+    describe '#duo_pro_trial_namespace_selector_data' do
+      subject { helper.duo_pro_trial_namespace_selector_data(nil) }
+
+      it 'returns all groups' do
+        group_options = all_groups.map do |group|
+          { 'text' => group.name, 'value' => group.id.to_s }
+        end
+
+        is_expected.to include(any_trial_eligible_namespaces: 'true')
+        expect(Gitlab::Json.parse(subject[:items])[1]['options']).to eq(group_options)
+      end
     end
   end
 end

@@ -39,14 +39,20 @@ module TrialsHelper
     end
   end
 
-  def namespace_selector_data(namespace_create_errors)
-    {
+  def trial_namespace_selector_data(namespace_create_errors)
+    namespace_selector_data(namespace_create_errors).merge(
       any_trial_eligible_namespaces: any_trial_eligible_namespaces?.to_s,
-      new_group_name: params[:new_group_name],
-      items: namespace_options_for_listbox.to_json,
-      initial_value: params[:namespace_id],
-      namespace_create_errors: namespace_create_errors
-    }
+      items: namespace_options_for_listbox(trial_eligible_namespaces).to_json
+    )
+  end
+
+  def duo_pro_trial_namespace_selector_data(namespace_create_errors)
+    namespaces = duo_pro_trial_eligible_namespaces
+
+    namespace_selector_data(namespace_create_errors).merge(
+      any_trial_eligible_namespaces: namespaces.any?.to_s,
+      items: namespace_options_for_listbox(namespaces).to_json
+    )
   end
 
   def glm_source
@@ -69,8 +75,8 @@ module TrialsHelper
       can?(user, :read_billing, namespace)
   end
 
-  def namespace_options_for_listbox
-    group_options = trial_eligible_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+  def namespace_options_for_listbox(namespaces)
+    group_options = namespaces.map { |n| { text: n.name, value: n.id.to_s } }
     options = [
       {
         text: _('New'),
@@ -108,6 +114,12 @@ module TrialsHelper
     trial_eligible_namespaces.any?
   end
 
+  def duo_pro_trial_eligible_namespaces
+    # TODO: Add additional eligibility checks
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/448506
+    current_user.owned_groups
+  end
+
   def _lead_form_data
     {
       first_name: current_user.first_name,
@@ -118,5 +130,13 @@ module TrialsHelper
         :first_name, :last_name, :company_name, :company_size, :phone_number, :country, :state
       ).to_h.symbolize_keys
     )
+  end
+
+  def namespace_selector_data(namespace_create_errors)
+    {
+      new_group_name: params[:new_group_name],
+      initial_value: params[:namespace_id],
+      namespace_create_errors: namespace_create_errors
+    }
   end
 end

@@ -24,7 +24,7 @@ RSpec.describe 'subscriptions/trials/duo_pro/_select_namespace_form.html.haml', 
     let_it_be(:group) { build_stubbed(:group) }
 
     before do
-      allow(user).to receive(:manageable_namespaces_eligible_for_trial).and_return([group])
+      allow(user).to receive(:owned_groups).and_return([group])
     end
 
     it 'renders correct title' do

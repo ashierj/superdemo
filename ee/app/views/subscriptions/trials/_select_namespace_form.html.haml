@@ -15,7 +15,7 @@
     = yield :before_form
 
     = form_tag trials_path(**glm_params, step: GitlabSubscriptions::Trials::CreateService::TRIAL), method: :post, class: 'js-saas-trial-group', data: { testid: 'trial-form' } do
-      .js-namespace-selector{ data: namespace_selector_data(local_assigns[:namespace_create_errors]) }
+      .js-namespace-selector{ data: trial_namespace_selector_data(local_assigns[:namespace_create_errors]) }
       - if should_ask_company_question?
         .form-group
           = label_tag :trial_entity, _('Who will be using GitLab?')
