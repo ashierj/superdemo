@@ -128,8 +128,10 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           .to receive(:execute).with(hash_including(ci_cd_only: true))
           .and_return(project)
 
-        click_button 'Connect'
-        wait_for_requests
+        # Avoid click_button since this has been patched to call
+        # wait_for_requests, which might wait endlessly since the
+        # frontend polls the import status constantly.
+        find(:button, 'Connect').click
 
         expect(page).to have_text('Complete')
 
