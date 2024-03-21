@@ -11,6 +11,13 @@ module IdentityVerifiable
     EMAIL: 'email'
   }.freeze
 
+  IDENTITY_VERIFICATION_EXEMPT_METHODS = %w[email].freeze
+  PHONE_NUMBER_EXEMPT_METHODS = %w[email credit_card].freeze
+  ASSUMED_HIGH_RISK_USER_METHODS = %w[email credit_card phone].freeze
+  HIGH_RISK_USER_METHODS = %w[email phone credit_card].freeze
+  MEDIUM_RISK_USER_METHODS = %w[email phone].freeze
+  LOW_RISK_USER_METHODS = %w[email].freeze
+
   def identity_verification_enabled?
     return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
     return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
@@ -58,12 +65,8 @@ module IdentityVerifiable
   strong_memoize_attr :identity_verification_state
 
   def required_identity_verification_methods
-    return identity_verification_exempt_methods if exempt_from_identity_verification?
-    return phone_number_exempt_methods if exempt_from_phone_number_verification?
-    return assumed_high_risk_user_methods if assumed_high_risk?
-    return assumed_high_risk_user_methods if affected_by_phone_verifications_limit?
-
-    risk_band_based_methods
+    methods = determine_required_methods
+    methods.select { |method| verification_method_enabled?(method) }
   end
 
   def credit_card_verified?
@@ -117,9 +120,21 @@ module IdentityVerifiable
     identity_verification_exemption_attribute.present?
   end
 
+  def verification_method_enabled?(method)
+    case method
+    when 'phone'
+      Feature.enabled?(:identity_verification_phone_number, self) &&
+        !PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
+    when 'credit_card'
+      Feature.enabled?(:identity_verification_credit_card, self)
+    else
+      true
+    end
+  end
+
   def offer_phone_number_exemption?
-    return false unless credit_card_verification_enabled?
-    return false unless phone_number_verification_enabled?
+    return false unless verification_method_enabled?('credit_card')
+    return false unless verification_method_enabled?('phone')
 
     phone_required = verification_method_required?(method: VERIFICATION_METHODS[:PHONE_NUMBER])
     cc_required = verification_method_required?(method: VERIFICATION_METHODS[:CREDIT_CARD])
@@ -158,45 +173,6 @@ module IdentityVerifiable
     @risk_profile ||= IdentityVerification::UserRiskProfile.new(self)
   end
 
-  def risk_band_based_methods
-    methods = [email_method]
-
-    methods.append phone_number_method, credit_card_method if high_risk?
-    methods.append phone_number_method if medium_risk?
-
-    if low_risk? && phone_number_verification_enabled?
-      experiment(:phone_verification_for_low_risk_users, user: self) do |e|
-        e.candidate { methods.append VERIFICATION_METHODS[:PHONE_NUMBER] }
-      end
-    end
-
-    methods.compact
-  end
-
-  def credit_card_method
-    return unless credit_card_verification_enabled?
-
-    VERIFICATION_METHODS[:CREDIT_CARD]
-  end
-
-  def phone_number_method
-    return unless phone_number_verification_enabled?
-
-    VERIFICATION_METHODS[:PHONE_NUMBER]
-  end
-
-  def email_method
-    VERIFICATION_METHODS[:EMAIL]
-  end
-
-  def identity_verification_exempt_methods
-    [email_method]
-  end
-
-  def phone_number_exempt_methods
-    [email_method, credit_card_method].compact
-  end
-
   def affected_by_phone_verifications_limit?
     # All users will be required to verify 1. email 2. credit card
     return true if PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
@@ -209,8 +185,22 @@ module IdentityVerifiable
     false
   end
 
-  def assumed_high_risk_user_methods
-    [email_method, credit_card_method, phone_number_method].compact
+  def phone_number_verification_experiment_candidate?
+    return unless low_risk? && verification_method_enabled?('phone')
+
+    experiment(:phone_verification_for_low_risk_users, user: self) do |e|
+      e.candidate { true }
+    end.run
+  end
+
+  def determine_required_methods
+    return IDENTITY_VERIFICATION_EXEMPT_METHODS if exempt_from_identity_verification?
+    return PHONE_NUMBER_EXEMPT_METHODS if exempt_from_phone_number_verification?
+    return ASSUMED_HIGH_RISK_USER_METHODS if assumed_high_risk? || affected_by_phone_verifications_limit?
+    return HIGH_RISK_USER_METHODS if high_risk?
+    return MEDIUM_RISK_USER_METHODS if medium_risk? || phone_number_verification_experiment_candidate?
+
+    LOW_RISK_USER_METHODS
   end
 
   def verification_method_required?(method:)
@@ -233,19 +223,6 @@ module IdentityVerifiable
 
   def email_verified?
     confirmed?
-  end
-
-  def credit_card_verification_enabled?
-    return false unless is_a?(User)
-
-    Feature.enabled?(:identity_verification_credit_card, self)
-  end
-
-  def phone_number_verification_enabled?
-    return false unless is_a?(User)
-    return false if PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
-
-    Feature.enabled?(:identity_verification_phone_number, self)
   end
 
   def phone_number_exemption_attribute
