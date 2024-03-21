@@ -29,6 +29,14 @@ RSpec.describe Ci::JobArtifactPolicy, :models do
           expect(policy).to be_allowed :read_job_artifacts
         end
       end
+
+      context 'when job artifact access is set to none' do
+        let(:job_artifact) { create(:ci_job_artifact, :none, project: project) }
+
+        it 'disallows read_job_artifacts' do
+          expect(policy).to be_disallowed :read_job_artifacts
+        end
+      end
     end
 
     describe 'for user with access to the project' do
@@ -49,6 +57,14 @@ RSpec.describe Ci::JobArtifactPolicy, :models do
 
         it 'allows read_job_artifacts' do
           expect(policy).to be_allowed :read_job_artifacts
+        end
+      end
+
+      context 'when job artifact access is set to none' do
+        let(:job_artifact) { create(:ci_job_artifact, :none, project: project) }
+
+        it 'disallows read_job_artifacts' do
+          expect(policy).to be_disallowed :read_job_artifacts
         end
       end
     end
@@ -75,6 +91,14 @@ RSpec.describe Ci::JobArtifactPolicy, :models do
           expect(policy).to be_allowed :read_job_artifacts
         end
       end
+
+      context 'when job artifact access is set to none' do
+        let(:job_artifact) { create(:ci_job_artifact, :none, project: project) }
+
+        it 'disallows read_job_artifacts' do
+          expect(policy).to be_disallowed :read_job_artifacts
+        end
+      end
     end
 
     describe 'for reporter user' do
@@ -97,6 +121,14 @@ RSpec.describe Ci::JobArtifactPolicy, :models do
           expect(policy).to be_allowed :read_job_artifacts
         end
       end
+
+      context 'when job artifact access is set to none' do
+        let(:job_artifact) { create(:ci_job_artifact, :none, project: project) }
+
+        it 'allows read_job_artifacts' do
+          expect(policy).to be_disallowed :read_job_artifacts
+        end
+      end
     end
 
     describe 'for guest user' do
@@ -116,6 +148,14 @@ RSpec.describe Ci::JobArtifactPolicy, :models do
 
         it 'allows read_job_artifacts' do
           expect(policy).to be_allowed :read_job_artifacts
+        end
+      end
+
+      context 'when job artifact access is set to none' do
+        let(:job_artifact) { create(:ci_job_artifact, :none, project: project) }
+
+        it 'disallows read_job_artifacts' do
+          expect(policy).to be_disallowed :read_job_artifacts
         end
       end
     end
