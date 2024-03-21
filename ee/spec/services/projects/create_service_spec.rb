@@ -167,7 +167,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
       it 'sets the correct attributes' do
         expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(an_instance_of(User))
-        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(an_instance_of(Project))
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(an_instance_of(Project)).twice
         expect(created_project).to be_persisted
         expect(created_project.mirror).to be true
         expect(created_project.mirror_user_id).to eq(user.id)
@@ -202,6 +202,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
             expect(created_project).to be_persisted
             expect(created_project.mirror).to be true
             expect(created_project.mirror_user_id).to eq(user.id)
+            expect(created_project.errors.to_a).to eq([])
           end
         end
       end
