@@ -53,6 +53,14 @@ describe('Add On Bulk Action Confirmation Modal', () => {
         'This action will assign a GitLab Duo Pro seat to 2 users. Are you sure you want to continue?',
       );
     });
+
+    it('emits appropriate event on assignment confirmation', () => {
+      createComponent();
+
+      findAssignSeatsButton().vm.$emit('click');
+
+      expect(wrapper.emitted('confirm-seat-assignment')).toHaveLength(1);
+    });
   });
 
   describe('when bulk action is for seat unassignment', () => {
@@ -77,6 +85,35 @@ describe('Add On Bulk Action Confirmation Modal', () => {
       expect(findModalBodyText()).toBe(
         'This action will remove GitLab Duo Pro seats from 2 users. Are you sure you want to continue?',
       );
+    });
+  });
+
+  describe('loading state', () => {
+    describe('when loading', () => {
+      beforeEach(() => {
+        createComponent({ isBulkActionInProgress: true });
+      });
+
+      it('shows loading state for confirm assignment button', () => {
+        expect(findAssignSeatsButton().props().loading).toBe(true);
+      });
+
+      it('disables cancel button', () => {
+        expect(findCancelButton().props().disabled).toBe(true);
+      });
+    });
+    describe('when not loading', () => {
+      beforeEach(() => {
+        createComponent({ isBulkActionInProgress: false });
+      });
+
+      it('does not show loading state', () => {
+        expect(findAssignSeatsButton().props().loading).toBe(false);
+      });
+
+      it('does not disable cancel button', () => {
+        expect(findCancelButton().props().disabled).toBe(false);
+      });
     });
   });
 
