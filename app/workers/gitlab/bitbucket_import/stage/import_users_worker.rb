@@ -3,8 +3,10 @@
 module Gitlab
   module BitbucketImport
     module Stage
-      class ImportRepositoryWorker # rubocop:disable Scalability/IdempotentWorker
+      class ImportUsersWorker
         include StageMethods
+
+        idempotent!
 
         private
 
@@ -13,19 +15,11 @@ module Gitlab
 
           importer.execute
 
-          if Feature.enabled?(:bitbucket_cloud_convert_mentions_to_users, project.creator)
-            return ImportUsersWorker.perform_async(project.id)
-          end
-
           ImportPullRequestsWorker.perform_async(project.id)
         end
 
         def importer_class
-          Importers::RepositoryImporter
-        end
-
-        def abort_on_failure
-          true
+          Importers::UsersImporter
         end
       end
     end

@@ -111,6 +111,8 @@
   - 1
 - - bitbucket_import_stage_import_repository
   - 1
+- - bitbucket_import_stage_import_users
+  - 1
 - - bitbucket_server_import_advance_stage
   - 1
 - - bitbucket_server_import_import_lfs_object
