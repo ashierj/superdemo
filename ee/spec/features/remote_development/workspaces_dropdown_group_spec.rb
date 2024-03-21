@@ -73,7 +73,6 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
     context 'when workspaces dropdown group is visible' do
       before do
         visit subject
-        wait_for_requests
         click_button 'Edit'
       end
 
