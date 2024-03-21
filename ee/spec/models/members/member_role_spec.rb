@@ -50,7 +50,7 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
           member_role = create(:member_role, name: 'foo 2', namespace: group)
           member_role.name = 'foo'
 
-          expect(member_role).to be_valid
+          expect(member_role).not_to be_valid
         end
       end
     end
