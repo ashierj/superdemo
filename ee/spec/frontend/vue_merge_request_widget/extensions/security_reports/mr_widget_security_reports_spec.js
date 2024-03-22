@@ -47,9 +47,6 @@ describe('MR Widget Security Reports', () => {
 
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
-      provide: {
-        canAdminVulnerability: true,
-      },
       propsData: {
         ...propsData,
         mr: {

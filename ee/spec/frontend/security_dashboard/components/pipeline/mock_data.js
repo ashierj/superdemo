@@ -578,6 +578,9 @@ export const pipelineSecurityReportFinding = {
     },
     presentOnDefaultBranch: true,
   },
+  userPermissions: {
+    adminVulnerability: true,
+  },
 };
 
 export const getPipelineSecurityReportFindingResponse = ({
