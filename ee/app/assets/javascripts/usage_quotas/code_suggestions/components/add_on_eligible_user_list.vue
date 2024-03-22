@@ -15,6 +15,7 @@ import { s__, n__, sprintf } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import {
   addOnEligibleUserListTableFields,
   ASSIGN_SEATS_BULK_ACTION,
@@ -24,6 +25,7 @@ import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
+import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -77,6 +79,7 @@ export default {
       addOnAssignmentError: undefined,
       selectedUsers: [],
       bulkAction: undefined,
+      isBulkActionInProgress: false,
       isConfirmationModalVisible: false,
     };
   },
@@ -172,18 +175,18 @@ export default {
       scrollToElement(this.$el);
     },
     isUserSelected(item) {
-      return this.selectedUsers.includes(item.username);
+      return this.selectedUsers.includes(item.id);
     },
     handleUserSelection(user, value) {
       if (value) {
-        this.selectedUsers.push(user.username);
+        this.selectedUsers.push(user.id);
       } else {
-        this.selectedUsers = this.selectedUsers.filter((username) => username !== user.username);
+        this.selectedUsers = this.selectedUsers.filter((id) => id !== user.id);
       }
     },
     handleSelectAllUsers(value) {
       if (value) {
-        this.selectedUsers = this.users.map((user) => user.username);
+        this.selectedUsers = this.users.map((user) => user.id);
       } else {
         this.unselectAllUsers();
       }
@@ -198,6 +201,35 @@ export default {
     handleCancelBulkAction() {
       this.isConfirmationModalVisible = false;
       this.bulkAction = undefined;
+    },
+    async assignSeats() {
+      this.isBulkActionInProgress = true;
+
+      try {
+        const {
+          data: { userAddOnAssignmentBulkCreate },
+        } = await this.$apollo.mutate({
+          mutation: userAddOnAssignmentBulkCreateMutation,
+          variables: {
+            userIds: this.selectedUsers,
+            addOnPurchaseId: this.addOnPurchaseId,
+          },
+        });
+
+        const errors = userAddOnAssignmentBulkCreate?.errors || [];
+
+        if (!errors.length) {
+          this.unselectAllUsers();
+        }
+      } catch (e) {
+        this.handleBulkActionError(e);
+      } finally {
+        this.isBulkActionInProgress = false;
+        this.isConfirmationModalVisible = false;
+      }
+    },
+    handleBulkActionError(e) {
+      Sentry.captureException(e);
     },
   },
 };
@@ -327,6 +359,8 @@ export default {
       v-if="isConfirmationModalVisible"
       :bulk-action="bulkAction"
       :user-count="selectedUsers.length"
+      :is-bulk-action-in-progress="isBulkActionInProgress"
+      @confirm-seat-assignment="assignSeats"
       @cancel="handleCancelBulkAction"
     />
   </section>

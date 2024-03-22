@@ -18,6 +18,11 @@ export default {
       type: String,
       required: true,
     },
+    isBulkActionInProgress: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     isBulkActionToAssignSeats() {
@@ -56,6 +61,9 @@ export default {
     hide() {
       this.$emit('cancel');
     },
+    confirmSeatAssignment() {
+      this.$emit('confirm-seat-assignment');
+    },
   },
 };
 </script>
@@ -72,13 +80,19 @@ export default {
 
     <template #modal-footer>
       <div class="gl-display-flex gl-flex-direction-row gl-justify-content-end gl-flex-wrap gl-m-0">
-        <gl-button data-testid="bulk-action-cancel-button" @click="hide">
+        <gl-button
+          data-testid="bulk-action-cancel-button"
+          :disabled="isBulkActionInProgress"
+          @click="hide"
+        >
           {{ __('Cancel') }}
         </gl-button>
         <gl-button
           v-if="isBulkActionToAssignSeats"
           variant="confirm"
           data-testid="assign-confirmation-button"
+          :loading="isBulkActionInProgress"
+          @click="confirmSeatAssignment"
         >
           {{ s__('Billing|Assign seats') }}
         </gl-button>

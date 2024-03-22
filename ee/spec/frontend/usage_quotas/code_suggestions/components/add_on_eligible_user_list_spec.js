@@ -7,7 +7,9 @@ import {
   GlFormCheckbox,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import CodeSuggestionsAddOnAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -16,28 +18,103 @@ import {
   pageInfoWithNoPages,
   pageInfoWithMorePages,
   eligibleUsersWithMaxRole,
+  mockAddOnEligibleUsers,
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
+import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
+import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
+
+Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/common_utils');
+jest.mock('~/sentry/sentry_browser_wrapper');
 
 describe('Add On Eligible User List', () => {
   let wrapper;
 
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/1';
 
+  const codeSuggestionsAddOn = { addOnPurchase: { name: ADD_ON_CODE_SUGGESTIONS } };
+
+  const addOnPurchase = {
+    id: addOnPurchaseId,
+    name: ADD_ON_CODE_SUGGESTIONS,
+    purchasedQuantity: 3,
+    assignedQuantity: 2,
+    __typename: 'AddOnPurchase',
+  };
+
+  const addOnEligibleUsersQueryVariables = {
+    fullPath: 'namespace/full-path',
+    addOnType: 'CODE_SUGGESTIONS',
+    addOnPurchaseIds: [addOnPurchaseId],
+  };
+
+  const bulkAddOnAssignmentSuccess = {
+    clientMutationId: '1',
+    errors: [],
+    addOnPurchase,
+    users: {
+      nodes: [
+        {
+          id: eligibleUsers[1].id,
+          addOnAssignments: {
+            nodes: codeSuggestionsAddOn,
+            __typename: 'UserAddOnAssignmentConnection',
+          },
+          __typename: 'AddOnUser',
+        },
+        {
+          id: eligibleUsers[2].id,
+          addOnAssignments: {
+            nodes: codeSuggestionsAddOn,
+            __typename: 'UserAddOnAssignmentConnection',
+          },
+          __typename: 'AddOnUser',
+        },
+      ],
+    },
+  };
+
+  const bulkAssignAddOnHandler = jest.fn().mockResolvedValue({
+    data: { userAddOnAssignmentBulkCreate: bulkAddOnAssignmentSuccess },
+  });
+
+  const createMockApolloProvider = (addonAssignmentCreateHandler) => {
+    const mockApollo = createMockApollo([
+      [userAddOnAssignmentBulkCreateMutation, addonAssignmentCreateHandler],
+    ]);
+
+    // Needed to check if cache update is successful on successful mutation
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: getAddOnEligibleUsers,
+      variables: addOnEligibleUsersQueryVariables,
+      data: mockAddOnEligibleUsers.data,
+    });
+
+    return mockApollo;
+  };
+
+  let mockApolloClient;
+
   const createComponent = ({
     enableAddOnUsersFiltering = false,
     isBulkAddOnAssignmentEnabled = false,
+    addonAssignmentBulkCreateHandler = bulkAssignAddOnHandler,
     mountFn = shallowMount,
     props = {},
     slots = {},
   } = {}) => {
+    mockApolloClient = createMockApolloProvider(addonAssignmentBulkCreateHandler);
+
     wrapper = extendedWrapper(
       mountFn(AddOnEligibleUserList, {
+        apolloProvider: mockApolloClient,
         propsData: {
           addOnPurchaseId,
           users: eligibleUsers,
@@ -56,6 +133,12 @@ describe('Add On Eligible User List', () => {
     );
 
     return waitForPromises();
+  };
+
+  const getAddOnAssignmentStatusForUserFromCache = (userId) => {
+    return mockApolloClient.clients.defaultClient.cache
+      .readQuery({ query: getAddOnEligibleUsers, variables: addOnEligibleUsersQueryVariables })
+      .namespace.addOnEligibleUsers.nodes.find((node) => node.id === userId).addOnAssignments.nodes;
   };
 
   const findTable = () => wrapper.findComponent(GlTable);
@@ -546,6 +629,7 @@ describe('Add On Eligible User List', () => {
 
         expect(findConfirmationModal().props()).toEqual({
           bulkAction: 'ASSIGN_BULK_ACTION',
+          isBulkActionInProgress: false,
           userCount: eligibleUsers.length,
         });
       });
@@ -556,6 +640,7 @@ describe('Add On Eligible User List', () => {
 
         expect(findConfirmationModal().props()).toEqual({
           bulkAction: 'UNASSIGN_BULK_ACTION',
+          isBulkActionInProgress: false,
           userCount: eligibleUsers.length,
         });
       });
@@ -589,6 +674,7 @@ describe('Add On Eligible User List', () => {
 
         expect(findConfirmationModal().props()).toEqual({
           bulkAction: 'ASSIGN_BULK_ACTION',
+          isBulkActionInProgress: false,
           userCount: 2,
         });
       });
@@ -599,6 +685,7 @@ describe('Add On Eligible User List', () => {
 
         expect(findConfirmationModal().props()).toEqual({
           bulkAction: 'UNASSIGN_BULK_ACTION',
+          isBulkActionInProgress: false,
           userCount: 2,
         });
       });
@@ -624,6 +711,100 @@ describe('Add On Eligible User List', () => {
         await nextTick();
 
         expect(findConfirmationModal().exists()).toBe(false);
+      });
+    });
+
+    describe('bulk assignment confirmation', () => {
+      describe('successful assignment', () => {
+        beforeEach(async () => {
+          await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
+
+          findSelectUserCheckboxAt(1).find('input').setChecked(true);
+          findSelectUserCheckboxAt(2).find('input').setChecked(true);
+          await nextTick();
+
+          findAssignSeatsButton().vm.$emit('click');
+          await nextTick();
+
+          findConfirmationModal().vm.$emit('confirm-seat-assignment');
+          await nextTick();
+        });
+
+        it('calls bulk addon assigment mutation with appropriate params', () => {
+          expect(bulkAssignAddOnHandler).toHaveBeenCalledWith({
+            addOnPurchaseId,
+            userIds: [eligibleUsers[1].id, eligibleUsers[2].id],
+          });
+        });
+
+        it('shows a loading state', () => {
+          expect(findConfirmationModal().props().isBulkActionInProgress).toBe(true);
+        });
+
+        it('updates the cache with latest add-on assignment status', async () => {
+          await waitForPromises();
+
+          expect(getAddOnAssignmentStatusForUserFromCache(eligibleUsers[1].id)).toEqual(
+            codeSuggestionsAddOn,
+          );
+          expect(getAddOnAssignmentStatusForUserFromCache(eligibleUsers[2].id)).toEqual(
+            codeSuggestionsAddOn,
+          );
+        });
+
+        it('does not show the confirmation modal on successful API call', async () => {
+          await waitForPromises();
+
+          expect(findConfirmationModal().exists()).toBe(false);
+        });
+
+        it('unselects users on successful API call', async () => {
+          expect(findSelectedUsersSummary().exists()).toBe(true);
+
+          await waitForPromises();
+
+          expect(findSelectedUsersSummary().exists()).toBe(false);
+        });
+      });
+
+      describe('unsuccessful assignment', () => {
+        const error = new Error('An error');
+
+        beforeEach(async () => {
+          await createComponent({
+            mountFn: mount,
+            isBulkAddOnAssignmentEnabled: true,
+            addonAssignmentBulkCreateHandler: jest.fn().mockRejectedValue(error),
+          });
+
+          findSelectUserCheckboxAt(1).find('input').setChecked(true);
+          findSelectUserCheckboxAt(2).find('input').setChecked(true);
+          await nextTick();
+
+          findAssignSeatsButton().vm.$emit('click');
+          await nextTick();
+
+          findConfirmationModal().vm.$emit('confirm-seat-assignment');
+          await nextTick();
+        });
+
+        it('captures error on Sentry for generic errors', async () => {
+          await waitForPromises();
+
+          expect(Sentry.captureException).toHaveBeenCalledWith(error);
+        });
+
+        it('does not show the confirmation modal on unsuccessful API call', async () => {
+          await waitForPromises();
+
+          expect(findConfirmationModal().exists()).toBe(false);
+        });
+
+        it('retains user selection on unsuccessful API call', async () => {
+          await waitForPromises();
+
+          expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
+        });
       });
     });
 
