@@ -64,9 +64,9 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
           end
         end
 
-        it 'publishes an EpicUpdated event' do
+        it 'publishes an EpicCreatedEvent' do
           expect { subject.execute(issue) }
-            .to publish_event(Epics::EpicUpdatedEvent)
+            .to publish_event(Epics::EpicCreatedEvent)
             .with({ id: an_instance_of(Integer), group_id: group.id })
         end
 

@@ -50,12 +50,8 @@ RSpec.describe Epics::TransferService, feature_category: :portfolio_management d
         end
 
         it 'publishes events for the new epics' do
-          expect(Gitlab::EventStore)
-            .to receive(:publish_group)
-            .with(array_including(an_instance_of(Epics::EpicCreatedEvent)))
-            .and_call_original
-
-          service.execute
+          expect { service.execute }
+            .to publish_event(Epics::EpicCreatedEvent).with({ id: an_instance_of(Integer), group_id: new_group.id })
         end
 
         it 'does not recreate missing epics that are not applied to issues' do

@@ -12,7 +12,6 @@ module Epics
 
       super(@issue, @parent_group)
 
-      publish_event
       track_event
       new_entity
     end
@@ -42,18 +41,8 @@ module Epics
       )
     end
 
-    def publish_event
-      return unless new_entity
-
-      ::Gitlab::EventStore.publish(
-        ::Epics::EpicUpdatedEvent.new(data: { id: new_entity.id, group_id: new_entity.group_id })
-      )
-    end
-
     def create_new_entity
-      @new_entity = Epics::CreateService.new(
-        group: parent_group, current_user: current_user, params: params, publish_event: false
-      ).execute
+      @new_entity = Epics::CreateService.new(group: parent_group, current_user: current_user, params: params).execute
     end
 
     def update_old_entity

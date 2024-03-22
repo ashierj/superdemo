@@ -21,6 +21,12 @@ module Epics
       # are composite fields managed by the system.
       params.extract!(:start_date, :end_date)
 
+      epic.run_after_commit do
+        ::Gitlab::EventStore.publish(
+          ::Epics::EpicUpdatedEvent.new(data: { id: epic.id, group_id: epic.group_id })
+        )
+      end
+
       update_task_event(epic) || update(epic)
 
       if saved_change_to_epic_dates?(epic)
@@ -38,7 +44,6 @@ module Epics
       assign_parent_epic_for(epic)
       remove_parent_epic_for(epic)
       assign_child_epic_for(epic)
-      publish_event(epic)
 
       epic
     end
@@ -226,14 +231,6 @@ module Epics
           )
         end
       end
-    end
-
-    def publish_event(epic)
-      return unless publish_event?
-
-      ::Gitlab::EventStore.publish(
-        ::Epics::EpicUpdatedEvent.new(data: { id: epic.id, group_id: epic.group_id })
-      )
     end
   end
 end
