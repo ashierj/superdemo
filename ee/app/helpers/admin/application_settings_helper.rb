@@ -18,6 +18,10 @@ module Admin
       License.feature_available?(:ai_chat) && CloudConnector::AccessService.new.free_access_for?(:duo_chat)
     end
 
+    def code_suggestions_purchased?
+      ::GitlabSubscriptions::AddOnPurchase.active.for_gitlab_duo_pro.any?
+    end
+
     private
 
     # rubocop:disable Gitlab/DocUrl

@@ -3704,4 +3704,28 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it { is_expected.to be(licensed_ai_features_available) }
     end
   end
+
+  describe '#code_suggestions_purchased?' do
+    let(:group) { create(:group) }
+
+    context 'when code suggestions purchase exists' do
+      let!(:active_addon) do
+        create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :active, namespace: group)
+      end
+
+      it 'returns true' do
+        expect(group.code_suggestions_purchased?).to eq(true)
+      end
+    end
+
+    context 'when code suggestions purchase does not exists' do
+      let!(:expired_addon) do
+        create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :expired, namespace: group)
+      end
+
+      it 'returns false' do
+        expect(group.code_suggestions_purchased?).to eq(false)
+      end
+    end
+  end
 end
