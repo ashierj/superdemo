@@ -89,6 +89,10 @@ module QA
               it_behaves_like 'a code completion suggestion',
                 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/439625'
             end
+
+            context 'when seat is not assigned', :ai_gateway_no_seat_assigned do
+              it_behaves_like 'unauthorized', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/451486'
+            end
           end
         end
 
