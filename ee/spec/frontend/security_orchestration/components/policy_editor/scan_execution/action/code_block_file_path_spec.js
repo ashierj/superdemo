@@ -46,6 +46,8 @@ describe('CodeBlockFilePath', () => {
     it('renders file path', () => {
       expect(findFormGroup().exists()).toBe(true);
       expect(findFormInputGroup().exists()).toBe(true);
+      expect(findFormInputGroup().attributes().disabled).toBe('true');
+      expect(findTruncate().props('text')).toBe('No project selected');
     });
 
     it('renders ref input', () => {
@@ -77,17 +79,19 @@ describe('CodeBlockFilePath', () => {
     });
 
     it('renders selected project and ref selector', () => {
+      const fullPath = 'path/to/project';
+
       createComponent({
         propsData: {
           selectedProject: {
             id: PROJECT_ID,
-            fullPath: 'fullPath',
+            fullPath,
           },
           selectedRef: 'ref',
         },
       });
 
-      expect(findTruncate().props('text')).toBe('fullPath');
+      expect(findTruncate().props('text')).toBe(fullPath);
       expect(findRefSelector().exists()).toBe(true);
       expect(findFormInput().exists()).toBe(false);
       expect(findRefSelector().props()).toEqual(
@@ -99,6 +103,8 @@ describe('CodeBlockFilePath', () => {
         }),
       );
       expect(findGroupProjectsDropdown().props('selected')).toBe(PROJECT_ID);
+      expect(findFormInputGroup().attributes().disabled).toBe(undefined);
+      expect(findTruncate().props('text')).toBe(fullPath);
     });
 
     it('renders selected file path', () => {
