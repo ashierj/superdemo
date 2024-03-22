@@ -8,6 +8,7 @@ const parsePlanData = (planData) =>
     text: capitalizeFirstCharacter(plan.name),
     code: plan.code,
     isEligibleToUsePromoCode: plan.eligible_to_use_promo_code,
+    maximumSeatLimit: plan.maximum_seat_limit,
   }));
 
 const parseGroupData = (groupData) =>

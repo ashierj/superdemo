@@ -21,6 +21,13 @@ jest.mock('~/lib/logger');
 const availablePlans = [
   { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze plan' },
   { id: 'secondPlanId', code: 'silver', price_per_year: 228, name: 'silver plan' },
+  {
+    id: 'thirdPlanId',
+    code: 'ramon',
+    price_per_year: 50,
+    name: 'ramon plan',
+    maximum_seat_limit: 2000,
+  },
 ];
 const firstGroup = { id: 132, name: 'My first group', full_path: 'my-first-group' };
 const secondGroup = { id: 483, name: 'My second group', full_path: 'my-second-group' };
@@ -71,6 +78,7 @@ describe('Subscription Details', () => {
   const numberOfUsersInput = () => wrapper.findComponent({ ref: 'number-of-users' });
   const companyLink = () => wrapper.findComponent({ ref: 'company-link' });
   const findQsrOverageMessage = () => wrapper.findByTestId('qsr-overage-message');
+  const findMaximumSeatMessage = () => wrapper.findByTestId('label-description');
   const findNumberOfUsersFormGroup = () => wrapper.findByTestId('number-of-users-field');
 
   describe('when rendering', () => {
@@ -92,6 +100,43 @@ describe('Subscription Details', () => {
       expect(findQsrOverageMessage().findComponent(GlLink).attributes('href')).toMatch(
         QSR_RECONCILIATION_PATH,
       );
+    });
+
+    it('does not have a maximum seat limit alert', () => {
+      expect(findMaximumSeatMessage().exists()).toBe(false);
+    });
+  });
+
+  describe('when rendering with a maximumSeatLimit', () => {
+    beforeEach(() => {
+      const mockApollo = createMockApolloProvider(STEPS, 1, {}, []);
+      const store = createStore(
+        createDefaultInitialStoreData({
+          newUser: 'true',
+          setupForCompany: '',
+          planId: 'thirdPlanId',
+        }),
+      );
+
+      return createComponent({ apolloProvider: mockApollo, store });
+    });
+
+    it('does not have a QSR alert', () => {
+      expect(findQsrOverageMessage().exists()).toBe(false);
+    });
+
+    it('has a maximum seat limit alert', () => {
+      expect(findMaximumSeatMessage().exists()).toBe(true);
+    });
+
+    it('maximum seat limit alert has correct content', () => {
+      expect(findMaximumSeatMessage().text()).toEqual(
+        'The maximum amount of seats available to buy is 2000. Learn more.',
+      );
+    });
+
+    it('maximum seat limit alert has a link', () => {
+      expect(findMaximumSeatMessage().findComponent(GlLink).exists()).toBe(true);
     });
   });
 

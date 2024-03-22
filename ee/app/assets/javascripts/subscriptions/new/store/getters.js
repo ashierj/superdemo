@@ -1,18 +1,13 @@
 import { s__ } from '~/locale';
-import {
-  NEW_GROUP,
-  ULTIMATE,
-  CHARGE_PROCESSING_TYPE,
-  DISCOUNT_PROCESSING_TYPE,
-} from '../constants';
+import { NEW_GROUP, CHARGE_PROCESSING_TYPE, DISCOUNT_PROCESSING_TYPE } from '../constants';
 
 export const selectedPlanText = (state, getters) => getters.selectedPlanDetails.text;
 
 export const selectedPlanDetails = (state) =>
   state.availablePlans.find((plan) => plan.value === state.selectedPlan);
 
-export const isUltimatePlan = (state, getters) => {
-  return getters.selectedPlanDetails?.code === ULTIMATE;
+export const maximumSeatLimit = (state, getters) => {
+  return getters.selectedPlanDetails?.maximumSeatLimit || 0;
 };
 
 export const confirmOrderParams = (state, getters) => ({
