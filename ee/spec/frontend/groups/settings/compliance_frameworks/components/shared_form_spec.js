@@ -197,7 +197,7 @@ describe('SharedForm', () => {
 
         await waitForPromises();
 
-        expect(findSubmitBtn().attributes('disabled')).toBe(disabled);
+        expect(findSubmitBtn().attributes().disabled).toBe(disabled);
       },
     );
   });
