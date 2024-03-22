@@ -263,6 +263,11 @@ module EE
           alpha: { milestone: '16.10' },
           description: 'Indicates if the GitLab Duo features enabled setting is enforced for all subgroups.'
 
+        field :marked_for_deletion_on, ::Types::TimeType,
+          null: true,
+          description: 'Date when group was scheduled to be deleted.',
+          alpha: { milestone: '16.11' }
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end
@@ -275,6 +280,12 @@ module EE
             provider: provider,
             cloud_project_id: cloud_project_id
           }
+        end
+
+        def marked_for_deletion_on
+          return unless group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+
+          group.marked_for_deletion_on
         end
       end
     end

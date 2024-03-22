@@ -35,6 +35,7 @@ RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projec
   it { expect(described_class).to have_graphql_field(:value_stream_analytics) }
   it { expect(described_class).to have_graphql_field(:duo_features_enabled) }
   it { expect(described_class).to have_graphql_field(:lock_duo_features_enabled) }
+  it { expect(described_class).to have_graphql_field(:marked_for_deletion_on) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }
@@ -162,5 +163,51 @@ RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projec
     subject { described_class.fields['dora'] }
 
     it { is_expected.to have_graphql_type(Types::DoraType) }
+  end
+
+  describe 'marked_for_deletion_on' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:pending_delete_group) { create(:group_with_deletion_schedule, marked_for_deletion_on: Time.current) }
+
+    let_it_be(:query) do
+      %(
+        query {
+          group(fullPath: "#{pending_delete_group.full_path}") {
+            markedForDeletionOn
+          }
+        }
+      )
+    end
+
+    before do
+      pending_delete_group.add_developer(user)
+    end
+
+    subject(:marked_for_deletion_on) do
+      result = GitlabSchema.execute(query, context: { current_user: user }).as_json
+      result.dig('data', 'group', 'markedForDeletionOn')
+    end
+
+    context 'when feature is available' do
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+      end
+
+      it 'returns correct date' do
+        marked_for_deletion_on_time = Time.zone.parse(marked_for_deletion_on)
+
+        expect(marked_for_deletion_on_time).to eq(pending_delete_group.marked_for_deletion_on.iso8601)
+      end
+    end
+
+    context 'when feature is not available' do
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
+      end
+
+      it 'returns nil' do
+        expect(marked_for_deletion_on).to be nil
+      end
+    end
   end
 end
