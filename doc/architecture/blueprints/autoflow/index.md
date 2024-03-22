@@ -156,12 +156,12 @@ Customer [quote](https://gitlab.com/gitlab-org/gitlab/-/issues/242194#note_17854
 Some use cases from `group::delivery` (from
 [this comment](https://gitlab.com/gitlab-org/ci-cd/section-showcases/-/issues/54#note_1663194580)):
 
-> - If we have events from when certain files are added/changed in Git for a project, we could use this to automate the
->   Provisioner in the Runway platform (and deprovision when people want to).
-> - Automating certain tasks when a new backport request issue is created.
-> - Automated tasks when we want to start a new monthly release.
-> - Moving to a "GitLab deployment Engine" that is more powerful than GitLab CI alone. This is perhaps the most
->   interesting use case to me, but I do wonder how complicated it would be to manage these workflows.
+- If we have events from when certain files are added/changed in Git for a project, we could use this to automate the
+  Provisioner in the Runway platform (and deprovision when people want to).
+- Automating certain tasks when a new backport request issue is created.
+- Automated tasks when we want to start a new monthly release.
+- Moving to a "GitLab deployment Engine" that is more powerful than GitLab CI alone. This is perhaps the most
+  interesting use case to me, but I do wonder how complicated it would be to manage these workflows.
 
 ---
 
