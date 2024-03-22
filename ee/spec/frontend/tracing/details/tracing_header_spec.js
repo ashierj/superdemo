@@ -4,22 +4,44 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 describe('TracingHeader', () => {
   let wrapper;
 
-  beforeEach(() => {
+  const defaultTrace = {
+    service_name: 'Service',
+    operation: 'Operation',
+    timestamp: 1692021937219,
+    duration_nano: 1000000000,
+    total_spans: 10,
+    spans: [
+      { span_id: 'span-1', parent_span_id: '' },
+      { span_id: 'span-2', parent_span_id: 'span-1' },
+    ],
+  };
+
+  const createComponent = (trace = defaultTrace) => {
     wrapper = shallowMountExtended(TracingHeader, {
       propsData: {
-        trace: {
-          service_name: 'Service',
-          operation: 'Operation',
-          timestamp: 1692021937219,
-          duration_nano: 1000000000,
-          total_spans: 10,
-        },
+        trace,
       },
     });
+  };
+  beforeEach(() => {
+    createComponent();
   });
 
   it('renders the correct title', () => {
     expect(wrapper.find('h1').text()).toBe('Service : Operation');
+  });
+
+  it('does not show the in progress label when the root span is not missing', () => {
+    expect(wrapper.find('h1').text()).not.toContain('In progress');
+  });
+
+  it('shows the in progress label when the root span is missing', () => {
+    createComponent({
+      ...defaultTrace,
+      spans: [{ span_id: 'span-2', parent_span_id: 'span-1' }],
+    });
+
+    expect(wrapper.find('h1').text()).toContain('In progress');
   });
 
   it('renders the correct trace date', () => {

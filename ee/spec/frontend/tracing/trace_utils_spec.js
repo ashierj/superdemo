@@ -6,6 +6,7 @@ import {
   formatTraceDuration,
   assignColorToServices,
   periodFilterToDate,
+  findRootSpan,
 } from 'ee/tracing/trace_utils';
 
 describe('trace_utils', () => {
@@ -93,6 +94,42 @@ describe('trace_utils', () => {
         // restart pallete
         'service-30': 'blue-500',
       });
+    });
+  });
+
+  describe('findRootSpan', () => {
+    const rootSpan = {
+      timestamp: '2023-08-07T15:03:53.199871Z',
+      span_id: 'SPAN-1',
+      trace_id: 'TRACE-1',
+      service_name: 'SERVICE-1',
+      operation: 'OP-1',
+      duration_nano: 123456789,
+      parent_span_id: '',
+    };
+    const nonRootSpan = {
+      timestamp: '2023-08-07T15:03:53.199871Z',
+      span_id: 'SPAN-2',
+      trace_id: 'TRACE-2',
+      service_name: 'SERVICE-2',
+      operation: 'OP-2',
+      duration_nano: 123456789,
+      parent_span_id: 'SPAN-1',
+    };
+    it('returns the root span', () => {
+      expect(
+        findRootSpan({
+          spans: [nonRootSpan, rootSpan],
+        }),
+      ).toBe(rootSpan);
+    });
+
+    it('returns undefined if the root span is missing', () => {
+      expect(
+        findRootSpan({
+          spans: [nonRootSpan],
+        }),
+      ).toBeUndefined();
     });
   });
 

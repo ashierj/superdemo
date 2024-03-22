@@ -69,10 +69,12 @@ export function assignColorToServices(trace) {
 
 const timestampToMs = (ts) => new Date(ts).getTime();
 
+export const findRootSpan = (trace) => trace.spans.find((s) => s.parent_span_id === '');
+
 export function mapTraceToTreeRoot(trace) {
   const nodes = {};
 
-  const rootSpan = trace.spans.find((s) => s.parent_span_id === '');
+  const rootSpan = findRootSpan(trace);
   if (!rootSpan) return undefined;
 
   const spanToNode = (span) => ({

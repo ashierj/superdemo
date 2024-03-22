@@ -25,6 +25,17 @@ describe('TracingTable', () => {
       matched_span_count: 2,
       error_span_count: 1,
     },
+    {
+      timestamp: '2023-08-11T16:03:50.577538Z',
+      service_name: 'tracegen-3',
+      operation: 'lets-go-3',
+      duration_nano: 2000000,
+      trace_id: 'trace-3',
+      total_spans: 3,
+      matched_span_count: 2,
+      error_span_count: 1,
+      in_progress: true,
+    },
   ];
 
   const expectedTraces = [
@@ -45,6 +56,16 @@ describe('TracingTable', () => {
       operation: 'lets-go-2',
       duration: '2ms',
       trace_id: 'trace-2',
+    },
+    {
+      timestamp: 'Aug 11, 2023 4:03pm UTC',
+      badge: '3 spans',
+      errorBadge: '1 error',
+      service_name: 'tracegen-3',
+      operation: 'lets-go-3',
+      duration: '2ms',
+      trace_id: 'trace-3',
+      inProgressBadge: true,
     },
   ];
 
@@ -74,15 +95,22 @@ describe('TracingTable', () => {
       const row = getRows().at(i);
       const expected = expectedTraces[i];
       expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(expected.timestamp);
+      expect(row.find(`[data-testid="trace-service"]`).text()).toBe(expected.service_name);
+      expect(row.find(`[data-testid="trace-operation"]`).text()).toBe(expected.operation);
+      expect(row.find(`[data-testid="trace-duration"]`).text()).toBe(expected.duration);
       expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(expected.badge);
+
       if (expected.errorBadge) {
         expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(expected.errorBadge);
       } else {
         expect(row.find(`[data-testid="trace-timestamp"]`).text()).not.toContain('error');
       }
-      expect(row.find(`[data-testid="trace-service"]`).text()).toBe(expected.service_name);
-      expect(row.find(`[data-testid="trace-operation"]`).text()).toBe(expected.operation);
-      expect(row.find(`[data-testid="trace-duration"]`).text()).toBe(expected.duration);
+
+      if (expected.inProgressBadge) {
+        expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain('In progress');
+      } else {
+        expect(row.find(`[data-testid="trace-timestamp"]`).text()).not.toContain('In progress');
+      }
     });
   });
 

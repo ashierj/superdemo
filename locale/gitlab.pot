@@ -53281,6 +53281,9 @@ msgstr ""
 msgid "Tracing|Filter traces"
 msgstr ""
 
+msgid "Tracing|In progress"
+msgstr ""
+
 msgid "Tracing|Metadata"
 msgstr ""
 

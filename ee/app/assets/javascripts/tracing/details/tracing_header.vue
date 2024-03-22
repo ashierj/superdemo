@@ -1,7 +1,8 @@
 <script>
-import { GlCard } from '@gitlab/ui';
+import { GlCard, GlBadge } from '@gitlab/ui';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
-import { formatTraceDuration } from '../trace_utils';
+import { s__ } from '~/locale';
+import { formatTraceDuration, findRootSpan } from '../trace_utils';
 
 const CARD_CLASS = 'gl-mr-7 gl-w-15p gl-min-w-fit-content';
 const HEADER_CLASS = 'gl-p-2 gl-font-weight-bold gl--flex-center';
@@ -14,6 +15,10 @@ export default {
   BODY_CLASS,
   components: {
     GlCard,
+    GlBadge,
+  },
+  i18n: {
+    inProgress: s__('Tracing|In progress'),
   },
   props: {
     trace: {
@@ -34,13 +39,25 @@ export default {
     traceDuration() {
       return formatTraceDuration(this.trace.duration_nano);
     },
+    isTraceInProgress() {
+      return !findRootSpan(this.trace);
+    },
   },
 };
 </script>
 
 <template>
   <div class="gl-mb-6">
-    <h1>{{ title }}</h1>
+    <h1>
+      {{ title }}
+      <gl-badge
+        v-if="isTraceInProgress"
+        variant="warning"
+        size="md"
+        class="gl-ml-3 gl-vertical-align-middle"
+        >{{ $options.i18n.inProgress }}</gl-badge
+      >
+    </h1>
 
     <div class="gl-display-flex gl-flex-wrap gl-justify-content-center gl-my-7 gl-row-gap-6">
       <gl-card
