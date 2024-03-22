@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::RackAttack::Request do
+RSpec.describe Gitlab::RackAttack::Request, feature_category: :rate_limiting do
   using RSpec::Parameterized::TableSyntax
 
   let(:path) { '/' }
