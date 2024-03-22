@@ -40,25 +40,33 @@ module GitlabSubscriptions
         result = lead_service_class.new.execute({ trial_user: trial_user_params })
 
         if result.success?
-          if single_eligible_namespace_for_trial?
-            @namespace = namespaces_eligible_for_trial.first
-            apply_trial_flow
-          else
-            # trigger new creation for next step...
-            trial_selection_params = {
-              step: TRIAL
-            }.merge(lead_params.slice(:glm_content, :glm_source))
-             .merge(trial_params.slice(:namespace_id))
-
-            ServiceResponse.error(
-              message: 'Lead created, but singular eligible namespace not present',
-              reason: NO_SINGLE_NAMESPACE,
-              payload: { trial_selection_params: trial_selection_params }
-            )
-          end
+          after_lead_success_hook
         else
-          ServiceResponse.error(message: result.message, reason: LEAD_FAILED)
+          after_lead_error_hook(result)
         end
+      end
+
+      def after_lead_success_hook
+        if single_eligible_namespace_for_trial?
+          @namespace = namespaces_eligible_for_trial.first
+          apply_trial_flow
+        else
+          # trigger new creation for next step...
+          trial_selection_params = {
+            step: TRIAL
+          }.merge(lead_params.slice(:glm_content, :glm_source))
+           .merge(trial_params.slice(:namespace_id))
+
+          ServiceResponse.error(
+            message: 'Lead created, but singular eligible namespace not present',
+            reason: NO_SINGLE_NAMESPACE,
+            payload: { trial_selection_params: trial_selection_params }
+          )
+        end
+      end
+
+      def after_lead_error_hook(result)
+        ServiceResponse.error(message: result.message, reason: LEAD_FAILED)
       end
 
       def lead_service_class
@@ -97,14 +105,22 @@ module GitlabSubscriptions
         ).execute
 
         if result.success?
-          Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: user)
-
-          ServiceResponse.success(message: 'Trial applied', payload: { namespace: namespace })
+          after_trial_success_hook
         else
-          ServiceResponse.error(
-            message: result.message, payload: { namespace_id: trial_params[:namespace_id] }, reason: TRIAL_FAILED
-          )
+          after_trial_error_hook(result)
         end
+      end
+
+      def after_trial_success_hook
+        Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: user)
+
+        ServiceResponse.success(message: 'Trial applied', payload: { namespace: namespace })
+      end
+
+      def after_trial_error_hook(result)
+        ServiceResponse.error(
+          message: result.message, payload: { namespace_id: trial_params[:namespace_id] }, reason: TRIAL_FAILED
+        )
       end
 
       def apply_trial_service_class

@@ -37,9 +37,6 @@ module Subscriptions
 
         if @result.success?
           # lead and trial created
-
-          track_event('duo_pro_trial_registration_success')
-
           flash[:success] = success_flash_message
 
           redirect_to group_usage_quotas_path(@result.payload[:namespace], anchor: 'code-suggestions-usage-tab')
@@ -58,8 +55,6 @@ module Subscriptions
           render :step_namespace_failed
         else
           # trial creation failed
-          track_event('duo_pro_trial_registration_failure')
-
           params[:namespace_id] = @result.payload[:namespace_id]
 
           render :trial_failed
