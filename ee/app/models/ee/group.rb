@@ -984,6 +984,10 @@ module EE
       access_level > current_user_role
     end
 
+    def code_suggestions_purchased?
+      ::GitlabSubscriptions::AddOnPurchase.active.for_gitlab_duo_pro.exists?(namespace_id: id)
+    end
+
     private
 
     def active_project_tokens_of_root_ancestor
