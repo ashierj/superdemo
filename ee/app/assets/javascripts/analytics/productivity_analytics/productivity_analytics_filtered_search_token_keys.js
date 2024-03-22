@@ -24,7 +24,7 @@ const tokenKeys = [
     type: 'string',
     param: 'title',
     symbol: '%',
-    icon: 'clock',
+    icon: 'milestone',
     tag: '%milestone',
   },
   {

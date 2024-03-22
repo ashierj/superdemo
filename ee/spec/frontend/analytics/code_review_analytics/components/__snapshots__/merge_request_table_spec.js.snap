@@ -128,11 +128,11 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
                   <svg
                     aria-hidden="true"
                     class="gl-icon gl-mr-2 s16"
-                    data-testid="clock-icon"
+                    data-testid="milestone-icon"
                     role="img"
                   >
                     <use
-                      href="file-mock#clock"
+                      href="file-mock#milestone"
                     />
                   </svg>
                   11.1

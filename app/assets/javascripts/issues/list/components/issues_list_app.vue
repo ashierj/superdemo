@@ -405,7 +405,7 @@ export default {
         {
           type: TOKEN_TYPE_MILESTONE,
           title: TOKEN_TITLE_MILESTONE,
-          icon: 'clock',
+          icon: 'milestone',
           token: MilestoneToken,
           recentSuggestionsStorageKey: `${this.fullPath}-issues-recent-tokens-milestone`,
           shouldSkipSort: true,

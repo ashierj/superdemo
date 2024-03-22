@@ -727,7 +727,7 @@ export const mockTokens = (fetchLabels, fetchIterations, fetchIterationCadences)
     ],
   },
   {
-    icon: 'clock',
+    icon: 'milestone',
     title: TOKEN_TITLE_MILESTONE,
     symbol: '%',
     type: TOKEN_TYPE_MILESTONE,

@@ -144,7 +144,7 @@ export default {
           class="gl-display-flex gl-align-items-center gl-justify-content-center text-secondary gl-white-space-nowrap"
           data-testid="count"
         >
-          <gl-icon name="clock" class="gl-mr-2" />
+          <gl-icon name="milestone" class="gl-mr-2" />
           <span :aria-label="milestonesCountText">{{ milestonesCount }}</span>
         </div>
       </div>
