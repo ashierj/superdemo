@@ -2767,6 +2767,14 @@
   rules:
     - <<: *if-merge-request-labels-run-in-ruby
 
+.setup:rules:set-pipeline-name:
+  rules:
+    - <<: *if-not-merge-request # This is only designed to run in a merge request
+      when: never
+    - if: '$PROJECT_TOKEN_FOR_CI_SCRIPTS_API_USAGE == null'
+      when: never
+    - <<: *if-merge-request
+
 .setup:rules:verify-tests-yml:
   rules:
     - <<: *if-not-ee
