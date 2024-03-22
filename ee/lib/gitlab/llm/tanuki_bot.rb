@@ -115,9 +115,7 @@ module Gitlab
 
         final_prompt_result = anthropic_client.stream(
           prompt: final_prompt[:prompt],
-          options: {
-            model: "claude-instant-1.1"
-          }
+          model: "claude-instant-1.1"
         ) do |data|
           logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
 
