@@ -6,7 +6,6 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
 import { getTemporaryExtensionData } from 'ee/fulfillment/shared_queries/temporary_extension.customer.query.graphql';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
-import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
@@ -94,7 +93,7 @@ export default {
   },
   computed: {
     ...mapState(['isLoadingSubscription', 'hasErrorSubscription', 'plan', 'tables', 'endpoint']),
-    ...mapGetters(['isFreePlan']),
+    ...mapGetters(['isFreePlan', 'tableKey']),
     isSubscription() {
       return !this.isFreePlan;
     },
@@ -147,15 +146,7 @@ export default {
       return [this.addSeatsButton, this.renewButton, this.manageButton].filter(Boolean);
     },
     visibleRows() {
-      let tableKey = TABLE_TYPE_DEFAULT;
-
-      if (this.plan.code === null) {
-        tableKey = TABLE_TYPE_FREE;
-      } else if (this.plan.trial) {
-        tableKey = TABLE_TYPE_TRIAL;
-      }
-
-      return this.tables[tableKey].rows;
+      return this.tables[this.tableKey].rows;
     },
     isLoading() {
       return this.isLoadingSubscription || this.$apollo.loading;
