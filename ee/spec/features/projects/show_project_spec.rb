@@ -36,10 +36,6 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
       create(:project, :repository, mirror: true, mirror_user: user, import_url: 'http://user:pass@test.com')
     end
 
-    before do
-      stub_feature_flags(project_overview_reorg: false)
-    end
-
     context 'for maintainer' do
       before do
         project.add_maintainer(user)
@@ -99,31 +95,25 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
     end
   end
 
-  context 'with FF project_overview_reorg enabled' do
+  context "when user has no permissions" do
     let_it_be(:project) { create(:project, :public, :repository) }
 
-    before do
-      stub_feature_flags(project_overview_reorg: true)
+    it 'does not render settings button if user has no permissions', :js do
+      visit project_path(project)
+
+      find_by_testid('groups-projects-more-actions-dropdown').click
+
+      expect(page).not_to have_selector('[data-testid="project-settings-link"]')
     end
 
-    context "when user has no permissions" do
-      it 'does not render settings button if user has no permissions', :js do
-        visit project_path(project)
+    it 'renders settings button if user has permissions', :js do
+      project.add_maintainer(user)
+      sign_in(user)
+      visit project_path(project)
 
-        find_by_testid('groups-projects-more-actions-dropdown').click
+      find_by_testid('groups-projects-more-actions-dropdown').click
 
-        expect(page).not_to have_selector('[data-testid="settings-project-link"]')
-      end
-
-      it 'renders settings button if user has permissions', :js do
-        project.add_maintainer(user)
-        sign_in(user)
-        visit project_path(project)
-
-        find_by_testid('groups-projects-more-actions-dropdown').click
-
-        expect(page).to have_selector('[data-testid="settings-project-link"]')
-      end
+      expect(page).to have_selector('[data-testid="settings-project-link"]')
     end
   end
 end
