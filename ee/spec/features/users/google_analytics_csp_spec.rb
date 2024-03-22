@@ -18,14 +18,16 @@ RSpec.describe 'Google Analytics 4 content security policy', feature_category: :
       '*.googletagmanager.com',
       '*.google-analytics.com',
       '*.analytics.google.com',
-      '*.g.doubleclick.net'
+      '*.g.doubleclick.net',
+      *GoogleAnalyticsCSP::GOOGLE_DOMAINS
     )
 
     expect(find_csp_directive('img-src', header: csp_header)).to include(
       '*.googletagmanager.com',
       '*.google-analytics.com',
       '*.analytics.google.com',
-      '*.g.doubleclick.net'
+      '*.g.doubleclick.net',
+      *GoogleAnalyticsCSP::GOOGLE_DOMAINS
     )
   end
 end
