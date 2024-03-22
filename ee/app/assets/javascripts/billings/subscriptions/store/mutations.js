@@ -1,7 +1,8 @@
 import Vue from 'vue';
-import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
+import { TABLE_TYPE_DEFAULT } from 'ee/billings/constants';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import * as types from './mutation_types';
+import { tableKey } from './getters';
 
 export default {
   [types.SET_NAMESPACE_ID](state, payload) {
@@ -16,23 +17,17 @@ export default {
   [types.RECEIVE_SUBSCRIPTION_SUCCESS](state, payload) {
     const data = convertObjectPropsToCamelCase(payload, { deep: true });
     const { plan, usage, billing } = data;
-    let tableKey = TABLE_TYPE_DEFAULT;
-
     state.plan = plan;
     state.billing = billing;
 
-    if (state.plan.code === null) {
-      tableKey = TABLE_TYPE_FREE;
-    } else if (state.plan.trial) {
-      tableKey = TABLE_TYPE_TRIAL;
-    }
+    const stateTableKey = tableKey(state);
 
-    state.tables[tableKey].rows.forEach((row) => {
+    state.tables[stateTableKey].rows.forEach((row) => {
       row.columns.forEach((col) => {
         if (Object.prototype.hasOwnProperty.call(usage, col.id)) {
           Vue.set(col, 'value', usage[col.id]);
-          if (tableKey === TABLE_TYPE_DEFAULT) {
-            Vue.set(col, 'type', tableKey);
+          if (stateTableKey === TABLE_TYPE_DEFAULT) {
+            Vue.set(col, 'type', stateTableKey);
           }
         } else if (Object.prototype.hasOwnProperty.call(billing, col.id)) {
           Vue.set(col, 'value', billing[col.id]);
