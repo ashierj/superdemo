@@ -142,7 +142,7 @@ module Features
     end
 
     def existing_group_attrs
-      { namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on) }
+      { namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on).merge(plan: group.actual_plan.name) }
     end
 
     def new_group_attrs(path: 'gitlab', name: 'gitlab')
@@ -152,7 +152,8 @@ module Features
           path: path,
           name: name,
           kind: 'group',
-          trial_ends_on: nil
+          trial_ends_on: nil,
+          plan: 'free'
         }
       }
     end

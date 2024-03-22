@@ -157,7 +157,9 @@ module GitlabSubscriptions
 
       def trial_user_information_params
         gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
-        namespace_params = { namespace: namespace.slice(:id, :name, :path, :kind, :trial_ends_on) }
+        namespace_params = {
+          namespace: namespace.slice(:id, :name, :path, :kind, :trial_ends_on).merge(plan: namespace.actual_plan.name)
+        }
 
         trial_params.except(:new_group_name).merge(gl_com_params).merge(namespace_params)
       end
