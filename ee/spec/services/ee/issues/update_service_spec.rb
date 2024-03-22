@@ -635,7 +635,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
         let!(:escalation_status) { create(:incident_management_issuable_escalation_status, issue: issue) }
 
         context 'when issue is an incident' do
-          let(:issue) { create(:incident, project: project) }
+          let(:issue) { create(:incident, :unchanged, project: project) }
 
           context 'setting the escalation policy' do
             include_examples 'updates the escalation status record' do
@@ -730,7 +730,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
       end
 
       context 'without an existing escalation status record' do
-        let(:issue) { create(:incident, project: project) }
+        let(:issue) { create(:incident, :unchanged, project: project) }
 
         include_examples 'updates the escalation status record' do
           let(:expected_policy) { policy }
