@@ -872,6 +872,16 @@ CREATE TABLE batched_background_migration_job_transition_logs (
 )
 PARTITION BY RANGE (created_at);
 
+CREATE TABLE p_ci_build_names (
+    build_id bigint NOT NULL,
+    partition_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    name text NOT NULL,
+    search_vector tsvector GENERATED ALWAYS AS (to_tsvector('english'::regconfig, COALESCE(name, ''::text))) STORED,
+    CONSTRAINT check_1722c96346 CHECK ((char_length(name) <= 255))
+)
+PARTITION BY LIST (partition_id);
+
 CREATE TABLE p_ci_builds (
     status character varying,
     finished_at timestamp without time zone,
@@ -21588,6 +21598,9 @@ ALTER TABLE ONLY p_catalog_resource_component_usages
 ALTER TABLE ONLY p_catalog_resource_sync_events
     ADD CONSTRAINT p_catalog_resource_sync_events_pkey PRIMARY KEY (id, partition_id);
 
+ALTER TABLE ONLY p_ci_build_names
+    ADD CONSTRAINT p_ci_build_names_pkey PRIMARY KEY (build_id, partition_id);
+
 ALTER TABLE ONLY p_ci_finished_build_ch_sync_events
     ADD CONSTRAINT p_ci_finished_build_ch_sync_events_pkey PRIMARY KEY (build_id, partition);
 
@@ -26179,6 +26192,10 @@ CREATE UNIQUE INDEX index_organizations_on_unique_name_per_group ON customer_rel
 CREATE INDEX index_p_catalog_resource_component_usages_on_project_id ON ONLY p_catalog_resource_component_usages USING btree (project_id);
 
 CREATE INDEX index_p_catalog_resource_sync_events_on_id_where_pending ON ONLY p_catalog_resource_sync_events USING btree (id) WHERE (status = 1);
+
+CREATE INDEX index_p_ci_build_names_on_project_id_and_build_id ON ONLY p_ci_build_names USING btree (project_id, build_id);
+
+CREATE INDEX index_p_ci_build_names_on_search_vector ON ONLY p_ci_build_names USING gin (search_vector);
 
 CREATE INDEX index_p_ci_finished_build_ch_sync_events_finished_at ON ONLY p_ci_finished_build_ch_sync_events USING btree (partition, build_finished_at);
 
@@ -32043,6 +32060,9 @@ ALTER TABLE ONLY packages_debian_project_component_files
 
 ALTER TABLE ONLY projects_sync_events
     ADD CONSTRAINT fk_rails_bbf0eef59f FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE p_ci_build_names
+    ADD CONSTRAINT fk_rails_bc221a297a FOREIGN KEY (partition_id, build_id) REFERENCES p_ci_builds(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY approval_merge_request_rules_users
     ADD CONSTRAINT fk_rails_bc8972fa55 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
