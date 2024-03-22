@@ -27,6 +27,7 @@ module API
           requires :quantity, type: Integer, desc: 'The quantity of the purchase'
           requires :expires_on, type: Date, desc: 'The date when purchase expires on'
           requires :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
+          optional :trial, type: Boolean, desc: 'Whether the add-on is a trial'
         end
         post ":id/subscription_add_on_purchase/:add_on_name" do
           result = ::GitlabSubscriptions::AddOnPurchases::CreateService.new(
@@ -72,6 +73,7 @@ module API
           requires :expires_on, type: Date, desc: 'The date when purchase expires on'
           optional :quantity, type: Integer, desc: 'The quantity of the purchase'
           optional :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
+          optional :trial, type: Boolean, desc: 'Whether the add-on is a trial'
         end
         put ":id/subscription_add_on_purchase/:add_on_name" do
           result = ::GitlabSubscriptions::AddOnPurchases::UpdateService.new(

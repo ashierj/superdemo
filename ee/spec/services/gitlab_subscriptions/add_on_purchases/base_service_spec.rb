@@ -11,7 +11,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BaseService, feature_categor
       {
         quantity: 10,
         expires_on: (Date.current + 1.year).to_s,
-        purchase_xid: 'S-A00000001'
+        purchase_xid: 'S-A00000001',
+        trial: false
       }
     end
 
@@ -58,7 +59,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BaseService, feature_categor
               add_on: add_on,
               quantity: quantity,
               expires_on: expires_on,
-              purchase_xid: purchase_xid
+              purchase_xid: purchase_xid,
+              trial: trial
             )
           end
         end

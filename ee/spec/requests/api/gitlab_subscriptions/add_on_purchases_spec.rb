@@ -211,7 +211,8 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
             'add_on' => add_on.name.titleize,
             'quantity' => add_on_purchase.quantity,
             'expires_on' => add_on_purchase.expires_on.to_s,
-            'purchase_xid' => add_on_purchase.purchase_xid
+            'purchase_xid' => add_on_purchase.purchase_xid,
+            'trial' => add_on_purchase.trial
           )
         end
       end
@@ -223,7 +224,8 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
       {
         quantity: 10,
         expires_on: (Date.current + 1.year).to_s,
-        purchase_xid: purchase_xid
+        purchase_xid: purchase_xid,
+        trial: true
       }
     end
 
@@ -272,6 +274,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
             add_on_purchase.reload
           end.to change { add_on_purchase.quantity }.from(5).to(10)
             .and change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
+            .and change { add_on_purchase.trial }.from(false).to(true)
 
           expect(response).to have_gitlab_http_status(:success)
           expect(json_response).to eq(
@@ -280,7 +283,8 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
             'add_on' => add_on.name.titleize,
             'quantity' => params[:quantity],
             'expires_on' => params[:expires_on],
-            'purchase_xid' => params[:purchase_xid]
+            'purchase_xid' => params[:purchase_xid],
+            'trial' => params[:trial]
           )
         end
 
@@ -301,7 +305,8 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
               'add_on' => add_on.name.titleize,
               'quantity' => add_on_purchase.quantity,
               'expires_on' => params[:expires_on],
-              'purchase_xid' => add_on_purchase.purchase_xid
+              'purchase_xid' => add_on_purchase.purchase_xid,
+              'trial' => add_on_purchase.trial
             )
           end
         end
