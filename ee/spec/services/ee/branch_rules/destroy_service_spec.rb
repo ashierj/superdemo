@@ -9,8 +9,6 @@ RSpec.describe BranchRules::DestroyService, feature_category: :source_code_manag
   describe '#execute' do
     subject(:execute) { described_class.new(branch_rule, user).execute }
 
-    let(:destroy_service_error) { { status: :error, message: 'error' } }
-
     before do
       allow(Ability).to receive(:allowed?).and_return(true)
     end
@@ -34,6 +32,7 @@ RSpec.describe BranchRules::DestroyService, feature_category: :source_code_manag
       context 'if approval rule deletion fails' do
         let(:destroy_service) { ApprovalRules::ProjectRuleDestroyService }
         let(:destroy_service_instance) { instance_double(destroy_service) }
+        let(:destroy_service_error) { ServiceResponse.error(message: 'error') }
 
         before do
           allow(destroy_service).to receive(:new).and_return(destroy_service_instance)
@@ -50,6 +49,7 @@ RSpec.describe BranchRules::DestroyService, feature_category: :source_code_manag
       context 'if external status check deletion fails' do
         let(:destroy_service) { ExternalStatusChecks::DestroyService }
         let(:destroy_service_instance) { instance_double(destroy_service) }
+        let(:destroy_service_error) { { status: :error, message: 'error' } }
 
         before do
           allow(destroy_service).to receive(:new).and_return(destroy_service_instance)
@@ -82,6 +82,7 @@ RSpec.describe BranchRules::DestroyService, feature_category: :source_code_manag
       context 'if approval rule deletion fails' do
         let(:destroy_service) { ApprovalRules::ProjectRuleDestroyService }
         let(:destroy_service_instance) { instance_double(destroy_service) }
+        let(:destroy_service_error) { ServiceResponse.error(message: 'error') }
 
         before do
           allow(destroy_service).to receive(:new).and_return(destroy_service_instance)
