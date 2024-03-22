@@ -8,6 +8,8 @@ import {
   ANY_COMMIT,
   BRANCH_TYPE_KEY,
   INVALID_PROTECTED_BRANCHES,
+  MATCH_ON_INCLUSION,
+  MATCH_ON_INCLUSION_LICENSE,
   VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS,
   VULNERABILITY_AGE_OPERATORS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
@@ -51,14 +53,20 @@ export const securityScanBuildRule = () => ({
   branch_type: ALL_PROTECTED_BRANCHES.value,
 });
 
-export const licenseScanBuildRule = () => ({
-  id: uniqueId('rule_'),
-  type: LICENSE_FINDING,
-  match_on_inclusion: true,
-  license_types: [],
-  license_states: [],
-  branch_type: ALL_PROTECTED_BRANCHES.value,
-});
+export const licenseScanBuildRule = () => {
+  const MATCH_KEY = gon?.features?.securityPoliciesBreakingChanges
+    ? MATCH_ON_INCLUSION_LICENSE
+    : MATCH_ON_INCLUSION;
+
+  return {
+    id: uniqueId('rule_'),
+    type: LICENSE_FINDING,
+    [MATCH_KEY]: true,
+    license_types: [],
+    license_states: [],
+    branch_type: ALL_PROTECTED_BRANCHES.value,
+  };
+};
 
 export const anyMergeRequestBuildRule = () => ({
   id: uniqueId('rule_'),

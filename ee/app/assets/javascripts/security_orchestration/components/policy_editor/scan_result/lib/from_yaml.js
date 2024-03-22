@@ -1,7 +1,11 @@
 import { safeLoad } from 'js-yaml';
 import { isBoolean, isEqual } from 'lodash';
 import { addIdsToPolicy, hasInvalidKey, isValidPolicy } from '../../utils';
-import { PRIMARY_POLICY_KEYS } from '../../constants';
+import {
+  MATCH_ON_INCLUSION,
+  MATCH_ON_INCLUSION_LICENSE,
+  PRIMARY_POLICY_KEYS,
+} from '../../constants';
 import {
   VALID_APPROVAL_SETTINGS,
   PERMITTED_INVALID_SETTINGS,
@@ -27,6 +31,9 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
       const hasPolicyScope =
         gon?.features?.securityPoliciesPolicyScope ||
         gon?.features?.securityPoliciesPolicyScopeProject;
+      const MATCH_LICENSE_KEY = gon?.features?.securityPoliciesBreakingChanges
+        ? MATCH_ON_INCLUSION_LICENSE
+        : MATCH_ON_INCLUSION;
 
       const primaryKeys = [...PRIMARY_POLICY_KEYS, ...(hasPolicyScope ? ['policy_scope'] : [])];
       const rulesKeys = [
@@ -37,7 +44,6 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'commits',
         'license_states',
         'license_types',
-        'match_on_inclusion',
         'scanners',
         'severity_levels',
         'vulnerabilities_allowed',
@@ -45,6 +51,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'vulnerability_age',
         'vulnerability_attributes',
         'id',
+        MATCH_LICENSE_KEY,
       ];
       const actionsKeys = [
         'type',

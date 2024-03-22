@@ -12,6 +12,7 @@ import {
   invalidVulnerabilityAttributes,
   VULNERABILITY_STATE_KEYS,
   humanizeInvalidBranchesError,
+  licenseScanBuildRule,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/rules';
 import {
   APPROVAL_VULNERABILITY_STATES,
@@ -22,6 +23,8 @@ import {
 import {
   ANY_OPERATOR,
   GREATER_THAN_OPERATOR,
+  MATCH_ON_INCLUSION,
+  MATCH_ON_INCLUSION_LICENSE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('invalidScanners', () => {
@@ -267,5 +270,19 @@ describe('invalidVulnerabilityAttributes', () => {
     ${[{ vulnerability_attributes: { false_positive: {} } }]}                             | ${true}
   `('returns $expectedResult', ({ rules, expectedResult }) => {
     expect(invalidVulnerabilityAttributes(rules)).toStrictEqual(expectedResult);
+  });
+
+  describe('licenseScanBuildRule', () => {
+    it.each([false, true])(
+      'creates license rule with different match option based on flag',
+      (securityPoliciesBreakingChanges) => {
+        window.gon = { features: { securityPoliciesBreakingChanges } };
+        const MATCH_KEY = securityPoliciesBreakingChanges
+          ? MATCH_ON_INCLUSION_LICENSE
+          : MATCH_ON_INCLUSION;
+
+        expect(licenseScanBuildRule()).toEqual(expect.objectContaining({ [MATCH_KEY]: true }));
+      },
+    );
   });
 });
