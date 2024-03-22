@@ -21,7 +21,7 @@ module EE
         errors = approval_project_rules.find_each.each_with_object([]) do |rule, error_accumulator|
           response = ::ApprovalRules::ProjectRuleDestroyService.new(rule, current_user).execute
 
-          error_accumulator << response if response[:status] == :error
+          error_accumulator << response if response.error?
         end
 
         return ::ServiceResponse.success if errors.blank?

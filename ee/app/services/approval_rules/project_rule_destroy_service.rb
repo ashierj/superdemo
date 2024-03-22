@@ -26,7 +26,11 @@ module ApprovalRules
     def success
       audit_deletion
 
-      super
+      ServiceResponse.success
+    end
+
+    def error
+      ServiceResponse.error(message: rule.errors.messages)
     end
 
     def remove_associated_approval_rules_from_unmerged_merge_requests
