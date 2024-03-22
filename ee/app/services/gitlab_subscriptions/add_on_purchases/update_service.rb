@@ -34,7 +34,8 @@ module GitlabSubscriptions
         attributes = {
           quantity: quantity,
           expires_on: expires_on,
-          purchase_xid: purchase_xid
+          purchase_xid: purchase_xid,
+          trial: trial
         }.compact
 
         add_on_purchase.update(attributes)

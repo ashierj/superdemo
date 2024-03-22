@@ -12,7 +12,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
       {
         quantity: 10,
         expires_on: (Date.current + 1.year).to_s,
-        purchase_xid: purchase_xid
+        purchase_xid: purchase_xid,
+        trial: true
       }
     end
 
@@ -28,7 +29,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             add_on: add_on,
             quantity: 5,
             expires_on: expires_on,
-            purchase_xid: purchase_xid
+            purchase_xid: purchase_xid,
+            trial: false
           )
         end
 
@@ -44,6 +46,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             add_on_purchase.reload
           end.to change { add_on_purchase.quantity }.from(5).to(10)
             .and change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
+            .and change { add_on_purchase.trial }.from(false).to(true)
         end
 
         context 'when passing in the add-on purchase record' do

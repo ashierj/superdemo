@@ -7,6 +7,7 @@ FactoryBot.define do
     quantity { 1 }
     expires_on { 1.year.from_now.to_date }
     purchase_xid { SecureRandom.hex(16) }
+    trial { false }
 
     trait :active do
       expires_on { 1.year.from_now.to_date }
