@@ -30,16 +30,16 @@ module Gitlab
               Utils::Prompt.as_system(
                 <<~PROMPT
                   You are an assistant that extracts the most important information from the comments in maximum 10 bullet points.
-                  Comments are between two identical sets of 3-digit numbers surrounded by < > sign.
+                  Each comment is wrapped in a <comment> tag.
 
-                  <%<num>s>
                   %<notes_content>s
-                  <%<num>s>
 
                   Desired markdown format:
                   **<summary_title>**
-                  <bullet_points>
-                  """
+                  - <bullet_point>
+                  - <bullet_point>
+                  - <bullet_point>
+                  - ...
 
                   Focus on extracting information related to one another and that are the majority of the content.
                   Ignore phrases that are not connected to others.
@@ -57,7 +57,6 @@ module Gitlab
               content = if notes.exists?
                           notes_content = notes_to_summarize(notes) # rubocop: disable CodeReuse/ActiveRecord
                           options[:notes_content] = notes_content
-                          options[:num] = Random.rand(100..999)
 
                           if options[:raw_ai_response]
                             request(&block)
@@ -87,7 +86,7 @@ module Gitlab
 
                   break notes_content if notes_content.size + note[1].size >= input_content_limit
 
-                  notes_content << note[1]
+                  notes_content << (format("<comment>%<note>s</comment>", note: note[1]))
                 end
               end
 
