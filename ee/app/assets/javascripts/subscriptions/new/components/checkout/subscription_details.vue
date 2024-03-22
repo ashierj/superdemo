@@ -83,6 +83,7 @@ export default {
       'selectedGroupId',
       'selectedGroupData',
       'isGroupSelected',
+      'maximumSeatLimit',
       'selectedGroupName',
       'isSelectedGroupPresent',
     ]),
@@ -198,6 +199,9 @@ export default {
     shouldDisableNumberOfUsers() {
       return this.isNewUser && !this.isSetupForCompany;
     },
+    hasMaximumSeatLimit() {
+      return Boolean(this.maximumSeatLimit);
+    },
   },
   watch: {
     billableData: {
@@ -257,6 +261,9 @@ export default {
     numberOfUsersLabel: s__('Checkout|Number of users'),
     numberOfUsersLabelDescription: s__(
       'Checkout|Must be %{minimumNumberOfUsers} (your seats in use) or more.',
+    ),
+    maximumSeatLimitMessage: s__(
+      'Checkout|The maximum amount of seats available to buy is %{maximumSeatLimit}. %{maxSeatLinkStart}Learn more.%{maxSeatLinkEnd}',
     ),
     numberOfUsersLabelDescriptionFreeUserCap: s__(
       'Checkout|Must be %{minimumNumberOfUsers} (your seats in use, plus all over limit members) or more. To buy fewer seats, remove members from the group.',
@@ -332,14 +339,25 @@ export default {
       >
         <gl-form-input ref="organization-name" v-model="organizationNameModel" type="text" />
       </gl-form-group>
-      <div class="combined d-flex">
+      <div class="combined gl-display-flex">
         <gl-form-group
           data-testid="number-of-users-field"
           :label="$options.i18n.numberOfUsersLabel"
           label-size="sm"
-          class="gl-mb-0"
+          class="gl-mb-5"
           :label-description="numberOfUsersLabelDescription"
         >
+          <template v-if="hasMaximumSeatLimit" #label-description>
+            <div class="gl-mb-3">
+              <gl-sprintf :message="$options.i18n.maximumSeatLimitMessage" class="">
+                <template #maximumSeatLimit>{{ maximumSeatLimit }}</template>
+                <template #maxSeatLink="{ content }">
+                  <gl-link href="" target="_blank">{{ content }}</gl-link>
+                </template>
+              </gl-sprintf>
+            </div>
+          </template>
+
           <gl-form-input
             ref="number-of-users"
             v-model.number="numberOfUsersModel"
@@ -363,7 +381,8 @@ export default {
         </gl-form-group>
       </div>
       <gl-alert
-        class="gl-my-5"
+        v-if="!hasMaximumSeatLimit"
+        class="gl-mb-5"
         :dismissible="false"
         variant="info"
         data-testid="qsr-overage-message"

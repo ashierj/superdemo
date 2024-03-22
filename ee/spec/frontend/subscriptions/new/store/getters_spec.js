@@ -46,17 +46,11 @@ describe('Subscriptions Getters', () => {
     });
   });
 
-  describe('isUltimatePlan', () => {
-    it('returns true if plan code is ultimate', () => {
-      expect(getters.isUltimatePlan(state, { selectedPlanDetails: { code: 'ultimate' } })).toBe(
-        true,
-      );
-    });
-
-    it('returns false if plan code is not ultimate', () => {
-      expect(getters.isUltimatePlan(state, { selectedPlanDetails: { code: 'not-ultimate' } })).toBe(
-        false,
-      );
+  describe('maximumSeatLimit', () => {
+    it('returns the maximumSeatLimit for the selected plan', () => {
+      expect(
+        getters.maximumSeatLimit(state, { selectedPlanDetails: { maximumSeatLimit: 12345 } }),
+      ).toBe(12345);
     });
   });
 
