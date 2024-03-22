@@ -139,25 +139,30 @@ RSpec.describe GitlabSubscriptions::DuoPro::BulkAssignService, feature_category:
             expect(response[:users].map(&:id)).to eq(user_ids)
           end
 
-          context 'when user is already assigned' do
+          context 'when a user is already assigned' do
             let_it_be(:user) { create(:user) }
+            let_it_be(:user_2) { create(:user) }
+            let_it_be(:user_3) { create(:user) }
             let_it_be(:service_instance) do
               described_class.new(
                 add_on_purchase: add_on_purchase,
-                user_ids: [user.id]
+                user_ids: [user.id, user_2.id, user_3.id]
               )
             end
 
             before_all do
+              add_on_purchase.update!(quantity: 3)
               namespace.add_developer(user)
+              namespace.add_developer(user_2)
+              namespace.add_developer(user_3)
               create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: user)
             end
 
             subject(:response) { service_instance.execute }
 
-            it 'returns the user' do
+            it 'excludes the assigned user when checking seats but still return it' do
               expect(response.success?).to be_truthy
-              expect(response[:users].map(&:id)).to eq([user.id])
+              expect(response[:users].map(&:id)).to match_array([user.id, user_2.id, user_3.id])
             end
           end
 

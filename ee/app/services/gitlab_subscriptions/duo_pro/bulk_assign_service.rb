@@ -59,11 +59,18 @@ module GitlabSubscriptions
       end
 
       def seats_available?
-        add_on_purchase.quantity >= (assigned_seats + eligible_user_ids.count)
+        assigned_user_ids = assigned_users.select(:user_id).map(&:user_id)
+        available_seats = add_on_purchase.quantity - assigned_user_ids.count
+
+        available_seats >= eligible_users_count_excluding_assigned_users(assigned_user_ids)
       end
 
-      def assigned_seats
-        add_on_purchase.assigned_users.count
+      def eligible_users_count_excluding_assigned_users(assigned_user_ids)
+        eligible_user_ids.count { |user_id| assigned_user_ids.exclude?(user_id) }
+      end
+
+      def assigned_users
+        add_on_purchase.assigned_users
       end
 
       def eligible_user_ids
