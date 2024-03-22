@@ -201,7 +201,9 @@ describe('DoraPerformersScoreChart', () => {
 
     it('renders the filter badges when provided', async () => {
       const topics = ['one', 'two'];
-      await createWrapper({ props: { data: { ...mockData, filter_project_topics: topics } } });
+      await createWrapper({
+        props: { data: { ...mockData, filters: { projectTopics: topics } } },
+      });
       expect(findFilterBadges().exists()).toBe(true);
       expect(findFilterBadges().props('topics')).toEqual(topics);
     });
@@ -213,7 +215,9 @@ describe('DoraPerformersScoreChart', () => {
 
     it('filters out invalid project topics', async () => {
       const topics = ['one', 'two\n'];
-      await createWrapper({ props: { data: { ...mockData, filter_project_topics: topics } } });
+      await createWrapper({
+        props: { data: { ...mockData, filters: { projectTopics: topics } } },
+      });
       expect(findFilterBadges().exists()).toBe(true);
       expect(findFilterBadges().props('topics')).toEqual(['one']);
     });

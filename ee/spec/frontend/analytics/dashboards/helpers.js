@@ -100,8 +100,8 @@ export const mockGraphqlContributorCountResponse = (
     },
   });
 
-export const mockFilterLabelsResponse = (mockLabels) => ({
-  namespace: mockLabels.reduce(
+export const mockFilterLabelsResponse = (mockLabels = []) => ({
+  namespace: mockLabels?.reduce(
     (acc, label, index) =>
       Object.assign(acc, {
         [`label_${index}`]: { nodes: [{ id: label, title: label, color: '#FFFFFF' }] },
