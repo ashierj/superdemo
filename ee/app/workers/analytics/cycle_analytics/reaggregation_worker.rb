@@ -5,6 +5,8 @@ module Analytics
     class ReaggregationWorker
       include ApplicationWorker
 
+      MAX_RUNTIME = 270.seconds.freeze
+
       # rubocop:disable Scalability/CronWorkerContext
       # This worker does not perform work scoped to a context
       include CronjobQueue
@@ -17,7 +19,7 @@ module Analytics
 
       def perform
         current_time = Time.current
-        runtime_limiter = Gitlab::Metrics::RuntimeLimiter.new
+        runtime_limiter = Gitlab::Metrics::RuntimeLimiter.new(MAX_RUNTIME)
         over_time = false
 
         loop do
