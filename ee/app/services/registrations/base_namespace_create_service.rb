@@ -19,6 +19,7 @@ module Registrations
       ::Onboarding::Progress.onboard(group)
 
       experiment(:phone_verification_for_low_risk_users, user: user).track(:assignment, namespace: group)
+      experiment(:signup_intent_step_one, actor: user).track(:assignment, namespace: group)
 
       experiment(:trial_discover_page, actor: user).track(:assignment, namespace: group) if onboarding_status.trial?
 
