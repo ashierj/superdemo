@@ -570,13 +570,13 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
             'version' => {
               'number' => '7.9.3',
               'build_type' => 'docker',
-              'lucene_version' => '8.6.2'
+              'lucene_version' => '8.11.4'
             }
           }
         end
 
         it 'returns server info' do
-          is_expected.to include(distribution: 'elasticsearch', version: '7.9.3', build_type: 'docker', lucene_version: '8.6.2')
+          is_expected.to include(distribution: 'elasticsearch', version: '7.9.3', build_type: 'docker', lucene_version: '8.11.4')
         end
       end
 
