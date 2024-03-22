@@ -1720,7 +1720,7 @@
 .qa:rules:e2e:test-on-cng:
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
-    - <<: [*if-default-branch-schedule-nightly, *qa-e2e-test-schedule-variables]
+    - <<: [*if-dot-com-gitlab-org-schedule, *qa-e2e-test-schedule-variables]
     - <<: *if-merge-request
       changes: *qa-patterns
 
