@@ -29,6 +29,22 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
       it { is_expected.to render_template(:show) }
 
+      context 'for signup_intent_step_one experiment' do
+        let(:experiment) { instance_double(ApplicationExperiment) }
+
+        it 'tracks experiment events' do
+          allow(controller)
+            .to receive(:experiment)
+                  .with(:signup_intent_step_one, actor: user)
+                  .and_return(experiment)
+
+          expect(experiment).to receive(:run)
+          expect(experiment).to receive(:track).with(:show, label: :welcome)
+
+          get_show
+        end
+      end
+
       it 'tracks render event' do
         get_show
 

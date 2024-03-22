@@ -38,13 +38,15 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
 
   describe 'POST create' do
     let(:user_params) { build_stubbed(:user).slice(:first_name, :last_name, :email, :username, :password) }
+    let(:params) { { user: user_params } }
 
     subject(:post_create) do
-      post trial_registrations_path, params: { user: user_params }
+      post trial_registrations_path, params: params
       response
     end
 
     before do
+      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
       stub_feature_flags(arkose_labs_signup_challenge: false)
     end
 
@@ -158,6 +160,37 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
 
         it 'raises an error' do
           expect { post_create }.to raise_error(ActionController::ParameterMissing)
+        end
+      end
+
+      context 'for signup_intent_step_one experiment' do
+        let(:experiment) { instance_double(ApplicationExperiment) }
+
+        before do
+          allow_next_instance_of(described_class) do |controller|
+            allow(controller)
+              .to receive(:experiment)
+                    .with(:signup_intent_step_one, actor: instance_of(User))
+                    .and_return(experiment)
+          end
+        end
+
+        context 'when signup_intent is not provided' do
+          it 'does not tracks signup_intent_step_one experiment event' do
+            expect(experiment).not_to receive(:track).with(:submitted_intent)
+
+            post_create
+          end
+        end
+
+        context 'when signup intent is provided' do
+          let(:params) { { user: user_params, signup_intent: "new_team" } }
+
+          it 'tracks signup_intent_step_one experiment events' do
+            expect(experiment).to receive(:track).with(:submitted_intent, label: :signup_intent, property: "new_team")
+
+            post_create
+          end
         end
       end
     end
