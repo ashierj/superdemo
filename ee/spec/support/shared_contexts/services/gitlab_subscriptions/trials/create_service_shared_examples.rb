@@ -392,7 +392,7 @@ def expect_apply_trial_fail(user, group, extra_params: {})
 end
 
 def existing_group_attrs(group)
-  { namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on) }
+  { namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on).merge(plan: group.actual_plan.name) }
 end
 
 def new_group_attrs(path: 'gitlab')
@@ -402,7 +402,8 @@ def new_group_attrs(path: 'gitlab')
       path: path,
       name: 'gitlab',
       kind: 'group',
-      trial_ends_on: nil
+      trial_ends_on: nil,
+      plan: 'default'
     }
   }
 end
