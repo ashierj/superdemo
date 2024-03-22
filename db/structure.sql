@@ -14878,6 +14878,24 @@ CREATE SEQUENCE related_epic_links_id_seq
 
 ALTER SEQUENCE related_epic_links_id_seq OWNED BY related_epic_links.id;
 
+CREATE TABLE relation_import_trackers (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    relation smallint NOT NULL,
+    status smallint DEFAULT 0 NOT NULL
+);
+
+CREATE SEQUENCE relation_import_trackers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE relation_import_trackers_id_seq OWNED BY relation_import_trackers.id;
+
 CREATE TABLE release_links (
     id bigint NOT NULL,
     release_id integer NOT NULL,
@@ -19463,6 +19481,8 @@ ALTER TABLE ONLY redirect_routes ALTER COLUMN id SET DEFAULT nextval('redirect_r
 
 ALTER TABLE ONLY related_epic_links ALTER COLUMN id SET DEFAULT nextval('related_epic_links_id_seq'::regclass);
 
+ALTER TABLE ONLY relation_import_trackers ALTER COLUMN id SET DEFAULT nextval('relation_import_trackers_id_seq'::regclass);
+
 ALTER TABLE ONLY release_links ALTER COLUMN id SET DEFAULT nextval('release_links_id_seq'::regclass);
 
 ALTER TABLE ONLY releases ALTER COLUMN id SET DEFAULT nextval('releases_id_seq'::regclass);
@@ -21948,6 +21968,9 @@ ALTER TABLE ONLY redirect_routes
 
 ALTER TABLE ONLY related_epic_links
     ADD CONSTRAINT related_epic_links_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY relation_import_trackers
+    ADD CONSTRAINT relation_import_trackers_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY release_links
     ADD CONSTRAINT release_links_pkey PRIMARY KEY (id);
@@ -26714,6 +26737,8 @@ CREATE INDEX index_related_epic_links_on_source_id ON related_epic_links USING b
 CREATE UNIQUE INDEX index_related_epic_links_on_source_id_and_target_id ON related_epic_links USING btree (source_id, target_id);
 
 CREATE INDEX index_related_epic_links_on_target_id ON related_epic_links USING btree (target_id);
+
+CREATE INDEX index_relation_import_trackers_on_project_id ON relation_import_trackers USING btree (project_id);
 
 CREATE UNIQUE INDEX index_release_links_on_release_id_and_name ON release_links USING btree (release_id, name);
 
@@ -32174,6 +32199,9 @@ ALTER TABLE ONLY gpg_signatures
 
 ALTER TABLE ONLY board_group_recent_visits
     ADD CONSTRAINT fk_rails_ca04c38720 FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY relation_import_trackers
+    ADD CONSTRAINT fk_rails_ca9bd1ef8a FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY boards_epic_board_positions
     ADD CONSTRAINT fk_rails_cb4563dd6e FOREIGN KEY (epic_board_id) REFERENCES boards_epic_boards(id) ON DELETE CASCADE;
