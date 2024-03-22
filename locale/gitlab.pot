@@ -15128,6 +15128,9 @@ msgstr ""
 msgid "Created %{time_ago}"
 msgstr ""
 
+msgid "Created %{timeago}"
+msgstr ""
+
 msgid "Created %{timestamp}"
 msgstr ""
 
@@ -17389,6 +17392,9 @@ msgid "DeployTokens|Your new project deploy token has been created."
 msgstr ""
 
 msgid "Deployed"
+msgstr ""
+
+msgid "Deployed %{timeago}"
 msgstr ""
 
 msgid "Deployed to"
