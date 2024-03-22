@@ -11,18 +11,18 @@ module EE
         h[:mergeable] = [
           *approved_mergeability_check_preloads,
           *blocked_by_other_mrs_mergeability_check_preloads,
-          *broken_status_mergeability_check_preloads
+          *commits_status_mergeability_check_preloads
         ]
 
         h[:detailed_merge_status] = [
           *approved_mergeability_check_preloads,
           *blocked_by_other_mrs_mergeability_check_preloads,
-          *broken_status_mergeability_check_preloads
+          *commits_status_mergeability_check_preloads
         ]
       end
     end
 
-    def broken_status_mergeability_check_preloads
+    def commits_status_mergeability_check_preloads
       [:latest_merge_request_diff]
     end
 
