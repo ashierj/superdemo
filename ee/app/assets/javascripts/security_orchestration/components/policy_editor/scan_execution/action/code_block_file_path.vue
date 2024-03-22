@@ -5,9 +5,11 @@ import {
   GlInputGroupText,
   GlSprintf,
   GlFormInput,
+  GlTooltipDirective,
   GlTruncate,
 } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
+import { BV_SHOW_TOOLTIP, BV_HIDE_TOOLTIP } from '~/lib/utils/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
@@ -20,7 +22,7 @@ export default {
     filePathCopy: s__(
       'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} from the project %{projectSelector} with ref %{refSelector}',
     ),
-    filePathPrependLabel: __('Select project'),
+    filePathPrependLabel: __('No project selected'),
     fileRefLabel: s__('ScanExecutionPolicy|Select ref'),
     filePathInputPlaceholder: s__('ScanExecutionPolicy|Link existing CI file'),
     filePathInputEmptyMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
@@ -28,10 +30,12 @@ export default {
       "ScanExecutionPolicy|The file at that project, ref, and path doesn't exist",
     ),
     formGroupLabel: s__('ScanExecutionPolicy|file path group'),
+    tooltipText: s__('ScanExecutionPolicy|Select project first, and then insert a file path'),
   },
   refSelectorTranslations: {
     noRefSelected: __('default branch'),
   },
+  SELECTED_PROJECT_TOOLTIP: 'selected-project-tooltip',
   name: 'CodeBlockFilePath',
   components: {
     CodeBlockSourceSelector,
@@ -44,6 +48,7 @@ export default {
     GroupProjectsDropdown,
     RefSelector,
   },
+  directives: { GlTooltip: GlTooltipDirective },
   inject: ['namespacePath', 'rootNamespacePath', 'namespaceType'],
   props: {
     selectedType: {
@@ -107,6 +112,9 @@ export default {
     selectedProjectFullPath() {
       return this.selectedProject?.fullPath || this.$options.i18n.filePathPrependLabel;
     },
+    selectedProjectTooltip() {
+      return this.selectedProject?.fullPath || this.$options.i18n.tooltipText;
+    },
     groupProjectsPath() {
       return this.namespaceType === NAMESPACE_TYPES.GROUP
         ? this.namespacePath
@@ -125,6 +133,10 @@ export default {
     },
     setSelectedRef(ref) {
       this.$emit('select-ref', ref);
+    },
+    triggerTooltip(state) {
+      const EVENT = state ? BV_SHOW_TOOLTIP : BV_HIDE_TOOLTIP;
+      this.$root.$emit(EVENT, this.$options.SELECTED_PROJECT_TOOLTIP);
     },
   },
 };
@@ -196,12 +208,22 @@ export default {
               id="file-path"
               :placeholder="$options.i18n.filePathInputPlaceholder"
               :state="filePathState"
+              :disabled="!selectedProjectId"
               :value="filePath"
+              @mouseenter="triggerTooltip(true)"
+              @mouseleave="triggerTooltip(false)"
               @input="updatedFilePath"
             >
               <template #prepend>
-                <gl-input-group-text class="gl-max-w-26 gl-max-h-full!">
-                  <gl-truncate :text="selectedProjectFullPath" position="start" with-tooltip />
+                <gl-input-group-text
+                  v-gl-tooltip="{
+                    id: $options.SELECTED_PROJECT_TOOLTIP,
+                    title: selectedProjectTooltip,
+                  }"
+                  :class="{ 'gl-border-gray-100': !selectedProjectId }"
+                  class="gl-max-w-26 gl-max-h-full!"
+                >
+                  <gl-truncate :text="selectedProjectFullPath" position="start" />
                 </gl-input-group-text>
               </template>
             </gl-form-input-group>
