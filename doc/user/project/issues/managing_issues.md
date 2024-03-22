@@ -63,7 +63,7 @@ To edit multiple issues at the same time:
 1. Select **Bulk edit**. A sidebar on the right of your screen appears.
 1. Select the checkboxes next to each issue you want to edit.
 1. From the sidebar, edit the available fields.
-1. Select **Update all**.
+1. Select **Update selected**.
 
 When bulk editing issues in a project, you can edit the following attributes:
 
@@ -101,7 +101,7 @@ To edit multiple issues at the same time:
 1. Select **Bulk edit**. A sidebar on the right of your screen appears.
 1. Select the checkboxes next to each issue you want to edit.
 1. From the sidebar, edit the available fields.
-1. Select **Update all**.
+1. Select **Update selected**.
 
 When bulk editing issues in a group, you can edit the following attributes:
 

@@ -217,7 +217,7 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
   end
 
   def update_issues
-    click_button 'Update all'
+    click_button 'Update selected'
     wait_for_requests
   end
 
