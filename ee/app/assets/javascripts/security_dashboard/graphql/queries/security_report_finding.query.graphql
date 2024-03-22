@@ -179,6 +179,9 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           }
           presentOnDefaultBranch
         }
+        userPermissions {
+          adminVulnerability
+        }
       }
     }
   }
