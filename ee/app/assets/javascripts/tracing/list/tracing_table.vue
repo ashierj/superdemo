@@ -9,6 +9,7 @@ export default {
   i18n: {
     title: s__('Tracing|Traces'),
     emptyText: __('No results found'),
+    inProgress: s__('Tracing|In progress'),
   },
   fields: [
     {
@@ -71,7 +72,11 @@ export default {
     },
     matchesBadgeContent(item) {
       const spans = n__('Tracing|%d span', 'Tracing|%d spans', item.total_spans);
-      if (item.total_spans === item.matched_span_count) {
+      if (
+        item.total_spans === item.matched_span_count ||
+        !Number.isInteger(item.matched_span_count) ||
+        item.in_progress
+      ) {
         return spans;
       }
       const matches = n__('Tracing|%d match', 'Tracing|%d matches', item.matched_span_count);
@@ -108,6 +113,9 @@ export default {
         {{ item.timestamp }}
         <div class="gl-mt-4 gl-display-flex">
           <gl-badge variant="info" size="md">{{ matchesBadgeContent(item) }}</gl-badge>
+          <gl-badge v-if="item.in_progress" variant="warning" size="md" class="gl-ml-3">{{
+            $options.i18n.inProgress
+          }}</gl-badge>
           <gl-badge v-if="hasError(item)" variant="danger" size="md" class="gl-ml-2">
             <gl-icon name="status-alert" class="gl-mr-2 gl-text-red-500" />
             {{ errorBadgeContent(item) }}
