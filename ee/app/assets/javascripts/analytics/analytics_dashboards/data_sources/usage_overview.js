@@ -84,11 +84,10 @@ export const prepareQuery = (queryKeysToInclude = []) => {
  */
 export const fetch = async ({
   rootNamespace: { requestPath: fullPath },
-  query: { include = [] },
+  queryOverrides: { filters: { include = USAGE_OVERVIEW_IDENTIFIERS } = {} } = {},
 }) => {
   const variableOverrides = prepareQuery(include);
   const { startDate, endDate } = USAGE_OVERVIEW_DEFAULT_DATE_RANGE;
-
   try {
     const { data = {} } = await defaultClient.query({
       query: getUsageOverviewQuery,

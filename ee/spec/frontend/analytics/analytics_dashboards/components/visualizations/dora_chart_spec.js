@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DoraChart from 'ee/analytics/analytics_dashboards/components/visualizations/dora_chart.vue';
-import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
+import FilterableComparisonChart from 'ee/analytics/dashboards/components/filterable_comparison_chart.vue';
 import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
 import GetGroupOrProjectQuery from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
 import { mockGroup } from 'ee_jest/analytics/dashboards/mock_data';
@@ -23,11 +23,13 @@ describe('DoraChart Visualization', () => {
 
   const defaultData = {
     namespace,
-    excludeMetrics,
-    filterLabels,
+    filters: {
+      excludeMetrics,
+      labels: filterLabels,
+    },
   };
 
-  const findChart = () => wrapper.findComponent(ComparisonChart);
+  const findChart = () => wrapper.findComponent(FilterableComparisonChart);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const createWrapper = (props = {}) => {
@@ -83,9 +85,12 @@ describe('DoraChart Visualization', () => {
 
     it('renders the comparison chart component', () => {
       expect(findChart().props()).toMatchObject({
-        excludeMetrics,
-        filterLabels,
-        requestPath: 'some/fake/path',
+        namespace,
+        filters: {
+          excludeMetrics,
+          labels: filterLabels,
+        },
+        webUrl: 'gdk.test/groups/group-10',
       });
     });
 

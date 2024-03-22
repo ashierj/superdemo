@@ -1,12 +1,12 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
-import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
+import FilterableComparisonChart from 'ee/analytics/dashboards/components/filterable_comparison_chart.vue';
 import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
 
 export default {
   name: 'DoraChart',
   components: {
-    ComparisonChart,
+    FilterableComparisonChart,
     GlLoadingIcon,
     GroupOrProjectProvider,
   },
@@ -22,23 +22,38 @@ export default {
       default: () => ({}),
     },
   },
+  computed: {
+    filters() {
+      const { filters: { labels = [], excludeMetrics = [] } = {} } = this.data;
+      return {
+        labels,
+        excludeMetrics,
+      };
+    },
+  },
+  methods: {
+    webUrl(group, project, isProject) {
+      return isProject ? project.webUrl : group.webUrl;
+    },
+  },
 };
 </script>
 
 <template>
   <group-or-project-provider
-    #default="{ isProject, isNamespaceLoading }"
+    #default="{ isProject, isNamespaceLoading, group, project }"
     :full-path="data.namespace"
   >
     <div v-if="isNamespaceLoading" class="gl--flex-center gl-h-full">
       <gl-loading-icon size="lg" />
     </div>
-    <comparison-chart
+    <filterable-comparison-chart
       v-else
-      :request-path="data.namespace"
+      :namespace="data.namespace"
+      :filters="filters"
       :is-project="isProject"
-      :exclude-metrics="data.excludeMetrics"
-      :filter-labels="data.filterLabels"
+      :is-loading="isNamespaceLoading"
+      :web-url="webUrl(group, project, isProject)"
       @set-errors="$emit('set-errors', $event)"
     />
   </group-or-project-provider>

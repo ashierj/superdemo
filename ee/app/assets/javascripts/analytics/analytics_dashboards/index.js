@@ -44,6 +44,7 @@ export default () => {
     rootNamespaceFullPath,
     dataSourceClickhouse,
     aiGenerateCubeQueryEnabled,
+    topicsExploreProjectsPath,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -122,6 +123,7 @@ export default () => {
       rootNamespaceFullPath,
       dataSourceClickhouse: parseBoolean(dataSourceClickhouse),
       currentUserId: window.gon?.current_user_id,
+      topicsExploreProjectsPath,
     },
     render(h) {
       return h(DashboardsApp);

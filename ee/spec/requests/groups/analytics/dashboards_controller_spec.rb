@@ -91,6 +91,14 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
       expect(js_list_app_attributes).to include('data-data-source-clickhouse')
     end
 
+    it 'passes topics-explore-projects-path to data attributes' do
+      request
+
+      expect(response).to be_successful
+
+      expect(js_list_app_attributes).to include('data-topics-explore-projects-path')
+    end
+
     context 'when project_id outside of the group hierarchy was set' do
       it 'does not pass the project pointer' do
         project_outside_the_hierarchy = create(:project)

@@ -131,7 +131,8 @@ export default {
       );
     },
     filterProjectTopics() {
-      return validateProjectTopics(this.data?.filter_project_topics || []);
+      const { filters: { projectTopics = [] } = {} } = this.data;
+      return validateProjectTopics(projectTopics);
     },
     hasFilterProjectTopics() {
       return this.filterProjectTopics.length > 0;
