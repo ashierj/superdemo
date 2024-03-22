@@ -1,9 +1,11 @@
 <script>
 import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel, GlPagination } from '@gitlab/ui';
+import { updateHistory, getParameterByName, setUrlParams } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
+import getSecretsQuery from '../../graphql/queries/client/get_secrets.query.graphql';
 import {
   NEW_ROUTE_NAME,
   DETAILS_ROUTE_NAME,
@@ -14,6 +16,11 @@ import {
   PAGE_SIZE,
 } from '../../constants';
 import SecretActionsCell from './secret_actions_cell.vue';
+
+const emptySecrets = {
+  count: 0,
+  nodes: [],
+};
 
 export default {
   name: 'SecretsTable',
@@ -29,18 +36,40 @@ export default {
     SecretActionsCell,
   },
   props: {
-    secrets: {
+    parentQueryVariables: {
       type: Object,
       required: false,
       default: () => {},
     },
-    page: {
-      type: Number,
-      required: false,
-      default: () => INITIAL_PAGE,
+  },
+  data() {
+    return {
+      secrets: emptySecrets,
+      page: INITIAL_PAGE,
+    };
+  },
+  apollo: {
+    secrets: {
+      query: getSecretsQuery,
+      variables() {
+        return this.queryVariables;
+      },
+      update(data) {
+        if (this.queryVariables.isGroup) {
+          return data.group.secrets || emptySecrets;
+        }
+        return data.project?.secrets || emptySecrets;
+      },
     },
   },
   computed: {
+    queryVariables() {
+      return {
+        ...this.parentQueryVariables,
+        offset: (this.page - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
+      };
+    },
     secretsCount() {
       return this.secrets?.count || 0;
     },
@@ -51,6 +80,14 @@ export default {
       return this.secretsCount > PAGE_SIZE;
     },
   },
+  created() {
+    this.updateQueryParamsFromUrl();
+
+    window.addEventListener('popstate', this.updateQueryParamsFromUrl);
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.updateQueryParamsFromUrl);
+  },
   methods: {
     getDetailsRoute: (key) => ({ name: DETAILS_ROUTE_NAME, params: { key } }),
     getEditRoute: (key) => ({ name: EDIT_ROUTE_NAME, params: { key } }),
@@ -59,6 +96,15 @@ export default {
     },
     getLabelBackgroundColor(label) {
       return this.isScopedLabel(label) ? SCOPED_LABEL_COLOR : UNSCOPED_LABEL_COLOR;
+    },
+    updateQueryParamsFromUrl() {
+      this.page = Number(getParameterByName('page')) || INITIAL_PAGE;
+    },
+    handlePageChange(page) {
+      this.page = page;
+      updateHistory({
+        url: setUrlParams({ page }),
+      });
     },
   },
   fields: [
@@ -161,7 +207,7 @@ export default {
       :label-prev-page="__('Go to previous page')"
       align="center"
       class="gl-mt-5"
-      @input="$emit('onPageChange', $event)"
+      @input="handlePageChange"
     />
   </div>
 </template>
