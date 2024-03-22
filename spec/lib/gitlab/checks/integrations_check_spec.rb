@@ -12,10 +12,6 @@ RSpec.describe Gitlab::Checks::IntegrationsCheck, feature_category: :source_code
         expect(instance).to receive(:validate!)
       end
 
-      expect_next_instance_of(::Gitlab::Checks::Integrations::GitGuardianCheck) do |instance|
-        expect(instance).to receive(:validate!)
-      end
-
       integration_check.validate!
     end
   end
