@@ -80,18 +80,33 @@ describe('Scan result policy rules', () => {
   });
 
   describe('license rule', () => {
+    const verifyRuleMode = () => {
+      expect(findDefaultRuleBuilder().exists()).toBe(false);
+      expect(findLicenseScanRuleBuilder().exists()).toBe(true);
+      expect(findSettingsSection().exists()).toBe(true);
+    };
+
     beforeEach(() => {
       createWrapper();
     });
 
     it('should select license rule', async () => {
-      const verifyRuleMode = () => {
-        expect(findDefaultRuleBuilder().exists()).toBe(false);
-        expect(findLicenseScanRuleBuilder().exists()).toBe(true);
-        expect(findSettingsSection().exists()).toBe(true);
-      };
       await findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
       await verify({ manifest: mockLicenseApprovalManifest, verifyRuleMode, wrapper });
+    });
+
+    it('should select license rule after breaking changes for match on inclusion license', async () => {
+      window.gon = { features: { securityPoliciesBreakingChanges: true } };
+
+      await findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
+      await verify({
+        manifest: mockLicenseApprovalManifest.replace(
+          'match_on_inclusion',
+          'match_on_inclusion_license',
+        ),
+        verifyRuleMode,
+        wrapper,
+      });
     });
   });
 

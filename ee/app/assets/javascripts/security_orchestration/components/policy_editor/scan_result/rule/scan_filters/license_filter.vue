@@ -3,6 +3,11 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import { sprintf, __, s__ } from '~/locale';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import {
+  MATCH_ON_INCLUSION,
+  MATCH_ON_INCLUSION_LICENSE,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 import { EXCEPT, MATCHING } from '../../lib/rules';
 import { UNKNOWN_LICENSE } from './constants';
 
@@ -30,6 +35,7 @@ export default {
     SectionLayout,
     GlCollapsibleListbox,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['parsedSoftwareLicenses'],
   props: {
     initRule: {
@@ -55,6 +61,11 @@ export default {
 
       return this.allLicenses;
     },
+    matchTypeKey() {
+      return this.glFeatures.securityPoliciesBreakingChanges
+        ? MATCH_ON_INCLUSION_LICENSE
+        : MATCH_ON_INCLUSION;
+    },
     licenseTypes: {
       get() {
         return this.initRule.license_types;
@@ -65,10 +76,10 @@ export default {
     },
     matchType: {
       get() {
-        return this.initRule.match_on_inclusion?.toString();
+        return this.initRule?.[this.matchTypeKey]?.toString();
       },
       set(value) {
-        this.triggerChanged({ match_on_inclusion: parseBoolean(value) });
+        this.triggerChanged({ [this.matchTypeKey]: parseBoolean(value) });
       },
     },
     matchTypeToggleText() {

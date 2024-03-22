@@ -20,13 +20,14 @@ describe('LicenseFilter', () => {
   const parsedSoftwareLicenses = [APACHE_LICENSE, MIT_LICENSE].map((l) => ({ text: l, value: l }));
   const allLicenses = [...parsedSoftwareLicenses, UNKNOWN_LICENSE];
 
-  const createComponent = (props = DEFAULT_PROPS) => {
+  const createComponent = ({ props = DEFAULT_PROPS, provide = {} } = {}) => {
     wrapper = shallowMountExtended(LicenseFilter, {
       propsData: {
         ...props,
       },
       provide: {
         parsedSoftwareLicenses,
+        ...provide,
       },
       stubs: {
         SectionLayout,
@@ -74,13 +75,13 @@ describe('LicenseFilter', () => {
 
     describe('updated rule', () => {
       it('displays the toggle text properly with a single license selected', () => {
-        createComponent({ initRule: UPDATED_RULE([MIT_LICENSE]) });
+        createComponent({ props: { initRule: UPDATED_RULE([MIT_LICENSE]) } });
         const listBox = findLicenseTypeListBox();
         expect(listBox.props('toggleText')).toBe(MIT_LICENSE);
       });
 
       it('displays the toggle text properly with multiple licenses selected', () => {
-        createComponent({ initRule: UPDATED_RULE([MIT_LICENSE, APACHE_LICENSE]) });
+        createComponent({ props: { initRule: UPDATED_RULE([MIT_LICENSE, APACHE_LICENSE]) } });
         const listBox = findLicenseTypeListBox();
         expect(listBox.props('toggleText')).toBe('2 licenses');
       });
@@ -115,6 +116,24 @@ describe('LicenseFilter', () => {
           expect.objectContaining({ license_types: [] }),
         ]);
       });
+    });
+  });
+
+  describe('new filter value match_on_inclusion_license', () => {
+    it('selects updated status value when feature flag is enabled', () => {
+      createComponent({
+        provide: {
+          glFeatures: {
+            securityPoliciesBreakingChanges: true,
+          },
+        },
+      });
+
+      const matchType = true;
+      findMatchTypeListBox().vm.$emit('select', matchType);
+      expect(wrapper.emitted('changed')).toStrictEqual([
+        [{ match_on_inclusion_license: matchType }],
+      ]);
     });
   });
 });

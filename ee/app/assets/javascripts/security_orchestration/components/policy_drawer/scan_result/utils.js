@@ -9,6 +9,8 @@ import {
   SCAN_RESULT_BRANCH_TYPE_OPTIONS,
   GREATER_THAN_OPERATOR,
   LESS_THAN_OPERATOR,
+  MATCH_ON_INCLUSION_LICENSE,
+  MATCH_ON_INCLUSION,
 } from '../../policy_editor/constants';
 import { createHumanizedScanners } from '../../policy_editor/utils';
 import {
@@ -292,9 +294,12 @@ const humanizeRule = (rule) => {
 
   const branchExceptions = humanizedBranchExceptions(rule.branch_exceptions);
   const branchExceptionsString = buildBranchExceptionsString(rule.branch_exceptions);
+  const MATCH_LICENSE_KEY = gon?.features?.securityPoliciesBreakingChanges
+    ? MATCH_ON_INCLUSION_LICENSE
+    : MATCH_ON_INCLUSION;
 
   if (rule.type === LICENSE_FINDING) {
-    const summaryText = rule.match_on_inclusion
+    const summaryText = rule[MATCH_LICENSE_KEY]
       ? s__(
           'SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}%{branchExceptionsString}',
         )
