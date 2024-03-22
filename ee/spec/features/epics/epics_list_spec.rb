@@ -147,7 +147,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
           click_button 'Bulk edit'
 
           page.within('.issuable-list-container aside.right-sidebar') do
-            expect(page).to have_button('Update all', disabled: true)
+            expect(page).to have_button('Update selected', disabled: true)
             expect(page).to have_button('Cancel')
 
             expect(page).to have_selector('form#epics-list-bulk-edit')
@@ -182,7 +182,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
               wait_for_requests
 
               click_link bug_label.title
-              click_button 'Update all'
+              click_button 'Update selected'
 
               wait_for_requests
             end

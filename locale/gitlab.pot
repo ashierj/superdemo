@@ -54162,9 +54162,6 @@ msgstr ""
 msgid "Update Scheduled…"
 msgstr ""
 
-msgid "Update all"
-msgstr ""
-
 msgid "Update appearance settings"
 msgstr ""
 
@@ -54181,6 +54178,9 @@ msgid "Update it"
 msgstr ""
 
 msgid "Update now"
+msgstr ""
+
+msgid "Update selected"
 msgstr ""
 
 msgid "Update username"

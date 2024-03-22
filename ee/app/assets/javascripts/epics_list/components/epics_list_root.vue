@@ -301,7 +301,7 @@ export default {
         form="epics-list-bulk-edit"
         :disabled="checkedIssuables.length === 0 || bulkEditInProgress"
         :loading="bulkEditInProgress"
-        >{{ __('Update all') }}</gl-button
+        >{{ __('Update selected') }}</gl-button
       >
       <gl-button class="gl-float-right" @click="showBulkEditSidebar = false">{{
         __('Cancel')
