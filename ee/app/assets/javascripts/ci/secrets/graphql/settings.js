@@ -2,20 +2,24 @@ import getSecretsQuery from './queries/client/get_secrets.query.graphql';
 
 export const cacheConfig = {
   typePolicies: {
-    Group: {
-      merge(existing = {}, incoming, { isReference }) {
-        if (isReference(incoming)) {
-          return existing;
-        }
-        return { ...existing, ...incoming };
-      },
-    },
-    Project: {
-      merge(existing = {}, incoming, { isReference }) {
-        if (isReference(incoming)) {
-          return existing;
-        }
-        return { ...existing, ...incoming };
+    Query: {
+      fields: {
+        group: {
+          merge(existing = {}, incoming, { isReference }) {
+            if (isReference(incoming)) {
+              return existing;
+            }
+            return { ...existing, ...incoming };
+          },
+        },
+        project: {
+          merge(existing = {}, incoming, { isReference }) {
+            if (isReference(incoming)) {
+              return existing;
+            }
+            return { ...existing, ...incoming };
+          },
+        },
       },
     },
   },
