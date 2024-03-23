@@ -285,37 +285,6 @@ describe('GitLab Duo Chat', () => {
     });
 
     describe('@track-feedback', () => {
-      let trackingSpy;
-
-      beforeEach(() => {
-        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-      });
-
-      afterEach(() => {
-        unmockTracking();
-      });
-
-      it('tracks the snowplow event on successful mutation for chat', async () => {
-        createComponent();
-        findGlDuoChat().vm.$emit('track-feedback', {
-          feedbackChoices: ['foo', 'bar'],
-          improveWhat: 'improveWhat',
-          didWhat: 'didWhat',
-        });
-
-        await waitForPromises();
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, TANUKI_BOT_TRACKING_EVENT_NAME, {
-          action: 'click_button',
-          label: 'response_feedback',
-          property: ['foo', 'bar'],
-          extra: {
-            improveWhat: 'improveWhat',
-            didWhat: 'didWhat',
-            prompt_location: 'after_content',
-          },
-        });
-      });
-
       it('calls the feedback GraphQL mutation when message is passed', async () => {
         createComponent();
         findGlDuoChat().vm.$emit('track-feedback', feedbackData);
@@ -324,6 +293,17 @@ describe('GitLab Duo Chat', () => {
         expect(duoUserFeedbackMutationHandlerMock).toHaveBeenCalledWith({
           input: {
             aiMessageId: feedbackData.message.id,
+            trackingEvent: {
+              category: TANUKI_BOT_TRACKING_EVENT_NAME,
+              action: 'click_button',
+              label: 'response_feedback',
+              property: 'useful,not_relevant',
+              extra: {
+                improveWhat: 'more examples',
+                didWhat: 'provided clarity',
+                prompt_location: 'after_content',
+              },
+            },
           },
         });
       });
