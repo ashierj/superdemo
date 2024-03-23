@@ -416,7 +416,7 @@ group :development do
 
   gem 'ruby-lsp', "~> 0.14.6", require: false, feature_category: :tooling
 
-  gem 'ruby-lsp-rails', "~> 0.3.0", feature_category: :tooling
+  gem 'ruby-lsp-rails', "~> 0.3.3", feature_category: :tooling
 
   gem 'ruby-lsp-rspec', "~> 0.1.10", require: false, feature_category: :tooling
 
