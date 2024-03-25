@@ -7,13 +7,14 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
     let(:group)   { create(:group) }
     let(:project) { create(:project, namespace: group) }
     let(:pipeline) { create(:ee_ci_pipeline, ref: 'master', project: project, user: project.creator) }
+    let(:worker) { described_class.new }
 
     before do
       allow(::ScanSecurityReportSecretsWorker).to receive(:perform_async).and_return(nil)
     end
 
     context 'when there is no pipeline with the given ID' do
-      subject(:perform) { described_class.new.perform(0) }
+      subject(:perform) { worker.perform(0) }
 
       it 'does not raise an error' do
         expect { perform }.not_to raise_error
@@ -21,6 +22,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
     end
 
     context 'when at least one security report feature is enabled' do
+      include ExclusiveLeaseHelpers
       where(report_type: [:sast, :dast, :dependency_scanning, :container_scanning, :cluster_image_scanning])
 
       with_them do
@@ -31,7 +33,16 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
         it 'executes IngestReportsService for given pipeline' do
           expect(::Security::Ingestion::IngestReportsService).to receive(:execute).with(pipeline)
 
-          described_class.new.perform(pipeline.id)
+          worker.perform(pipeline.id)
+        end
+
+        it 'reschedules work if lease is taken' do
+          stub_exclusive_lease_taken("StoreSecurityReportsWorker:projects:#{project.id}")
+
+          expect(::Security::Ingestion::IngestReportsService).not_to receive(:execute).with(pipeline)
+          expect(described_class).to receive(:perform_in).with(5.minutes, pipeline.id)
+
+          worker.perform(pipeline.id)
         end
       end
     end
@@ -63,7 +74,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
               .and change { Security::Scan.count }.by(1)
 
             expect do
-              described_class.new.perform(pipeline.id)
+              worker.perform(pipeline.id)
             end.to change { Vulnerabilities::Finding.count }.by(1)
               .and change { Vulnerability.count }.by(1)
 
@@ -73,7 +84,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
               .and change { Security::Scan.count }.by(2)
 
             expect do
-              described_class.new.perform(pipeline2.id)
+              worker.perform(pipeline2.id)
             end.to change { Vulnerabilities::Finding.count }.by(0)
               .and change { Vulnerability.count }.by(0)
           end
@@ -103,7 +114,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
               .and change { Security::Scan.count }.by(1)
 
             expect do
-              described_class.new.perform(pipeline.id)
+              worker.perform(pipeline.id)
             end.to change { Vulnerabilities::Finding.count }.by(1)
               .and change { Vulnerability.count }.by(1)
 
@@ -113,7 +124,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
               .and change { Security::Scan.count }.by(2)
 
             expect do
-              described_class.new.perform(pipeline2.id)
+              worker.perform(pipeline2.id)
             end.to change { Vulnerabilities::Finding.count }.by(0)
               .and change { Vulnerability.count }.by(0)
           end
@@ -142,7 +153,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           .and change { Security::Scan.count }.by(1)
 
         expect do
-          described_class.new.perform(pipeline.id)
+          worker.perform(pipeline.id)
         end.to change { Vulnerabilities::Finding.count }.by(2)
           .and change { Vulnerability.count }.by(2)
           .and change { project.vulnerabilities.with_resolution(false).count }.by(2)
@@ -154,7 +165,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           .and change { Security::Scan.count }.by(1)
 
         expect do
-          described_class.new.perform(pipeline2.id)
+          worker.perform(pipeline2.id)
         end.to change { Vulnerabilities::Finding.count }.by(0)
           .and change { Vulnerability.count }.by(0)
           .and change { project.vulnerabilities.with_resolution(true).count }.by(1)
@@ -187,7 +198,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           .and change { Security::Scan.count }.by(1)
 
         expect do
-          described_class.new.perform(pipeline.id)
+          worker.perform(pipeline.id)
         end.to change { Vulnerability.count }.by(2)
 
         expect(project.vulnerabilities.map(&:resolved_on_default_branch)).not_to include(true)
@@ -200,7 +211,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
       it 'does not execute IngestReportsService' do
         expect(::Security::Ingestion::IngestReportsService).not_to receive(:execute)
 
-        described_class.new.perform(pipeline.id)
+        worker.perform(pipeline.id)
       end
     end
   end
