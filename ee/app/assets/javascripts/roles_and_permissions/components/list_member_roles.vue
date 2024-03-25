@@ -7,6 +7,7 @@ import {
   GlModal,
   GlTable,
   GlLoadingIcon,
+  GlTooltipDirective,
 } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
@@ -22,7 +23,18 @@ export const FIELDS = [
   { key: 'id', label: s__('MemberRole|ID'), sortable: true },
   { key: 'baseAccessLevel', label: s__('MemberRole|Base role'), sortable: true },
   { key: 'permissions', label: s__('MemberRole|Permissions') },
-  { key: 'actions', label: s__('MemberRole|Actions') },
+  {
+    key: 'membersCount',
+    label: s__('MemberRole|Member count'),
+    thClass: 'gl-w-12 gl-white-space-nowrap',
+    tdClass: 'gl-text-right',
+  },
+  {
+    key: 'actions',
+    label: s__('MemberRole|Actions'),
+    thClass: 'gl-w-12',
+    tdClass: 'gl-text-right',
+  },
 ];
 
 export default {
@@ -41,6 +53,9 @@ export default {
     deleteSuccess: s__('MemberRole|Role successfully deleted.'),
     deleteError: s__('MemberRole|Failed to delete role.'),
     deleteErrorWithReason: s__('MemberRole|Failed to delete role. %{error}'),
+    deleteDisabledTooltip: s__(
+      'MemberRole|To delete custom role, remove role from all group members.',
+    ),
     createSuccess: s__('MemberRole|Role successfully created.'),
   },
   components: {
@@ -52,6 +67,9 @@ export default {
     GlModal,
     GlTable,
     GlLoadingIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     groupFullPath: {
@@ -86,11 +104,10 @@ export default {
 
         const memberRoles = nodes || [];
 
-        return memberRoles.map(({ id, name, baseAccessLevel, enabledPermissions }) => ({
-          id,
-          name,
-          baseAccessLevel: ACCESS_LEVEL_LABELS[baseAccessLevel.integerValue],
-          permissions: enabledPermissions.nodes,
+        return memberRoles.map((member) => ({
+          ...member,
+          baseAccessLevel: ACCESS_LEVEL_LABELS[member.baseAccessLevel.integerValue],
+          permissions: member.enabledPermissions.nodes,
         }));
       },
       error() {
@@ -156,6 +173,9 @@ export default {
     showDeleteModal(id) {
       this.memberRoleToDelete = id;
       this.isDeleteRoleModalVisible = true;
+    },
+    getDeleteDisabledTooltip({ membersCount }) {
+      return membersCount ? this.$options.i18n.deleteDisabledTooltip : '';
     },
   },
   FIELDS,
@@ -235,15 +255,18 @@ export default {
         </div>
       </template>
 
-      <template #cell(actions)="{ item: { id } }">
-        <gl-button
-          class="gl-my-n4"
-          category="tertiary"
-          :aria-label="$options.i18n.deleteRole"
-          icon="remove"
-          data-testid="delete-role-button"
-          @click="showDeleteModal(id)"
-        />
+      <template #cell(actions)="{ item }">
+        <span v-gl-tooltip.left.d0="getDeleteDisabledTooltip(item)">
+          <gl-button
+            class="gl-my-n4"
+            category="tertiary"
+            :aria-label="$options.i18n.deleteRole"
+            :disabled="item.membersCount > 0"
+            icon="remove"
+            data-testid="delete-role-button"
+            @click="showDeleteModal(item.id)"
+          />
+        </span>
       </template>
     </gl-table>
 

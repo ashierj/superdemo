@@ -11,9 +11,15 @@ export const TABLE_FIELDS = [
     tdClass: 'gl-white-space-nowrap',
   },
   {
+    key: 'membersCount',
+    label: s__('MemberRole|Member count'),
+    thClass: 'gl-w-12 gl-white-space-nowrap',
+    tdClass: 'gl-text-right',
+  },
+  {
     key: 'actions',
     label: s__('MemberRole|Actions'),
     thClass: 'gl-w-12',
-    tdClass: 'gl-text-right',
+    tdClass: 'gl-text-right gl-p-3!',
   },
 ];

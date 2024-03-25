@@ -246,6 +246,14 @@ describe('ListMemberRoles', () => {
       return waitForPromises();
     };
 
+    it('disables delete button when the role has been assigned to a user', async () => {
+      await createComponent({ mountFn: mountExtended });
+
+      const deleteButton = wrapper.findAllByTestId('delete-role-button').at(-1);
+
+      expect(deleteButton.props('disabled')).toBe(true);
+    });
+
     it('shows confirm modal when the delete icon is clicked', async () => {
       await createComponent({ mountFn: mountExtended });
 

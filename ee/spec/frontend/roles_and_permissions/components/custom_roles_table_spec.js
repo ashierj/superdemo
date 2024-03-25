@@ -26,7 +26,8 @@ describe('CustomRolesTable', () => {
     expect(findHeaders().at(2).text()).toBe('Description');
     expect(findHeaders().at(3).text()).toBe('Base role');
     expect(findHeaders().at(4).text()).toBe('Custom permissions');
-    expect(findHeaders().at(5).text()).toBe('Actions');
+    expect(findHeaders().at(5).text()).toBe('Member count');
+    expect(findHeaders().at(6).text()).toBe('Actions');
   });
 
   it('renders the id', () => {
@@ -51,7 +52,7 @@ describe('CustomRolesTable', () => {
   });
 
   it('renders the actions', () => {
-    expect(findCells().at(5).text()).toContain('Edit role');
-    expect(findCells().at(5).text()).toContain('Delete role');
+    expect(findCells().at(6).text()).toContain('Edit role');
+    expect(findCells().at(6).text()).toContain('Delete role');
   });
 });

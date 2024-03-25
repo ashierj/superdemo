@@ -43,8 +43,8 @@ export default {
       </div>
     </template>
 
-    <template #cell(actions)>
-      <custom-roles-actions />
+    <template #cell(actions)="{ item }">
+      <custom-roles-actions :custom-role="item" />
     </template>
   </gl-table>
 </template>
