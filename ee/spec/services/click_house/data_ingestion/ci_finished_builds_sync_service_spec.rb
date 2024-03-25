@@ -14,9 +14,11 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       architecture: 'amd64')
   end
 
+  let_it_be(:group_runner) { create(:ci_runner, :group) }
+
   let_it_be(:build1) { create(:ci_build, :success, runner_manager: runner_manager1) }
   let_it_be(:build2) { create(:ci_build, :canceled) }
-  let_it_be(:build3) { create(:ci_build, :failed, stage: 'test') }
+  let_it_be(:build3) { create(:ci_build, :failed, runner: group_runner, stage: 'test') }
   let_it_be(:build4) { create(:ci_build, :pending) }
 
   before_all do
@@ -74,6 +76,19 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           .to change { ci_finished_builds_row_count }.by(3)
           .and change { sync_event.reload.processed }.to(true)
       end
+    end
+
+    it "set's runner_owner_namespace_id only for group runners" do
+      execute
+
+      records = ci_finished_builds
+      expect(records.count).to eq 3
+
+      expect(records).to contain_exactly(
+        include(id: build1.id, runner_owner_namespace_id: 0),
+        include(id: build2.id, runner_owner_namespace_id: 0),
+        include(id: build3.id, runner_owner_namespace_id: group_runner.groups.first.id)
+      )
     end
   end
 
@@ -241,6 +256,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       .map(&:symbolize_keys)
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity -- the method is straightforward, just a lot of ||
   def expected_build_attributes(build)
     runner = build.runner
     runner_manager = build.runner_manager
@@ -257,6 +273,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       root_namespace_id: build.project.root_namespace.id,
       runner_id: runner&.id || 0,
       runner_type: Ci::Runner.runner_types.fetch(runner&.runner_type, 0),
+      runner_owner_namespace_id: runner&.owner_runner_namespace&.namespace_id || 0,
       runner_run_untagged: runner&.run_untagged || false,
       runner_manager_system_xid: runner_manager&.system_xid || '',
       runner_manager_version: runner_manager&.version || '',
@@ -265,6 +282,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       runner_manager_architecture: runner_manager&.architecture || ''
     }
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def contain_exactly_builds(*builds)
     expected_builds = builds.map do |build|
