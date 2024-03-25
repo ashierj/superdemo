@@ -26665,6 +26665,9 @@ msgstr ""
 msgid "Indicates whether this runner can pick jobs without tags"
 msgstr ""
 
+msgid "Indirect"
+msgstr ""
+
 msgid "Inform users without uploaded SSH keys that they can't push over SSH until one is added"
 msgstr ""
 
