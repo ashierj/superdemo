@@ -14,9 +14,10 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
     end
   end
 
+  let_it_be(:organization) { create(:organization) }
   let_it_be(:group) { create(:group) }
 
-  subject(:service) { described_class.new(current_user, { namespace_id: group.id }) }
+  subject(:service) { described_class.new(current_user, { organization_id: organization.id, namespace_id: group.id }) }
 
   context 'when current user is an owner' do
     let_it_be(:current_user) { create(:user).tap { |user| group.add_owner(user) } }

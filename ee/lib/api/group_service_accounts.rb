@@ -32,8 +32,12 @@ module API
         end
 
         post do
+          organization_id = Namespace.find(params[:id]).organization_id
+          service_params = declared_params.merge({ organization_id: organization_id, namespace_id: params[:id] })
+
           response = ::Namespaces::ServiceAccounts::CreateService
-                       .new(current_user, declared_params.merge(namespace_id: params[:id])).execute
+                       .new(current_user, service_params)
+                       .execute
 
           if response.status == :success
             present response.payload, with: Entities::UserSafe, current_user: current_user

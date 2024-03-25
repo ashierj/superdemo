@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Users::ServiceAccounts::CreateService, feature_category: :user_management do
+  let_it_be(:organization) { create(:organization) }
+  let(:params) { { organization_id: organization.id } }
+
   shared_examples 'service account creation failure' do
     it 'produces an error', :aggregate_failures do
       result = described_class.new(current_user).execute
@@ -12,7 +15,7 @@ RSpec.describe Users::ServiceAccounts::CreateService, feature_category: :user_ma
     end
   end
 
-  subject(:service) { described_class.new(current_user) }
+  subject(:service) { described_class.new(current_user, params) }
 
   context 'when current user is an admin ', :enable_admin_mode do
     let_it_be(:current_user) { create(:admin) }
