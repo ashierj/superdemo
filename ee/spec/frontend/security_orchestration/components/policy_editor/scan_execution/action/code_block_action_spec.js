@@ -29,6 +29,9 @@ describe('CodeBlockAction', () => {
   const project = {
     id: 'gid://gitlab/Project/29',
     fullPath: 'project-path',
+    repository: {
+      rootRef: 'spooky-stuff',
+    },
   };
 
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
@@ -407,46 +410,62 @@ describe('CodeBlockAction', () => {
       });
 
       describe('successful validation', () => {
-        beforeEach(() => {
-          createComponent({
-            propsData: {
-              initAction: {
-                ci_configuration: toYaml({
-                  include: {
-                    id: 1,
-                    ref: 'main',
-                  },
-                }),
+        describe('simple scenarios', () => {
+          beforeEach(() => {
+            createComponent({
+              propsData: {
+                initAction: {
+                  ci_configuration: toYaml({ include: { id: 1, ref: 'main', file: 'path' } }),
+                },
               },
-            },
+            });
+          });
+
+          it('verifies on file path change', async () => {
+            await wrapper.setProps({
+              initAction: {
+                ci_configuration: toYaml({ include: { ref: 'main', file: 'new-path' } }),
+              },
+            });
+            await waitForPromises();
+            expect(Api.getFile).toHaveBeenCalledTimes(2);
+            expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+          });
+
+          it('verifies on project change when ref is selected', async () => {
+            await findCodeBlockFilePath().vm.$emit('select-project', project);
+            await waitForPromises();
+            expect(Api.getFile).toHaveBeenCalledTimes(2);
+            expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
+          });
+
+          it('verifies on ref change', async () => {
+            await wrapper.setProps({
+              initAction: {
+                ci_configuration: toYaml({ include: { ref: 'new-ref', file: 'path' } }),
+              },
+            });
+            await waitForPromises();
+            expect(Api.getFile).toHaveBeenCalledTimes(2);
+            expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
           });
         });
 
-        it('verifies on file path change', async () => {
-          await wrapper.setProps({
-            initAction: {
-              ci_configuration: toYaml({ include: { ref: 'main', file: 'new-path' } }),
-            },
+        describe('complex scenarios', () => {
+          it('verifies on project change when ref is not selected', async () => {
+            await createComponent({
+              propsData: {
+                initAction: {
+                  ci_configuration: toYaml({ include: { id: 1, file: 'path' } }),
+                },
+              },
+            });
+            await findCodeBlockFilePath().vm.$emit('select-project', project);
+            await waitForPromises();
+            expect(Api.getFile).toHaveBeenCalledTimes(1);
+            expect(Api.getFile).toHaveBeenCalledWith(29, 'path', { ref: 'spooky-stuff' });
+            expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
           });
-          await waitForPromises();
-          expect(Api.getFile).toHaveBeenCalledTimes(2);
-          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
-        });
-
-        it('verifies on project change', async () => {
-          await findCodeBlockFilePath().vm.$emit('select-project', project);
-          await waitForPromises();
-          expect(Api.getFile).toHaveBeenCalledTimes(2);
-          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
-        });
-
-        it('verifies on ref change', async () => {
-          await wrapper.setProps({
-            initAction: { ci_configuration: toYaml({ include: { ref: 'new-ref' } }) },
-          });
-          await waitForPromises();
-          expect(Api.getFile).toHaveBeenCalledTimes(2);
-          expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
         });
       });
 

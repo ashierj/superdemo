@@ -5,7 +5,7 @@ import Api from 'ee/api';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { THOUSAND } from '~/lib/utils/constants';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -122,7 +122,7 @@ export default {
     },
   },
   created() {
-    this.handleFileValidation = debounce(this.validateFilePath, THOUSAND);
+    this.handleFileValidation = debounce(this.validateFilePath, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
   },
   mounted() {
     this.validateFilePath();
@@ -183,18 +183,22 @@ export default {
     },
     async validateFilePath() {
       const selectedProjectId = getIdFromGraphQLId(this.selectedProject?.id);
+      const ref = this.selectedRef || this.selectedProject?.repository?.rootRef;
+
+      // For when the id is removed or when selectedProject is set to null temporarily above
       if (!selectedProjectId) {
         this.doesFileExist = false;
         return;
       }
 
-      if (!this.selectedRef) {
+      // For existing policies with existing project selected, rootRef will not be available
+      if (!ref) {
         this.doesFileExist = true;
         return;
       }
 
       try {
-        await Api.getFile(selectedProjectId, this.filePath, { ref: this.selectedRef });
+        await Api.getFile(selectedProjectId, this.filePath, { ref });
         this.doesFileExist = true;
       } catch {
         this.doesFileExist = false;
