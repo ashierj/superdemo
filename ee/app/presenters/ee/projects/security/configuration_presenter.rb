@@ -30,6 +30,11 @@ module EE
         def continuous_vulnerability_scans_enabled
           project_settings&.continuous_vulnerability_scans_enabled
         end
+
+        override :container_scanning_for_registry_enabled
+        def container_scanning_for_registry_enabled
+          project_settings&.container_scanning_for_registry_enabled
+        end
       end
     end
   end
