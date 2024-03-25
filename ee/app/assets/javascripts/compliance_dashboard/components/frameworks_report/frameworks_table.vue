@@ -124,7 +124,7 @@ export default {
           class="gl-display-inline-block"
         >
           <gl-link :href="associatedProject.webUrl">{{ associatedProject.name }}</gl-link
-          ><span v-if="!isLastItem(index, associatedProjects)">, </span>
+          ><span v-if="!isLastItem(index, associatedProjects)">,&nbsp;</span>
         </div>
       </template>
       <template #table-busy>
