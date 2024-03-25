@@ -1068,6 +1068,9 @@ msgstr ""
 msgid "%{percentageUsed}%% used"
 msgstr ""
 
+msgid "%{percentage}%% complete"
+msgstr ""
+
 msgid "%{percentage}%% issues closed"
 msgstr ""
 
@@ -19731,10 +19734,16 @@ msgstr ""
 msgid "End time"
 msgstr ""
 
+msgid "Ended %{dueDate}"
+msgstr ""
+
 msgid "Endpoint name '%{endpoint}' of component '%{component}' must not start with '%{prefix}'"
 msgstr ""
 
 msgid "Ends"
+msgstr ""
+
+msgid "Ends %{dueDate}"
 msgstr ""
 
 msgid "Ends on"
@@ -49605,6 +49614,9 @@ msgstr ""
 msgid "Started"
 msgstr ""
 
+msgid "Started %{startDate}"
+msgstr ""
+
 msgid "Started %{startsIn}"
 msgstr ""
 
@@ -49618,6 +49630,9 @@ msgid "Starting..."
 msgstr ""
 
 msgid "Starts"
+msgstr ""
+
+msgid "Starts %{startDate}"
 msgstr ""
 
 msgid "Starts %{startsIn}"
