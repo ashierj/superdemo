@@ -58,7 +58,7 @@ For more information about upgrading GitLab Helm Chart, see [the release notes f
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -123,6 +123,10 @@ planned for release in 16.9.1.
   | 16.8                    |  16.8.0 - 18.8.3        | 16.8.4   |
   | 16.9                    |  16.9.0 - 16.9.1        | 16.9.2   |
 
+### Linux package installations
+
+- The [Sidekiq `min_concurrency` and `max_concurrency`](../../administration/sidekiq/extra_sidekiq_processes.md#manage-thread-counts-with-min_concurrency-and-max_concurrency-fields-deprecated) options are deprecated in GitLab 16.9.0 and due for removal in GitLab 17.0.0. In GitLab 16.9.0 and later, to avoid breaking changes in GitLab 17.0.0, set the new [`concurrency`](../../administration/sidekiq/extra_sidekiq_processes.md#manage-thread-counts-with-concurrency-field) option and remove the `min_concurrency` and `max_concurrency` options.
+
 ## 16.8.0
 
 - In GitLab 16.8.0 and 16.8.1, the Sidekiq gem was upgraded, and the newer version requires Redis 6.2 or later. If you are using Redis 6.0, upgrade
@@ -136,7 +140,7 @@ planned for release in 16.9.1.
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -186,7 +190,7 @@ you must take one of the following actions based on your configuration:
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -253,7 +257,7 @@ take one of the following actions based on your configuration:
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -314,7 +318,7 @@ take one of the following actions based on your configuration:
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -504,7 +508,7 @@ Specific information applies to installations using Geo:
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -634,7 +638,7 @@ Specific information applies to installations using Geo:
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -765,7 +769,7 @@ Specific information applies to installations using Geo:
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -869,7 +873,7 @@ Workaround: A possible workaround is to [disable proxying](../../administration/
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
@@ -944,7 +948,7 @@ by this issue.
   | Affected minor releases | Affected patch releases | Fixed in |
   | ----------------------- | ----------------------- | -------- |
   | 15.11                   |  All                    | None     |
-  | 16.0                    |  All                    | None     |  
+  | 16.0                    |  All                    | None     |
   | 16.1                    |  All                    | None     |
   | 16.2                    |  All                    | None     |
   | 16.3                    |  All                    | None     |
