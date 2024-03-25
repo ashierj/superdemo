@@ -5,6 +5,7 @@ module Zoekt
     MAX_JOBS_PER_HOUR = 3600
     TIMEOUT = 2.hours
     RETRY_IN_IF_LOCKED = 10.minutes
+    RETRY_IN_PERIOD_IF_TOO_MANY_REQUESTS = 5.minutes
 
     REINDEXING_CHANCE_PERCENTAGE = 0.5
 
@@ -36,6 +37,9 @@ module Zoekt
 
         project.repository.update_zoekt_index!(force: force)
       end
+    rescue Gitlab::Search::Zoekt::Client::TooManyRequestsError
+      delay = rand(RETRY_IN_PERIOD_IF_TOO_MANY_REQUESTS)
+      self.class.perform_in(delay, project_id, options)
     rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
       self.class.perform_in(RETRY_IN_IF_LOCKED, project_id, options)
     end
