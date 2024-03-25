@@ -11,29 +11,53 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
       {
         quantity: 10,
         expires_on: (Date.current + 1.year).to_s,
-        purchase_xid: 'S-A00000001'
+        purchase_xid: 'S-A00000001',
+        trial: false
       }
     end
 
     subject(:result) { described_class.new(namespace, add_on, params).execute }
 
+    shared_examples "a successful add-on purchase" do |trial_value|
+      it 'returns a success' do
+        expect(result[:status]).to eq(:success)
+      end
+
+      it 'creates a new record' do
+        expect { result }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
+
+        expect(result[:add_on_purchase]).to be_persisted
+        expect(result[:add_on_purchase]).to have_attributes(
+          namespace: namespace,
+          add_on: add_on,
+          quantity: params[:quantity],
+          expires_on: params[:expires_on].to_date,
+          purchase_xid: params[:purchase_xid],
+          trial: trial_value
+        )
+      end
+    end
+
     shared_examples 'no record exists' do
       context 'when no record exists' do
-        it 'returns a success' do
-          expect(result[:status]).to eq(:success)
+        include_examples 'a successful add-on purchase', false
+
+        context 'when trial is true' do
+          let(:params) { super().merge(trial: true) }
+
+          include_examples 'a successful add-on purchase', true
         end
 
-        it 'creates a new record' do
-          expect { result }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
+        context 'when trial is nil' do
+          let(:params) { super().merge(trial: nil) }
 
-          expect(result[:add_on_purchase]).to be_persisted
-          expect(result[:add_on_purchase]).to have_attributes(
-            namespace: namespace,
-            add_on: add_on,
-            quantity: params[:quantity],
-            expires_on: params[:expires_on].to_date,
-            purchase_xid: params[:purchase_xid]
-          )
+          include_examples 'a successful add-on purchase', false
+        end
+
+        context 'when trial is not given' do
+          let(:params) { super().tap { |params| params.delete(:trial) } }
+
+          include_examples 'a successful add-on purchase', false
         end
 
         context 'when creating the record failed' do

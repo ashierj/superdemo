@@ -27,7 +27,8 @@ module GitlabSubscriptions
           add_on: add_on,
           quantity: quantity,
           expires_on: expires_on,
-          purchase_xid: purchase_xid
+          purchase_xid: purchase_xid,
+          trial: trial.presence || false
         )
       end
 
