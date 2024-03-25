@@ -65,6 +65,7 @@ export default {
         {
           text: s__('ciReport|Full report'),
           href: this.mr.licenseCompliance.license_scanning.full_report_path,
+          trackFullReportClicked: true,
           target: '_self',
         },
       ];
