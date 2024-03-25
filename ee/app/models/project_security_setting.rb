@@ -26,4 +26,8 @@ class ProjectSecuritySetting < ApplicationRecord
   def set_continuous_vulnerability_scans!(enabled:)
     enabled if update!(continuous_vulnerability_scans_enabled: enabled)
   end
+
+  def set_container_scanning_for_registry!(enabled:)
+    enabled if update!(container_scanning_for_registry_enabled: enabled)
+  end
 end
