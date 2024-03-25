@@ -210,6 +210,35 @@ describe('Analytics Dashboards utils', () => {
       const now = MOCK_TABLE_TIME_PERIODS[2].start;
       expect(generateDateRanges(now)).not.toEqual(MOCK_TABLE_TIME_PERIODS);
     });
+
+    it('returns the correct values on the 31st of the month', () => {
+      expect(generateDateRanges(new Date('2020-07-31T23:59:59.000Z'))).toEqual([
+        expect.objectContaining({
+          key: 'thisMonth',
+          label: 'Month to date',
+          start: new Date('2020-07-01T00:00:00.000Z'),
+          end: new Date('2020-07-31T23:59:59.000Z'),
+        }),
+        expect.objectContaining({
+          key: 'lastMonth',
+          label: 'June',
+          start: new Date('2020-06-01T00:00:00.000Z'),
+          end: new Date('2020-06-30T23:59:59.000Z'),
+        }),
+        expect.objectContaining({
+          key: 'twoMonthsAgo',
+          label: 'May',
+          start: new Date('2020-05-01T00:00:00.000Z'),
+          end: new Date('2020-05-31T23:59:59.000Z'),
+        }),
+        expect.objectContaining({
+          key: 'threeMonthsAgo',
+          label: 'April',
+          start: new Date('2020-04-01T00:00:00.000Z'),
+          end: new Date('2020-04-30T23:59:59.000Z'),
+        }),
+      ]);
+    });
   });
 
   describe('generateChartTimePeriods', () => {
