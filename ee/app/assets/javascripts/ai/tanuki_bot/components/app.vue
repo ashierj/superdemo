@@ -14,7 +14,12 @@ import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import duoUserFeedbackMutation from 'ee/ai/graphql/duo_user_feedback.mutation.graphql';
 import Tracking from '~/tracking';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { i18n, GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE } from 'ee/ai/constants';
+import {
+  i18n,
+  GENIE_CHAT_RESET_MESSAGE,
+  GENIE_CHAT_CLEAN_MESSAGE,
+  GENIE_CHAT_CLEAR_MESSAGE,
+} from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
 export default {
@@ -122,37 +127,52 @@ export default {
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
     onSendChatPrompt(question) {
-      if (![GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_RESET_MESSAGE].includes(question)) {
+      const trimmedQuestion = question.trim();
+
+      if (
+        ![GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE, GENIE_CHAT_RESET_MESSAGE].includes(
+          trimmedQuestion,
+        )
+      ) {
         this.setLoading();
       }
       this.$apollo
         .mutate({
           mutation: chatMutation,
           variables: {
-            question,
+            question: trimmedQuestion,
             resourceId: this.resourceId || this.userId,
             clientSubscriptionId: this.clientSubscriptionId,
           },
         })
         .then(({ data: { aiAction = {} } = {} }) => {
-          if (![GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_RESET_MESSAGE].includes(question)) {
+          if (
+            ![
+              GENIE_CHAT_CLEAN_MESSAGE,
+              GENIE_CHAT_CLEAR_MESSAGE,
+              GENIE_CHAT_RESET_MESSAGE,
+            ].includes(trimmedQuestion)
+          ) {
             this.track('submit_gitlab_duo_question', {
               property: aiAction.requestId,
             });
           }
-          if (question === GENIE_CHAT_CLEAN_MESSAGE) {
+          if (
+            trimmedQuestion === GENIE_CHAT_CLEAN_MESSAGE ||
+            trimmedQuestion === GENIE_CHAT_CLEAR_MESSAGE
+          ) {
             this.$apollo.queries.aiMessages.refetch();
           } else {
             this.addDuoChatMessage({
               ...aiAction,
-              content: question,
+              content: trimmedQuestion,
             });
           }
         })
         .catch((err) => {
           this.error = err.toString();
           this.addDuoChatMessage({
-            content: question,
+            content: trimmedQuestion,
           });
           this.setLoading(false);
         });
