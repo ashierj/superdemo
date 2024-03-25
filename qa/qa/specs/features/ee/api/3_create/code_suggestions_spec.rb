@@ -88,6 +88,10 @@ module QA
 
                 it_behaves_like 'completions API with PAT auth', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/436993'
               end
+
+              context 'when seat is not assigned', :ai_gateway_no_seat_assigned do
+                it_behaves_like 'unauthorized', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/451487'
+              end
             end
           end
 
