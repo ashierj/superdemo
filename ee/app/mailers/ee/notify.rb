@@ -21,6 +21,7 @@ module EE
       include ::Emails::ComplianceProjectFrameworks
       include ::Emails::ComplianceViolations
       include ::Emails::ComplianceStandards
+      include ::Emails::ComplianceFrameworks
       include ::Emails::Okr
       include ::Emails::CiRunnerUsageByProject
     end

@@ -386,6 +386,23 @@ RSpec.describe Notify, feature_category: :shared do
       it { have_subject "#{group.name} | Compliance Project Framework Export" }
       it { is_expected.to have_body_text('Your Compliance Project Frameworks CSV export for the group') }
     end
+
+    describe 'for compliance frameworks' do
+      let_it_be(:fedramp) { create :compliance_framework, name: 'FedRamp', namespace: group }
+
+      subject do
+        described_class.compliance_frameworks_csv_email(
+          user: current_user,
+          group: group,
+          attachment: "csv_data",
+          filename: "filename.csv"
+        )
+      end
+
+      it_behaves_like 'an email sent from GitLab'
+      it { have_subject "#{group.name} | Compliance Framework Export" }
+      it { is_expected.to have_body_text('A compliance frameworks CSV export for the group') }
+    end
   end
 
   describe 'mirror was hard failed' do
