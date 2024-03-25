@@ -88,7 +88,7 @@ describe('AvailableVisualizationsDrawer', () => {
     });
 
     it('disables the add button', () => {
-      expect(findAddButton().attributes('disabled')).toBe('true');
+      expect(findAddButton().attributes().disabled).toBe('true');
     });
 
     it('emits close event when the drawer is closed', async () => {
@@ -172,14 +172,14 @@ describe('AvailableVisualizationsDrawer', () => {
       it('clears the selected visualizations after add button is clicked', async () => {
         await findAddButton().vm.$emit('click');
 
-        expect(findAddButton().attributes('disabled')).toBe('true');
+        expect(findAddButton().attributes().disabled).toBe('true');
       });
 
       it('deselects the selected visualizations when the same list items are clicked again', async () => {
         await findListItemBySlug(visualizations[0].slug).trigger('click');
         await findListItemBySlug(visualizations[1].slug).trigger('click');
 
-        expect(findAddButton().attributes('disabled')).toBe('true');
+        expect(findAddButton().attributes().disabled).toBe('true');
       });
     });
 
