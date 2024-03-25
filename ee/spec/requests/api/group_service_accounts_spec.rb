@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category: :user_management do
-  let(:user)  { create(:user) }
-  let(:group) { create(:group) }
+  let_it_be(:organization) { create(:organization) }
+  let_it_be(:user) { create(:user) }
+  let(:group) { create(:group, organization: organization) }
   let(:service_account_user) { create(:user, :service_account) }
 
   before do
@@ -39,6 +40,7 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['username']).to start_with("service_account_group_#{group_id}")
             expect(json_response.keys).to match_array(%w[id name username])
+            expect(User.find(json_response['id']).namespace.organization).to eq(organization)
           end
 
           context 'when params are provided' do

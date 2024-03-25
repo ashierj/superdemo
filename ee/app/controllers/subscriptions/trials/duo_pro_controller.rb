@@ -40,7 +40,7 @@ module Subscriptions
 
           track_event('duo_pro_trial_registration_success')
 
-          redirect_to group_path(@result.payload[:namespace])
+          redirect_to group_usage_quotas_path(@result.payload[:namespace], anchor: 'code-suggestions-usage-tab')
         elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::NO_SINGLE_NAMESPACE
           # lead created, but we now need to select namespace and then apply a trial
           redirect_to new_trials_duo_pro_path(@result.payload[:trial_selection_params])

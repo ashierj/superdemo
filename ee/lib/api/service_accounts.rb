@@ -17,7 +17,9 @@ module API
       end
 
       post feature_category: :user_management do
-        response = ::Users::ServiceAccounts::CreateService.new(current_user, declared_params).execute
+        response = ::Users::ServiceAccounts::CreateService.new(
+          current_user, declared_params.merge(organization_id: Current.organization&.id)
+        ).execute
 
         if response.status == :success
           present response.payload, with: ::API::Entities::UserBasic, current_user: current_user

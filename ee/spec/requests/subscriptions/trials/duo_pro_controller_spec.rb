@@ -139,8 +139,8 @@ RSpec.describe Subscriptions::Trials::DuoProController, feature_category: :purch
           expect_create_success(group)
         end
 
-        it 'redirects to group path' do
-          expect(post_create).to redirect_to(group_path(group))
+        it 'redirects to the group usage quotas page with code suggestions usage tab anchor' do
+          expect(post_create).to redirect_to(group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab'))
         end
 
         it_behaves_like 'with tracking trial registration', 'duo_pro_trial_registration_success'
