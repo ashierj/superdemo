@@ -16,8 +16,10 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
   end
 
   describe '#clean_history?' do
-    it 'returns true for /clean message' do
-      expect(build(:ai_chat_message, content: '/clean')).to be_clean_history
+    Gitlab::Llm::ChatMessage::CLEAN_HISTORY_MESSAGES.each do |clean_message|
+      it "returns true for '#{clean_message}'" do
+        expect(build(:ai_chat_message, content: clean_message)).to be_clean_history
+      end
     end
 
     it 'returns false for regular message' do
@@ -65,15 +67,17 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
       end
     end
 
-    context 'for /clean message' do
-      it 'removes all messages from chat storage' do
-        message = build(:ai_chat_message, content: '/clean', agent_version_id: 1)
+    context 'for slash commands to clean history' do
+      Gitlab::Llm::ChatMessage::CLEAN_HISTORY_MESSAGES.each do |clean_message|
+        it "removes all messages from chat storage for message '#{clean_message}'" do
+          message = build(:ai_chat_message, content: clean_message, agent_version_id: 1)
 
-        expect_next_instance_of(Gitlab::Llm::ChatStorage, message.user, message.agent_version_id) do |instance|
-          expect(instance).to receive(:clean!)
+          expect_next_instance_of(Gitlab::Llm::ChatStorage, message.user, message.agent_version_id) do |instance|
+            expect(instance).to receive(:clean!)
+          end
+
+          message.save!
         end
-
-        message.save!
       end
     end
   end

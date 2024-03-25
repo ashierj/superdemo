@@ -6,7 +6,11 @@ import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
 import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
-import { GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE } from 'ee/ai/constants';
+import {
+  GENIE_CHAT_RESET_MESSAGE,
+  GENIE_CHAT_CLEAN_MESSAGE,
+  GENIE_CHAT_CLEAR_MESSAGE,
+} from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
@@ -175,15 +179,19 @@ describe('GitLab Duo Chat', () => {
         findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
         expect(actionSpies.setLoading).toHaveBeenCalled();
       });
-      it.each([GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE])(
-        'does not set loading to `true` for "%s" message',
-        async (msg) => {
-          actionSpies.setLoading.mockReset();
-          findGlDuoChat().vm.$emit('send-chat-prompt', msg);
-          await nextTick();
-          expect(actionSpies.setLoading).not.toHaveBeenCalled();
-        },
-      );
+      it.each([
+        GENIE_CHAT_RESET_MESSAGE,
+        ` ${GENIE_CHAT_RESET_MESSAGE} `,
+        GENIE_CHAT_CLEAN_MESSAGE,
+        ` ${GENIE_CHAT_CLEAN_MESSAGE} `,
+        GENIE_CHAT_CLEAR_MESSAGE,
+        ` ${GENIE_CHAT_CLEAR_MESSAGE} `,
+      ])('does not set loading to `true` for "%s" message', async (msg) => {
+        actionSpies.setLoading.mockReset();
+        findGlDuoChat().vm.$emit('send-chat-prompt', msg);
+        await nextTick();
+        expect(actionSpies.setLoading).not.toHaveBeenCalled();
+      });
 
       describe.each`
         resourceId          | expectedResourceId
@@ -235,21 +243,29 @@ describe('GitLab Duo Chat', () => {
         });
       });
 
-      it('refetches the `aiMessages` if the prompt is `/clean` and does not call addDuoChatMessage', async () => {
-        createComponent();
+      it.each([
+        GENIE_CHAT_CLEAN_MESSAGE,
+        ` ${GENIE_CHAT_CLEAN_MESSAGE} `,
+        GENIE_CHAT_CLEAR_MESSAGE,
+        ` ${GENIE_CHAT_CLEAR_MESSAGE} `,
+      ])(
+        'refetches the `aiMessages` if the prompt is "%s" and does not call addDuoChatMessage',
+        async (prompt) => {
+          createComponent();
 
-        await waitForPromises();
+          await waitForPromises();
 
-        queryHandlerMock.mockClear();
-        actionSpies.addDuoChatMessage.mockClear();
+          queryHandlerMock.mockClear();
+          actionSpies.addDuoChatMessage.mockClear();
 
-        findGlDuoChat().vm.$emit('send-chat-prompt', GENIE_CHAT_CLEAN_MESSAGE);
+          findGlDuoChat().vm.$emit('send-chat-prompt', prompt);
 
-        await waitForPromises();
+          await waitForPromises();
 
-        expect(queryHandlerMock).toHaveBeenCalled();
-        expect(actionSpies.addDuoChatMessage).not.toHaveBeenCalled();
-      });
+          expect(queryHandlerMock).toHaveBeenCalled();
+          expect(actionSpies.addDuoChatMessage).not.toHaveBeenCalled();
+        },
+      );
 
       describe('tracking on mutation', () => {
         let trackingSpy;
@@ -269,16 +285,20 @@ describe('GitLab Duo Chat', () => {
           await waitForPromises();
           expect(trackingSpy).toHaveBeenCalled();
         });
-        it.each([GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE])(
-          'does not track if the sent message is "%s"',
-          async (msg) => {
-            createComponent();
-            findGlDuoChat().vm.$emit('send-chat-prompt', msg);
+        it.each([
+          GENIE_CHAT_RESET_MESSAGE,
+          ` ${GENIE_CHAT_RESET_MESSAGE} `,
+          GENIE_CHAT_CLEAN_MESSAGE,
+          ` ${GENIE_CHAT_CLEAN_MESSAGE} `,
+          GENIE_CHAT_CLEAR_MESSAGE,
+          ` ${GENIE_CHAT_CLEAR_MESSAGE} `,
+        ])('does not track if the sent message is "%s"', async (msg) => {
+          createComponent();
+          findGlDuoChat().vm.$emit('send-chat-prompt', msg);
 
-            await waitForPromises();
-            expect(trackingSpy).not.toHaveBeenCalled();
-          },
-        );
+          await waitForPromises();
+          expect(trackingSpy).not.toHaveBeenCalled();
+        });
       });
     });
 

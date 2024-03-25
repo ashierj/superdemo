@@ -4,13 +4,12 @@ module Gitlab
   module Llm
     class ChatMessage < AiMessage
       RESET_MESSAGE = '/reset'
-      CLEAN_HISTORY_MESSAGE = '/clean'
+      CLEAN_HISTORY_MESSAGES = %w[/clean /clear].freeze
 
       def save!
         storage = ChatStorage.new(user, agent_version_id)
 
-        case content
-        when CLEAN_HISTORY_MESSAGE
+        if CLEAN_HISTORY_MESSAGES.include?(content)
           storage.clean!
         else
           storage.add(self)
@@ -22,7 +21,7 @@ module Gitlab
       end
 
       def clean_history?
-        content == CLEAN_HISTORY_MESSAGE
+        CLEAN_HISTORY_MESSAGES.include?(content)
       end
 
       def question?
