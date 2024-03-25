@@ -7,6 +7,8 @@ module Gitlab
         include ::Gitlab::Loggable
         INDEXING_TIMEOUT_S = 30.minutes.to_i
 
+        TooManyRequestsError = Class.new(StandardError)
+
         class << self
           def instance
             @instance ||= new
@@ -57,6 +59,7 @@ module Gitlab
 
           response = zoekt_indexer_post('/indexer/index', payload, node_id)
 
+          raise TooManyRequestsError if response.code == 429
           raise "Request failed with: #{response.inspect}" unless response.success?
 
           parsed_response = parse_response(response)
