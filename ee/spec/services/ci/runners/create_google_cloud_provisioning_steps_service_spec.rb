@@ -71,7 +71,8 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
         let(:current_user) { container_owner }
         let(:runner_token) { nil }
 
-        it 'is successful and generates a unique deployment id' do
+        it 'is successful and generates a unique deployment id',
+          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446109' do
           expect(execute).to be_success
 
           steps = execute.payload[:provisioning_steps]
