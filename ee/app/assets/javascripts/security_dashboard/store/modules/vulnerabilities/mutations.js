@@ -107,7 +107,10 @@ export default {
     Vue.set(state.selectedVulnerabilities, id, true);
   },
   [types.DESELECT_VULNERABILITY](state, id) {
-    Vue.delete(state.selectedVulnerabilities, id);
+    const selectedVulnerabilitiesCopy = { ...state.selectedVulnerabilities };
+    delete selectedVulnerabilitiesCopy[id];
+
+    state.selectedVulnerabilities = selectedVulnerabilitiesCopy;
   },
   [types.SELECT_ALL_VULNERABILITIES](state) {
     state.selectedVulnerabilities = state.vulnerabilities.reduce(
