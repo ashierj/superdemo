@@ -127,7 +127,7 @@ export const mockGraphqlDoraPerformanceScoreCountsResponse = ({
 } = {}) =>
   jest.fn().mockResolvedValue({
     data: {
-      namespace: {
+      group: {
         id: 'fake-dora-performance-score-counts-request',
         doraPerformanceScoreCounts: {
           totalProjectsCount,
