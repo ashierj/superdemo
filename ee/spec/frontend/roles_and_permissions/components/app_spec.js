@@ -97,7 +97,7 @@ describe('CustomRolesApp', () => {
       });
 
       it('renders the number of roles', () => {
-        expect(findCount().text()).toBe('1 Custom role');
+        expect(findCount().text()).toBe('2 Custom roles');
       });
 
       it('renders the table', () => {

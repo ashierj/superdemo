@@ -41,6 +41,30 @@ export const mockMemberRoles = {
             id: 'gid://gitlab/MemberRole/1',
             name: 'Test',
             description: 'Test description',
+            membersCount: 0,
+            enabledPermissions: {
+              nodes: [
+                {
+                  name: 'Read code',
+                  value: 'READ_CODE',
+                },
+                {
+                  name: 'Read vulnerability',
+                  value: 'READ_VULNERABILITY',
+                },
+              ],
+            },
+            __typename: 'MemberRole',
+          },
+          {
+            baseAccessLevel: {
+              integerValue: 20,
+              __typename: 'AccessLevel',
+            },
+            id: 'gid://gitlab/MemberRole/2',
+            name: 'Test 2',
+            description: 'Test description',
+            membersCount: 1,
             enabledPermissions: {
               nodes: [
                 {
@@ -75,6 +99,7 @@ export const mockInstanceMemberRoles = {
           id: 'gid://gitlab/MemberRole/2',
           name: 'Instance Test',
           description: 'Instance Test description',
+          membersCount: 0,
           enabledPermissions: {
             nodes: [
               {

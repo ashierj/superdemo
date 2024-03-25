@@ -3,11 +3,13 @@ import { GlDisclosureDropdown, GlDisclosureDropdownItem, GlTooltipDirective } fr
 import { s__ } from '~/locale';
 
 export default {
-  name: 'CustomRolesActions',
   i18n: {
     actionsText: s__('MemberRole|Actions'),
     editRoleText: s__('MemberRole|Edit role'),
     deleteRoleText: s__('MemberRole|Delete role'),
+    deleteDisabledTooltip: s__(
+      'MemberRole|To delete custom role, remove role from all group members.',
+    ),
   },
   components: {
     GlDisclosureDropdown,
@@ -16,19 +18,30 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  props: {
+    customRole: {
+      type: Object,
+      required: true,
+    },
+  },
   computed: {
+    hasAssignedUsers() {
+      return this.customRole.membersCount > 0;
+    },
     editRoleItem() {
-      return {
-        text: this.$options.i18n.editRoleText,
-      };
+      return { text: this.$options.i18n.editRoleText };
     },
     deleteRoleItem() {
       return {
         text: this.$options.i18n.deleteRoleText,
         extraAttrs: {
-          class: 'gl-text-red-500!',
+          disabled: this.hasAssignedUsers,
+          class: this.hasAssignedUsers ? '' : 'gl-text-red-500!',
         },
       };
+    },
+    deleteTooltip() {
+      return this.hasAssignedUsers ? this.$options.i18n.deleteDisabledTooltip : '';
     },
   },
 };
@@ -42,6 +55,9 @@ export default {
     no-caret
   >
     <gl-disclosure-dropdown-item :item="editRoleItem" />
-    <gl-disclosure-dropdown-item :item="deleteRoleItem" />
+    <gl-disclosure-dropdown-item
+      v-gl-tooltip.left.viewport.d0="deleteTooltip"
+      :item="deleteRoleItem"
+    />
   </gl-disclosure-dropdown>
 </template>
