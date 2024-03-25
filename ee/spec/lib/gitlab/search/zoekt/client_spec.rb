@@ -277,6 +277,20 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       end
     end
 
+    context 'when response code is 429' do
+      let(:response) do
+        instance_double(HTTParty::Response,
+          code: 429, success?: false
+        )
+      end
+
+      it 'raises an exception when indexing errors out' do
+        allow(::Gitlab::HTTP).to receive(:post).and_return(response)
+
+        expect { index }.to raise_error(described_class::TooManyRequestsError)
+      end
+    end
+
     context 'with a failed response' do
       let(:successful_response) { false }
 
