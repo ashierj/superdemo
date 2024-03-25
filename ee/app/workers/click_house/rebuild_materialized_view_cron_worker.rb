@@ -28,8 +28,7 @@ module ClickHouse
     end
 
     def perform
-      return unless Gitlab::ClickHouse.globally_enabled_for_analytics? && Feature.enabled?(:rebuild_contributions_mv,
-        type: :gitlab_com_derisk)
+      return unless Gitlab::ClickHouse.globally_enabled_for_analytics?
 
       in_lock("#{self.class}:#{MATERIALIZED_VIEW[:view_name]}", ttl: MAX_TTL, retries: 0) do
         state = build_state

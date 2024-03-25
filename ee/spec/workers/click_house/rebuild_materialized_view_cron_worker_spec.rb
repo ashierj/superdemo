@@ -40,16 +40,6 @@ RSpec.describe ClickHouse::RebuildMaterializedViewCronWorker, :clean_gitlab_redi
       end
     end
 
-    context 'when the rebuild_contributions_mv feature flag is disabled' do
-      it 'does not invoke the service' do
-        stub_feature_flags(rebuild_contributions_mv: false)
-
-        expect(ClickHouse::RebuildMaterializedViewService).not_to receive(:new)
-
-        run_job
-      end
-    end
-
     context 'when the service is finished', :click_house do
       it 'persists the finished_at timestamp' do
         run_job

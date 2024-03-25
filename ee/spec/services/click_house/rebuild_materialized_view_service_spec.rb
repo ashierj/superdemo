@@ -73,28 +73,6 @@ RSpec.describe ClickHouse::RebuildMaterializedViewService, :click_house, feature
     expect(connection.select(table_query)).to be_empty
   end
 
-  context 'when the rebuild_mv_drop_old_tables FF is off' do
-    it 'preserves the old tables' do
-      stub_feature_flags(rebuild_mv_drop_old_tables: false)
-      expect(service_response).to be_success
-
-      view_query = <<~SQL
-        SELECT view_definition FROM information_schema.views
-        WHERE table_name = 'tmp_contributions_mv' AND
-        table_schema = '#{connection.database_name}'
-      SQL
-
-      table_query = <<~SQL
-        SELECT table_name FROM information_schema.tables
-        WHERE table_name = 'tmp_contributions' AND
-        table_schema = '#{connection.database_name}'
-      SQL
-
-      expect(connection.select(view_query)).not_to be_empty
-      expect(connection.select(table_query)).not_to be_empty
-    end
-  end
-
   context 'when the processing is stopped due to over time' do
     before do
       stub_const("#{described_class}::INSERT_BATCH_SIZE", 1)

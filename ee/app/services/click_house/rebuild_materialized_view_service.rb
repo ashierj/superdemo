@@ -29,7 +29,7 @@ module ClickHouse
       backfill_data.tap do |service_response|
         if service_response.payload[:status] == :finished
           rename_table
-          drop_tmp_tables if Feature.enabled?(:rebuild_mv_drop_old_tables, type: :gitlab_com_derisk)
+          drop_tmp_tables
         end
       end
     end
