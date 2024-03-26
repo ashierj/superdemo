@@ -14,6 +14,7 @@ module Analytics
         is_group: is_group.to_s,
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
         can_configure_dashboards_project: can_configure_dashboards_project?(namespace).to_s,
+        can_select_gitlab_managed_provider: can_select_gitlab_managed_provider?(namespace).to_s,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
         collector_host: can_read_product_analytics ? collector_host(namespace) : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
@@ -25,7 +26,8 @@ module Analytics
         router_base: router_base(namespace),
         root_namespace_name: namespace.root_ancestor.name,
         root_namespace_full_path: namespace.root_ancestor.full_path,
-        ai_generate_cube_query_enabled: ai_generate_cube_query_enabled.to_s
+        ai_generate_cube_query_enabled: ai_generate_cube_query_enabled.to_s,
+        project_level_analytics_provider_settings: project_level_analytics_provider_settings_json(namespace)
       }
     end
 
@@ -80,6 +82,15 @@ module Analytics
       can?(current_user, :admin_project, namespace)
     end
 
+    def can_select_gitlab_managed_provider?(project)
+      return false unless project?(project)
+      return false unless ::Feature.enabled?(:product_analytics_billing, project.root_ancestor)
+
+      # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- GitLab-managed provider is currently ONLY available on .com
+      Gitlab::CurrentSettings.should_check_namespace_plan?
+      # rubocop:enable Gitlab/AvoidGitlabInstanceChecks
+    end
+
     def project_dashboard_pointer(project)
       project.analytics_dashboards_pointer.target_project
     end
@@ -113,6 +124,18 @@ module Analytics
         end
 
       "#{settings_path}#js-analytics-dashboards-settings"
+    end
+
+    def project_level_analytics_provider_settings_json(namespace)
+      return unless project?(namespace)
+
+      {
+        product_analytics_configurator_connection_string:
+          namespace.project_setting.product_analytics_configurator_connection_string,
+        product_analytics_data_collector_host: namespace.project_setting.product_analytics_data_collector_host,
+        cube_api_base_url: namespace.project_setting.cube_api_base_url,
+        cube_api_key: namespace.project_setting.cube_api_key
+      }.to_json
     end
   end
 end

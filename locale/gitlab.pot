@@ -38284,6 +38284,9 @@ msgstr ""
 msgid "ProductAnalytics|3. Initiate the tracking"
 msgstr ""
 
+msgid "ProductAnalytics|A deployed instance of the analytics-stack project."
+msgstr ""
+
 msgid "ProductAnalytics|Add another dimension"
 msgstr ""
 
@@ -38335,6 +38338,9 @@ msgstr ""
 msgid "ProductAnalytics|Back to dashboards"
 msgstr ""
 
+msgid "ProductAnalytics|Collector host"
+msgstr ""
+
 msgid "ProductAnalytics|Compares all events against each other"
 msgstr ""
 
@@ -38350,7 +38356,13 @@ msgstr ""
 msgid "ProductAnalytics|Compares page views of all pages against each other"
 msgstr ""
 
+msgid "ProductAnalytics|Connect your own provider"
+msgstr ""
+
 msgid "ProductAnalytics|Creating your product analytics instance..."
+msgstr ""
+
+msgid "ProductAnalytics|Cube API URL"
 msgstr ""
 
 msgid "ProductAnalytics|Cube API key"
@@ -38383,7 +38395,19 @@ msgstr ""
 msgid "ProductAnalytics|For the product analytics dashboard to start showing you some data, you need to add the analytics tracking code to your project."
 msgstr ""
 
+msgid "ProductAnalytics|For this option, you need:"
+msgstr ""
+
+msgid "ProductAnalytics|For this option:"
+msgstr ""
+
 msgid "ProductAnalytics|Get started with product analytics"
+msgstr ""
+
+msgid "ProductAnalytics|GitLab-managed provider"
+msgstr ""
+
+msgid "ProductAnalytics|Go to analytics settings"
 msgstr ""
 
 msgid "ProductAnalytics|Help us improve Product Analytics Dashboards by sharing your experience."
@@ -38393,6 +38417,9 @@ msgid "ProductAnalytics|How many sessions a user has"
 msgstr ""
 
 msgid "ProductAnalytics|How often users returned compared to all sessions"
+msgstr ""
+
+msgid "ProductAnalytics|I agree to event collection and processing in this region."
 msgstr ""
 
 msgid "ProductAnalytics|Instrument your application"
@@ -38408,6 +38435,9 @@ msgid "ProductAnalytics|Link Click Events"
 msgstr ""
 
 msgid "ProductAnalytics|Loading instance"
+msgstr ""
+
+msgid "ProductAnalytics|Manage your own analytics provider to process, store, and query analytics data."
 msgstr ""
 
 msgid "ProductAnalytics|Measure All tracked Events"
@@ -38464,6 +38494,9 @@ msgstr ""
 msgid "ProductAnalytics|Projects (%{maxProjects} of %{totalProjects} shown)"
 msgstr ""
 
+msgid "ProductAnalytics|Reset existing project provider settings"
+msgstr ""
+
 msgid "ProductAnalytics|Returning Users"
 msgstr ""
 
@@ -38476,10 +38509,16 @@ msgstr ""
 msgid "ProductAnalytics|SDK host"
 msgstr ""
 
+msgid "ProductAnalytics|Self-managed provider"
+msgstr ""
+
 msgid "ProductAnalytics|Sessions"
 msgstr ""
 
-msgid "ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes."
+msgid "ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine analytics with your GitLab data to better understand where you can improve your product and development processes."
+msgstr ""
+
+msgid "ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine analytics with your GitLab data to better understand where you can improve your product and development processes. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "ProductAnalytics|Set up product analytics"
@@ -38500,6 +38539,9 @@ msgstr ""
 msgid "ProductAnalytics|Tell us what you think!"
 msgstr ""
 
+msgid "ProductAnalytics|The Product Analytics Beta on GitLab.com is offered only in the Google Cloud Platform zone %{zone}."
+msgstr ""
+
 msgid "ProductAnalytics|The connection string for your Snowplow configurator instance."
 msgstr ""
 
@@ -38509,13 +38551,28 @@ msgstr ""
 msgid "ProductAnalytics|The sender of tracking events"
 msgstr ""
 
+msgid "ProductAnalytics|Then, return to this page and continue with the setup."
+msgstr ""
+
+msgid "ProductAnalytics|This feature is in Beta and requires purchasing a quota of events, which you receive on each billing period."
+msgstr ""
+
 msgid "ProductAnalytics|This group has no projects with product analytics onboarded in the current period."
 msgstr ""
 
 msgid "ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later."
 msgstr ""
 
+msgid "ProductAnalytics|This project uses the provider configuration. To connect to a GitLab-managed provider, you'll be redirected to the %{analyticsSettingsLink} page where you must remove the current configuration."
+msgstr ""
+
 msgid "ProductAnalytics|This table excludes projects that do not have product analytics onboarded."
+msgstr ""
+
+msgid "ProductAnalytics|To connect your own provider, you'll be redirected to the %{analyticsSettingsLink} page, which shows your provider's configuration settings and setup instructions."
+msgstr ""
+
+msgid "ProductAnalytics|To continue, you must agree to event storage and processing in this region."
 msgstr ""
 
 msgid "ProductAnalytics|To instrument your application, select one of the options below. After an option has been instrumented and data is being collected, this page will progress to the next step."
@@ -38531,6 +38588,12 @@ msgid "ProductAnalytics|Usage by month"
 msgstr ""
 
 msgid "ProductAnalytics|Usage by project"
+msgstr ""
+
+msgid "ProductAnalytics|Use GitLab-managed provider"
+msgstr ""
+
+msgid "ProductAnalytics|Use a GitLab-managed infrastructure to process, store, and query analytics events data."
 msgstr ""
 
 msgid "ProductAnalytics|Use product analytics"
@@ -38551,6 +38614,9 @@ msgstr ""
 msgid "ProductAnalytics|Using JS module"
 msgstr ""
 
+msgid "ProductAnalytics|Valid project settings."
+msgstr ""
+
 msgid "ProductAnalytics|Waiting for events"
 msgstr ""
 
@@ -38558,6 +38624,9 @@ msgid "ProductAnalytics|What metric do you want to visualize?"
 msgstr ""
 
 msgid "ProductAnalytics|You can instrument your application using a JS module or an HTML script. Follow the instructions below for the option you prefer."
+msgstr ""
+
+msgid "ProductAnalytics|Your instance will be created on this provider:"
 msgstr ""
 
 msgid "Productivity"
@@ -46702,6 +46771,9 @@ msgid "Select an assignee"
 msgstr ""
 
 msgid "Select an iteration"
+msgstr ""
+
+msgid "Select an option"
 msgstr ""
 
 msgid "Select assignee"
