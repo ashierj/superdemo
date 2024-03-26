@@ -721,6 +721,54 @@ describe('Subscription Details', () => {
         expect(isStepValid()).toBe(false);
       });
     });
+
+    describe('number of users', () => {
+      beforeEach(() => {
+        const billableMembersCountMock = jest.fn().mockResolvedValue({
+          data: {
+            group: {
+              id: secondGroup.id,
+              enforceFreeUserCap: false,
+              billableMembersCount: 12,
+            },
+          },
+        });
+
+        store = createStore(
+          createDefaultInitialStoreData({
+            newUser: 'false',
+            setupForCompany: 'true',
+            planId: 'thirdPlanId',
+          }),
+        );
+
+        return createComponent({ store, billableMembersCountMock });
+      });
+
+      it('does not show invalid feedback by default', () => {
+        expect(numberOfUsersInput().classes()).toContain('is-valid');
+      });
+
+      it('shows invalid feedback when number is below minimum seats', async () => {
+        numberOfUsersInput().vm.$emit('input', 0);
+        await nextTick();
+
+        expect(numberOfUsersInput().classes()).toContain('is-invalid');
+        expect(findNumberOfUsersFormGroup().findComponent('.invalid-feedback').text()).toBe(
+          'You must buy a minimum of 1 seat.',
+        );
+      });
+
+      it('shows invalid feedback when number is above maxSeatLimit', async () => {
+        numberOfUsersInput().vm.$emit('input', 12345);
+        await nextTick();
+
+        expect(numberOfUsersInput().classes()).toContain('is-invalid');
+        expect(findNumberOfUsersFormGroup().findComponent('.invalid-feedback').text()).toBe(
+          'You can only buy a maximum of 2000 seats.',
+        );
+      });
+    });
   });
 
   describe('Showing summary', () => {

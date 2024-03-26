@@ -133,6 +133,13 @@ export default {
         !this.selectedGroupFullPath || !this.hasSelectedPlan || this.shouldDisableNumberOfUsers
       );
     },
+    hasValidSeatInput() {
+      if (this.hasTooFewSeats) {
+        return false;
+      }
+
+      return !this.exceedsMaximumSeatLimit;
+    },
     numberOfUsersLabelDescription() {
       if (this.shouldSkipQuery || this.hasError) {
         return null;
@@ -201,6 +208,25 @@ export default {
     },
     hasMaximumSeatLimit() {
       return Boolean(this.maximumSeatLimit);
+    },
+    exceedsMaximumSeatLimit() {
+      return this.hasMaximumSeatLimit && this.numberOfUsers > this.maximumSeatLimit;
+    },
+    hasTooFewSeats() {
+      return this.numberOfUsers < this.billableData.minimumSeats;
+    },
+    numberOfSeatsInvalidFeedback() {
+      let message;
+      let seatLimit;
+
+      if (this.exceedsMaximumSeatLimit) {
+        message = this.$options.i18n.maximumSeatOverageMessage;
+        seatLimit = this.maximumSeatLimit;
+      } else {
+        message = this.$options.i18n.minimumSeatMessage;
+        seatLimit = this.billableData.minimumSeats;
+      }
+      return sprintf(message, { seatLimit });
     },
   },
   watch: {
@@ -277,6 +303,8 @@ export default {
     qsrOverageMessage: __(
       'You are billed if you exceed this number. %{qsrOverageLinkStart}How does billing work?%{qsrOverageLinkEnd}',
     ),
+    maximumSeatOverageMessage: s__('Checkout|You can only buy a maximum of %{seatLimit} seats.'),
+    minimumSeatMessage: s__('Checkout|You must buy a minimum of %{seatLimit} seat.'),
   },
   stepId: STEP_SUBSCRIPTION_DETAILS,
   qsrReconciliationLink: helpPagePath(QSR_RECONCILIATION_PATH),
@@ -346,6 +374,7 @@ export default {
           label-size="sm"
           class="gl-mb-5"
           :label-description="numberOfUsersLabelDescription"
+          :invalid-feedback="numberOfSeatsInvalidFeedback"
         >
           <template v-if="hasMaximumSeatLimit" #label-description>
             <div class="gl-mb-3">
@@ -365,8 +394,12 @@ export default {
             type="number"
             :min="billableData.minimumSeats"
             :disabled="shouldDisableNumberOfUsers"
+            :state="hasValidSeatInput"
             data-testid="number-of-users"
           />
+          <template #invalid-feedback>
+            {{ numberOfSeatsInvalidFeedback }}
+          </template>
         </gl-form-group>
         <gl-form-group
           v-if="shouldDisableNumberOfUsers"

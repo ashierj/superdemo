@@ -10516,6 +10516,12 @@ msgstr ""
 msgid "Checkout|Users"
 msgstr ""
 
+msgid "Checkout|You can only buy a maximum of %{seatLimit} seats."
+msgstr ""
+
+msgid "Checkout|You must buy a minimum of %{seatLimit} seat."
+msgstr ""
+
 msgid "Checkout|You'll create your new group after checkout"
 msgstr ""
 
