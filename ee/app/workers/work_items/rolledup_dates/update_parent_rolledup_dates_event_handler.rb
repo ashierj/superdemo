@@ -12,6 +12,8 @@ module WorkItems
       UPDATE_TRIGGER_ATTRIBUTES = %w[
         start_date
         due_date
+        milestone
+        milestone_id
       ].freeze
 
       UPDATE_TRIGGER_WIDGETS = %w[
