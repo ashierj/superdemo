@@ -1,6 +1,7 @@
 import { GlTable, GlLabel } from '@gitlab/ui';
 import MetricsTable from 'ee/metrics/list/metrics_table.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mockMetrics } from './mock_data';
 
 describe('MetricsTable', () => {
@@ -10,6 +11,9 @@ describe('MetricsTable', () => {
     wrapper = mountExtended(MetricsTable, {
       propsData: {
         metrics,
+      },
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
   };
@@ -42,12 +46,39 @@ describe('MetricsTable', () => {
       ['unknown', '#808080'],
     ])('sets the proper label when metric type is %s', (type, expectedColor) => {
       mountComponent({
-        metrics: [{ name: 'a metric', description: 'a description', type }],
+        metrics: [{ name: 'a metric', description: 'a description', type, attributes: [] }],
       });
       const label = wrapper.findComponent(GlLabel);
       expect(label.props('backgroundColor')).toBe(expectedColor);
       expect(label.props('title')).toBe(type);
     });
+  });
+
+  describe('attributes', () => {
+    it.each([
+      [['1', '2', '3', '4', '5'], '1, 2, 3, 4, 5', undefined],
+      [['1', '2', '3', '4', '5', '6', '7'], '1, 2, 3, 4, 5 +2 more', '6, 7'],
+      [[], '', undefined],
+    ])(
+      'sets the proper attributes field with tooltip',
+      (attributes, expectedAttributes, expectedTooltip) => {
+        mountComponent({
+          metrics: [{ name: 'a metric', description: 'a description', type: 'Sum', attributes }],
+        });
+
+        expect(wrapper.find(`[data-testid="metric-attributes"]`).text()).toMatchInterpolatedText(
+          expectedAttributes,
+        );
+        const tooltipWrapper = wrapper.find(`[data-testid="metric-attributes-tooltip"]`);
+        if (!expectedTooltip) {
+          expect(tooltipWrapper.exists()).toBe(false);
+        } else {
+          const tooltip = getBinding(tooltipWrapper.element, 'gl-tooltip');
+          expect(tooltip).toBeDefined();
+          expect(tooltip.value).toBe(expectedTooltip);
+        }
+      },
+    );
   });
 
   it('renders the empty state when no metrics are provided', () => {
