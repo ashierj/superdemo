@@ -18,7 +18,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
           project, id: CGI.escape(policy[:name]), type: 'approval_policy'
         ),
         enabled: true,
-        policy_scope: nil,
+        policy_scope: {
+          compliance_frameworks: [],
+          including_projects: [],
+          excluding_projects: []
+        },
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_last_updated_at,
         user_approvers: [],
@@ -58,7 +62,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
             project, id: CGI.escape(policy[:name]), type: 'approval_policy'
           ),
           enabled: true,
-          policy_scope: nil,
+          policy_scope: {
+            compliance_frameworks: [],
+            including_projects: [],
+            excluding_projects: []
+          },
           yaml: YAML.dump(policy.deep_stringify_keys),
           updated_at: policy_last_updated_at,
           user_approvers: [],

@@ -7,12 +7,8 @@ RSpec.describe Security::ScanResultPolicies::AddApproversToRulesService, feature
   let_it_be(:user2) { create(:user) }
   let_it_be(:user_not_referenced_in_policy) { create(:user) }
 
-  let_it_be(:namespace_settings) do
-    create(:namespace_settings, toggle_security_policies_policy_scope: true)
-  end
-
   let_it_be(:namespace) do
-    create(:group, :with_security_orchestration_policy_configuration, namespace_settings: namespace_settings)
+    create(:group, :with_security_orchestration_policy_configuration)
   end
 
   let_it_be(:project1) { create(:project, :repository, group: namespace) }

@@ -3,11 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeFetcher, :aggregate_failures, feature_category: :security_policy_management do
-  let_it_be_with_refind(:namespace_settings) do
-    create(:namespace_settings, toggle_security_policies_policy_scope: true)
-  end
-
-  let_it_be_with_refind(:namespace) { create(:group, namespace_settings: namespace_settings) }
+  let_it_be_with_refind(:namespace) { create(:group) }
   let_it_be(:policy_configuration) do
     create(:security_orchestration_policy_configuration, namespace: namespace, project: nil)
   end
@@ -91,18 +87,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeFetcher, :agg
     context 'when security_policies_policy_scope is disabled' do
       before do
         stub_feature_flags(security_policies_policy_scope: false)
-      end
-
-      it 'returns empty result' do
-        response = service.execute
-
-        expect(response).to be_nil
-      end
-    end
-
-    context 'when namespace_settings is disabled' do
-      before do
-        namespace_settings.update!(toggle_security_policies_policy_scope: false)
       end
 
       it 'returns empty result' do

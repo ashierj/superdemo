@@ -1676,11 +1676,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#applicable_scan_result_policies_for_project' do
-    let_it_be(:namespace_settings) do
-      create(:namespace_settings, toggle_security_policies_policy_scope: true)
-    end
-
-    let_it_be(:group) { create(:group, namespace_settings: namespace_settings) }
+    let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, :repository, group: group) }
     let(:policy_yaml) do
       build(:orchestration_policy_yaml, scan_result_policy: [

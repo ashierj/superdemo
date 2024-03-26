@@ -67,10 +67,9 @@ module Security
       end
 
       def policy_scope_enabled?
-        return false unless group && group.namespace_settings
+        return false unless group
 
-        Feature.enabled?(:security_policies_policy_scope, group) &&
-          group.namespace_settings&.toggle_security_policies_policy_scope?
+        Feature.enabled?(:security_policies_policy_scope, group)
       end
     end
   end

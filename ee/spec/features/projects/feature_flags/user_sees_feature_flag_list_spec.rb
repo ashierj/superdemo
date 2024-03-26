@@ -53,7 +53,7 @@ RSpec.describe 'User sees feature flag list', :js, feature_category: :feature_fl
 
     it 'stops users from adding another' do
       visit(project_feature_flags_path(project))
-      expect(page).to have_text('Feature flags limit reached (1). Delete one or more feature flags before adding new ones.')
+      expect(page).to have_text("You've reached your feature flag limit (1). To add more, delete at least one feature flag, or upgrade to a higher tier.")
     end
   end
 end
