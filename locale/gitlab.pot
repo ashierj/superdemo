@@ -8866,6 +8866,9 @@ msgstr ""
 msgid "BranchRules|Does not require approval from code owners"
 msgstr ""
 
+msgid "BranchRules|Edit"
+msgstr ""
+
 msgid "BranchRules|From users with push access."
 msgstr ""
 
@@ -8923,6 +8926,9 @@ msgstr ""
 msgid "BranchRules|Something went wrong while deleting branch rule."
 msgstr ""
 
+msgid "BranchRules|Something went wrong while updating branch rule."
+msgstr ""
+
 msgid "BranchRules|Status checks"
 msgstr ""
 
@@ -8935,13 +8941,16 @@ msgstr ""
 msgid "BranchRules|To create a branch rule, you first need to create a protected branch."
 msgstr ""
 
+msgid "BranchRules|Update"
+msgstr ""
+
+msgid "BranchRules|Update target branch"
+msgstr ""
+
 msgid "BranchRules|Users"
 msgstr ""
 
 msgid "BranchRules|View details"
-msgstr ""
-
-msgid "BranchRules|Wildcards such as *-stable or production/* are supported"
 msgstr ""
 
 msgid "BranchRules|default"

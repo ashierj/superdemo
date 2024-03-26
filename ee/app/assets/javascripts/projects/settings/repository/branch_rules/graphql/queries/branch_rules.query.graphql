@@ -4,6 +4,7 @@ query getBranchRulesEE($projectPath: ID!) {
     branchRules {
       nodes {
         name
+        id
         isDefault
         matchingBranchesCount
         branchProtection {
