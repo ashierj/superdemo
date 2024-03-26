@@ -5,12 +5,10 @@
         = sprite_icon('tanuki-ai', css_class: 'gl-mr-2')
         = s_('CodeSuggestions|Introducing the GitLab Duo Pro add-on')
       %p
-        - docs_link_url = help_page_path('user/project/repository/code_suggestions/index')
-        - docs_link = link_to('', docs_link_url, target: '_blank', rel: 'noopener noreferrer')
         - duo_pro_link = link_to('', 'https://about.gitlab.com/gitlab-duo/', target: '_blank', rel: 'noopener noreferrer')
 
-        = safe_format(s_("CodeSuggestions|Boost productivity by using %{linkStart}Code Suggestions%{linkEnd} to write and understand code. Starting in February 2024, Code Suggestions will be part of %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd}, available to Premium and Ultimate users for purchase now."),
-          tag_pair(docs_link, :linkStart, :linkEnd), tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
+        = safe_format(s_('CodeSuggestions|Boost productivity across the software development life cycle by using Code Suggestions and GitLab Duo Chat (Beta) as part of the %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd} add-on. You can now try GitLab Duo Pro for free for 30 days, no credit card required.'),
+          tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
       .gl-display-flex.gl-flex-direction-column.gl-sm-flex-direction-row.gl-gap-3
         - if Feature.enabled?(:duo_pro_trials, current_user, type: :wip)
           = render 'duo_pro_trial_cta',
