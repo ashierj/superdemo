@@ -172,7 +172,7 @@ export default {
           <div
             data-testid="span-duration-bar"
             :style="durationBarStyle(span)"
-            :class="`gl-bg-data-viz-${serviceToColor[span.service]}`"
+            :class="serviceToColor[span.service]"
           ></div>
           <span
             data-testid="span-duration-value"

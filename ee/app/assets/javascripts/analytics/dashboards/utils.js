@@ -8,7 +8,6 @@ import {
   nSecondsBefore,
   nDaysBefore,
 } from '~/lib/utils/datetime_utility';
-import { thWidthPercent } from '~/lib/utils/table_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
 import {
   TABLE_METRICS,
@@ -247,7 +246,7 @@ export const generateDateRanges = (now) => {
     label: s__('DORA4Metrics|Month to date'),
     start: thisMonthStart,
     end: now,
-    thClass: thWidthPercent(20),
+    thClass: 'gl-w-20p',
   });
 
   const lastMonthStart = nMonthsBefore(thisMonthStart, 1);
@@ -257,7 +256,7 @@ export const generateDateRanges = (now) => {
     label: monthInWords(lastMonthStart),
     start: lastMonthStart,
     end: lastMonthEnd,
-    thClass: thWidthPercent(20),
+    thClass: 'gl-w-20p',
   });
 
   const twoMonthsAgoStart = nMonthsBefore(lastMonthStart, 1);
@@ -267,7 +266,7 @@ export const generateDateRanges = (now) => {
     label: monthInWords(twoMonthsAgoStart),
     start: twoMonthsAgoStart,
     end: twoMonthsAgoEnd,
-    thClass: thWidthPercent(20),
+    thClass: 'gl-w-20p',
   });
 
   const threeMonthsAgoStart = nMonthsBefore(twoMonthsAgoStart, 1);
@@ -306,7 +305,7 @@ export const generateDashboardTableFields = (now) => {
     {
       key: 'metric',
       label: __('Metric'),
-      thClass: thWidthPercent(25),
+      thClass: 'gl-w-25p',
     },
     ...generateDateRanges(now).slice(0, -1),
     {
@@ -314,7 +313,7 @@ export const generateDashboardTableFields = (now) => {
       label: s__('DORA4Metrics|Past 6 Months'),
       start: nMonthsBefore(now, 6),
       end: now,
-      thClass: thWidthPercent(15),
+      thClass: 'gl-w-15p',
       tdClass: 'gl-py-2!',
     },
   ];

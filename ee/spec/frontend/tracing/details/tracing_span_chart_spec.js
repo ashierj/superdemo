@@ -36,8 +36,8 @@ describe('TracingSpansChart', () => {
     spans: mockSpans,
     traceDurationMs: 300,
     serviceToColor: {
-      'service-1': 'blue-500',
-      'service-2': 'orange-500',
+      'service-1': 'gl-bg-data-viz-blue-500',
+      'service-2': 'gl-bg-data-viz-orange-500',
     },
   };
 
