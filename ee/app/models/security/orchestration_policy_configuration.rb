@@ -144,7 +144,7 @@ module Security
 
         rules.each do |rule|
           deprecated_properties.add('match_on_inclusion') if rule.key?(:match_on_inclusion)
-          deprecated_properties.add('newly_detected') if rule[:license_states]&.include?('newly_detected')
+          deprecated_properties.add('newly_detected') if rule[:vulnerability_states]&.include?('newly_detected')
         end
       end
 
