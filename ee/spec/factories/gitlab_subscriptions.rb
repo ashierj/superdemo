@@ -13,6 +13,10 @@ FactoryBot.define do
     end_date { Date.current.advance(years: 1) }
     trial { false }
 
+    trait :with_group do
+      association :namespace, factory: :group
+    end
+
     trait :expired do
       start_date { Date.current.advance(years: -1, months: -1) }
       end_date { Date.current.advance(months: -1) }

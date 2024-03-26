@@ -6,7 +6,7 @@ RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_categor
   let_it_be(:user, reload: true) { create(:user) }
   let(:step) { described_class::LEAD }
 
-  describe '#execute' do
+  describe '#execute', :saas do
     let(:trial_params) { {} }
     let(:extra_lead_params) { {} }
     let(:trial_user_params) do
@@ -16,17 +16,21 @@ RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_categor
     let(:lead_service_class) { GitlabSubscriptions::Trials::CreateDuoProLeadService }
     let(:apply_trial_service_class) { GitlabSubscriptions::Trials::ApplyDuoProService }
 
+    before_all do
+      create(:gitlab_subscription_add_on, :gitlab_duo_pro)
+    end
+
     subject(:execute) do
       described_class.new(
         step: step, lead_params: lead_params(user, extra_lead_params), trial_params: trial_params, user: user
       ).execute
     end
 
-    it_behaves_like 'when on the lead step'
-    it_behaves_like 'when on trial step'
+    it_behaves_like 'when on the lead step', :ultimate_plan
+    it_behaves_like 'when on trial step', :ultimate_plan
     it_behaves_like 'with an unknown step'
     it_behaves_like 'with no step'
-    it_behaves_like 'with tracking duo pro trial lead'
+    it_behaves_like 'with tracking duo pro trial lead', :ultimate_plan
   end
 
   def lead_params(user, extra_lead_params)

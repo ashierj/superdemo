@@ -421,7 +421,7 @@ module EE
     end
 
     def manageable_namespaces_eligible_for_trial
-      owned_groups.eligible_for_trial.order(:name)
+      owned_groups.eligible_for_trial.ordered_by_name
     end
 
     override :has_current_license?

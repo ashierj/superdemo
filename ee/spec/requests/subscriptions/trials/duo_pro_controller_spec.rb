@@ -2,15 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Subscriptions::Trials::DuoProController, feature_category: :purchase do
+RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:another_group) { create(:group) }
+  let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be(:another_group) { create(:group_with_plan, plan: :ultimate_plan) }
 
   let(:duo_pro_trials_feature_flag) { true }
   let(:subscriptions_trials_saas_feature) { true }
 
   before_all do
+    create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro)
     group.add_owner(user)
   end
 

@@ -343,8 +343,8 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       end
     end
 
-    describe '.in_default_plan', :saas do
-      subject { described_class.in_default_plan.ids }
+    describe '.not_in_default_plan', :saas do
+      subject { described_class.not_in_default_plan.ids }
 
       where(:plan_name, :expect_in_default_plan) do
         ::Plan::FREE     | true
@@ -360,14 +360,31 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
         it 'returns expected result' do
           namespace = create(:namespace_with_plan, plan: "#{plan_name}_plan")
 
-          is_expected.to eq(expect_in_default_plan ? [namespace.id] : [])
+          is_expected.to eq(expect_in_default_plan ? [] : [namespace.id])
         end
       end
 
-      it 'includes namespace with no subscription' do
-        namespace = create(:namespace)
+      it 'does not include namespace without subscription' do
+        create(:namespace)
 
-        is_expected.to eq([namespace.id])
+        is_expected.to eq([])
+      end
+    end
+
+    describe '.not_duo_pro_or_no_add_on', :saas do
+      let_it_be(:namespace_with_paid_plan) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:namespace_with_duo_pro) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:namespace_with_other_addon) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:regular_namespace) { create(:group) }
+
+      before_all do
+        create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: namespace_with_duo_pro)
+        create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: namespace_with_other_addon)
+      end
+
+      it 'includes correct namespaces' do
+        expect(described_class.not_duo_pro_or_no_add_on)
+          .to match_array([namespace_with_paid_plan, namespace_with_other_addon, regular_namespace])
       end
     end
 
