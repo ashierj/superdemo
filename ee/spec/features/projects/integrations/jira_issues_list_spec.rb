@@ -9,6 +9,7 @@ RSpec.describe 'Jira issues list', :js, feature_category: :integrations do
   let_it_be(:public_url) { 'http://jira.foo.bar' }
   let_it_be(:api_url) { "#{public_url}/api" }
   let_it_be(:jira_project_key) { 'JIRA-GL1' }
+  let_it_be(:jira_project_keys) { ['GL'] }
   let_it_be(:jira_user) { 'JiraGitlabUser' }
   let_it_be(:timestamp) { Time.current }
   let_it_be(:jira) do
@@ -16,6 +17,7 @@ RSpec.describe 'Jira issues list', :js, feature_category: :integrations do
       :jira_integration,
       project: project,
       project_key: jira_project_key,
+      project_keys: jira_project_keys,
       deployment_type: 1,
       issues_enabled: true,
       api_url: api_url,
