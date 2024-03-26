@@ -2,7 +2,6 @@
 import { GlCard, GlTable, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
-import { thWidthPercent } from '~/lib/utils/table_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import { EMPTY_STATUS_CHECK } from '../constants';
@@ -60,17 +59,17 @@ export default {
     {
       key: 'name',
       label: i18n.nameHeader,
-      thClass: thWidthPercent(20),
+      thClass: 'gl-w-20p',
     },
     {
       key: 'externalUrl',
       label: i18n.apiHeader,
-      thClass: thWidthPercent(40),
+      thClass: 'gl-w-40p',
     },
     {
       key: 'protectedBranches',
       label: i18n.branchHeader,
-      thClass: thWidthPercent(20),
+      thClass: 'gl-w-20p',
     },
     {
       key: 'actions',
