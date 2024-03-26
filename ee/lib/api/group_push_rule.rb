@@ -46,7 +46,7 @@ module API
           optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)', documentation: { example: 20 }
           optional :commit_committer_check, type: Boolean, desc: 'Users may only push their own commits'
           optional :commit_committer_name_check, type: Boolean, desc: 'The commit author name must be consistent with their GitLab account name.'
-          optional :reject_unsigned_commits, type: Boolean, desc: 'Only GPG signed commits can be pushed to this repository'
+          optional :reject_unsigned_commits, type: Boolean, desc: 'Only signed commits can be pushed to this repository'
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
             :commit_message_regex, :commit_message_negative_regex, :branch_name_regex,
             :author_email_regex,
