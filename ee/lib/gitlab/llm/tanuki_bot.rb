@@ -10,7 +10,6 @@ module Gitlab
       CONTENT_ID_FIELD = 'ATTRS'
       CONTENT_ID_REGEX = /CNT-IDX-(?<id>\d+)/
       RECORD_LIMIT = 4
-      MODEL = 'claude-instant-1.1'
 
       def self.enabled_for?(user:, container: nil)
         return false unless Feature.enabled?(:ai_duo_chat_switch, type: :ops)
@@ -114,8 +113,7 @@ module Gitlab
           .final_prompt(question: question, documents: search_documents)
 
         final_prompt_result = anthropic_client.stream(
-          prompt: final_prompt[:prompt],
-          model: "claude-instant-1.1"
+          prompt: final_prompt[:prompt]
         ) do |data|
           logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
 

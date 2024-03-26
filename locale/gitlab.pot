@@ -32212,6 +32212,9 @@ msgstr ""
 msgid "MlExperimentTracking|Experiment"
 msgstr ""
 
+msgid "MlExperimentTracking|Experiment metadata"
+msgstr ""
+
 msgid "MlExperimentTracking|Experiment removed"
 msgstr ""
 
@@ -32249,6 +32252,9 @@ msgid "MlExperimentTracking|No candidates"
 msgstr ""
 
 msgid "MlExperimentTracking|No candidates logged for the query. Create new candidates using the MLflow client."
+msgstr ""
+
+msgid "MlExperimentTracking|No logged experiment metadata"
 msgstr ""
 
 msgid "MlExperimentTracking|No name"

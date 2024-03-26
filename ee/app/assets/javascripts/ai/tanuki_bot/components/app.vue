@@ -126,53 +126,45 @@ export default {
   },
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
+    isClearOrResetMessage(question) {
+      return [
+        GENIE_CHAT_CLEAN_MESSAGE,
+        GENIE_CHAT_CLEAR_MESSAGE,
+        GENIE_CHAT_RESET_MESSAGE,
+      ].includes(question);
+    },
     onSendChatPrompt(question) {
-      const trimmedQuestion = question.trim();
-
-      if (
-        ![GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE, GENIE_CHAT_RESET_MESSAGE].includes(
-          trimmedQuestion,
-        )
-      ) {
+      if (!this.isClearOrResetMessage(question)) {
         this.setLoading();
       }
       this.$apollo
         .mutate({
           mutation: chatMutation,
           variables: {
-            question: trimmedQuestion,
+            question,
             resourceId: this.resourceId || this.userId,
             clientSubscriptionId: this.clientSubscriptionId,
           },
         })
         .then(({ data: { aiAction = {} } = {} }) => {
-          if (
-            ![
-              GENIE_CHAT_CLEAN_MESSAGE,
-              GENIE_CHAT_CLEAR_MESSAGE,
-              GENIE_CHAT_RESET_MESSAGE,
-            ].includes(trimmedQuestion)
-          ) {
+          if (!this.isClearOrResetMessage(question)) {
             this.track('submit_gitlab_duo_question', {
               property: aiAction.requestId,
             });
           }
-          if (
-            trimmedQuestion === GENIE_CHAT_CLEAN_MESSAGE ||
-            trimmedQuestion === GENIE_CHAT_CLEAR_MESSAGE
-          ) {
+          if ([GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE].includes(question)) {
             this.$apollo.queries.aiMessages.refetch();
           } else {
             this.addDuoChatMessage({
               ...aiAction,
-              content: trimmedQuestion,
+              content: question,
             });
           }
         })
         .catch((err) => {
           this.error = err.toString();
           this.addDuoChatMessage({
-            content: trimmedQuestion,
+            content: question,
           });
           this.setLoading(false);
         });
