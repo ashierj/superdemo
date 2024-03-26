@@ -22,6 +22,7 @@ RSpec.describe 'User activates Jira', :js, feature_category: :integrations do
         visit_project_integration('Jira')
         fill_form
         fill_in 'service_project_key', with: 'AB'
+        fill_in 'service_project_keys', with: 'AB,CD'
         click_test_then_save_integration(expect_test_to_fail: false)
       end
 

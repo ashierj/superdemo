@@ -12,6 +12,7 @@ module EE
         :issues_enabled,
         :multiproject_enabled,
         :pass_unstable,
+        :project_keys,
         :repository_url,
         :static_context,
         :vulnerabilities_enabled,
@@ -23,9 +24,23 @@ module EE
         :workload_identity_pool_provider_id
       ].freeze
 
+      override :integration_params
+      def integration_params
+        return_value = super
+        parse_jira_project_keys(return_value)
+
+        return_value
+      end
+
       override :allowed_integration_params
       def allowed_integration_params
         super + ALLOWED_PARAMS_EE
+      end
+
+      def parse_jira_project_keys(return_value)
+        return unless return_value.dig(:integration, :project_keys)
+
+        return_value[:integration][:project_keys] = return_value[:integration][:project_keys].split(',')
       end
     end
   end

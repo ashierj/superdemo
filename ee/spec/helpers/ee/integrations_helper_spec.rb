@@ -16,6 +16,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
         enable_jira_issues: 'true',
         enable_jira_vulnerabilities: 'false',
         project_key: 'FE',
+        project_keys: 'FE,BE',
         vulnerabilities_issuetype: '10001'
       }
     end
@@ -27,7 +28,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
     end
 
     context 'with a Jira integration' do
-      let_it_be_with_refind(:integration) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'FE', vulnerabilities_enabled: true, vulnerabilities_issuetype: '10001') }
+      let_it_be_with_refind(:integration) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'FE', project_keys: %w[FE BE], vulnerabilities_enabled: true, vulnerabilities_issuetype: '10001') }
 
       context 'when there is no license for jira_vulnerabilities_integration' do
         before do
