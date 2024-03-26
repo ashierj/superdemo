@@ -7,12 +7,14 @@ import {
   GlCollapse,
   GlCollapsibleListbox,
 } from '@gitlab/ui';
+import { debounce, memoize } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import AddApprovers from './add_approvers.vue';
 import { ACCESS_LEVELS } from './constants';
 
@@ -60,28 +62,19 @@ export default {
       return Boolean(this.environment);
     },
   },
-  methods: {
-    updateDeployers(permissions) {
-      this.deployers = permissions;
-    },
-    updateApprovers(permissions) {
-      this.approvers = permissions;
-    },
-    fetchEnvironments() {
-      this.getProtectedEnvironments();
-    },
-    getProtectedEnvironments(query = '') {
+  mounted() {
+    this.fetchEnvironments();
+  },
+  unmounted() {
+    // cancel debounce if the component is unmounted to avoid unnecessary fetches
+    this.fetchEnvironments.cancel();
+  },
+  created() {
+    this.fetch = memoize(async function getProtectedEnvironments(query = '') {
       this.environmentsLoading = true;
       this.errorMessage = '';
       return axios
         .get(this.searchUnprotectedEnvironmentsUrl, { params: { query } })
-        .then(({ data }) => {
-          const environments = [].concat(data);
-          this.environments = environments.map((environment) => ({
-            value: environment,
-            text: environment,
-          }));
-        })
         .catch((error) => {
           Sentry.captureException(error);
           this.environments = [];
@@ -90,6 +83,31 @@ export default {
         .finally(() => {
           this.environmentsLoading = false;
         });
+    });
+
+    this.fetchEnvironments = debounce(function debouncedFetchEnvironments(query = '') {
+      this.fetch(query)
+        .then(({ data }) => {
+          const environments = [].concat(data);
+          this.environments = environments.map((environment) => ({
+            value: environment,
+            text: environment,
+          }));
+        })
+        .catch(() => {
+          this.environments = [];
+        });
+    }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+  },
+  methods: {
+    onSearch(query) {
+      this.fetchEnvironments(query);
+    },
+    updateDeployers(permissions) {
+      this.deployers = permissions;
+    },
+    updateApprovers(permissions) {
+      this.approvers = permissions;
     },
     submitForm() {
       this.errorMessage = '';
@@ -158,8 +176,7 @@ export default {
           :items="environments"
           :searching="environmentsLoading"
           searchable
-          @shown="fetchEnvironments"
-          @search="getProtectedEnvironments"
+          @search="onSearch"
         />
       </gl-form-group>
 

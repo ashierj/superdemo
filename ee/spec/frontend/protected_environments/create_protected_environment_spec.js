@@ -1,5 +1,4 @@
 import MockAdapter from 'axios-mock-adapter';
-import { nextTick } from 'vue';
 import { GlAlert, GlCollapsibleListbox, GlForm } from '@gitlab/ui';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -12,12 +11,15 @@ import { ACCESS_LEVELS } from 'ee/protected_environments/constants';
 import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import CreateProtectedEnvironment from 'ee/protected_environments/create_protected_environment.vue';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { __ } from '~/locale';
 
 const SEARCH_URL = '/search';
 const PROJECT_ID = '0';
 const API_LINK = `${TEST_HOST}/docs/api.md`;
 const DOCS_LINK = `${TEST_HOST}/docs/protected_environments.md`;
+
+jest.mock('lodash');
 
 describe('ee/protected_environments/create_protected_environment.vue', () => {
   useMockLocationHelper();
@@ -31,6 +33,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
   const findAccessDropdown = () =>
     wrapper.findByTestId('create-deployer-dropdown').findComponent(AccessDropdown);
   const findAddApprovers = () => wrapper.findComponent(AddApprovers);
+  const findCancelButton = () => wrapper.findByTestId('cancel-button');
   const findForm = () => wrapper.findComponent(GlForm);
 
   beforeEach(() => {
@@ -103,17 +106,28 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     });
   });
 
+  it('emits cancel event when the cancel button is clicked', () => {
+    createComponent();
+    findCancelButton().trigger('click');
+
+    expect(wrapper.emitted('cancel').length).toBe(1);
+  });
+
   it('searchs the environment name', async () => {
     const query = 'staging';
+    mockAxios
+      .onGet(SEARCH_URL, { params: { query: '' } })
+      .reply(HTTP_STATUS_OK, ['production', query]);
     createComponent();
+    jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+    await waitForPromises();
 
     mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(HTTP_STATUS_OK, [query]);
 
     const environmentSearch = findEnvironmentsListbox();
     environmentSearch.vm.$emit('search', query);
-
+    jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
     await waitForPromises();
-    await nextTick();
 
     expect(environmentSearch.props('items')).toEqual([{ value: query, text: query }]);
   });

@@ -92,7 +92,7 @@ describe('ee/protected_environments/protected_environments.vue', () => {
         docsLink: '',
       },
       // Stub access dropdown since it triggers some requests that are out-of-scope here
-      stubs: ['AccessDropdown'],
+      stubs: ['AccessDropdown', 'CreateProtectedEnvironment'],
     });
   };
 
@@ -100,7 +100,6 @@ describe('ee/protected_environments/protected_environments.vue', () => {
   const findPagination = () => wrapper.findComponent(Pagination);
   const findAddButton = () => wrapper.findByTestId('new-environment-button');
   const findAddForm = () => wrapper.findComponent(CreateProtectedEnvironment);
-  const findCancelButton = () => wrapper.findByTestId('cancel-button');
 
   describe('header', () => {
     it('shows a header with the title protected environments', async () => {
@@ -234,7 +233,7 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       });
 
       it('when canceled, hides the add form', async () => {
-        await findCancelButton().trigger('click');
+        await findAddForm().vm.$emit('cancel');
 
         expect(findAddForm().exists()).toBe(false);
       });
