@@ -56,7 +56,7 @@ RSpec.describe 'Duo Pro trial lead submission and creation with multiple eligibl
   end
 
   context 'when applying lead fails' do
-    xit 'fills out form, submits and sent back to information form with errors and is then resolved' do
+    it 'fills out form, submits and sent back to information form with errors and is then resolved' do
       # setup
       sign_in(user)
 

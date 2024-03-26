@@ -37,6 +37,11 @@ module Features
       expect(page).to have_content('We have found the following errors')
       expect(page).to have_content('_lead_fail_')
       expect(page).to have_content('Number of employees')
+
+      # This is needed to ensure the countries and regions selector has time to populate
+      # This only happens on the duo trial and not the regular trial. Probably due to the added time for full page
+      # to load with background on duo trial. However, this wait should be present anyway to avoid possible flakiness.
+      wait_for_all_requests
     end
 
     def expect_to_be_on_group_security_dashboard(group_for_path: group)
