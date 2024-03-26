@@ -329,6 +329,18 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     it { is_expected.not_to be_allowed(:read_dora4_analytics) }
   end
 
+  describe ':read_ai_analytics' do
+    let(:current_user) { reporter }
+
+    it { is_expected.to be_allowed(:read_ai_analytics) }
+
+    context 'when user is a guest' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:read_ai_analytics) }
+    end
+  end
+
   describe 'analytics value streams' do
     context 'when feature is not available' do
       context 'and user is admin', :enable_admin_mode do

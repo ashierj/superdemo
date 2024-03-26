@@ -190,6 +190,13 @@ module EE
           authorize: :read_cycle_analytics,
           alpha: { milestone: '15.10' }
 
+        field :ai_metrics,
+          ::Types::Analytics::AiMetrics,
+          null: true,
+          description: 'AI-related metrics.',
+          resolver: ::Resolvers::Analytics::AiMetricsResolver,
+          alpha: { milestone: '16.11' }
+
         field :project_compliance_standards_adherence,
           ::Types::Projects::ComplianceStandards::AdherenceType.connection_type,
           null: true,

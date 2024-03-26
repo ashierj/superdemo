@@ -234,6 +234,13 @@ module EE
               method: :itself,
               description: "Project's DORA metrics."
 
+        field :ai_metrics,
+              ::Types::Analytics::AiMetrics,
+              null: true,
+              description: 'AI-related metrics.',
+              resolver: ::Resolvers::Analytics::AiMetricsResolver,
+              alpha: { milestone: '16.11' }
+
         field :security_training_urls,
               [::Types::Security::TrainingUrlType],
               null: true,

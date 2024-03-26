@@ -37,6 +37,7 @@ RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projec
   it { expect(described_class).to have_graphql_field(:duo_features_enabled) }
   it { expect(described_class).to have_graphql_field(:lock_duo_features_enabled) }
   it { expect(described_class).to have_graphql_field(:marked_for_deletion_on) }
+  it { expect(described_class).to have_graphql_field(:ai_metrics) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }

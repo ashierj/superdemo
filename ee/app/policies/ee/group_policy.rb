@@ -390,6 +390,8 @@ module EE
       rule { (admin | reporter | auditor) & dora4_analytics_available }
         .enable :read_dora4_analytics
 
+      rule { admin | reporter }.enable :read_ai_analytics
+
       rule { reporter & group_repository_analytics_available }
         .enable :read_group_repository_analytics
 

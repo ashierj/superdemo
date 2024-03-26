@@ -1527,6 +1527,18 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     it { is_expected.not_to be_allowed(:read_dora4_analytics) }
   end
 
+  describe ':read_ai_analytics' do
+    let(:current_user) { reporter }
+
+    it { is_expected.to be_allowed(:read_ai_analytics) }
+
+    context 'when user is a guest' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:read_ai_analytics) }
+    end
+  end
+
   describe ':read_code_review_analytics' do
     let(:project) { private_project }
 
