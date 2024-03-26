@@ -5,10 +5,10 @@ import {
   policyScopeHasExcludingProjects,
   policyScopeHasIncludingProjects,
   policyScopeProjectsKey,
-  policyHasAllProjectsInGroup,
   policyScopeHasComplianceFrameworks,
   policyScopeProjectLength,
-  policyScopeComplianceFrameworkIds,
+  policyScopeComplianceFrameworks,
+  policyScopeProjects,
 } from 'ee/security_orchestration/components/utils';
 import {
   EXCLUDING,
@@ -42,11 +42,18 @@ describe(policyHasNamespace, () => {
 
 describe(isDefaultMode, () => {
   it.each`
-    input                            | output
-    ${undefined}                     | ${true}
-    ${{}}                            | ${true}
-    ${null}                          | ${true}
-    ${{ compliance_frameworks: [] }} | ${false}
+    input                                      | output
+    ${undefined}                               | ${true}
+    ${{}}                                      | ${true}
+    ${null}                                    | ${true}
+    ${{ complianceFrameworks: { nodes: [] } }} | ${false}
+    ${{ excludingProjects: { nodes: [] } }}    | ${false}
+    ${{ includingProjects: { nodes: [] } }}    | ${false}
+    ${{
+  complianceFrameworks: { nodes: [] },
+  excludingProjects: { nodes: [] },
+  includingProjects: { nodes: [] },
+}} | ${true}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(isDefaultMode(input)).toBe(output);
   });
@@ -54,17 +61,16 @@ describe(isDefaultMode, () => {
 
 describe(policyScopeHasExcludingProjects, () => {
   it.each`
-    input                                                  | output
-    ${undefined}                                           | ${false}
-    ${{}}                                                  | ${false}
-    ${null}                                                | ${false}
-    ${{ compliance_frameworks: [] }}                       | ${false}
-    ${{ projects: [] }}                                    | ${false}
-    ${{ projects: { including: [] } }}                     | ${false}
-    ${{ projects: { excluding: [] } }}                     | ${false}
-    ${{ projects: { excluding: [{}] } }}                   | ${true}
-    ${{ projects: { excluding: [undefined] } }}            | ${false}
-    ${{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }} | ${true}
+    input                                                       | output
+    ${undefined}                                                | ${false}
+    ${{}}                                                       | ${false}
+    ${null}                                                     | ${false}
+    ${{ complianceFrameworks: [] }}                             | ${false}
+    ${{ includingProjects: { nodes: [] } }}                     | ${false}
+    ${{ excludingProjects: { nodes: [] } }}                     | ${false}
+    ${{ excludingProjects: { nodes: [{}] } }}                   | ${true}
+    ${{ excludingProjects: { nodes: [undefined] } }}            | ${false}
+    ${{ excludingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${true}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(policyScopeHasExcludingProjects(input)).toBe(output);
   });
@@ -72,19 +78,18 @@ describe(policyScopeHasExcludingProjects, () => {
 
 describe(policyScopeHasIncludingProjects, () => {
   it.each`
-    input                                                  | output
-    ${undefined}                                           | ${false}
-    ${{}}                                                  | ${false}
-    ${null}                                                | ${false}
-    ${{ compliance_frameworks: [] }}                       | ${false}
-    ${{ projects: [] }}                                    | ${false}
-    ${{ projects: { including: [] } }}                     | ${false}
-    ${{ projects: { excluding: [] } }}                     | ${false}
-    ${{ projects: { excluding: [{}] } }}                   | ${false}
-    ${{ projects: { excluding: [undefined] } }}            | ${false}
-    ${{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }} | ${false}
-    ${{ projects: { including: [undefined] } }}            | ${false}
-    ${{ projects: { including: [{ id: 1 }, { id: 2 }] } }} | ${true}
+    input                                                       | output
+    ${undefined}                                                | ${false}
+    ${{}}                                                       | ${false}
+    ${null}                                                     | ${false}
+    ${{ complianceFrameworks: [] }}                             | ${false}
+    ${{ includingProjects: { nodes: [] } }}                     | ${false}
+    ${{ excludingProjects: { nodes: [] } }}                     | ${false}
+    ${{ excludingProjects: { nodes: [{}] } }}                   | ${false}
+    ${{ excludingProjects: { nodes: [undefined] } }}            | ${false}
+    ${{ excludingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${false}
+    ${{ includingProjects: { nodes: [undefined] } }}            | ${false}
+    ${{ includingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${true}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(policyScopeHasIncludingProjects(input)).toBe(output);
   });
@@ -92,51 +97,30 @@ describe(policyScopeHasIncludingProjects, () => {
 
 describe(policyScopeProjectsKey, () => {
   it.each`
-    input                                                  | output
-    ${undefined}                                           | ${EXCLUDING}
-    ${{}}                                                  | ${EXCLUDING}
-    ${null}                                                | ${EXCLUDING}
-    ${{ compliance_frameworks: [] }}                       | ${EXCLUDING}
-    ${{ projects: [] }}                                    | ${EXCLUDING}
-    ${{ projects: { including: [] } }}                     | ${EXCLUDING}
-    ${{ projects: { excluding: [] } }}                     | ${EXCLUDING}
-    ${{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }} | ${EXCLUDING}
-    ${{ projects: { including: [{ id: 1 }, { id: 2 }] } }} | ${INCLUDING}
+    input                                                       | output
+    ${undefined}                                                | ${EXCLUDING}
+    ${{}}                                                       | ${EXCLUDING}
+    ${null}                                                     | ${EXCLUDING}
+    ${{ complianceFrameworks: { nodes: [] } }}                  | ${EXCLUDING}
+    ${{ includingProjects: { nodes: [] } }}                     | ${EXCLUDING}
+    ${{ excludingProjects: { nodes: [] } }}                     | ${EXCLUDING}
+    ${{ excludingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${EXCLUDING}
+    ${{ includingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${INCLUDING}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(policyScopeProjectsKey(input)).toBe(output);
   });
 });
 
-describe(policyHasAllProjectsInGroup, () => {
-  it.each`
-    input                                                  | output
-    ${undefined}                                           | ${false}
-    ${{}}                                                  | ${false}
-    ${null}                                                | ${false}
-    ${{ compliance_frameworks: [] }}                       | ${true}
-    ${{ projects: [] }}                                    | ${true}
-    ${{ projects: { including: [] } }}                     | ${true}
-    ${{ projects: { excluding: [] } }}                     | ${true}
-    ${{ projects: { excluding: [{}] } }}                   | ${false}
-    ${{ projects: { excluding: [undefined] } }}            | ${true}
-    ${{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }} | ${false}
-    ${{ projects: { including: [undefined] } }}            | ${true}
-    ${{ projects: { including: [{ id: 1 }, { id: 2 }] } }} | ${true}
-  `('returns `$output` when passed `$input`', ({ input, output }) => {
-    expect(policyHasAllProjectsInGroup(input)).toBe(output);
-  });
-});
-
 describe(policyScopeHasComplianceFrameworks, () => {
   it.each`
-    input                                     | output
-    ${undefined}                              | ${false}
-    ${{}}                                     | ${false}
-    ${null}                                   | ${false}
-    ${{ compliance_frameworks: [] }}          | ${false}
-    ${{ compliance_frameworks: [{}] }}        | ${true}
-    ${{ compliance_frameworks: undefined }}   | ${false}
-    ${{ compliance_frameworks: [{ id: 1 }] }} | ${true}
+    input                                               | output
+    ${undefined}                                        | ${false}
+    ${{}}                                               | ${false}
+    ${null}                                             | ${false}
+    ${{ complianceFrameworks: [] }}                     | ${false}
+    ${{ complianceFrameworks: { nodes: [{}] } }}        | ${true}
+    ${{ complianceFrameworks: { nodes: undefined } }}   | ${false}
+    ${{ complianceFrameworks: { nodes: [{ id: 1 }] } }} | ${true}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(policyScopeHasComplianceFrameworks(input)).toBe(output);
   });
@@ -144,32 +128,43 @@ describe(policyScopeHasComplianceFrameworks, () => {
 
 describe(policyScopeProjectLength, () => {
   it.each`
-    input                                                  | output
-    ${undefined}                                           | ${0}
-    ${{}}                                                  | ${0}
-    ${null}                                                | ${0}
-    ${{ compliance_frameworks: [] }}                       | ${0}
-    ${{ projects: { excluding: [undefined] } }}            | ${0}
-    ${{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }} | ${2}
-    ${{ projects: { including: [undefined] } }}            | ${0}
-    ${{ projects: { including: [{ id: 1 }, { id: 2 }] } }} | ${2}
+    input                                                       | output
+    ${undefined}                                                | ${0}
+    ${{}}                                                       | ${0}
+    ${null}                                                     | ${0}
+    ${{ complianceFrameworks: { nodes: [] } }}                  | ${0}
+    ${{ excludingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${2}
+    ${{ includingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${2}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(policyScopeProjectLength(input)).toBe(output);
   });
 });
 
-describe(policyScopeComplianceFrameworkIds, () => {
+describe(policyScopeComplianceFrameworks, () => {
   it.each`
-    input                                                              | output
-    ${undefined}                                                       | ${[]}
-    ${{}}                                                              | ${[]}
-    ${null}                                                            | ${[]}
-    ${{ compliance_frameworks: [] }}                                   | ${[]}
-    ${{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }}             | ${[]}
-    ${{ projects: { including: [{ id: 1 }, { id: 2 }] } }}             | ${[]}
-    ${{ compliance_frameworks: [{ id: 1 }, { id: 2 }] }}               | ${[1, 2]}
-    ${{ compliance_frameworks: [{ invalidId: 1 }, { invalidId: 2 }] }} | ${[]}
+    input                                                          | output
+    ${undefined}                                                   | ${[]}
+    ${{}}                                                          | ${[]}
+    ${null}                                                        | ${[]}
+    ${{ complianceFrameworks: { nodes: [] } }}                     | ${[]}
+    ${{ includingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }}    | ${[]}
+    ${{ excludingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }}    | ${[]}
+    ${{ complianceFrameworks: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${[{ id: 1 }, { id: 2 }]}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
-    expect(policyScopeComplianceFrameworkIds(input)).toEqual(output);
+    expect(policyScopeComplianceFrameworks(input)).toEqual(output);
+  });
+});
+
+describe(policyScopeProjects, () => {
+  it.each`
+    input                                                       | output
+    ${undefined}                                                | ${{ pageInfo: {}, projects: [] }}
+    ${{}}                                                       | ${{ pageInfo: {}, projects: [] }}
+    ${null}                                                     | ${{ pageInfo: {}, projects: [] }}
+    ${{ compliance_frameworks: [] }}                            | ${{ pageInfo: {}, projects: [] }}
+    ${{ excludingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${{ pageInfo: {}, projects: [{ id: 1 }, { id: 2 }] }}
+    ${{ includingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${{ pageInfo: {}, projects: [{ id: 1 }, { id: 2 }] }}
+  `('returns `$output` when passed `$input`', ({ input, output }) => {
+    expect(policyScopeProjects(input)).toEqual(output);
   });
 });

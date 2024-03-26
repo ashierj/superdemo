@@ -5,6 +5,7 @@ import * as urlUtils from '~/lib/utils/url_utility';
 import ListComponent from 'ee/security_orchestration/components/policies/list_component.vue';
 import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import projectScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_result_policies.query.graphql';
@@ -24,6 +25,7 @@ import {
   groupScanExecutionPolicies,
   projectScanResultPolicies,
   groupScanResultPolicies,
+  mockLinkedSppItemsResponse,
 } from '../../mocks/mock_apollo';
 import {
   mockGroupScanExecutionPolicy,
@@ -44,11 +46,13 @@ const projectScanExecutionPoliciesSpy = projectScanExecutionPolicies(
 const groupScanExecutionPoliciesSpy = groupScanExecutionPolicies(mockScanExecutionPoliciesResponse);
 const projectScanResultPoliciesSpy = projectScanResultPolicies(mockScanResultPoliciesResponse);
 const groupScanResultPoliciesSpy = groupScanResultPolicies(mockScanResultPoliciesResponse);
+const linkedSppItemsResponseSpy = mockLinkedSppItemsResponse();
 const defaultRequestHandlers = {
   projectScanExecutionPolicies: projectScanExecutionPoliciesSpy,
   groupScanExecutionPolicies: groupScanExecutionPoliciesSpy,
   projectScanResultPolicies: projectScanResultPoliciesSpy,
   groupScanResultPolicies: groupScanResultPoliciesSpy,
+  linkedSppItemsResponse: linkedSppItemsResponseSpy,
 };
 
 describe('List component', () => {
@@ -78,6 +82,7 @@ describe('List component', () => {
         [groupScanExecutionPoliciesQuery, requestHandlers.groupScanExecutionPolicies],
         [projectScanResultPoliciesQuery, requestHandlers.projectScanResultPolicies],
         [groupScanResultPoliciesQuery, requestHandlers.groupScanResultPolicies],
+        [getSppLinkedProjectsNamespaces, requestHandlers.linkedSppItemsResponse],
       ]),
       stubs: {
         DrawerWrapper: stubComponent(DrawerWrapper, {

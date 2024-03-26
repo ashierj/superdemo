@@ -13,7 +13,21 @@ export const policyHasNamespace = (source) => Boolean(source?.namespace);
  * @returns {Boolean}
  */
 export const isDefaultMode = (policyScope) => {
-  return policyScope === undefined || policyScope === null || isEmpty(policyScope);
+  const {
+    complianceFrameworks: { nodes: frameworks } = {},
+    excludingProjects: { nodes: excluding } = {},
+    includingProjects: { nodes: including } = {},
+  } = policyScope || {};
+
+  const noScope = (items) => items?.length === 0;
+  const existingDefaultScope = noScope(frameworks) && noScope(excluding) && noScope(including);
+
+  return (
+    policyScope === undefined ||
+    policyScope === null ||
+    isEmpty(policyScope) ||
+    existingDefaultScope
+  );
 };
 
 /**
@@ -22,8 +36,8 @@ export const isDefaultMode = (policyScope) => {
  * @returns {boolean}
  */
 export const policyScopeHasExcludingProjects = (policyScope = {}) => {
-  const { projects: { excluding = [] } = {} } = policyScope || {};
-  return Boolean(excluding) && excluding?.filter(Boolean).length > 0;
+  const { excludingProjects: { nodes: excluding = [] } = {} } = policyScope || {};
+  return excluding?.filter(Boolean).length > 0;
 };
 
 /**
@@ -32,8 +46,8 @@ export const policyScopeHasExcludingProjects = (policyScope = {}) => {
  * @returns {boolean}
  */
 export const policyScopeHasIncludingProjects = (policyScope = {}) => {
-  const { projects: { including = [] } = {} } = policyScope || {};
-  return Boolean(including) && including?.filter(Boolean).length > 0;
+  const { includingProjects: { nodes: including = [] } = {} } = policyScope || {};
+  return including?.filter(Boolean).length > 0;
 };
 
 /**
@@ -52,20 +66,10 @@ export const policyScopeProjectsKey = (policyScope = {}) => {
  * @returns {Number}
  */
 export const policyScopeProjectLength = (policyScope = {}) => {
-  return policyScope?.projects?.[policyScopeProjectsKey(policyScope)]?.filter(Boolean).length || 0;
-};
-
-/**
- * Check if policy scope include all projects
- * This is state when projects: { excluding: [] }
- * @param policyScope policyScope policy scope object on security policy
- * @returns {boolean}
- */
-export const policyHasAllProjectsInGroup = (policyScope) => {
-  if (isDefaultMode(policyScope)) return false;
-
-  const { projects: { excluding = [] } = {} } = policyScope || {};
-  return Boolean(excluding) && excluding?.filter(Boolean).length === 0;
+  return (
+    policyScope?.[`${policyScopeProjectsKey(policyScope)}Projects`]?.nodes?.filter(Boolean)
+      .length || 0
+  );
 };
 
 /**
@@ -74,8 +78,8 @@ export const policyHasAllProjectsInGroup = (policyScope) => {
  * @returns {boolean}
  */
 export const policyScopeHasComplianceFrameworks = (policyScope = {}) => {
-  const { compliance_frameworks: complianceFrameworks = [] } = policyScope || {};
-  return Boolean(complianceFrameworks) && complianceFrameworks?.filter(Boolean).length > 0;
+  const { complianceFrameworks: { nodes = [] } = {} } = policyScope || {};
+  return nodes?.filter(Boolean).length > 0;
 };
 
 /**
@@ -83,6 +87,20 @@ export const policyScopeHasComplianceFrameworks = (policyScope = {}) => {
  * @param policyScope policyScope policy scope object on security policy
  * @returns {Array}
  */
-export const policyScopeComplianceFrameworkIds = (policyScope = {}) => {
-  return policyScope?.compliance_frameworks?.map(({ id }) => id).filter(Boolean) || [];
+export const policyScopeComplianceFrameworks = (policyScope = {}) => {
+  return policyScope?.complianceFrameworks?.nodes || [];
+};
+
+/**
+ * Extract ids from projects
+ * @param policyScope policyScope policy scope object on security policy
+ * @returns {Object}
+ */
+export const policyScopeProjects = (policyScope = {}) => {
+  const { nodes = [], pageInfo = {} } =
+    policyScope?.[`${policyScopeProjectsKey(policyScope)}Projects`] || {};
+  return {
+    projects: nodes,
+    pageInfo,
+  };
 };
