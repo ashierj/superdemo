@@ -2497,7 +2497,7 @@ before cloning the Git repository and any submodules.
 You can use it for example to:
 
 - Adjust the [Git configuration](../jobs/index.md#get_sources-job-section-fails-because-of-an-http2-problem).
-- Export [tracing variables](../../topics/git/useful_git_commands.md).
+- Export [tracing variables](../../topics/git/troubleshooting_git.md#debug-git-with-traces).
 
 **Possible inputs**: An array including:
 
