@@ -77,6 +77,12 @@ export default {
     hasIssue() {
       return Boolean(this.issueData || this.jiraIssueData);
     },
+    hasJiraIssue() {
+      return Boolean(this.jiraIssueData);
+    },
+    hasGitLabIssue() {
+      return Boolean(this.issueData);
+    },
     jiraIssueData() {
       const jiraIssue = this.vulnerability.external_issue_links?.find(
         (link) => link.external_issue_details.external_tracker === 'jira',
@@ -111,7 +117,15 @@ export default {
         create_jira_issue_url: createJiraIssueUrl,
       } = this.vulnerability;
 
-      return Boolean(createGitLabIssuePath || createJiraIssueUrl) && !this.hasIssue;
+      if (createJiraIssueUrl && !this.hasJiraIssue) {
+        return true;
+      }
+
+      if (createGitLabIssuePath && !this.hasGitLabIssue) {
+        return true;
+      }
+
+      return false;
     },
     extraIdentifierCount() {
       const { identifiers } = this.vulnerability;
@@ -206,7 +220,7 @@ export default {
             <span class="text-uppercase">{{ s__('vulnerability|dismissed') }}</span>
           </span>
           <span
-            v-if="isJiraIssueCreationEnabled && jiraIssueData"
+            v-if="isJiraIssueCreationEnabled && hasJiraIssue"
             class="gl-display-inline-flex gl-align-items-baseline"
           >
             <span
@@ -226,7 +240,7 @@ export default {
             >
           </span>
           <vulnerability-issue-link
-            v-if="!isJiraIssueCreationEnabled && hasIssue"
+            v-if="!isJiraIssueCreationEnabled && hasGitLabIssue"
             class="text-nowrap"
             :issue="issueData"
             :project-name="vulnerability.project.name"
