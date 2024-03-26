@@ -122,6 +122,16 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_
           repository_languages: project.repository_languages.map(&:name)
         )
       end
+
+      context 'when project does not have an owner' do
+        it 'does not throw an exception' do
+          allow(project).to receive(:owner).and_return(nil)
+
+          result = proxy.as_indexed_json.with_indifferent_access
+
+          expect(result[:owner_id]).to be_nil
+        end
+      end
     end
   end
 
@@ -176,10 +186,10 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_
       let_it_be(:group) { create(:group) }
       let_it_be(:target) { create(:project, group: group) }
 
-      subject { described_class.new(target).es_parent }
+      subject(:es_parent) { described_class.new(target).es_parent }
 
       it 'is the root namespace id' do
-        expect(subject).to eq("n_#{group.id}")
+        expect(es_parent).to eq("n_#{group.id}")
       end
 
       context 'if migration is not finished' do
@@ -188,7 +198,7 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_
         end
 
         it 'is nil' do
-          expect(subject).to be_nil
+          expect(es_parent).to be_nil
         end
       end
     end
