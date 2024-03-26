@@ -16,6 +16,11 @@ module Types
       value 'INHERITED_ONLY',
         description: 'Policies defined for the project/group\'s ancestor groups only.',
         value: :inherited_only
+
+      value 'DESCENDANT',
+        description: 'Policies defined for the group\'s descendant projects/groups only. ' \
+                     'Only valid for group-level policies.',
+        value: :descendant
     end
   end
 end

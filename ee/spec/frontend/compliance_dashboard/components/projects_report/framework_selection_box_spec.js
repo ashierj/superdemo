@@ -7,7 +7,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
 import { createAlert } from '~/alert';
-import { validFetchResponse as getComplianceFrameworksResponse } from 'ee_jest/groups/settings/compliance_frameworks/mock_data';
+import { createComplianceFrameworksReportResponse } from 'ee_jest/compliance_dashboard/mock_data';
 import FrameworkSelectionBox from 'ee/compliance_dashboard/components/projects_report/framework_selection_box.vue';
 
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
@@ -19,9 +19,11 @@ Vue.use(VueApollo);
 describe('FrameworkSelectionBox component', () => {
   let wrapper;
   let apolloProvider;
-  const getComplianceFrameworkQueryResponse = jest
-    .fn()
-    .mockResolvedValue(getComplianceFrameworksResponse);
+
+  const mockedResponse = createComplianceFrameworksReportResponse();
+  // for testing filtering
+  mockedResponse.data.namespace.complianceFrameworks.nodes[0].name = 'PCI-DSS';
+  const getComplianceFrameworkQueryResponse = jest.fn().mockResolvedValue(mockedResponse);
 
   const findNewFrameworkButton = () =>
     wrapper
@@ -61,7 +63,7 @@ describe('FrameworkSelectionBox component', () => {
   });
 
   it('sets toggle-text to framework name when it matches selection', async () => {
-    const framework = getComplianceFrameworksResponse.data.namespace.complianceFrameworks.nodes[0];
+    const framework = mockedResponse.data.namespace.complianceFrameworks.nodes[0];
 
     createComponent({ selected: framework.id });
     await waitForPromises();
