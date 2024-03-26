@@ -75,14 +75,13 @@ module Security
       target_branch_report = target_branch_report(merge_request)
 
       license_policies = license_policies(scan_result_policy_read)
-      license_ids_from_policy, license_names_from_policy = license_policy_ids_and_names(license_policies)
-      licenses_from_policy = join_ids_and_names(license_ids_from_policy, license_names_from_policy)
+      licenses_from_policy = extend_from_report(license_policies)
 
       license_ids, license_names = licenses_to_check(target_branch_report, scan_result_policy_read)
 
       if scan_result_policy_read.match_on_inclusion_license
         all_denied_licenses = licenses_from_policy
-        policy_denied_license_names = (all_denied_licenses & licenses_from_report) - license_ids_from_policy
+        policy_denied_license_names = (all_denied_licenses & licenses_from_report) - license_ids
         violates_license_policy = report.violates_for_licenses?(license_policies, license_ids, license_names)
       else
         # when match_on_inclusion_license is false, only the licenses mentioned in the policy are allowed
@@ -144,10 +143,24 @@ module Security
     def new_dependencies_with_denied_licenses(target_branch_report, denied_licenses)
       new_dependency_names_in_report = new_dependency_names(target_branch_report)
 
-      report.licenses
-            .select { |license| denied_licenses.include?(license.name) || denied_licenses.include?(license.id) }
+      report_licenses_matching_name_or_id(denied_licenses)
             .to_h { |license| [license.name, license.dependencies.map(&:name)] }
             .select { |_license, dependency_names| (dependency_names & new_dependency_names_in_report).present? }
+    end
+
+    # Licenses from policies may match either spdx or name.
+    # If we find either in the report, we take also the other value into comparison
+    def extend_from_report(license_policies)
+      license_ids_from_policy, license_names_from_policy = license_policy_ids_and_names(license_policies)
+
+      licenses = join_ids_and_names(license_ids_from_policy, license_names_from_policy)
+      licenses += report_licenses_matching_name_or_id(licenses).flat_map { |license| [license.id, license.name] }
+      licenses.compact.uniq
+    end
+
+    def report_licenses_matching_name_or_id(licenses)
+      report.licenses
+            .select { |license| licenses.include?(license.name) || licenses.include?(license.id) }
     end
 
     def target_branch_report(merge_request)
