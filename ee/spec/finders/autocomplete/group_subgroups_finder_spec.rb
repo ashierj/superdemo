@@ -55,6 +55,17 @@ RSpec.describe Autocomplete::GroupSubgroupsFinder, feature_category: :groups_and
       end
     end
 
+    context 'when a search param is added' do
+      before do
+        params[:search] = subgroup_1.name
+      end
+
+      it 'returns only the searched for subgroups' do
+        expect(subject.count).to eq(1)
+        expect(subject).to contain_exactly(subgroup_1)
+      end
+    end
+
     context 'when the number of groups exceeds the limit' do
       before do
         stub_const("#{described_class}::LIMIT", 1)

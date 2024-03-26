@@ -23,12 +23,17 @@ module Autocomplete
       params[:group_id]
     end
 
+    def search
+      params[:search]
+    end
+
     # rubocop: disable CodeReuse/Finder
     def execute
       group = ::Autocomplete::GroupFinder.new(current_user, nil, group_id: group_id).execute
       GroupsFinder.new(current_user, parent: group,
         include_parent_descendants: include_parent_descendants?,
-        include_parent_shared_groups: include_parent_shared_groups?).execute.limit(LIMIT)
+        include_parent_shared_groups: include_parent_shared_groups?,
+        search: search).execute.limit(LIMIT)
     end
     # rubocop: enable CodeReuse/Finder
   end
