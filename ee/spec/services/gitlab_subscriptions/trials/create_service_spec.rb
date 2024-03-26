@@ -6,7 +6,7 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
   let_it_be(:user, reload: true) { create(:user) }
   let(:step) { described_class::LEAD }
 
-  describe '#execute' do
+  describe '#execute', :saas do
     let(:trial_params) { {} }
     let(:extra_lead_params) { {} }
     let(:trial_user_params) do
@@ -22,8 +22,8 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
       ).execute
     end
 
-    it_behaves_like 'when on the lead step'
-    it_behaves_like 'when on trial step'
+    it_behaves_like 'when on the lead step', :free_plan
+    it_behaves_like 'when on trial step', :free_plan
     it_behaves_like 'with an unknown step'
     it_behaves_like 'with no step'
   end

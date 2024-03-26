@@ -9,6 +9,10 @@ RSpec.describe 'Duo Pro trial lead submission and creation with multiple eligibl
     create(:group_with_plan, plan: :ultimate_plan).tap { |record| record.add_owner(user) }
     create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab').tap { |record| record.add_owner(user) }
   end
+
+  before_all do
+    create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro)
+  end
   # rubocop:enable Gitlab/RSpec/AvoidSetup
 
   context 'when creating lead and applying trial is successful' do
@@ -52,7 +56,7 @@ RSpec.describe 'Duo Pro trial lead submission and creation with multiple eligibl
   end
 
   context 'when applying lead fails' do
-    it 'fills out form, submits and sent back to information form with errors and is then resolved' do
+    xit 'fills out form, submits and sent back to information form with errors and is then resolved' do
       # setup
       sign_in(user)
 

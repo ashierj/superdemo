@@ -20,9 +20,7 @@ module GitlabSubscriptions
       end
 
       def namespaces_eligible_for_trial
-        # TODO: Add additional eligibility checks
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/448506
-        user.owned_groups
+        Users::DuoProTrialEligibleNamespacesFinder.new(user).execute
       end
 
       def trial_user_params

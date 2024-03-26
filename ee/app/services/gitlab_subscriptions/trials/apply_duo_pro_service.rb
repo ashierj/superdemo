@@ -4,9 +4,7 @@ module GitlabSubscriptions
   module Trials
     class ApplyDuoProService < ::GitlabSubscriptions::Trials::BaseApplyTrialService
       def valid_to_generate_trial?
-        # TODO: Add additional eligibility checks
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/448506
-        namespace.present?
+        namespace.present? && namespace.paid? && namespace.subscription_add_on_purchases.active.for_gitlab_duo_pro.none?
       end
 
       private

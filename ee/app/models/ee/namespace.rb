@@ -74,10 +74,22 @@ module EE
            .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
-      scope :in_default_plan, -> do
+      scope :not_in_default_plan, -> do
         left_joins(gitlab_subscription: :hosted_plan)
-          .where(plans: { name: [nil, *::Plan.default_plans] })
+          .where.not(plans: { name: [nil, *::Plan.default_plans] })
           .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
+      end
+
+      scope :not_duo_pro_or_no_add_on, -> do
+        # We return any namespace that does not have a duo pro add on.
+        # We get all namespaces that do not have an add on from the left_joins and the
+        # or nil condition preserves the unmatched data what would be removed due to the not eq
+        # condition without it.
+        left_joins(:subscription_add_on_purchases)
+          .where(
+            GitlabSubscriptions::AddOnPurchase.arel_table[:subscription_add_on_id].not_eq(
+              GitlabSubscriptions::AddOn.code_suggestions.pick(:id)
+            ).or(GitlabSubscriptions::AddOnPurchase.arel_table[:subscription_add_on_id].eq(nil)))
       end
 
       scope :eligible_for_trial, -> do
