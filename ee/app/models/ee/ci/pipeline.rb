@@ -130,6 +130,17 @@ module EE
         tag? && project_has_subscriptions?
       end
 
+      def security_reports(report_types: [])
+        reports_scope = report_types.empty? ? ::Ci::JobArtifact.security_reports : ::Ci::JobArtifact.security_reports(file_types: report_types)
+        types_to_collect = report_types.empty? ? ::EE::Enums::Ci::JobArtifact.security_report_file_types : report_types
+
+        ::Gitlab::Ci::Reports::Security::Reports.new(self).tap do |security_reports|
+          latest_report_builds_in_self_and_project_descendants(reports_scope).includes(pipeline: { project: :route }).find_each do |build|
+            build.collect_security_reports!(security_reports, report_types: types_to_collect)
+          end
+        end
+      end
+
       def batch_lookup_report_artifact_for_file_types(file_types)
         file_types_to_search = []
         file_types.each do |file_type|
