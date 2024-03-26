@@ -16,8 +16,7 @@ module Security
         group = project.group
         return false if group.nil?
 
-        Feature.enabled?(:security_policies_policy_scope, group) &&
-          group.namespace_settings.toggle_security_policies_policy_scope?
+        Feature.enabled?(:security_policies_policy_scope, group)
       end
 
       def applicable_for_compliance_framework?(policy)

@@ -101,7 +101,7 @@ module EE
     end
 
     def security_policies_toggle_params
-      security_policy_custom_ci_toggle_params + security_policies_policy_scope_toggle_params
+      security_policy_custom_ci_toggle_params
     end
 
     def security_policy_custom_ci_toggle_params
@@ -111,12 +111,6 @@ module EE
         :toggle_security_policy_custom_ci,
         :lock_toggle_security_policy_custom_ci
       ]
-    end
-
-    def security_policies_policy_scope_toggle_params
-      return [] if ::Feature.disabled?(:security_policies_policy_scope, current_group)
-
-      %w[toggle_security_policies_policy_scope lock_toggle_security_policies_policy_scope]
     end
 
     def experiment_settings_allowed?
