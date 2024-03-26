@@ -69,6 +69,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
               name: pointer.target_project.name
             }.to_json,
             can_configure_dashboards_project: user_can_admin_project.to_s,
+            can_select_gitlab_managed_provider: 'false',
             tracking_key: user_has_permission ? product_analytics_instrumentation_key : nil,
             collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
             chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -80,7 +81,13 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             root_namespace_name: group.full_path,
             features: (enabled && has_permission ? [:product_analytics] : []).to_json,
             router_base: '/-/analytics/dashboards',
-            ai_generate_cube_query_enabled: 'false'
+            ai_generate_cube_query_enabled: 'false',
+            project_level_analytics_provider_settings: {
+              product_analytics_configurator_connection_string: nil,
+              product_analytics_data_collector_host: nil,
+              cube_api_base_url: nil,
+              cube_api_key: nil
+            }.to_json
           }
         end
 
@@ -108,6 +115,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           namespace_id: sub_group.id,
           dashboard_project: nil,
           can_configure_dashboards_project: 'false',
+          can_select_gitlab_managed_provider: 'false',
           tracking_key: nil,
           collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -119,7 +127,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           root_namespace_name: group.full_path,
           features: [].to_json,
           router_base: "/groups/#{sub_group.full_path}/-/analytics/dashboards",
-          ai_generate_cube_query_enabled: 'false'
+          ai_generate_cube_query_enabled: 'false',
+          project_level_analytics_provider_settings: nil
         }
       end
 
@@ -158,6 +167,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             name: group_pointer.target_project.name
           }.to_json,
           can_configure_dashboards_project: 'false',
+          can_select_gitlab_managed_provider: 'false',
           tracking_key: nil,
           collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -169,7 +179,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           root_namespace_name: group.full_path,
           features: [].to_json,
           router_base: "/groups/#{group.full_path}/-/analytics/dashboards",
-          ai_generate_cube_query_enabled: 'false'
+          ai_generate_cube_query_enabled: 'false',
+          project_level_analytics_provider_settings: nil
         }
       end
 
@@ -257,6 +268,32 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         it 'returns the expected tracking_key' do
           expect(data[:ai_generate_cube_query_enabled]).to eq(expected)
+        end
+      end
+    end
+
+    describe 'can_select_gitlab_managed_provider' do
+      where(:is_project, :gitlab_com, :product_analytics_billing, :expected_value) do
+        true  | true  | true  | 'true'
+        true  | true  | false | 'false'
+        true  | false | true  | 'false'
+        true  | false | false | 'false'
+        false | true  | true  | 'false'
+        false | true  | false | 'false'
+        false | false | true  | 'false'
+        false | false | false | 'false'
+      end
+
+      with_them do
+        before do
+          allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(gitlab_com)
+          stub_feature_flags(product_analytics_billing: product_analytics_billing)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
+
+        it 'returns the expected value' do
+          expect(data[:can_select_gitlab_managed_provider]).to eq(expected_value)
         end
       end
     end

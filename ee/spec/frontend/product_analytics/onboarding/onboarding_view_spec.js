@@ -4,6 +4,7 @@ import ProductAnalyticsOnboardingView from 'ee/product_analytics/onboarding/onbo
 import ProductAnalyticsOnboardingSetup from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import ProductAnalyticsOnboardingState from 'ee/product_analytics/onboarding/components/onboarding_state.vue';
 import OnboardingEmptyState from 'ee/product_analytics/onboarding/components/onboarding_empty_state.vue';
+import ProviderSelectionView from 'ee/product_analytics/onboarding/components/providers/provider_selection_view.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import { createAlert } from '~/alert';
@@ -32,10 +33,11 @@ describe('ProductAnalyticsOnboardingView', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(OnboardingEmptyState);
+  const findProviderSelection = () => wrapper.findComponent(ProviderSelectionView);
   const findSetupView = () => wrapper.findComponent(ProductAnalyticsOnboardingSetup);
   const findStateComponent = () => wrapper.findComponent(ProductAnalyticsOnboardingState);
 
-  const createWrapper = (listeners = {}) => {
+  const createWrapper = (provide = {}) => {
     wrapper = shallowMountExtended(ProductAnalyticsOnboardingView, {
       provide: {
         namespaceFullPath: TEST_PROJECT_FULL_PATH,
@@ -43,11 +45,12 @@ describe('ProductAnalyticsOnboardingView', () => {
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
         dashboardsPath: '/analytics/dashboards',
+        canSelectGitlabManagedProvider: false,
+        ...provide,
       },
       mocks: {
         $router,
       },
-      listeners,
     });
   };
 
@@ -70,15 +73,15 @@ describe('ProductAnalyticsOnboardingView', () => {
     });
   };
 
-  beforeEach(() => {
-    createWrapper();
-  });
-
   afterEach(() => {
     createAlert.mockClear();
   });
 
   describe('when mounted', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
     it('shows the loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(true);
     });
@@ -100,18 +103,44 @@ describe('ProductAnalyticsOnboardingView', () => {
   });
 
   describe('create and loading instance', () => {
-    it.each([STATE_CREATE_INSTANCE, STATE_LOADING_INSTANCE])(
-      'renders the empty state when the state is "%s"',
-      async (state) => {
-        await emitStateChange(state);
+    describe('with provider selection', () => {
+      beforeEach(() => {
+        createWrapper({
+          canSelectGitlabManagedProvider: true,
+        });
+      });
 
-        expect(findEmptyState().props('loadingInstance')).toBe(state === STATE_LOADING_INSTANCE);
-      },
-    );
+      it.each([STATE_CREATE_INSTANCE, STATE_LOADING_INSTANCE])(
+        'renders provider_selection when the state is "%s"',
+        async (state) => {
+          await emitStateChange(state);
+
+          expect(findProviderSelection().props('loadingInstance')).toBe(
+            state === STATE_LOADING_INSTANCE,
+          );
+        },
+      );
+    });
+
+    describe('with empty state', () => {
+      beforeEach(() => {
+        createWrapper();
+      });
+
+      it.each([STATE_CREATE_INSTANCE, STATE_LOADING_INSTANCE])(
+        'renders the empty state when the state is "%s"',
+        async (state) => {
+          await emitStateChange(state);
+
+          expect(findEmptyState().props('loadingInstance')).toBe(state === STATE_LOADING_INSTANCE);
+        },
+      );
+    });
   });
 
   describe('when waiting for events', () => {
     beforeEach(() => {
+      createWrapper();
       return emitStateChange(STATE_WAITING_FOR_EVENTS);
     });
 
@@ -122,6 +151,7 @@ describe('ProductAnalyticsOnboardingView', () => {
 
   describe('empty state component events', () => {
     beforeEach(() => {
+      createWrapper();
       return emitStateChange(STATE_CREATE_INSTANCE);
     });
 
@@ -138,7 +168,36 @@ describe('ProductAnalyticsOnboardingView', () => {
     });
   });
 
+  describe('provider selection component events', () => {
+    beforeEach(() => {
+      createWrapper({
+        canSelectGitlabManagedProvider: true,
+      });
+      return emitStateChange(STATE_CREATE_INSTANCE);
+    });
+
+    it(`activates polling on initialized`, async () => {
+      findProviderSelection().vm.$emit('initialized');
+
+      await nextTick();
+
+      expect(findStateComponent().props('pollState')).toBe(true);
+    });
+
+    it('creates an alert on error with the error message', () => {
+      expectAlertOnError({
+        finder: findProviderSelection,
+        captureError: true,
+        message: errorMessage,
+      });
+    });
+  });
+
   describe('state component events', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
     it('routes to "index" on complete', async () => {
       findStateComponent().vm.$emit('complete');
 
