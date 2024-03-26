@@ -22,7 +22,7 @@ export default {
     createError: s__('MemberRole|Failed to create role.'),
     createErrorWithReason: s__('MemberRole|Failed to create role: %{error}'),
     permissionsFetchError: s__('MemberRole|Could not fetch available permissions.'),
-    createNewRole: s__('MemberRole|Create new role'),
+    createRole: s__('MemberRole|Create role'),
     cancel: __('Cancel'),
     baseRoleLabel: s__('MemberRole|Base role to use as template'),
     baseRoleDescription: s__('MemberRole|Select a standard role to add permissions.'),
@@ -186,7 +186,7 @@ export default {
 
 <template>
   <gl-form @submit.prevent="createMemberRole">
-    <h4 class="gl-mt-0">{{ $options.i18n.createNewRole }}</h4>
+    <h4 class="gl-mt-0">{{ $options.i18n.createRole }}</h4>
     <div class="row">
       <gl-form-group
         class="col-md-4"
@@ -248,7 +248,7 @@ export default {
         variant="confirm"
         class="js-no-auto-disable"
       >
-        {{ $options.i18n.createNewRole }}
+        {{ $options.i18n.createRole }}
       </gl-button>
       <gl-button
         type="reset"

@@ -51,7 +51,7 @@ module TrialsHelper
 
     namespace_selector_data(namespace_create_errors).merge(
       any_trial_eligible_namespaces: namespaces.any?.to_s,
-      items: namespace_options_for_listbox(namespaces).to_json
+      items: current_namespaces_for_selector(namespaces).to_json
     )
   end
 
@@ -76,7 +76,7 @@ module TrialsHelper
   end
 
   def namespace_options_for_listbox(namespaces)
-    group_options = namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+    group_options = current_namespaces_for_selector(namespaces)
     options = [
       {
         text: _('New'),
@@ -95,6 +95,10 @@ module TrialsHelper
   end
 
   private
+
+  def current_namespaces_for_selector(namespaces)
+    namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+  end
 
   def passed_through_params
     params.slice(

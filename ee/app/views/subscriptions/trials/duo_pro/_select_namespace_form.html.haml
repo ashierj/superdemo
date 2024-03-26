@@ -11,10 +11,7 @@
       = sprite_icon('tanuki-ai', size: 32, css_class: 'gl-pb-3')
 
       %h2.gl-pb-5.gl-my-0
-        - if duo_pro_trial_eligible_namespaces.any?
-          = s_('DuoProTrial|Apply your GitLab Duo Pro trial to a new or existing group')
-        - else
-          = s_('DuoProTrial|Create a group to start your GitLab Duo Pro trial')
+        = s_('DuoProTrial|Apply your GitLab Duo Pro trial to an existing group')
 
       = yield :before_form
 

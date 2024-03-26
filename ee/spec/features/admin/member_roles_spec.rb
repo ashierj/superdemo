@@ -16,13 +16,13 @@ RSpec.describe 'Instance-level Member Roles', feature_category: :permissions do
   end
 
   def create_role(access_level, name, permissions)
-    click_button 'Add new role'
+    click_button 'New role'
     select access_level, from: 'Base role to use as template'
     fill_in 'Role name', with: name
     permissions.each do |permission|
       page.check permission
     end
-    click_button 'Create new role'
+    click_button 'Create role'
   end
 
   def created_role(name, id, access_level, permissions)

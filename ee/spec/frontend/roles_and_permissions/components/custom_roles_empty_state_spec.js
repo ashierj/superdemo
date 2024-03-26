@@ -27,7 +27,7 @@ describe('CustomRolesEmptyState', () => {
       title: 'Create custom roles',
       svgPath: 'empty.svg',
       primaryButtonLink: '#',
-      primaryButtonText: 'Create new role',
+      primaryButtonText: 'New role',
     });
 
     expect(findEmptyState().text()).toContain(
