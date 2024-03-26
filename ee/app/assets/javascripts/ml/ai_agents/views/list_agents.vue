@@ -1,7 +1,6 @@
 <script>
-import { GlBadge } from '@gitlab/ui';
+import { GlExperimentBadge } from '@gitlab/ui';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import AgentList from '../components/agent_list.vue';
 import { ROUTE_NEW_AGENT } from '../constants';
 
@@ -10,7 +9,7 @@ export default {
   components: {
     TitleArea,
     AgentList,
-    GlBadge,
+    GlExperimentBadge,
   },
   provide() {
     return {
@@ -23,7 +22,6 @@ export default {
       errorMessage: undefined,
     };
   },
-  helpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
   ROUTE_NEW_AGENT,
 };
 </script>
@@ -34,9 +32,7 @@ export default {
       <template #title>
         <div class="gl-flex-grow-1 gl-display-flex gl-align-items-center">
           <span>{{ s__('AIAgents|AI Agents') }}</span>
-          <gl-badge variant="neutral" class="gl-mx-4" size="lg" :href="$options.helpPagePath">
-            {{ __('Experiment') }}
-          </gl-badge>
+          <gl-experiment-badge />
         </div>
       </template>
       <template #right-actions>

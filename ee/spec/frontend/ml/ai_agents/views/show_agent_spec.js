@@ -1,12 +1,14 @@
-import { GlDuoChat, GlExperimentBadge } from '@gitlab/ui';
+import { GlDuoChat, GlExperimentBadge, GlEmptyState } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { RouterLinkStub as RouterLink } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getMarkdown } from '~/rest_api';
 import ShowAgent from 'ee/ml/ai_agents/views/show_agent.vue';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import getLatestAiAgentVersionQuery from 'ee/ml/ai_agents/graphql/queries/get_latest_ai_agent_version.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import {
@@ -14,14 +16,19 @@ import {
   MOCK_USER_ID,
   MOCK_TANUKI_SUCCESS_RES,
   MOCK_TANUKI_BOT_MUTATATION_RES,
-} from '../../../ai/tanuki_bot/mock_data';
+} from 'ee_jest/ai/tanuki_bot/mock_data';
+import {
+  getLatestAiAgentResponse,
+  getLatestAiAgentNotFoundResponse,
+} from 'ee_jest/ml/ai_agents/graphql/mocks';
 
 Vue.use(VueApollo);
 
 jest.mock('~/rest_api');
 
-describe('ee/ml/ai_agents/views/create_agent', () => {
+describe('ee/ml/ai_agents/views/show_agent', () => {
   let wrapper;
+  let latestAiAgentResponseMock;
 
   const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
@@ -29,17 +36,23 @@ describe('ee/ml/ai_agents/views/create_agent', () => {
 
   const findTitleArea = () => wrapper.findComponent(TitleArea);
   const findBadge = () => wrapper.findComponent(GlExperimentBadge);
+  const findSettingsButton = () => wrapper.findByTestId('settings-button');
   const findGlDuoChat = () => wrapper.findComponent(GlDuoChat);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   const createWrapper = () => {
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
       [chatMutation, chatMutationHandlerMock],
+      [getLatestAiAgentVersionQuery, latestAiAgentResponseMock],
     ]);
 
     wrapper = shallowMountExtended(ShowAgent, {
       apolloProvider,
       provide: { projectPath: 'path/to/project', userId: MOCK_USER_ID },
+      stubs: {
+        RouterLink,
+      },
       mocks: {
         $route: {
           params: {
@@ -51,16 +64,22 @@ describe('ee/ml/ai_agents/views/create_agent', () => {
   };
 
   beforeEach(() => {
+    latestAiAgentResponseMock = jest.fn().mockResolvedValueOnce(getLatestAiAgentResponse);
     getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
   });
 
   describe('rendering', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createWrapper();
+      await waitForPromises();
     });
 
     it('shows the title', () => {
-      expect(findTitleArea().text()).toContain('AI Agent: 2');
+      expect(findTitleArea().text()).toContain('agent-1');
+    });
+
+    it('shows the settings button', () => {
+      expect(findSettingsButton().exists()).toBe(true);
     });
 
     it('displays the experiment badge', () => {
@@ -72,9 +91,22 @@ describe('ee/ml/ai_agents/views/create_agent', () => {
     });
   });
 
-  describe('@send-chat-prompt', () => {
-    beforeEach(() => {
+  describe('when the requested agent is not found', () => {
+    beforeEach(async () => {
+      latestAiAgentResponseMock = jest.fn().mockResolvedValueOnce(getLatestAiAgentNotFoundResponse);
       createWrapper();
+      await waitForPromises();
+    });
+
+    it('shows the error message', () => {
+      expect(findEmptyState().exists()).toBe(true);
+    });
+  });
+
+  describe('@send-chat-prompt', () => {
+    beforeEach(async () => {
+      createWrapper();
+      await waitForPromises();
     });
 
     it('does set loading to `true` for a user message', async () => {
