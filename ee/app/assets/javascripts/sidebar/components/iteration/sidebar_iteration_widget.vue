@@ -73,7 +73,7 @@ export default {
     :issue-id="issueId"
   >
     <template #value="{ attributeUrl, currentAttribute }">
-      <p class="gl-font-weight-bold gl-line-height-20 gl-m-0">
+      <p class="gl-text-gray-500 gl-font-size-sm gl-line-height-21 gl-my-1">
         {{ getCadenceTitle(currentAttribute) }}
       </p>
       <gl-link
