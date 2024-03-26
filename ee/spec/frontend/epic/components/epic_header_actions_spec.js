@@ -1,8 +1,8 @@
-import { GlDisclosureDropdown } from '@gitlab/ui';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import EpicHeaderActions from 'ee/epic/components/epic_header_actions.vue';
 import { getStoreConfig } from 'ee/epic/store';
 import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
@@ -42,6 +42,9 @@ describe('EpicHeaderActions component', () => {
 
     wrapper = mountExtended(EpicHeaderActions, {
       store,
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       provide: {
         fullPath: 'mock-path',
         iid: 'mock-iid',
@@ -57,7 +60,8 @@ describe('EpicHeaderActions component', () => {
     wrapper.findByRole('button', { name: 'Copy reference' });
   const findDeleteEpicButton = () => wrapper.findByRole('button', { name: 'Delete epic' });
   const findDeleteEpicModal = () => wrapper.findComponent(DeleteIssueModal);
-  const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findDropdown = () => wrapper.findByTestId('desktop-dropdown');
+  const findDropdownTooltip = () => getBinding(findDropdown().element, 'gl-tooltip');
   const findEditButton = () => wrapper.findByRole('button', { name: 'Edit title and description' });
   const findNewEpicButton = () => wrapper.findByRole('link', { name: 'New epic' });
   const findNotificationToggle = () => wrapper.findComponent(SidebarSubscriptionsWidget);
@@ -161,6 +165,12 @@ describe('EpicHeaderActions component', () => {
       it('does not show notification toggle', () => {
         expect(findNotificationToggle().exists()).toBe(false);
       });
+    });
+
+    it('renders tooltip', () => {
+      createComponent();
+
+      expect(findDropdownTooltip().value).toBe('Epic actions');
     });
   });
 
