@@ -34438,6 +34438,9 @@ msgstr ""
 msgid "ObservabilityLogs|Warning"
 msgstr ""
 
+msgid "ObservabilityMetrics|+%{count} more"
+msgstr ""
+
 msgid "ObservabilityMetrics|Attributes"
 msgstr ""
 

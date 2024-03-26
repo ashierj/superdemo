@@ -1,39 +1,57 @@
 <script>
-import { GlTable, GlLabel } from '@gitlab/ui';
+import { GlTable, GlLabel, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { ingestedAtTimeAgo } from '../utils';
 
+const MAX_NUM_OF_ATTRIBUTES_SHOWN = 5;
+
 export default {
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   i18n: {
     title: s__('ObservabilityMetrics|Metrics'),
     emptyText: __('No results found'),
+    moreAttributes: s__(`ObservabilityMetrics|+%{count} more`),
   },
   fields: [
     {
       key: 'name',
       label: s__('ObservabilityMetrics|Name'),
       tdAttr: { 'data-testid': 'metric-name' },
+      tdClass: `gl-word-break-word`,
     },
     {
       key: 'description',
       label: s__('ObservabilityMetrics|Description'),
       tdAttr: { 'data-testid': 'metric-description' },
+      thClass: 'gl-w-30p',
+      tdClass: `gl-word-break-word`,
     },
     {
       key: 'type',
       label: s__('ObservabilityMetrics|Type'),
       tdAttr: { 'data-testid': 'metric-type' },
-      thClass: 'gl-w-15p',
+      thClass: 'gl-w-10p',
+    },
+    {
+      key: 'attributes',
+      label: s__('ObservabilityMetrics|Attributes'),
+      tdAttr: { 'data-testid': 'metric-attributes' },
+      thClass: 'gl-w-30p',
+      tdClass: `gl-word-break-word`,
     },
     {
       key: 'last_ingested_at',
       label: s__('ObservabilityMetrics|Last ingested'),
       tdAttr: { 'data-testid': 'metric-last-ingested' },
+      thClass: 'gl-w-10p',
     },
   ],
   components: {
     GlTable,
     GlLabel,
+    GlSprintf,
   },
   props: {
     metrics: {
@@ -68,6 +86,18 @@ export default {
     onRowClicked(item, _index, event) {
       this.$emit('metric-clicked', { metricId: item.name, clickEvent: event });
     },
+    metricAttributesText({ attributes }) {
+      return attributes.slice(0, MAX_NUM_OF_ATTRIBUTES_SHOWN).join(', ');
+    },
+    metricAttributesTooltipContent({ attributes }) {
+      return attributes.slice(MAX_NUM_OF_ATTRIBUTES_SHOWN).join(', ');
+    },
+    metricAttributesTruncatedItems({ attributes }) {
+      if (attributes.length > MAX_NUM_OF_ATTRIBUTES_SHOWN) {
+        return attributes.length - MAX_NUM_OF_ATTRIBUTES_SHOWN;
+      }
+      return 0;
+    },
   },
 };
 </script>
@@ -91,6 +121,23 @@ export default {
       <template #cell(type)="{ item }">
         <gl-label :background-color="labelColor(item.type)" :title="item.type" />
       </template>
+
+      <template #cell(attributes)="{ item }">
+        <span>
+          {{ metricAttributesText(item) }}
+        </span>
+        <span
+          v-if="metricAttributesTruncatedItems(item) > 0"
+          v-gl-tooltip="metricAttributesTooltipContent(item)"
+          data-testid="metric-attributes-tooltip"
+          class="gl-link gl-hover-text-decoration-underline"
+        >
+          <gl-sprintf :message="$options.i18n.moreAttributes">
+            <template #count>{{ metricAttributesTruncatedItems(item) }}</template>
+          </gl-sprintf>
+        </span>
+      </template>
+
       <!-- no date template -->
       <template #empty>
         <div class="gl-text-center">
