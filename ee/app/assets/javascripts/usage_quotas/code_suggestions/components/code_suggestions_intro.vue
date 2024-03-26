@@ -17,6 +17,7 @@ export default {
   },
   i18n: {
     contactSales: __('Contact sales'),
+    purchaseSeats: __('Purchase seats'),
     description: s__(
       `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo Pro%{linkEnd} offers features that use generative AI to suggest code.`,
     ),
@@ -32,13 +33,26 @@ export default {
     GlSprintf,
   },
   apolloProvider,
-  inject: { createHandRaiseLeadPath: { default: null } },
+  inject: {
+    createHandRaiseLeadPath: { default: null },
+    addDuoProHref: { default: null },
+  },
+  computed: {
+    buttonLink() {
+      return this.addDuoProHref ? this.addDuoProHref : this.$options.helpLinks.salesLink;
+    },
+    buttonText() {
+      return this.addDuoProHref
+        ? this.$options.i18n.purchaseSeats
+        : this.$options.i18n.contactSales;
+    },
+  },
 };
 </script>
 <template>
   <gl-empty-state
-    :primary-button-text="$options.i18n.contactSales"
-    :primary-button-link="$options.helpLinks.salesLink"
+    :primary-button-text="buttonText"
+    :primary-button-link="buttonLink"
     class="gl-max-w-48 gl-mx-auto"
   >
     <template #title>

@@ -4,6 +4,8 @@ import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/co
 import { salesLink } from 'ee/usage_quotas/code_suggestions/constants';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 
+const addDuoProHref = 'http://customers.gitlab.com/namespaces/10/duo_pro_seats';
+
 describe('Code Suggestions Intro', () => {
   let wrapper;
   const emptyState = () => wrapper.findComponent(GlEmptyState);
@@ -21,13 +23,13 @@ describe('Code Suggestions Intro', () => {
   describe('when rendering', () => {
     describe('when not showing hand raise lead button', () => {
       beforeEach(() => {
-        return createComponent();
+        return createComponent({ addDuoProHref });
       });
 
       it('renders gl-empty-state component', () => {
         expect(emptyState().exists()).toBe(true);
-        expect(emptyState().props('primaryButtonLink')).toBe(salesLink);
-        expect(emptyState().props('primaryButtonText')).toBe('Contact sales');
+        expect(emptyState().props('primaryButtonLink')).toBe(addDuoProHref);
+        expect(emptyState().props('primaryButtonText')).toBe('Purchase seats');
         expect(handRaiseLeadButton().exists()).toBe(false);
       });
     });
@@ -42,6 +44,18 @@ describe('Code Suggestions Intro', () => {
         expect(emptyState().exists()).toBe(true);
         expect(handRaiseLeadButton().exists()).toBe(true);
         expect(defaultButton.exists()).toBe(false);
+      });
+    });
+
+    describe('without addDuoProHref', () => {
+      beforeEach(() => {
+        return createComponent({ addDuoProHref: '' });
+      });
+
+      it('renders gl-empty-state component', () => {
+        expect(emptyState().exists()).toBe(true);
+        expect(emptyState().props('primaryButtonLink')).toBe(salesLink);
+        expect(emptyState().props('primaryButtonText')).toBe('Contact sales');
       });
     });
   });
