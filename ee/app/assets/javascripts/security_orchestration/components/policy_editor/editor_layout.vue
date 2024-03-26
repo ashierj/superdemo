@@ -60,7 +60,7 @@ export default {
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespaceType', 'policiesPath', 'securityPoliciesPolicyScopeToggleEnabled'],
+  inject: ['namespaceType', 'policiesPath'],
   props: {
     customSaveButtonText: {
       type: String,
@@ -138,11 +138,9 @@ export default {
       return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
     shouldShowScope() {
-      const featureFlagEnabled = this.isGroupLevel
+      return this.isGroupLevel
         ? this.glFeatures.securityPoliciesPolicyScope
         : this.glFeatures.securityPoliciesPolicyScopeProject;
-
-      return featureFlagEnabled && this.securityPoliciesPolicyScopeToggleEnabled;
     },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
