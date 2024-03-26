@@ -1877,6 +1877,43 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#all_descendant_security_orchestration_policy_configurations' do
+    let_it_be(:parent_group) { create(:group) }
+    let_it_be(:child_group) { create(:group, parent: parent_group) }
+    let_it_be(:child_group_2) { create(:group, parent: child_group) }
+
+    let_it_be(:parent_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: parent_group) }
+    let_it_be(:child_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: child_group_2) }
+
+    subject { parent_group.all_descendant_security_orchestration_policy_configurations }
+
+    context 'when configuration is invalid' do
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 2) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(false)
+        end
+      end
+
+      it 'returns empty list' do
+        expect(subject).to be_empty
+      end
+    end
+
+    context 'when configuration is valid' do
+      before do
+        allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 2) do |configuration|
+          allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
+        end
+      end
+
+      it 'returns valid security policy configurations for all parent groups' do
+        expect(subject).to match_array(
+          [parent_security_orchestration_policy_configuration, child_security_orchestration_policy_configuration]
+        )
+      end
+    end
+  end
+
   describe '#all_projects_pages_domains' do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:subgroup) { create(:group, parent: namespace) }

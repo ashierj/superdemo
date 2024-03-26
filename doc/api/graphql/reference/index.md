@@ -32825,6 +32825,7 @@ The status of the security scan.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="securitypolicyrelationtypedescendant"></a>`DESCENDANT` | Policies defined for the group's descendant projects/groups only. Only valid for group-level policies. |
 | <a id="securitypolicyrelationtypedirect"></a>`DIRECT` | Policies defined for the project/group only. |
 | <a id="securitypolicyrelationtypeinherited"></a>`INHERITED` | Policies defined for the project/group and ancestor groups. |
 | <a id="securitypolicyrelationtypeinherited_only"></a>`INHERITED_ONLY` | Policies defined for the project/group's ancestor groups only. |

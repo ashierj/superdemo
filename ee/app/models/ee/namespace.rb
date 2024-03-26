@@ -533,6 +533,12 @@ module EE
       security_orchestration_policies_for_namespaces(self_and_ancestor_ids)
     end
 
+    def all_descendant_security_orchestration_policy_configurations
+      return [] if self_and_descendant_ids.blank?
+
+      security_orchestration_policies_for_namespaces(self_and_descendant_ids)
+    end
+
     def all_inherited_security_orchestration_policy_configurations
       return [] if ancestor_ids.blank?
 

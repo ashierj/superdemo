@@ -38,11 +38,21 @@ module Security
         object.all_security_orchestration_policy_configurations
       when :inherited_only
         object.all_inherited_security_orchestration_policy_configurations
+      when :descendant
+        descendant_policy_configurations
       else
-        Array
-          .wrap(policy_configuration)
-          .select { |config| config&.policy_configuration_valid? }
+        default_policy_configurations
       end
+    end
+
+    def descendant_policy_configurations
+      return default_policy_configurations if object.is_a?(Project)
+
+      object.all_descendant_security_orchestration_policy_configurations
+    end
+
+    def default_policy_configurations
+      Array.wrap(policy_configuration).select { |config| config&.policy_configuration_valid? }
     end
 
     def merge_project_relationship(config)
