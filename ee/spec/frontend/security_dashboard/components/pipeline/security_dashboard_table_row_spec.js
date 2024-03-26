@@ -14,7 +14,9 @@ import { trimText } from 'helpers/text_helper';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 import VulnerabilityIssueLink from 'ee/security_dashboard/components/pipeline/vulnerability_issue_link.vue';
 import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
-import mockDataVulnerabilities from '../../store/modules/vulnerabilities/data/mock_data_vulnerabilities';
+import mockDataVulnerabilities, {
+  issueData,
+} from '../../store/modules/vulnerabilities/data/mock_data_vulnerabilities';
 
 Vue.use(Vuex);
 
@@ -269,40 +271,66 @@ describe('Security Dashboard Table Row', () => {
     },
   );
 
-  describe('with Jira issue-integration enabled and an existing Jira issue', () => {
-    const jiraIssueDetails = {
-      external_issue_details: {
-        external_tracker: 'jira',
-        web_url: 'http://jira.example.com/GTA-1',
-        references: {
-          relative: 'GTA#1',
+  describe('with Jira issue-integration enabled', () => {
+    describe('with an existing GitLab issue', () => {
+      beforeEach(() => {
+        const vulnerability = {
+          ...mockDataVulnerabilities[1],
+          issue_links: [issueData],
+          create_jira_issue_url: 'http://jira.example.com',
+        };
+
+        createComponent(shallowMountExtended, { props: { vulnerability } });
+      });
+
+      it('allows the creation of a Jira issue', () => {
+        expect(wrapper.findComponent(VulnerabilityActionButtons).props('canCreateIssue')).toBe(
+          true,
+        );
+      });
+    });
+
+    describe('with an existing Jira issue', () => {
+      const jiraIssueDetails = {
+        external_issue_details: {
+          external_tracker: 'jira',
+          web_url: 'http://jira.example.com/GTA-1',
+          references: {
+            relative: 'GTA#1',
+          },
         },
-      },
-    };
-
-    beforeEach(() => {
-      const vulnerability = {
-        ...mockDataVulnerabilities[1],
-        external_issue_links: [jiraIssueDetails],
       };
-      vulnerability.create_jira_issue_url = 'http://foo.bar';
 
-      createComponent(shallowMountExtended, { props: { vulnerability } });
-    });
+      beforeEach(() => {
+        const vulnerability = {
+          ...mockDataVulnerabilities[1],
+          external_issue_links: [jiraIssueDetails],
+          create_jira_issue_url: 'http://jira.example.com',
+        };
 
-    it('renders a Jira logo with a tooltip to let the user know that there is an existing issue', () => {
-      expect(wrapper.findByTestId('jira-issue-icon').attributes('title')).toBe(
-        'Jira Issue Created',
-      );
-    });
+        createComponent(shallowMountExtended, { props: { vulnerability } });
+      });
 
-    it('renders a link to the Jira issue that opens in a new tab', () => {
-      const jiraIssueLink = wrapper.findByTestId('jira-issue-link');
+      it('does not allow the creation of an additional Jira issue', () => {
+        expect(wrapper.findComponent(VulnerabilityActionButtons).props('canCreateIssue')).toBe(
+          false,
+        );
+      });
 
-      expect(jiraIssueLink.props('href')).toBe(
-        jiraIssueDetails.external_issue_details.references.web_url,
-      );
-      expect(jiraIssueLink.attributes('target')).toBe('_blank');
+      it('renders a Jira logo with a tooltip to let the user know that there is an existing issue', () => {
+        expect(wrapper.findByTestId('jira-issue-icon').attributes('title')).toBe(
+          'Jira Issue Created',
+        );
+      });
+
+      it('renders a link to the Jira issue that opens in a new tab', () => {
+        const jiraIssueLink = wrapper.findByTestId('jira-issue-link');
+
+        expect(jiraIssueLink.props('href')).toBe(
+          jiraIssueDetails.external_issue_details.references.web_url,
+        );
+        expect(jiraIssueLink.attributes('target')).toBe('_blank');
+      });
     });
   });
 
