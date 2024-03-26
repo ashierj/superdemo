@@ -7,7 +7,9 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
 
   let_it_be(:parent_group) { create(:group) }
   let_it_be(:group) { create(:group, projects: [project], parent: parent_group) }
+
   let(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration) }
+  let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
 
   before_all do
     parent_group.add_owner(user)
@@ -15,6 +17,13 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
 
   before do
     stub_saas_features(google_cloud_support: true)
+
+    allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+      .with(wlif_integration: an_instance_of(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation),
+        user: user)
+      .and_return(client_double)
+    allow(client_double).to receive(:repository)
+      .and_return(dummy_repository_response)
   end
 
   subject(:visit_page) { visit_project_integration('Google Artifact Registry') }
@@ -32,7 +41,7 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
       fill_in s_('GoogleCloudPlatformService|Repository name'),
         with: integration.artifact_registry_repositories
 
-      click_save_integration
+      click_test_then_save_integration(expect_test_to_fail: false)
 
       expect(page).to have_content('Google Artifact Registry settings saved and active.')
 
@@ -73,5 +82,11 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
 
       it_behaves_like 'inactive integration'
     end
+  end
+
+  private
+
+  def dummy_repository_response
+    ::Google::Cloud::ArtifactRegistry::V1::Repository.new(name: 'test')
   end
 end

@@ -73,6 +73,12 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     it { is_expected.to eq([]) }
   end
 
+  describe '.default_test_event' do
+    subject { described_class.default_test_event }
+
+    it { is_expected.to eq('current_user') }
+  end
+
   describe '#repository_full_name' do
     let(:expected) do
       "projects/#{integration.artifact_registry_project_id}/" \
@@ -83,6 +89,12 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     subject { integration.repository_full_name }
 
     it { is_expected.to eq(expected) }
+  end
+
+  describe '#testable?' do
+    subject { integration.testable? }
+
+    it { is_expected.to be_truthy }
   end
 
   describe '#required_integration_activated?' do
@@ -111,12 +123,6 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     subject { integration.required_integration_class }
 
     it { is_expected.to eq(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation) }
-  end
-
-  describe '#testable?' do
-    subject { integration.testable? }
-
-    it { is_expected.to be_falsey }
   end
 
   describe '#ci_variables' do
@@ -154,5 +160,46 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     subject { integration.sections }
 
     it { is_expected.to eq([{ type: 'google_cloud_artifact_registry' }]) }
+  end
+
+  describe '#test' do
+    let_it_be(:integration) { create(:google_cloud_platform_artifact_registry_integration) }
+
+    let_it_be(:wlif_integration) do
+      create(:google_cloud_platform_workload_identity_federation_integration, project: integration.project)
+    end
+
+    let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+    let(:user) { integration.project.first_owner }
+    let(:data) { { current_user: user } }
+
+    subject { integration.test(data) }
+
+    before do
+      stub_saas_features(google_cloud_support: true)
+
+      allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+        .with(wlif_integration: wlif_integration, user: user).and_return(client_double)
+
+      allow(client_double).to receive(:repository)
+        .and_return(dummy_repository_response)
+    end
+
+    it { is_expected.to eq(success: true, result: nil) }
+
+    context 'when the connection was not established' do
+      before do
+        allow(client_double).to receive(:repository)
+          .and_raise(::GoogleCloudPlatform::ApiError)
+      end
+
+      it { is_expected.to eq(success: false, result: 'Unsuccessful Google Cloud API request') }
+    end
+
+    private
+
+    def dummy_repository_response
+      ::Google::Cloud::ArtifactRegistry::V1::Repository.new(name: 'test')
+    end
   end
 end

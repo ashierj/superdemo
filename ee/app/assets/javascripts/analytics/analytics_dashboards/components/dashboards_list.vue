@@ -56,7 +56,6 @@ export default {
   data() {
     return {
       requiresOnboarding: Object.keys(ONBOARDING_FEATURE_COMPONENTS),
-      featureDashboards: [],
       userDashboards: [],
       alert: null,
     };
@@ -71,22 +70,18 @@ export default {
     showValueStreamsDashboard() {
       return !this.isProject && this.glFeatures.groupAnalyticsDashboards;
     },
-    shouldRenderLegacyValueStreamsDashboards() {
-      return !this.glFeatures.groupAnalyticsDashboardDynamicVsd;
-    },
     dashboards() {
-      let dashboards = [...this.featureDashboards, ...this.userDashboards];
-
-      if (this.showValueStreamsDashboard && this.shouldRenderLegacyValueStreamsDashboards) {
-        // Filter out the graphql route and use the built-in config instead
-        // This will redirect to the backend route for `/value_streams_dashboard
-        dashboards = dashboards
-          .filter(({ slug }) => {
-            return ![BUILT_IN_VALUE_STREAM_DASHBOARD, CUSTOM_VALUE_STREAM_DASHBOARD].includes(slug);
-          })
-          .concat([VALUE_STREAMS_DASHBOARD_CONFIG]);
+      if (!this.showValueStreamsDashboard || this.glFeatures.groupAnalyticsDashboardDynamicVsd) {
+        return this.userDashboards;
       }
-      return dashboards;
+
+      // Filter out the graphql route and use the built-in config instead
+      // This will redirect to the backend route for `/value_streams_dashboard
+      return this.userDashboards
+        .filter(({ slug }) => {
+          return ![BUILT_IN_VALUE_STREAM_DASHBOARD, CUSTOM_VALUE_STREAM_DASHBOARD].includes(slug);
+        })
+        .concat([VALUE_STREAMS_DASHBOARD_CONFIG]);
     },
     isLoading() {
       return this.$apollo.queries.userDashboards.loading;
