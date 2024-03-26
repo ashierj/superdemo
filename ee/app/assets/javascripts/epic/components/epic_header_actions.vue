@@ -52,6 +52,7 @@ export default {
   data() {
     return {
       isReportAbuseDrawerOpen: false,
+      isDesktopDropdownVisible: false,
     };
   },
   computed: {
@@ -152,6 +153,9 @@ export default {
         ? description
         : sanitize(`${description} <kbd class="flat gl-ml-1" aria-hidden=true>${key}</kbd>`);
     },
+    showDropdownTooltip() {
+      return !this.isDesktopDropdownVisible ? this.$options.i18n.dropdownText : '';
+    },
   },
   methods: {
     ...mapActions(['toggleEpicStatus']),
@@ -171,6 +175,12 @@ export default {
     },
     toggleReportAbuseDrawer(isOpen) {
       this.isReportAbuseDrawerOpen = isOpen;
+    },
+    showDesktopDropdown() {
+      this.isDesktopDropdownVisible = true;
+    },
+    hideDesktopDropdown() {
+      this.isDesktopDropdownVisible = false;
     },
   },
 };
@@ -236,6 +246,7 @@ export default {
 
     <gl-disclosure-dropdown
       ref="epicActionsDropdownDesktop"
+      v-gl-tooltip="showDropdownTooltip"
       class="gl-display-none gl-md-display-block"
       placement="right"
       :auto-close="false"
@@ -245,6 +256,8 @@ export default {
       icon="ellipsis_v"
       category="tertiary"
       no-caret
+      @shown="showDesktopDropdown"
+      @hidden="hideDesktopDropdown"
     >
       <gl-disclosure-dropdown-group
         v-if="showNotificationToggle && !glFeatures.notificationsTodosButtons"
