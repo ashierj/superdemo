@@ -27,6 +27,7 @@ export default () => {
   const {
     dashboardProject: analyticsDashboardPointerJSON = '',
     canConfigureDashboardsProject,
+    canSelectGitlabManagedProvider,
     trackingKey,
     namespaceId,
     namespaceName,
@@ -45,6 +46,7 @@ export default () => {
     dataSourceClickhouse,
     aiGenerateCubeQueryEnabled,
     topicsExploreProjectsPath,
+    projectLevelAnalyticsProviderSettings,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -106,6 +108,7 @@ export default () => {
       breadcrumbState,
       customDashboardsProject: analyticsDashboardPointer,
       canConfigureDashboardsProject: parseBoolean(canConfigureDashboardsProject),
+      canSelectGitlabManagedProvider: parseBoolean(canSelectGitlabManagedProvider),
       trackingKey,
       namespaceFullPath,
       namespaceId,
@@ -124,6 +127,9 @@ export default () => {
       dataSourceClickhouse: parseBoolean(dataSourceClickhouse),
       currentUserId: window.gon?.current_user_id,
       topicsExploreProjectsPath,
+      projectLevelAnalyticsProviderSettings: convertObjectPropsToCamelCase(
+        JSON.parse(projectLevelAnalyticsProviderSettings || '{}'),
+      ),
     },
     render(h) {
       return h(DashboardsApp);

@@ -115,9 +115,7 @@ module TrialsHelper
   end
 
   def duo_pro_trial_eligible_namespaces
-    # TODO: Add additional eligibility checks
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/448506
-    current_user.owned_groups
+    Users::DuoProTrialEligibleNamespacesFinder.new(current_user).execute
   end
 
   def _lead_form_data
@@ -135,6 +133,9 @@ module TrialsHelper
   def namespace_selector_data(namespace_create_errors)
     {
       new_group_name: params[:new_group_name],
+      # This may allow through an unprivileged submission of trial since we don't validate access on the passed in
+      # namespace_id.
+      # That is ok since we validate this on submission.
       initial_value: params[:namespace_id],
       namespace_create_errors: namespace_create_errors
     }

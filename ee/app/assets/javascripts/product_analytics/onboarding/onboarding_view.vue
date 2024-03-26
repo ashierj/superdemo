@@ -2,6 +2,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import OnboardingState from './components/onboarding_state.vue';
+import ProviderSelectionView from './components/providers/provider_selection_view.vue';
 import {
   STATE_LOADING_INSTANCE,
   STATE_CREATE_INSTANCE,
@@ -13,10 +14,12 @@ export default {
   components: {
     GlLoadingIcon,
     OnboardingState,
+    ProviderSelectionView,
     OnboardingEmptyState: () => import('./components/onboarding_empty_state.vue'),
     OnboardingSetup: () => import('ee/product_analytics/onboarding/onboarding_setup.vue'),
   },
   inject: {
+    canSelectGitlabManagedProvider: {},
     dashboardsPath: {},
   },
   data() {
@@ -29,10 +32,10 @@ export default {
     loadingInstance() {
       return this.state === STATE_LOADING_INSTANCE;
     },
-    showEmptyState() {
+    showProviderSetup() {
       return this.state === STATE_CREATE_INSTANCE || this.loadingInstance;
     },
-    showSetup() {
+    showInstrumentationSetup() {
       return this.state === STATE_WAITING_FOR_EVENTS;
     },
   },
@@ -73,13 +76,25 @@ export default {
 
     <gl-loading-icon v-if="!state" size="lg" class="gl-my-7" />
 
-    <onboarding-empty-state
-      v-else-if="showEmptyState"
-      :loading-instance="loadingInstance"
-      @initialized="onInitialized"
-      @error="showError($event)"
-    />
+    <template v-else-if="showProviderSetup">
+      <provider-selection-view
+        v-if="canSelectGitlabManagedProvider"
+        :loading-instance="loadingInstance"
+        @initialized="onInitialized"
+        @error="showError($event)"
+      />
+      <onboarding-empty-state
+        v-else
+        :loading-instance="loadingInstance"
+        @initialized="onInitialized"
+        @error="showError($event)"
+      />
+    </template>
 
-    <onboarding-setup v-else-if="showSetup" is-initial-setup :dashboards-path="dashboardsPath" />
+    <onboarding-setup
+      v-else-if="showInstrumentationSetup"
+      is-initial-setup
+      :dashboards-path="dashboardsPath"
+    />
   </div>
 </template>

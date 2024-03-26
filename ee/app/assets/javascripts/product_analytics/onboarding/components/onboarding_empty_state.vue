@@ -43,7 +43,7 @@ export default {
             'ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later.',
           )
         : s__(
-            'ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
+            'ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine analytics with your GitLab data to better understand where you can improve your product and development processes.',
           );
     },
   },

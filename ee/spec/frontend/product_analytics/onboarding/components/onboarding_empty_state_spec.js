@@ -63,7 +63,7 @@ describe('OnboardingEmptyState', () => {
         svgPath: TEST_HOST,
       });
       expect(emptyState.text()).toContain(
-        'Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
+        'Set up Product Analytics to track how your product is performing. Combine analytics with your GitLab data to better understand where you can improve your product and development processes.',
       );
       expect(findSetupBtn().text()).toBe('Set up product analytics');
       expect(findLearnMoreBtn().text()).toBe('Learn more');

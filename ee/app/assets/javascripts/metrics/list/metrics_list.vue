@@ -103,7 +103,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="gl-mx-7">
     <div v-if="loading && metrics.length === 0" class="gl-py-5">
       <gl-loading-icon size="lg" />
     </div>

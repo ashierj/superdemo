@@ -318,19 +318,9 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
   context 'with namespace_selector_data', :saas do
     let_it_be(:user) { create(:user) }
     let_it_be(:free) { create(:group) }
-
-    let_it_be(:premium_subscription) do
-      create(:gitlab_subscription, :premium, namespace: create(:group))
-    end
-
-    let_it_be(:ultimate_subscription) do
-      create(:gitlab_subscription, :ultimate, namespace: create(:group))
-    end
-
-    let_it_be(:ultimate_trial_subscription) do
-      create(:gitlab_subscription, :ultimate_trial, namespace: create(:group))
-    end
-
+    let_it_be(:premium_subscription) { create(:gitlab_subscription, :premium, :with_group) }
+    let_it_be(:ultimate_subscription) { create(:gitlab_subscription, :ultimate, :with_group) }
+    let_it_be(:ultimate_trial_subscription) { create(:gitlab_subscription, :ultimate_trial, :with_group) }
     let_it_be(:all_groups) do
       [
         free,
@@ -357,6 +347,18 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     end
 
     describe '#duo_pro_trial_namespace_selector_data' do
+      let_it_be(:all_groups) do
+        [
+          premium_subscription.namespace,
+          ultimate_subscription.namespace,
+          ultimate_trial_subscription.namespace
+        ]
+      end
+
+      before_all do
+        create(:gitlab_subscription_add_on, :gitlab_duo_pro)
+      end
+
       subject { helper.duo_pro_trial_namespace_selector_data(nil) }
 
       it 'returns all groups' do

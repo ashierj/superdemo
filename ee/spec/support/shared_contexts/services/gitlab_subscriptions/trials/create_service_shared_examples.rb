@@ -2,10 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.shared_examples 'when on the lead step' do
+RSpec.shared_examples 'when on the lead step' do |plan_name|
   context 'when lead creation is successful' do
     context 'when there is only one trial eligible namespace' do
-      let_it_be(:group) { create(:group, name: 'gitlab').tap { |record| record.add_owner(user) } }
+      let_it_be(:group) do
+        create(:group_with_plan, plan: plan_name, name: 'gitlab') { |record| record.add_owner(user) }
+      end
 
       it 'starts a trial and tracks the event' do
         expect_create_lead_success(trial_user_params)
@@ -49,8 +51,8 @@ RSpec.shared_examples 'when on the lead step' do
 
     context 'when there are multiple trial eligible namespaces' do
       let_it_be(:group) do
-        create(:group).tap { |record| record.add_owner(user) }
-        create(:group, name: 'gitlab').tap { |record| record.add_owner(user) }
+        create(:group_with_plan, plan: plan_name) { |record| record.add_owner(user) }
+        create(:group_with_plan, plan: plan_name, name: 'gitlab') { |record| record.add_owner(user) }
       end
 
       it 'does not create a trial and returns that there is no namespace' do
@@ -92,8 +94,8 @@ RSpec.shared_examples 'when on the lead step' do
   end
 end
 
-RSpec.shared_examples 'with tracking duo pro trial lead' do
-  let_it_be(:group) { create(:group, name: 'gitlab').tap { |record| record.add_owner(user) } }
+RSpec.shared_examples 'with tracking duo pro trial lead' do |plan_name|
+  let_it_be(:group) { create(:group_with_plan, plan: plan_name, name: 'gitlab') { |record| record.add_owner(user) } }
 
   context 'when lead creation is successful regardless' do
     before do
@@ -153,11 +155,11 @@ def expect_to_trigger_trial_step(execution, lead_payload_params, trial_payload_p
   expect(execution.payload).to match(trial_selection_params: trial_selection_params)
 end
 
-RSpec.shared_examples 'when on trial step' do
+RSpec.shared_examples 'when on trial step' do |plan_name|
   let(:step) { described_class::TRIAL }
 
   context 'in the existing namespace flow' do
-    let_it_be(:group) { create(:group, name: 'gitlab').tap { |record| record.add_owner(user) } }
+    let_it_be(:group) { create(:group_with_plan, plan: plan_name, name: 'gitlab') { |record| record.add_owner(user) } }
     let(:namespace_id) { group.id.to_s }
     let(:extra_params) { { trial_entity: '_entity_' } }
     let(:trial_params) { { namespace_id: namespace_id }.merge(extra_params) }
@@ -204,13 +206,13 @@ RSpec.shared_examples 'when on trial step' do
     end
 
     context 'when the user does not have access to the namespace' do
-      let(:namespace_id) { create(:group).id.to_s }
+      let(:namespace_id) { create(:group_with_plan, plan: plan_name).id.to_s }
 
       it_behaves_like 'returns an error of not_found and does not apply a trial'
     end
 
     context 'when the user is not an owner of the namespace' do
-      let(:namespace_id) { create(:group).tap { |record| record.add_developer(user) }.id.to_s }
+      let(:namespace_id) { create(:group_with_plan, plan: plan_name) { |record| record.add_developer(user) }.id.to_s }
 
       it_behaves_like 'returns an error of not_found and does not apply a trial'
     end
@@ -255,7 +257,7 @@ RSpec.shared_examples 'when on trial step' do
 
       context 'when group name needs sanitized' do
         it 'return success with the namespace path sanitized for duplication' do
-          create(:group, name: 'gitlab')
+          create(:group_with_plan, plan: plan_name, name: 'gitlab')
 
           stub_apply_trial(
             user, namespace_id: anything, success: true,
@@ -403,7 +405,7 @@ def new_group_attrs(path: 'gitlab')
       name: 'gitlab',
       kind: 'group',
       trial_ends_on: nil,
-      plan: 'default'
+      plan: 'free'
     }
   }
 end

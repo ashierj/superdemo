@@ -31,3 +31,24 @@ export const getProductAnalyticsStateResponse = (productAnalyticsState = null) =
     },
   },
 });
+
+export const getProjectLevelAnalyticsProviderSettings = () => ({
+  productAnalyticsConfiguratorConnectionString: 'https://configurator.example.com',
+  productAnalyticsDataCollectorHost: 'https://collector.example.com',
+  cubeApiBaseUrl: 'https://cubejs.example.com',
+  cubeApiKey: 'abc-123',
+});
+
+export const getPartialProjectLevelAnalyticsProviderSettings = () => ({
+  productAnalyticsConfiguratorConnectionString: null,
+  productAnalyticsDataCollectorHost: null,
+  cubeApiBaseUrl: 'https://cubejs.example.com',
+  cubeApiKey: 'abc-123',
+});
+
+export const getEmptyProjectLevelAnalyticsProviderSettings = () => ({
+  productAnalyticsConfiguratorConnectionString: null,
+  productAnalyticsDataCollectorHost: null,
+  cubeApiBaseUrl: null,
+  cubeApiKey: null,
+});

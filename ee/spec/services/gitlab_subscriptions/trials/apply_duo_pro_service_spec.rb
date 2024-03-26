@@ -2,16 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, feature_category: :subscription_management do
-  let_it_be(:namespace) { create(:namespace) }
+RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_category: :subscription_management do
+  let_it_be(:user) { create(:user) }
+  let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
 
-  let(:user) { namespace.owner }
   let(:trial_user_information) { { namespace_id: namespace.id } }
   let(:apply_trial_params) do
     {
       uid: user.id,
       trial_user_information: trial_user_information
     }
+  end
+
+  before_all do
+    namespace.add_owner(user)
   end
 
   describe '.execute' do
@@ -66,6 +70,24 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, feature_category
 
       context 'when namespace does not exist' do
         let(:trial_user_information) { { namespace_id: non_existing_record_id } }
+
+        it 'returns success: false with errors' do
+          expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
+        end
+      end
+
+      context 'when namespace is not paid' do
+        let_it_be(:namespace) { create(:group) }
+
+        it 'returns success: false with errors' do
+          expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
+        end
+      end
+
+      context 'when namespace already has duo pro add-on' do
+        before do
+          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: namespace)
+        end
 
         it 'returns success: false with errors' do
           expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
