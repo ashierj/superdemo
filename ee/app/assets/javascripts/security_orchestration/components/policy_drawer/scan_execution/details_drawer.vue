@@ -37,6 +37,9 @@ export default {
     },
   },
   computed: {
+    policyScope() {
+      return this.policy?.policyScope;
+    },
     humanizedActions() {
       return humanizeActions(this.parsedYaml.actions);
     },
@@ -67,7 +70,7 @@ export default {
     key="scan_execution_policy"
     :description="parsedYaml.description"
     :policy="policy"
-    :policy-scope="parsedYaml.policy_scope"
+    :policy-scope="policyScope"
     :type="$options.i18n.scanExecution"
   >
     <template v-if="parsedYaml" #summary>

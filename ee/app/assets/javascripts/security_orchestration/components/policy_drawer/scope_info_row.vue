@@ -1,12 +1,20 @@
 <script>
 import {
-  EXCLUDING,
-  INCLUDING,
-} from 'ee/security_orchestration/components/policy_editor/scope/constants';
-import {
-  DEFAULT_SCOPE_LABEL,
+  DEFAULT_PROJECT_TEXT,
   SCOPE_TITLE,
 } from 'ee/security_orchestration/components/policy_drawer/constants';
+import ScopeDefaultLabel from 'ee/security_orchestration/components/scope_default_label.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import {
+  policyScopeHasComplianceFrameworks,
+  policyScopeHasExcludingProjects,
+  policyScopeHasIncludingProjects,
+  policyScopeProjects,
+  policyScopeComplianceFrameworks,
+} from 'ee/security_orchestration/components/utils';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
+import LoaderWithMessage from '../loader_with_message.vue';
 import ComplianceFrameworksToggleList from './compliance_frameworks_toggle_list.vue';
 import ProjectsToggleList from './projects_toggle_list.vue';
 import InfoRow from './info_row.vue';
@@ -16,11 +24,36 @@ export default {
   components: {
     ComplianceFrameworksToggleList,
     InfoRow,
+    LoaderWithMessage,
     ProjectsToggleList,
+    ScopeDefaultLabel,
   },
   i18n: {
-    defaultScope: DEFAULT_SCOPE_LABEL,
     scopeTitle: SCOPE_TITLE,
+    defaultProjectText: DEFAULT_PROJECT_TEXT,
+  },
+  mixins: [glFeatureFlagsMixin()],
+  inject: ['namespaceType', 'namespacePath'],
+  apollo: {
+    linkedSppItems: {
+      query: getSppLinkedProjectsNamespaces,
+      variables() {
+        return {
+          fullPath: this.namespacePath,
+        };
+      },
+      update(data) {
+        const {
+          securityPolicyProjectLinkedProjects: { nodes: linkedProjects = [] } = {},
+          securityPolicyProjectLinkedNamespaces: { nodes: linkedNamespaces = [] } = {},
+        } = data?.project || {};
+
+        return [...linkedProjects, ...linkedNamespaces];
+      },
+      skip() {
+        return this.shouldSkipDependenciesCheck;
+      },
+    },
   },
   props: {
     policyScope: {
@@ -29,29 +62,47 @@ export default {
       default: () => ({}),
     },
   },
+  data() {
+    return {
+      linkedSppItems: [],
+    };
+  },
   computed: {
+    isGroup() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+    },
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
     policyScopeHasComplianceFrameworks() {
-      const { compliance_frameworks: complianceFrameworks = [] } = this.policyScope || {};
-      return Boolean(complianceFrameworks) && complianceFrameworks?.length > 0;
+      return policyScopeHasComplianceFrameworks(this.policyScope);
     },
     policyScopeHasIncludingProjects() {
-      const { projects: { including = [] } = {} } = this.policyScope || {};
-      return Boolean(including) && including?.length > 0;
+      return policyScopeHasIncludingProjects(this.policyScope);
     },
     policyScopeHasExcludingProjects() {
-      return Boolean(this.policyScope?.projects?.excluding);
+      return policyScopeHasExcludingProjects(this.policyScope);
     },
     policyHasProjects() {
       return this.policyScopeHasIncludingProjects || this.policyScopeHasExcludingProjects;
     },
-    policyScopeProjectsKey() {
-      return this.policyScopeHasIncludingProjects ? INCLUDING : EXCLUDING;
+    policyScopeProjects() {
+      return policyScopeProjects(this.policyScope);
     },
-    policyScopeProjectsIds() {
-      return this.policyScope?.projects?.[this.policyScopeProjectsKey]?.map(({ id }) => id) || [];
+    policyScopeComplianceFrameworks() {
+      return policyScopeComplianceFrameworks(this.policyScope);
     },
-    policyScopeComplianceFrameworkIds() {
-      return this.policyScope?.compliance_frameworks?.map(({ id }) => id) || [];
+    hasMultipleProjectsLinked() {
+      return this.linkedSppItems.length > 1;
+    },
+    shouldSkipDependenciesCheck() {
+      return this.isGroup || !this.glFeatures.securityPoliciesPolicyScopeProject;
+    },
+    showDefaultText() {
+      return this.isProject && !this.hasMultipleProjectsLinked;
+    },
+    showLoader() {
+      return this.$apollo.queries.linkedSppItems?.loading && this.isProject;
     },
   },
 };
@@ -59,21 +110,32 @@ export default {
 
 <template>
   <info-row :label="$options.i18n.scopeTitle" data-testid="policy-scope">
-    <div class="gl-display-inline-flex gl-gap-3 gl-flex-wrap">
-      <template v-if="policyScopeHasComplianceFrameworks">
-        <compliance-frameworks-toggle-list
-          :compliance-framework-ids="policyScopeComplianceFrameworkIds"
-        />
-      </template>
-      <template v-else-if="policyHasProjects">
-        <projects-toggle-list
-          :including="policyScopeHasIncludingProjects"
-          :project-ids="policyScopeProjectsIds"
-        />
-      </template>
-      <div v-else class="gl-text-gray-500" data-testid="default-scope-text">
-        {{ $options.i18n.defaultScope }}
+    <loader-with-message v-if="showLoader" />
+    <template v-else>
+      <p v-if="showDefaultText" class="gl-m-0" data-testid="default-project-text">
+        {{ $options.i18n.defaultProjectText }}
+      </p>
+      <div v-else class="gl-display-inline-flex gl-gap-3 gl-flex-wrap">
+        <template v-if="policyScopeHasComplianceFrameworks">
+          <compliance-frameworks-toggle-list
+            :compliance-frameworks="policyScopeComplianceFrameworks"
+          />
+        </template>
+        <template v-else-if="policyHasProjects">
+          <projects-toggle-list
+            :is-group="isGroup"
+            :including="policyScopeHasIncludingProjects"
+            :projects="policyScopeProjects.projects"
+          />
+        </template>
+        <div v-else data-testid="default-scope-text">
+          <scope-default-label
+            :is-group="isGroup"
+            :policy-scope="policyScope"
+            :linked-items="linkedSppItems"
+          />
+        </div>
       </div>
-    </div>
+    </template>
   </info-row>
 </template>

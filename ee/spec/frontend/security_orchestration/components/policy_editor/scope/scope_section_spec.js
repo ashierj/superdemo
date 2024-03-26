@@ -20,6 +20,7 @@ import {
   EXCEPT_PROJECTS,
   WITHOUT_EXCEPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/scope/constants';
+import { mockLinkedSppItemsResponse } from 'ee_jest/security_orchestration/mocks/mock_apollo';
 
 describe('PolicyScope', () => {
   let wrapper;
@@ -47,7 +48,11 @@ describe('PolicyScope', () => {
     return createMockApollo([[getSppLinkedProjectsNamespaces, requestHandler]]);
   };
 
-  const createComponent = ({ propsData, provide = {}, handler = createHandler() } = {}) => {
+  const createComponent = ({
+    propsData,
+    provide = {},
+    handler = mockLinkedSppItemsResponse(),
+  } = {}) => {
     wrapper = shallowMountExtended(ScopeSection, {
       apolloProvider: createMockApolloProvider(handler),
       propsData: {
@@ -96,6 +101,15 @@ describe('PolicyScope', () => {
     expect(findGroupProjectsDropdown().exists()).toBe(false);
     expect(findComplianceFrameworkDropdown().exists()).toBe(false);
     expect(findGlAlert().exists()).toBe(false);
+  });
+
+  it('should not check linked items on group level', async () => {
+    await waitForPromises();
+
+    expect(findLoader().exists()).toBe(false);
+    expect(findProjectScopeTypeDropdown().exists()).toBe(true);
+    expect(requestHandler).toHaveBeenCalledTimes(0);
+    expect(findPolicyScopeProjectText().exists()).toBe(false);
   });
 
   it('should change scope and reset it', async () => {
@@ -391,17 +405,6 @@ describe('PolicyScope', () => {
       expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'gitlab-org' });
     });
 
-    it('should not check linked items on group level', async () => {
-      createComponent();
-
-      await waitForPromises();
-
-      expect(findLoader().exists()).toBe(false);
-      expect(findProjectScopeTypeDropdown().exists()).toBe(true);
-      expect(requestHandler).toHaveBeenCalledTimes(0);
-      expect(findPolicyScopeProjectText().exists()).toBe(false);
-    });
-
     it('show text message for project without linked items', async () => {
       createComponent({
         provide: {
@@ -422,7 +425,7 @@ describe('PolicyScope', () => {
             securityPoliciesPolicyScopeProject: true,
           },
         },
-        handler: createHandler({
+        handler: mockLinkedSppItemsResponse({
           projects: [
             { id: '1', name: 'name1' },
             { id: '2', name: 'name2 ' },
@@ -483,7 +486,7 @@ describe('PolicyScope', () => {
             securityPoliciesPolicyScopeProject: true,
           },
         },
-        handler: createHandler({
+        handler: mockLinkedSppItemsResponse({
           projects: [
             { id: '1', name: 'name1' },
             { id: '2', name: 'name2 ' },
@@ -544,7 +547,7 @@ describe('PolicyScope', () => {
               securityPoliciesPolicyScopeProject: true,
             },
           },
-          handler: createHandler({
+          handler: mockLinkedSppItemsResponse({
             projects: [
               { id: '1', name: 'name1' },
               { id: '2', name: 'name2 ' },

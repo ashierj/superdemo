@@ -42,6 +42,9 @@ export default {
     requireApproval() {
       return this.parsedYaml?.actions?.find((action) => action.type === 'require_approval');
     },
+    policyScope() {
+      return this.policy?.policyScope;
+    },
     approvers() {
       return [
         ...this.policy.allGroupApprovers,
@@ -77,7 +80,7 @@ export default {
     key="scan_result_policy"
     :description="parsedYaml.description"
     :policy="policy"
-    :policy-scope="parsedYaml.policy_scope"
+    :policy-scope="policyScope"
     :type="$options.i18n.scanResult"
   >
     <template v-if="parsedYaml" #summary>

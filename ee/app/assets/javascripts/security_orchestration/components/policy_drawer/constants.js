@@ -13,6 +13,9 @@ export const TYPE_TITLE = s__('SecurityOrchestration|Policy Type');
 export const SOURCE_TITLE = s__('SecurityOrchestration|Source');
 export const SCOPE_TITLE = s__('SecurityOrchestration|Scope');
 export const DEFAULT_SCOPE_LABEL = s__('SecurityOrchestration|No scope');
+export const DEFAULT_PROJECT_TEXT = s__(
+  'SecurityOrchestration|This policy is applied to current project.',
+);
 export const COMPLIANCE_FRAMEWORKS_DESCRIPTION = (projectsCount) =>
   n__(
     'SecurityOrchestration|%{projects} which has compliance framework:',
