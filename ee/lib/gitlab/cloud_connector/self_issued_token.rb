@@ -3,7 +3,6 @@
 module Gitlab
   module CloudConnector
     class SelfIssuedToken
-      JWT_AUDIENCE = 'gitlab-ai-gateway'
       NOT_BEFORE_TIME = 5.seconds.to_i.freeze
       EXPIRES_IN = 1.hour.to_i.freeze
 
@@ -11,9 +10,9 @@ module Gitlab
 
       attr_reader :issued_at
 
-      def initialize(subject:, scopes:, extra_claims: {})
+      def initialize(audience:, subject:, scopes:, extra_claims: {})
         @id = SecureRandom.uuid
-        @audience = JWT_AUDIENCE
+        @audience = audience
         @subject = subject
         @issuer = Doorkeeper::OpenidConnect.configuration.issuer
         @issued_at = Time.now.to_i

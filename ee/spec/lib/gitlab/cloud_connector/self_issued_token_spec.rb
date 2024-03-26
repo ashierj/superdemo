@@ -5,7 +5,11 @@ require 'spec_helper'
 RSpec.describe Gitlab::CloudConnector::SelfIssuedToken, feature_category: :cloud_connector do
   let(:extra_claims) { {} }
 
-  subject(:token) { described_class.new(subject: 'ABC-123', scopes: [:code_suggestions], extra_claims: extra_claims) }
+  subject(:token) do
+    described_class.new(
+      audience: 'gitlab-ai-gateway', subject: 'ABC-123', scopes: [:code_suggestions], extra_claims: extra_claims
+    )
+  end
 
   describe '#payload' do
     subject(:payload) { token.payload }

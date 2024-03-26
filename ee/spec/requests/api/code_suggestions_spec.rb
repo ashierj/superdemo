@@ -354,9 +354,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       before do
-        allow_next_instance_of(Gitlab::CloudConnector::SelfIssuedToken) do |instance|
-          allow(instance).to receive(:encoded).and_return(token)
-        end
+        allow(Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(token)
       end
 
       context 'when user belongs to a namespace with an active code suggestions purchase' do

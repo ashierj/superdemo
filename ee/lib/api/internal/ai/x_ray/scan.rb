@@ -68,7 +68,7 @@ module API
             strong_memoize_attr :current_namespace
 
             def ai_gateway_token
-              ::CloudConnector::AccessService.new.access_token(scopes: [:code_suggestions])
+              Gitlab::Llm::AiGateway::Client.access_token(scopes: [:code_suggestions])
             end
             strong_memoize_attr :ai_gateway_token
           end

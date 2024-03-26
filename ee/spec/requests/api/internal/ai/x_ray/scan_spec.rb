@@ -103,22 +103,9 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         context 'with add on' do
           before_all { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
 
-          it 'calls ::CloudConnector::AccessService to obtain access token', :aggregate_failures do
-            expect_next_instance_of(::CloudConnector::AccessService) do |instance|
-              expect(instance).to receive(:access_token).with(scopes: [:code_suggestions])
-                                                        .and_return(ai_gateway_token)
-            end
-
-            post_api
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-
           context 'when cloud connector access token is missing' do
             before do
-              allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-                allow(instance).to receive(:access_token).and_return(nil)
-              end
+              allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(nil)
             end
 
             it 'returns UNAUTHORIZED status' do
@@ -130,9 +117,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
           context 'when cloud connector access token is valid' do
             before do
-              allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-                allow(instance).to receive(:access_token).and_return(ai_gateway_token)
-              end
+              allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(ai_gateway_token)
             end
 
             context 'when instance has uuid available' do
@@ -184,9 +169,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
       end
 
       before do
-        allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-          allow(instance).to receive(:access_token).and_return(ai_gateway_token)
-        end
+        allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(ai_gateway_token)
       end
 
       context 'with purchase_code_suggestions feature disabled' do

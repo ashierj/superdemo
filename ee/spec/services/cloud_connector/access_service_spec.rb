@@ -15,8 +15,9 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
   let_it_be(:cloud_connector_access) { create(:cloud_connector_access, data: data) }
 
   describe '#access_token' do
-    subject(:access_token) { described_class.new.access_token(scopes: scopes) }
+    subject(:access_token) { described_class.new.access_token(audience: audience, scopes: scopes) }
 
+    let(:audience) { 'gitlab-ai-gateway' }
     let(:scopes) { [:code_suggestions, :duo_chat] }
 
     context 'when self-managed' do
@@ -37,6 +38,7 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
 
       it 'returns the constructed token' do
         expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
+          audience: audience,
           subject: gitlab_instance_id,
           scopes: scopes,
           extra_claims: {}
@@ -48,10 +50,13 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
       context 'when passing additional claims' do
         let(:extra_claims) { { 'custom_claim' => 'custom_value' } }
 
-        subject(:access_token) { described_class.new.access_token(scopes: scopes, extra_claims: extra_claims) }
+        subject(:access_token) do
+          described_class.new.access_token(audience: audience, scopes: scopes, extra_claims: extra_claims)
+        end
 
         it 'includes extra_claims element in token payload' do
           expect(Gitlab::CloudConnector::SelfIssuedToken).to receive(:new).with(
+            audience: audience,
             subject: gitlab_instance_id,
             scopes: scopes,
             extra_claims: extra_claims
