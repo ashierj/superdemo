@@ -9,7 +9,7 @@ export default {
     emptyStateDescription: s__(
       'MemberRole|Create a custom role with specific abilities by starting with a base role and adding custom permissions. %{linkStart}Learn more about custom roles.%{linkEnd}',
     ),
-    createButton: s__('MemberRole|Create new role'),
+    newRoleButton: s__('MemberRole|New role'),
   },
   components: {
     GlEmptyState,
@@ -25,7 +25,7 @@ export default {
     :title="$options.i18n.emptyStateTitle"
     :svg-path="emptyStateSvgPath"
     primary-button-link="#"
-    :primary-button-text="$options.i18n.createButton"
+    :primary-button-text="$options.i18n.newRoleButton"
   >
     <template #description>
       <gl-sprintf :message="$options.i18n.emptyStateDescription">

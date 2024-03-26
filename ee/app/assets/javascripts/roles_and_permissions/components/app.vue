@@ -14,7 +14,7 @@ export default {
     description: s__(
       'MemberRole|You can create a custom role by adding specific %{linkStart}permissions to a base role.%{linkEnd}',
     ),
-    createRoleText: s__('MemberRole|Create new role'),
+    newRoleText: s__('MemberRole|New role'),
     fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
   },
   components: {
@@ -90,7 +90,7 @@ export default {
           {{ $options.i18n.title }}
         </h1>
         <gl-button variant="confirm">
-          {{ $options.i18n.createRoleText }}
+          {{ $options.i18n.newRoleText }}
         </gl-button>
       </div>
 

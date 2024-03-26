@@ -91,9 +91,8 @@ describe('CustomRolesApp', () => {
         expect(findHeader().text()).toContain('Custom roles');
       });
 
-      it('renders the create new role button', () => {
-        expect(findButton().exists()).toBe(true);
-        expect(findButton().text()).toContain('Create new role');
+      it('renders the new role button', () => {
+        expect(findButton().text()).toContain('New role');
       });
 
       it('renders the number of roles', () => {
