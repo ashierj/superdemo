@@ -273,7 +273,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
     match do |response|
       expect(response).to have_gitlab_http_status(:ok)
 
-      expect(response.body).to include(s_('DuoProTrial|Apply your GitLab Duo Pro trial to a new or existing group'))
+      expect(response.body).to include(s_('DuoProTrial|Apply your GitLab Duo Pro trial to an existing group'))
     end
   end
 
