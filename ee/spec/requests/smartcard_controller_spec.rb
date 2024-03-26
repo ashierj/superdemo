@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe SmartcardController, type: :request, feature_category: :system_access do
   include LdapHelpers
 
+  let_it_be(:organization) { create(:organization, :default) }
   let(:smartcard_host) { 'smartcard.example.com' }
   let(:smartcard_port) { 3443 }
 
