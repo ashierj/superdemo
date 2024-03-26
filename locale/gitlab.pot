@@ -21328,6 +21328,11 @@ msgstr ""
 msgid "FeatureFlags|Create feature flag"
 msgstr ""
 
+msgid "FeatureFlags|Current plan allows for %d feature flag."
+msgid_plural "FeatureFlags|Current plan allows for %d feature flags."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "FeatureFlags|Delete %{name}?"
 msgstr ""
 
@@ -21371,9 +21376,6 @@ msgid "FeatureFlags|Feature flags"
 msgstr ""
 
 msgid "FeatureFlags|Feature flags allow you to configure your code into different flavors by dynamically toggling certain functionality."
-msgstr ""
-
-msgid "FeatureFlags|Feature flags limit reached (%{featureFlagsLimit}). Delete one or more feature flags before adding new ones."
 msgstr ""
 
 msgid "FeatureFlags|Get started with feature flags"
@@ -21461,6 +21463,9 @@ msgid "FeatureFlags|User Lists"
 msgstr ""
 
 msgid "FeatureFlags|View user lists"
+msgstr ""
+
+msgid "FeatureFlags|You've reached your %{docLinkStart}feature flag limit%{docLinkEnd} (%{featureFlagsLimit}). To add more, delete at least one feature flag, or %{pricingLinkStart}upgrade to a higher tier%{pricingLinkEnd}."
 msgstr ""
 
 msgid "FeatureFlag|Percentage"
