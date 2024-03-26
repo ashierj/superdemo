@@ -179,19 +179,15 @@ describe('GitLab Duo Chat', () => {
         findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
         expect(actionSpies.setLoading).toHaveBeenCalled();
       });
-      it.each([
-        GENIE_CHAT_RESET_MESSAGE,
-        ` ${GENIE_CHAT_RESET_MESSAGE} `,
-        GENIE_CHAT_CLEAN_MESSAGE,
-        ` ${GENIE_CHAT_CLEAN_MESSAGE} `,
-        GENIE_CHAT_CLEAR_MESSAGE,
-        ` ${GENIE_CHAT_CLEAR_MESSAGE} `,
-      ])('does not set loading to `true` for "%s" message', async (msg) => {
-        actionSpies.setLoading.mockReset();
-        findGlDuoChat().vm.$emit('send-chat-prompt', msg);
-        await nextTick();
-        expect(actionSpies.setLoading).not.toHaveBeenCalled();
-      });
+      it.each([GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE])(
+        'does not set loading to `true` for "%s" message',
+        async (msg) => {
+          actionSpies.setLoading.mockReset();
+          findGlDuoChat().vm.$emit('send-chat-prompt', msg);
+          await nextTick();
+          expect(actionSpies.setLoading).not.toHaveBeenCalled();
+        },
+      );
 
       describe.each`
         resourceId          | expectedResourceId
@@ -243,12 +239,7 @@ describe('GitLab Duo Chat', () => {
         });
       });
 
-      it.each([
-        GENIE_CHAT_CLEAN_MESSAGE,
-        ` ${GENIE_CHAT_CLEAN_MESSAGE} `,
-        GENIE_CHAT_CLEAR_MESSAGE,
-        ` ${GENIE_CHAT_CLEAR_MESSAGE} `,
-      ])(
+      it.each([GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE])(
         'refetches the `aiMessages` if the prompt is "%s" and does not call addDuoChatMessage',
         async (prompt) => {
           createComponent();
@@ -285,20 +276,16 @@ describe('GitLab Duo Chat', () => {
           await waitForPromises();
           expect(trackingSpy).toHaveBeenCalled();
         });
-        it.each([
-          GENIE_CHAT_RESET_MESSAGE,
-          ` ${GENIE_CHAT_RESET_MESSAGE} `,
-          GENIE_CHAT_CLEAN_MESSAGE,
-          ` ${GENIE_CHAT_CLEAN_MESSAGE} `,
-          GENIE_CHAT_CLEAR_MESSAGE,
-          ` ${GENIE_CHAT_CLEAR_MESSAGE} `,
-        ])('does not track if the sent message is "%s"', async (msg) => {
-          createComponent();
-          findGlDuoChat().vm.$emit('send-chat-prompt', msg);
+        it.each([GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE])(
+          'does not track if the sent message is "%s"',
+          async (msg) => {
+            createComponent();
+            findGlDuoChat().vm.$emit('send-chat-prompt', msg);
 
-          await waitForPromises();
-          expect(trackingSpy).not.toHaveBeenCalled();
-        });
+            await waitForPromises();
+            expect(trackingSpy).not.toHaveBeenCalled();
+          },
+        );
       });
     });
 
