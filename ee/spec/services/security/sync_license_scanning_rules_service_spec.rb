@@ -240,6 +240,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           ref(:case1) | ref(:case2) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
           ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
           ref(:case2) | ref(:case3) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
+          ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'MIT'] | :allowed | nil | false
           ref(:case3) | ref(:case4) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
           ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
           ref(:case4) | ref(:case5) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'Apache License 2' | true
@@ -253,10 +254,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           ref(:case4) | ref(:case5) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
           ref(:case4) | ref(:case5) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
 
-          # TODO: These cases fail. Related to https://gitlab.com/gitlab-org/gitlab/-/issues/438584
-          # When spdx_identifier is used in policy instead of name, match_on_inclusion_license is evaluated incorrectly
-          # ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'MIT'] | :allowed | nil | false
-          # ref(:case2) | ref(:case2) | ['detected'] | [nil, 'GPL v3'] | :allowed | nil | false
+          ref(:case2) | ref(:case2) | ['detected'] | [nil, 'GPL v3'] | :allowed | nil | false
         end
 
         with_them do

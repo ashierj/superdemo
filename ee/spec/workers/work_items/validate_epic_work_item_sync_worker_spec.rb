@@ -76,7 +76,7 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
             message: "Epic and work item attributes are not in sync after create",
             epic_id: epic.id,
             work_item_id: work_item.id,
-            mismatching_attributes: match_array(%w[title lock_version])
+            mismatching_attributes: include("title", "lock_version")
           )
 
           consume_event(subscriber: described_class, event: epic_created_event)
@@ -89,7 +89,7 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
             message: "Epic and work item attributes are not in sync after update",
             epic_id: epic.id,
             work_item_id: work_item.id,
-            mismatching_attributes: match_array(%w[title lock_version])
+            mismatching_attributes: include("title", "lock_version")
           )
 
           consume_event(subscriber: described_class, event: epic_updated_event)
