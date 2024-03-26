@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::Smartcard::Certificate do
+  let_it_be(:organization) { create(:organization, :default) }
   let(:subject_dn) { '/O=Random Corp Ltd/CN=gitlab-user/emailAddress=gitlab-user@random-corp.org' }
   let(:issuer_dn) { '/O=Random Corp Ltd/CN=Random Corp' }
   let(:certificate_header) { 'certificate' }
@@ -96,6 +97,7 @@ RSpec.describe Gitlab::Auth::Smartcard::Certificate do
           expect { subject }.to change { User.count }.from(0).to(1)
           expect(User.first.username).to eql('gitlab-user')
           expect(User.first.email).to eql('gitlab-user@random-corp.org')
+          expect(User.first.namespace.organization).to eq(organization)
         end
       end
 

@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate, feature_category: :system_access do
   include LdapHelpers
 
+  let_it_be(:organization) { create(:organization, :default) }
   let(:certificate_header) { 'certificate' }
   let(:openssl_certificate_store) { instance_double(OpenSSL::X509::Store) }
   let(:user_build_service) { instance_double(Users::BuildService) }
@@ -208,6 +209,7 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate, feature_category: :syst
 
         expect(user).not_to be_nil
         expect(user.email).to eql(ldap_person_email)
+        expect(user.namespace.organization).to eq(organization)
       end
 
       it 'creates identity' do

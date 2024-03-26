@@ -40,7 +40,8 @@ module Gitlab
             password: password,
             password_confirmation: password,
             password_automatically_set: true,
-            skip_confirmation: true
+            skip_confirmation: true,
+            organization_id: organization.id
           }
 
           Users::AuthorizedCreateService.new(nil, user_params).execute

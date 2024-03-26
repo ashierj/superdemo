@@ -63,6 +63,10 @@ module Gitlab
         def password
           @password ||= ::User.random_password
         end
+
+        def organization
+          @organization ||= Organizations::Organization.default_organization
+        end
       end
     end
   end
