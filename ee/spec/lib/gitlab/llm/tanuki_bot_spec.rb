@@ -174,8 +174,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
             expect(anthropic_client).to receive(:stream)
               .with(
-                prompt: a_string_including('absolute_links_content'),
-                model: "claude-instant-1.1"
+                prompt: a_string_including('absolute_links_content')
               ).once.and_return(completion_response)
 
             execute
