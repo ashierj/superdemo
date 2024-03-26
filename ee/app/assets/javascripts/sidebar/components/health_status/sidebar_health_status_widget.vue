@@ -167,9 +167,9 @@ export default {
           {{ healthStatusText }}
         </p>
       </div>
-      <div class="hide-collapsed" :class="{ 'gl-text-secondary': !healthStatus }">
-        <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
-        <span v-else>{{ $options.HEALTH_STATUS_I18N_NONE }}</span>
+      <div class="hide-collapsed">
+        <issue-health-status v-if="healthStatus" class="gl-mt-2" :health-status="healthStatus" />
+        <span v-else class="gl-text-secondary">{{ $options.HEALTH_STATUS_I18N_NONE }}</span>
       </div>
     </template>
     <template #default>
