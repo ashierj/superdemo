@@ -330,19 +330,24 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       ]
     end
 
+    let(:parsed_selector_data) { Gitlab::Json.parse(selector_data[:items]) }
+
     before do
       allow(helper).to receive(:current_user).and_return(user)
       all_groups.map { |group| group.add_owner(user) }
     end
 
     describe '#trial_namespace_selector_data' do
-      subject { helper.trial_namespace_selector_data(nil) }
+      subject(:selector_data) { helper.trial_namespace_selector_data(nil) }
 
       it 'returns free group' do
         group_options = [{ 'text' => free.name, 'value' => free.id.to_s }]
 
         is_expected.to include(any_trial_eligible_namespaces: 'true')
-        expect(Gitlab::Json.parse(subject[:items])[1]['options']).to eq(group_options)
+        new_group_option = parsed_selector_data[0]['options']
+        group_select_options = parsed_selector_data[1]['options']
+        expect(new_group_option).to eq([{ 'text' => _('Create group'), 'value' => '0' }])
+        expect(group_select_options).to eq(group_options)
       end
     end
 
@@ -359,15 +364,15 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
         create(:gitlab_subscription_add_on, :gitlab_duo_pro)
       end
 
-      subject { helper.duo_pro_trial_namespace_selector_data(nil) }
+      subject(:selector_data) { helper.duo_pro_trial_namespace_selector_data(nil) }
 
-      it 'returns all groups' do
+      it 'returns all groups without create group option' do
         group_options = all_groups.map do |group|
           { 'text' => group.name, 'value' => group.id.to_s }
         end
 
         is_expected.to include(any_trial_eligible_namespaces: 'true')
-        expect(Gitlab::Json.parse(subject[:items])[1]['options']).to eq(group_options)
+        expect(parsed_selector_data).to eq(group_options)
       end
     end
   end

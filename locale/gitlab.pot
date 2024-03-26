@@ -18732,7 +18732,7 @@ msgstr ""
 msgid "DuoProTrial|Activate my trial"
 msgstr ""
 
-msgid "DuoProTrial|Apply your GitLab Duo Pro trial to a new or existing group"
+msgid "DuoProTrial|Apply your GitLab Duo Pro trial to an existing group"
 msgstr ""
 
 msgid "DuoProTrial|Chat"
@@ -18745,9 +18745,6 @@ msgid "DuoProTrial|Code explanation"
 msgstr ""
 
 msgid "DuoProTrial|Code refactorization"
-msgstr ""
-
-msgid "DuoProTrial|Create a group to start your GitLab Duo Pro trial"
 msgstr ""
 
 msgid "DuoProTrial|GitLab Duo Pro is designed to make teams more efficient throughout the software development lifecycle with:"
