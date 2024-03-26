@@ -18,7 +18,8 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
       target_branch: 'feature',
       target_project: project,
       merge_when_pipeline_succeeds: true,
-      merge_user: user)
+      merge_user: user,
+      reviewers: [owner])
   end
 
   let(:commits) { merge_request.commits }
@@ -82,6 +83,10 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
         end
+      end
+
+      it 'updates reviewers state' do
+        expect { service.execute('refs/heads/master', newrev) }.to change { merge_request.merge_request_reviewers.first.state }.from("unreviewed").to("unapproved")
       end
 
       it 'resets all approvals and does not create new todos for approvers' do
@@ -334,7 +339,8 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
           source_project: project,
           source_branch: 'feature',
           target_project: project,
-          target_branch: 'master'
+          target_branch: 'master',
+          reviewers: [owner]
         )
       end
 
@@ -356,6 +362,10 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         js_approval
         rb_approval
         ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
+      end
+
+      it 'updates reviewers state' do
+        expect { service.execute('feature', feature_sha3) }.to change { merge_request.merge_request_reviewers.first.state }.from("unreviewed").to("unapproved")
       end
 
       context 'when the latest push is related to codeowners' do

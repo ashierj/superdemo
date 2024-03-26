@@ -841,6 +841,7 @@ Use `detailed_merge_status` instead of `merge_status` to account for all potenti
   - `jira_association_missing`: The title or description must reference a Jira issue.
   - `needs_rebase`: The merge request must be rebased.
   - `conflict`: There are conflicts between the source and target branches.
+  - `requested_changes`: The merge request has reviewers who have requested changes.
 
 ### Preparation steps
 
