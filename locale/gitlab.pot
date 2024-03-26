@@ -43243,7 +43243,16 @@ msgstr ""
 msgid "Runners|Containers"
 msgstr ""
 
+msgid "Runners|Copy Terraform configuration"
+msgstr ""
+
 msgid "Runners|Copy and paste the following command into your command line to register the runner."
+msgstr ""
+
+msgid "Runners|Copy command"
+msgstr ""
+
+msgid "Runners|Copy commands"
 msgstr ""
 
 msgid "Runners|Copy instructions"
