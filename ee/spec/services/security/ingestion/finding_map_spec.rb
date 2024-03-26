@@ -18,7 +18,7 @@ RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability
     it { is_expected.to delegate_method(:uuid).to(:security_finding) }
     it { is_expected.to delegate_method(:scanner_id).to(:security_finding) }
     it { is_expected.to delegate_method(:severity).to(:security_finding) }
-    it { is_expected.to delegate_method(:project_id).to(:pipeline) }
+    it { is_expected.to delegate_method(:project).to(:pipeline) }
     it { is_expected.to delegate_method(:evidence).to(:report_finding) }
   end
 

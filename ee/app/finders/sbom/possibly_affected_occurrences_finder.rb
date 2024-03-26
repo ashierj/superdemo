@@ -20,7 +20,8 @@ module Sbom
 
       search_scope.each_batch(of: of) do |batch|
         yield batch
-          .with_component_source_version_project_and_pipeline
+          .with_component_source_version_and_project
+          .with_pipeline_project_and_namespace
           .filter_by_non_nil_component_version
       end
     end

@@ -16,6 +16,11 @@ module EE
       prepended do
         validates :project_key, presence: true, if: :project_key_required?
         validates :vulnerabilities_issuetype, presence: true, if: :vulnerabilities_enabled
+        validates :project_keys,
+          length: {
+            maximum: 100,
+            message: N_('is too long (maximum is 100 entries)')
+          }
       end
 
       def jira_vulnerabilities_integration_available?
@@ -78,7 +83,11 @@ module EE
       private
 
       def project_key_required?
-        (active? && issues_enabled) || vulnerabilities_enabled
+        if ::Feature.enabled?(:jira_multiple_project_keys, group || project&.group)
+          vulnerabilities_enabled
+        else
+          (active? && issues_enabled) || vulnerabilities_enabled
+        end
       end
       strong_memoize_attr :project_key_required?
 

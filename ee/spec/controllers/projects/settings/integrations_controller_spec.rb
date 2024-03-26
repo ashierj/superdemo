@@ -60,4 +60,30 @@ RSpec.describe Projects::Settings::IntegrationsController, feature_category: :in
       end
     end
   end
+
+  describe 'PUT #update' do
+    let(:params) do
+      {
+        namespace_id: project.namespace,
+        project_id: project,
+        id: integration.to_param,
+        service: integration_params
+      }
+    end
+
+    let_it_be(:jira_integration) { create(:jira_integration, project: project) }
+    let_it_be_with_reload(:integration) { jira_integration }
+
+    before do
+      put :update, params: params
+    end
+
+    context 'with project_keys in params' do
+      let(:integration_params) { { project_keys: 'GTL,JR' } }
+
+      it 'saves the project_keys as an array' do
+        expect(integration.project_keys).to eq %w[GTL JR]
+      end
+    end
+  end
 end

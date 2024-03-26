@@ -179,6 +179,10 @@ RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulner
         expect(uuids.first).not_to eq(uuids.last)
       end
 
+      it 'sets the `traversal_ids` of the `vulnerability_reads` record' do
+        expect(vulnerability.vulnerability_read.traversal_ids).to eq(project.namespace.traversal_ids)
+      end
+
       context "when state fields match state" do
         let(:params) do
           {

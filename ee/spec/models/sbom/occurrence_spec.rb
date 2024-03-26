@@ -134,18 +134,33 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
-  describe '.with_component_source_version_project_and_pipeline scope' do
+  describe '.with_component_source_version_and_project scope' do
     let_it_be(:occurrence) { create(:sbom_occurrence, component: create(:sbom_component)) }
 
     it 'pre-loads relations to avoid executing additional queries' do
-      record = described_class.with_component_source_version_project_and_pipeline.first
+      record = described_class.with_component_source_version_and_project.first
 
       queries = ActiveRecord::QueryRecorder.new do
         record.component
         record.component_version
         record.source
-        record.pipeline
         record.project
+      end
+
+      expect(queries.count).to be_zero
+    end
+  end
+
+  describe '.with_pipeline_project_and_namespace' do
+    before do
+      create(:sbom_occurrence, component: create(:sbom_component))
+    end
+
+    it 'preloads the pipeline, project, and namespace associations' do
+      record = described_class.with_pipeline_project_and_namespace.first
+
+      queries = ActiveRecord::QueryRecorder.new do
+        record.pipeline.project.namespace
       end
 
       expect(queries.count).to be_zero

@@ -42,7 +42,7 @@ describe('License Compliance extension', () => {
   const findToggleCollapsedButton = () => wrapper.findByTestId('toggle-button');
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
   const findActionButtons = () => wrapper.findComponent(ActionButtons);
-  const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"] span`);
+  const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
   const findFullReportLink = () => findByHrefAttribute(fullReportPath);
   const findSummary = () => wrapper.findByTestId('widget-extension-top-level-summary');
 
@@ -147,6 +147,18 @@ describe('License Compliance extension', () => {
       expect(findFullReportLink().text()).toBe('Full report');
 
       expect(findActionButtons().exists()).toBe(true);
+    });
+
+    it('should specify trackFullReportClicked property on full report action', async () => {
+      mockApi(licenseComparisonPathCollapsed, HTTP_STATUS_OK, licenseComplianceNewLicenses);
+
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findWidget().props('actionButtons')[0]).toMatchObject({
+        trackFullReportClicked: true,
+      });
     });
 
     it('hides the manage licenses button when URL is not available', async () => {

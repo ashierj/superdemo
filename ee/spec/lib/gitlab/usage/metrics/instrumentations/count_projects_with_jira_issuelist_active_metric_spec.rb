@@ -7,11 +7,11 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountProjectsWithJiraIs
   let_it_be(:project_1) { create(:project) }
   let_it_be(:project_2) { create(:project) }
   let_it_be(:jira_project_with_issuelist) do
-    create(:jira_integration, project: project_1, issues_enabled: true, project_key: 'foo')
+    create(:jira_integration, project: project_1, issues_enabled: true, project_keys: ['foo'])
   end
 
   let_it_be(:jira_project_without_issuelist) do
-    create(:jira_integration, project: project_2, issues_enabled: false, project_key: 'bar')
+    create(:jira_integration, project: project_2, issues_enabled: false, project_keys: ['bar'])
   end
 
   let(:expected_value) { 1 }
