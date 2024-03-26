@@ -27,7 +27,7 @@ export const accessLevelsMockResponse = [
 export const branchRulesMockResponse = {
   data: {
     project: {
-      id: '123',
+      id: 'gid://gitlab/Project/1',
       __typename: 'Project',
       branchRules: {
         __typename: 'BranchRuleConnection',
@@ -61,6 +61,7 @@ export const branchRulesMockResponse = {
           },
           {
             name: 'test-*',
+            id: 'gid://gitlab/Projects/BranchRule/2',
             isDefault: false,
             matchingBranchesCount: 2,
             branchProtection: {
@@ -126,4 +127,16 @@ export const branchRulePropsMock = {
   },
   approvalRulesTotal: 1,
   statusChecksTotal: 2,
+};
+
+export const protectableBranches = ['make-release-umd-bundle', 'main', 'v2.x'];
+
+export const protectableBranchesMockResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      protectableBranches,
+      __typename: 'Project',
+    },
+  },
 };

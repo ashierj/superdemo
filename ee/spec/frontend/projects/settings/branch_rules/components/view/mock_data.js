@@ -122,7 +122,9 @@ export const branchProtectionsMockResponse = {
           {
             __typename: 'BranchRule',
             name: 'main',
+            isDefault: true,
             id: 'gid://gitlab/Projects/BranchRule/1',
+            matchingBranchesCount,
             branchProtection: {
               __typename: 'BranchProtection',
               allowForcePush: true,
@@ -144,12 +146,13 @@ export const branchProtectionsMockResponse = {
               __typename: 'ExternalStatusCheckConnection',
               nodes: statusChecksRulesMock,
             },
-            matchingBranchesCount,
           },
           {
             __typename: 'BranchRule',
             name: '*',
             id: 'gid://gitlab/Projects/BranchRule/2',
+            isDefault: false,
+            matchingBranchesCount,
             branchProtection: {
               __typename: 'BranchProtection',
               allowForcePush: true,
@@ -171,7 +174,6 @@ export const branchProtectionsMockResponse = {
               __typename: 'ExternalStatusCheckConnection',
               nodes: [],
             },
-            matchingBranchesCount,
           },
         ],
       },
@@ -184,6 +186,25 @@ export const deleteBranchRuleMockResponse = {
     branchRuleDelete: {
       errors: [],
       __typename: 'BranchRuleDeletePayload',
+    },
+  },
+};
+
+export const editBranchRuleMockResponse = {
+  data: {
+    branchRule: {
+      errors: [],
+      __typename: 'BranchRuleEditPayload',
+    },
+  },
+};
+
+export const protectableBranchesMockResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      protectableBranches: ['make-release-umd-bundle', 'main', 'v2.x'],
+      __typename: 'Project',
     },
   },
 };
