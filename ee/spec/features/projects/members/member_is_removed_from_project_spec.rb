@@ -18,9 +18,9 @@ RSpec.describe 'Projects > Members > Member is removed from project', :js, featu
     visit project_project_members_path(project)
   end
 
-  def leave_group
+  def leave_project
     show_actions_for_username(user)
-    click_button _('Leave group')
+    click_button _('Leave project')
 
     within_modal do
       click_button _('Leave')
@@ -28,7 +28,7 @@ RSpec.describe 'Projects > Members > Member is removed from project', :js, featu
   end
 
   it 'user is removed from project' do
-    leave_group
+    leave_project
 
     expect(project.users.exists?(user.id)).to be_falsey
   end
@@ -38,7 +38,7 @@ RSpec.describe 'Projects > Members > Member is removed from project', :js, featu
     let!(:non_matching_protected_branch) { create(:protected_branch, authorize_user_to_push: other_user, authorize_user_to_merge: other_user, project: project) }
 
     it 'user leaves project' do
-      leave_group
+      leave_project
 
       expect(project.users.exists?(user.id)).to be_falsey
       expect(matching_protected_branch.push_access_levels.where(user: user)).not_to exist

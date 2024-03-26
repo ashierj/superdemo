@@ -1,5 +1,5 @@
 query groupDoraPerformanceScoreCountsQuery($fullPath: ID!, $topics: [String!]) {
-  namespace: group(fullPath: $fullPath) {
+  group(fullPath: $fullPath) {
     id
     doraPerformanceScoreCounts(projectFilters: { topic: $topics }) {
       totalProjectsCount

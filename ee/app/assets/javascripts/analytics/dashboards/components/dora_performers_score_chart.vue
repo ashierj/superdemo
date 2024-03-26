@@ -62,7 +62,7 @@ export default {
       },
       update(data) {
         const { noDoraDataProjectsCount = 0, nodes: items = [], totalProjectsCount = 0 } =
-          data?.namespace?.doraPerformanceScoreCounts || {};
+          data?.group?.doraPerformanceScoreCounts || {};
 
         return {
           totalProjectsCount,

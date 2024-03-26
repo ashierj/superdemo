@@ -70,43 +70,33 @@ const doraPerformersScoreEmptyResponseData = [
   },
 ];
 
-export const doraPerformanceScoreCountsSuccess = {
+const generateDoraPerformanceScoreCounts = ({
+  noDoraDataProjectsCount,
+  nodes = doraPerformersScoreResponseData,
+}) => ({
   data: {
-    namespace: {
+    group: {
       id: 'fake-dora-performance-score-counts-request',
       doraPerformanceScoreCounts: {
         totalProjectsCount: doraPerformanceScoresProjectsCount,
-        noDoraDataProjectsCount: 0,
-        nodes: doraPerformersScoreResponseData,
+        noDoraDataProjectsCount,
+        nodes,
       },
     },
   },
-};
+});
 
-export const excludedProjectsDoraPerformanceScoreCounts = {
-  data: {
-    namespace: {
-      id: 'fake-dora-performance-score-counts-request',
-      doraPerformanceScoreCounts: {
-        totalProjectsCount: doraPerformanceScoresProjectsCount,
-        noDoraDataProjectsCount: 20,
-        nodes: doraPerformersScoreResponseData,
-      },
-    },
-  },
-};
+export const doraPerformanceScoreCountsSuccess = generateDoraPerformanceScoreCounts({
+  noDoraDataProjectsCount: 0,
+});
 
-export const noProjectsWithDoraPerformanceScoreCounts = {
-  data: {
-    namespace: {
-      id: 'fake-dora-performance-score-counts-request',
-      doraPerformanceScoreCounts: {
-        totalProjectsCount: doraPerformanceScoresProjectsCount,
-        noDoraDataProjectsCount: doraPerformanceScoresProjectsCount,
-        nodes: doraPerformersScoreEmptyResponseData,
-      },
-    },
-  },
-};
+export const excludedProjectsDoraPerformanceScoreCounts = generateDoraPerformanceScoreCounts({
+  noDoraDataProjectsCount: 20,
+});
+
+export const noProjectsWithDoraPerformanceScoreCounts = generateDoraPerformanceScoreCounts({
+  noDoraDataProjectsCount: doraPerformanceScoresProjectsCount,
+  nodes: doraPerformersScoreEmptyResponseData,
+});
 
 export const filterProjectTopics = ['ruby', 'vue.js'];
