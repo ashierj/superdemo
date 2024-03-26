@@ -71,13 +71,13 @@ export default {
     isGroup() {
       return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
-
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
     showScopeInfoBox() {
-      return (
-        (this.securityPoliciesPolicyScopeToggleEnabled ||
-          this.glFeatures.securityPoliciesPolicyScope) &&
-        this.isGroup
-      );
+      return this.isProject
+        ? this.glFeatures.securityPoliciesPolicyScopeProject
+        : this.glFeatures.securityPoliciesPolicyScope;
     },
     isInherited() {
       return isPolicyInherited(this.policy.source);

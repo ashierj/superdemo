@@ -1,19 +1,11 @@
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
-import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectsToggleList from 'ee/security_orchestration/components/policy_drawer/projects_toggle_list.vue';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
 import ToggleList from 'ee/security_orchestration/components/policy_drawer/toggle_list.vue';
 
 describe('ProjectsToggleList', () => {
   let wrapper;
-  let requestHandlers;
 
   const defaultNodes = [
     {
@@ -30,98 +22,47 @@ describe('ProjectsToggleList', () => {
     },
   ];
 
-  const defaultNodesIds = defaultNodes.map(({ id }) => id);
-
-  const defaultPageInfo = {
-    __typename: 'PageInfo',
-    hasNextPage: false,
-    hasPreviousPage: false,
-    startCursor: null,
-    endCursor: null,
-  };
-
-  const mockApolloHandlers = ({ nodes = defaultNodes, hasNextPage = false } = {}) => {
-    return {
-      getGroupProjects: jest.fn().mockResolvedValue({
-        data: {
-          id: 1,
-          group: {
-            id: 2,
-            projects: {
-              nodes,
-              pageInfo: { ...defaultPageInfo, hasNextPage },
-            },
-          },
-        },
-      }),
-    };
-  };
-
-  const createMockApolloProvider = (handlers) => {
-    Vue.use(VueApollo);
-
-    requestHandlers = handlers;
-    return createMockApollo([[getGroupProjects, requestHandlers.getGroupProjects]]);
-  };
-
-  const createComponent = ({
-    propsData = {},
-    provide = {},
-    handlers = mockApolloHandlers(),
-  } = {}) => {
+  const createComponent = ({ propsData = {} } = {}) => {
     wrapper = shallowMountExtended(ProjectsToggleList, {
-      apolloProvider: createMockApolloProvider(handlers),
-      provide: {
-        namespaceType: NAMESPACE_TYPES.GROUP,
-        namespacePath: 'gitlab-org',
-        rootNamespacePath: 'gitlab-org-root',
-        ...provide,
-      },
       propsData: {
-        projectIds: [],
+        projects: defaultNodes,
         ...propsData,
       },
     });
   };
 
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findToggleList = () => wrapper.findComponent(ToggleList);
   const findHeader = () => wrapper.findByTestId('toggle-list-header');
 
   describe('all projects', () => {
     describe('many projects', () => {
       beforeEach(() => {
-        createComponent();
+        createComponent({
+          propsData: {
+            projects: [],
+          },
+        });
       });
 
-      it('should render loading icon', () => {
-        expect(findLoadingIcon().exists()).toBe(true);
+      it('should not render toggle list', () => {
         expect(findToggleList().exists()).toBe(false);
       });
 
-      it('should render toggle list with full project list', async () => {
-        await waitForPromises();
-        expect(findLoadingIcon().exists()).toBe(false);
-        expect(findToggleList().exists()).toBe(true);
-        expect(findToggleList().props('items')).toHaveLength(2);
-      });
-
-      it('should render header for all projects', async () => {
-        await waitForPromises();
-
-        expect(findHeader().text()).toBe('All 2 projects in this group');
+      it('should render header for all projects', () => {
+        expect(findHeader().text()).toBe('All projects in this group');
       });
     });
 
     describe('single project', () => {
-      it('should render header for all projects when there is single project', async () => {
+      it('should render header and list for all projects when there is single project', () => {
         createComponent({
-          handlers: mockApolloHandlers({ nodes: [defaultNodes[0]] }),
+          propsData: {
+            projects: [defaultNodes[0]],
+          },
         });
 
-        await waitForPromises();
-
-        expect(findHeader().text()).toBe('1 project in this group');
+        expect(findHeader().text()).toBe('All projects in this group except:');
+        expect(findToggleList().props('items')).toHaveLength(1);
       });
     });
   });
@@ -130,127 +71,55 @@ describe('ProjectsToggleList', () => {
     beforeEach(() => {
       createComponent({
         propsData: {
-          projectIds: [1],
+          projects: [defaultNodes[0]],
           including: true,
         },
       });
     });
 
-    it('should render toggle list with specific projects', async () => {
-      await waitForPromises();
-      expect(findLoadingIcon().exists()).toBe(false);
+    it('should render toggle list with specific projects', () => {
       expect(findToggleList().exists()).toBe(true);
-
-      expect(requestHandlers.getGroupProjects).toHaveBeenCalledWith({
-        fullPath: 'gitlab-org',
-        projectIds: [defaultNodesIds[0]],
-      });
-    });
-    it('should render header for specific projects', async () => {
-      await waitForPromises();
-
-      expect(findHeader().text()).toBe('2 projects:');
-    });
-  });
-
-  describe('all projects except specific projects', () => {
-    beforeEach(() => {
-      createComponent({
-        propsData: {
-          projectIds: [2],
-          including: false,
-        },
-      });
+      expect(findToggleList().props('items')).toEqual(['1']);
     });
 
-    it('should render toggle list with excluded projects', async () => {
-      await waitForPromises();
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findToggleList().exists()).toBe(true);
-
-      expect(requestHandlers.getGroupProjects).toHaveBeenCalledWith({
-        fullPath: 'gitlab-org',
-        projectIds: [defaultNodesIds[1]],
-      });
-    });
-
-    it('should render header for excluded projects', async () => {
-      await waitForPromises();
-
-      expect(findHeader().text()).toBe('All projects in this group except:');
-    });
-  });
-
-  describe('failed query', () => {
-    it('should emit error when query fails', async () => {
-      createComponent({
-        handlers: {
-          getGroupProjects: jest.fn().mockRejectedValue({}),
-        },
-      });
-
-      await waitForPromises();
-      expect(wrapper.emitted('projects-query-error')).toHaveLength(1);
-    });
-  });
-
-  describe('paginated toggle list', () => {
-    beforeEach(async () => {
-      createComponent({
-        handlers: mockApolloHandlers({ hasNextPage: true }),
-      });
-
-      await waitForPromises();
-    });
-
-    it('should load more projects', async () => {
-      expect(findToggleList().props('hasNextPage')).toBe(true);
-      expect(findToggleList().props('page')).toBe(1);
-      expect(findToggleList().props('items')).toHaveLength(2);
-
-      findToggleList().vm.$emit('load-next-page');
-      await waitForPromises();
-
-      expect(findToggleList().props('page')).toBe(2);
-      expect(findToggleList().props('items')).toHaveLength(4);
-
-      findToggleList().vm.$emit('load-next-page');
-      await waitForPromises();
-
-      expect(findToggleList().props('page')).toBe(3);
-      expect(findToggleList().props('items')).toHaveLength(6);
+    it('should render header for specific projects', () => {
+      expect(findHeader().text()).toBe('1 project:');
     });
   });
 
   describe('project level', () => {
-    it('should render toggle list with specific projects on project level', async () => {
+    it('should render toggle list and specific header for all projects', () => {
       createComponent({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.PROJECT,
+        propsData: {
+          isGroup: false,
         },
       });
 
-      await waitForPromises();
-      expect(findLoadingIcon().exists()).toBe(false);
       expect(findToggleList().exists()).toBe(true);
+      expect(findHeader().text()).toBe('All projects linked to this project except:');
+    });
 
-      expect(requestHandlers.getGroupProjects).toHaveBeenCalledWith({
-        fullPath: 'gitlab-org-root',
-        projectIds: [],
+    it('should render toggle list and specific header for specific projects', () => {
+      createComponent({
+        propsData: {
+          isGroup: false,
+          including: true,
+        },
       });
+
+      expect(findToggleList().exists()).toBe(true);
+      expect(findHeader().text()).toBe('2 projects:');
     });
   });
 
   describe('partial list', () => {
-    it('renders partial lists for projects', async () => {
+    it('renders partial lists for projects', () => {
       createComponent({
         propsData: {
           projectsToShow: 3,
           inlineList: true,
         },
       });
-
-      await waitForPromises();
 
       expect(findToggleList().props('itemsToShow')).toBe(3);
       expect(findToggleList().props('inlineList')).toBe(true);

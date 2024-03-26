@@ -1,9 +1,6 @@
 <script>
-import { GlLabel, GlLoadingIcon } from '@gitlab/ui';
-import getComplianceFrameworksQuery from 'ee/security_orchestration/graphql/queries/get_compliance_framework.query.graphql';
+import { GlLabel } from '@gitlab/ui';
 import { sprintf, n__, __ } from '~/locale';
-import { mapShortIdsToFullGraphQlFormat } from 'ee/security_orchestration/components/policy_drawer/utils';
-import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
 import {
   COMPLIANCE_FRAMEWORKS_DESCRIPTION,
   COMPLIANCE_FRAMEWORKS_DESCRIPTION_NO_PROJECTS,
@@ -13,31 +10,9 @@ export default {
   name: 'ComplianceFrameworksToggleList',
   components: {
     GlLabel,
-    GlLoadingIcon,
   },
-  apollo: {
-    complianceFrameworks: {
-      query: getComplianceFrameworksQuery,
-      variables() {
-        return {
-          fullPath: this.rootNamespacePath,
-          complianceFrameworkIds: mapShortIdsToFullGraphQlFormat(
-            TYPE_COMPLIANCE_FRAMEWORK,
-            this.complianceFrameworkIds,
-          ),
-        };
-      },
-      update(data) {
-        return data.namespace?.complianceFrameworks?.nodes || [];
-      },
-      error() {
-        this.$emit('framework-query-error');
-      },
-    },
-  },
-  inject: ['rootNamespacePath'],
   props: {
-    complianceFrameworkIds: {
+    complianceFrameworks: {
       type: Array,
       required: false,
       default: () => [],
@@ -53,15 +28,7 @@ export default {
       default: 0,
     },
   },
-  data() {
-    return {
-      complianceFrameworks: [],
-    };
-  },
   computed: {
-    loading() {
-      return this.$apollo.queries.complianceFrameworks?.loading;
-    },
     hasHiddenLabels() {
       const { length } = this.complianceFrameworks;
 
@@ -110,27 +77,23 @@ export default {
 
 <template>
   <div>
-    <gl-loading-icon v-if="loading" />
+    <p class="gl-mb-3" data-testid="compliance-frameworks-header">
+      {{ header }}
+    </p>
 
-    <template v-else>
-      <p class="gl-mb-3" data-testid="compliance-frameworks-header">
-        {{ header }}
-      </p>
+    <div class="gl-display-flex gl-flex-wrap gl-gap-3">
+      <gl-label
+        v-for="item in complianceFrameworksFormatted"
+        :key="item.id"
+        :background-color="item.color"
+        :description="item.description"
+        :title="item.name"
+        size="sm"
+      />
+    </div>
 
-      <div class="gl-display-flex gl-flex-wrap gl-gap-3">
-        <gl-label
-          v-for="item in complianceFrameworksFormatted"
-          :key="item.id"
-          :background-color="item.color"
-          :description="item.description"
-          :title="item.name"
-          size="sm"
-        />
-      </div>
-
-      <p v-if="hasHiddenLabels" data-testid="hidden-labels-text" class="gl-m-0 gl-mt-3">
-        {{ hiddenLabelsText }}
-      </p>
-    </template>
+    <p v-if="hasHiddenLabels" data-testid="hidden-labels-text" class="gl-m-0 gl-mt-3">
+      {{ hiddenLabelsText }}
+    </p>
   </div>
 </template>
