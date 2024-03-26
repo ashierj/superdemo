@@ -16844,6 +16844,9 @@ msgstr ""
 msgid "Delete snippet"
 msgstr ""
 
+msgid "Delete snippet modal"
+msgstr ""
+
 msgid "Delete snippet?"
 msgstr ""
 
