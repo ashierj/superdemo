@@ -40,7 +40,7 @@ RSpec.describe 'AI Agents', :js, feature_category: :mlops do
 
       click_on('my-agent')
 
-      expect(page).to have_content("AI Agent: #{agent1.id}")
+      expect(page).to have_content(agent1.name)
     end
 
     it 'shows the create screen when the button is clicked' do
@@ -63,7 +63,7 @@ RSpec.describe 'AI Agents', :js, feature_category: :mlops do
 
       click_on('Create agent')
 
-      expect(page).to have_content("AI Agent:")
+      expect(page).to have_content("my-agent-name")
       expect(page).not_to have_content('New agent')
       expect(page).not_to have_content('Agent name')
       expect(page).not_to have_content('Prompt (optional)')

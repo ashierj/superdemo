@@ -1,4 +1,4 @@
-import { GlBadge } from '@gitlab/ui';
+import { GlExperimentBadge } from '@gitlab/ui';
 import { RouterLinkStub as RouterLink } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ListAgents from 'ee/ml/ai_agents/views/list_agents.vue';
@@ -18,7 +18,7 @@ const createWrapper = () => {
 
 const findTitleArea = () => wrapper.findComponent(TitleArea);
 const findCreateButton = () => findTitleArea().findComponent(RouterLink);
-const findBadge = () => wrapper.findComponent(GlBadge);
+const findBadge = () => wrapper.findComponent(GlExperimentBadge);
 const findAgentList = () => wrapper.findComponent(AgentList);
 
 describe('ee/ml/ai_agents/views/list_agents', () => {
@@ -29,7 +29,7 @@ describe('ee/ml/ai_agents/views/list_agents', () => {
   });
 
   it('displays the experiment badge', () => {
-    expect(findBadge().attributes().href).toBe('/help/policy/experiment-beta-support#experiment');
+    expect(findBadge().props('type')).toBe('experiment');
   });
 
   it('shows create agent button', () => {

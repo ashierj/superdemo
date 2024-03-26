@@ -108,6 +108,22 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
         let(:epic) { Epic.last }
       end
 
+      context 'when date params are not set and is_fixed is false' do
+        let!(:params) do
+          {
+            title: 'new epic',
+            start_date_fixed: nil,
+            due_date_fixed: nil,
+            due_date_is_fixed: false,
+            start_date_is_fixed: false
+          }
+        end
+
+        it_behaves_like 'syncs all data from an epic to a work item' do
+          let(:epic) { Epic.last }
+        end
+      end
+
       it 'does not create work item metrics' do
         expect { subject }.to change { Epic.count }.by(1)
           .and(change { WorkItem.count }.by(1))
