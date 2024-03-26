@@ -1,4 +1,3 @@
-import { thWidthPercent } from '~/lib/utils/table_utility';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
@@ -18,32 +17,31 @@ export const FIELDS = [
   {
     key: 'user',
     label: __('User'),
-    // eslint-disable-next-line @gitlab/require-i18n-strings
-    thClass: `${thWidthPercent(30)} gl-pl-2!`,
+    thClass: `gl-w-30p gl-pl-2!`,
     tdClass: 'gl-vertical-align-middle! gl-pl-2!',
   },
   {
     key: 'email',
     label: __('Email'),
-    thClass: thWidthPercent(20),
+    thClass: 'gl-w-20p',
     tdClass: 'gl-vertical-align-middle!',
   },
   {
     key: 'lastActivityTime',
     label: __('Last GitLab activity'),
-    thClass: thWidthPercent(20),
+    thClass: 'gl-w-20p',
     tdClass: 'gl-vertical-align-middle!',
   },
   {
     key: 'lastLoginAt',
     label: __('Last login'),
-    thClass: thWidthPercent(20),
+    thClass: 'gl-w-20p',
     tdClass: 'gl-vertical-align-middle!',
   },
   {
     key: 'actions',
     label: '',
-    thClass: thWidthPercent(10),
+    thClass: 'gl-w-10p',
     tdClass: 'gl-vertical-align-middle! text-right',
   },
 ];

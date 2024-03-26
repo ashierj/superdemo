@@ -6,7 +6,6 @@ import Target from 'ee/security_configuration/corpus_management/components/colum
 import { s__ } from '~/locale';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
-import { thWidthPercent } from '~/lib/utils/table_utility';
 
 export default {
   components: {
@@ -27,29 +26,29 @@ export default {
     {
       key: 'name',
       label: s__('CorpusManagement|Corpus name'),
-      thClass: thWidthPercent(40),
+      thClass: 'gl-w-40p',
       tdClass: 'gl-text-truncate gl-max-w-15',
     },
     {
       key: 'target',
       label: s__('CorpusManagement|Target'),
-      thClass: thWidthPercent(20),
+      thClass: 'gl-w-20p',
       tdClass: 'gl-word-break-word',
     },
     {
       key: 'lastUpdated',
       label: s__('CorpusManagement|Last updated'),
-      thClass: thWidthPercent(15),
+      thClass: 'gl-w-15p',
     },
     {
       key: 'lastUsed',
       label: s__('CorpusManagement|Last used'),
-      thClass: thWidthPercent(15),
+      thClass: 'gl-w-15p',
     },
     {
       key: 'actions',
       label: s__('CorpusManagement|Actions'),
-      thClass: thWidthPercent(10),
+      thClass: 'gl-w-10p',
     },
   ],
   i18n: {

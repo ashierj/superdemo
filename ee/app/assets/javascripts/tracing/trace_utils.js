@@ -2,8 +2,38 @@ import { s__, sprintf } from '~/locale';
 import { periodToDate } from '~/observability/utils';
 
 // See https://design.gitlab.com/data-visualization/color/#categorical-data
-const SPAN_COLOR_WEIGHT = ['500', '600', '700', '800', '900', '950'];
-const SPAN_COLOR_PALETTE = ['blue', 'orange', 'aqua', 'green', 'magenta'];
+const PALETTE = [
+  'gl-bg-data-viz-blue-500',
+  'gl-bg-data-viz-orange-500',
+  'gl-bg-data-viz-aqua-500',
+  'gl-bg-data-viz-green-500',
+  'gl-bg-data-viz-magenta-500',
+  'gl-bg-data-viz-blue-600',
+  'gl-bg-data-viz-orange-600',
+  'gl-bg-data-viz-aqua-600',
+  'gl-bg-data-viz-green-600',
+  'gl-bg-data-viz-magenta-600',
+  'gl-bg-data-viz-blue-700',
+  'gl-bg-data-viz-orange-700',
+  'gl-bg-data-viz-aqua-700',
+  'gl-bg-data-viz-green-700',
+  'gl-bg-data-viz-magenta-700',
+  'gl-bg-data-viz-blue-800',
+  'gl-bg-data-viz-orange-800',
+  'gl-bg-data-viz-aqua-800',
+  'gl-bg-data-viz-green-800',
+  'gl-bg-data-viz-magenta-800',
+  'gl-bg-data-viz-blue-900',
+  'gl-bg-data-viz-orange-900',
+  'gl-bg-data-viz-aqua-900',
+  'gl-bg-data-viz-green-900',
+  'gl-bg-data-viz-magenta-900',
+  'gl-bg-data-viz-blue-950',
+  'gl-bg-data-viz-orange-950',
+  'gl-bg-data-viz-aqua-950',
+  'gl-bg-data-viz-green-950',
+  'gl-bg-data-viz-magenta-950',
+];
 
 export function durationNanoToMs(durationNano) {
   return durationNano / 1000000;
@@ -44,24 +74,12 @@ export function formatTraceDuration(durationNano) {
   return formatDurationMs(durationNanoToMs(durationNano));
 }
 
-function createPalette() {
-  const palette = [];
-  SPAN_COLOR_WEIGHT.forEach((w) => {
-    SPAN_COLOR_PALETTE.forEach((c) => {
-      palette.push(`${c}-${w}`);
-    });
-  });
-  return palette;
-}
-
 export function assignColorToServices(trace) {
   const services = Array.from(new Set(trace.spans.map((s) => s.service_name)));
 
-  const palette = createPalette();
-
   const serviceToColor = {};
   services.forEach((s, i) => {
-    serviceToColor[s] = palette[i % palette.length];
+    serviceToColor[s] = PALETTE[i % PALETTE.length];
   });
 
   return serviceToColor;
