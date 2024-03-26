@@ -101,7 +101,7 @@ describe('DashboardsList', () => {
       );
     });
 
-    it('does not render any feature or custom dashboards', () => {
+    it('does not render any custom dashboards', () => {
       expect(findListItems()).toHaveLength(0);
     });
 
@@ -389,7 +389,7 @@ describe('DashboardsList', () => {
         expect(findListLoadingSkeletons()).toHaveLength(0);
       });
 
-      it('renders a list item for each custom and feature dashboard', () => {
+      it('renders a list item for each custom dashboard', () => {
         const expectedDashboards =
           TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.customizableDashboards?.nodes;
 
