@@ -22,45 +22,56 @@ module WorkItems
         attr_reader :work_item, :params
 
         def start_date_attributes
+          attributes = {}
+
           if params.key?(:start_date_fixed)
-            {
-              start_date_is_fixed: true,
-              start_date: params[:start_date_fixed],
-              start_date_fixed: params[:start_date_fixed]
-            }
-          elsif params[:start_date_is_fixed]
-            { start_date_is_fixed: true }
-          else
-            finder.minimum_start_date.first.then do |result|
-              {
-                start_date: result&.start_date,
-                start_date_is_fixed: false,
-                start_date_sourcing_milestone_id: result&.start_date_sourcing_milestone_id,
-                start_date_sourcing_work_item_id: result&.start_date_sourcing_work_item_id
-              }
+            attributes[:start_date_fixed] = params[:start_date_fixed]
+            attributes[:start_date] = params[:start_date_fixed] if params[:start_date_is_fixed]
+          end
+
+          if params.key?(:start_date_is_fixed)
+            attributes[:start_date_is_fixed] = params[:start_date_is_fixed]
+
+            unless params[:start_date_is_fixed]
+              finder.minimum_start_date.first.then do |result|
+                attributes.merge!(
+                  {
+                    start_date: result&.start_date,
+                    start_date_is_fixed: false,
+                    start_date_sourcing_milestone_id: result&.start_date_sourcing_milestone_id,
+                    start_date_sourcing_work_item_id: result&.start_date_sourcing_work_item_id
+                  })
+              end
             end
           end
+
+          attributes
         end
 
         def due_date_attributes
+          attributes = {}
+
           if params.key?(:due_date_fixed)
-            {
-              due_date: params[:due_date_fixed],
-              due_date_fixed: params[:due_date_fixed],
-              due_date_is_fixed: true
-            }
-          elsif params[:due_date_is_fixed]
-            { due_date_is_fixed: true }
-          else
-            finder.maximum_due_date.first.then do |result|
-              {
-                due_date: result&.due_date,
-                due_date_is_fixed: false,
-                due_date_sourcing_milestone_id: result&.due_date_sourcing_milestone_id,
-                due_date_sourcing_work_item_id: result&.due_date_sourcing_work_item_id
-              }
+            attributes[:due_date_fixed] = params[:due_date_fixed]
+            attributes[:due_date] = params[:due_date_fixed] if params[:due_date_is_fixed]
+          end
+
+          if params.key?(:due_date_is_fixed)
+            attributes[:due_date_is_fixed] = params[:due_date_is_fixed]
+
+            unless params[:due_date_is_fixed]
+              finder.maximum_due_date.first.then do |result|
+                attributes.merge!(
+                  due_date: result&.due_date,
+                  due_date_is_fixed: false,
+                  due_date_sourcing_milestone_id: result&.due_date_sourcing_milestone_id,
+                  due_date_sourcing_work_item_id: result&.due_date_sourcing_work_item_id
+                )
+              end
             end
           end
+
+          attributes
         end
 
         def finder

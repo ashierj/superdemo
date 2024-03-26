@@ -44,10 +44,6 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
           it "does not set start_date and start_date_fixed values" do
             expect(builder.build).to eq(
-              due_date: milestone.due_date,
-              due_date_is_fixed: false,
-              due_date_sourcing_milestone_id: milestone.id,
-              due_date_sourcing_work_item_id: nil,
               start_date_is_fixed: true
             )
           end
@@ -58,14 +54,24 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
           it "sets the start_date and start_date_fixed to the given value" do
             expect(builder.build).to eq(
-              due_date: milestone.due_date,
-              due_date_is_fixed: false,
-              due_date_sourcing_milestone_id: milestone.id,
-              due_date_sourcing_work_item_id: nil,
               start_date: start_date,
               start_date_fixed: start_date,
               start_date_is_fixed: true
             )
+          end
+
+          context "when params[:start_date_fixed] is nil and start_date_is_fixed is false" do
+            let(:params) { { start_date_is_fixed: false, start_date_fixed: nil } }
+
+            it "sets the start_date and start_date_fixed to nil" do
+              expect(builder.build).to eq(
+                start_date_is_fixed: false,
+                start_date_fixed: nil,
+                start_date: milestone.start_date,
+                start_date_sourcing_milestone_id: milestone.id,
+                start_date_sourcing_work_item_id: nil
+              )
+            end
           end
 
           context "when params[:start_date_fixed] is nil" do
@@ -73,10 +79,6 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
             it "sets the start_date and start_date_fixed to nil" do
               expect(builder.build).to eq(
-                due_date: milestone.due_date,
-                due_date_is_fixed: false,
-                due_date_sourcing_milestone_id: milestone.id,
-                due_date_sourcing_work_item_id: nil,
                 start_date: nil,
                 start_date_fixed: nil,
                 start_date_is_fixed: true
@@ -91,10 +93,6 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
         it "sets the start_date to the rolledup value" do
           expect(builder.build).to eq(
-            due_date: milestone.due_date,
-            due_date_is_fixed: false,
-            due_date_sourcing_milestone_id: milestone.id,
-            due_date_sourcing_work_item_id: nil,
             start_date_is_fixed: false,
             start_date: milestone.start_date,
             start_date_sourcing_milestone_id: milestone.id,
@@ -111,10 +109,6 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
           it "does not set due_date and due_date_fixed values" do
             expect(builder.build).to eq(
-              start_date: milestone.start_date,
-              start_date_is_fixed: false,
-              start_date_sourcing_milestone_id: milestone.id,
-              start_date_sourcing_work_item_id: nil,
               due_date_is_fixed: true
             )
           end
@@ -125,14 +119,24 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
           it "sets the due_date and due_date_fixed to the given value" do
             expect(builder.build).to eq(
-              start_date: milestone.start_date,
-              start_date_is_fixed: false,
-              start_date_sourcing_milestone_id: milestone.id,
-              start_date_sourcing_work_item_id: nil,
               due_date: due_date,
               due_date_fixed: due_date,
               due_date_is_fixed: true
             )
+          end
+
+          context "when params[:due_date_fixed] is nil and due_date_is_fixed: false" do
+            let(:params) { { due_date_is_fixed: false, due_date_fixed: nil } }
+
+            it "sets the due_date and due_date_fixed to nil and due_date_is_fixed to false" do
+              expect(builder.build).to eq(
+                due_date_is_fixed: false,
+                due_date_fixed: nil,
+                due_date: milestone.due_date,
+                due_date_sourcing_milestone_id: milestone.id,
+                due_date_sourcing_work_item_id: nil
+              )
+            end
           end
 
           context "when params[:due_date_fixed] is nil" do
@@ -140,10 +144,6 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
             it "sets the due_date and due_date_fixed to nil" do
               expect(builder.build).to eq(
-                start_date: milestone.start_date,
-                start_date_is_fixed: false,
-                start_date_sourcing_milestone_id: milestone.id,
-                start_date_sourcing_work_item_id: nil,
                 due_date: nil,
                 due_date_fixed: nil,
                 due_date_is_fixed: true
@@ -158,10 +158,6 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
 
         it "sets the due_date to the rolledup value" do
           expect(builder.build).to eq(
-            start_date: milestone.start_date,
-            start_date_is_fixed: false,
-            start_date_sourcing_milestone_id: milestone.id,
-            start_date_sourcing_work_item_id: nil,
             due_date_is_fixed: false,
             due_date: milestone.due_date,
             due_date_sourcing_milestone_id: milestone.id,
@@ -174,17 +170,8 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
     context "when all params are empty" do
       let(:params) { {} }
 
-      it "creates the work_item dates_souce and populates it" do
-        expect(builder.build).to eq(
-          due_date: milestone.due_date,
-          due_date_is_fixed: false,
-          due_date_sourcing_milestone_id: milestone.id,
-          due_date_sourcing_work_item_id: nil,
-          start_date: milestone.start_date,
-          start_date_is_fixed: false,
-          start_date_sourcing_milestone_id: milestone.id,
-          start_date_sourcing_work_item_id: nil
-        )
+      it "creates the work_item dates_source and populates it" do
+        expect(builder.build).to eq({})
       end
     end
   end
