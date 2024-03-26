@@ -71,6 +71,10 @@ module Integrations
         []
       end
 
+      def self.default_test_event
+        'current_user'
+      end
+
       # TODO This will need an update when the integration handles multi repositories
       # artifact_registry_repository will not be available anymore.
       def repository_full_name
@@ -85,11 +89,6 @@ module Integrations
 
       def required_integration_class
         ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation
-      end
-
-      # We will make the integration testable in https://gitlab.com/gitlab-org/gitlab/-/issues/438560
-      def testable?
-        false
       end
 
       def ci_variables
@@ -112,6 +111,13 @@ module Integrations
           link_end: '</a>'.html_safe,
           icon: ApplicationController.helpers.sprite_icon('external-link').html_safe # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
         )
+      end
+
+      def test(data)
+        response = ::GoogleCloudPlatform::ArtifactRegistry::GetRepositoryService # rubocop:disable CodeReuse/ServiceClass -- the implementation is tied to existing strategy of testing an integration
+          .new(project: project, current_user: data[:current_user]).execute
+
+        { success: response.success?, result: response.message }
       end
     end
   end
