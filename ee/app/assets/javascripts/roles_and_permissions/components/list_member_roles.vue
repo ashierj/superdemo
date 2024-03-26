@@ -39,7 +39,7 @@ export const FIELDS = [
 
 export default {
   i18n: {
-    addNewRole: s__('MemberRole|Add new role'),
+    newRole: s__('MemberRole|New role'),
     cardTitle: s__('MemberRole|Custom roles'),
     deleteRole: s__('MemberRole|Delete role'),
     cancel: __('Cancel'),
@@ -48,7 +48,7 @@ export default {
       'MemberRole|To delete the custom role make sure no group member has this custom role',
     ),
     emptyTitle: s__('MemberRole|No custom roles found'),
-    emptyDescription: s__(`MemberRole|To add a new role select 'Add new role'.`),
+    emptyDescription: s__(`MemberRole|To create a role select 'New role'.`),
     fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
     deleteSuccess: s__('MemberRole|Role successfully deleted.'),
     deleteError: s__('MemberRole|Failed to delete role.'),
@@ -203,7 +203,7 @@ export default {
           data-testid="add-role"
           @click="showCreateMemberForm = true"
         >
-          {{ $options.i18n.addNewRole }}
+          {{ $options.i18n.newRole }}
         </gl-button>
       </div>
     </template>
