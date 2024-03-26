@@ -27,7 +27,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create, featur
       expect(created_vulnerabilities.size).to eq(2)
       expect(created_vulnerabilities.map(&:author_id)).to match_array(
         finding_maps.map { |finding_map| finding_map.pipeline.user_id })
-      expect(created_vulnerabilities.map(&:project_id)).to match_array(finding_maps.map(&:project_id))
+      expect(created_vulnerabilities.map(&:project)).to match_array(finding_maps.map(&:project))
     end
   end
 

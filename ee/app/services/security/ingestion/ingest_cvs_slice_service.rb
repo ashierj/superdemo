@@ -14,6 +14,7 @@ module Security
         IngestFindingSignatures
         IngestFindingEvidence
         IngestVulnerabilityFlags
+        IngestVulnerabilityReads
         IngestVulnerabilityStatistics
         HooksExecution
       ].freeze

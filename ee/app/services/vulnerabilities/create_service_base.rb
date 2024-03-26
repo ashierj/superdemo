@@ -14,6 +14,8 @@ module Vulnerabilities
 
     private
 
+    attr_reader :project
+
     def authorized?
       can?(@author, :admin_vulnerability, @project)
     end

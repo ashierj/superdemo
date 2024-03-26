@@ -38,6 +38,9 @@ module Vulnerabilities
         vulnerability.vulnerability_finding = finding
         vulnerability.save!
         finding.update!(vulnerability_id: vulnerability.id)
+
+        vulnerability.vulnerability_read.update!(traversal_ids: project.namespace.traversal_ids)
+
         Statistics::UpdateService.update_for(vulnerability)
 
         ServiceResponse.success(payload: { vulnerability: vulnerability })
