@@ -876,16 +876,16 @@
 ######################
 .build-images:rules:build-qa-image-merge-requests:
   rules:
-    - <<: *if-not-canonical-namespace
-      when: never
-    - <<: *if-merge-request-labels-pipeline-expedite
-      when: never
     - if: '$ENABLE_BUILD_QA_IMAGE == "true"'
+    - <<: *if-merge-request
+      changes: *qa-patterns
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request
       changes: *ci-build-images-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
     - <<: *if-merge-request
       changes: *code-qa-patterns
     # Rules to support .qa:rules:package-and-test-ee
@@ -902,7 +902,11 @@
 
 .build-images:rules:build-qa-image:
   rules:
-    - !reference [".build-images:rules:build-qa-image-merge-requests", "rules"]
+    - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
+    - <<: *if-ruby-branch
     - <<: *if-auto-deploy-branches
       variables:
         ARCH: amd64,arm64
@@ -917,16 +921,20 @@
     - <<: *if-dot-com-gitlab-org-schedule
       variables:
         ARCH: amd64,arm64
-    - <<: *if-ruby-branch
+    - !reference [".build-images:rules:build-qa-image-merge-requests", rules]
     - !reference [".releases:rules:canonical-dot-com-gitlab-stable-branch-only-setup-test-env", rules]
 
 .build-images:rules:build-qa-image-as-if-foss:
   rules:
+    - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - !reference [".strict-ee-only-rules", rules]
-    - !reference [".build-images:rules:build-qa-image-merge-requests", "rules"]
     - <<: *if-default-branch-schedule-nightly
       variables:
         ARCH: amd64,arm64
+    - !reference [".build-images:rules:build-qa-image-merge-requests", rules]
 
 # When new minor release tag is pushed, re-tag gdk image with pattern ignored by registry cleanup
 .build-images:rules:retag-gdk-image:
@@ -1194,19 +1202,19 @@
     - <<: *if-auto-deploy-branches
     - <<: *if-ruby-branch
     - <<: *if-force-ci
-    # Rules to support .qa:rules:package-and-test
-    - <<: *if-default-branch-schedule-nightly
-    - <<: *if-merge-request-labels-run-all-e2e
-    - <<: *if-merge-request-labels-run-review-app
+    - <<: *if-merge-request
+      changes: *qa-patterns
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
     - <<: *if-default-refs
       changes: *ci-build-images-patterns
     - <<: *if-default-refs
       changes: *workhorse-patterns
-    # TODO: Below are broad so we only want to run if it's approved if it's MR
-    # - <<: *if-merge-request-not-approved
-    #   when: never
+    - <<: *if-merge-request-labels-run-review-app
+    - <<: *if-merge-request-not-approved
+      when: never
+    # Rules to support .qa:rules:package-and-test
+    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *dependency-patterns
     - <<: *if-default-refs
@@ -1456,17 +1464,23 @@
 
 .qa:rules:code-merge-request:
   rules:
+    - <<: *if-merge-request-not-approved
+      when: never
     - <<: *if-merge-request
       changes: *code-patterns
 
 .qa:rules:code-merge-request-allowed-to-fail:
   rules:
+    - <<: *if-merge-request-not-approved
+      when: never
     - <<: *if-merge-request
       changes: *code-patterns
       allow_failure: true
 
 .qa:rules:code-merge-request-manual:
   rules:
+    - <<: *if-merge-request-not-approved
+      when: never
     - <<: *if-merge-request
       changes: *code-patterns
       when: manual
@@ -1525,16 +1539,18 @@
   rules:
     # From .qa:rules:package-and-test-common
     - !reference [".qa:rules:package-and-test-never-run", rules]
-    - <<: *if-merge-request-targeting-stable-branch
-      changes: *setup-test-env-patterns
     - <<: *if-ruby-branch
     - <<: *if-merge-request
       changes: *qa-patterns
+    - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
+    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *dependency-patterns
       variables:
         OMNIBUS_GITLAB_BUILD_ON_ALL_OS: 'true'
-    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *feature-flag-development-config-patterns
     - <<: *if-merge-request
@@ -1545,9 +1561,9 @@
       changes: *ci-qa-patterns
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *code-patterns
-    - <<: *if-force-ci
     - <<: *if-merge-request-and-specific-devops-stage
       changes: *code-patterns
+    - <<: *if-force-ci
     # From .qa:rules:package-and-test-schedule
     - <<: *if-dot-com-gitlab-org-schedule
     - !reference [".qa:rules:code-merge-request", rules]
@@ -1564,24 +1580,24 @@
 .qa:rules:package-and-test-common:
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
-    - <<: *if-merge-request-targeting-stable-branch
-      changes: *setup-test-env-patterns
-      allow_failure: true
     - <<: *if-ruby-branch
       allow_failure: true
     # Run tests automatically for MRs that touch QA files
     - <<: *if-merge-request
       changes: *qa-patterns
       allow_failure: true
+    - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
+      allow_failure: true
     # Otherwise, only run tests after the MR is approved
     - <<: *if-merge-request-not-approved
       when: never
+    - <<: *if-merge-request-labels-run-all-e2e
+      allow_failure: true
     - <<: *if-merge-request
       changes: *dependency-patterns
       variables:
         OMNIBUS_GITLAB_BUILD_ON_ALL_OS: 'true'
-    - <<: *if-merge-request-labels-run-all-e2e
-      allow_failure: true
     - <<: *if-merge-request
       changes: *feature-flag-development-config-patterns
       allow_failure: true
@@ -1597,11 +1613,11 @@
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *code-patterns
       allow_failure: true
-    - <<: *if-force-ci
-      when: manual
-      allow_failure: true
     - <<: *if-merge-request-and-specific-devops-stage
       changes: *code-patterns
+      allow_failure: true
+    - <<: *if-force-ci
+      when: manual
       allow_failure: true
       # We used to have a rule at the end here that would catch any remaining code MRs and allow the job to be run
       # manually. That rule is now in ".qa:rules:code-merge-request-manual" so it can be included when needed and we can
@@ -1687,9 +1703,15 @@
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
+      changes: *qa-patterns
+      when: manual
+      allow_failure: true
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *ci-build-images-patterns
       when: manual
       allow_failure: true
+    - <<: *if-merge-request-not-approved
+      when: never
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *code-qa-patterns
       when: manual
@@ -1798,9 +1820,6 @@
       when: never
     # From .qa:rules:package-and-test-schedule
     - <<: *if-dot-com-gitlab-org-schedule
-      when: never
-    # Do not run on unapproved MR
-    - <<: *if-merge-request-not-approved
       when: never
     - !reference [".qa:rules:code-merge-request-allowed-to-fail", rules]
 
