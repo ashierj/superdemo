@@ -26,6 +26,14 @@ describe('projectsSelector default state', () => {
       name: 'Ultimate Plan',
       eligible_to_use_promo_code: false,
     },
+    {
+      id: 'fourthPlanId',
+      code: 'ramon',
+      price_per_year: 350,
+      name: 'Ramon Plan',
+      eligible_to_use_promo_code: false,
+      maximum_seat_limit: 2000,
+    },
   ];
 
   const groupData = [
@@ -72,6 +80,13 @@ describe('projectsSelector default state', () => {
           text: 'Ultimate Plan',
           code: 'ultimate',
           isEligibleToUsePromoCode: false,
+        },
+        {
+          value: 'fourthPlanId',
+          text: 'Ramon Plan',
+          code: 'ramon',
+          isEligibleToUsePromoCode: false,
+          maximumSeatLimit: 2000,
         },
       ]);
     });
