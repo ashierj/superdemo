@@ -119,8 +119,9 @@ module Sbom
     scope :with_project_namespace, -> { includes(project: [namespace: :route]) }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }
-    scope :with_component_source_version_project_and_pipeline, -> do
-      includes(:component, :source, :component_version, :project).preload(:pipeline)
+    scope :with_pipeline_project_and_namespace, -> { preload(pipeline: { project: :namespace }) }
+    scope :with_component_source_version_and_project, -> do
+      includes(:component, :source, :component_version, :project)
     end
     scope :filter_by_non_nil_component_version, -> { where.not(component_version: nil) }
 

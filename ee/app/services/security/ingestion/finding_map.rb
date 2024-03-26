@@ -15,7 +15,7 @@ module Security
 
       delegate :uuid, :scanner_id, :severity, to: :security_finding
       delegate :scan, to: :security_finding, private: true
-      delegate :project_id, to: :pipeline
+      delegate :project, to: :pipeline
       delegate :project_fingerprint, to: :report_finding, private: true
       delegate :evidence, to: :report_finding
 
@@ -32,7 +32,7 @@ module Security
 
       def identifier_data
         identifiers.map do |identifier|
-          identifier.to_hash.merge(project_id: project_id)
+          identifier.to_hash.merge(project_id: project.id)
         end
       end
 
@@ -50,7 +50,7 @@ module Security
                         primary_identifier_id: identifier_ids.first,
                         location: report_finding.location_data,
                         location_fingerprint: report_finding.location_fingerprint,
-                        project_id: project_id,
+                        project_id: project.id,
                         initial_pipeline_id: pipeline.id,
                         latest_pipeline_id: pipeline.id
                       )

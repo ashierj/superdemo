@@ -32,7 +32,7 @@ module Security
 
             {
               author_id: finding_map.pipeline.user_id,
-              project_id: finding_map.project_id,
+              project_id: finding_map.project.id,
               title: report_finding.name.to_s.truncate(::Issuable::TITLE_LENGTH_MAX),
               state: :detected, # this will be detected because if there is any interaction for dismissal for finding, there will be vulnerability already
               severity: report_finding.severity,

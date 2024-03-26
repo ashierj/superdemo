@@ -21,7 +21,7 @@ module Security
             map[project_id][fingerprint] = id
           end
 
-          finding_maps.each { |finding_map| finding_map.set_identifier_ids_by(fingerprint_map[finding_map.project_id]) }
+          finding_maps.each { |finding_map| finding_map.set_identifier_ids_by(fingerprint_map[finding_map.project.id]) }
         end
 
         # Important Note:
