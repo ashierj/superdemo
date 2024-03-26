@@ -13519,9 +13519,6 @@ msgstr ""
 msgid "Confirmation email sent to %{email}"
 msgstr ""
 
-msgid "Confirmation required"
-msgstr ""
-
 msgid "Confirmed at:"
 msgstr ""
 
@@ -37840,9 +37837,6 @@ msgstr ""
 msgid "Please try and refresh the page. If the problem persists please contact support."
 msgstr ""
 
-msgid "Please type %{phrase_code} to proceed."
-msgstr ""
-
 msgid "Please use this form to report to the administrator users who create spam issues, comments or behave inappropriately."
 msgstr ""
 
@@ -52873,6 +52867,9 @@ msgstr ""
 msgid "To personalize your GitLab experience, we'd like to know a bit more about you. We won't share this information with anyone."
 msgstr ""
 
+msgid "To proceed with the transfer, type %{phrase_code}:"
+msgstr ""
+
 msgid "To protect this issue's confidentiality, %{linkStart}fork this project%{linkEnd} and set the fork's visibility to private."
 msgstr ""
 
@@ -53446,6 +53443,9 @@ msgid "Training mode"
 msgstr ""
 
 msgid "Transfer"
+msgstr ""
+
+msgid "Transfer group"
 msgstr ""
 
 msgid "Transfer group to another parent group."
@@ -58018,6 +58018,12 @@ msgstr ""
 msgid "You are about to remove the group %{group_name}."
 msgstr ""
 
+msgid "You are about to transfer %{codeStart}%{groupName}%{codeEnd} to another namespace. This action changes the %{projectLinkStart}project's path%{projectLinkEnd} and can lead to %{documentationLinkStart}data loss%{documentationLinkEnd}."
+msgstr ""
+
+msgid "You are about to transfer %{code_start}%{project_full_name}%{code_end} to another namespace. This action changes the %{link_to_namespace_change_doc} and can lead to %{link_to_data_loss_doc}."
+msgstr ""
+
 msgid "You are already a member of this %{member_source}."
 msgstr ""
 
@@ -58046,12 +58052,6 @@ msgid "You are going to delete %{project_full_name}. Deleted projects CANNOT be 
 msgstr ""
 
 msgid "You are going to remove the fork relationship from %{project_full_name}. Are you ABSOLUTELY sure?"
-msgstr ""
-
-msgid "You are going to transfer %{group_name} to another namespace. Are you ABSOLUTELY sure?"
-msgstr ""
-
-msgid "You are going to transfer %{project_full_name} to another namespace. Are you ABSOLUTELY sure?"
 msgstr ""
 
 msgid "You are going to turn off the confidentiality. This means %{strongStart}everyone%{strongEnd} will be able to see%{commentText} this %{issuableType}."
@@ -59834,6 +59834,9 @@ msgstr ""
 msgid "data"
 msgstr ""
 
+msgid "data loss"
+msgstr ""
+
 msgid "database"
 msgstr ""
 
@@ -60998,6 +61001,9 @@ msgid "project name"
 msgstr ""
 
 msgid "project namespace cannot be the parent of another namespace"
+msgstr ""
+
+msgid "project's path"
 msgstr ""
 
 msgid "projects"
