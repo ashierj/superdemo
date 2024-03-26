@@ -62,6 +62,20 @@ RSpec.shared_examples 'scan policies finder' do
                 inherited: false
               })])
           end
+
+          context 'when relationship argument is provided as DESCENDANT' do
+            let(:relationship) { :descendant }
+
+            it 'returns policies with project only' do
+              is_expected.to match_array([policy.merge(
+                {
+                  config: policy_configuration,
+                  project: object,
+                  namespace: nil,
+                  inherited: false
+                })])
+            end
+          end
         end
       end
 
@@ -103,6 +117,42 @@ RSpec.shared_examples 'scan policies finder' do
                   namespace: group,
                   inherited: true
                 })])
+            end
+          end
+
+          context 'when relationship argument is provided as DESCENDANT' do
+            let(:relationship) { :descendant }
+
+            let!(:sub_group) { create(:group, parent: group) }
+            let!(:sub_group_policy_configuration) do
+              create(
+                :security_orchestration_policy_configuration,
+                :namespace,
+                security_policy_management_project: policy_management_project,
+                namespace: sub_group
+              )
+            end
+
+            let(:object) { group }
+
+            it 'returns scan policies for descendant groups' do
+              is_expected.to match_array(
+                [
+                  policy.merge(
+                    {
+                      config: group_policy_configuration,
+                      project: nil,
+                      namespace: object,
+                      inherited: false
+                    }),
+                  policy.merge(
+                    {
+                      config: sub_group_policy_configuration,
+                      project: nil,
+                      namespace: sub_group,
+                      inherited: true
+                    })
+                ])
             end
           end
         end
@@ -172,6 +222,23 @@ RSpec.shared_examples 'scan policies finder' do
                   namespace: group,
                   inherited: true
                 })])
+            end
+          end
+
+          context 'when relationship argument is provided as DESCENDANT' do
+            let(:relationship) { :descendant }
+
+            it 'returns scan policies for descendants only' do
+              is_expected.to match_array(
+                [
+                  policy.merge(
+                    {
+                      config: policy_configuration,
+                      project: object,
+                      namespace: nil,
+                      inherited: false
+                    })
+                ])
             end
           end
         end
