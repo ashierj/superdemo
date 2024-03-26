@@ -1,4 +1,4 @@
-const issueData = {
+export const issueData = {
   id: 2,
   project_id: 1,
   author: {
