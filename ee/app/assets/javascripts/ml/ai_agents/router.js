@@ -8,7 +8,7 @@ import {
   ROUTE_LIST_AGENTS,
   ROUTE_NEW_AGENT,
   ROUTE_SHOW_AGENT,
-  ROUTE_EDIT_AGENT,
+  ROUTE_AGENT_SETTINGS,
 } from './constants';
 
 Vue.use(VueRouter);
@@ -34,8 +34,8 @@ export default function createRouter(base) {
         component: ShowAgent,
       },
       {
-        name: ROUTE_EDIT_AGENT,
-        path: '/:agentId/edit',
+        name: ROUTE_AGENT_SETTINGS,
+        path: '/:agentId/settings',
         component: EditAgent,
       },
     ],

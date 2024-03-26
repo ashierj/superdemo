@@ -1967,9 +1967,6 @@ msgstr ""
 msgid "AIAgents|Update the name and prompt for this agent."
 msgstr ""
 
-msgid "AIAgent|AI Agent: %{agentId}"
-msgstr ""
-
 msgid "AIAgent|Agent"
 msgstr ""
 
@@ -1986,6 +1983,9 @@ msgid "AIAgent|Edit Ai Agent"
 msgstr ""
 
 msgid "AIAgent|Prompt (optional)"
+msgstr ""
+
+msgid "AIAgent|Settings"
 msgstr ""
 
 msgid "AIAgent|Try out your agent"
