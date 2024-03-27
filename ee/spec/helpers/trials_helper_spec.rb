@@ -364,7 +364,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
         create(:gitlab_subscription_add_on, :gitlab_duo_pro)
       end
 
-      subject(:selector_data) { helper.duo_pro_trial_namespace_selector_data(nil) }
+      subject(:selector_data) { helper.duo_pro_trial_namespace_selector_data(all_groups, nil) }
 
       it 'returns all groups without create group option' do
         group_options = all_groups.map do |group|

@@ -46,9 +46,7 @@ module TrialsHelper
     )
   end
 
-  def duo_pro_trial_namespace_selector_data(namespace_create_errors)
-    namespaces = duo_pro_trial_eligible_namespaces
-
+  def duo_pro_trial_namespace_selector_data(namespaces, namespace_create_errors)
     namespace_selector_data(namespace_create_errors).merge(
       any_trial_eligible_namespaces: namespaces.any?.to_s,
       items: current_namespaces_for_selector(namespaces).to_json
@@ -116,10 +114,6 @@ module TrialsHelper
 
   def any_trial_eligible_namespaces?
     trial_eligible_namespaces.any?
-  end
-
-  def duo_pro_trial_eligible_namespaces
-    Users::DuoProTrialEligibleNamespacesFinder.new(current_user).execute
   end
 
   def _lead_form_data
