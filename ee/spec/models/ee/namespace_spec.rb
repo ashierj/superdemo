@@ -1761,6 +1761,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     context 'when :saas_user_caps is enabled' do
       before do
         stub_feature_flags(saas_user_caps: true)
+        stub_feature_flags(ramon: false)
       end
 
       it { is_expected.to be true }
@@ -1768,6 +1769,14 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       context 'when the namespace is not a group' do
         let(:user) { create(:user) }
         let(:namespace) { user.namespace }
+
+        it { is_expected.to be false }
+      end
+
+      context 'when Ramon is available' do
+        before do
+          stub_feature_flags(ramon: true)
+        end
 
         it { is_expected.to be false }
       end
@@ -2104,6 +2113,22 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   describe '#reached_project_access_token_limit?' do
     it 'returns false' do
       expect(namespace.reached_project_access_token_limit?).to eq(false)
+    end
+  end
+
+  describe '#ramon?' do
+    it 'returns true' do
+      expect(namespace.ramon?).to eq(true)
+    end
+
+    context 'when :ramon feature flag is disabled' do
+      before do
+        stub_feature_flags(ramon: false)
+      end
+
+      it 'returns false' do
+        expect(namespace.ramon?).to eq(false)
+      end
     end
   end
 
