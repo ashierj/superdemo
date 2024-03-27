@@ -99,6 +99,14 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
             expect(panel).to have_content _('Custom Panel 1')
           end
         end
+
+        it 'does not render 404 when refreshing the page' do
+          visit current_path
+
+          within find_by_testid('dashboard-description') do |panel|
+            expect(panel).to have_content _('VSD from fixture')
+          end
+        end
       end
 
       context 'with invalid custom configuration' do
