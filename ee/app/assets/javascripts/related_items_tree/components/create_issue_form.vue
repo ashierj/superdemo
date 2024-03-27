@@ -200,7 +200,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <form data-testid="form" @submit.prevent="createIssue">
     <div class="row mb-3">
       <div class="col-sm-6 gl-mb-3 gl-sm-mb-0">
         <label class="label-bold">{{ s__('Issue|Title') }}</label>
@@ -212,7 +212,6 @@ export default {
             parentItem.confidential ? __('New confidential issue title') : __('New issue title')
           "
           autofocus
-          @keyup.enter="createIssue"
         />
       </div>
       <div class="col-sm-6">
@@ -297,6 +296,7 @@ export default {
         variant="confirm"
         category="primary"
         size="small"
+        type="submit"
         class="gl-mr-2"
         data-testid="submit-button"
         :disabled="isIssueCreationDisabled"
@@ -308,5 +308,5 @@ export default {
         __('Cancel')
       }}</gl-button>
     </div>
-  </div>
+  </form>
 </template>
