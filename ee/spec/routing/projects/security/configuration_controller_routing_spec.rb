@@ -12,8 +12,4 @@ RSpec.describe Projects::Security::ConfigurationController, 'routing' do
   it 'to #show' do
     expect(get('/gitlab/gitlabhq/-/security/configuration')).to route_to('projects/security/configuration#show', namespace_id: 'gitlab', project_id: 'gitlabhq')
   end
-
-  it 'to #auto_fix' do
-    expect(post('/gitlab/gitlabhq/-/security/configuration/auto_fix')).to route_to('projects/security/configuration#auto_fix', namespace_id: 'gitlab', project_id: 'gitlabhq')
-  end
 end
