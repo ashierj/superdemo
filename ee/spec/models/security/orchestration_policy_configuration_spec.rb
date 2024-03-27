@@ -1831,7 +1831,20 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             }
           end
 
+          let(:rule_2) do
+            {
+              type: 'scan_finding',
+              branches: [],
+              scanners: %w[container_scanning],
+              vulnerabilities_allowed: 0,
+              severity_levels: %w[critical],
+              vulnerability_states: %w[newly_detected]
+            }
+          end
+
           context 'when the policy contains multiple deprecated properties' do
+            let(:rules) { [rule, rule_2] }
+
             it { is_expected.to match_array(%w[match_on_inclusion newly_detected]) }
           end
 
@@ -1849,16 +1862,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             it { is_expected.to match_array(['match_on_inclusion']) }
           end
 
-          context 'when the policy contains the license_state newly_detected' do
-            let(:rule) do
-              {
-                type: 'license_finding',
-                branches: %w[master],
-                match_on_inclusion_license: true,
-                license_types: %w[BSD MIT],
-                license_states: %w[newly_detected]
-              }
-            end
+          context 'when the policy contains the vulnerability_state newly_detected' do
+            let(:rules) { [rule_2] }
 
             it { is_expected.to match_array(['newly_detected']) }
           end

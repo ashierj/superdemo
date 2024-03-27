@@ -90,11 +90,12 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
 
       let(:rule) do
         {
-          type: 'license_finding',
-          branches: %w[master],
-          match_on_inclusion_license: true,
-          license_types: %w[BSD MIT],
-          license_states: %w[newly_detected]
+          type: 'scan_finding',
+          branches: [],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[newly_detected]
         }
       end
 
