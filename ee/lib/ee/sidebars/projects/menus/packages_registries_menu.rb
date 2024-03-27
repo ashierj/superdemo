@@ -12,6 +12,7 @@ module EE
             return false unless super
 
             add_item(google_artifact_registry_menu_item)
+            add_item(ai_agents_menu_item)
 
             true
           end
@@ -32,11 +33,28 @@ module EE
             )
           end
 
+          def ai_agents_menu_item
+            return ::Sidebars::NilMenuItem.new(item_id: :ai_agents) unless show_ai_agents_menu_item?
+
+            ::Sidebars::MenuItem.new(
+              title: s_('AIAgents|AI Agents'),
+              link: project_ml_agents_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::DeployMenu,
+              active_routes: { controller: %w[projects/ml/agents] },
+              item_id: :ai_agents
+            )
+          end
+
           def show_google_artifact_registry_menu_item?
             context.project.google_cloud_support_enabled? &&
               can?(context.current_user, :read_google_cloud_artifact_registry, context.project) &&
               context.project.google_cloud_platform_workload_identity_federation_integration&.operating? &&
               context.project.google_cloud_platform_artifact_registry_integration&.operating?
+          end
+
+          def show_ai_agents_menu_item?
+            ::Feature.enabled?(:agent_registry_nav, context.project) &&
+              can?(context.current_user, :read_ai_agents, context.project)
           end
         end
       end
