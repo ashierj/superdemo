@@ -35,6 +35,10 @@ RSpec.describe Projects::Security::ConfigurationPresenter, feature_category: :so
     it 'includes a default value for container_scanning_for_registry_enabled' do
       expect(result[:container_scanning_for_registry_enabled]).to eq(false)
     end
+
+    it 'includes a default value for pre_receive_secret_detection_enabled' do
+      expect(result[:pre_receive_secret_detection_enabled]).to eq(false)
+    end
   end
 
   describe '#to_html_data_attribute' do

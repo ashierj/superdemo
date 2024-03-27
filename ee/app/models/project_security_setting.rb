@@ -30,4 +30,8 @@ class ProjectSecuritySetting < ApplicationRecord
   def set_container_scanning_for_registry!(enabled:)
     enabled if update!(container_scanning_for_registry_enabled: enabled)
   end
+
+  def set_pre_receive_secret_detection!(enabled:)
+    enabled if update!(pre_receive_secret_detection_enabled: enabled)
+  end
 end
