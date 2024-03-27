@@ -60,7 +60,7 @@ RSpec.describe 'Querying user duo pro access',
 
     context 'when feature flag is off' do
       before do
-        stub_feature_flags(code_suggestions_tokens_api: false)
+        stub_feature_flags(ai_duo_code_suggestions_switch: false)
       end
 
       it 'returns false' do
