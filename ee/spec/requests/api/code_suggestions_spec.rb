@@ -93,7 +93,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     let(:access_token) { tokens[:api] }
 
     before do
-      stub_feature_flags(code_suggestions_tokens_api: true)
+      stub_feature_flags(ai_duo_code_suggestions_switch: true)
       headers["Authorization"] = "Bearer #{access_token.token}"
 
       post_api
