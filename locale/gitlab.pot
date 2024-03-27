@@ -45751,6 +45751,9 @@ msgstr ""
 msgid "SecurityOrchestration|Branch: %{boldStart}%{branchName}%{boldEnd} was not found in project: %{boldStart}%{projectName}%{boldEnd}. Edit or remove this entry."
 msgstr ""
 
+msgid "SecurityOrchestration|Cadence is invalid"
+msgstr ""
+
 msgid "SecurityOrchestration|Can't find project: %{boldStart}%{projectName}%{boldEnd}. Edit or remove this entry."
 msgstr ""
 

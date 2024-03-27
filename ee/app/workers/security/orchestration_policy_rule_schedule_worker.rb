@@ -9,7 +9,7 @@ module Security
     # This worker does not perform work scoped to a context
     include CronjobQueue
     # rubocop:enable Scalability/CronWorkerContext
-    include ::ScanExecutionPolicy::CadenceHelper
+    include Security::SecurityOrchestrationPolicies::CadenceChecker
 
     feature_category :security_policy_management
 

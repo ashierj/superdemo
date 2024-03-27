@@ -2,10 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe ScanExecutionPolicy::CadenceHelper, feature_category: :security_policy_management do
+RSpec.describe Security::SecurityOrchestrationPolicies::CadenceChecker, feature_category: :security_policy_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#valid_cadence?' do
+    let_it_be(:cadence_checker) { Class.new { include Security::SecurityOrchestrationPolicies::CadenceChecker }.new }
+
     where(:cadence, :expected_result) do
       '* * * * *' | false
       '*/30 * * * *' | false
@@ -50,7 +52,7 @@ RSpec.describe ScanExecutionPolicy::CadenceHelper, feature_category: :security_p
 
     with_them do
       it 'verifies if the cadence is allowed' do
-        expect(helper.valid_cadence?(cadence)).to eq expected_result
+        expect(cadence_checker.valid_cadence?(cadence)).to eq expected_result
       end
     end
   end

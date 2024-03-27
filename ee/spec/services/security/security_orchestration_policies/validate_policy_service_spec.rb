@@ -474,6 +474,41 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       end
     end
 
+    shared_examples 'checks if cadence is valid' do
+      context 'when cadence is provided' do
+        let(:rule) do
+          {
+            branches: ['master'],
+            cadence: cadence,
+            timezone: 'Europe/Amsterdam'
+          }
+        end
+
+        context 'when cadence is valid' do
+          let(:cadence) { '0 0 * * *' }
+
+          it { expect(result[:status]).to eq(:success) }
+        end
+
+        context 'when cadence is invalid' do
+          let(:cadence) { '* * * * *' }
+
+          it_behaves_like 'sets validation errors', field: :cadence, message: 'Cadence is invalid'
+
+          it { expect(result[:status]).to eq(:error) }
+          it { expect(result[:details]).to match_array(['Cadence is invalid']) }
+
+          context 'when the feature flag scan_execution_policy_cadence_validation is disabled' do
+            before do
+              stub_feature_flags(scan_execution_policy_cadence_validation: false)
+            end
+
+            it { expect(result[:status]).to eq(:success) }
+          end
+        end
+      end
+    end
+
     shared_examples 'checks if vulnerability_age is valid' do
       let(:new_states) { %w[new_needs_triage newly_detected] }
       let(:new_and_previously_existing_states) { %w[detected new_needs_triage] }
@@ -537,6 +572,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if timezone is valid'
+      it_behaves_like 'checks if cadence is valid'
       it_behaves_like 'checks if vulnerability_age is valid'
     end
 
@@ -588,6 +624,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
         it_behaves_like 'checks if timezone is valid'
+        it_behaves_like 'checks if cadence is valid'
         it_behaves_like 'checks if vulnerability_age is valid'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
@@ -616,6 +653,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
         it_behaves_like 'checks if timezone is valid'
+        it_behaves_like 'checks if cadence is valid'
         it_behaves_like 'checks if vulnerability_age is valid'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
@@ -677,6 +715,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if required approvals exceed eligible approvers'
       it_behaves_like 'checks if timezone is valid'
+      it_behaves_like 'checks if cadence is valid'
       it_behaves_like 'checks if vulnerability_age is valid'
 
       context 'when policy_scope is present' do

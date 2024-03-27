@@ -4,7 +4,7 @@ module Security
   class OrchestrationPolicyRuleScheduleNamespaceWorker
     BATCH_SIZE = 50
     include ApplicationWorker
-    include ::ScanExecutionPolicy::CadenceHelper
+    include Security::SecurityOrchestrationPolicies::CadenceChecker
 
     feature_category :security_policy_management
 
