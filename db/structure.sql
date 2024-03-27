@@ -6041,6 +6041,7 @@ CREATE TABLE ci_group_variables (
     environment_scope text DEFAULT '*'::text NOT NULL,
     raw boolean DEFAULT false NOT NULL,
     description text,
+    hidden boolean DEFAULT false NOT NULL,
     CONSTRAINT check_dfe009485a CHECK ((char_length(environment_scope) <= 255)),
     CONSTRAINT check_e2e50ff879 CHECK ((char_length(description) <= 255))
 );
@@ -6967,6 +6968,7 @@ CREATE TABLE ci_variables (
     variable_type smallint DEFAULT 1 NOT NULL,
     raw boolean DEFAULT false NOT NULL,
     description text,
+    hidden boolean DEFAULT false NOT NULL,
     CONSTRAINT check_7e46c006aa CHECK ((char_length(description) <= 255))
 );
 
