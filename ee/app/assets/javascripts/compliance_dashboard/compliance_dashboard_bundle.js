@@ -21,7 +21,6 @@ export default () => {
     rootAncestorPath,
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
-    securityPoliciesPolicyScopeToggleEnabled,
     featurePipelineMaintenanceModeEnabled,
     pipelineExecutionPolicyPath,
     migratePipelineToPolicyPath,
@@ -52,9 +51,6 @@ export default () => {
       canAddEdit,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
-      securityPoliciesPolicyScopeToggleEnabled: parseBoolean(
-        securityPoliciesPolicyScopeToggleEnabled,
-      ),
       featurePipelineMaintenanceModeEnabled: parseBoolean(featurePipelineMaintenanceModeEnabled),
       disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       mergeCommitsCsvExportPath,

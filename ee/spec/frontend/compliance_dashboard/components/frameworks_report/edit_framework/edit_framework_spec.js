@@ -29,7 +29,6 @@ describe('Edit Framework Form', () => {
     groupPath: 'group-1',
     pipelineConfigurationFullPathEnabled: true,
     pipelineConfigurationEnabled: true,
-    securityPoliciesPolicyScopeToggleEnabled: true,
     disableScanPolicyUpdate: false,
   };
 
@@ -262,22 +261,8 @@ describe('Edit Framework Form', () => {
     });
 
     describe('when editing framework', () => {
-      it('does not render policies section if experiment is not enabled', async () => {
-        wrapper = createComponent(shallowMountExtended, {
-          provide: {
-            securityPoliciesPolicyScopeToggleEnabled: false,
-          },
-        });
-        await waitForPromises();
-        expect(wrapper.findComponent(PoliciesSection).exists()).toBe(false);
-      });
-
-      it('render policies section if experiment is enabled', async () => {
-        wrapper = createComponent(shallowMountExtended, {
-          provide: {
-            securityPoliciesPolicyScopeToggleEnabled: true,
-          },
-        });
+      it('render policies section', async () => {
+        wrapper = createComponent(shallowMountExtended);
         await waitForPromises();
         expect(wrapper.findComponent(PoliciesSection).exists()).toBe(true);
       });

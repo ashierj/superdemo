@@ -328,7 +328,6 @@ describe('EditorLayout component', () => {
 
       factory({
         provide: {
-          securityPoliciesPolicyScopeToggleEnabled: true,
           namespaceType: NAMESPACE_TYPES.GROUP,
           glFeatures: { securityPoliciesPolicyScope: true },
         },
@@ -341,7 +340,6 @@ describe('EditorLayout component', () => {
     it('removes a policy scope property', () => {
       factory({
         provide: {
-          securityPoliciesPolicyScopeToggleEnabled: true,
           namespaceType: NAMESPACE_TYPES.GROUP,
           glFeatures: { securityPoliciesPolicyScope: true },
         },
