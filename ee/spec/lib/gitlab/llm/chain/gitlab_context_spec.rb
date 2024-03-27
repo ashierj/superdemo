@@ -24,6 +24,12 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
           .to_xml(root: :root, skip_types: true, skip_instruct: true)
       end
 
+      let(:resource2) { create(:issue, project: project) }
+      let(:resource_xml2) do
+        Ai::AiResource::Issue.new(resource2).serialize_for_ai(user: user, content_limit: content_limit)
+                             .to_xml(root: :root, skip_types: true, skip_instruct: true)
+      end
+
       before_all do
         group.add_reporter(user)
       end
@@ -36,6 +42,11 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
 
       it 'returns the AI serialization of the resource' do
         expect(context.resource_serialized(content_limit: content_limit)).to eq(resource_xml)
+
+        context.resource = resource2
+
+        # Do not cache value
+        expect(context.resource_serialized(content_limit: content_limit)).to eq(resource_xml2)
       end
     end
 
