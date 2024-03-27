@@ -7,7 +7,6 @@ module EE
 
       def initialize(contributor, current_user = nil)
         super
-        return unless ::Feature.enabled?(:epic_events_on_contributions_calendar, contributor)
 
         @groups = ::Users::ContributedGroupsFinder.new(contributor)
           .execute(current_user, include_private_contributions: @contributor.include_private_contributions?)
@@ -17,8 +16,6 @@ module EE
 
       override :collect_events_between
       def collect_events_between(start_time, end_time)
-        return super unless ::Feature.enabled?(:epic_events_on_contributions_calendar, contributor)
-
         group_events = group_events_created_between(start_time, end_time)
         epic_events = group_events.epics.for_action(%i[created closed reopened])
         group_note_events = group_events.for_action(:commented)

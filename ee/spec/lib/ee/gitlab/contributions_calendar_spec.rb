@@ -53,16 +53,6 @@ RSpec.describe Gitlab::ContributionsCalendar, feature_category: :user_profile do
         expect(activity_dates[today]).to eq(4)
       end
     end
-
-    context 'when epic_events_on_contributions_calendar feature flag is disabled' do
-      before do
-        stub_feature_flags(epic_events_on_contributions_calendar: false)
-      end
-
-      it 'does not count epics events' do
-        expect(activity_dates[today]).to eq(nil) # No contributions on this date
-      end
-    end
   end
 
   describe '#events_by_date' do
@@ -99,16 +89,6 @@ RSpec.describe Gitlab::ContributionsCalendar, feature_category: :user_profile do
           public_group_epic_created_event, public_group_epic_closed_event, public_group_epic_commented_event,
           private_group_event
         )
-      end
-    end
-
-    context 'when epic_events_on_contributions_calendar feature flag is disabled' do
-      before do
-        stub_feature_flags(epic_events_on_contributions_calendar: false)
-      end
-
-      it 'does not return epic events for a given date' do
-        expect(events).to be_empty
       end
     end
   end
