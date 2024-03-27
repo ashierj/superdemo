@@ -64,6 +64,9 @@ export default {
     confirmSeatAssignment() {
       this.$emit('confirm-seat-assignment');
     },
+    confirmSeatUnassignment() {
+      this.$emit('confirm-seat-unassignment');
+    },
   },
 };
 </script>
@@ -96,7 +99,13 @@ export default {
         >
           {{ s__('Billing|Assign seats') }}
         </gl-button>
-        <gl-button v-else variant="danger" data-testid="unassign-confirmation-button">
+        <gl-button
+          v-else
+          variant="danger"
+          data-testid="unassign-confirmation-button"
+          :loading="isBulkActionInProgress"
+          @click="confirmSeatUnassignment"
+        >
           {{ s__('Billing|Remove seats') }}
         </gl-button>
       </div>

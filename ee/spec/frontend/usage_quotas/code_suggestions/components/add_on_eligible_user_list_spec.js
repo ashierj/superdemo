@@ -28,6 +28,7 @@ import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/consta
 import createMockApollo from 'helpers/mock_apollo_helper';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
+import userAddOnAssignmentBulkRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_remove.mutation.graphql';
 
 Vue.use(VueApollo);
 
@@ -81,13 +82,47 @@ describe('Add On Eligible User List', () => {
     },
   };
 
+  const bulkAddOnUnassignmentSuccess = {
+    clientMutationId: '1',
+    errors: [],
+    addOnPurchase,
+    users: {
+      nodes: [
+        {
+          id: eligibleUsers[0].id,
+          addOnAssignments: {
+            nodes: [],
+            __typename: 'UserAddOnAssignmentConnection',
+          },
+          __typename: 'AddOnUser',
+        },
+        {
+          id: eligibleUsers[1].id,
+          addOnAssignments: {
+            nodes: [],
+            __typename: 'UserAddOnAssignmentConnection',
+          },
+          __typename: 'AddOnUser',
+        },
+      ],
+    },
+  };
+
   const bulkAssignAddOnHandler = jest.fn().mockResolvedValue({
     data: { userAddOnAssignmentBulkCreate: bulkAddOnAssignmentSuccess },
   });
 
-  const createMockApolloProvider = (addonAssignmentCreateHandler) => {
+  const bulkUnassignAddOnHandler = jest.fn().mockResolvedValue({
+    data: { userAddOnAssignmentBulkRemove: bulkAddOnUnassignmentSuccess },
+  });
+
+  const createMockApolloProvider = (
+    addonAssignmentBulkCreateHandler,
+    addonAssignmentBulkRemoveHandler,
+  ) => {
     const mockApollo = createMockApollo([
-      [userAddOnAssignmentBulkCreateMutation, addonAssignmentCreateHandler],
+      [userAddOnAssignmentBulkCreateMutation, addonAssignmentBulkCreateHandler],
+      [userAddOnAssignmentBulkRemoveMutation, addonAssignmentBulkRemoveHandler],
     ]);
 
     // Needed to check if cache update is successful on successful mutation
@@ -106,11 +141,15 @@ describe('Add On Eligible User List', () => {
     enableAddOnUsersFiltering = false,
     isBulkAddOnAssignmentEnabled = false,
     addonAssignmentBulkCreateHandler = bulkAssignAddOnHandler,
+    addonAssignmentBulkRemoveHandler = bulkUnassignAddOnHandler,
     mountFn = shallowMount,
     props = {},
     slots = {},
   } = {}) => {
-    mockApolloClient = createMockApolloProvider(addonAssignmentBulkCreateHandler);
+    mockApolloClient = createMockApolloProvider(
+      addonAssignmentBulkCreateHandler,
+      addonAssignmentBulkRemoveHandler,
+    );
 
     wrapper = extendedWrapper(
       mountFn(AddOnEligibleUserList, {
@@ -606,8 +645,7 @@ describe('Add On Eligible User List', () => {
       beforeEach(async () => {
         await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
-        findSelectAllUsersCheckbox().find('input').setChecked(true);
-        await nextTick();
+        await findSelectAllUsersCheckbox().find('input').setChecked(true);
       });
 
       it('shows a summary of all users selected when select all users checkbox is clicked', () => {
@@ -617,8 +655,7 @@ describe('Add On Eligible User List', () => {
       });
 
       it('does not show a summary of users when unselect all users checkbox is clicked', async () => {
-        findSelectAllUsersCheckbox().find('input').setChecked(false);
-        await nextTick();
+        await findSelectAllUsersCheckbox().find('input').setChecked(false);
 
         expect(findSelectedUsersSummary().exists()).toBe(false);
       });
@@ -650,9 +687,8 @@ describe('Add On Eligible User List', () => {
       beforeEach(async () => {
         await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
-        findSelectUserCheckboxAt(1).find('input').setChecked(true);
-        findSelectUserCheckboxAt(2).find('input').setChecked(true);
-        await nextTick();
+        await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+        await findSelectUserCheckboxAt(2).find('input').setChecked(true);
       });
 
       it('shows a summary of only the selected users', () => {
@@ -662,8 +698,7 @@ describe('Add On Eligible User List', () => {
       it('pluralises user count appropriately', async () => {
         await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
-        findSelectUserCheckboxAt(1).find('input').setChecked(true);
-        await nextTick();
+        await findSelectUserCheckboxAt(1).find('input').setChecked(true);
 
         expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('1 user selected');
       });
@@ -701,8 +736,7 @@ describe('Add On Eligible User List', () => {
       });
 
       it('hides the confirmation modal when cancelled', async () => {
-        findSelectAllUsersCheckbox().find('input').setChecked(true);
-        await nextTick();
+        await findSelectAllUsersCheckbox().find('input').setChecked(true);
 
         findAssignSeatsButton().vm.$emit('click');
         await nextTick();
@@ -719,9 +753,8 @@ describe('Add On Eligible User List', () => {
         beforeEach(async () => {
           await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
-          findSelectUserCheckboxAt(1).find('input').setChecked(true);
-          findSelectUserCheckboxAt(2).find('input').setChecked(true);
-          await nextTick();
+          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+          await findSelectUserCheckboxAt(2).find('input').setChecked(true);
 
           findAssignSeatsButton().vm.$emit('click');
           await nextTick();
@@ -730,7 +763,7 @@ describe('Add On Eligible User List', () => {
           await nextTick();
         });
 
-        it('calls bulk addon assigment mutation with appropriate params', () => {
+        it('calls bulk addon assignment mutation with appropriate params', () => {
           expect(bulkAssignAddOnHandler).toHaveBeenCalledWith({
             addOnPurchaseId,
             userIds: [eligibleUsers[1].id, eligibleUsers[2].id],
@@ -777,9 +810,8 @@ describe('Add On Eligible User List', () => {
             addonAssignmentBulkCreateHandler: jest.fn().mockRejectedValue(error),
           });
 
-          findSelectUserCheckboxAt(1).find('input').setChecked(true);
-          findSelectUserCheckboxAt(2).find('input').setChecked(true);
-          await nextTick();
+          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+          await findSelectUserCheckboxAt(2).find('input').setChecked(true);
 
           findAssignSeatsButton().vm.$emit('click');
           await nextTick();
@@ -808,6 +840,90 @@ describe('Add On Eligible User List', () => {
       });
     });
 
+    describe('bulk unassignment confirmation', () => {
+      describe('successful unassignment', () => {
+        beforeEach(async () => {
+          await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
+
+          await findSelectUserCheckboxAt(0).find('input').setChecked(true);
+          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+
+          findAssignSeatsButton().vm.$emit('click');
+          await nextTick();
+
+          findConfirmationModal().vm.$emit('confirm-seat-unassignment');
+          await nextTick();
+        });
+
+        it('calls bulk addon unassignment mutation with appropriate params', () => {
+          expect(bulkUnassignAddOnHandler).toHaveBeenCalledWith({
+            addOnPurchaseId,
+            userIds: [eligibleUsers[0].id, eligibleUsers[1].id],
+          });
+        });
+
+        it('shows a loading state', () => {
+          expect(findConfirmationModal().props().isBulkActionInProgress).toBe(true);
+        });
+
+        it('updates the cache with latest add-on assignment status', async () => {
+          await waitForPromises();
+
+          expect(getAddOnAssignmentStatusForUserFromCache(eligibleUsers[0].id)).toEqual([]);
+          expect(getAddOnAssignmentStatusForUserFromCache(eligibleUsers[1].id)).toEqual([]);
+        });
+
+        it('does not show the confirmation modal on successful API call', async () => {
+          await waitForPromises();
+
+          expect(findConfirmationModal().exists()).toBe(false);
+        });
+
+        it('unselects users on successful API call', async () => {
+          expect(findSelectedUsersSummary().exists()).toBe(true);
+
+          await waitForPromises();
+
+          expect(findSelectedUsersSummary().exists()).toBe(false);
+        });
+      });
+
+      describe('unsuccessful unassignment', () => {
+        const error = new Error('An error');
+
+        beforeEach(async () => {
+          await createComponent({
+            mountFn: mount,
+            isBulkAddOnAssignmentEnabled: true,
+            addonAssignmentBulkRemoveHandler: jest.fn().mockRejectedValue(error),
+          });
+
+          await findSelectUserCheckboxAt(0).find('input').setChecked(true);
+          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+
+          findAssignSeatsButton().vm.$emit('click');
+          await nextTick();
+
+          findConfirmationModal().vm.$emit('confirm-seat-unassignment');
+          await nextTick();
+
+          await waitForPromises();
+        });
+
+        it('captures error on Sentry for generic errors', () => {
+          expect(Sentry.captureException).toHaveBeenCalledWith(error);
+        });
+
+        it('does not show the confirmation modal on unsuccessful API call', () => {
+          expect(findConfirmationModal().exists()).toBe(false);
+        });
+
+        it('retains user selection on unsuccessful API call', () => {
+          expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
+        });
+      });
+    });
+
     describe('when paginating', () => {
       beforeEach(async () => {
         createComponent({
@@ -816,8 +932,7 @@ describe('Add On Eligible User List', () => {
           props: { pageInfo: pageInfoWithMorePages },
         });
 
-        findSelectAllUsersCheckbox().find('input').setChecked(true);
-        await nextTick();
+        await findSelectAllUsersCheckbox().find('input').setChecked(true);
       });
 
       it('resets user selection on navigating to next page', async () => {
