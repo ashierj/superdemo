@@ -133,7 +133,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :find_message
   def find_message(kind, options = {})
-    _('Unable to sign you in to the group with SAML due to "%{reason}"') % options
+    _('Unable to sign in to group with SAML: "%{reason}"') % options
   end
 
   override :after_omniauth_failure_path_for

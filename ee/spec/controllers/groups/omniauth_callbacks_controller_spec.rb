@@ -535,7 +535,7 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
       it "has descriptive error flash" do
         post :failure, params: { group_id: group }
 
-        expect(flash[:alert]).to start_with("Unable to sign you in to the group with SAML due to")
+        expect(flash[:alert]).to start_with("Unable to sign in to group with SAML:")
         expect(flash[:alert]).to include("Fingerprint mismatch")
       end
 
