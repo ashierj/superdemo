@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
+  let_it_be(:user_without_eligible_groups) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:another_group) { create(:group_with_plan, plan: :ultimate_plan) }
 
@@ -36,7 +37,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
       it { is_expected.to redirect_to_trial_registration }
     end
 
-    context 'when authenticated' do
+    context 'when authenticated as a user with eligible namespaces' do
       before do
         login_as(user)
       end
@@ -82,6 +83,14 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
         end
       end
     end
+
+    context 'when authenticated as a user with no eligible namespaces' do
+      before do
+        login_as(user_without_eligible_groups)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:not_found) }
+    end
   end
 
   describe 'POST create' do
@@ -119,7 +128,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
       end
     end
 
-    context 'when authenticated' do
+    context 'when authenticated as a user with eligible namespaces' do
       shared_examples 'with tracking trial registration' do |event|
         it_behaves_like 'internal event tracking' do
           let(:event) { event }
@@ -234,6 +243,14 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
+    end
+
+    context 'when authenticated as a user with no eligible namespaces' do
+      before do
+        login_as(user_without_eligible_groups)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:not_found) }
     end
   end
 
