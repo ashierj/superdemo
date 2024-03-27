@@ -33208,6 +33208,7 @@ Name of the feature that the callout is for.
 | <a id="usercalloutfeaturenameenumcloud_licensing_subscription_activation_banner"></a>`CLOUD_LICENSING_SUBSCRIPTION_ACTIVATION_BANNER` | Callout feature name for cloud_licensing_subscription_activation_banner. |
 | <a id="usercalloutfeaturenameenumcluster_security_warning"></a>`CLUSTER_SECURITY_WARNING` | Callout feature name for cluster_security_warning. |
 | <a id="usercalloutfeaturenameenumduo_chat_callout"></a>`DUO_CHAT_CALLOUT` | Callout feature name for duo_chat_callout. |
+| <a id="usercalloutfeaturenameenumduo_pro_trial_alert"></a>`DUO_PRO_TRIAL_ALERT` | Callout feature name for duo_pro_trial_alert. |
 | <a id="usercalloutfeaturenameenumfeature_flags_new_version"></a>`FEATURE_FLAGS_NEW_VERSION` | Callout feature name for feature_flags_new_version. |
 | <a id="usercalloutfeaturenameenumgcp_signup_offer"></a>`GCP_SIGNUP_OFFER` | Callout feature name for gcp_signup_offer. |
 | <a id="usercalloutfeaturenameenumgeo_enable_hashed_storage"></a>`GEO_ENABLE_HASHED_STORAGE` | Callout feature name for geo_enable_hashed_storage. |
