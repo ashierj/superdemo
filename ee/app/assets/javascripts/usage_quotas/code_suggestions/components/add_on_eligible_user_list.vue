@@ -26,6 +26,7 @@ import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
+import userAddOnAssignmentBulkRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_remove.mutation.graphql';
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -228,6 +229,32 @@ export default {
         this.isConfirmationModalVisible = false;
       }
     },
+    async unassignSeats() {
+      this.isBulkActionInProgress = true;
+
+      try {
+        const {
+          data: { userAddOnAssignmentBulkRemove },
+        } = await this.$apollo.mutate({
+          mutation: userAddOnAssignmentBulkRemoveMutation,
+          variables: {
+            userIds: this.selectedUsers,
+            addOnPurchaseId: this.addOnPurchaseId,
+          },
+        });
+
+        const errors = userAddOnAssignmentBulkRemove?.errors || [];
+
+        if (!errors.length) {
+          this.unselectAllUsers();
+        }
+      } catch (e) {
+        this.handleBulkActionError(e);
+      } finally {
+        this.isBulkActionInProgress = false;
+        this.isConfirmationModalVisible = false;
+      }
+    },
     handleBulkActionError(e) {
       Sentry.captureException(e);
     },
@@ -361,6 +388,7 @@ export default {
       :user-count="selectedUsers.length"
       :is-bulk-action-in-progress="isBulkActionInProgress"
       @confirm-seat-assignment="assignSeats"
+      @confirm-seat-unassignment="unassignSeats"
       @cancel="handleCancelBulkAction"
     />
   </section>
