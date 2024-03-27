@@ -8,7 +8,7 @@ module Types
     description 'Represents a vulnerable Kubernetes resource. Used in vulnerability location data'
 
     field :namespace, GraphQL::Types::String,
-      null: false, description: 'Kubernetes namespace which the resource resides in.'
+      null: false, description: 'Kubernetes namespace where the resource resides.'
 
     field :kind, GraphQL::Types::String,
       null: false, description: 'Kind of the Kubernetes resource.'
@@ -20,11 +20,11 @@ module Types
       null: false, description: 'Name of the container that had its image scanned.'
 
     field :agent, ::Types::Clusters::AgentType,
-      null: true, description: 'Kubernetes Agent which performed the scan.'
+      null: true, description: 'Kubernetes agent that performed the scan.'
 
     field :cluster_id, ::Types::GlobalIDType[::Clusters::Cluster],
       null: true,
-      description: 'ID of the Cluster integration which was used to perform the scan.'
+      description: 'ID of the cluster integration used to perform the scan.'
 
     def agent
       ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Clusters::Agent, object['agent_id']).find

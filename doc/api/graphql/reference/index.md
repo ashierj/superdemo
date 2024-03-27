@@ -22319,8 +22319,8 @@ Represents the Geo replication and verification state of a job_artifact.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="kasenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether the Kubernetes Agent Server is enabled. |
-| <a id="kasexternalurl"></a>`externalUrl` | [`String`](#string) | URL used by the Agents to communicate with KAS. |
+| <a id="kasenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether the Kubernetes agent server is enabled. |
+| <a id="kasexternalurl"></a>`externalUrl` | [`String`](#string) | URL used by the agents to communicate with the server. |
 | <a id="kasversion"></a>`version` | [`String`](#string) | KAS version. |
 
 ### `Key`
@@ -30145,12 +30145,12 @@ Represents a vulnerable Kubernetes resource. Used in vulnerability location data
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="vulnerablekubernetesresourceagent"></a>`agent` | [`ClusterAgent`](#clusteragent) | Kubernetes Agent which performed the scan. |
-| <a id="vulnerablekubernetesresourceclusterid"></a>`clusterId` | [`ClustersClusterID`](#clustersclusterid) | ID of the Cluster integration which was used to perform the scan. |
+| <a id="vulnerablekubernetesresourceagent"></a>`agent` | [`ClusterAgent`](#clusteragent) | Kubernetes agent that performed the scan. |
+| <a id="vulnerablekubernetesresourceclusterid"></a>`clusterId` | [`ClustersClusterID`](#clustersclusterid) | ID of the cluster integration used to perform the scan. |
 | <a id="vulnerablekubernetesresourcecontainername"></a>`containerName` | [`String!`](#string) | Name of the container that had its image scanned. |
 | <a id="vulnerablekubernetesresourcekind"></a>`kind` | [`String!`](#string) | Kind of the Kubernetes resource. |
 | <a id="vulnerablekubernetesresourcename"></a>`name` | [`String!`](#string) | Name of the Kubernetes resource. |
-| <a id="vulnerablekubernetesresourcenamespace"></a>`namespace` | [`String!`](#string) | Kubernetes namespace which the resource resides in. |
+| <a id="vulnerablekubernetesresourcenamespace"></a>`namespace` | [`String!`](#string) | Kubernetes namespace where the resource resides. |
 
 ### `VulnerablePackage`
 
