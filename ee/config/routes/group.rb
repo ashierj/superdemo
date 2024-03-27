@@ -39,11 +39,16 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     namespace :analytics do
       resource :ci_cd_analytics, only: :show, path: 'ci_cd'
-      resources :dashboards, only: :index do
+
+      resources :dashboards, only: [:index], path: 'dashboards(/*vueroute)', format: false do
         collection do
+          # Need to preserve this route to support group legacy Value Streams Dashboard
+          # including query parameters.
+          # Can be removed with group_analytics_dashboard_dynamic_vsd feature flag.
           get :value_streams_dashboard
         end
       end
+
       resource :devops_adoption, controller: :devops_adoption, only: :show
       resource :productivity_analytics, only: :show
       resources :coverage_reports, only: :index
