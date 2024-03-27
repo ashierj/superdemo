@@ -334,6 +334,32 @@ describe('Security Dashboard Table Row', () => {
     });
   });
 
+  describe('with a deleted Jira issue', () => {
+    const jiraIssueDetails = {
+      // when an attached Jira issue gets deleted the external_issue_details is set to null
+      external_issue_details: null,
+    };
+
+    beforeEach(() => {
+      const vulnerability = {
+        ...mockDataVulnerabilities[1],
+        external_issue_links: [jiraIssueDetails],
+        create_jira_issue_url: 'http://jira.example.com',
+      };
+
+      createComponent(shallowMountExtended, { props: { vulnerability } });
+    });
+
+    it('allows the creation of a Jira issue', () => {
+      expect(wrapper.findComponent(VulnerabilityActionButtons).props('canCreateIssue')).toBe(true);
+    });
+
+    it('does not render any information about the deleted Jira issue', () => {
+      expect(wrapper.findByTestId('jira-issue-icon').exists()).toBe(false);
+      expect(wrapper.findByTestId('jira-issue-link').exists()).toBe(false);
+    });
+  });
+
   describe('can admin vulnerability', () => {
     it.each([true, false])(
       'shows/hides the select all checkbox if the user can admin vulnerability = %s',
