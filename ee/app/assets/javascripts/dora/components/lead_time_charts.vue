@@ -170,15 +170,10 @@ export default {
       :chart-description-text="$options.chartDescriptionText"
       :chart-documentation-href="$options.chartDocumentationHref"
     />
-
-    <!-- Using renderer="canvas" here, otherwise the area chart coloring doesn't work if the
-         first value in the series is `null`. This appears to have been fixed in ECharts v5,
-         so once we upgrade, we can go back to using the default renderer (SVG). -->
     <ci-cd-analytics-charts
       :charts="charts"
       :chart-options="$options.areaChartOptions"
       :format-tooltip-text="formatTooltipText"
-      renderer="canvas"
     >
       <template #tooltip-title> {{ tooltipTitle }} </template>
       <template #tooltip-content>
