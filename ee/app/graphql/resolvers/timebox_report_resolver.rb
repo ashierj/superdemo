@@ -17,7 +17,7 @@ module Resolvers
       project_scopes = projects_in_scope(args)
 
       response = if feature_enabled?
-                   Timebox::RollupReportService.new(timebox, project_scopes).execute
+                   Timebox::ReportService.new(timebox, project_scopes).execute
                  else
                    TimeboxReportService.new(timebox, project_scopes).execute
                  end

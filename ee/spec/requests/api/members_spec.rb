@@ -1330,6 +1330,152 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
       end
     end
 
+    describe 'GET /groups/:id/members/:user_id/indirect' do
+      let_it_be(:invited_group) { create(:group) }
+      let_it_be(:other_invited_group) { create(:group) }
+      let_it_be(:developer) { invited_group.add_developer(create(:user)).user }
+
+      context 'with indirect memberships' do
+        let(:membership) { developer.members.first }
+
+        context 'with group to group invites' do
+          before do
+            create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
+          end
+
+          it 'includes invited group membership' do
+            get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", owner)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to eq([{
+              'id' => membership.id,
+              'source_id' => invited_group.id,
+              'source_full_name' => invited_group.full_name,
+              'source_members_url' => group_members_url(invited_group),
+              'created_at' => membership.created_at.as_json,
+              'expires_at' => nil,
+              'access_level' => {
+                'string_value' => 'Developer',
+                'integer_value' => 30
+              }
+            }])
+          end
+
+          it 'excludes memberships outside the requested group hierarchy' do
+            external_group = create(:group)
+            external_group.add_developer(developer)
+
+            get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", owner)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response.map { |m| m['source_full_name'] }).to eq([invited_group.full_name])
+          end
+
+          it 'excludes non-billable memberships', :saas do
+            create(:gitlab_subscription, :ultimate, namespace: group)
+            create(:group_group_link, { shared_with_group: other_invited_group, shared_group: group })
+            other_invited_group.add_guest(developer)
+
+            get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", owner)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response.map { |m| m['source_full_name'] }).to eq([invited_group.full_name])
+          end
+
+          it 'paginates results' do
+            sub_group = create(:group, name: 'SubGroup A', parent: group)
+            create(:group_group_link, { shared_with_group: other_invited_group, shared_group: sub_group })
+            other_invited_group.add_developer(developer)
+
+            get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", owner), params: { page: 2, per_page: 1 }
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response.map { |m| m['source_full_name'] }).to eq([other_invited_group.full_name])
+          end
+        end
+
+        context 'with group to project invites' do
+          before do
+            project = create(:project, group: group)
+            create(:project_group_link, project: project, group: invited_group)
+          end
+
+          it 'includes invited group membership' do
+            get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", owner)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to eq([{
+              'id' => membership.id,
+              'source_id' => invited_group.id,
+              'source_full_name' => invited_group.full_name,
+              'source_members_url' => group_members_url(invited_group),
+              'created_at' => membership.created_at.as_json,
+              'expires_at' => nil,
+              'access_level' => {
+                'string_value' => 'Developer',
+                'integer_value' => 30
+              }
+            }])
+          end
+        end
+
+        it 'returns not found when the user does not exist' do
+          get api("/groups/#{group.id}/billable_members/#{non_existing_record_id}/indirect", owner)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response).to eq({ 'message' => '404 Not found' })
+        end
+
+        it 'returns not found when the group does not exist' do
+          get api("/groups/#{non_existing_record_id}/billable_members/#{developer.id}/indirect", owner)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response).to eq({ 'message' => '404 Group Not Found' })
+        end
+
+        it 'returns not found when the user is not billable', :saas do
+          guest = create(:user)
+          invited_group.add_guest(guest)
+          create(:gitlab_subscription, :ultimate, namespace: group)
+
+          get api("/groups/#{group.id}/billable_members/#{guest.id}/indirect", owner)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response).to eq({ 'message' => '404 User Not Found' })
+        end
+
+        it 'returns bad request if the user cannot admin group members' do
+          get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", developer)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response).to eq({ 'message' => '400 Bad request' })
+        end
+
+        it 'returns bad request if the group is a subgroup' do
+          subgroup = create(:group, name: 'My SubGroup', parent: group)
+          subgroup.add_developer(developer)
+
+          get api("/groups/#{subgroup.id}/billable_members/#{developer.id}/indirect", owner)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response).to eq({ 'message' => '400 Bad request' })
+        end
+      end
+
+      context 'with direct memberships' do
+        before_all do
+          group.add_developer(developer)
+        end
+
+        it 'does not return direct memberships for the billable group member' do
+          get api("/groups/#{group.id}/billable_members/#{developer.id}/indirect", owner)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to eq([])
+        end
+      end
+    end
+
     describe 'PUT /groups/:id/members/:user_id/state', :saas do
       let(:url) { "/groups/#{group.id}/members/#{user.id}/state" }
       let(:state) { 'active' }
