@@ -4,7 +4,7 @@ module EE
   # This class is responsible for updating the namespace settings of a specific group.
   #
   module NamespaceSettings
-    module UpdateService
+    module AssignAttributesService
       extend ::Gitlab::Utils::Override
 
       override :execute
