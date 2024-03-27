@@ -16433,6 +16433,7 @@ CI/CD variables for a group.
 | ---- | ---- | ----------- |
 | <a id="cigroupvariabledescription"></a>`description` | [`String`](#string) | Description of the variable. |
 | <a id="cigroupvariableenvironmentscope"></a>`environmentScope` | [`String`](#string) | Scope defining the environments that can use the variable. |
+| <a id="cigroupvariablehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates whether the variable is hidden. |
 | <a id="cigroupvariableid"></a>`id` | [`ID!`](#id) | ID of the variable. |
 | <a id="cigroupvariablekey"></a>`key` | [`String`](#string) | Name of the variable. |
 | <a id="cigroupvariablemasked"></a>`masked` | [`Boolean`](#boolean) | Indicates whether the variable is masked. |
@@ -16634,6 +16635,7 @@ CI/CD variables for a project.
 | ---- | ---- | ----------- |
 | <a id="ciprojectvariabledescription"></a>`description` | [`String`](#string) | Description of the variable. |
 | <a id="ciprojectvariableenvironmentscope"></a>`environmentScope` | [`String`](#string) | Scope defining the environments that can use the variable. |
+| <a id="ciprojectvariablehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates whether the variable is hidden. |
 | <a id="ciprojectvariableid"></a>`id` | [`ID!`](#id) | ID of the variable. |
 | <a id="ciprojectvariablekey"></a>`key` | [`String`](#string) | Name of the variable. |
 | <a id="ciprojectvariablemasked"></a>`masked` | [`Boolean`](#boolean) | Indicates whether the variable is masked. |
