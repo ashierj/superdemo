@@ -16,6 +16,10 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
   let_it_be(:developer) { create(:user) }
   let_it_be(:subgroup_owner) { create(:user) }
 
+  before do
+    stub_feature_flags(ramon: false)
+  end
+
   before_all do
     group.add_owner(owner)
     group.add_developer(developer)

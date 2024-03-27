@@ -491,7 +491,7 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
 
     context 'when the :saas_user_caps feature flag is enabled for the root group' do
       before do
-        stub_feature_flags(saas_user_caps: group)
+        stub_feature_flags(saas_user_caps: group, ramon: false)
       end
 
       context 'when the user cap has not been reached' do
@@ -656,6 +656,8 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     let(:root_ancestor) { group }
 
     before do
+      stub_feature_flags(ramon: false)
+
       allow(root_ancestor).to receive(:user_cap_reached?).and_return(user_cap_reached)
     end
 
