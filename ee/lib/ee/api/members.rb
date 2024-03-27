@@ -169,7 +169,7 @@ module EE
             end
           end
 
-          desc 'Get the memberships of a billable user of a root group.' do
+          desc 'Get the direct memberships of a billable user of a root group.' do
             success ::EE::API::Entities::BillableMembership
           end
           params do
@@ -189,6 +189,32 @@ module EE
             memberships = user.members.in_hierarchy(group).including_source
 
             present paginate(memberships), with: ::EE::API::Entities::BillableMembership
+          end
+
+          desc 'Get the indirect memberships of a billable user of a root group.' do
+            success ::EE::API::Entities::BillableMembership
+          end
+          params do
+            requires :user_id, type: Integer, desc: 'The user ID of the member'
+            use :pagination
+          end
+          get ":id/billable_members/:user_id/indirect", feature_category: :seat_cost_management do
+            group = find_group!(params[:id])
+
+            bad_request! unless can?(current_user, :admin_group_member, group)
+            bad_request! if group.subgroup?
+
+            user = ::User.find(params[:user_id])
+
+            not_found!('User') unless billable_member?(group, user)
+
+            exclude_guests = group.exclude_guests?
+            invited_group_to_project_memberships = group.billed_invited_group_to_project_members(exclude_guests: exclude_guests).with_user(user.id)
+            invited_group_to_group_memberships = group.billed_shared_group_members(exclude_guests: exclude_guests).with_user(user.id)
+
+            invited_memberships = invited_group_to_group_memberships.or(invited_group_to_project_memberships)
+
+            present paginate(invited_memberships), with: ::EE::API::Entities::BillableMembership
           end
 
           desc 'Removes a billable member from a group or project.'
