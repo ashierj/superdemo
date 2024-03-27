@@ -20,9 +20,9 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
 
   def create_member_role(ability, member)
     build(:member_role, :guest, namespace: group, read_code: false).tap do |record|
-      record[ability] = true
+      record.assign_attributes(ability => true)
       ability_requirements(ability).each do |requirement|
-        record[requirement] = true
+        record.assign_attributes(requirement => true)
       end
       record.save!
       record.members << member

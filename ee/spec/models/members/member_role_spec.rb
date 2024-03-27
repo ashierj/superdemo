@@ -55,6 +55,24 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       end
     end
 
+    context 'for json schema' do
+      let(:permissions) { { read_code: true } }
+
+      it { is_expected.to allow_value(permissions).for(:permissions) }
+
+      context 'when trying to store an unsupported key' do
+        let(:permissions) { { unsupported_key: true } }
+
+        it { is_expected.not_to allow_value(permissions).for(:permissions) }
+      end
+
+      context 'when trying to store an unsupported value' do
+        let(:permissions) { { read_code: 'some_value' } }
+
+        it { is_expected.not_to allow_value(permissions).for(:permissions) }
+      end
+    end
+
     context 'when running on Gitlab.com' do
       before do
         stub_saas_features(gitlab_com_subscriptions: true)
@@ -239,7 +257,8 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
           see_code: { description: 'Test permission' }
         )
 
-        expect(described_class.elevating.to_sql).to include('WHERE (see_code = true)')
+        expect(described_class.elevating.to_sql)
+          .to include("member_roles.permissions @> ('{\"see_code\":true}')::jsonb")
       end
 
       it 'creates proper query with multiple permissions' do
@@ -249,7 +268,9 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
           remove_code: { description: 'Test second permission' }
         )
 
-        expect(described_class.elevating.to_sql).to include('WHERE (see_code = true OR remove_code = true)')
+        expect(described_class.elevating.to_sql)
+          .to include("member_roles.permissions @> ('{\"see_code\":true}')::jsonb " \
+                      "OR member_roles.permissions @> ('{\"remove_code\":true}')::jsonb")
       end
 
       it 'returns nothing when there are no elevating permissions' do
@@ -348,14 +369,6 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       end
 
       it { is_expected.to eq(expected_result) }
-    end
-  end
-
-  describe 'covering all permissions columns' do
-    it 'has all attributes listed in the member_roles table' do
-      expect(described_class.attribute_names.map(&:to_sym))
-        .to contain_exactly(*described_class.all_customizable_permissions.keys,
-          *described_class::NON_PERMISSION_COLUMNS)
     end
   end
 

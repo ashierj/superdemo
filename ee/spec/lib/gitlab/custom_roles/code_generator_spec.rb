@@ -3,16 +3,14 @@
 require 'spec_helper'
 require 'active_support/testing/stream'
 
-RSpec.describe Gitlab::CustomRoles::CodeGenerator, :migration, :silence_stdout,
+RSpec.describe Gitlab::CustomRoles::CodeGenerator, :silence_stdout,
   feature_category: :permissions do
   include ActiveSupport::Testing::Stream
-  include MigrationsHelpers
 
   before do
     allow(MemberRole).to receive(:all_customizable_permissions).and_return(
       { test_new_ability: { feature_category: 'vulnerability_management' } }
     )
-    allow(Gitlab).to receive(:current_milestone).and_return('16.5')
   end
 
   let(:ability) { 'test_new_ability' }
@@ -32,39 +30,29 @@ RSpec.describe Gitlab::CustomRoles::CodeGenerator, :migration, :silence_stdout,
   context 'when the ability exists' do
     after do
       FileUtils.rm_rf(destination_root)
-
-      table(:schema_migrations).where(version: migrations.map(&:version)).delete_all
-
-      active_record_base.connection.execute(<<~SQL)
-        ALTER TABLE member_roles DROP COLUMN #{ability};
-      SQL
     end
 
-    it 'creates the migration file with the right content' do
+    let(:schema_file_path) { 'app/validators/json_schemas/member_role_permissions.json' }
+    let(:schema) do
+      Gitlab::Json.pretty_generate(
+        '$schema': 'http://json-schema.org/draft-07/schema#',
+        description: 'Permissions on custom roles',
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          test_new_ability: { type: 'boolean' }
+        }
+      )
+    end
+
+    it 'updates the schema validation file with the right content' do
+      expect(File).to receive(:write).with(schema_file_path, "#{schema}\n")
+
       run_generator
-
-      migration = migrations.first
-
-      expect(migrations.count).to eq(1)
-      expect(migration.name).to eq('AddTestNewAbilityToMemberRoles')
-      expect(MemberRole.column_names).not_to include('test_new_ability')
-
-      schema_migrate_up!
-
-      expect(MemberRole.column_names).to include('test_new_ability')
     end
-  end
-
-  # We want to execute only the newly generated migrations
-  def migrations_paths
-    [File.join(destination_root, 'db', 'migrate')]
   end
 
   def destination_root
     File.expand_path("../tmp", __dir__)
-  end
-
-  def schema_migrate_down!
-    # no-op
   end
 end
