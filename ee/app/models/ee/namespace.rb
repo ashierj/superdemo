@@ -523,8 +523,13 @@ module EE
     def user_cap_available?
       return false unless group_namespace?
       return false unless ::Gitlab.com?
+      return false if ramon?
 
       ::Feature.enabled?(:saas_user_caps, root_ancestor)
+    end
+
+    def ramon?
+      ::Feature.enabled?(:ramon, self, type: :wip)
     end
 
     def block_seat_overages?
