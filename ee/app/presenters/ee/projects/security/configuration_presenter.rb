@@ -35,6 +35,11 @@ module EE
         def container_scanning_for_registry_enabled
           project_settings&.container_scanning_for_registry_enabled
         end
+
+        override :pre_receive_secret_detection_enabled
+        def pre_receive_secret_detection_enabled
+          project_settings&.pre_receive_secret_detection_enabled
+        end
       end
     end
   end
