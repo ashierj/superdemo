@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::TimeboxReportResolver do
+RSpec.describe Resolvers::TimeboxReportResolver, feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
@@ -198,7 +198,7 @@ RSpec.describe Resolvers::TimeboxReportResolver do
 
   context 'when "rollup_timebox_chart" feature flag is enabled' do
     let(:event_aggregation_service_class) { Timebox::EventAggregationService }
-    let(:report_service_class) { Timebox::RollupReportService }
+    let(:report_service_class) { Timebox::ReportService }
 
     context 'when FF is enabled for group' do
       let_it_be(:timebox) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group), start_date: start_date, due_date: due_date) }
@@ -207,8 +207,8 @@ RSpec.describe Resolvers::TimeboxReportResolver do
         stub_feature_flags(rollup_timebox_chart: group)
       end
 
-      it 'uses Timebox::RollupReportService' do
-        expect(Timebox::RollupReportService).to receive(:new).and_call_original
+      it 'uses Timebox::ReportService' do
+        expect(Timebox::ReportService).to receive(:new).and_call_original
 
         resolve(described_class, obj: timebox, ctx: { current_user: group_member })
       end
@@ -262,8 +262,8 @@ RSpec.describe Resolvers::TimeboxReportResolver do
         stub_feature_flags(rollup_timebox_chart: project)
       end
 
-      it 'uses Timebox::RollupReportService' do
-        expect(Timebox::RollupReportService).to receive(:new).and_call_original
+      it 'uses Timebox::ReportService' do
+        expect(Timebox::ReportService).to receive(:new).and_call_original
 
         resolve(described_class, obj: timebox, ctx: { current_user: group_member })
       end

@@ -300,7 +300,7 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
   end
 end
 
-RSpec.describe Timebox::RollupReportService, :aggregate_failures, feature_category: :team_planning do
+RSpec.describe Timebox::ReportService, :aggregate_failures, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:timebox_start_date) { Date.today }

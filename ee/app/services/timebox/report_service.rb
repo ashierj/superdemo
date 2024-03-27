@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
-# rubocop:disable Layout/LineLength
 module Timebox
-  class RollupReportService
-    NULL_STATS_DATA = { incomplete: { count: 0, weight: 0 }, complete: { count: 0, weight: 0 }, total: { count: 0, weight: 0 } }.freeze
+  class ReportService
+    NULL_STATS_DATA = {
+      incomplete: { count: 0, weight: 0 },
+      complete: { count: 0, weight: 0 },
+      total: { count: 0, weight: 0 }
+    }.freeze
 
     def initialize(timebox, scoped_projects = nil)
       @timebox = timebox
@@ -51,8 +54,10 @@ module Timebox
 
     def error(code)
       message = case code
-                when :unsupported_type then _(format('%{timebox_type} does not support burnup charts', timebox_type: timebox_type))
-                when :missing_dates    then _(format('%{timebox_type} must have a start and due date', timebox_type: timebox_type))
+                when :unsupported_type
+                  format(_('%{timebox_type} does not support burnup charts'), timebox_type: timebox_type)
+                when :missing_dates
+                  format(_('%{timebox_type} must have a start and due date'), timebox_type: timebox_type)
                 end
 
       ServiceResponse.error(message: message, payload: { code: code })
@@ -61,12 +66,16 @@ module Timebox
     def handle_resource_timebox_event(event)
       item_state = find_or_build_state(event['issue_id'])
 
-      return if item_state[:timebox] == timebox.id && event['action'] == ResourceTimeboxEvent.actions[:add] && event['value'] == timebox.id
+      if item_state[:timebox] == timebox.id &&
+          event['action'] == ResourceTimeboxEvent.actions[:add] && event['value'] == timebox.id
+        return
+      end
 
       if event['action'] == ResourceTimeboxEvent.actions[:add] && event['value'] == timebox.id
         handle_add_timebox_event(event)
       elsif item_state[:timebox] == timebox.id
-        # If the issue is currently assigned to the timebox(milestone or iteration), then treat any event here as a removal.
+        # If the issue is currently assigned to the timebox(milestone or iteration),
+        # then treat any event here as a removal.
         # We do not have a separate `:remove` event when replacing timebox(milestone or iteration) with another one.
         handle_remove_timebox_event(event)
       end
@@ -101,10 +110,15 @@ module Timebox
 
       return if item_state[:timebox] != timebox.id
 
-      if old_state == ResourceStateEvent.states[:closed] && event['value'] == ResourceStateEvent.states[:reopened]
-        decrement_completed(event['created_at'], item_state[:weight])
-      elsif ResourceStateEvent.states.values_at(:opened, :reopened).include?(old_state) && event['value'] == ResourceStateEvent.states[:closed]
-        increment_completed(event['created_at'], item_state[:weight])
+      case old_state
+      when ResourceStateEvent.states[:closed]
+        if event['value'] == ResourceStateEvent.states[:reopened]
+          decrement_completed(event['created_at'], item_state[:weight])
+        end
+      when *ResourceStateEvent.states.values_at(:opened, :reopened)
+        if event['value'] == ResourceStateEvent.states[:closed]
+          increment_completed(event['created_at'], item_state[:weight])
+        end
       end
     end
 
@@ -197,4 +211,3 @@ module Timebox
     end
   end
 end
-# rubocop:enable Layout/LineLength
