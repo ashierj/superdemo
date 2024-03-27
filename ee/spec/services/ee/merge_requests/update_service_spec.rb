@@ -11,6 +11,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
   let(:user3) { create(:user) }
   let(:label) { create(:label, project: project) }
   let(:label2) { create(:label) }
+  let(:current_user) { user }
 
   let(:merge_request) do
     create(
@@ -57,7 +58,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
     end
 
     def update_merge_request(opts)
-      described_class.new(project: project, current_user: user, params: opts).execute(merge_request)
+      described_class.new(project: project, current_user: current_user, params: opts).execute(merge_request)
     end
 
     context 'when code owners changes' do
@@ -102,6 +103,36 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
 
           expect(rule.reload.approvals_required).to eq(0)
         end
+      end
+    end
+
+    context 'for override requested changes' do
+      context 'for user can not merge' do
+        let(:current_user) { merge_request.author }
+
+        it 'does not update' do
+          expect do
+            update_merge_request(override_requested_changes: true)
+          end.not_to change { merge_request.override_requested_changes? }
+        end
+      end
+
+      it 'updates override_requested_changes' do
+        expect do
+          update_merge_request(override_requested_changes: true)
+        end.to change { merge_request.override_requested_changes? }.from(false).to(true)
+      end
+
+      it 'calls SystemNoteService.override_requested_changes' do
+        expect_next_instance_of(::SystemNotes::MergeRequestsService) do |service|
+          expect(service).to receive(:override_requested_changes).with(true)
+        end
+
+        update_merge_request(override_requested_changes: true)
+      end
+
+      it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+        let(:action) { update_merge_request(override_requested_changes: true) }
       end
     end
 

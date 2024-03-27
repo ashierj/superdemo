@@ -22,6 +22,9 @@ module EE
           params.delete(:approver_group_ids)
         end
 
+        # Only users who have permission to merge can update this value
+        params.delete(:override_requested_changes) unless merge_request.can_be_merged_by?(current_user)
+
         self.params = ApprovalRules::ParamsFilteringService.new(merge_request, current_user, params).execute
 
         self.blocking_merge_requests_params =

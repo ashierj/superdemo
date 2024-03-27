@@ -170,6 +170,10 @@ module EE
       merge_requests_service(noteable, noteable.project, user).approvals_reset(cause, approvers)
     end
 
+    def override_requested_changes(noteable, user, event)
+      merge_requests_service(noteable, noteable.project, user).override_requested_changes(event)
+    end
+
     private
 
     def issuables_service(noteable, project, author)
