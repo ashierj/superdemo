@@ -39,7 +39,10 @@ module Preloaders
       permissions = MemberRole.all_customizable_group_permissions
 
       permission_select = permissions.map { |p| "bool_or(custom_permissions.#{p}) AS #{p}" }.join(', ')
-      permission_condition = permissions.map { |p| "member_roles.#{p} = true" }.join(' OR ')
+      permission_condition = permissions.map do |permission|
+        "member_roles.permissions @> ('{\"#{permission}\":true}')::jsonb"
+      end.join(' OR ')
+      permission_columns = permissions.map { |p| "(member_roles.permissions -> '#{p}')::BOOLEAN as #{p}" }.join(', ')
       result_default = permissions.map { |p| "false AS #{p}" }.join(', ')
 
       sql = <<~SQL
@@ -47,7 +50,7 @@ module Preloaders
         FROM (#{value_list.to_sql}) AS namespace_ids (namespace_id, namespace_ids),
         LATERAL (
           (
-           #{Member.select(permissions.join(', '))
+           #{Member.select(permission_columns)
               .left_outer_joins(:member_role)
               .where("members.source_type = 'Namespace' AND members.source_id = namespace_ids.namespace_id")
               .with_user(user)
@@ -55,7 +58,7 @@ module Preloaders
               .to_sql}
           ) UNION ALL
           (
-            #{Member.select(permissions.join(', '))
+            #{Member.select(permission_columns)
               .left_outer_joins(:member_role)
               .where("members.source_type = 'Namespace' AND members.source_id IN (SELECT UNNEST(namespace_ids) as ids)")
               .with_user(user)

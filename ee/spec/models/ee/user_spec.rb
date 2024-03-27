@@ -1250,6 +1250,12 @@ RSpec.describe User, feature_category: :system_access do
     end
 
     context 'without guests' do
+      let(:elevating_permissions) do
+        MemberRole.elevating_permissions.map do |permission|
+          /member_roles.permissions @> \('\{"#{permission}":true\}'\)::jsonb/.source
+        end.join(' OR ')
+      end
+
       let(:expected_where) do
         'WHERE \("users"."state" IN \(\'active\'\)\)
         AND
@@ -1262,18 +1268,7 @@ RSpec.describe User, feature_category: :system_access do
            WHERE "members"."user_id" = "users"."id"
              AND \(members.access_level > 10
              OR "members"."access_level" = 10
-             AND \(admin_cicd_variables = true
-             OR admin_group_member = true
-             OR admin_merge_request = true
-             OR admin_terraform_state = true
-             OR admin_vulnerability = true
-             OR archive_project = true
-             OR manage_group_access_tokens = true
-             OR manage_project_access_tokens = true
-             OR read_dependency = true
-             OR read_vulnerability = true
-             OR remove_group = true
-             OR remove_project = true\)\)\)\)'.squish # allow_cross_joins_across_databases
+             AND \('.squish + elevating_permissions + '\)\)\)\)'.squish # allow_cross_joins_across_databases
       end
 
       before do

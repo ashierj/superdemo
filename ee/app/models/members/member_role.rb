@@ -2,19 +2,10 @@
 
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   include GitlabSubscriptions::SubscriptionHelper
+  include IgnorableColumns
 
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
 
-  NON_PERMISSION_COLUMNS = [
-    :base_access_level,
-    :created_at,
-    :description,
-    :id,
-    :name,
-    :namespace_id,
-    :updated_at,
-    :occupies_seat
-  ].freeze
   LEVELS = ::Gitlab::Access.options_with_owner.values.freeze
 
   has_many :members
@@ -26,6 +17,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validates :name, presence: true
   validates :name, uniqueness: { scope: :namespace_id }, on: %i[create update]
   validates :base_access_level, presence: true, inclusion: { in: LEVELS }
+  validates :permissions, json_schema: { filename: 'member_role_permissions' }
   validate :belongs_to_top_level_namespace
   validate :max_count_per_group_hierarchy, on: :create
   validate :validate_namespace_locked, on: :update
@@ -40,9 +32,14 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   scope :elevating, -> do
     return none if elevating_permissions.empty?
 
-    query = elevating_permissions.map { |permission| "#{permission} = true" }
-                                 .join(" OR ")
-    where(query)
+    first_permission, *other_permissions = elevating_permissions
+
+    scope = permissions_where(first_permission => true)
+    other_permissions.each do |permission|
+      scope = scope.or(permissions_where(permission => true))
+    end
+
+    scope
   end
 
   scope :by_namespace, ->(group_ids) { where(namespace_id: group_ids) }
@@ -56,6 +53,26 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   end
 
   before_destroy :prevent_delete_after_member_associated
+
+  ignore_columns %i[
+    admin_cicd_variables
+    admin_group_member
+    admin_merge_request
+    admin_terraform_state
+    admin_vulnerability
+    archive_project
+    manage_group_access_tokens
+    manage_project_access_tokens
+    read_code
+    read_dependency
+    read_vulnerability
+    remove_group
+    remove_project
+  ], remove_with: '17.1', remove_after: '2024-05-13'
+
+  jsonb_accessor :permissions, Gitlab::CustomRoles::Definition.all.keys.index_with(:boolean)
+
+  self.filter_attributes = [] # There are no secrets stored in this model, prevent filtering of attributes
 
   def self.levels_sentence
     ::Gitlab::Access

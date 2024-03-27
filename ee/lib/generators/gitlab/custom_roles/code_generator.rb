@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 require 'rails/generators'
-require 'rails/generators/active_record/migration'
 
 module Gitlab
   module CustomRoles
     class CodeGenerator < Rails::Generators::Base
-      include ActiveRecord::Generators::Migration
-
+      SCHEMA_FILE_PATH = 'app/validators/json_schemas/member_role_permissions.json'
       REQUEST_SPEC_DIR = 'ee/spec/requests/custom_roles'
 
       desc 'This generator creates the basic code for implementing a new custom ability'
@@ -20,8 +18,17 @@ module Gitlab
         raise ArgumentError, "ability yaml file is not yet defined" unless permission_definition
       end
 
-      def create_add_ability_migration
-        migration_template('../templates/ability_migration.rb.template', perm_migration_file_name)
+      def create_schema
+        permissions = MemberRole.all_customizable_permissions.keys
+        schema = Gitlab::Json.pretty_generate(
+          '$schema': 'http://json-schema.org/draft-07/schema#',
+          description: 'Permissions on custom roles',
+          type: 'object',
+          additionalProperties: false,
+          properties: permissions.index_with(type: 'boolean')
+        )
+
+        File.write(SCHEMA_FILE_PATH, "#{schema}\n")
       end
 
       def create_request_spec
@@ -29,10 +36,6 @@ module Gitlab
       end
 
       private
-
-      def perm_migration_file_name
-        File.join(db_migrate_path, "add_#{options[:ability]}_to_member_roles.rb")
-      end
 
       def request_spec_file_name
         dir_path = "#{REQUEST_SPEC_DIR}/#{ability}"
