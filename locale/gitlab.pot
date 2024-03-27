@@ -52353,13 +52353,13 @@ msgstr ""
 msgid "This setting is allowed for forked projects only"
 msgstr ""
 
-msgid "This subscription is for"
-msgstr ""
-
 msgid "This suggestion already matches its content."
 msgstr ""
 
 msgid "This title already exists."
+msgstr ""
+
+msgid "This trial is for"
 msgstr ""
 
 msgid "This user cannot be unlocked manually from GitLab"
