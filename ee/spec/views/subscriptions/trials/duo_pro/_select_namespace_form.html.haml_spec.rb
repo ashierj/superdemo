@@ -8,7 +8,7 @@ RSpec.describe 'subscriptions/trials/duo_pro/_select_namespace_form.html.haml', 
 
   before do
     allow(view).to receive(:current_user) { user }
-    allow(view).to receive(:duo_pro_trial_eligible_namespaces).and_return([group])
+    assign(:eligible_namespaces, [group])
   end
 
   it 'renders select namespace form' do

@@ -13,7 +13,6 @@ module Subscriptions
 
       skip_before_action :set_confirm_warning
       before_action :check_feature_available!
-      before_action :authenticate_user!
 
       feature_category :purchase
       urgency :low
@@ -66,6 +65,10 @@ module Subscriptions
 
       private
 
+      def eligible_namespaces
+        @eligible_namespaces = Users::DuoProTrialEligibleNamespacesFinder.new(current_user).execute
+      end
+
       def authenticate_user!
         return if current_user
 
@@ -74,7 +77,8 @@ module Subscriptions
 
       def check_feature_available!
         if Feature.enabled?(:duo_pro_trials, current_user, type: :wip) &&
-            ::Gitlab::Saas.feature_available?(:subscriptions_trials)
+            ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
+            eligible_namespaces.any?
           return
         end
 
