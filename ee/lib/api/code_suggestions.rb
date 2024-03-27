@@ -19,7 +19,7 @@ module API
     before do
       authenticate!
 
-      not_found! unless Feature.enabled?(:code_suggestions_tokens_api, type: :ops)
+      not_found! unless Feature.enabled?(:ai_duo_code_suggestions_switch, type: :ops)
       unauthorized! unless current_user.can?(:access_code_suggestions)
     end
 
