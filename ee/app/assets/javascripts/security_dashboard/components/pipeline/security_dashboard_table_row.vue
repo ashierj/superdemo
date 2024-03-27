@@ -85,7 +85,7 @@ export default {
     },
     jiraIssueData() {
       const jiraIssue = this.vulnerability.external_issue_links?.find(
-        (link) => link.external_issue_details.external_tracker === 'jira',
+        (link) => link.external_issue_details?.external_tracker === 'jira',
       );
 
       if (!jiraIssue) {
