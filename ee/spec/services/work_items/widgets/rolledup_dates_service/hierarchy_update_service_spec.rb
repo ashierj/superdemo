@@ -7,18 +7,12 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
   feature_category: :portfolio_management do
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:work_item) { create(:work_item, :epic, namespace: group) }
-    let_it_be_with_reload(:child_work_item) do
-      now = Time.now.utc
-      create(:work_item, :issue, namespace: group, start_date: now, due_date: now).tap do |child|
-        create(:parent_link, work_item: child, work_item_parent: work_item)
-      end
-    end
 
     shared_examples "does not update work_item's date_source" do
       specify do
         expect { described_class.new(work_item).execute }
           .to not_change { work_item&.reload&.dates_source&.start_date }
-            .and not_change { work_item&.reload&.dates_source&.due_date }
+          .and not_change { work_item&.reload&.dates_source&.due_date }
       end
     end
 
@@ -42,7 +36,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
         specify do
           expect(::WorkItems::RolledupDates::UpdateRolledupDatesWorker)
             .to receive(:perform_async)
-              .with(parent.id)
+            .with(parent.id)
 
           described_class.new(work_item).execute
         end
@@ -52,6 +46,19 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
     shared_examples "when work item already have an associated dates_source" do
       after do
         work_item.dates_source.delete
+      end
+
+      context "when rolling up start and due date" do
+        before do
+          create(:work_items_dates_source, work_item: work_item)
+        end
+
+        it "does not update due date" do
+          expect { described_class.new(work_item).execute }
+            .to not_change { WorkItems::DatesSource.count }
+            .and change { work_item.reload.dates_source&.due_date }.from(nil).to(due_date)
+            .and change { work_item.reload.dates_source&.start_date }.from(nil).to(start_date)
+        end
       end
 
       context "when due date is fixed" do
@@ -117,7 +124,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
       let_it_be(:due_date) { 1.day.from_now.to_date }
 
       context "when rolling up from child work_item dates fields" do
-        before do
+        before_all do
           create(:work_item, :issue, namespace: group, start_date: start_date, due_date: due_date).tap do |child|
             create(:parent_link, work_item: child, work_item_parent: work_item)
           end
@@ -129,7 +136,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
       end
 
       context "when rolling up from from a child work_item dates_source fields" do
-        before do
+        before_all do
           create(:work_item, :issue, namespace: group).tap do |child|
             create(:parent_link, work_item: child, work_item_parent: work_item)
             create(:work_items_dates_source, :fixed, work_item: child, start_date: start_date, due_date: due_date)
@@ -146,7 +153,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
           create(:milestone, group: group, start_date: start_date, due_date: due_date)
         end
 
-        before do
+        before_all do
           create(:work_item, :issue, namespace: group, milestone: milestone).tap do |child|
             create(:parent_link, work_item: child, work_item_parent: work_item)
             create(

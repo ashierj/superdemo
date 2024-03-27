@@ -99,13 +99,13 @@ module EE
         end
 
         def subscribe_to_work_item_events(store)
-          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+          store.subscribe ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler,
             to: ::WorkItems::WorkItemCreatedEvent
-          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+          store.subscribe ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler,
             to: ::WorkItems::WorkItemDeletedEvent
-          store.subscribe ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler,
+          store.subscribe ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler,
             to: ::WorkItems::WorkItemUpdatedEvent, if: ->(event) {
-              ::WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler.can_handle_update?(event)
+              ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler.can_handle_update?(event)
             }
         end
       end
