@@ -38,14 +38,14 @@ describe('SecretsTable component', () => {
   const findPagination = () => wrapper.findComponent(GlPagination);
 
   const createComponent = async ({
-    resource = 'group',
+    entity = 'group',
     secretsMockData = mockGroupSecretsData,
   } = {}) => {
     const mockPaginatedSecretsData = ({ offset, limit }) => ({
       data: {
-        [resource]: {
-          id: `${resource}Id`,
-          fullPath: `path/to/${resource}`,
+        [entity]: {
+          id: `${entity}Id`,
+          fullPath: `path/to/${entity}`,
           secrets: {
             count: secretsMockData.length,
             nodes: secretsMockData.slice(offset, offset + limit),
@@ -60,11 +60,8 @@ describe('SecretsTable component', () => {
 
     wrapper = mountExtended(SecretsTable, {
       propsData: {
-        parentQueryVariables: {
-          fullPath: `path/to/${resource}`,
-          isGroup: resource === 'group',
-          isProject: resource === 'project',
-        },
+        fullPath: `path/to/${entity}`,
+        entity,
       },
       apolloProvider,
       stubs: {
@@ -80,14 +77,14 @@ describe('SecretsTable component', () => {
   });
 
   describe.each`
-    resource     | secretsMockData
+    entity       | secretsMockData
     ${'group'}   | ${mockGroupSecretsData}
     ${'project'} | ${mockProjectSecretsData}
-  `('$resource secrets table', ({ resource, secretsMockData }) => {
+  `('$entity secrets table', ({ entity, secretsMockData }) => {
     const secret = secretsMockData[0];
 
     beforeEach(async () => {
-      await createComponent({ resource, secretsMockData });
+      await createComponent({ entity, secretsMockData });
     });
 
     it('shows a total count of secrets', () => {

@@ -10,6 +10,7 @@ import {
   NEW_ROUTE_NAME,
   DETAILS_ROUTE_NAME,
   EDIT_ROUTE_NAME,
+  ENTITY_GROUP,
   SCOPED_LABEL_COLOR,
   UNSCOPED_LABEL_COLOR,
   INITIAL_PAGE,
@@ -36,10 +37,14 @@ export default {
     SecretActionsCell,
   },
   props: {
-    parentQueryVariables: {
-      type: Object,
+    entity: {
+      type: String,
+      required: true,
+    },
+    fullPath: {
+      type: String,
       required: false,
-      default: () => {},
+      default: null,
     },
   },
   data() {
@@ -65,7 +70,9 @@ export default {
   computed: {
     queryVariables() {
       return {
-        ...this.parentQueryVariables,
+        fullPath: this.fullPath,
+        isGroup: this.entity === ENTITY_GROUP,
+        isProject: this.entity !== ENTITY_GROUP,
         offset: (this.page - 1) * PAGE_SIZE,
         limit: PAGE_SIZE,
       };

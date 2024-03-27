@@ -7,8 +7,7 @@ import SecretTabs from 'ee/ci/secrets/components/secret_details/secret_tabs.vue'
 import SecretDetails from 'ee/ci/secrets/components/secret_details/secret_details.vue';
 import SecretAuditLog from 'ee/ci/secrets/components/secret_details/secret_audit_log.vue';
 import createRouter from 'ee/ci/secrets/router';
-import ProjectSecretsApp from 'ee//ci/secrets/components/project_secrets_app.vue';
-import GroupSecretsApp from 'ee//ci/secrets/components/group_secrets_app.vue';
+import SecretsApp from 'ee//ci/secrets/components/secrets_app.vue';
 
 Vue.use(VueRouter);
 
@@ -25,13 +24,13 @@ describe('Secrets router', () => {
     projectPath: '/path/to/project',
   };
 
-  const createSecretsApp = ({ route, app, props } = {}) => {
+  const createSecretsApp = ({ route, props } = {}) => {
     const router = createRouter(base, props);
     if (route) {
       router.push(route);
     }
 
-    wrapper = mountExtended(app, {
+    wrapper = mountExtended(SecretsApp, {
       router,
       propsData: { ...props },
       data() {
@@ -77,12 +76,21 @@ describe('Secrets router', () => {
   });
 
   describe.each`
-    entity       | app                  | props           | fullPath
-    ${'group'}   | ${GroupSecretsApp}   | ${groupProps}   | ${groupProps.groupPath}
-    ${'project'} | ${ProjectSecretsApp} | ${projectProps} | ${projectProps.projectPath}
-  `('$entity secrets form', ({ entity, app, props, fullPath }) => {
+    entity       | props           | fullPath
+    ${'group'}   | ${groupProps}   | ${groupProps.groupPath}
+    ${'project'} | ${projectProps} | ${projectProps.projectPath}
+  `('$entity secrets form', ({ entity, props, fullPath }) => {
+    it('provides the correct props when visiting the index', () => {
+      createSecretsApp({ route: '/', props });
+
+      expect(wrapper.findComponent(SecretsTable).props()).toMatchObject({
+        entity,
+        fullPath,
+      });
+    });
+
     it('provides the correct props when visiting the create form', () => {
-      createSecretsApp({ route: '/new', app, props });
+      createSecretsApp({ route: '/new', props });
 
       expect(wrapper.findComponent(SecretFormWrapper).props()).toMatchObject({
         entity,
@@ -92,7 +100,7 @@ describe('Secrets router', () => {
 
     it('provides the correct props when visiting the edit form', () => {
       const route = { name: 'edit', params: { key: 'SECRET_KEY' } };
-      createSecretsApp({ route, app, props });
+      createSecretsApp({ route, props });
 
       expect(wrapper.findComponent(SecretFormWrapper).props()).toMatchObject({
         entity,

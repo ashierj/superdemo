@@ -9,8 +9,7 @@ import getSecretsQuery from './graphql/queries/client/get_secrets.query.graphql'
 
 import createRouter from './router';
 
-import GroupSecretsApp from './components/group_secrets_app.vue';
-import ProjectSecretsApp from './components/project_secrets_app.vue';
+import SecretsApp from './components/secrets_app.vue';
 import SecretsBreadcrumbs from './components/secrets_breadcrumbs.vue';
 
 import { mockGroupSecretsData, mockProjectSecretsData } from './mock_data';
@@ -61,7 +60,7 @@ export const initGroupSecretsApp = () => {
     },
   });
 
-  return initSecretsApp(el, GroupSecretsApp, { groupPath, groupId }, basePath);
+  return initSecretsApp(el, SecretsApp, { groupPath, groupId }, basePath);
 };
 
 export const initProjectSecretsApp = () => {
@@ -88,5 +87,5 @@ export const initProjectSecretsApp = () => {
     },
   });
 
-  return initSecretsApp(el, ProjectSecretsApp, { projectPath, projectId }, basePath);
+  return initSecretsApp(el, SecretsApp, { projectPath, projectId }, basePath);
 };

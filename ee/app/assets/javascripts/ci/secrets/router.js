@@ -32,6 +32,9 @@ export default (base, props) => {
         name: INDEX_ROUTE_NAME,
         path: '/',
         component: SecretsTable,
+        props: () => {
+          return { entity, fullPath };
+        },
         meta: {
           getBreadcrumbText: () => s__('Secrets|Secrets'),
           isRoot: true,
