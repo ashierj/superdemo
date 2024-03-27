@@ -45,10 +45,8 @@ RSpec.describe 'Member Roles', :js, feature_category: :permissions do
       it 'and displays it' do
         create_role(access_level, name, [permission_name])
 
-        created_member_role = MemberRole.find_by(
-          name: name,
-          base_access_level: Gitlab::Access.options[access_level],
-          permission => true)
+        created_member_role = MemberRole.permissions_where(permission => true)
+          .find_by(name: name, base_access_level: Gitlab::Access.options[access_level])
 
         expect(created_member_role).not_to be_nil
 

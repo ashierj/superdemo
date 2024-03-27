@@ -94,46 +94,24 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
           expect(json_response).to(
             match_array(
               [
-                {
+                hash_including(
                   "id" => member_role_1.id,
                   "name" => member_role_1.name,
                   "description" => member_role_1.description,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
-                  "read_code" => false,
-                  "read_dependency" => false,
                   "read_vulnerability" => true,
-                  "admin_group_member" => false,
-                  "admin_merge_request" => false,
-                  "admin_terraform_state" => false,
-                  "admin_vulnerability" => false,
-                  "manage_group_access_tokens" => false,
-                  "manage_project_access_tokens" => false,
-                  "archive_project" => false,
-                  "remove_group" => false,
-                  "remove_project" => false,
-                  "admin_cicd_variables" => false,
                   "group_id" => group_id
-                },
-                {
+                ),
+                hash_including(
                   "id" => member_role_2.id,
                   "name" => member_role_2.name,
                   "description" => member_role_2.description,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => true,
                   "read_dependency" => true,
-                  "read_vulnerability" => false,
-                  "admin_group_member" => false,
                   "admin_merge_request" => true,
-                  "admin_terraform_state" => false,
-                  "admin_vulnerability" => false,
-                  "manage_group_access_tokens" => false,
-                  "manage_project_access_tokens" => false,
-                  "archive_project" => false,
-                  "remove_group" => false,
-                  "remove_project" => false,
-                  "admin_cicd_variables" => false,
                   "group_id" => group_id
-                }
+                )
               ]
             )
           )

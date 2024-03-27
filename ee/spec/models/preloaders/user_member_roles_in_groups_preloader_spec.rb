@@ -22,9 +22,9 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
 
   def create_member_role(ability, member)
     create(:member_role, :guest, namespace: root_group).tap do |record|
-      record[ability] = true
+      record.assign_attributes(ability => true)
       ability_requirements(ability).each do |requirement|
-        record[requirement] = true
+        record.assign_attributes(requirement => true)
       end
       record.save!
       record.members << member
