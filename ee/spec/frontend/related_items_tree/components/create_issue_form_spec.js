@@ -13,7 +13,6 @@ import Vuex from 'vuex';
 import MockAdapter from 'axios-mock-adapter';
 
 import axios from '~/lib/utils/axios_utils';
-import { ENTER_KEY } from '~/lib/utils/keys';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -59,6 +58,7 @@ describe('CreateIssueForm', () => {
   const findDropdownHeader = () => wrapper.findComponent(GlDropdownSectionHeader);
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findDropdownItem = (index) => findDropdownItems().at(index);
+  const findForm = () => wrapper.findByTestId('form');
   const findIssueTitleInput = () => wrapper.findComponent(GlFormInput);
   const findIssueTitleLabel = () => wrapper.findAll('label').at(0);
   const findProjectItem = (project) => wrapper.findByTestId(`project-item-${project.id}`);
@@ -161,13 +161,14 @@ describe('CreateIssueForm', () => {
         expect(input.attributes('value')).toBe('');
       });
 
-      it('emits event `submit` on enter', async () => {
+      it('emits event `submit` when form is submitted', async () => {
         const input = findTitleInput();
         const endpoint = Api.buildUrl(Api.projectCreateIssuePath).replace(':id', mockProject.id);
 
         await selectProject();
         await input.vm.$emit('input', 'Some issue');
-        await input.vm.$emit('keyup', new KeyboardEvent({ key: ENTER_KEY }));
+
+        await findForm().trigger('submit');
 
         expect(wrapper.emitted('submit')[0]).toEqual(
           expect.arrayContaining([{ issuesEndpoint: endpoint, title: 'Some issue' }]),
