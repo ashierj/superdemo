@@ -44,6 +44,10 @@ describe('EditorLayout component', () => {
       provide: {
         policiesPath,
         namespaceType,
+        maxActiveScanExecutionPoliciesReached: false,
+        maxScanExecutionPoliciesAllowed: 5,
+        maxActiveScanResultPoliciesReached: false,
+        maxScanResultPoliciesAllowed: 5,
         ...provide,
       },
       stubs: { YamlEditor: true },
@@ -230,8 +234,8 @@ describe('EditorLayout component', () => {
       const customSaveTooltipText = 'Custom Test';
       factory({ propsData: { customSaveTooltipText, disableTooltip: false } });
       await nextTick();
-      expect(glTooltipDirectiveMock.mock.calls[0][1].value.disabled).toBe(false);
-      expect(glTooltipDirectiveMock.mock.calls[0][0].title).toBe(customSaveTooltipText);
+      expect(glTooltipDirectiveMock.mock.calls[1][1].value.disabled).toBe(false);
+      expect(glTooltipDirectiveMock.mock.calls[1][1].value.title).toBe(customSaveTooltipText);
     });
   });
 
@@ -259,7 +263,7 @@ describe('EditorLayout component', () => {
       expect(policyRunTimeInfo.text()).toBe(POLICY_RUN_TIME_MESSAGE);
       const policyRunTimeTooltip = findScanResultPolicyRunTimeTooltip();
       expect(policyRunTimeTooltip.exists()).toBe(true);
-      expect(glTooltipDirectiveMock.mock.calls[1][1].value).toBe(POLICY_RUN_TIME_TOOLTIP);
+      expect(glTooltipDirectiveMock.mock.calls[2][1].value).toBe(POLICY_RUN_TIME_TOOLTIP);
     });
   });
 
@@ -350,6 +354,41 @@ describe('EditorLayout component', () => {
       expect(wrapper.emitted('remove-property')).toEqual(undefined);
       findScopeSection().vm.$emit('remove');
       expect(wrapper.emitted('remove-property')).toEqual([['policy_scope']]);
+    });
+  });
+
+  describe('policy limit', () => {
+    it('disables the radio buttons if the limit has been reached and the policy is disabled', () => {
+      factory({ provide: { maxActiveScanExecutionPoliciesReached: true } });
+      expect(findEnabledRadioGroup().attributes().disabled).toBe('true');
+    });
+
+    it('disabled the save button if the limit has been reached and the yaml has been updated', async () => {
+      factory({
+        propsData: { policy: { ...mockDastScanExecutionObject, enabled: false } },
+        provide: { maxActiveScanExecutionPoliciesReached: true },
+      });
+      await wrapper.setProps({ policy: { ...mockDastScanExecutionObject, enabled: true } });
+      expect(findSavePolicyButton().props('disabled')).toBe(true);
+    });
+
+    it('displays the correct radio button tooltip text for merge request approval policy', () => {
+      factory({
+        propsData: { policy: mockDefaultBranchesScanResultObject },
+        provide: { maxActiveScanResultPoliciesReached: true },
+      });
+      expect(glTooltipDirectiveMock.mock.calls[0][1].value.title).toBe(
+        "You've reached the maximum limit of 5 merge request approval policies allowed. Policies are disabled when added.",
+      );
+    });
+
+    it('displays the correct radio button tooltip text for scan execution policy', () => {
+      factory({
+        provide: { maxActiveScanExecutionPoliciesReached: true },
+      });
+      expect(glTooltipDirectiveMock.mock.calls[0][1].value.title).toBe(
+        "You've reached the maximum limit of 5 scan execution policies allowed. Policies are disabled when added.",
+      );
     });
   });
 });
