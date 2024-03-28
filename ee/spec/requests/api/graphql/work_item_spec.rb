@@ -1265,6 +1265,81 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
         end
       end
+
+      describe 'development widget' do
+        context 'when fetching related feature flags' do
+          let_it_be(:feature_flags) { create_list(:operations_feature_flag, 4, project: project) }
+          let(:work_item_fields) do
+            <<~GRAPHQL
+              id
+              widgets {
+                type
+                ... on WorkItemWidgetDevelopment {
+                  featureFlags {
+                    nodes {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            GRAPHQL
+          end
+
+          before_all do
+            feature_flags.each { |ff| create(:feature_flag_issue, issue_id: project_work_item.id, feature_flag: ff) }
+          end
+
+          before do
+            post_graphql(query, current_user: current_user)
+          end
+
+          context 'when user is developer' do
+            let(:current_user) { developer }
+
+            it 'returns related feature flags in the response' do
+              expect(work_item_data['widgets']).to include(
+                'type' => 'DEVELOPMENT', 'featureFlags' => {
+                  'nodes' => match_array(
+                    feature_flags.map { |ff| hash_including('id' => ff.to_gid.to_s, 'name' => ff.name) }
+                  )
+                }
+              )
+            end
+
+            it 'avoids N + 1 queries', :use_sql_query_cache do
+              # warm-up already don in the before block
+              control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+                post_graphql(query, current_user: current_user)
+              end
+
+              2.times do
+                create(
+                  :feature_flag_issue,
+                  issue_id: work_item.id,
+                  feature_flag: create(:operations_feature_flag, project: project)
+                )
+              end
+
+              expect do
+                post_graphql(query, current_user: current_user)
+              end.to issue_same_number_of_queries_as(control)
+            end
+          end
+
+          context 'when user is guest' do
+            let(:current_user) { guest }
+
+            it 'returns an empty list of feature flags' do
+              expect(work_item_data['widgets']).to include(
+                'type' => 'DEVELOPMENT', 'featureFlags' => {
+                  'nodes' => []
+                }
+              )
+            end
+          end
+        end
+      end
     end
 
     context 'when querying work item type information' do

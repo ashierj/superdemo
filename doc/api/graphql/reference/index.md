@@ -11603,6 +11603,29 @@ The edge type for [`ExternalStatusCheck`](#externalstatuscheck).
 | <a id="externalstatuscheckedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="externalstatuscheckedgenode"></a>`node` | [`ExternalStatusCheck`](#externalstatuscheck) | The item at the end of the edge. |
 
+#### `FeatureFlagConnection`
+
+The connection type for [`FeatureFlag`](#featureflag).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="featureflagconnectionedges"></a>`edges` | [`[FeatureFlagEdge]`](#featureflagedge) | A list of edges. |
+| <a id="featureflagconnectionnodes"></a>`nodes` | [`[FeatureFlag]`](#featureflag) | A list of nodes. |
+| <a id="featureflagconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `FeatureFlagEdge`
+
+The edge type for [`FeatureFlag`](#featureflag).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="featureflagedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="featureflagedgenode"></a>`node` | [`FeatureFlag`](#featureflag) | The item at the end of the edge. |
+
 #### `ForecastDatapointConnection`
 
 The connection type for [`ForecastDatapoint`](#forecastdatapoint).
@@ -19749,6 +19772,16 @@ Describes an external status check.
 | <a id="externalstatuscheckexternalurl"></a>`externalUrl` | [`String!`](#string) | External URL for the status check. |
 | <a id="externalstatuscheckid"></a>`id` | [`GlobalID!`](#globalid) | ID of the rule. |
 | <a id="externalstatuscheckname"></a>`name` | [`String!`](#string) | Name of the rule. |
+
+### `FeatureFlag`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="featureflagactive"></a>`active` | [`Boolean!`](#boolean) | Whether the feature flag is active. |
+| <a id="featureflagid"></a>`id` | [`OperationsFeatureFlagID!`](#operationsfeatureflagid) | Global ID of the feature flag. |
+| <a id="featureflagname"></a>`name` | [`String!`](#string) | Name of the feature flag. |
 
 ### `FileUpload`
 
@@ -30538,6 +30571,17 @@ Represents designs widget.
 | <a id="workitemwidgetdesignsdesigncollection"></a>`designCollection` | [`DesignCollection`](#designcollection) | Collection of design images associated with the issue. |
 | <a id="workitemwidgetdesignstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetDevelopment`
+
+Represents a development widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetdevelopmentfeatureflags"></a>`featureFlags` | [`FeatureFlagConnection`](#featureflagconnection) | Feature flags associated with the work item. (see [Connections](#connections)) |
+| <a id="workitemwidgetdevelopmenttype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetHealthStatus`
 
 Represents a health status widget.
@@ -33735,6 +33779,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypecurrent_user_todos"></a>`CURRENT_USER_TODOS` | Current User Todos widget. |
 | <a id="workitemwidgettypedescription"></a>`DESCRIPTION` | Description widget. |
 | <a id="workitemwidgettypedesigns"></a>`DESIGNS` | Designs widget. |
+| <a id="workitemwidgettypedevelopment"></a>`DEVELOPMENT` | Development widget. |
 | <a id="workitemwidgettypehealth_status"></a>`HEALTH_STATUS` | Health Status widget. |
 | <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
 | <a id="workitemwidgettypeiteration"></a>`ITERATION` | Iteration widget. |
@@ -34424,6 +34469,12 @@ An example `NoteID` is: `"gid://gitlab/Note/1"`.
 A `NoteableID` is a global ID. It is encoded as a string.
 
 An example `NoteableID` is: `"gid://gitlab/Noteable/1"`.
+
+### `OperationsFeatureFlagID`
+
+A `OperationsFeatureFlagID` is a global ID. It is encoded as a string.
+
+An example `OperationsFeatureFlagID` is: `"gid://gitlab/Operations::FeatureFlag/1"`.
 
 ### `OrganizationsOrganizationID`
 
@@ -35525,6 +35576,7 @@ Implementations:
 - [`WorkItemWidgetCurrentUserTodos`](#workitemwidgetcurrentusertodos)
 - [`WorkItemWidgetDescription`](#workitemwidgetdescription)
 - [`WorkItemWidgetDesigns`](#workitemwidgetdesigns)
+- [`WorkItemWidgetDevelopment`](#workitemwidgetdevelopment)
 - [`WorkItemWidgetHealthStatus`](#workitemwidgethealthstatus)
 - [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
 - [`WorkItemWidgetIteration`](#workitemwidgetiteration)

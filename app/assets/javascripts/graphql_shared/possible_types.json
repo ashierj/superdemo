@@ -204,6 +204,7 @@
     "WorkItemWidgetCurrentUserTodos",
     "WorkItemWidgetDescription",
     "WorkItemWidgetDesigns",
+    "WorkItemWidgetDevelopment",
     "WorkItemWidgetHealthStatus",
     "WorkItemWidgetHierarchy",
     "WorkItemWidgetIteration",
