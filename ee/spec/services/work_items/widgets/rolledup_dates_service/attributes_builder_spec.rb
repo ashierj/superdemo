@@ -9,8 +9,8 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
   let(:due_date) { 1.day.from_now.to_date }
   let(:milestone) { instance_double(::Milestone, id: 1, start_date: start_date - 1.day, due_date: due_date + 1.day) }
 
-  def query_result(values)
-    instance_double(WorkItems::DatesSource, {
+  def query_attributes_with(values)
+    {
       due_date: nil,
       due_date_is_fixed: nil,
       due_date_sourcing_milestone_id: nil,
@@ -19,18 +19,26 @@ RSpec.describe WorkItems::Widgets::RolledupDatesService::AttributesBuilder, feat
       start_date_is_fixed: nil,
       start_date_sourcing_milestone_id: nil,
       start_date_sourcing_work_item_id: nil
-    }.merge(values))
+    }.merge(values)
   end
 
   before do
     allow_next_instance_of(WorkItems::Widgets::RolledupDatesFinder) do |finder|
       allow(finder)
-        .to receive(:minimum_start_date)
-        .and_return([query_result(start_date: milestone.start_date, start_date_sourcing_milestone_id: milestone.id)])
+        .to receive(:attributes_for)
+        .with(:start_date)
+        .and_return(query_attributes_with(
+          start_date: milestone.start_date,
+          start_date_sourcing_milestone_id: milestone.id
+        ))
 
       allow(finder)
-        .to receive(:maximum_due_date)
-        .and_return([query_result(due_date: milestone.due_date, due_date_sourcing_milestone_id: milestone.id)])
+        .to receive(:attributes_for)
+        .with(:due_date)
+        .and_return(query_attributes_with(
+          due_date: milestone.due_date,
+          due_date_sourcing_milestone_id: milestone.id
+        ))
     end
   end
 

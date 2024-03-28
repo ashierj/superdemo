@@ -14,64 +14,41 @@ module WorkItems
         end
 
         def build
-          start_date_attributes.merge(due_date_attributes)
+          %i[start_date due_date].each_with_object({}) do |field, attributes|
+            attributes.merge!(date_values_for(field))
+            attributes.merge!(date_is_fixed_for(field))
+            attributes.merge!(date_rolledup_values_for(field))
+          end
         end
 
         private
 
         attr_reader :work_item, :params
 
-        def start_date_attributes
-          attributes = {}
+        def date_values_for(field)
+          return {} unless params.key?(:"#{field}_fixed")
 
-          if params.key?(:start_date_fixed)
-            attributes[:start_date_fixed] = params[:start_date_fixed]
-            attributes[:start_date] = params[:start_date_fixed] if params[:start_date_is_fixed]
-          end
+          values = params.slice(:"#{field}_fixed")
+          values[field] = params[:"#{field}_fixed"] if params[:"#{field}_is_fixed"]
 
-          if params.key?(:start_date_is_fixed)
-            attributes[:start_date_is_fixed] = params[:start_date_is_fixed]
-
-            unless params[:start_date_is_fixed]
-              finder.minimum_start_date.first.then do |result|
-                attributes.merge!(
-                  {
-                    start_date: result&.start_date,
-                    start_date_is_fixed: false,
-                    start_date_sourcing_milestone_id: result&.start_date_sourcing_milestone_id,
-                    start_date_sourcing_work_item_id: result&.start_date_sourcing_work_item_id
-                  })
-              end
-            end
-          end
-
-          attributes
+          values
         end
 
-        def due_date_attributes
-          attributes = {}
+        def date_is_fixed_for(field)
+          return {} unless params.key?(:"#{field}_is_fixed")
 
-          if params.key?(:due_date_fixed)
-            attributes[:due_date_fixed] = params[:due_date_fixed]
-            attributes[:due_date] = params[:due_date_fixed] if params[:due_date_is_fixed]
-          end
+          { "#{field}_is_fixed": Gitlab::Utils.to_boolean(params[:"#{field}_is_fixed"], default: false) }
+        end
 
-          if params.key?(:due_date_is_fixed)
-            attributes[:due_date_is_fixed] = params[:due_date_is_fixed]
+        def date_rolledup_values_for(field)
+          return {} unless params.key?(:"#{field}_is_fixed")
+          return {} if params[:"#{field}_is_fixed"]
 
-            unless params[:due_date_is_fixed]
-              finder.maximum_due_date.first.then do |result|
-                attributes.merge!(
-                  due_date: result&.due_date,
-                  due_date_is_fixed: false,
-                  due_date_sourcing_milestone_id: result&.due_date_sourcing_milestone_id,
-                  due_date_sourcing_work_item_id: result&.due_date_sourcing_work_item_id
-                )
-              end
-            end
-          end
-
-          attributes
+          finder.attributes_for(field).slice(
+            field,
+            :"#{field}_sourcing_milestone_id",
+            :"#{field}_sourcing_work_item_id"
+          )
         end
 
         def finder
