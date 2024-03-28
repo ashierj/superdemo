@@ -16,16 +16,13 @@ module Onboarding
       user.update_onboarding_status(:step_url, onboarding_step_url)
     end
 
-    def start_onboarding(onboarding_step_url, user)
+    def start_onboarding!(user, onboarding_status:)
       return unless ::Onboarding::Status.enabled?
 
       user.onboarding_in_progress = true
-      user.onboarding_status_step_url = onboarding_step_url
-      user
-    end
+      user.onboarding_status = onboarding_status
 
-    def start_onboarding!(...)
-      start_onboarding(...)&.save
+      user.save
     end
 
     def finish_onboarding(user)

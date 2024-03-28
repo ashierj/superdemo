@@ -8,12 +8,13 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     let_it_be(:new_user_email) { 'new@user.com' }
     let_it_be(:user_params) { { user: base_user_params.merge(email: new_user_email) } }
     let(:params) { {} }
+    let(:session) { {} }
 
     before do
       stub_feature_flags(arkose_labs_signup_challenge: false)
     end
 
-    subject(:post_create) { post :create, params: params.merge(user_params) }
+    subject(:post_create) { post :create, params: params.merge(user_params), session: session }
 
     shared_examples 'blocked user by default' do
       it 'registers the user in blocked_pending_approval state' do
@@ -55,11 +56,28 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
       end
     end
 
-    it_behaves_like EE::Onboarding::Redirectable do
+    context 'for onboarding concerns' do
       let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
+      let(:redirect_params) { glm_params }
 
       before do
         stub_application_setting(require_admin_approval_after_user_signup: false)
+      end
+
+      it_behaves_like EE::Onboarding::Redirectable, 'free'
+
+      context 'with invited by email' do
+        before_all do
+          create(:group_member, :invited, invite_email: new_user_email)
+        end
+
+        it_behaves_like EE::Onboarding::Redirectable, 'invite'
+      end
+
+      context 'with subscription registration' do
+        let(:session) { { user_return_to: new_subscriptions_path } }
+
+        it_behaves_like EE::Onboarding::Redirectable, 'subscription'
       end
     end
 

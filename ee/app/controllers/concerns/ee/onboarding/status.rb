@@ -18,6 +18,13 @@ module EE
         subscription: 'subscription_registration'
       }.freeze
 
+      REGISTRATION_TYPE = {
+        free: 'free',
+        trial: 'trial',
+        invite: 'invite',
+        subscription: 'subscription'
+      }.freeze
+
       module ClassMethods
         def enabled?
           ::Gitlab::Saas.feature_available?(:onboarding)
@@ -40,15 +47,18 @@ module EE
       end
 
       def redirect_to_company_form?
-        trial? || setup_for_company?
+        trial? || convert_to_automatic_trial?
       end
 
       def invite?
         members.any?
       end
+      alias_method :invited_registration_type?, :invite?
 
       def trial?
-        enabled? && (::Gitlab::Utils.to_boolean(params[:trial], default: false) || trial_from_stored_location?)
+        return false unless enabled?
+
+        trial_from_params? || trial_from_stored_location?
       end
 
       def oauth?
@@ -88,13 +98,14 @@ module EE
       def setup_for_company?
         ::Gitlab::Utils.to_boolean(params.dig(:user, :setup_for_company), default: false)
       end
+      alias_method :convert_to_automatic_trial?, :setup_for_company?
 
       def enabled?
         self.class.enabled?
       end
 
       def subscription?
-        enabled? && base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path
+        enabled? && subscription_from_stored_location?
       end
 
       def iterable_product_interaction
@@ -132,9 +143,39 @@ module EE
         session['user_return_to']
       end
 
+      def registration_type
+        # maybe we initialize different classes here eventually about the registration type and then
+        # use that logic the rest of the time and they all answer the same way
+        if trial_registration_type?
+          REGISTRATION_TYPE[:trial]
+        elsif invited_registration_type?
+          REGISTRATION_TYPE[:invite]
+        elsif subscription_registration_type?
+          REGISTRATION_TYPE[:subscription]
+        elsif free_registration_type?
+          REGISTRATION_TYPE[:free]
+        end
+      end
+
       private
 
       attr_reader :params, :session
+
+      def free_registration_type?
+        # This is mainly to give the free registration type declarative meaning in the elseif
+        # it is used in. This reads better in the elsif than merely using else for now.
+        true
+      end
+
+      def trial_registration_type?
+        ::Gitlab::Utils.to_boolean(params[:trial], default: false)
+      end
+      alias_method :trial_from_params?, :trial_registration_type?
+
+      def subscription_registration_type?
+        base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path
+      end
+      alias_method :subscription_from_stored_location?, :subscription_registration_type?
 
       def base_stored_user_location_path
         return unless stored_user_location

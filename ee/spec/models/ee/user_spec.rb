@@ -20,6 +20,13 @@ RSpec.describe User, feature_category: :system_access do
     it { is_expected.to delegate_method(:onboarding_status_step_url).to(:user_detail).allow_nil }
 
     it do
+      is_expected
+        .to delegate_method(:onboarding_status_registration_type=).to(:user_detail).with_arguments('_type_').allow_nil
+    end
+
+    it { is_expected.to delegate_method(:onboarding_status_registration_type).to(:user_detail).allow_nil }
+
+    it do
       is_expected.to delegate_method(:onboarding_status_email_opt_in=).to(:user_detail).with_arguments(true).allow_nil
     end
 

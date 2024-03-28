@@ -59,6 +59,15 @@ module EE
       service = PhoneVerification::Users::RateLimitService
       service.assume_user_high_risk_if_daily_limit_exceeded!(user)
 
+      start_onboarding!(
+        resource,
+        onboarding_status: {
+          step_url: onboarding_first_step_path,
+          initial_registration_type: onboarding_status.registration_type,
+          registration_type: onboarding_status.registration_type
+        }
+      )
+
       log_audit_event(user)
     end
 
@@ -67,8 +76,6 @@ module EE
       super
 
       custom_confirmation_instructions_service.set_token(save: false)
-
-      start_onboarding(onboarding_first_step_path, resource)
     end
 
     override :identity_verification_enabled?

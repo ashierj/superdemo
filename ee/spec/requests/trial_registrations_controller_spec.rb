@@ -37,17 +37,39 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
   end
 
   describe 'POST create' do
+    let(:params) { {} }
     let(:user_params) { build_stubbed(:user).slice(:first_name, :last_name, :email, :username, :password) }
-    let(:params) { { user: user_params } }
 
     subject(:post_create) do
-      post trial_registrations_path, params: params
+      post trial_registrations_path, params: params.merge(user: user_params)
       response
     end
 
     before do
       allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
       stub_feature_flags(arkose_labs_signup_challenge: false)
+    end
+
+    context 'with onboarding' do
+      let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
+      let(:redirect_params) { glm_params.merge(trial: true) }
+      let(:new_user_email) { user_params[:email] }
+      let(:params) { glm_params }
+
+      before do
+        stub_application_setting(require_admin_approval_after_user_signup: false)
+      end
+
+      it 'onboards the user' do
+        post_create
+
+        expect(response).to redirect_to(users_sign_up_welcome_path(redirect_params))
+        created_user = User.find_by_email(new_user_email)
+        expect(created_user).to be_onboarding_in_progress
+        expect(created_user.onboarding_status_step_url).to eq(users_sign_up_welcome_path(redirect_params))
+        expect(created_user.onboarding_status_initial_registration_type).to eq('trial')
+        expect(created_user.onboarding_status_registration_type).to eq('trial')
+      end
     end
 
     context 'when not on gitlab.com and not in development environment' do
