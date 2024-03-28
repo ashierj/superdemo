@@ -560,6 +560,16 @@ module EE
       gitlab_subscription.seats >= (billable_ids.count + new_invites.count)
     end
 
+    def seat_overage?
+      return false unless gitlab_subscription
+
+      members_count = billable_members_count_with_reactive_cache
+
+      return false unless members_count
+
+      gitlab_subscription.seats < members_count
+    end
+
     def calculate_reactive_cache
       billable_members_count
     end

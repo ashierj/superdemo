@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Group, feature_category: :groups_and_projects do
   include LoginHelpers
   using RSpec::Parameterized::TableSyntax
+  include ReactiveCachingHelpers
 
   let(:group) { create(:group) }
 
@@ -3619,6 +3620,63 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         stub_feature_flags(block_seat_overages: false)
 
         expect(group.block_seat_overages?).to eq(false)
+      end
+    end
+  end
+
+  describe 'seat_overage?' do
+    let_it_be_with_refind(:group) { create(:group) }
+
+    context 'without a gitlab subscription' do
+      it 'returns false' do
+        expect(group.seat_overage?).to eq(false)
+      end
+    end
+
+    context 'with a gitlab subscription', :saas do
+      let_it_be(:subscription) { create(:gitlab_subscription, :ultimate, namespace: group, seats: 1) }
+
+      context 'with a reactive cache hit' do
+        before do
+          synchronous_reactive_cache(group)
+        end
+
+        it 'returns false when there are available seats' do
+          expect(group.seat_overage?).to eq(false)
+        end
+
+        it 'returns false when all seats are taken, but there is no overage' do
+          group.add_developer(create(:user))
+
+          expect(group.seat_overage?).to eq(false)
+        end
+
+        it 'returns true when the number of users exceeds the number of seats' do
+          group.add_developer(create(:user))
+          group.add_developer(create(:user))
+
+          expect(group.seat_overage?).to eq(true)
+        end
+
+        it 'does not count non-billable members as consuming a seat' do
+          group.add_developer(create(:user))
+          group.add_guest(create(:user))
+
+          expect(group.seat_overage?).to eq(false)
+        end
+      end
+
+      context 'with a reactive cache miss' do
+        before do
+          stub_reactive_cache(group, nil)
+        end
+
+        it 'returns false' do
+          group.add_developer(create(:user))
+          group.add_developer(create(:user))
+
+          expect(group.seat_overage?).to eq(false)
+        end
       end
     end
   end
