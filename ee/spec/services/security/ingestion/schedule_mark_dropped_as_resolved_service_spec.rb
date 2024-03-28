@@ -26,10 +26,15 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To remain untriaged (different scan_type)
     other_finding = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: other_ident.id, identifiers: [other_ident])
+      project_id: pipeline.project_id,
+      pipeline: pipeline, primary_identifier_id: other_ident.id, identifiers: [other_ident])
     create(
       :vulnerability,
-      :detected, report_type: :dast, resolved_on_default_branch: true, project_id: pipeline.project_id
+      :detected,
+      report_type: :dast,
+      resolved_on_default_branch: true,
+      project: pipeline.project,
+      vulnerability_finding: other_finding, findings: [other_finding]
     ).tap do |vuln|
       other_finding.update!(vulnerability_id: vuln.id)
     end
@@ -37,10 +42,14 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To remain untriaged (same scan_type)
     untriaged_finding = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: untriaged_ident.id, identifiers: [untriaged_ident])
+      project_id: pipeline.project_id,
+      pipeline: pipeline, primary_identifier_id: untriaged_ident.id, identifiers: [untriaged_ident])
     create(
       :vulnerability,
-      :detected, report_type: :sast, project_id: pipeline.project_id
+      :detected,
+      report_type: :sast,
+      project: pipeline.project,
+      vulnerability_finding: untriaged_finding, findings: [untriaged_finding]
     ).tap do |vuln|
       untriaged_finding.update!(vulnerability_id: vuln.id)
     end
@@ -48,10 +57,15 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To remain dismissed (same scan_type)
     dismissed_finding = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: dismissed_ident.id, identifiers: [dismissed_ident])
+      project_id: pipeline.project_id,
+      pipeline: pipeline, primary_identifier_id: dismissed_ident.id, identifiers: [dismissed_ident])
     create(
       :vulnerability,
-      :dismissed, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
+      :dismissed,
+      report_type: :sast,
+      resolved_on_default_branch: true,
+      project: pipeline.project,
+      vulnerability_finding: dismissed_finding, findings: [dismissed_finding]
     ).tap do |vuln|
       dismissed_finding.update!(vulnerability_id: vuln.id)
     end
@@ -59,10 +73,15 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To be resolved (same scan_type)
     dropped_finding1 = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: dropped_ident1.id, identifiers: [dropped_ident1])
+      project_id: pipeline.project_id,
+      pipeline: pipeline, primary_identifier_id: dropped_ident1.id, identifiers: [dropped_ident1])
     create(
       :vulnerability,
-      :detected, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
+      :detected,
+      report_type: :sast,
+      resolved_on_default_branch: true,
+      project: pipeline.project,
+      vulnerability_finding: dropped_finding1, findings: [dropped_finding1]
     ).tap do |vuln|
       dropped_finding1.update!(vulnerability_id: vuln.id)
     end
@@ -70,10 +89,15 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To be resolved (same scan_type)
     dropped_finding2 = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: dropped_ident1.id, identifiers: [dropped_ident1])
+      project_id: pipeline.project_id,
+      pipeline: pipeline, primary_identifier_id: dropped_ident1.id, identifiers: [dropped_ident1])
     create(
       :vulnerability,
-      :detected, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
+      :detected,
+      report_type: :sast,
+      resolved_on_default_branch: true,
+      project: pipeline.project,
+      vulnerability_finding: dropped_finding2, findings: [dropped_finding2]
     ).tap do |vuln|
       dropped_finding2.update!(vulnerability_id: vuln.id)
     end
@@ -81,10 +105,15 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     # To be resolved (same scan_type, different identifier)
     dropped_finding3 = create(
       :vulnerabilities_finding,
-      project_id: pipeline.project_id, primary_identifier_id: dropped_ident2.id, identifiers: [dropped_ident2])
+      project_id: pipeline.project_id,
+      pipeline: pipeline, primary_identifier_id: dropped_ident2.id, identifiers: [dropped_ident2])
     create(
       :vulnerability,
-      :detected, report_type: :sast, resolved_on_default_branch: true, project_id: pipeline.project_id
+      :detected,
+      report_type: :sast,
+      resolved_on_default_branch: true,
+      project: pipeline.project,
+      vulnerability_finding: dropped_finding3, findings: [dropped_finding3]
     ).tap do |vuln|
       dropped_finding3.update!(vulnerability_id: vuln.id)
     end

@@ -42,11 +42,28 @@ FactoryBot.define do
 
   factory :vulnerabilities_finding, class: 'Vulnerabilities::Finding' do
     after(:build) do |finding, evaluator|
-      finding.project = evaluator.vulnerability.project if evaluator.vulnerability
+      finding.project = evaluator.vulnerability_project
+
+      if evaluator.pipeline
+        pipeline_id = evaluator.pipeline.id
+        finding.initial_pipeline_id = finding.initial_pipeline_id || pipeline_id
+        finding.latest_pipeline_id = finding.latest_pipeline_id || pipeline_id
+      end
+    end
+
+    after(:create) do |finding, evaluator|
+      if evaluator.pipeline
+        create(
+          :vulnerabilities_finding_pipeline,
+          finding: finding,
+          pipeline: evaluator.pipeline
+        )
+      end
     end
 
     transient do
       pipeline { nil }
+      vulnerability_project { vulnerability&.project || pipeline&.project || project }
     end
 
     name { 'Cipher with no integrity' }
@@ -153,32 +170,18 @@ FactoryBot.define do
       }.to_json
     end
 
-    before(:create) do |finding, evaluator|
-      if evaluator.pipeline
-        pipeline_id = evaluator.pipeline.id
-
-        finding.initial_pipeline_id = finding.initial_pipeline_id.presence || pipeline_id
-        finding.latest_pipeline_id = finding.latest_pipeline_id.presence || pipeline_id
-      end
-    end
-
-    after(:create) do |finding, evaluator|
-      if evaluator.pipeline
-        create(
-          :vulnerabilities_finding_pipeline,
-          finding: finding,
-          pipeline: evaluator.pipeline
-        )
-      end
-    end
-
     trait :with_pipeline do
       pipeline { association(:ci_pipeline, project: project) }
     end
 
     trait :detected do
       after(:create) do |finding|
-        create(:vulnerability, :detected, project: finding.project, findings: [finding])
+        create(
+          :vulnerability, :detected,
+          project: finding.project,
+          vulnerability_finding: finding,
+          findings: [finding]
+        )
       end
     end
 

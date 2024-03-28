@@ -32,7 +32,7 @@ module Gitlab
           end
 
           def parse_vulnerabilities(report)
-            vuln_findings = pipeline.vulnerability_findings.by_report_types(%i[container_scanning dependency_scanning])
+            vuln_findings = project.vulnerability_findings.by_report_types(%i[container_scanning dependency_scanning])
             vuln_findings.each do |finding|
               dependency = finding.location.dig("dependency")
 

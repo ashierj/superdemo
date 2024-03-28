@@ -47,7 +47,7 @@ module Sbom
       end
 
       def vulnerability_findings
-        pipeline
+        project
           .vulnerability_findings
           .by_report_types(%i[container_scanning dependency_scanning])
           .ordered
