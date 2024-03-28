@@ -27,6 +27,7 @@ import {
   POLICY_RUN_TIME_TOOLTIP,
   SCOPE_LABEL,
 } from './constants';
+import { getPolicyLimitDetails } from './utils';
 
 export default {
   i18n: {
@@ -60,7 +61,14 @@ export default {
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespaceType', 'policiesPath'],
+  inject: [
+    'namespaceType',
+    'policiesPath',
+    'maxActiveScanExecutionPoliciesReached',
+    'maxScanExecutionPoliciesAllowed',
+    'maxActiveScanResultPoliciesReached',
+    'maxScanResultPoliciesAllowed',
+  ],
   props: {
     customSaveButtonText: {
       type: String,
@@ -129,11 +137,47 @@ export default {
   },
   data() {
     return {
+      isInitiallyEnabled: this.policy.enabled,
       selectedEditorMode: this.defaultEditorMode,
       showValidation: false,
     };
   },
   computed: {
+    disableSaveButton() {
+      return (
+        this.disableUpdate || !this.hasValidName || this.policyLimitDetails.saveButton.disabled
+      );
+    },
+    hasEnabledPropertyChanged() {
+      return this.isInitiallyEnabled !== this.policy.enabled;
+    },
+    isScanExecution() {
+      return this.policyType === POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter;
+    },
+    type() {
+      return this.isScanExecution
+        ? POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.text.toLowerCase()
+        : POLICY_TYPE_COMPONENT_OPTIONS.approval.text.toLowerCase();
+    },
+    policyLimitReached() {
+      return this.isScanExecution
+        ? this.maxActiveScanExecutionPoliciesReached
+        : this.maxActiveScanResultPoliciesReached;
+    },
+    policyLimit() {
+      return this.isScanExecution
+        ? this.maxScanExecutionPoliciesAllowed
+        : this.maxScanResultPoliciesAllowed;
+    },
+    policyLimitDetails() {
+      return getPolicyLimitDetails({
+        type: this.type,
+        policyLimitReached: this.policyLimitReached,
+        policyLimit: this.policyLimit,
+        hasPropertyChanged: this.hasEnabledPropertyChanged,
+        initialValue: this.isInitiallyEnabled,
+      });
+    },
     isGroupLevel() {
       return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
@@ -150,7 +194,14 @@ export default {
     hasValidName() {
       return this.policy.name !== '';
     },
+    policyType() {
+      return this.policy.type;
+    },
     saveTooltipText() {
+      if (this.policyLimitDetails.saveButton.disabled) {
+        return this.policyLimitDetails.saveButton.text;
+      }
+
       return this.customSaveTooltipText || this.saveButtonText;
     },
     saveButtonText() {
@@ -247,8 +298,13 @@ export default {
 
             <gl-form-group :label="$options.i18n.toggleLabel" :disabled="hasParsingError">
               <gl-form-radio-group
+                v-gl-tooltip="{
+                  disabled: !policyLimitDetails.radioButton.disabled,
+                  title: policyLimitDetails.radioButton.text,
+                }"
+                class="gl-display-inline-block"
                 :options="$options.STATUS_OPTIONS"
-                :disabled="hasParsingError"
+                :disabled="hasParsingError || policyLimitDetails.radioButton.disabled"
                 :checked="policy.enabled"
                 @change="updateProperty('enabled', $event)"
               />
@@ -307,16 +363,18 @@ export default {
       }"
     >
       <span
-        v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
+        v-gl-tooltip="{
+          disabled: disableTooltip && !policyLimitDetails.saveButton.disabled,
+          title: saveTooltipText,
+        }"
         class="gl-pt-2 gl-mr-3"
-        :title="saveTooltipText"
       >
         <gl-button
           type="submit"
           variant="confirm"
           data-testid="save-policy"
           :loading="isUpdatingPolicy"
-          :disabled="disableUpdate || !hasValidName"
+          :disabled="disableSaveButton"
           @click="savePolicy"
         >
           {{ saveButtonText }}

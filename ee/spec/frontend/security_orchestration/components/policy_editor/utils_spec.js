@@ -1,6 +1,7 @@
 import {
   addIdsToPolicy,
   assignSecurityPolicyProject,
+  getPolicyLimitDetails,
   modifyPolicy,
   createHumanizedScanners,
   isValidPolicy,
@@ -319,5 +320,61 @@ describe('renderMultiSelectText', () => {
     `('should validate branch@full_path format', ({ value, valid }) => {
       expect(validateBranchProjectFormat(value)).toBe(valid);
     });
+  });
+});
+
+describe('getPolicyLimitDetails', () => {
+  const defaultValues = {
+    type: 'scan',
+    policyLimitReached: true,
+    policyLimit: 5,
+    hasPropertyChanged: false,
+    initialValue: false,
+  };
+  describe('radio button details', () => {
+    it('returns the radio button text', () => {
+      expect(getPolicyLimitDetails(defaultValues).radioButton.text).toBe(
+        "You've reached the maximum limit of 5 scan policies allowed. Policies are disabled when added.",
+      );
+    });
+
+    it.each`
+      policyLimitReached | initialValue | expectedOutput
+      ${true}            | ${true}      | ${false}
+      ${false}           | ${true}      | ${false}
+      ${true}            | ${false}     | ${true}
+      ${false}           | ${false}     | ${false}
+    `(
+      'returns $expectedOutput for the radio button disabled status when policyLimitReached is $policyLimitReached and initialValue is $initialValue',
+      ({ policyLimitReached, initialValue, expectedOutput }) => {
+        expect(
+          getPolicyLimitDetails({ ...defaultValues, policyLimitReached, initialValue }).radioButton
+            .disabled,
+        ).toBe(expectedOutput);
+      },
+    );
+  });
+  describe('save button details', () => {
+    it('returns the save button text', () => {
+      expect(getPolicyLimitDetails(defaultValues).saveButton.text).toBe(
+        "You've reached the maximum limit of 5 scan policies allowed. To save this policy, set enabled: false.",
+      );
+    });
+
+    it.each`
+      policyLimitReached | hasPropertyChanged | expectedOutput
+      ${true}            | ${true}            | ${true}
+      ${true}            | ${false}           | ${false}
+      ${false}           | ${true}            | ${false}
+      ${false}           | ${false}           | ${false}
+    `(
+      'returns $expectedOutput for the save button disabled status when policyLimitReached is $policyLimitReached and hasPropertyChanged is $hasPropertyChanged',
+      ({ policyLimitReached, hasPropertyChanged, expectedOutput }) => {
+        expect(
+          getPolicyLimitDetails({ ...defaultValues, policyLimitReached, hasPropertyChanged })
+            .saveButton.disabled,
+        ).toBe(expectedOutput);
+      },
+    );
   });
 });
