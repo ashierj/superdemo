@@ -23,6 +23,9 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
 
     it { expect(setting.security_approval_policies_limit).to eq(5) }
     it { expect(setting.use_clickhouse_for_analytics).to eq(false) }
+    it { expect(setting.zoekt_indexing_enabled).to eq(false) }
+    it { expect(setting.zoekt_indexing_paused).to eq(false) }
+    it { expect(setting.zoekt_search_enabled).to eq(false) }
   end
 
   describe 'validations' do
@@ -475,6 +478,10 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     describe 'instance_level_ai_beta_features_enabled', feature_category: :cloud_connector do
       it { is_expected.to allow_values([true, false]).for(:instance_level_ai_beta_features_enabled) }
       it { is_expected.not_to allow_value(nil).for(:instance_level_ai_beta_features_enabled) }
+    end
+
+    describe 'zoekt settings', feature_category: :global_search do
+      it { expect(described_class).to validate_jsonb_schema(['application_setting_zoekt_settings']) }
     end
   end
 

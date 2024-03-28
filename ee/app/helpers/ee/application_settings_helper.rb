@@ -76,7 +76,10 @@ module EE
         :anthropic_api_key,
         :use_clickhouse_for_analytics,
         :duo_features_enabled,
-        :lock_duo_features_enabled
+        :lock_duo_features_enabled,
+        :zoekt_indexing_enabled,
+        :zoekt_indexing_paused,
+        :zoekt_search_enabled
       ]
     end
 
