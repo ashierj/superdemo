@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :security_policy_management do
+RSpec.describe 'Query.project(fullPath).scanExecutionPolicies', feature_category: :security_policy_management do
   include GraphqlHelpers
-  include_context 'with project level approval policies'
+  include_context 'with project level scan execution policies'
 
-  subject(:query_result) { graphql_data_at(:project, :scanResultPolicies, :nodes) }
+  subject(:query_result) { graphql_data_at(:project, :scanExecutionPolicies, :nodes) }
 
   context 'when policy_configuration is assigned to the project' do
     let_it_be(:policy_configuration) do
@@ -17,21 +17,21 @@ RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :
 
     it 'returns the policy' do
       expect(query_result).to match_array([
-        expected_approval_policy_response(policy)
+        expected_policy_reponse(policy)
           .merge(expected_project_source_response)
-          .merge(expected_edit_path_response(project, 'approval_policy'))
+          .merge(expected_edit_path_response(project))
       ])
     end
 
     context 'when policy_scope is present in policy' do
-      include_context 'with approval policy and policy_scope'
+      include_context 'with scan execution policy and policy_scope'
 
       it 'returns the policy' do
         expect(query_result).to match_array([
-          expected_approval_policy_response(policy)
-            .merge(expected_project_source_response)
+          expected_policy_reponse(policy)
             .merge(expected_policy_scope_response)
-            .merge(expected_edit_path_response(project, 'approval_policy'))
+            .merge(expected_project_source_response)
+            .merge(expected_edit_path_response(project))
         ])
       end
     end
@@ -52,11 +52,7 @@ RSpec.describe 'Query.project(fullPath).scanResultPolicies', feature_category: :
     end
 
     it 'returns the policy' do
-      expect(query_result).to match_array([
-        expected_approval_policy_response(policy)
-          .merge(expected_group_source_response(true))
-          .merge(expected_edit_path_response(group, 'approval_policy'))
-      ])
+      expect(query_result).to match_array([expected_policy_reponse(policy, true)])
     end
   end
 end
