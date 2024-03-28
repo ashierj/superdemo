@@ -28,7 +28,7 @@ export default {
     UrlSync,
   },
   i18n: {
-    searchInputPlaceholder: s__('ObservabilityMetrics|Search metrics starting with...'),
+    searchInputPlaceholder: s__('ObservabilityMetrics|Search metrics...'),
   },
   props: {
     observabilityClient: {
