@@ -2,11 +2,12 @@
 
 module ExternalStatusChecks
   class CreateService < BaseService
-    def execute
-      return ServiceResponse.error(message: 'Failed to create rule', payload: { errors: ['Not allowed'] }, http_status: :unauthorized) unless current_user.can?(:admin_project, container)
+    attr_reader :skip_authorization
+
+    def execute(skip_authorization: false)
+      return access_denied_error unless skip_authorization || can_create_status_check?
 
       rule = container.external_status_checks.new(name: params[:name],
-                                                  project: container,
                                                   external_url: params[:external_url],
                                                   protected_branch_ids: params[:protected_branch_ids])
 
@@ -15,6 +16,14 @@ module ExternalStatusChecks
       else
         ServiceResponse.error(message: 'Failed to create rule', payload: { errors: rule.errors.full_messages }, http_status: :unprocessable_entity)
       end
+    end
+
+    def can_create_status_check?
+      current_user.can?(:admin_project, container)
+    end
+
+    def access_denied_error
+      ServiceResponse.error(message: 'Failed to create rule', payload: { errors: ['Not allowed'] }, reason: :access_denied)
     end
   end
 end

@@ -2216,6 +2216,33 @@ Input type: `BranchRuleDeleteInput`
 | <a id="mutationbranchruledeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationbranchruledeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.branchRuleExternalStatusCheckCreate`
+
+Create a new external status check from a branch rule.
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Input type: `BranchRuleExternalStatusCheckCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationbranchruleexternalstatuscheckcreatebranchruleid"></a>`branchRuleId` | [`ProjectsBranchRuleID!`](#projectsbranchruleid) | Global ID of the branch rule to update. |
+| <a id="mutationbranchruleexternalstatuscheckcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationbranchruleexternalstatuscheckcreateexternalurl"></a>`externalUrl` | [`String!`](#string) | URL of external status check resource. |
+| <a id="mutationbranchruleexternalstatuscheckcreatename"></a>`name` | [`String!`](#string) | Name of the external status check. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationbranchruleexternalstatuscheckcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationbranchruleexternalstatuscheckcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationbranchruleexternalstatuscheckcreateexternalstatuscheck"></a>`externalStatusCheck` | [`ExternalStatusCheck`](#externalstatuscheck) | New status check after mutation. |
+
 ### `Mutation.branchRuleUpdate`
 
 DETAILS:

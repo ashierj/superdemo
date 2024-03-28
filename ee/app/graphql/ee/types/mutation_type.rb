@@ -65,6 +65,7 @@ module EE
         mount_mutation ::Mutations::Boards::EpicLists::Update
         mount_mutation ::Mutations::Boards::Epics::Create
         mount_mutation ::Mutations::Boards::Lists::UpdateLimitMetrics
+        mount_mutation ::Mutations::BranchRules::ExternalStatusChecks::Create, alpha: { milestone: '16.11' }
         mount_mutation ::Mutations::InstanceSecurityDashboard::AddProject
         mount_mutation ::Mutations::InstanceSecurityDashboard::RemoveProject
         mount_mutation ::Mutations::DastOnDemandScans::Create
