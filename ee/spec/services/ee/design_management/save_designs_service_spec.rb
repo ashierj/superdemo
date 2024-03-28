@@ -27,7 +27,7 @@ RSpec.describe DesignManagement::SaveDesignsService, feature_category: :design_m
 
     context 'when service is successful' do
       before do
-        project.add_developer(user)
+        project.add_reporter(user)
       end
 
       it 'calls repository#log_geo_updated_event', :aggregate_failures do
