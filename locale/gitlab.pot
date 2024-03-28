@@ -46347,9 +46347,6 @@ msgstr ""
 msgid "SecurityReports|Confirm dismissal"
 msgstr ""
 
-msgid "SecurityReports|Create Issue"
-msgstr ""
-
 msgid "SecurityReports|Create Jira issue"
 msgstr ""
 
@@ -46395,16 +46392,10 @@ msgstr ""
 msgid "SecurityReports|Download %{artifactName}"
 msgstr ""
 
-msgid "SecurityReports|Download patch to resolve"
-msgstr ""
-
 msgid "SecurityReports|Download results"
 msgstr ""
 
 msgid "SecurityReports|Download scanned URLs"
-msgstr ""
-
-msgid "SecurityReports|Download the patch to apply it manually"
 msgstr ""
 
 msgid "SecurityReports|Edit dismissal"

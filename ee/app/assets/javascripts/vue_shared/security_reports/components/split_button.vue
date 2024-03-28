@@ -26,11 +26,6 @@ export default {
       type: Array,
       required: true,
     },
-    disabled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     loading: {
       type: Boolean,
       required: false,
@@ -49,6 +44,13 @@ export default {
     items() {
       return this.buttons.map((button, index) => ({ ...button, value: index }));
     },
+    category() {
+      if (this.selectedButton.badge || this.buttons.length > 1) {
+        return 'primary';
+      }
+
+      return 'secondary';
+    },
   },
   methods: {
     handleClick() {
@@ -66,21 +68,18 @@ export default {
 </script>
 
 <template>
-  <!--TODO: Replace button-group workaround once `split` option for new dropdowns is implemented.-->
-  <!-- See issue at https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2263-->
   <gl-button-group v-if="selectedButton">
-    <!-- Must set a unique "key" to force re-rendering. -->
-    <!-- This ensures the tooltip is reset correctly when selectedButton changes. -->
     <gl-button
       :key="selectedButton.name"
       v-gl-tooltip
       :title="selectedButton.tooltip"
       :aria-label="selectedButton.tooltip"
-      :disabled="disabled"
       variant="confirm"
+      :category="category"
       :href="selectedButton.href"
       :icon="selectedButton.icon"
       :loading="loading"
+      :data-testid="`${selectedButton.action}-button`"
       @click="handleClick"
     >
       {{ selectedButton.name }}
@@ -89,13 +88,12 @@ export default {
       </gl-badge>
     </gl-button>
     <gl-collapsible-listbox
+      v-if="buttons.length > 1"
       v-model="selectedButtonIndex"
-      class="split"
-      toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-1!"
       variant="confirm"
       text-sr-only
       :toggle-text="$options.i18n.changeAction"
-      :disabled="disabled || loading"
+      :disabled="loading"
       :items="items"
     >
       <template #list-item="{ item }">
