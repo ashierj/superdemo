@@ -34,6 +34,11 @@ Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/common_utils');
 jest.mock('~/sentry/sentry_browser_wrapper');
+jest.mock('~/lib/utils/common_utils', () => ({
+  convertObjectPropsToLowerCase: jest.requireActual('~/lib/utils/common_utils')
+    .convertObjectPropsToLowerCase,
+  scrollToElement: jest.fn(),
+}));
 
 describe('Add On Eligible User List', () => {
   let wrapper;
@@ -106,6 +111,27 @@ describe('Add On Eligible User List', () => {
         },
       ],
     },
+  };
+
+  const knownAddOnBulkAssignmentError = {
+    clientMutationId: '1',
+    errors: ['NOT_ENOUGH_SEATS'],
+    addOnPurchase: null,
+    users: null,
+  };
+
+  const noAssignmentsFoundError = {
+    clientMutationId: '1',
+    errors: ['NO_ASSIGNMENTS_FOUND'],
+    addOnPurchase: null,
+    users: null,
+  };
+
+  const unknownErrorCodeError = {
+    clientMutationId: '1',
+    errors: ['UNKNOWN_ERROR_CODE'],
+    addOnPurchase: null,
+    users: null,
   };
 
   const bulkAssignAddOnHandler = jest.fn().mockResolvedValue({
@@ -231,6 +257,30 @@ describe('Add On Eligible User List', () => {
   const findAssignSeatsButton = () => wrapper.findByTestId('assign-seats-button');
   const findUnassignSeatsButton = () => wrapper.findByTestId('unassign-seats-button');
   const findConfirmationModal = () => wrapper.findComponent(AddOnBulkActionConfirmationModal);
+  const findBulkActionSuccessAlert = () => wrapper.findByTestId('bulk-action-success-alert');
+  const findBulkActionErrorAlert = () => wrapper.findByTestId('bulk-action-error-alert');
+
+  const confirmSeatAssignment = async () => {
+    await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+    await findSelectUserCheckboxAt(2).find('input').setChecked(true);
+
+    findAssignSeatsButton().vm.$emit('click');
+    await nextTick();
+
+    findConfirmationModal().vm.$emit('confirm-seat-assignment');
+    await nextTick();
+  };
+
+  const confirmSeatUnassignment = async () => {
+    await findSelectUserCheckboxAt(0).find('input').setChecked(true);
+    await findSelectUserCheckboxAt(1).find('input').setChecked(true);
+
+    findUnassignSeatsButton().vm.$emit('click');
+    await nextTick();
+
+    findConfirmationModal().vm.$emit('confirm-seat-unassignment');
+    await nextTick();
+  };
 
   describe('renders table', () => {
     beforeEach(() => {
@@ -640,7 +690,7 @@ describe('Add On Eligible User List', () => {
     });
   });
 
-  describe('bulk assignment', () => {
+  describe('bulk action', () => {
     describe('when using select all option', () => {
       beforeEach(async () => {
         await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
@@ -753,14 +803,7 @@ describe('Add On Eligible User List', () => {
         beforeEach(async () => {
           await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
-          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
-          await findSelectUserCheckboxAt(2).find('input').setChecked(true);
-
-          findAssignSeatsButton().vm.$emit('click');
-          await nextTick();
-
-          findConfirmationModal().vm.$emit('confirm-seat-assignment');
-          await nextTick();
+          await confirmSeatAssignment();
         });
 
         it('calls bulk addon assignment mutation with appropriate params', () => {
@@ -798,6 +841,14 @@ describe('Add On Eligible User List', () => {
 
           expect(findSelectedUsersSummary().exists()).toBe(false);
         });
+
+        it('shows a success alert', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionSuccessAlert().text()).toBe(
+            '2 users have been successfully assigned a seat.',
+          );
+        });
       });
 
       describe('unsuccessful assignment', () => {
@@ -810,14 +861,7 @@ describe('Add On Eligible User List', () => {
             addonAssignmentBulkCreateHandler: jest.fn().mockRejectedValue(error),
           });
 
-          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
-          await findSelectUserCheckboxAt(2).find('input').setChecked(true);
-
-          findAssignSeatsButton().vm.$emit('click');
-          await nextTick();
-
-          findConfirmationModal().vm.$emit('confirm-seat-assignment');
-          await nextTick();
+          await confirmSeatAssignment();
         });
 
         it('captures error on Sentry for generic errors', async () => {
@@ -837,6 +881,40 @@ describe('Add On Eligible User List', () => {
 
           expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
         });
+
+        it('shows a generic error alert', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionErrorAlert().props()).toMatchObject({
+            dismissible: true,
+            error: 'CANNOT_BULK_ASSIGN_ADDON',
+            errorDictionary: ADD_ON_ERROR_DICTIONARY,
+          });
+        });
+      });
+
+      describe('known error code', () => {
+        beforeEach(async () => {
+          await createComponent({
+            mountFn: mount,
+            isBulkAddOnAssignmentEnabled: true,
+            addonAssignmentBulkCreateHandler: jest.fn().mockResolvedValue({
+              data: { userAddOnAssignmentBulkCreate: knownAddOnBulkAssignmentError },
+            }),
+          });
+
+          await confirmSeatAssignment();
+        });
+
+        it('shows not enough seats error', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionErrorAlert().props()).toMatchObject({
+            dismissible: true,
+            error: 'NOT_ENOUGH_SEATS',
+            errorDictionary: ADD_ON_ERROR_DICTIONARY,
+          });
+        });
       });
     });
 
@@ -845,14 +923,7 @@ describe('Add On Eligible User List', () => {
         beforeEach(async () => {
           await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
-          await findSelectUserCheckboxAt(0).find('input').setChecked(true);
-          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
-
-          findAssignSeatsButton().vm.$emit('click');
-          await nextTick();
-
-          findConfirmationModal().vm.$emit('confirm-seat-unassignment');
-          await nextTick();
+          await confirmSeatUnassignment();
         });
 
         it('calls bulk addon unassignment mutation with appropriate params', () => {
@@ -886,6 +957,14 @@ describe('Add On Eligible User List', () => {
 
           expect(findSelectedUsersSummary().exists()).toBe(false);
         });
+
+        it('shows a success alert', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionSuccessAlert().text()).toBe(
+            '2 users have been successfully unassigned a seat.',
+          );
+        });
       });
 
       describe('unsuccessful unassignment', () => {
@@ -898,14 +977,7 @@ describe('Add On Eligible User List', () => {
             addonAssignmentBulkRemoveHandler: jest.fn().mockRejectedValue(error),
           });
 
-          await findSelectUserCheckboxAt(0).find('input').setChecked(true);
-          await findSelectUserCheckboxAt(1).find('input').setChecked(true);
-
-          findAssignSeatsButton().vm.$emit('click');
-          await nextTick();
-
-          findConfirmationModal().vm.$emit('confirm-seat-unassignment');
-          await nextTick();
+          await confirmSeatUnassignment();
 
           await waitForPromises();
         });
@@ -920,6 +992,63 @@ describe('Add On Eligible User List', () => {
 
         it('retains user selection on unsuccessful API call', () => {
           expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
+        });
+
+        it('shows a generic error alert', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionErrorAlert().props()).toMatchObject({
+            dismissible: true,
+            error: 'CANNOT_BULK_UNASSIGN_ADDON',
+            errorDictionary: ADD_ON_ERROR_DICTIONARY,
+          });
+        });
+      });
+
+      describe('known error code', () => {
+        beforeEach(async () => {
+          await createComponent({
+            mountFn: mount,
+            isBulkAddOnAssignmentEnabled: true,
+            addonAssignmentBulkRemoveHandler: jest.fn().mockResolvedValue({
+              data: { userAddOnAssignmentBulkRemove: noAssignmentsFoundError },
+            }),
+          });
+
+          await confirmSeatUnassignment();
+        });
+
+        it('treats no assignments found error as success', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionErrorAlert().exists()).toBe(false);
+          expect(findBulkActionSuccessAlert().text()).toBe(
+            '2 users have been successfully unassigned a seat.',
+          );
+        });
+      });
+
+      describe('unknown error code', () => {
+        beforeEach(async () => {
+          await createComponent({
+            mountFn: mount,
+            isBulkAddOnAssignmentEnabled: true,
+            addonAssignmentBulkRemoveHandler: jest.fn().mockResolvedValue({
+              data: { userAddOnAssignmentBulkRemove: unknownErrorCodeError },
+            }),
+          });
+
+          await confirmSeatUnassignment();
+        });
+
+        it('shows a generic error alert', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionErrorAlert().props()).toMatchObject({
+            dismissible: true,
+            error: 'CANNOT_BULK_UNASSIGN_ADDON',
+            errorDictionary: ADD_ON_ERROR_DICTIONARY,
+          });
         });
       });
     });
