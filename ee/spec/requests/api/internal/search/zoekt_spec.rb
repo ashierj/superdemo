@@ -41,7 +41,7 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
         end
 
         context 'when node does not exist' do
-          let(:node) { instance_double(::Search::Zoekt::Node, id: nil) }
+          let(:node) { build(:zoekt_node, id: nil) }
 
           it 'does not save node' do
             expect(node).not_to receive(:save)
@@ -49,12 +49,12 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
             request
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to eq({ 'id' => nil })
+            expect(json_response).to eq({ 'id' => nil, 'tasks' => [] })
           end
         end
 
         context 'when node exists' do
-          let(:node) { instance_double(::Search::Zoekt::Node, id: 123) }
+          let(:node) { build(:zoekt_node, id: 123) }
 
           it 'does not save node when node does not exist' do
             expect(node).not_to receive(:save)
@@ -62,14 +62,20 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
             request
 
             expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to eq({ 'id' => node.id })
+            expect(json_response).to eq({ 'id' => node.id, 'tasks' => [] })
           end
         end
       end
 
       context 'when a task request is received with valid params' do
-        it 'returns node ID for task request' do
-          node = instance_double(::Search::Zoekt::Node, id: 123)
+        let(:node) { build(:zoekt_node, id: 123) }
+        let(:tasks) { %w[task1 task2] }
+
+        before do
+          allow(::Search::Zoekt::TaskPresenterService).to receive(:execute).and_return(tasks)
+        end
+
+        it 'returns node ID and tasks for task request' do
           expect(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
             .with(valid_params).and_return(node)
           expect(node).to receive(:save).and_return(true)
@@ -77,7 +83,25 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
           get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to eq({ 'id' => node.id })
+          expect(json_response).to eq({ 'id' => node.id, 'tasks' => tasks })
+        end
+
+        context 'when zoekt_send_tasks is disabled' do
+          before do
+            stub_feature_flags(zoekt_send_tasks: false)
+          end
+
+          it 'does not return tasks' do
+            expect(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
+              .with(valid_params).and_return(node)
+            expect(node).to receive(:save).and_return(true)
+
+            get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header
+
+            expect(::Search::Zoekt::TaskPresenterService).not_to receive(:execute)
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to eq({ 'id' => node.id })
+          end
         end
       end
 

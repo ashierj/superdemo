@@ -34,7 +34,11 @@ module API
 
                   # We don't want to register (save) the node if the feature flag is disabled
                   if Feature.disabled?(:zoekt_internal_api_register_nodes, type: :ops) || node.save
-                    { id: node.id }
+                    { id: node.id }.tap do |resp|
+                      if Feature.enabled?(:zoekt_send_tasks)
+                        resp[:tasks] = ::Search::Zoekt::TaskPresenterService.execute(node)
+                      end
+                    end
                   else
                     unprocessable_entity!
                   end
