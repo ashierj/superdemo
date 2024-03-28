@@ -195,14 +195,9 @@ module Sidebars
             return ::Sidebars::NilMenuItem.new(item_id: menu_item_id)
           end
 
-          link = group_analytics_dashboards_path(context.group)
-          unless ::Feature.enabled?(:group_analytics_dashboards, context.group)
-            link = value_streams_dashboard_group_analytics_dashboards_path(context.group)
-          end
-
           ::Sidebars::MenuItem.new(
             title: _('Analytics dashboards'),
-            link: link,
+            link: group_analytics_dashboards_path(context.group),
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             container_html_options: { class: 'shortcuts-group-dashboards-analytics' },
             active_routes: { path: %w[

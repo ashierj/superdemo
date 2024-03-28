@@ -222,11 +222,9 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
 
     describe 'Analytics dashboards' do
       let(:item_id) { :analytics_dashboards }
-      let(:group_analytics_dashboards) { true }
       let(:group_level_analytics_dashboard_enabled) { true }
 
       before do
-        stub_feature_flags(group_analytics_dashboards: group_analytics_dashboards)
         stub_licensed_features(group_level_analytics_dashboard: group_level_analytics_dashboard_enabled)
       end
 
@@ -262,13 +260,6 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
         let(:group_level_analytics_dashboard_enabled) { false }
 
         specify { is_expected.to be_nil }
-      end
-
-      describe 'when the dashboards analytics feature is disabled' do
-        let(:group_analytics_dashboards) { false }
-
-        specify { is_expected.not_to be_nil }
-        specify { expect(menu_item.link).to eq('/groups/group_one/-/analytics/dashboards/value_streams_dashboard') }
       end
     end
   end

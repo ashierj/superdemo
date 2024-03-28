@@ -198,41 +198,13 @@ describe('DashboardsList', () => {
       expect(findNewDashboardButton().exists()).toBe(false);
     });
 
-    describe('when `groupAnalyticsDashboards` FF is disabled', () => {
-      beforeEach(() => {
-        createWrapper({ isProject: false, isGroup: true });
-      });
-
-      it('should render the page description', () => {
-        expect(findPageDescription().text()).toContain(
-          'Dashboards are created by editing the groups dashboard files.',
-        );
-      });
-
-      it('should not render the Value streams dashboards link', () => {
-        expect(findListItems()).toHaveLength(0);
-      });
-
-      it('does not render the visualization designer button', () => {
-        expect(findVisualizationDesignerButton().exists()).toBe(false);
-      });
-
-      it('does not render the new dashboard button', () => {
-        expect(findNewDashboardButton().exists()).toBe(false);
-      });
-    });
-
-    describe('when `groupAnalyticsDashboards` FF is enabled', () => {
+    describe('when `groupAnalyticsDashboardDynamicVsd` FF is disabled', () => {
       beforeEach(() => {
         mockAnalyticsDashboardsHandler = jest
           .fn()
           .mockResolvedValue(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
 
-        createWrapper({
-          isProject: false,
-          isGroup: true,
-          glFeatures: { groupAnalyticsDashboards: true },
-        });
+        createWrapper({ isProject: false, isGroup: true });
       });
 
       it('should redirect to the legacy VSD page', async () => {
@@ -244,7 +216,7 @@ describe('DashboardsList', () => {
       });
     });
 
-    describe('when `groupAnalyticsDashboards` and `groupAnalyticsDashboardDynamicVsd` feature flags are enabled', () => {
+    describe('when `groupAnalyticsDashboardDynamicVsd` FF is enabled', () => {
       beforeEach(() => {
         mockAnalyticsDashboardsHandler = jest
           .fn()
@@ -254,7 +226,6 @@ describe('DashboardsList', () => {
           isProject: false,
           isGroup: true,
           glFeatures: {
-            groupAnalyticsDashboards: true,
             groupAnalyticsDashboardDynamicVsd: true,
           },
         });
