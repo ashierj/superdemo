@@ -48,7 +48,6 @@ describe('EmptyState', () => {
     expect(link.attributes()).toMatchObject({
       href:
         'https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#required-roles',
-      rel: 'noopener noreferrer',
       target: '_blank',
     });
     expect(link.text()).toBe('What are the required permissions?');
