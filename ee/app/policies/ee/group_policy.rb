@@ -265,6 +265,15 @@ module EE
         ).has_ability?
       end
 
+      desc 'Custom role on group that enables admin push rules for repositories'
+      condition(:role_enables_admin_push_rules) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_push_rules
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -578,6 +587,10 @@ module EE
 
       rule { custom_roles_allowed & role_enables_remove_group & has_parent }.policy do
         enable :remove_group
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_push_rules }.policy do
+        enable :admin_push_rules
       end
 
       rule { can?(:read_group_security_dashboard) }.policy do

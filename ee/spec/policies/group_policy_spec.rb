@@ -3329,6 +3329,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         it { is_expected.to be_disallowed(*allowed_abilities) }
       end
     end
+
+    context 'for a custom role with the `admin_push_rules` ability' do
+      let(:member_role_abilities) { { admin_push_rules: true } }
+      let(:allowed_abilities) { [:admin_push_rules] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   context 'for :read_limit_alert' do
