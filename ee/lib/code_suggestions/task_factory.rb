@@ -21,7 +21,7 @@ module CodeSuggestions
     def task
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instruction = CodeSuggestions::InstructionsExtractor
-        .new(file_content, intent).extract
+        .new(file_content, intent, params[:generation_type]).extract
 
       unless instruction
         return CodeSuggestions::Tasks::CodeCompletion.new(

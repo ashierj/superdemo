@@ -25,16 +25,17 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     let(:suffix) { '' }
     let(:file_content) { CodeSuggestions::FileContent.new(language, content, suffix) }
     let(:intent) { nil }
+    let(:generation_type) { nil }
 
     subject do
-      described_class.new(file_content, intent).extract
+      described_class.new(file_content, intent, generation_type).extract
     end
 
     context 'when content is nil' do
       let(:content) { nil }
 
       it_behaves_like 'extracted instruction' do
-        let(:trigger_type) { :small_file }
+        let(:trigger_type) { 'small_file' }
       end
     end
 
@@ -59,7 +60,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it_behaves_like 'extracted instruction' do
           let(:instruction) { '' }
-          let(:trigger_type) { :comment }
+          let(:trigger_type) { 'comment' }
         end
       end
 
@@ -79,7 +80,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
       it_behaves_like 'extracted instruction' do
         let(:instruction) { '' }
-        let(:trigger_type) { :comment }
+        let(:trigger_type) { 'comment' }
       end
 
       context 'when intent is completion' do
@@ -103,12 +104,21 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
       it { is_expected.to be_nil }
 
+      context 'when generation_type is set' do
+        let(:generation_type) { 'comment' }
+
+        it_behaves_like 'extracted instruction' do
+          let(:instruction) { '' }
+          let(:trigger_type) { 'comment' }
+        end
+      end
+
       context 'when intent is generation' do
         let(:intent) { 'generation' }
 
         it_behaves_like 'extracted instruction' do
           let(:instruction) { '' }
-          let(:trigger_type) { :comment }
+          let(:trigger_type) { 'comment' }
         end
       end
     end
@@ -123,7 +133,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it_behaves_like 'extracted instruction' do
           let(:instruction) { '' }
-          let(:trigger_type) { :comment }
+          let(:trigger_type) { 'comment' }
         end
       end
 
@@ -135,7 +145,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
 
         it_behaves_like 'extracted instruction' do
-          let(:trigger_type) { :small_file }
+          let(:trigger_type) { 'small_file' }
         end
       end
 
@@ -150,7 +160,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
 
         it_behaves_like 'extracted instruction' do
-          let(:trigger_type) { :small_file }
+          let(:trigger_type) { 'small_file' }
         end
       end
 
@@ -166,7 +176,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it_behaves_like 'extracted instruction' do
           let(:instruction) { '' }
-          let(:trigger_type) { :comment }
+          let(:trigger_type) { 'comment' }
         end
       end
 
@@ -184,7 +194,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it_behaves_like 'extracted instruction' do
           let(:instruction) { '' }
-          let(:trigger_type) { :comment }
+          let(:trigger_type) { 'comment' }
         end
       end
 
@@ -204,7 +214,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it_behaves_like 'extracted instruction' do
           let(:instruction) { '' }
-          let(:trigger_type) { :comment }
+          let(:trigger_type) { 'comment' }
         end
       end
 
@@ -278,7 +288,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
 
         it_behaves_like 'extracted instruction' do
-          let(:trigger_type) { :small_file }
+          let(:trigger_type) { 'small_file' }
         end
       end
 
@@ -351,7 +361,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         let(:suffix) { '' }
 
         it_behaves_like 'extracted instruction' do
-          let(:trigger_type) { :empty_function }
+          let(:trigger_type) { 'empty_function' }
         end
       end
 
@@ -367,7 +377,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
 
         it_behaves_like 'extracted instruction' do
-          let(:trigger_type) { :empty_function }
+          let(:trigger_type) { 'empty_function' }
         end
       end
 
