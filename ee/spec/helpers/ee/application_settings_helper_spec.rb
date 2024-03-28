@@ -23,6 +23,10 @@ RSpec.describe EE::ApplicationSettingsHelper do
     it 'contains duo_features_enabled parameters' do
       expect(visible_attributes).to include(*%i[duo_features_enabled lock_duo_features_enabled])
     end
+
+    it 'contains zoekt parameters' do
+      expect(visible_attributes).to include(*%i[zoekt_indexing_enabled zoekt_indexing_paused zoekt_search_enabled])
+    end
   end
 
   describe '.registration_features_can_be_prompted?' do

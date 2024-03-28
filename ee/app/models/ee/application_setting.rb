@@ -19,6 +19,11 @@ module EE
       jsonb_accessor :clickhouse,
         use_clickhouse_for_analytics: [:boolean, { default: false }]
 
+      jsonb_accessor :zoekt_settings,
+        zoekt_indexing_enabled: [:boolean, { default: false }],
+        zoekt_indexing_paused: [:boolean, { default: false }],
+        zoekt_search_enabled: [:boolean, { default: false }]
+
       validates :clickhouse, json_schema: { filename: "application_setting_clickhouse" }
 
       validates :shared_runners_minutes,
@@ -186,6 +191,8 @@ module EE
       validates :instance_level_ai_beta_features_enabled,
         allow_nil: false,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
+
+      validates :zoekt_settings, json_schema: { filename: 'application_setting_zoekt_settings' }
 
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
