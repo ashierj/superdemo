@@ -2,11 +2,13 @@
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { GlAccordion, GlAccordionItem, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
-import CodeInstruction from '~/vue_shared/components/registry/code_instruction.vue';
+import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 
 export default {
   components: {
-    CodeInstruction,
+    CodeBlockHighlighted,
+    ClipboardButton,
     GlAccordion,
     GlAccordionItem,
     GlIcon,
@@ -119,11 +121,18 @@ export default {
             {{ s__('GoogleArtifactRegistry|You might be prompted to sign into Google.') }}
           </li>
         </ul>
-        <code-instruction
-          :instruction="instructions"
-          :copy-text="s__('GoogleArtifactRegistry|Copy command')"
-          multiline
-        />
+        <div class="gl-relative">
+          <clipboard-button
+            :title="s__('GoogleArtifactRegistry|Copy command')"
+            :text="instructions"
+            class="gl-absolute gl-top-3 gl-right-3 gl-z-index-1"
+          />
+          <code-block-highlighted
+            class="gl-border gl-p-4"
+            language="powershell"
+            :code="instructions"
+          />
+        </div>
         <gl-sprintf
           :message="
             s__(
