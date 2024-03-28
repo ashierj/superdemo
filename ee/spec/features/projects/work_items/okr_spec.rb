@@ -156,20 +156,26 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   shared_examples 'work items health status' do
-    let(:dropdown_selector) { '[data-testid="work-item-health-status-dropdown"]' }
+    let(:health_status_selector) { '[data-testid="work-item-health-status-with-edit"]' }
 
     it 'successfully sets health status' do
-      expect(find_by_testid('work-item-health-status-none')).to have_content 'None'
-      find_by_testid('edit-health-status').click
+      within(health_status_selector) do
+        expect(page).to have_content 'None'
+        click_button 'Edit'
 
-      within_testid('work-item-health-status-dropdown') do
         find_by_testid('listbox-item-needsAttention').click
+
+        wait_for_requests
+
+        expect(page).to have_content 'Needs attention'
+        expect(work_item.reload.health_status).to eq('needs_attention')
+
+        click_button 'Edit'
+        click_button 'Clear'
+
+        expect(page).to have_content 'None'
+        expect(work_item.reload.health_status).to be_nil
       end
-
-      wait_for_requests
-
-      expect(find_by_testid('work-item-health-status-value')).to have_content 'Needs attention'
-      expect(work_item.reload.health_status).to eq('needs_attention')
     end
   end
 

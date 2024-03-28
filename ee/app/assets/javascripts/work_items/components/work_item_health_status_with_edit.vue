@@ -1,11 +1,11 @@
 <script>
-import { GlForm, GlCollapsibleListbox, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import {
   HEALTH_STATUS_I18N_HEALTH_STATUS,
   HEALTH_STATUS_I18N_NO_STATUS,
   HEALTH_STATUS_I18N_NONE,
+  HEALTH_STATUS_I18N_SELECT_HEALTH_STATUS,
   healthStatusDropdownOptions,
 } from 'ee/sidebar/constants';
 import {
@@ -13,6 +13,7 @@ import {
   sprintfWorkItem,
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
+import WorkItemSidebarDropdownWidgetWithEdit from '~/work_items/components/shared/work_item_sidebar_dropdown_widget_with_edit.vue';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import Tracking from '~/tracking';
 
@@ -20,13 +21,11 @@ export default {
   HEALTH_STATUS_I18N_HEALTH_STATUS,
   HEALTH_STATUS_I18N_NO_STATUS,
   HEALTH_STATUS_I18N_NONE,
+  HEALTH_STATUS_I18N_SELECT_HEALTH_STATUS,
   healthStatusDropdownOptions,
   components: {
-    GlForm,
-    GlCollapsibleListbox,
-    GlButton,
-    GlLoadingIcon,
     IssueHealthStatus,
+    WorkItemSidebarDropdownWidgetWithEdit,
   },
   mixins: [Tracking.mixin()],
   inject: ['hasIssuableHealthStatusFeature'],
@@ -56,7 +55,6 @@ export default {
   },
   data() {
     return {
-      isEditing: false,
       updateInProgress: false,
     };
   },
@@ -71,21 +69,15 @@ export default {
     dropdownItems() {
       const emptyItem = {
         text: this.$options.HEALTH_STATUS_I18N_NO_STATUS,
-        value: 'empty',
+        value: null,
       };
       return [emptyItem, ...healthStatusDropdownOptions];
     },
     selectedHealthStatus() {
-      return this.healthStatus || 'empty';
+      return this.healthStatus || null;
     },
   },
   methods: {
-    isSelected(healthStatus) {
-      return this.healthStatus === healthStatus;
-    },
-    onDropdownHide() {
-      this.isEditing = false;
-    },
     updateHealthStatus(healthStatus) {
       if (!this.canUpdate) {
         return;
@@ -102,7 +94,7 @@ export default {
             input: {
               id: this.workItemId,
               healthStatusWidget: {
-                healthStatus: healthStatus === 'empty' ? null : healthStatus,
+                healthStatus,
               },
             },
           },
@@ -127,65 +119,25 @@ export default {
 
 <template>
   <div v-if="hasIssuableHealthStatusFeature">
-    <div
-      v-if="!isEditing && !updateInProgress"
-      class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
+    <work-item-sidebar-dropdown-widget-with-edit
+      :dropdown-label="$options.HEALTH_STATUS_I18N_HEALTH_STATUS"
+      :can-update="canUpdate"
+      dropdown-name="health-status"
+      :list-items="$options.healthStatusDropdownOptions"
+      :item-value="selectedHealthStatus"
+      :header-text="$options.HEALTH_STATUS_I18N_SELECT_HEALTH_STATUS"
+      :update-in-progress="updateInProgress"
+      :reset-button-label="__('Clear')"
+      :searchable="false"
+      data-testid="work-item-health-status-with-edit"
+      @updateValue="updateHealthStatus"
     >
-      <h3 class="gl-mb-0! gl-heading-5">
-        {{ $options.HEALTH_STATUS_I18N_HEALTH_STATUS }}
-      </h3>
-      <gl-button
-        v-if="canUpdate"
-        data-testid="edit-health-status"
-        category="tertiary"
-        size="small"
-        class="gl-ml-auto"
-        :disabled="updateInProgress"
-        @click="isEditing = true"
-        >{{ __('Edit') }}</gl-button
-      >
-    </div>
-    <gl-form v-if="isEditing || updateInProgress">
-      <div class="gl-display-flex gl-align-items-center">
-        <h3 class="gl-sr-only gl-mb-0! gl-heading-5">
-          {{ $options.HEALTH_STATUS_I18N_HEALTH_STATUS }}
-        </h3>
-        <label :for="$options.inputId" class="gl-mb-0">{{
-          $options.HEALTH_STATUS_I18N_HEALTH_STATUS
-        }}</label>
-        <gl-loading-icon v-if="updateInProgress" size="sm" inline class="gl-ml-2 gl-my-0" />
-        <gl-button
-          data-testid="apply-health-status"
-          category="tertiary"
-          size="small"
-          class="gl-ml-auto"
-          @click="isEditing = false"
-          >{{ __('Apply') }}</gl-button
-        >
-      </div>
-      <div class="gl-relative">
-        <gl-collapsible-listbox
-          :items="dropdownItems"
-          :disabled="!canUpdate || updateInProgress"
-          :selected="selectedHealthStatus"
-          start-opened
-          block
-          data-testid="work-item-health-status-dropdown"
-          @hidden="onDropdownHide"
-          @select="updateHealthStatus"
+      <template #readonly>
+        <issue-health-status
+          data-testid="work-item-health-status-value"
+          :health-status="selectedHealthStatus"
         />
-      </div>
-    </gl-form>
-    <issue-health-status
-      v-else-if="healthStatus"
-      data-testid="work-item-health-status-value"
-      :health-status="healthStatus"
-    />
-    <span
-      v-else
-      data-testid="work-item-health-status-none"
-      class="gl-text-secondary gl-display-inline-block"
-      >{{ $options.HEALTH_STATUS_I18N_NONE }}</span
-    >
+      </template>
+    </work-item-sidebar-dropdown-widget-with-edit>
   </div>
 </template>

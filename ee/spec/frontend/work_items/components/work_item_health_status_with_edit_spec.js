@@ -1,4 +1,4 @@
-import { GlForm, GlBadge, GlCollapsibleListbox, GlLoadingIcon } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
@@ -6,6 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import WorkItemSidebarDropdownWidgetWithEdit from '~/work_items/components/shared/work_item_sidebar_dropdown_widget_with_edit.vue';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
@@ -33,18 +34,17 @@ describe('WorkItemHealthStatus component', () => {
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
 
   const findHeader = () => wrapper.find('h3');
-  const findEditButton = () => wrapper.find('[data-testid="edit-health-status"]');
-  const findApplyButton = () => wrapper.find('[data-testid="apply-health-status"]');
-  const findLabel = () => wrapper.find('label');
-  const findForm = () => wrapper.findComponent(GlForm);
-  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findSidebarDropdownWidget = () =>
+    wrapper.findComponent(WorkItemSidebarDropdownWidgetWithEdit);
   const findBadge = () => wrapper.findComponent(GlBadge);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+
+  const showDropdown = () => {
+    findSidebarDropdownWidget().vm.$emit('dropdownShown');
+  };
 
   const createComponent = ({
     canUpdate = true,
     hasIssuableHealthStatusFeature = true,
-    isEditing = false,
     healthStatus,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
   } = {}) => {
@@ -64,11 +64,19 @@ describe('WorkItemHealthStatus component', () => {
         hasIssuableHealthStatusFeature,
       },
     });
-
-    if (isEditing) {
-      findEditButton().trigger('click');
-    }
   };
+
+  it('has "Health status" label for single select', () => {
+    createComponent();
+
+    expect(findSidebarDropdownWidget().props('dropdownLabel')).toBe('Health status');
+  });
+
+  it('the dropdown is not searchable', () => {
+    createComponent();
+
+    expect(findSidebarDropdownWidget().props('searchable')).toBe(false);
+  });
 
   describe('`hasIssuableHealthStatusFeature` licensed feature', () => {
     describe.each`
@@ -84,75 +92,124 @@ describe('WorkItemHealthStatus component', () => {
     });
   });
 
-  describe('update permissions', () => {
-    describe.each`
-      description                     | canUpdate | exists
-      ${'when allowed to update'}     | ${true}   | ${true}
-      ${'when not allowed to update'} | ${false}  | ${false}
-    `('$description', ({ canUpdate, exists }) => {
-      it(`${canUpdate ? 'renders' : 'does not render'} the dropdown`, () => {
-        createComponent({ canUpdate });
+  describe('Dropdown options', () => {
+    beforeEach(() => {
+      createComponent();
+    });
 
-        expect(findEditButton().exists()).toBe(exists);
+    it('shows the health status options in dropdown', async () => {
+      showDropdown();
+
+      await nextTick();
+
+      expect(findSidebarDropdownWidget().props('loading')).toBe(false);
+      expect(findSidebarDropdownWidget().props('listItems')).toHaveLength(3);
+    });
+  });
+
+  describe('health status input', () => {
+    it.each`
+      selected            | expectedStatus
+      ${'onTrack'}        | ${'onTrack'}
+      ${'needsAttention'} | ${'needsAttention'}
+      ${'atRisk'}         | ${'atRisk'}
+    `(
+      'calls mutation with health status = "$expectedStatus"',
+      async ({ selected, expectedStatus }) => {
+        const mutationSpy = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
+        await createComponent({
+          mutationHandler: mutationSpy,
+        });
+
+        showDropdown();
+        await findSidebarDropdownWidget().vm.$emit('updateValue', selected);
+
+        expect(mutationSpy).toHaveBeenCalledWith({
+          input: {
+            id: workItemId,
+            healthStatusWidget: {
+              healthStatus: expectedStatus,
+            },
+          },
+        });
+      },
+    );
+
+    it('changes the health status to null when clicked on Clear', async () => {
+      const mutationSpy = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
+      await createComponent({ healthStatus: HEALTH_STATUS_ON_TRACK, mutationHandler: mutationSpy });
+      showDropdown();
+      await nextTick();
+
+      findSidebarDropdownWidget().vm.$emit('updateValue', null);
+
+      await nextTick();
+
+      expect(findSidebarDropdownWidget().props('updateInProgress')).toBe(true);
+
+      await waitForPromises();
+      expect(findSidebarDropdownWidget().props('updateInProgress')).toBe(false);
+      expect(mutationSpy).toHaveBeenCalledWith({
+        input: {
+          id: workItemId,
+          healthStatusWidget: {
+            healthStatus: null,
+          },
+        },
+      });
+    });
+
+    it('emits an error when there is a GraphQL error', async () => {
+      const response = {
+        data: {
+          workItemUpdate: {
+            errors: ['Error!'],
+            workItem: {},
+          },
+        },
+      };
+      await createComponent({
+        mutationHandler: jest.fn().mockResolvedValue(response),
+      });
+
+      showDropdown();
+
+      await findSidebarDropdownWidget().vm.$emit('updateValue', HEALTH_STATUS_ON_TRACK);
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toEqual([
+        ['Something went wrong while updating the task. Please try again.'],
+      ]);
+    });
+
+    it('emits an error when there is a network error', async () => {
+      await createComponent({
+        mutationHandler: jest.fn().mockRejectedValue(new Error()),
+      });
+
+      showDropdown();
+      await findSidebarDropdownWidget().vm.$emit('updateValue', HEALTH_STATUS_ON_TRACK);
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toEqual([
+        ['Something went wrong while updating the task. Please try again.'],
+      ]);
+    });
+
+    it('tracks updating the health status', async () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      await createComponent({ isEditing: true });
+
+      showDropdown();
+      await findSidebarDropdownWidget().vm.$emit('updateValue', HEALTH_STATUS_ON_TRACK);
+
+      expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_health_status', {
+        category: TRACKING_CATEGORY_SHOW,
+        label: 'item_health_status',
+        property: 'type_Task',
       });
     });
   });
-
-  describe('label', () => {
-    it('shows header when not editing', () => {
-      createComponent();
-
-      expect(findHeader().exists()).toBe(true);
-      expect(findHeader().classes('gl-sr-only')).toBe(false);
-      expect(findLabel().exists()).toBe(false);
-    });
-
-    it('shows label and hides header while editing', async () => {
-      createComponent({ isEditing: true });
-
-      await nextTick();
-
-      expect(findLabel().exists()).toBe(true);
-      expect(findHeader().classes('gl-sr-only')).toBe(true);
-    });
-  });
-
-  describe('edit button', () => {
-    it('is not shown if user cannot edit', () => {
-      createComponent({ canUpdate: false });
-
-      expect(findEditButton().exists()).toBe(false);
-    });
-
-    it('is shown if user can edit', () => {
-      createComponent({ canUpdate: true });
-
-      expect(findEditButton().exists()).toBe(true);
-    });
-
-    it('triggers edit mode on click', async () => {
-      createComponent();
-
-      findEditButton().trigger('click');
-
-      await nextTick();
-
-      expect(findLabel().exists()).toBe(true);
-      expect(findForm().exists()).toBe(true);
-    });
-
-    it('is replaced by Apply button while editing', async () => {
-      createComponent();
-
-      findEditButton().trigger('click');
-
-      await nextTick();
-
-      expect(findEditButton().exists()).toBe(false);
-      expect(findApplyButton().exists()).toBe(true);
-    });
-  });
-
   describe('health status rendering', () => {
     describe('correct text', () => {
       it.each`
@@ -179,136 +236,6 @@ describe('WorkItemHealthStatus component', () => {
 
         expect(findBadge().props('variant')).toBe(variant);
       });
-    });
-  });
-
-  describe('form', () => {
-    it('is not shown while not editing', async () => {
-      await createComponent();
-
-      expect(findForm().exists()).toBe(false);
-    });
-
-    it('is shown while editing', async () => {
-      await createComponent({ isEditing: true });
-
-      expect(findForm().exists()).toBe(true);
-    });
-  });
-
-  describe('health status input', () => {
-    it('is not shown while not editing', async () => {
-      await createComponent();
-
-      expect(findListbox().exists()).toBe(false);
-    });
-
-    it('is visible and disabled while updating the value', async () => {
-      await createComponent({ isEditing: true });
-
-      await findListbox().vm.$emit('select', 'onTrack');
-
-      expect(findListbox().exists()).toBe(true);
-      expect(findListbox().props('disabled')).toBe(true);
-    });
-
-    it.each`
-      selected            | expectedStatus
-      ${'empty'}          | ${null}
-      ${'onTrack'}        | ${'onTrack'}
-      ${'needsAttention'} | ${'needsAttention'}
-      ${'atRisk'}         | ${'atRisk'}
-    `(
-      'calls mutation with health status = "$expectedStatus"',
-      async ({ selected, expectedStatus }) => {
-        const mutationSpy = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
-        await createComponent({
-          isEditing: true,
-          mutationHandler: mutationSpy,
-        });
-
-        await findListbox().vm.$emit('select', selected);
-
-        expect(mutationSpy).toHaveBeenCalledWith({
-          input: {
-            id: workItemId,
-            healthStatusWidget: {
-              healthStatus: expectedStatus,
-            },
-          },
-        });
-      },
-    );
-
-    it('emits an error when there is a GraphQL error', async () => {
-      const response = {
-        data: {
-          workItemUpdate: {
-            errors: ['Error!'],
-            workItem: {},
-          },
-        },
-      };
-      await createComponent({
-        isEditing: true,
-        mutationHandler: jest.fn().mockResolvedValue(response),
-      });
-
-      await findListbox().vm.$emit('select', 'onTrack');
-      await waitForPromises();
-
-      expect(wrapper.emitted('error')).toEqual([
-        ['Something went wrong while updating the task. Please try again.'],
-      ]);
-    });
-
-    it('emits an error when there is a network error', async () => {
-      await createComponent({
-        isEditing: true,
-        mutationHandler: jest.fn().mockRejectedValue(new Error()),
-      });
-
-      await findListbox().vm.$emit('select', 'onTrack');
-      await waitForPromises();
-
-      expect(wrapper.emitted('error')).toEqual([
-        ['Something went wrong while updating the task. Please try again.'],
-      ]);
-    });
-
-    it('tracks updating the health status', async () => {
-      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-      await createComponent({ isEditing: true });
-
-      await findListbox().vm.$emit('select', 'onTrack');
-
-      expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_health_status', {
-        category: TRACKING_CATEGORY_SHOW,
-        label: 'item_health_status',
-        property: 'type_Task',
-      });
-    });
-  });
-
-  describe('loading icon', () => {
-    it('is not visible when not editing', async () => {
-      await createComponent();
-
-      expect(findLoadingIcon().exists()).toBe(false);
-    });
-
-    it('is not visible when editing but not updating', async () => {
-      await createComponent({ isEditing: true });
-
-      expect(findLoadingIcon().exists()).toBe(false);
-    });
-
-    it('is visible when editing and updating', async () => {
-      await createComponent({ isEditing: true });
-
-      await findListbox().vm.$emit('select', 'onTrack');
-
-      expect(findLoadingIcon().exists()).toBe(true);
     });
   });
 });
