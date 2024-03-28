@@ -16,7 +16,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
           file_name: file_name,
           content_above_cursor: prefix,
           content_below_cursor: suffix
-        }
+        },
+        generation_type: 'empty_function'
       }
     end
 
@@ -33,7 +34,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
-        .with(an_instance_of(CodeSuggestions::FileContent), nil)
+        .with(an_instance_of(CodeSuggestions::FileContent), nil, 'empty_function')
         .and_call_original
 
       get_task

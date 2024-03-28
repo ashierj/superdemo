@@ -9,9 +9,9 @@ RSpec.describe CodeSuggestions::Instruction, feature_category: :code_suggestions
     using RSpec::Parameterized::TableSyntax
 
     where(:type, :expected_instruction) do
-      :empty_function | described_class::EMPTY_FUNCTION_INSTRUCTION
-      :small_file     | described_class::SMALL_FILE_INSTRUCTION
-      :comment        | ''
+      'empty_function' | described_class::EMPTY_FUNCTION_INSTRUCTION
+      'small_file'     | described_class::SMALL_FILE_INSTRUCTION
+      'comment'        | ''
     end
 
     with_them do

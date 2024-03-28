@@ -15,22 +15,25 @@ module CodeSuggestions
 
     EMPTY_LINES_LIMIT = 1
 
-    def initialize(file_content, intent)
+    def initialize(file_content, intent, generation_type = nil)
       @file_content = file_content
       @language = file_content.language
       @intent = intent
+      @generation_type = generation_type
     end
 
     def extract
       return if intent == INTENT_COMPLETION
 
-      comment_block = comment(file_content.lines_above_cursor)
-      get_instruction(comment_block)
+      type = instruction_type
+      return unless type
+
+      Instruction.new(trigger_type: type)
     end
 
     private
 
-    attr_reader :language, :file_content, :intent
+    attr_reader :language, :file_content, :intent, :generation_type
 
     def comment(lines)
       comment_block = []
@@ -46,23 +49,22 @@ module CodeSuggestions
       comment_block
     end
 
-    def get_instruction(comment_block)
-      type = if comment_block.first&.match(first_line_regex)
-               :comment
-             elsif file_content.small?
-               :small_file
-             elsif language.cursor_inside_empty_function?(
-               file_content.content_above_cursor, file_content.content_below_cursor)
-               :empty_function
-             elsif intent == INTENT_GENERATION
-               # on client side intent is currently detected only for comments, so
-               # it's safe to assume that when intent is sent, it's because of comment
-               :comment
-             end
+    def instruction_type
+      return generation_type if generation_type.present?
 
-      return unless type
+      # although new client versions will send "generation_type" parameter if intent is detected, current behavior is
+      # that client sends only "intent" parameter and only when "comment" parameter is used
+      return Instruction::COMMENT_TRIGGER if intent == INTENT_GENERATION
 
-      Instruction.new(trigger_type: type)
+      comment_block = comment(file_content.lines_above_cursor)
+      if comment_block.first&.match(first_line_regex)
+        Instruction::COMMENT_TRIGGER
+      elsif file_content.small?
+        Instruction::SMALL_FILE_TRIGGER
+      elsif language.cursor_inside_empty_function?(
+        file_content.content_above_cursor, file_content.content_below_cursor)
+        Instruction::EMPTY_FUNCTION_TRIGGER
+      end
     end
 
     def first_line_regex

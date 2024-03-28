@@ -12,6 +12,11 @@ module CodeSuggestions
       Do not repeat the code. Only return the method contents.
     PROMPT
 
+    COMMENT_TRIGGER = 'comment'
+    EMPTY_FUNCTION_TRIGGER = 'empty_function'
+    SMALL_FILE_TRIGGER = 'small_file'
+    GENERATION_TRIGGER_TYPES = [COMMENT_TRIGGER, EMPTY_FUNCTION_TRIGGER, SMALL_FILE_TRIGGER].freeze
+
     attr_reader :trigger_type, :instruction
 
     def initialize(trigger_type:)
@@ -23,11 +28,11 @@ module CodeSuggestions
 
     def instruction_from_trigger_type(type)
       case type
-      when :empty_function
+      when EMPTY_FUNCTION_TRIGGER
         EMPTY_FUNCTION_INSTRUCTION
-      when :small_file
+      when SMALL_FILE_TRIGGER
         SMALL_FILE_INSTRUCTION
-      when :comment
+      when COMMENT_TRIGGER
         ''
       else
         raise ArgumentError, "Unknwown trigger type #{type}"

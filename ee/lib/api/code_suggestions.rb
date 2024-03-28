@@ -63,6 +63,8 @@ module API
               ::CodeSuggestions::InstructionsExtractor::INTENT_GENERATION
             ],
             desc: 'The intent of the completion request, current options are "completion" or "generation"'
+          optional :generation_type, type: String, values: ::CodeSuggestions::Instruction::GENERATION_TRIGGER_TYPES,
+            desc: 'The type of generation request'
           optional :stream, type: Boolean, default: false, desc: 'The option to stream code completion response'
           optional :project_path, type: String, desc: 'The path of the project',
             documentation: { example: 'namespace/project' }

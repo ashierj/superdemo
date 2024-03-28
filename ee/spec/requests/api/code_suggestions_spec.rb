@@ -322,6 +322,21 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
         end
 
+        context 'when passing generation_type parameter' do
+          let(:additional_params) { { generation_type: :small_file } }
+
+          it 'passes generation_type into TaskFactory.new' do
+            expect(::CodeSuggestions::TaskFactory).to receive(:new)
+              .with(
+                current_user,
+                params: hash_including(generation_type: 'small_file'),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+        end
+
         context 'when passing project_path parameter' do
           let(:additional_params) { { project_path: 'group/test-project' } }
 
