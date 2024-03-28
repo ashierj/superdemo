@@ -81,8 +81,6 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
     end
 
     shared_examples 'CI/CD for GitHub' do
-      let(:scopes) { ['repo', 'read:org'] }
-
       it 'creates CI/CD project from GitHub' do
         visit new_project_path
         click_link 'Run CI/CD for external repository'
@@ -104,10 +102,11 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           allow(client).to receive(:user).and_return({ login: 'my-user' })
           allow(client).to receive_message_chain(:octokit, :rate_limit)
           allow(client).to receive(:octokit).and_return(octokit)
-          allow(client).to receive_message_chain(:octokit, :scopes).and_return(scopes)
         end
 
         allow(octokit).to receive_message_chain(:rate_limit, :remaining).and_return(100)
+        allow(octokit).to receive(:repository).and_return({ status: 200 })
+        allow(octokit).to receive(:collaborators).and_return({ status: 200 })
 
         fill_in 'personal_access_token', with: 'fake-token'
 
