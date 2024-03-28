@@ -12,8 +12,7 @@ module EE
         def counters
           super + [
             ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
-            ::Gitlab::UsageDataCounters::LicenseTestingCounter,
-            ::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter
+            ::Gitlab::UsageDataCounters::LicenseTestingCounter
           ]
         end
       end
