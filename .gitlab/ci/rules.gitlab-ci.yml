@@ -877,11 +877,12 @@
 .build-images:rules:build-qa-image-merge-requests:
   rules:
     - if: '$ENABLE_BUILD_QA_IMAGE == "true"'
+    - <<: *if-merge-request-labels-run-all-e2e
+    - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request
       changes: *qa-patterns
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
-    - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request
       changes: *ci-build-images-patterns
     - <<: *if-merge-request-not-approved
@@ -891,14 +892,12 @@
     # Rules to support .qa:rules:package-and-test-ee
     - <<: *if-merge-request
       changes: *dependency-patterns
-    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *feature-flag-development-config-patterns
     - <<: *if-merge-request
       changes: *nodejs-patterns
     - <<: *if-merge-request
       changes: *ci-qa-patterns
-    - <<: *if-force-ci
 
 .build-images:rules:build-qa-image:
   rules:
@@ -907,6 +906,7 @@
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-ruby-branch
+    - <<: *if-force-ci
     - <<: *if-auto-deploy-branches
       variables:
         ARCH: amd64,arm64
@@ -1202,6 +1202,8 @@
     - <<: *if-auto-deploy-branches
     - <<: *if-ruby-branch
     - <<: *if-force-ci
+    - <<: *if-merge-request-labels-run-all-e2e
+    - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request
       changes: *qa-patterns
     - <<: *if-merge-request-targeting-stable-branch
@@ -1210,11 +1212,9 @@
       changes: *ci-build-images-patterns
     - <<: *if-default-refs
       changes: *workhorse-patterns
-    - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request-not-approved
       when: never
     # Rules to support .qa:rules:package-and-test
-    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *dependency-patterns
     - <<: *if-default-refs
@@ -1504,6 +1504,10 @@
       when: never
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
+    - <<: *if-ruby-branch
+      allow_failure: true
+    - <<: *if-merge-request-labels-run-all-e2e
+      allow_failure: true
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
       allow_failure: true
@@ -1515,12 +1519,9 @@
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-schedule
       allow_failure: true
-    - <<: *if-ruby-branch
     # Rules to support .qa:rules:package-and-test-ee
     - <<: *if-merge-request
       changes: *dependency-patterns
-      allow_failure: true
-    - <<: *if-merge-request-labels-run-all-e2e
       allow_failure: true
     - <<: *if-merge-request
       changes: *feature-flag-development-config-patterns
@@ -1540,13 +1541,13 @@
     # From .qa:rules:package-and-test-common
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-ruby-branch
+    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *qa-patterns
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
     - <<: *if-merge-request-not-approved
       when: never
-    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-merge-request
       changes: *dependency-patterns
       variables:
@@ -1582,6 +1583,8 @@
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-ruby-branch
       allow_failure: true
+    - <<: *if-merge-request-labels-run-all-e2e
+      allow_failure: true
     # Run tests automatically for MRs that touch QA files
     - <<: *if-merge-request
       changes: *qa-patterns
@@ -1592,8 +1595,6 @@
     # Otherwise, only run tests after the MR is approved
     - <<: *if-merge-request-not-approved
       when: never
-    - <<: *if-merge-request-labels-run-all-e2e
-      allow_failure: true
     - <<: *if-merge-request
       changes: *dependency-patterns
       variables:
