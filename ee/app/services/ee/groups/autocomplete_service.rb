@@ -2,6 +2,8 @@
 module EE
   module Groups
     module AutocompleteService
+      include ::Routing::WikiHelper
+
       # rubocop: disable CodeReuse/ActiveRecord
       def epics(confidential_only: false)
         finder_params = { group_id: group.id }
@@ -20,6 +22,16 @@ module EE
         finder_params = { parent: group, include_ancestors: true, state: 'opened' }
 
         IterationsFinder.new(current_user, finder_params).execute
+      end
+
+      def wikis
+        wiki = ::Wiki.for_container(group, current_user)
+        return [] unless can?(current_user, :read_wiki, wiki.container)
+
+        wiki
+          .list_pages(limit: 5000)
+          .reject { |page| page.slug.start_with?('templates/') }
+          .map { |page| { path: wiki_page_path(page.wiki, page), slug: page.slug, title: page.title } }
       end
 
       def vulnerabilities

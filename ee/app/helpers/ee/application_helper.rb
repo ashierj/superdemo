@@ -83,7 +83,8 @@ module EE
         {
           epics: epics_group_autocomplete_sources_path(object),
           iterations: object.feature_available?(:iterations) ? iterations_group_autocomplete_sources_path(object) : nil,
-          vulnerabilities: enabled_for_vulnerabilities ? vulnerabilities_group_autocomplete_sources_path(object) : nil
+          vulnerabilities: enabled_for_vulnerabilities ? vulnerabilities_group_autocomplete_sources_path(object) : nil,
+          wikis: object.feature_available?(:wiki, current_user) ? wikis_group_autocomplete_sources_path(object) : nil
         }.compact.merge(super)
       else
         {

@@ -108,6 +108,40 @@ RSpec.describe Groups::AutocompleteService, feature_category: :groups_and_projec
     end
   end
 
+  describe '#wikis' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:wiki) { create(:group_wiki, group: group) }
+
+    before do
+      create(:wiki_page, wiki: wiki, title: 'page1', content: 'content1')
+      create(:wiki_page, wiki: wiki, title: 'templates/page2', content: 'content2')
+    end
+
+    context 'when user can read wiki' do
+      it 'returns wiki pages (except templates)' do
+        service = described_class.new(group, user)
+        allow(service).to receive(:can?).and_return(true)
+
+        results = service.wikis
+
+        expect(results.size).to eq(1)
+        expect(results.first).to include(path: "/groups/#{group.full_path}/-/wikis/page1", slug: 'page1', title: 'page1')
+      end
+    end
+
+    context 'when user cannot read wiki' do
+      it 'returns empty array' do
+        service = described_class.new(group, nil)
+        allow(service).to receive(:can?).and_return(false)
+
+        results = service.wikis
+
+        expect(results).to be_empty
+      end
+    end
+  end
+
   describe '#vulnerability' do
     let_it_be_with_refind(:project) { create(:project, group: group) }
     let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
