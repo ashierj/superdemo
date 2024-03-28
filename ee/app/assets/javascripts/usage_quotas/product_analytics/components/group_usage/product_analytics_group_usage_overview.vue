@@ -1,5 +1,5 @@
 <script>
-import { formatNumber, s__ } from '~/locale';
+import { formatNumber, sprintf, s__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { SHORT_DATE_FORMAT } from '~/vue_shared/constants';
 
@@ -28,7 +28,9 @@ export default {
   computed: {
     description() {
       const currentMonth = getCurrentMonth();
-      return s__(`Analytics|Events received since ${formatDate(currentMonth, SHORT_DATE_FORMAT)}`);
+      return sprintf(s__('Analytics|Events received since %{date}'), {
+        date: formatDate(currentMonth, SHORT_DATE_FORMAT),
+      });
     },
     eventsUsedPercentage() {
       if (!this.storedEventsLimit) {

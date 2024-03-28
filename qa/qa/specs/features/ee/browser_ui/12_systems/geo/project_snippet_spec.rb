@@ -43,7 +43,7 @@ module QA
             aggregate_failures 'checking snippet details' do
               expect(snippet).to have_snippet_title(snippet_title)
               expect(snippet).to have_snippet_description(snippet_description)
-              expect(snippet).to have_visibility_type(/private/i)
+              expect(snippet).to have_visibility_description('The snippet is visible only to project members.')
               expect(snippet).to have_file_name(file_name)
               expect(snippet).to have_file_content('Geo snippet heading')
               expect(snippet).to have_file_content('Example link')
