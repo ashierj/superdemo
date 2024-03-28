@@ -1,5 +1,5 @@
 import { GlDisclosureDropdown } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -38,12 +38,6 @@ describe('WorkItemColor component', () => {
     .mockResolvedValue(
       updateWorkItemMutationResponseFactory({ colorWidgetPresent: true, color: selectedColor }),
     );
-  const successUpdateWorkItemMutationDefaultColorHandler = jest.fn().mockResolvedValue(
-    updateWorkItemMutationResponseFactory({
-      colorWidgetPresent: true,
-      color: DEFAULT_COLOR.color,
-    }),
-  );
 
   const createComponent = ({
     canUpdate = true,
@@ -83,6 +77,7 @@ describe('WorkItemColor component', () => {
     it('renders the color view component with provided value', () => {
       expect(findSidebarColorView().exists()).toBe(true);
       expect(findSidebarColorView().props('color')).toBe(selectedColor);
+      expect(findSidebarColorView().props('colorName')).toBe('Custom');
     });
 
     it('does not render the color picker component and edit button', () => {
@@ -109,8 +104,9 @@ describe('WorkItemColor component', () => {
     });
 
     describe('when editing', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponent({ workItem: mockWorkItem });
+        await nextTick();
         findEditButton().vm.$emit('click');
       });
 
@@ -140,29 +136,24 @@ describe('WorkItemColor component', () => {
         });
       });
 
-      it.each`
-        color                  | inputColor       | successHandler
-        ${selectedColor}       | ${selectedColor} | ${successUpdateWorkItemMutationHandler}
-        ${DEFAULT_COLOR.color} | ${null}          | ${successUpdateWorkItemMutationDefaultColorHandler}
-      `(
-        'updates the color from $inputColor to $color if dropdown is closed after selecting input color',
-        async ({ color, inputColor, successHandler }) => {
-          createComponent({ mutationHandler: successHandler });
+      it('updates the color if dropdown is closed after selecting input color', async () => {
+        createComponent({ mutationHandler: successUpdateWorkItemMutationHandler });
 
-          selectColor(inputColor);
+        await nextTick();
 
-          await waitForPromises();
+        selectColor(selectedColor);
 
-          expect(successHandler).toHaveBeenCalledWith({
-            input: {
-              id: workItemColorWidget.id,
-              colorWidget: {
-                color,
-              },
+        await waitForPromises();
+
+        expect(successUpdateWorkItemMutationHandler).toHaveBeenCalledWith({
+          input: {
+            id: workItemColorWidget.id,
+            colorWidget: {
+              color: selectedColor,
             },
-          });
-        },
-      );
+          },
+        });
+      });
 
       it.each`
         errorType          | expectedErrorMessage                                                 | failureHandler
@@ -174,6 +165,8 @@ describe('WorkItemColor component', () => {
           createComponent({
             mutationHandler: failureHandler,
           });
+
+          await nextTick();
 
           selectColor(selectedColor);
 
@@ -187,9 +180,15 @@ describe('WorkItemColor component', () => {
 
   it('renders the title in the dropdown header', async () => {
     createComponent({ mountFn: mountExtended, stubs: { SidebarColorPicker: true } });
-
+    await nextTick();
     await findEditButton().vm.$emit('click');
 
     expect(findColorHeaderTitle().text()).toBe('Select a color');
+  });
+
+  it('renders the color name when preset color is applied', () => {
+    createComponent();
+
+    expect(findSidebarColorView().props('colorName')).toBe('Blue');
   });
 });
