@@ -109,7 +109,7 @@ module Integrations
              'CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}'),
           link_start: format('<a target="_blank" rel="noopener noreferrer" href="%{url}">', url: url).html_safe, # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
           link_end: '</a>'.html_safe,
-          icon: ApplicationController.helpers.sprite_icon('external-link').html_safe # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
+          icon: ApplicationController.helpers.sprite_icon('external-link', aria_label: _('(external link)')).html_safe # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
         )
       end
 
