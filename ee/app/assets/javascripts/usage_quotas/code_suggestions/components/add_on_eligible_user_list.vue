@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlAvatarLabeled,
   GlAvatarLink,
   GlBadge,
@@ -13,7 +14,12 @@ import {
 import { pick, escape } from 'lodash';
 import { s__, n__, sprintf } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
+import {
+  ADD_ON_ERROR_DICTIONARY,
+  CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE,
+  CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE,
+  NO_ASSIGNMENTS_FOUND_ERROR_CODE,
+} from 'ee/usage_quotas/error_constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import {
@@ -38,6 +44,7 @@ export default {
     AddOnBulkActionConfirmationModal,
     CodeSuggestionsAddonAssignment,
     ErrorAlert,
+    GlAlert,
     GlAvatarLabeled,
     GlAvatarLink,
     GlBadge,
@@ -80,6 +87,8 @@ export default {
       addOnAssignmentError: undefined,
       selectedUsers: [],
       bulkAction: undefined,
+      bulkActionSuccessMessage: undefined,
+      bulkActionError: undefined,
       isBulkActionInProgress: false,
       isConfirmationModalVisible: false,
     };
@@ -151,6 +160,9 @@ export default {
         false,
       );
     },
+    isBulkActionToAssignSeats() {
+      return this.bulkAction === ASSIGN_SEATS_BULK_ACTION;
+    },
   },
   methods: {
     nextPage() {
@@ -203,7 +215,13 @@ export default {
       this.isConfirmationModalVisible = false;
       this.bulkAction = undefined;
     },
+    clearAlerts() {
+      this.addOnAssignmentError = undefined;
+      this.bulkActionError = undefined;
+      this.bulkActionSuccessMessage = undefined;
+    },
     async assignSeats() {
+      this.clearAlerts();
       this.isBulkActionInProgress = true;
 
       try {
@@ -219,17 +237,20 @@ export default {
 
         const errors = userAddOnAssignmentBulkCreate?.errors || [];
 
-        if (!errors.length) {
-          this.unselectAllUsers();
+        if (errors.length) {
+          this.handleBulkActionError(errors[0]);
+        } else {
+          this.handleBulkActionSuccess();
         }
       } catch (e) {
         this.handleBulkActionError(e);
+        Sentry.captureException(e);
       } finally {
-        this.isBulkActionInProgress = false;
-        this.isConfirmationModalVisible = false;
+        this.resetBulkAction();
       }
     },
     async unassignSeats() {
+      this.clearAlerts();
       this.isBulkActionInProgress = true;
 
       try {
@@ -245,18 +266,63 @@ export default {
 
         const errors = userAddOnAssignmentBulkRemove?.errors || [];
 
-        if (!errors.length) {
-          this.unselectAllUsers();
+        if (errors.length) {
+          const error = errors[0];
+          if (error === NO_ASSIGNMENTS_FOUND_ERROR_CODE) {
+            // NO_ASSIGNMENTS_FOUND is returned when none of the users provided
+            // have add-on assignment - we consider this a success on the UI
+            // as customer is trying to unassign add-on to users who already have
+            // no assignment therefore not raising an error for this scenario
+            this.handleBulkActionSuccess();
+            return;
+          }
+          this.handleBulkActionError(error);
+        } else {
+          this.handleBulkActionSuccess();
         }
       } catch (e) {
         this.handleBulkActionError(e);
+        Sentry.captureException(e);
       } finally {
-        this.isBulkActionInProgress = false;
-        this.isConfirmationModalVisible = false;
+        this.resetBulkAction();
       }
     },
-    handleBulkActionError(e) {
-      Sentry.captureException(e);
+    handleBulkActionSuccess() {
+      if (this.isBulkActionToAssignSeats) {
+        this.bulkActionSuccessMessage = n__(
+          'Billing|%d user has been successfully assigned a seat.',
+          'Billing|%d users have been successfully assigned a seat.',
+          this.selectedUsers.length,
+        );
+      } else {
+        this.bulkActionSuccessMessage = n__(
+          'Billing|%d user has been successfully unassigned a seat.',
+          'Billing|%d users have been successfully unassigned a seat.',
+          this.selectedUsers.length,
+        );
+      }
+      this.unselectAllUsers();
+    },
+    handleBulkActionError(error) {
+      let bulkActionError = error;
+      if (!this.isKnownErrorCode(error)) {
+        bulkActionError = this.isBulkActionToAssignSeats
+          ? CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE
+          : CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE;
+      }
+      this.bulkActionError = bulkActionError;
+    },
+    isKnownErrorCode(errorCode) {
+      if (errorCode instanceof String || typeof errorCode === 'string') {
+        return Object.keys(ADD_ON_ERROR_DICTIONARY).includes(errorCode.toLowerCase());
+      }
+
+      return false;
+    },
+    resetBulkAction() {
+      this.bulkAction = undefined;
+      this.isBulkActionInProgress = false;
+      this.isConfirmationModalVisible = false;
     },
   },
 };
@@ -274,9 +340,26 @@ export default {
       :dismissible="true"
       @dismiss="clearAddOnAssignmentError"
     />
+    <gl-alert
+      v-if="bulkActionSuccessMessage"
+      data-testid="bulk-action-success-alert"
+      variant="success"
+      :dismissible="true"
+      @dismiss="bulkActionSuccessMessage = undefined"
+    >
+      {{ bulkActionSuccessMessage }}
+    </gl-alert>
+    <error-alert
+      v-if="bulkActionError"
+      data-testid="bulk-action-error-alert"
+      :error="bulkActionError"
+      :error-dictionary="$options.addOnErrorDictionary"
+      :dismissible="true"
+      @dismiss="bulkActionError = undefined"
+    />
     <div
       v-if="isAnyUserSelected"
-      class="gl-display-flex gl-bg-gray-10 gl-p-5 gl-mt-5 gl-align-items-center gl-justify-content-space-between"
+      class="gl-display-flex gl-bg-gray-10 gl-p-5 gl-align-items-center gl-justify-content-space-between"
     >
       <span v-safe-html="pluralisedSelectedUsers" data-testid="selected-users-summary"></span>
       <div class="gl-display-flex gl-gap-3">
