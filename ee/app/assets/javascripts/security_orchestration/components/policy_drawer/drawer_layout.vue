@@ -42,9 +42,6 @@ export default {
   mixins: [glFeatureFlagsMixin()],
   inject: {
     namespaceType: {},
-    securityPoliciesPolicyScopeToggleEnabled: {
-      default: false,
-    },
   },
   props: {
     description: {
