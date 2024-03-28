@@ -18,8 +18,8 @@ export const DEFAULT_PROJECT_TEXT = s__(
 );
 export const COMPLIANCE_FRAMEWORKS_DESCRIPTION = (projectsCount) =>
   n__(
-    'SecurityOrchestration|%{projects} which has compliance framework:',
-    'SecurityOrchestration|%{projects} which have compliance framework:',
+    'SecurityOrchestration|%d project which has compliance framework:',
+    'SecurityOrchestration|%d projects which have compliance framework:',
     projectsCount,
   );
 

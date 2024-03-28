@@ -1,5 +1,5 @@
 import { newDate } from '~/lib/utils/datetime_utility';
-import { __ } from '~/locale';
+import { sprintf, __ } from '~/locale';
 import { PRESET_DEFAULTS, DAYS_IN_WEEK } from '../../constants';
 
 /**
@@ -47,4 +47,5 @@ export const getTimeframeForWeeksView = (initialDate = new Date()) => {
  * => (UTC -10:00)
  *
  */
-export const selectedTimezoneFormattedOffset = (offset) => __(`(UTC ${offset})`);
+export const selectedTimezoneFormattedOffset = (offset) =>
+  sprintf(__('(UTC %{offset})'), { offset });

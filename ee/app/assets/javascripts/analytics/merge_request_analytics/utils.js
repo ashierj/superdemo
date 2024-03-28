@@ -1,6 +1,6 @@
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
-import { __ } from '~/locale';
+import { sprintf, __ } from '~/locale';
 import { createAlert, VARIANT_WARNING } from '~/alert';
 import {
   getMonthNames,
@@ -177,7 +177,9 @@ export const toDateRange = (startDateParam, endDateParam) => {
     return parseAndValidateDates(startDateParam, endDateParam);
   } catch (error) {
     createAlert({
-      message: __(`${error.message}, defaulting to 365 days.`),
+      message: sprintf(__('%{errorMessage}, defaulting to 365 days.'), {
+        errorMessage: error.message,
+      }),
       variant: VARIANT_WARNING,
     });
     return getDefaultDateRange();

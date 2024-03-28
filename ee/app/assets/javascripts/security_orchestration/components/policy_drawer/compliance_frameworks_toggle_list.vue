@@ -1,6 +1,6 @@
 <script>
 import { GlLabel } from '@gitlab/ui';
-import { sprintf, n__, __ } from '~/locale';
+import { sprintf, __ } from '~/locale';
 import {
   COMPLIANCE_FRAMEWORKS_DESCRIPTION,
   COMPLIANCE_FRAMEWORKS_DESCRIPTION_NO_PROJECTS,
@@ -16,11 +16,6 @@ export default {
       type: Array,
       required: false,
       default: () => [],
-    },
-    customHeaderMessage: {
-      type: String,
-      required: false,
-      default: '',
     },
     labelsToShow: {
       type: Number,
@@ -56,13 +51,7 @@ export default {
         return COMPLIANCE_FRAMEWORKS_DESCRIPTION_NO_PROJECTS;
       }
 
-      const projects = n__('project', 'projects', this.projectsLength);
-
-      const message =
-        this.customHeaderMessage || COMPLIANCE_FRAMEWORKS_DESCRIPTION(this.projectsLength);
-      return sprintf(message, {
-        projects: __(`${this.projectsLength} ${projects}`),
-      });
+      return COMPLIANCE_FRAMEWORKS_DESCRIPTION(this.projectsLength);
     },
     projectsLength() {
       const allProjectsOfComplianceFrameworks = this.complianceFrameworks

@@ -1,5 +1,4 @@
 import { GlDrawer, GlLink } from '@gitlab/ui';
-import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
@@ -140,7 +139,7 @@ describe('DastProfilesDrawer', () => {
       createComponent({ libraryLink });
       await waitForPromises();
 
-      expect(findFooterLink().text()).toBe(__(`Manage ${SCANNER_TYPE} profiles`));
+      expect(findFooterLink().text()).toBe(`Manage ${SCANNER_TYPE} profiles`);
       expect(findFooterLink().attributes('href')).toEqual(libraryLink);
     });
 

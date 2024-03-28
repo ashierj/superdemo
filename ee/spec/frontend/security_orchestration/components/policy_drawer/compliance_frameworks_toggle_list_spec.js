@@ -90,16 +90,4 @@ describe('ComplianceFrameworksToggleList', () => {
       },
     );
   });
-
-  describe('custom header', () => {
-    it('renders custom header message', () => {
-      createComponent({
-        propsData: {
-          customHeaderMessage: 'Test header',
-        },
-      });
-
-      expect(findHeader().text()).toBe('Test header');
-    });
-  });
 });
