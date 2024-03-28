@@ -355,12 +355,11 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
             stub_feature_flags(group_analytics_dashboards: false)
           end
 
-          it 'tracks page view on usage ping' do
-            expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
+          it_behaves_like 'internal event tracking' do
+            let(:event) { 'value_streams_dashboard_viewed' }
+            let(:namespace) { group }
 
-            request
-
-            expect(response).to be_successful
+            subject(:track_event) { request }
           end
         end
       end

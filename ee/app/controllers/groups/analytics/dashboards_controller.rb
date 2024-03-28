@@ -35,7 +35,7 @@ module Groups
             #       This check handles rendering when we directly
             #       link to `/-/analytics/dashboards/value_streams_dashboard`
             if Feature.enabled?(:group_analytics_dashboard_dynamic_vsd, @group)
-              Gitlab::UsageDataCounters::ValueStreamsDashboardCounter.count(:views)
+              track_value_streams_event
 
               render :index
             else
@@ -56,8 +56,6 @@ module Groups
                 else
                   []
                 end
-
-              Gitlab::UsageDataCounters::ValueStreamsDashboardCounter.count(:views)
             end
           end
         end
@@ -95,6 +93,10 @@ module Groups
 
       def tracking_project_source
         nil
+      end
+
+      def track_value_streams_event
+        Gitlab::InternalEvents.track_event('value_streams_dashboard_viewed', namespace: @group, user: current_user)
       end
 
       def redirect_to_value_streams_dashboard
