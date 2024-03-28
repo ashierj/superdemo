@@ -4,9 +4,11 @@ module Search
   module Zoekt
     class Task < ApplicationRecord
       PARTITION_DURATION = 1.day
+      PROCESSING_BATCH_SIZE = 100
 
       include PartitionedTable
       include IgnorableColumns
+      include EachBatch
 
       self.table_name = 'zoekt_tasks'
       self.primary_key = :id
@@ -17,6 +19,7 @@ module Search
       belongs_to :zoekt_repository, inverse_of: :tasks, class_name: '::Search::Zoekt::Repository'
 
       scope :for_partition, ->(partition) { where(partition_id: partition) }
+      scope :with_project, -> { includes(zoekt_repository: :project) }
 
       enum state: {
         pending: 0,
@@ -49,6 +52,34 @@ module Search
             .where(state: :pending)
             .exists?
         end
+
+      def self.each_task(limit:)
+        return unless block_given?
+
+        count = 0
+
+        scope = pending.with_project.order(:perform_at, :id)
+        iterator = Gitlab::Pagination::Keyset::Iterator.new(scope: scope)
+
+        iterator.each_batch(of: PROCESSING_BATCH_SIZE) do |tasks|
+          orphaned_task_ids = []
+
+          tasks.each do |task|
+            unless task.zoekt_repository&.project
+              orphaned_task_ids << task.id
+              next
+            end
+
+            yield task
+            count += 1
+            break if count >= limit
+          end
+
+          tasks.where(id: orphaned_task_ids).update_all(state: :orphaned) if orphaned_task_ids.any?
+
+          break if count >= limit
+        end
+      end
     end
   end
 end

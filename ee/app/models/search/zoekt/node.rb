@@ -37,6 +37,8 @@ module Search
           s.used_bytes = params.fetch("disk.used")
           s.total_bytes = params.fetch("disk.all")
           s.metadata['name'] = params.fetch("node.name")
+          s.metadata['task_count'] = params["node.task_count"].to_i if params["node.task_count"].present?
+          s.metadata['concurrency'] = params["node.concurrency"].to_i if params["node.concurrency"].present?
         end
       end
 

@@ -42,7 +42,9 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
         'node.url' => 'http://localhost:6080',
         'disk.all' => 994662584320,
         'disk.used' => 532673712128,
-        'disk.free' => 461988872192
+        'disk.free' => 461988872192,
+        'node.task_count' => 5,
+        'node.concurrency' => 10
       }
     end
 
@@ -71,6 +73,8 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
           expect(tasked_node.used_bytes).to eq(params['disk.used'])
           expect(tasked_node.total_bytes).to eq(params['disk.all'])
           expect(tasked_node.metadata['name']).to eq(params['node.name'])
+          expect(tasked_node.metadata['task_count']).to eq(params['node.task_count'])
+          expect(tasked_node.metadata['concurrency']).to eq(params['node.concurrency'])
         end
       end
 
