@@ -94,6 +94,10 @@ module QA
               it_behaves_like 'unauthorized', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/451486'
             end
           end
+
+          context 'with no Duo Pro add-on', :ai_gateway_no_add_on do
+            it_behaves_like 'unauthorized', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/452450'
+          end
         end
 
         context 'with no license', :ai_gateway_no_license do
