@@ -28,7 +28,7 @@
                 - subscription_details_link = link_to('', admin_code_suggestions_path)
                 = safe_format(s_('CodeSuggestionsSM|Manage user access for Code Suggestions on the %{subscription_details_link_start}subscription details page%{subscription_details_link_end}.'), tag_pair(subscription_details_link, :subscription_details_link_start, :subscription_details_link_end))
           - else
-            = render Pajamas::AlertComponent.new(variant: :warning, dismissible: true, alert_options: { class: 'gl-mb-5' }, title: _('CodeSuggestionsSM|Code Suggestions free access has ended')) do |c|
+            = render Pajamas::AlertComponent.new(variant: :warning, dismissible: true, alert_options: { class: 'gl-mb-5' }, title: s_('CodeSuggestionsSM|Code Suggestions free access has ended')) do |c|
               - c.with_body do
                 = s_('CodeSuggestionsSM|Purchase the Duo Pro add-on to use Code Suggestions.')
               - c.with_actions do
