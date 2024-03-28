@@ -64,6 +64,26 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
     end
   end
 
+  describe '.from_diff' do
+    before_all do
+      create_valid_funnel
+    end
+
+    subject(:funnel) { described_class.from_diff(project.repository.commit.deltas.last, project: project) }
+
+    it { is_expected.to be_a(described_class) }
+
+    it 'has the correct values', :aggregate_failures do
+      expect(funnel.name).to eq('completed_purchase')
+      expect(funnel.project).to eq(project)
+      expect(funnel.seconds_to_convert).to eq(3600)
+      expect(funnel.steps.size).to eq(2)
+      expect(funnel.steps.first.name).to eq('view_page_1')
+      expect(funnel.steps.first.target).to eq('/page1.html')
+      expect(funnel.steps.first.action).to eq('pageview')
+    end
+  end
+
   describe '#to_sql' do
     subject { project.product_analytics_funnels.first.to_sql }
 
@@ -77,5 +97,17 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
     end
 
     it { is_expected.to eq(query) }
+  end
+
+  private
+
+  def create_valid_funnel
+    project.repository.create_file(
+      project.creator,
+      '.gitlab/analytics/funnels/example1.yml',
+      File.read(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_1.yaml')),
+      message: 'Add funnel',
+      branch_name: 'master'
+    )
   end
 end
