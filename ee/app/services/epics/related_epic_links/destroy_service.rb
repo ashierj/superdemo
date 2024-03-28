@@ -71,9 +71,7 @@ module Epics
       end
 
       def sync_to_work_item!
-        return unless epic.group.epic_synced_with_work_item_enabled?
         return unless epic.work_item
-
         return unless source.issue_id && target.issue_id
 
         item_ids = epic_is_link_source? ? [target.issue_id] : [source.issue_id]
