@@ -169,6 +169,7 @@ module GitlabSubscriptions
       disable_private_profiles
       group_saved_replies
       requested_changes_block_merge_request
+      project_saved_replies
     ].freeze
 
     ULTIMATE_FEATURES = %i[

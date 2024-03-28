@@ -6828,6 +6828,79 @@ Input type: `ProjectMemberBulkUpdateInput`
 | <a id="mutationprojectmemberbulkupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationprojectmemberbulkupdateprojectmembers"></a>`projectMembers` | [`[ProjectMember!]`](#projectmember) | Project members after mutation. |
 
+### `Mutation.projectSavedReplyCreate`
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Input type: `ProjectSavedReplyCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsavedreplycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsavedreplycreatecontent"></a>`content` | [`String!`](#string) | Content of the saved reply. |
+| <a id="mutationprojectsavedreplycreatename"></a>`name` | [`String!`](#string) | Name of the saved reply. |
+| <a id="mutationprojectsavedreplycreateprojectid"></a>`projectId` | [`ProjectID!`](#projectid) | Project for the saved reply. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsavedreplycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsavedreplycreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationprojectsavedreplycreatesavedreply"></a>`savedReply` | [`ProjectSavedReply`](#projectsavedreply) | Saved reply after mutation. |
+
+### `Mutation.projectSavedReplyDestroy`
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Input type: `ProjectSavedReplyDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsavedreplydestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsavedreplydestroyid"></a>`id` | [`ProjectsSavedReplyID!`](#projectssavedreplyid) | Global ID of the project-level saved reply. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsavedreplydestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsavedreplydestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationprojectsavedreplydestroysavedreply"></a>`savedReply` | [`ProjectSavedReply`](#projectsavedreply) | Saved reply after mutation. |
+
+### `Mutation.projectSavedReplyUpdate`
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Input type: `ProjectSavedReplyUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsavedreplyupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsavedreplyupdatecontent"></a>`content` | [`String!`](#string) | Content of the saved reply. |
+| <a id="mutationprojectsavedreplyupdateid"></a>`id` | [`ProjectsSavedReplyID!`](#projectssavedreplyid) | Global ID of the project-level saved reply. |
+| <a id="mutationprojectsavedreplyupdatename"></a>`name` | [`String!`](#string) | Name of the saved reply. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsavedreplyupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsavedreplyupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationprojectsavedreplyupdatesavedreply"></a>`savedReply` | [`ProjectSavedReply`](#projectsavedreply) | Saved reply after mutation. |
+
 ### `Mutation.projectSetComplianceFramework`
 
 Assign (or unset) a compliance framework to a project.
@@ -13289,6 +13362,30 @@ The edge type for [`ProjectRepositoryRegistry`](#projectrepositoryregistry).
 | ---- | ---- | ----------- |
 | <a id="projectrepositoryregistryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="projectrepositoryregistryedgenode"></a>`node` | [`ProjectRepositoryRegistry`](#projectrepositoryregistry) | The item at the end of the edge. |
+
+#### `ProjectSavedReplyConnection`
+
+The connection type for [`ProjectSavedReply`](#projectsavedreply).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectsavedreplyconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
+| <a id="projectsavedreplyconnectionedges"></a>`edges` | [`[ProjectSavedReplyEdge]`](#projectsavedreplyedge) | A list of edges. |
+| <a id="projectsavedreplyconnectionnodes"></a>`nodes` | [`[ProjectSavedReply]`](#projectsavedreply) | A list of nodes. |
+| <a id="projectsavedreplyconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProjectSavedReplyEdge`
+
+The edge type for [`ProjectSavedReply`](#projectsavedreply).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectsavedreplyedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="projectsavedreplyedgenode"></a>`node` | [`ProjectSavedReply`](#projectsavedreply) | The item at the end of the edge. |
 
 #### `ProjectWikiRepositoryRegistryConnection`
 
@@ -25727,6 +25824,7 @@ Check permissions for the current user on a vulnerability finding.
 | <a id="projectrequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request member access to the project. |
 | <a id="projectrequirementstatescount"></a>`requirementStatesCount` | [`RequirementStatesCount`](#requirementstatescount) | Number of requirements for the project by their state. |
 | <a id="projectsastciconfiguration"></a>`sastCiConfiguration` | [`SastCiConfiguration`](#sastciconfiguration) | SAST CI configuration for the project. |
+| <a id="projectsavedreplies"></a>`savedReplies` **{warning-solid}** | [`ProjectSavedReplyConnection`](#projectsavedreplyconnection) | **Introduced** in GitLab 16.11. **Status**: Experiment. Saved replies available to the project. Available only when feature flag `project_saved_replies_flag` is enabled. |
 | <a id="projectsecuritydashboardpath"></a>`securityDashboardPath` | [`String`](#string) | Path to project's security dashboard. |
 | <a id="projectsecuritypolicyproject"></a>`securityPolicyProject` | [`Project`](#project) | Security policy project assigned to the project, absent if assigned to a parent group. |
 | <a id="projectsecuritypolicyprojectlinkednamespaces"></a>`securityPolicyProjectLinkedNamespaces` | [`NamespaceConnection`](#namespaceconnection) | Namespaces linked to the project, when used as Security Policy Project. (see [Connections](#connections)) |
@@ -27037,6 +27135,22 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="projectrunnersupgradestatus"></a>`upgradeStatus` | [`CiRunnerUpgradeStatus`](#cirunnerupgradestatus) | Filter by upgrade status. |
 | <a id="projectrunnersversionprefix"></a>`versionPrefix` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.6. **Status**: Experiment. Filter runners by version. Runners that contain runner managers with the version at the start of the search term are returned. For example, the search term '14.' returns runner managers with versions '14.11.1' and '14.2.3'. |
 
+##### `Project.savedReply`
+
+Saved reply in the project. Available only when feature flag `group_saved_replies_flag` is enabled.
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Returns [`ProjectSavedReply`](#projectsavedreply).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectsavedreplyid"></a>`id` | [`ProjectsSavedReplyID!`](#projectssavedreplyid) | Global ID of a saved reply. |
+
 ##### `Project.scanExecutionPolicies`
 
 Scan Execution Policies of the project.
@@ -27515,6 +27629,16 @@ Represents the Geo replication and verification state of a project repository.
 | <a id="projectrepositoryregistryverificationstartedat"></a>`verificationStartedAt` | [`Time`](#time) | Timestamp when the verification started of ProjectRepositoryRegistry. |
 | <a id="projectrepositoryregistryverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Verification state of the ProjectRepositoryRegistry. |
 | <a id="projectrepositoryregistryverifiedat"></a>`verifiedAt` | [`Time`](#time) | Timestamp of the most recent successful verification of the ProjectRepositoryRegistry. |
+
+### `ProjectSavedReply`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectsavedreplycontent"></a>`content` | [`String!`](#string) | Content of the saved reply. |
+| <a id="projectsavedreplyid"></a>`id` | [`ProjectsSavedReplyID!`](#projectssavedreplyid) | Global ID of the project-level saved reply. |
+| <a id="projectsavedreplyname"></a>`name` | [`String!`](#string) | Name of the saved reply. |
 
 ### `ProjectSecurityPolicySource`
 
@@ -34655,6 +34779,12 @@ An example `ProjectImportStateID` is: `"gid://gitlab/ProjectImportState/1"`.
 A `ProjectsBranchRuleID` is a global ID. It is encoded as a string.
 
 An example `ProjectsBranchRuleID` is: `"gid://gitlab/Projects::BranchRule/1"`.
+
+### `ProjectsSavedReplyID`
+
+A `ProjectsSavedReplyID` is a global ID. It is encoded as a string.
+
+An example `ProjectsSavedReplyID` is: `"gid://gitlab/Projects::SavedReply/1"`.
 
 ### `ReleaseID`
 
