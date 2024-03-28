@@ -1,6 +1,22 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
+  factory :security_policy, class: 'Security::Policy' do
+    security_orchestration_policy_configuration
+    sequence(:name) { |n| "security-policy-#{n}" }
+    checksum { Digest::SHA256.hexdigest(rand.to_s) }
+    policy_index { 0 }
+    type { Security::Policy.types[:approval_policy] }
+    enabled { true }
+    scope { {} }
+    approval_settings { {} }
+    require_approval
+
+    trait :require_approval do
+      actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[owner] }] }
+    end
+  end
+
   factory :scan_execution_policy, class: Struct.new(:name, :description, :enabled, :actions, :rules, :policy_scope) do
     skip_create
 
