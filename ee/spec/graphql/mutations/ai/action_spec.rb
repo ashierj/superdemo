@@ -95,66 +95,20 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
         end
       end
 
-      context 'when user is allowed to read resource' do
-        before do
-          allow(Ability)
+      context 'when the user can perform AI action' do
+        context 'when user is not a member who can view the resource' do
+          before do
+            allow(Ability)
               .to receive(:allowed?)
               .with(user, "read_#{resource.to_ability_name}", resource)
               .and_return(true)
-
-          allow(Ability)
-            .to receive(:allowed?)
-            .and_call_original
-        end
-
-        context 'when the user is not a member' do
-          it 'raises error' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
-        end
-
-        context 'when the resource does not have a parent' do
-          let(:resource) { user }
-
-          it 'does not raise an error' do
-            expect { subject }.not_to raise_error
-          end
-        end
-      end
-
-      context 'when the user can perform AI action' do
-        before do
-          resource.project.add_developer(user)
-        end
-
-        it 'calls Llm::ExecuteMethodService' do
-          expect_next_instance_of(
-            Llm::ExecuteMethodService,
-            user,
-            resource,
-            expected_method,
-            expected_options
-          ) do |svc|
-            expect(svc)
-              .to receive(:execute)
-              .and_return(ServiceResponse.success(
-                payload: {
-                  ai_message: build(:ai_message, request_id: request_id)
-                }))
-          end
-
-          expect(subject[:errors]).to be_empty
-          expect(subject[:request_id]).to eq(request_id)
-        end
-
-        context 'when resource is null' do
-          let(:resource_id) { nil }
 
           it 'calls Llm::ExecuteMethodService' do
             expect_next_instance_of(
               Llm::ExecuteMethodService,
               user,
-              nil,
+              resource,
               expected_method,
               expected_options
             ) do |svc|
@@ -171,8 +125,12 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
           end
         end
 
-        context 'when Llm::ExecuteMethodService errors out' do
-          it 'returns errors' do
+        context 'when user is a member who can view the resource' do
+          before do
+            resource.project.add_developer(user)
+          end
+
+          it 'calls Llm::ExecuteMethodService' do
             expect_next_instance_of(
               Llm::ExecuteMethodService,
               user,
@@ -182,11 +140,57 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
             ) do |svc|
               expect(svc)
                 .to receive(:execute)
-                .and_return(ServiceResponse.error(message: 'error'))
+                .and_return(ServiceResponse.success(
+                  payload: {
+                    ai_message: build(:ai_message, request_id: request_id)
+                  }))
             end
 
-            expect(subject[:errors]).to eq(['error'])
-            expect(subject[:request_id]).to be_nil
+            expect(subject[:errors]).to be_empty
+            expect(subject[:request_id]).to eq(request_id)
+          end
+
+          context 'when Llm::ExecuteMethodService errors out' do
+            it 'returns errors' do
+              expect_next_instance_of(
+                Llm::ExecuteMethodService,
+                user,
+                resource,
+                expected_method,
+                expected_options
+              ) do |svc|
+                expect(svc)
+                  .to receive(:execute)
+                  .and_return(ServiceResponse.error(message: 'error'))
+              end
+
+              expect(subject[:errors]).to eq(['error'])
+              expect(subject[:request_id]).to be_nil
+            end
+          end
+
+          context 'when resource is null' do
+            let(:resource_id) { nil }
+
+            it 'calls Llm::ExecuteMethodService' do
+              expect_next_instance_of(
+                Llm::ExecuteMethodService,
+                user,
+                nil,
+                expected_method,
+                expected_options
+              ) do |svc|
+                expect(svc)
+                  .to receive(:execute)
+                  .and_return(ServiceResponse.success(
+                    payload: {
+                      ai_message: build(:ai_message, request_id: request_id)
+                    }))
+              end
+
+              expect(subject[:errors]).to be_empty
+              expect(subject[:request_id]).to eq(request_id)
+            end
           end
         end
       end

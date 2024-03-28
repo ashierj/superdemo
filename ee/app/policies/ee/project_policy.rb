@@ -322,7 +322,6 @@ module EE
         ::Feature.enabled?(:fill_in_mr_template, subject) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(
             container: subject,
-            current_user: user,
             feature_name: :fill_in_merge_request_template
           ).allowed?
       end
@@ -332,7 +331,6 @@ module EE
         ::Feature.enabled?(:add_ai_summary_for_new_mr, subject) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(
             container: subject,
-            current_user: user,
             feature_name: :summarize_new_merge_request
           ).allowed?
       end
@@ -341,7 +339,6 @@ module EE
       condition(:generate_description_enabled) do
         ::Gitlab::Llm::FeatureAuthorizer.new(
           container: subject,
-          current_user: user,
           feature_name: :generate_description
         ).allowed?
       end
@@ -403,14 +400,6 @@ module EE
 
       condition(:chat_available_for_user, scope: :global) do
         Ability.allowed?(@user, :access_duo_chat)
-      end
-
-      condition(:membership_for_chat, scope: :global) do
-        unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
-          next Ability.allowed?(@user, :read_project, @subject)
-        end
-
-        team_member?
       end
 
       condition(:duo_features_enabled, scope: :subject) { @subject.duo_features_enabled }
@@ -935,7 +924,7 @@ module EE
         enable :write_ai_agents
       end
 
-      rule { membership_for_chat & chat_allowed_for_parent_group & chat_available_for_user }.enable :access_duo_chat
+      rule { can?(:read_project) & chat_allowed_for_parent_group & chat_available_for_user }.enable :access_duo_chat
 
       rule { can?(:read_project) & duo_features_enabled }.enable :access_duo_features
     end

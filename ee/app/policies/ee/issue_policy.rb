@@ -15,7 +15,6 @@ module EE
       condition(:summarize_notes_enabled) do
         ::Gitlab::Llm::FeatureAuthorizer.new(
           container: subject_container,
-          current_user: user,
           feature_name: :summarize_notes
         ).allowed?
       end

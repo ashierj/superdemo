@@ -296,12 +296,6 @@ module EE
         Ability.allowed?(@user, :access_duo_chat)
       end
 
-      condition(:membership_for_chat) do
-        next Ability.allowed?(@user, :read_group, @subject) unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
-
-        @subject.member?(@user)
-      end
-
       condition(:duo_features_enabled, scope: :subject) { @subject.namespace_settings&.duo_features_enabled }
 
       rule { user_banned_from_namespace }.prevent_all
@@ -706,7 +700,7 @@ module EE
 
       rule { guest }.enable :read_limit_alert
 
-      rule { membership_for_chat & chat_allowed_for_group & chat_available_for_user }.enable :access_duo_chat
+      rule { can?(:read_group) & chat_allowed_for_group & chat_available_for_user }.enable :access_duo_chat
 
       rule { can?(:read_group) & duo_features_enabled }.enable :access_duo_features
 
