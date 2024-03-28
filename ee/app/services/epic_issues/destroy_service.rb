@@ -56,7 +56,6 @@ module EpicIssues
     end
 
     def sync_to_work_item!
-      return unless source.group.epic_synced_with_work_item_enabled?
       return unless source.issue_id.present?
 
       parent_link = WorkItems::ParentLink.for_children(link.issue_id).first

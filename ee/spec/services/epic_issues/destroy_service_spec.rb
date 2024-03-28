@@ -120,9 +120,9 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
               stub_feature_flags(epic_creation_with_synced_work_item: false)
             end
 
-            it 'only removes the epic link' do
+            it 'removes the epic and work item link' do
               expect { subject }.to change { EpicIssue.count }.by(-1)
-                .and not_change { WorkItems::ParentLink.count }
+                .and(change { WorkItems::ParentLink.count }.by(-1))
             end
           end
 
