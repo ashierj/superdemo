@@ -189,8 +189,8 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
             "allowForcePush" => false,
             "codeOwnerApprovalRequired" => false
           },
-          'createdAt' => branch_rule_a.created_at.iso8601,
-          'updatedAt' => branch_rule_a.updated_at.iso8601,
+          'createdAt' => branch_rule_b.created_at.iso8601,
+          'updatedAt' => branch_rule_b.updated_at.iso8601,
           'approvalRules' => be_kind_of(Hash),
           'externalStatusChecks' => be_kind_of(Hash)
         )
