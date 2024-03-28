@@ -121,6 +121,12 @@ module EE
         end
       end
 
+      def vulnerability_findings
+        return super unless ::Feature.enabled?(:deprecate_vulnerability_occurrence_pipelines, project)
+
+        raise NotImplementedError, 'Use pipeline.project.vulnerability_findings instead'
+      end
+
       def needs_touch?
         updated_at < 5.minutes.ago
       end

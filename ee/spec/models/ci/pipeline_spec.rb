@@ -1080,6 +1080,43 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
+  describe '#vulnerability_findings' do
+    subject(:vulnerability_findings) { pipeline.vulnerability_findings }
+
+    let_it_be(:other_pipeline) { create(:ci_pipeline) }
+    let_it_be(:initial_pipeline_finding) do
+      create(
+        :vulnerabilities_finding,
+        pipeline: pipeline,
+        latest_pipeline_id: other_pipeline.id
+      ).tap { |finding| create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: other_pipeline) }
+    end
+
+    let_it_be(:latest_pipeline_finding) do
+      create(
+        :vulnerabilities_finding,
+        pipeline: other_pipeline,
+        latest_pipeline_id: pipeline.id
+      ).tap { |finding| create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
+    end
+
+    # When the FF is on, we simulate having dropped the table by
+    # raising an exception
+    it 'raises an exception when the FF is on' do
+      expect { vulnerability_findings }.to raise_error NotImplementedError
+    end
+
+    context 'with deprecate_vulnerability_occurrence_pipelines FF disabled' do
+      let(:expected_findings) { [initial_pipeline_finding, latest_pipeline_finding] }
+
+      before do
+        stub_feature_flags(deprecate_vulnerability_occurrence_pipelines: false)
+      end
+
+      it { is_expected.to match_array expected_findings }
+    end
+  end
+
   describe '#has_security_report_ingestion_warnings?' do
     subject { pipeline.has_security_report_ingestion_warnings? }
 

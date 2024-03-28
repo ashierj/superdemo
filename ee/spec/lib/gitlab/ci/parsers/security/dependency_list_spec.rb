@@ -4,11 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: :dependency_management do
   let(:parser) { described_class.new(project, sha, pipeline) }
-  let(:project) { build_stubbed(:project) }
   let(:sha) { '4242424242424242' }
   let(:report) { Gitlab::Ci::Reports::DependencyList::Report.new }
 
-  let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report) }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
 
   describe '#parse!' do
     let(:artifact) { pipeline.job_artifacts.last }
@@ -44,7 +44,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
     end
 
     context 'with dependency_scanning dependencies' do
-      let_it_be(:vulnerability) { create(:vulnerability, report_type: :dependency_scanning) }
+      let_it_be(:vulnerability) { create(:vulnerability, report_type: :dependency_scanning, project: project) }
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability, pipeline: pipeline) }
 
       it 'does not causes N+1 query' do
@@ -54,7 +54,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
           end
         end
 
-        vuln2 = create(:vulnerability, report_type: :dependency_scanning)
+        vuln2 = create(:vulnerability, report_type: :dependency_scanning, project: project)
         create(:vulnerabilities_finding, :with_dependency_scanning_metadata, package: 'mini_portile2', vulnerability: vuln2, pipeline: pipeline)
 
         expect do
@@ -75,7 +75,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
       end
 
       context 'when severity is not part of metadata' do
-        let_it_be(:vuln2) { create(:vulnerability, report_type: :dependency_scanning) }
+        let_it_be(:vuln2) { create(:vulnerability, report_type: :dependency_scanning, project: project) }
         let_it_be(:finding2) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vuln2, raw_severity: nil, pipeline: pipeline) }
 
         it 'returns the correct severity' do
@@ -98,7 +98,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
     end
 
     context 'with container_scanning dependencies' do
-      let_it_be(:vulnerability) { create(:vulnerability, report_type: :container_scanning) }
+      let_it_be(:vulnerability) { create(:vulnerability, report_type: :container_scanning, project: project) }
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_container_scanning_metadata, vulnerability: vulnerability, pipeline: pipeline) }
 
       it 'adds new dependency and vulnerability to the report with modified path' do

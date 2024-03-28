@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::Vulnerabilities, feature_category: :dependency_management do
   let_it_be(:vulnerability) { create(:vulnerability) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: vulnerability.project) }
 
   subject(:vulnerabilities) { described_class.new(pipeline).vulnerabilities }
 
@@ -12,7 +13,6 @@ RSpec.describe Sbom::Ingestion::Vulnerabilities, feature_category: :dependency_m
       create(:vulnerabilities_finding, :with_pipeline, :with_dependency_scanning_metadata, vulnerability: vulnerability)
     end
 
-    let(:pipeline) { finding.first_finding_pipeline }
     let(:dependency) { finding.location["dependency"] }
     let(:package_name) { dependency['package']['name'] }
     let(:version) { dependency['version'] }
