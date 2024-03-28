@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::FieldEntity do
+RSpec.describe Integrations::FieldEntity, feature_category: :integrations do
   let(:request) { EntityRequest.new(integration: integration) }
 
   subject { described_class.new(field, request: request, integration: integration).as_json }
@@ -42,7 +42,9 @@ RSpec.describe Integrations::FieldEntity do
         let(:field) { integration_field('artifact_registry_project_id') }
 
         before do
-          allow(ApplicationController.helpers).to receive(:sprite_icon).with('external-link').and_return('<svg></svg>')
+          allow(ApplicationController.helpers).to receive(:sprite_icon)
+            .with('external-link', { aria_label: '(external link)' })
+            .and_return('<svg></svg>')
         end
 
         it 'exposes correct attributes' do
