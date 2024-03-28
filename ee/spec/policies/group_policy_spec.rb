@@ -2976,11 +2976,25 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           end
         end
 
-        context 'when the user has AI enabled via another group' do
-          it 'is disallowed' do
-            allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+        context 'when the user is not a member but has AI enabled via another group' do
+          before do
+            allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
+          end
 
-            is_expected.to be_disallowed(:access_duo_chat)
+          context 'user can view group' do
+            it 'is allowed' do
+              is_expected.to be_allowed(:access_duo_chat)
+            end
+          end
+
+          context 'user cannot view group' do
+            before do
+              group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+            end
+
+            it 'is not allowed' do
+              is_expected.to be_disallowed(:access_duo_chat)
+            end
           end
         end
       end
@@ -2995,7 +3009,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             include_context 'with ai features disabled and licensed chat for group on SaaS'
 
             it 'returns false' do
-              allow(current_user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
 
               is_expected.to be_disallowed(:access_duo_chat)
             end

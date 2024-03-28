@@ -3441,7 +3441,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
   describe 'access_duo_chat' do
     let_it_be(:current_user) { create(:user) }
-    let(:project) { create(:project, group: group) }
+    let(:project) { create(:project, :public, group: group) }
 
     subject { described_class.new(current_user, project) }
 
@@ -3467,10 +3467,24 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
         context 'when user is not a member of the parent group' do
           context 'when the user has AI enabled via another group' do
-            it 'is disallowed' do
+            before do
               allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
+            end
 
-              is_expected.to be_disallowed(:access_duo_chat)
+            context 'user can view project' do
+              it 'is allowed' do
+                is_expected.to be_allowed(:access_duo_chat)
+              end
+            end
+
+            context 'user cannot view project' do
+              before do
+                project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+              end
+
+              it 'is not allowed' do
+                is_expected.to be_disallowed(:access_duo_chat)
+              end
             end
           end
         end
@@ -3520,7 +3534,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
 
       context 'when not on .org or .com' do
-        where(:licensed, :instance_level_ai_beta_features_enabled, :cs_matcher) do
+        where(:licensed, :instance_level_ai_beta_features_enabled, :duo_chat_matcher) do
           true  | false | be_disallowed(policy)
           true  | true  | be_allowed(policy)
           false | false | be_disallowed(policy)
@@ -3534,7 +3548,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
             stub_licensed_features(ai_chat: licensed)
           end
 
-          it { is_expected.to cs_matcher }
+          it { is_expected.to duo_chat_matcher }
         end
       end
     end

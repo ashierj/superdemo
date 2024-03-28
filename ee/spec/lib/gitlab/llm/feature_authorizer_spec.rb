@@ -3,14 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::FeatureAuthorizer, feature_category: :ai_abstraction_layer do
-  let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:group) { create(:group) }
 
   let(:feature_name) { :chat }
   let(:instance) do
     described_class.new(
       container: group,
-      current_user: user,
       feature_name: feature_name
     )
   end
@@ -21,19 +19,6 @@ RSpec.describe Gitlab::Llm::FeatureAuthorizer, feature_category: :ai_abstraction
     context 'when container has correct setting and license' do
       before do
         allow(::Gitlab::Llm::StageCheck).to receive(:available?).and_return(true)
-      end
-
-      context 'when user is a member of the group' do
-        it 'returns true' do
-          group.add_guest(user)
-          expect(allowed?).to be true
-        end
-      end
-
-      context 'when user is not a member of the group' do
-        it 'returns false' do
-          expect(allowed?).to be false
-        end
       end
 
       context 'when ai_global_switch is turned off' do
@@ -51,8 +36,6 @@ RSpec.describe Gitlab::Llm::FeatureAuthorizer, feature_category: :ai_abstraction
       end
 
       it 'returns false' do
-        group.add_guest(user)
-
         expect(allowed?).to be false
       end
     end
@@ -61,27 +44,11 @@ RSpec.describe Gitlab::Llm::FeatureAuthorizer, feature_category: :ai_abstraction
       let(:instance) do
         described_class.new(
           container: nil,
-          current_user: user,
           feature_name: feature_name
         )
       end
 
       it 'returns false' do
-        expect(allowed?).to be false
-      end
-    end
-
-    context 'when user not present' do
-      let(:instance) do
-        described_class.new(
-          container: group,
-          current_user: nil,
-          feature_name: feature_name
-        )
-      end
-
-      it 'returns false' do
-        allow(::Gitlab::Llm::StageCheck).to receive(:available?).and_return(true)
         expect(allowed?).to be false
       end
     end

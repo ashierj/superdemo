@@ -16,7 +16,6 @@ module EE
         ::Feature.enabled?(:summarize_my_code_review, @user) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(
             container: @subject.project,
-            current_user: @user,
             feature_name: :summarize_my_mr_code_review
           ).allowed?
       end
@@ -50,7 +49,6 @@ module EE
           subject.project.licensed_feature_available?(:summarize_submitted_review) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(
             container: subject.project,
-            current_user: user,
             feature_name: :summarize_submitted_review
           ).allowed?
       end
@@ -74,7 +72,6 @@ module EE
           subject.project.licensed_feature_available?(:summarize_mr_changes) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(
             container: subject.project,
-            current_user: user,
             feature_name: :summarize_diff
           ).allowed?
       end

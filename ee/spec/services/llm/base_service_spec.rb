@@ -56,7 +56,7 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
       it_behaves_like 'success when implemented'
     end
 
-    context 'when the resource is nnot authorized' do
+    context 'when the resource is not authorized' do
       let(:allowed) { false }
 
       it_behaves_like 'returns an error'
@@ -68,13 +68,22 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:resource) { create(:issue, project: project) }
 
-    context 'when user has no access' do
+    context 'when user does not have access to AI features' do
       it_behaves_like 'returns an error'
     end
 
-    context 'when user has access' do
+    context 'when user has access to AI features as a non-member' do
+      let_it_be(:resource) { create(:issue, project: project) }
+
       before do
-        project.add_developer(user)
+        allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+      end
+
+      it_behaves_like 'authorizing a resource'
+    end
+
+    context 'when user has access as a member' do
+      before do
         group.add_developer(user)
       end
 
