@@ -7,7 +7,7 @@ module EE
 
       prepended do
         feature_category :portfolio_management, [:epics]
-        feature_category :team_planning, [:iterations]
+        feature_category :team_planning, [:iterations, :wikis]
         urgency :medium, [:epics, :iterations]
         feature_category :vulnerability_management, [:vulnerabilities]
         urgency :low, [:vulnerabilities]
@@ -18,6 +18,10 @@ module EE
           autocomplete_service.epics(confidential_only: params[:confidential_only]),
           parent_group: group
         )
+      end
+
+      def wikis
+        render json: autocomplete_service.wikis
       end
 
       def iterations

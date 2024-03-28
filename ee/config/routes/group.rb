@@ -123,6 +123,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
         get 'epics'
         get 'iterations'
         get 'vulnerabilities'
+        get 'wikis'
       end
     end
 

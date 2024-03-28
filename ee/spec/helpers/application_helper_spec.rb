@@ -257,7 +257,7 @@ RSpec.describe ApplicationHelper do
     end
 
     context 'group' do
-      let(:autocomplete_data_sources) { [:members, :issues, :mergeRequests, :labels, :commands, :milestones, :epics] }
+      let(:autocomplete_data_sources) { [:members, :issues, :mergeRequests, :labels, :commands, :milestones, :epics, :wikis] }
       let(:object) { create(:group) }
       let(:noteable_type) { Epic }
 
@@ -283,7 +283,7 @@ RSpec.describe ApplicationHelper do
     end
 
     context 'project' do
-      let(:autocomplete_data_sources) { [:members, :issues, :mergeRequests, :labels, :commands, :milestones, :snippets, :contacts] }
+      let(:autocomplete_data_sources) { [:members, :issues, :mergeRequests, :labels, :commands, :milestones, :snippets, :contacts, :wikis] }
       let(:object) { create(:project) }
       let(:noteable_type) { Issue }
 
