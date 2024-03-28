@@ -1,7 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlAccordion, GlAccordionItem, GlLink, GlSprintf } from '@gitlab/ui';
 import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
-import CodeInstruction from '~/vue_shared/components/registry/code_instruction.vue';
+import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { createStore } from '~/integrations/edit/store';
 import { mockIntegrationProps } from '../../mock_data';
 
@@ -12,7 +13,8 @@ describe('ConfigurationInstructions', () => {
   const findDescription = () => wrapper.find('p');
   const findAccordion = () => wrapper.findComponent(GlAccordion);
   const findAccordionItem = () => wrapper.findComponent(GlAccordionItem);
-  const findCodeInstruction = () => wrapper.findComponent(CodeInstruction);
+  const findCodeBlockHighlighted = () => wrapper.findComponent(CodeBlockHighlighted);
+  const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
   const findLinks = () => wrapper.findAllComponents(GlLink);
 
   const createComponent = (customState = {}) => {
@@ -89,18 +91,23 @@ describe('ConfigurationInstructions', () => {
     });
   });
 
-  it('renders code instruction with placeholder', () => {
+  it('renders code instruction with copy button', () => {
     createComponent();
-
-    expect(findCodeInstruction().props()).toMatchObject({
-      copyText: 'Copy command',
-      multiline: true,
-      instruction: `curl --request GET \\
+    const instructions = `curl --request GET \\
 --header "PRIVATE-TOKEN: <your_access_token>" \\
 --data 'google_cloud_artifact_registry_project_id=<your_google_cloud_project_id>' \\
 --data 'enable_google_cloud_artifact_registry=true' \\
 --url "https://gitlab.com/api/v4/projects/1/google_cloud/setup/integrations.sh" \\
-| bash`,
+| bash`;
+
+    expect(findClipboardButton().props()).toMatchObject({
+      title: 'Copy command',
+      text: instructions,
+    });
+
+    expect(findCodeBlockHighlighted().props()).toMatchObject({
+      language: 'powershell',
+      code: instructions,
     });
   });
 });
