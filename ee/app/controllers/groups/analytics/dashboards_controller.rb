@@ -12,10 +12,8 @@ module Groups
         destinations: %i[redis_hll snowplow]
 
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
-      before_action :redirect_to_value_streams_dashboard, only: :index
       before_action do
         push_frontend_feature_flag(:dora_performers_score_panel, @group)
-        push_frontend_feature_flag(:group_analytics_dashboards, @group)
         push_frontend_feature_flag(:group_analytics_dashboard_dynamic_vsd, @group)
 
         load_visualizations
@@ -64,8 +62,6 @@ module Groups
       private
 
       def load_visualizations
-        return unless Feature.enabled?(:group_analytics_dashboards, @group)
-
         @available_visualizations = [load_yaml_dashboard_config(VALUE_STREAM_VISUALIZATIONS_PATH, "dora_chart.yaml")]
       end
 
@@ -97,14 +93,6 @@ module Groups
 
       def track_value_streams_event
         Gitlab::InternalEvents.track_event('value_streams_dashboard_viewed', namespace: @group, user: current_user)
-      end
-
-      def redirect_to_value_streams_dashboard
-        return if Feature.enabled?(:group_analytics_dashboards, @group)
-
-        # Value streams dashboard has been moved into another action,
-        # this is a temporary redirect to keep current bookmarks healthy.
-        redirect_to(value_streams_dashboard_group_analytics_dashboards_path(@group, query: params[:query]))
       end
     end
   end

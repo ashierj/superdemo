@@ -201,19 +201,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
 
         it_behaves_like 'sets data source instance variable correctly'
 
-        context 'when group_analytics_dashboards is disabled' do
-          before do
-            stub_feature_flags(group_analytics_dashboards: false)
-          end
-
-          it 'redirects to value stream dashboards' do
-            request
-
-            expect(response)
-              .to redirect_to(value_streams_dashboard_group_analytics_dashboards_path(group))
-          end
-        end
-
         context 'when group_analytics_dashboard_dynamic_vsd feature flag is disabled' do
           let_it_be(:subgroup) { create(:group, parent: group) }
           let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
@@ -357,19 +344,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
             expect(js_app_attributes).not_to include('data-pointer-project')
           end
         end
-
-        context 'when group_analytics_dashboards is disabled' do
-          before do
-            stub_feature_flags(group_analytics_dashboards: false)
-          end
-
-          it_behaves_like 'internal event tracking' do
-            let(:event) { 'value_streams_dashboard_viewed' }
-            let(:namespace) { group }
-
-            subject(:track_event) { request }
-          end
-        end
       end
     end
   end
@@ -392,7 +366,6 @@ RSpec.describe Groups::Analytics::DashboardsController, type: :controller, featu
   end
 
   before do
-    stub_feature_flags(group_analytics_dashboards: false)
     stub_licensed_features(group_level_analytics_dashboard: true)
 
     sign_in(user)

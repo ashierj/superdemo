@@ -67,11 +67,8 @@ export default {
     showNewDashboardButton() {
       return this.isProject && this.customDashboardsProject;
     },
-    showValueStreamsDashboard() {
-      return !this.isProject && this.glFeatures.groupAnalyticsDashboards;
-    },
     dashboards() {
-      if (!this.showValueStreamsDashboard || this.glFeatures.groupAnalyticsDashboardDynamicVsd) {
+      if (this.isProject || this.glFeatures.groupAnalyticsDashboardDynamicVsd) {
         return this.userDashboards;
       }
 
