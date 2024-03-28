@@ -577,6 +577,8 @@
   - 1
 - - product_analytics_post_push
   - 1
+- - product_analytics_sync_funnels
+  - 1
 - - project_cache
   - 1
 - - project_destroy

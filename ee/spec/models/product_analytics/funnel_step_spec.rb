@@ -39,6 +39,20 @@ RSpec.describe ProductAnalytics::FunnelStep, feature_category: :product_analytic
     end
   end
 
+  describe '#to_h' do
+    subject { funnel_step.to_h }
+
+    let(:expected) do
+      {
+        name: 'test',
+        target: '/page1.html',
+        action: 'pageview'
+      }
+    end
+
+    it { is_expected.to eq expected }
+  end
+
   describe '#step_definition' do
     subject { funnel_step.step_definition }
 

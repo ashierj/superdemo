@@ -10,7 +10,13 @@ RSpec.describe ProductAnalytics::PostPushWorker, feature_category: :product_anal
 
   let(:commit) { project.repository.commit }
 
-  subject { described_class.new.perform(project.id, commit.sha, user.id) }
+  subject(:worker) { described_class.new.perform(project.id, commit.sha, user.id) }
+
+  it 'triggers a funnel sync' do
+    expect(ProductAnalytics::SyncFunnelsWorker).to receive(:perform_async).once
+
+    worker
+  end
 
   shared_examples 'tracks a usage event' do
     it 'tracks a project usage event' do

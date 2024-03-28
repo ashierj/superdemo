@@ -13,6 +13,7 @@ module ProductAnalytics
       @commit = @project.repository.commit(newrev)
       @user_id = user_id
 
+      ProductAnalytics::SyncFunnelsWorker.perform_async(@project.id, newrev, @user_id)
       track_event if commit_has_new_dashboard?
     end
 

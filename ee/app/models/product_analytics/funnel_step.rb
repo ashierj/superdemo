@@ -19,5 +19,9 @@ module ProductAnalytics
       path_name = 'page_urlpath'
       "#{path_name} = '#{target}'" if action == 'pageview'
     end
+
+    def to_h
+      { name: @name, target: @target, action: @action }
+    end
   end
 end
