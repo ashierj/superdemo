@@ -1816,14 +1816,6 @@ class User < MainClusterwide::ApplicationRecord
     end
   end
 
-  def unfollow(user)
-    if Users::UserFollowUser.where(follower_id: self.id, followee_id: user.id).delete_all > 0
-      self.followees.reset
-    else
-      false
-    end
-  end
-
   def following_users_allowed?(user)
     return false if self.id == user.id
 
