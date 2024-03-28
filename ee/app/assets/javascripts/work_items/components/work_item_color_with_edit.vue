@@ -7,14 +7,15 @@ import {
   GlLoadingIcon,
 } from '@gitlab/ui';
 import { validateHexColor } from '~/lib/utils/color_utils';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import {
   I18N_WORK_ITEM_ERROR_UPDATING,
   sprintfWorkItem,
   WIDGET_TYPE_COLOR,
   TRACKING_CATEGORY_SHOW,
+  EPIC_COLORS,
+  DEFAULT_EPIC_COLORS,
 } from '~/work_items/constants';
-import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/constants';
 import SidebarColorView from '~/sidebar/components/sidebar_color_view.vue';
 import SidebarColorPicker from '~/sidebar/components/sidebar_color_picker.vue';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
@@ -25,6 +26,7 @@ export default {
     colorLabel: __('Color'),
   },
   inputId: 'color-widget-input',
+  suggestedColors: EPIC_COLORS,
   components: {
     GlForm,
     SidebarColorPicker,
@@ -51,6 +53,7 @@ export default {
       currentColor: '',
       isEditing: false,
       isUpdating: false,
+      errorMessage: '',
     };
   },
   computed: {
@@ -66,6 +69,19 @@ export default {
     color() {
       return this.workItemColorWidget?.color;
     },
+    selectedColor() {
+      // Check if current color hex code matches a suggested color key
+      // If yes, return the named color from suggested color list
+      // If no, return Custom
+      if (this.suggestedColorKeys.includes(this.color?.toLowerCase())) {
+        return Object.values(
+          this.$options.suggestedColors.find(
+            (item) => Object.keys(item)[0] === this.color?.toLowerCase(),
+          ),
+        ).pop();
+      }
+      return __('Custom');
+    },
     textColor() {
       return this.workItemColorWidget?.textColor;
     },
@@ -76,21 +92,39 @@ export default {
         property: `type_${this.workItemType}`,
       };
     },
+    suggestedColorKeys() {
+      return this.$options.suggestedColors.map((item) => {
+        return Object.keys(item).pop();
+      });
+    },
+  },
+  watch: {
+    currentColor() {
+      if (!validateHexColor(this.currentColor)) {
+        this.errorMessage = s__('WorkItem|Must be a valid hex code');
+      } else if (this.suggestedColorKeys.includes(this.currentColor)) {
+        this.errorMessage = '';
+        this.updateColor();
+      } else {
+        this.errorMessage = '';
+      }
+    },
   },
   created() {
     this.currentColor = this.color;
   },
   methods: {
     async updateColor() {
-      if (!this.canUpdate || this.color === this.currentColor) {
+      if (
+        !this.canUpdate ||
+        this.color === this.currentColor ||
+        !validateHexColor(this.currentColor)
+      ) {
         this.isEditing = false;
         return;
       }
 
       this.isUpdating = true;
-      this.currentColor = validateHexColor(this.currentColor)
-        ? this.currentColor
-        : DEFAULT_COLOR.color;
 
       try {
         const {
@@ -137,13 +171,12 @@ export default {
       }
     },
     resetColor() {
-      this.currentColor = null;
+      this.currentColor = DEFAULT_EPIC_COLORS;
       this.updateColor();
     },
   },
 };
 </script>
-
 <template>
   <div class="work-item-color-with-edit">
     <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
@@ -182,34 +215,40 @@ export default {
       >
         <template #header>
           <div
-            class="gl-display-flex gl-align-items-center gl-p-4! gl-min-h-8 gl-border-b-1 gl-border-b-solid gl-border-b-gray-200"
+            class="gl-display-flex gl-align-items-center gl-py-2 gl-px-4 gl-min-h-8 gl-border-b-1 gl-border-b-solid gl-border-b-gray-200"
           >
-            <div
+            <span
               data-testid="color-header-title"
-              class="gl-flex-grow-1 gl-font-weight-bold gl-font-sm gl-pr-2"
+              class="gl-flex-grow-1 gl-font-weight-bold gl-font-sm gl-pr-2 gl-line-height-normal"
             >
               {{ __('Select a color') }}
-            </div>
+            </span>
             <gl-button
               data-testid="reset-color"
               category="tertiary"
               size="small"
-              class="gl-font-sm!"
+              class="gl-font-sm! gl-px-2! gl-py-2!"
               @click="resetColor"
               >{{ __('Reset') }}</gl-button
             >
           </div>
         </template>
         <template #toggle>
-          <sidebar-color-view :color="color" />
+          <sidebar-color-view :color="color" :color-name="selectedColor" />
         </template>
         <gl-disclosure-dropdown-item>
-          <sidebar-color-picker v-model="currentColor" :autofocus="true" class="gl-px-2" />
+          <sidebar-color-picker
+            v-model="currentColor"
+            :autofocus="true"
+            :suggested-colors="$options.suggestedColors"
+            :error-message="errorMessage"
+            class="gl-px-2 gl-mt-2"
+          />
         </gl-disclosure-dropdown-item>
       </gl-disclosure-dropdown>
     </gl-form>
     <div v-else class="work-item-field-value">
-      <sidebar-color-view :color="currentColor" />
+      <sidebar-color-view :color="color" :color-name="selectedColor" />
     </div>
   </div>
 </template>

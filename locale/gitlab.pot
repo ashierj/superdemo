@@ -57518,6 +57518,12 @@ msgstr ""
 msgid "WorkItem|Ancestor"
 msgstr ""
 
+msgid "WorkItem|Apricot"
+msgstr ""
+
+msgid "WorkItem|Aqua"
+msgstr ""
+
 msgid "WorkItem|Are you sure you want to cancel editing?"
 msgstr ""
 
@@ -57538,6 +57544,9 @@ msgstr ""
 msgid "WorkItem|Blocking"
 msgstr ""
 
+msgid "WorkItem|Blue"
+msgstr ""
+
 msgid "WorkItem|Cancel"
 msgstr ""
 
@@ -57556,6 +57565,9 @@ msgstr ""
 msgid "WorkItem|Closed"
 msgstr ""
 
+msgid "WorkItem|Coffee"
+msgstr ""
+
 msgid "WorkItem|Comments only"
 msgstr ""
 
@@ -57569,6 +57581,9 @@ msgid "WorkItem|Copy %{workItemType} email address"
 msgstr ""
 
 msgid "WorkItem|Create %{workItemType}"
+msgstr ""
+
+msgid "WorkItem|Dark red"
 msgstr ""
 
 msgid "WorkItem|Dates"
@@ -57598,6 +57613,9 @@ msgstr ""
 msgid "WorkItem|Fixed"
 msgstr ""
 
+msgid "WorkItem|Forest green"
+msgstr ""
+
 msgid "WorkItem|History only"
 msgstr ""
 
@@ -57619,6 +57637,12 @@ msgstr ""
 msgid "WorkItem|Key result"
 msgstr ""
 
+msgid "WorkItem|Lavender"
+msgstr ""
+
+msgid "WorkItem|Light blue"
+msgstr ""
+
 msgid "WorkItem|Link items together to show that they're related or that one is blocking others."
 msgstr ""
 
@@ -57628,10 +57652,19 @@ msgstr ""
 msgid "WorkItem|Linked item removed"
 msgstr ""
 
+msgid "WorkItem|Magenta"
+msgstr ""
+
 msgid "WorkItem|Mark as done"
 msgstr ""
 
 msgid "WorkItem|Milestone"
+msgstr ""
+
+msgid "WorkItem|Mint green"
+msgstr ""
+
+msgid "WorkItem|Must be a valid hex code"
 msgstr ""
 
 msgid "WorkItem|New %{workItemName}"
@@ -57694,7 +57727,13 @@ msgstr ""
 msgid "WorkItem|Parent"
 msgstr ""
 
+msgid "WorkItem|Pink"
+msgstr ""
+
 msgid "WorkItem|Promoted to objective."
+msgstr ""
+
+msgid "WorkItem|Purple"
 msgstr ""
 
 msgid "WorkItem|Related to"
@@ -57704,6 +57743,9 @@ msgid "WorkItem|Remove"
 msgstr ""
 
 msgid "WorkItem|Requirements"
+msgstr ""
+
+msgid "WorkItem|Rose"
 msgstr ""
 
 msgid "WorkItem|Save and overwrite"
@@ -57815,6 +57857,9 @@ msgid "WorkItem|Task reverted"
 msgstr ""
 
 msgid "WorkItem|Tasks"
+msgstr ""
+
+msgid "WorkItem|Teal"
 msgstr ""
 
 msgid "WorkItem|Test case"

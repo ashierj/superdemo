@@ -7,6 +7,7 @@ import {
   sprintfWorkItem,
   WIDGET_TYPE_COLOR,
   TRACKING_CATEGORY_SHOW,
+  EPIC_COLORS,
 } from '~/work_items/constants';
 import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/constants';
 import SidebarColorView from '~/sidebar/components/sidebar_color_view.vue';
@@ -18,6 +19,7 @@ export default {
   i18n: {
     colorLabel: __('Color'),
   },
+  suggestedColors: EPIC_COLORS,
   components: {
     GlFormGroup,
     SidebarColorPicker,
@@ -161,7 +163,11 @@ export default {
         </gl-button>
       </template>
       <gl-disclosure-dropdown-item>
-        <sidebar-color-picker v-model="currentColor" class="gl-px-2" />
+        <sidebar-color-picker
+          v-model="currentColor"
+          :suggested-colors="$options.suggestedColors"
+          class="gl-px-3 gl-py-2"
+        />
       </gl-disclosure-dropdown-item>
     </gl-disclosure-dropdown>
   </gl-form-group>
