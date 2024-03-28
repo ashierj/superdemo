@@ -39,7 +39,6 @@ module Epics
       end
 
       def destroy_work_item_parent_link!
-        return unless child_epic.group.epic_synced_with_work_item_enabled?
         return unless child_epic.work_item.present?
 
         parent_link = child_epic.work_item.parent_link

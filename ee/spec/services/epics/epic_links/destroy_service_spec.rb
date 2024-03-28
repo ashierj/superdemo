@@ -194,12 +194,12 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
               stub_feature_flags(epic_creation_with_synced_work_item: false)
             end
 
-            it 'removes relationship only for the child epic' do
+            it 'removes epic relationship and destroy work item parent link' do
               expect { remove_epic_relation(child_epic) }.to change { parent_epic.children.count }.by(-1)
-                .and(not_change { WorkItems::ParentLink.count })
+                .and(change { WorkItems::ParentLink.count }.by(-1))
 
               expect(parent_epic.reload.children).not_to include(child_epic)
-              expect(parent.reload.work_item_children).to include(child)
+              expect(parent.reload.work_item_children).not_to include(child)
             end
           end
         end
