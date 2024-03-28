@@ -7,7 +7,7 @@ export const CREATE_GROUP_OPTION_VALUE = '0';
 
 export default {
   i18n: {
-    groupSelectLabel: __('This subscription is for'),
+    groupSelectLabel: __('This trial is for'),
     defaultToggleText: __('Please select a group'),
     newGroupNameLabel: __('New group name'),
   },
