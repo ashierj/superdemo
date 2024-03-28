@@ -44179,9 +44179,6 @@ msgstr ""
 msgid "Runners|You may lose access to the runner token if you leave this page."
 msgstr ""
 
-msgid "Runners|You've created a new runner!"
-msgstr ""
-
 msgid "Runners|You've registered a new runner!"
 msgstr ""
 
