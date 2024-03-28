@@ -21251,6 +21251,9 @@ msgstr ""
 msgid "Failed to toggle the to-do status for the design."
 msgstr ""
 
+msgid "Failed to unfollow user"
+msgstr ""
+
 msgid "Failed to update branch!"
 msgstr ""
 

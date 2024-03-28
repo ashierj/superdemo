@@ -4332,10 +4332,6 @@ RSpec.describe User, feature_category: :user_profile do
       expect(user.follow(followee1)).to be_truthy
 
       expect(user.following?(followee1)).to be_truthy
-
-      expect(user.unfollow(followee1)).to be_truthy
-
-      expect(user.following?(followee1)).to be_falsey
     end
   end
 
@@ -4426,46 +4422,6 @@ RSpec.describe User, feature_category: :user_profile do
       follower.ban
 
       expect(user.followed_by?(follower)).to be_falsey
-    end
-  end
-
-  describe '#unfollow' do
-    it 'unfollow another user' do
-      user = create :user
-      followee1 = create :user
-      followee2 = create :user
-
-      expect(user.followees).to be_empty
-
-      expect(user.follow(followee1)).to be_truthy
-      expect(user.follow(followee1)).to be_falsey
-
-      expect(user.follow(followee2)).to be_truthy
-      expect(user.follow(followee2)).to be_falsey
-
-      expect(user.followees).to contain_exactly(followee1, followee2)
-
-      expect(user.unfollow(followee1)).to be_truthy
-      expect(user.unfollow(followee1)).to be_falsey
-
-      expect(user.followees).to contain_exactly(followee2)
-
-      expect(user.unfollow(followee2)).to be_truthy
-      expect(user.unfollow(followee2)).to be_falsey
-
-      expect(user.followees).to be_empty
-    end
-
-    it 'unfollows when over followee limit' do
-      user = create(:user)
-
-      followees = create_list(:user, 4)
-      followees.each { |f| expect(user.follow(f)).to be_truthy }
-
-      stub_const('Users::UserFollowUser::MAX_FOLLOWEE_LIMIT', followees.length - 2)
-
-      expect(user.unfollow(followees.first)).to be_truthy
-      expect(user.following?(followees.first)).to be_falsey
     end
   end
 
