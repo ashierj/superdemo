@@ -2753,6 +2753,9 @@ msgstr ""
 msgid "Achievements|New achievement"
 msgstr ""
 
+msgid "Achievements|Not yet awarded."
+msgstr ""
+
 msgid "Achievements|There are currently no achievements."
 msgstr ""
 
