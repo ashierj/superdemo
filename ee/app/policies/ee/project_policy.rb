@@ -307,6 +307,15 @@ module EE
         ).has_ability?
       end
 
+      desc 'Custom role on project that enables admin push rules for repositories'
+      condition(:role_enables_admin_push_rules) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_push_rules
+        ).has_ability?
+      end
+
       condition(:developer_access_to_admin_vulnerability) do
         ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_namespace) &&
           can?(:developer_access)
@@ -385,6 +394,10 @@ module EE
 
       rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
         enable :admin_cicd_variables
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_push_rules }.policy do
+        enable :admin_push_rules
       end
 
       condition(:ci_cancellation_maintainers_only, scope: :subject) do

@@ -1,0 +1,12 @@
+---
+name: admin_push_rules
+description: Configure push rules for repositories at the group or project level.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/421786
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147872
+feature_category: source_code_management
+milestone: '16.11'
+group_ability: true
+project_ability: true
+requirements: []
+feature_flag: custom_ability_admin_push_rules
+available_from_access_level:
