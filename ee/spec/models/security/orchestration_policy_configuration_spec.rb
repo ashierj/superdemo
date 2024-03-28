@@ -67,6 +67,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     it { is_expected.to belong_to(:security_policy_management_project).class_name('Project') }
     it { is_expected.to have_many(:rule_schedules).class_name('Security::OrchestrationPolicyRuleSchedule').inverse_of(:security_orchestration_policy_configuration) }
     it { is_expected.to have_many(:compliance_framework_security_policies).class_name('ComplianceManagement::ComplianceFramework::SecurityPolicy') }
+    it { is_expected.to have_many(:security_policies).class_name('Security::Policy') }
   end
 
   describe 'validations' do
