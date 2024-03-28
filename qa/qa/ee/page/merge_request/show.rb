@@ -53,7 +53,10 @@ module QA
                 element 'save-editing-dismissal'
                 element 'dismissal-comment'
                 element 'cancel-button'
-                element 'create-issue-button', "`${footerActionButtons[0].action}-button`" # rubocop:disable QA/ElementWithPattern -- create-issue is coming from footerActionButtons
+              end
+
+              view 'ee/app/assets/javascripts/vue_shared/security_reports/components/split_button.vue' do
+                element 'create-issue-button', "`${selectedButton.action}-button`" # rubocop:disable QA/ElementWithPattern -- create-issue is coming from selectedButton.action
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_dismissal_reason.vue' do

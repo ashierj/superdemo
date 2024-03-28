@@ -50,11 +50,10 @@ describe('Split Button', () => {
     expect(findButtonGroup().exists()).toBe(false);
   });
 
-  it('renders disabled listbox and disabled button if disabled prop is true', () => {
-    createComponent({ disabled: true });
+  it('does not render the listbox if only 1 button is provided', () => {
+    createComponent({ buttons: [defaultProps.buttons[0]] });
 
-    expect(findButton().attributes().disabled).toBe('true');
-    expect(findListbox().attributes().disabled).toBe('true');
+    expect(findListbox().exists()).toBe(false);
   });
 
   it('renders loading button and disable the listbox if loading prop is true', () => {
@@ -136,7 +135,7 @@ describe('Split Button', () => {
     it('renders the icon', () => {
       const icon = 'tanuki-ai';
       const { buttons } = defaultProps;
-      createComponent({ buttons: [{ ...buttons[0], icon }] }, mountExtended);
+      createComponent({ buttons: [{ ...buttons[0], icon }, buttons[1]] }, mountExtended);
 
       expect(findListboxIcon().props('name')).toBe(icon);
     });
@@ -144,7 +143,7 @@ describe('Split Button', () => {
     it('renders the badge', () => {
       const badge = 'experiment';
       const { buttons } = defaultProps;
-      createComponent({ buttons: [{ ...buttons[0], badge }] }, mountExtended);
+      createComponent({ buttons: [{ ...buttons[0], badge }, buttons[1]] }, mountExtended);
 
       expect(findListboxBadge().text()).toBe(badge);
       expect(findListboxBadge().props('size')).toBe('sm');
