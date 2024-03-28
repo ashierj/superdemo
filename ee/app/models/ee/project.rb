@@ -182,6 +182,8 @@ module EE
       has_many :dora_performance_scores, class_name: 'Dora::PerformanceScore'
       has_many :xray_reports, class_name: 'Projects::XrayReport', foreign_key: :project_id
 
+      has_many :saved_replies, class_name: 'Projects::SavedReply'
+
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :issues, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
       elastic_index_dependant_association :work_items, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
