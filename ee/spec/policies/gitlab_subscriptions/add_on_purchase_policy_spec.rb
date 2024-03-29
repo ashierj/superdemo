@@ -7,7 +7,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchasePolicy, feature_category: :seat
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:admin) { create(:admin) }
+  let_it_be(:admin) { create(:admin, :without_default_org) }
   let_it_be(:owner) { create(:user) }
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:developer) { create(:user) }

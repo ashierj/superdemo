@@ -5679,6 +5679,56 @@ RSpec.describe User, feature_category: :user_profile do
     end
   end
 
+  shared_examples 'organization owner' do
+    let!(:org_user) { create(:organization_user, organization: organization, user: user, access_level: access_level) }
+
+    context 'when user is the owner of the organization' do
+      let(:access_level) { Gitlab::Access::OWNER }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when user is not the owner of the organization' do
+      let(:access_level) { Gitlab::Access::GUEST }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#can_admin_organization?' do
+    let(:user) { create(:user) }
+    let(:organization) { create(:organization) }
+
+    subject { user.can_admin_organization?(organization) }
+
+    it_behaves_like 'organization owner'
+  end
+
+  describe '#owns_organization?' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:organization) { create(:organization) }
+
+    subject { user.owns_organization?(organization_param) }
+
+    context 'when passed organization object' do
+      let(:organization_param) { organization }
+
+      it_behaves_like 'organization owner'
+    end
+
+    context 'when passed organization id' do
+      let(:organization_param) { organization.id }
+
+      it_behaves_like 'organization owner'
+    end
+
+    context 'when passed nil' do
+      let(:organization_param) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe '#update_two_factor_requirement' do
     let(:user) { create :user }
 

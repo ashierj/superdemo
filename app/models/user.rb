@@ -2073,6 +2073,20 @@ class User < MainClusterwide::ApplicationRecord
     can?(:admin_all_resources)
   end
 
+  def owns_organization?(organization)
+    return false unless organization
+
+    organization_id = organization.is_a?(Integer) ? organization : organization.id
+
+    organization_users.where(organization_id: organization_id).owner.exists?
+  end
+
+  def can_admin_organization?(organization)
+    strong_memoize_with(:can_admin_organization, organization) do
+      owns_organization?(organization)
+    end
+  end
+
   def update_two_factor_requirement
     periods = expanded_groups_requiring_two_factor_authentication.pluck(:two_factor_grace_period)
 
