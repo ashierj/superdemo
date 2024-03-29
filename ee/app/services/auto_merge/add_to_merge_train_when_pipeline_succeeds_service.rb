@@ -4,12 +4,12 @@ module AutoMerge
   class AddToMergeTrainWhenPipelineSucceedsService < AutoMerge::BaseService
     def execute(merge_request)
       super do
-        SystemNoteService.add_to_merge_train_when_pipeline_succeeds(merge_request, project, current_user, merge_request.actual_head_pipeline.sha)
+        SystemNoteService.add_to_merge_train_when_pipeline_succeeds(merge_request, project, current_user, merge_request.diff_head_pipeline.sha)
       end
     end
 
     def process(merge_request)
-      return unless merge_request.actual_head_pipeline_success?
+      return unless merge_request.diff_head_pipeline_success?
 
       merge_train_service = AutoMerge::MergeTrainService.new(project, merge_request.merge_user)
 
@@ -33,7 +33,7 @@ module AutoMerge
     def available_for?(merge_request)
       super do
         merge_request.project.merge_trains_enabled? &&
-          merge_request.actual_head_pipeline&.active?
+          merge_request.diff_head_pipeline&.active?
       end
     end
   end

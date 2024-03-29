@@ -19,7 +19,7 @@ module Security
           sync_preexisting_state_approval_rules(merge_request)
           notify_for_policy_violations(merge_request)
 
-          head_pipeline = merge_request.actual_head_pipeline
+          head_pipeline = merge_request.diff_head_pipeline
           next unless head_pipeline
 
           ::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(head_pipeline.id)

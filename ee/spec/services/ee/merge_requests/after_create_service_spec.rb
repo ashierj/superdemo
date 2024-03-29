@@ -26,7 +26,7 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
       expect(::MergeRequests::NotifyApproversWorker).to have_received(:perform_in).with(10.seconds, merge_request.id)
     end
 
-    context 'when the merge request has actual_head_pipeline' do
+    context 'when the merge request has diff_head_pipeline' do
       let(:pipeline_id) { 1881 }
 
       before do
@@ -50,7 +50,7 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
       end
     end
 
-    context 'when the merge request does not have actual_head_pipeline' do
+    context 'when the merge request does not have diff_head_pipeline' do
       it 'does not schedule a background job to sync security reports and findings to approval rules' do
         execute
 

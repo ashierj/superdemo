@@ -6,7 +6,7 @@ module Security
 
     def initialize(merge_request)
       @merge_request = merge_request
-      @pipeline = merge_request.actual_head_pipeline
+      @pipeline = merge_request.diff_head_pipeline
     end
 
     def execute
