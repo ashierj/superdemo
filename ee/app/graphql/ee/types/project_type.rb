@@ -386,6 +386,17 @@ module EE
           null: true,
           description: 'Date when project was scheduled to be deleted.',
           alpha: { milestone: '16.10' }
+
+        field :is_adjourned_deletion_enabled, GraphQL::Types::Boolean,
+          null: false,
+          description: 'Indicates if delayed project deletion is enabled.',
+          method: :adjourned_deletion?,
+          alpha: { milestone: '16.11' }
+
+        field :permanent_deletion_date, GraphQL::Types::String,
+          null: true,
+          description: 'Date when project will be deleted if delayed project deletion is enabled.',
+          alpha: { milestone: '16.11' }
       end
 
       def tracking_key
@@ -452,9 +463,15 @@ module EE
       def marked_for_deletion_on
         ## marked_for_deletion_at is deprecated in our v5 REST API in favor of marked_for_deletion_on
         ## https://docs.gitlab.com/ee/api/projects.html#removals-in-api-v5
-        return unless project.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+        return unless project.adjourned_deletion?
 
         project.marked_for_deletion_at
+      end
+
+      def permanent_deletion_date
+        return unless project.adjourned_deletion?
+
+        project.permanent_deletion_date(Time.now.utc)
       end
     end
   end

@@ -8,7 +8,6 @@ RSpec.describe GitlabSchema.types['Project'] do
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:pending_delete_project) { create(:project, marked_for_deletion_at: Time.current) }
   let_it_be(:user) { create(:user) }
   let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project, severity: :high) }
 
@@ -18,7 +17,6 @@ RSpec.describe GitlabSchema.types['Project'] do
     stub_licensed_features(security_dashboard: true)
 
     project.add_developer(user)
-    pending_delete_project.add_developer(user)
   end
 
   it 'includes the ee specific fields' do
@@ -33,6 +31,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
       ci_subscriptions_projects ci_subscribed_projects ai_agents ai_agent duo_features_enabled
       runner_cloud_provisioning google_cloud_artifact_registry_repository marked_for_deletion_on
+      is_adjourned_deletion_enabled permanent_deletion_date
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -500,41 +499,73 @@ RSpec.describe GitlabSchema.types['Project'] do
     it { is_expected.to have_graphql_type(::Types::Ci::RunnerCloudProvisioningType) }
   end
 
-  describe 'marked_for_deletion_on', feature_category: :groups_and_projects do
+  describe 'project adjourned deletion fields', feature_category: :groups_and_projects do
+    let_it_be(:pending_delete_project) { create(:project, marked_for_deletion_at: Time.current) }
+
     let_it_be(:query) do
       %(
         query {
           project(fullPath: "#{pending_delete_project.full_path}") {
             markedForDeletionOn
+            isAdjournedDeletionEnabled
+            permanentDeletionDate
           }
         }
       )
     end
 
-    subject(:marked_for_deletion_on) do
+    before do
+      pending_delete_project.add_developer(user)
+    end
+
+    subject(:project_data) do
       result = GitlabSchema.execute(query, context: { current_user: user }).as_json
-      result.dig('data', 'project', 'markedForDeletionOn')
+      {
+        marked_for_deletion_on: result.dig('data', 'project', 'markedForDeletionOn'),
+        is_adjourned_deletion_enabled: result.dig('data', 'project', 'isAdjournedDeletionEnabled'),
+        permanent_deletion_date: result.dig('data', 'project', 'permanentDeletionDate')
+      }
     end
 
-    context 'when feature is available' do
+    context 'with adjourned deletion disabled' do
       before do
-        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+        allow_next_found_instance_of(Project) do |project|
+          allow(project).to receive(:adjourned_deletion?).and_return(false)
+        end
       end
 
-      it 'returns correct date' do
-        marked_for_deletion_on_time = Time.zone.parse(marked_for_deletion_on)
+      it 'marked_for_deletion_on returns nil' do
+        expect(project_data[:marked_for_deletion_on]).to be_nil
+      end
 
-        expect(marked_for_deletion_on_time).to be_within(1.day).of(Time.current)
+      it 'is_adjourned_deletion_enabled returns false' do
+        expect(project_data[:is_adjourned_deletion_enabled]).to be false
+      end
+
+      it 'permanent_deletion_date returns nil' do
+        expect(project_data[:permanent_deletion_date]).to be_nil
       end
     end
 
-    context 'when feature is not available' do
+    context 'with adjourned deletion enabled' do
       before do
-        stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
+        allow_next_found_instance_of(Project) do |project|
+          allow(project).to receive(:adjourned_deletion?).and_return(true)
+        end
       end
 
-      it 'returns nil' do
-        expect(marked_for_deletion_on).to be nil
+      it 'marked_for_deletion_on returns correct date' do
+        marked_for_deletion_on_time = Time.zone.parse(project_data[:marked_for_deletion_on])
+
+        expect(marked_for_deletion_on_time).to eq(pending_delete_project.marked_for_deletion_at.iso8601)
+      end
+
+      it 'is_adjourned_deletion_enabled returns true' do
+        expect(project_data[:is_adjourned_deletion_enabled]).to be true
+      end
+
+      it 'permanent_deletion_date returns correct date' do
+        expect(project_data[:permanent_deletion_date]).to eq(pending_delete_project.permanent_deletion_date(Time.now.utc))
       end
     end
   end

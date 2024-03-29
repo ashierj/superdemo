@@ -8,5 +8,7 @@ export const organizationProjects = organizationProjectsCE.map((project, index, 
   return {
     ...project,
     markedForDeletionOn: index === array.length - 1 ? '2024-01-01' : null,
+    isAdjournedDeletionEnabled: true,
+    permanentDeletionDate: index === array.length - 1 ? '2024-01-01' : null,
   };
 });
