@@ -2,6 +2,7 @@ import {
   USAGE_OVERVIEW_METADATA,
   USAGE_OVERVIEW_IDENTIFIER_GROUPS,
   USAGE_OVERVIEW_IDENTIFIER_PROJECTS,
+  USAGE_OVERVIEW_IDENTIFIER_USERS,
   USAGE_OVERVIEW_IDENTIFIER_ISSUES,
   USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
   USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
@@ -28,6 +29,7 @@ describe('Usage overview Data Source', () => {
   const identifiers = [
     USAGE_OVERVIEW_IDENTIFIER_GROUPS,
     USAGE_OVERVIEW_IDENTIFIER_PROJECTS,
+    USAGE_OVERVIEW_IDENTIFIER_USERS,
     USAGE_OVERVIEW_IDENTIFIER_ISSUES,
     USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
     USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
@@ -54,6 +56,7 @@ describe('Usage overview Data Source', () => {
     const queryIncludeKeys = [
       'includeGroups',
       'includeProjects',
+      'includeUsers',
       'includeIssues',
       'includeMergeRequests',
       'includePipelines',
@@ -76,6 +79,7 @@ describe('Usage overview Data Source', () => {
         includeGroups: true,
         includeIssues: false,
         includeProjects: false,
+        includeUsers: false,
         includeMergeRequests: true,
         includePipelines: false,
       });
@@ -104,6 +108,7 @@ describe('Usage overview Data Source', () => {
             includeIssues: false,
             includeProjects: false,
             includePipelines: false,
+            includeUsers: false,
           },
         }),
       );
@@ -128,6 +133,7 @@ describe('Usage overview Data Source', () => {
             includeIssues: false,
             includeProjects: false,
             includePipelines: false,
+            includeUsers: false,
           },
         }),
       );
