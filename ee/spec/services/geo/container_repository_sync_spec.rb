@@ -49,6 +49,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
   before do
     stub_container_registry_config(enabled: true, api_url: secondary_api_url)
     stub_registry_replication_config(enabled: true, primary_api_url: primary_api_url)
+    stub_connected(true)
   end
 
   def stub_repository_tags_requests(repository_url, tags)
@@ -89,6 +90,12 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
 
       stub_request(:get, "#{primary_repository_url}/blobs/#{digest}")
         .to_return(status: 200, body: File.new(Rails.root.join('ee/spec/fixtures/ee_sample_schema.json')), headers: {})
+    end
+  end
+
+  def stub_connected(connected)
+    allow_next_instance_of(ContainerRegistry::Client) do |client|
+      allow(client).to receive(:connected?).and_return(connected)
     end
   end
 
@@ -313,6 +320,11 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
         expect(container_repository).to receive(:push_manifest).with('tag-to-sync', anything, anything)
 
         subject.execute
+      end
+
+      it 'raises an error with a bad connection' do
+        stub_connected(false)
+        expect { subject.execute }.to raise_error.with_message('No valid connection to primary registry')
       end
     end
 

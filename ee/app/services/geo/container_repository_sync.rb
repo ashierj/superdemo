@@ -22,6 +22,8 @@ module Geo
     end
 
     def execute
+      raise "No valid connection to primary registry" unless client.connected?
+
       tags_to_sync.each { |tag| sync_tag(tag) }
       tags_to_remove.each { |tag| remove_tag(tag) }
 
