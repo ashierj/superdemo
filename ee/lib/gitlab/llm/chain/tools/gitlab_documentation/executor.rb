@@ -22,7 +22,7 @@ module Gitlab
                 Thought: Question is about inner working of GitLab. "GitlabDocumentation" tool is the right one for
                   the job.
                 Action: GitlabDocumentation
-                ActionInput: How do I set up a new project?
+                Action Input: How do I set up a new project?
               PROMPT
 
             def perform(&_block)

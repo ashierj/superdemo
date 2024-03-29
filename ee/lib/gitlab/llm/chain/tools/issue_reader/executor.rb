@@ -24,7 +24,7 @@ module Gitlab
                   Question is about the content of an issue, so you need to use "IssueReader" tool to retrieve and read issue.
                   Based on this information you can present final answer about issue.
                 Action: IssueReader
-                ActionInput: Please identify the author of #123 issue
+                Action Input: Please identify the author of #123 issue
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
