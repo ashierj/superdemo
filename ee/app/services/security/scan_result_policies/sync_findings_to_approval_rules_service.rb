@@ -30,7 +30,7 @@ module Security
         # Ensure that approvals are in sync when the source branch pipeline
         # finishes before the target branch pipeline
         merge_requests_targeting_pipeline_ref.each do |merge_request|
-          head_pipeline = merge_request.actual_head_pipeline || next
+          head_pipeline = merge_request.diff_head_pipeline || next
 
           Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker.perform_async(
             head_pipeline.id,

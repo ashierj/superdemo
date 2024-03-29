@@ -385,7 +385,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
     before do
       allow(merge_request).to receive(:mergeable_state?) { true }
       allow(merge_request).to receive(:for_fork?) { false }
-      allow(merge_request).to receive(:actual_head_pipeline) { pipeline }
+      allow(merge_request).to receive(:diff_head_pipeline) { pipeline }
       allow(pipeline).to receive(:complete?) { true }
     end
 

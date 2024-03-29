@@ -687,7 +687,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       context 'when head pipeline is blocked by manual jobs' do
         before do
-          merge_request.actual_head_pipeline.block!
+          merge_request.diff_head_pipeline.block!
         end
 
         it { is_expected.to be_truthy }
@@ -715,7 +715,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       context 'when head pipeline is blocked by manual jobs' do
         before do
-          merge_request.actual_head_pipeline.block!
+          merge_request.diff_head_pipeline.block!
         end
 
         it { is_expected.to be_truthy }
@@ -743,7 +743,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       context 'when head pipeline is blocked by manual jobs' do
         before do
-          merge_request.actual_head_pipeline.block!
+          merge_request.diff_head_pipeline.block!
         end
 
         it { is_expected.to be_truthy }
@@ -771,7 +771,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       context 'when head pipeline is blocked by manual jobs' do
         before do
-          merge_request.actual_head_pipeline.block!
+          merge_request.diff_head_pipeline.block!
         end
 
         it { is_expected.to be_truthy }
@@ -826,7 +826,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       context 'when head pipeline is blocked by manual jobs' do
         before do
-          merge_request.actual_head_pipeline.block!
+          merge_request.diff_head_pipeline.block!
         end
 
         it { is_expected.to be_truthy }
@@ -854,7 +854,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       context 'when head pipeline is blocked by manual jobs' do
         before do
-          merge_request.actual_head_pipeline.block!
+          merge_request.diff_head_pipeline.block!
         end
 
         it { is_expected.to be_truthy }

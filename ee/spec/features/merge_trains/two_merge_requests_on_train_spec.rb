@@ -37,8 +37,8 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     head_pipeline = double('Ci::Pipeline')
     allow(head_pipeline).to receive(:complete?).and_return(true)
-    allow(merge_request_1).to receive(:actual_head_pipeline) { head_pipeline }
-    allow(merge_request_2).to receive(:actual_head_pipeline) { head_pipeline }
+    allow(merge_request_1).to receive(:diff_head_pipeline) { head_pipeline }
+    allow(merge_request_2).to receive(:diff_head_pipeline) { head_pipeline }
 
     AutoMergeService.new(project, maintainer_1, { sha: merge_request_1.diff_head_sha })
       .execute(merge_request_1, AutoMergeService::STRATEGY_MERGE_TRAIN)

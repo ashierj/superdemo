@@ -256,10 +256,10 @@ module EE
     def has_denied_policies?
       return false unless license_scanning_feature_available?
 
-      return false unless actual_head_pipeline
+      return false unless diff_head_pipeline
 
       return false unless ::Gitlab::LicenseScanning
-        .scanner_for_pipeline(project, actual_head_pipeline)
+        .scanner_for_pipeline(project, diff_head_pipeline)
         .results_available?
 
       return false if has_approved_license_check?
@@ -290,11 +290,11 @@ module EE
     end
 
     def has_security_reports?
-      !!actual_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.security_reports)
+      !!diff_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.security_reports)
     end
 
     def has_dependency_scanning_reports?
-      !!actual_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:dependency_list))
+      !!diff_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:dependency_list))
     end
 
     def compare_dependency_scanning_reports(current_user)
@@ -304,7 +304,7 @@ module EE
     end
 
     def has_container_scanning_reports?
-      !!actual_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:container_scanning))
+      !!diff_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:container_scanning))
     end
 
     def compare_container_scanning_reports(current_user)
@@ -314,7 +314,7 @@ module EE
     end
 
     def has_dast_reports?
-      !!actual_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:dast))
+      !!diff_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:dast))
     end
 
     def compare_dast_reports(current_user)
@@ -324,7 +324,7 @@ module EE
     end
 
     def compare_license_scanning_reports(current_user)
-      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(project, actual_head_pipeline).results_available?
+      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(project, diff_head_pipeline).results_available?
         return missing_report_error("license scanning")
       end
 
@@ -332,7 +332,7 @@ module EE
     end
 
     def compare_license_scanning_reports_collapsed(current_user)
-      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(project, actual_head_pipeline).results_available?
+      unless ::Gitlab::LicenseScanning.scanner_for_pipeline(project, diff_head_pipeline).results_available?
         return missing_report_error("license scanning")
       end
 
@@ -345,7 +345,7 @@ module EE
     end
 
     def has_metrics_reports?
-      !!actual_head_pipeline&.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:metrics))
+      !!diff_head_pipeline&.complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:metrics))
     end
 
     def compare_metrics_reports
@@ -355,7 +355,7 @@ module EE
     end
 
     def has_coverage_fuzzing_reports?
-      !!actual_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:coverage_fuzzing))
+      !!diff_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:coverage_fuzzing))
     end
 
     def compare_coverage_fuzzing_reports(current_user)
@@ -365,7 +365,7 @@ module EE
     end
 
     def has_api_fuzzing_reports?
-      !!actual_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:api_fuzzing))
+      !!diff_head_pipeline&.complete_or_manual_and_has_reports?(::Ci::JobArtifact.of_report_type(:api_fuzzing))
     end
 
     def compare_api_fuzzing_reports(current_user)

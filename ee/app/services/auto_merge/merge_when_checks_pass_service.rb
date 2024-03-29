@@ -69,7 +69,7 @@ module AutoMerge
       return false unless merge_request.approval_feature_available?
       return false if merge_request.project.merge_trains_enabled?
 
-      merge_request.actual_head_pipeline&.active? ||
+      merge_request.diff_head_pipeline&.active? ||
         !merge_request.approved? ||
         (Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project) &&
          (merge_request.draft? ||
