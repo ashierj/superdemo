@@ -110,19 +110,29 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
     end
 
     describe 'thought' do
-      let(:output) do
-        <<-OUTPUT
+      context 'when thought is prefixed with Thought:' do
+        let(:output) do
+          <<-OUTPUT
           something else
           Thought: Thought: Thought: thought
           Action: This is an action
-        OUTPUT
-      end
+          OUTPUT
+        end
 
-      context 'when thought is prefixed with Thought:' do
         it 'removes the prefix' do
           parser.parse
 
           expect(parser.thought).to eq('thought')
+        end
+      end
+
+      context 'when thought contains only empty Action: keyword' do
+        let(:output) { 'Thought: Action:' }
+
+        it 'removes the thought' do
+          parser.parse
+
+          expect(parser.thought).to be_nil
         end
       end
     end
@@ -217,6 +227,22 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
 
           expect(parser.action).to be_nil
           expect(parser.final_answer).to eq('Some answer')
+        end
+      end
+
+      context 'when keywords present but without the answer' do
+        let(:output) do
+          <<~OUTPUT
+            Thought: Action:
+          OUTPUT
+        end
+
+        it 'returns nothing' do
+          parser.parse
+
+          expect(parser.thought).to be_nil
+          expect(parser.action).to be_nil
+          expect(parser.final_answer).to be_nil
         end
       end
     end

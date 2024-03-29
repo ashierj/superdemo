@@ -74,6 +74,24 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
       end
     end
 
+    context 'when response is empty but framed into thought' do
+      let(:input) { 'Thought: ' }
+
+      it 'returns final answer with default response' do
+        expect(answer.is_final?).to eq(true)
+        expect(answer.content).to eq(described_class.default_final_message)
+      end
+    end
+
+    context 'when response is empty but framed into action' do
+      let(:input) { 'Action: ' }
+
+      it 'returns final answer with default response' do
+        expect(answer.is_final?).to eq(true)
+        expect(answer.content).to eq(described_class.default_final_message)
+      end
+    end
+
     context 'when tool does not contain any of expected keyword' do
       let(:input) { 'Here is my freestyle answer.' }
 
