@@ -37,6 +37,11 @@ export default {
       required: false,
       default: () => [],
     },
+    itemsToShow: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   computed: {
     isDefaultMode() {
@@ -72,7 +77,7 @@ export default {
 <template>
   <div
     v-if="showDefaultMode"
-    class="gl-display-flex gl-text-gray-500 gl-align-items-center gl-gap-3"
+    class="gl-display-flex gl-text-gray-700 gl-align-items-center gl-gap-3"
   >
     <span>{{ $options.i18n.defaultModeText }}</span>
     <gl-icon v-gl-tooltip name="status_warning" :title="$options.i18n.allGroupText" />
@@ -87,9 +92,10 @@ export default {
       :bullet-style="true"
       :default-close-button-text="$options.i18n.hideProjectsButtonText"
       :items="listItems"
+      :items-to-show="itemsToShow"
     />
   </div>
-  <p v-else class="gl-m-0 gl-text-gray-500">
+  <p v-else class="gl-m-0 gl-text-gray-700">
     {{ $options.i18n.projectDefaultText }}
   </p>
 </template>

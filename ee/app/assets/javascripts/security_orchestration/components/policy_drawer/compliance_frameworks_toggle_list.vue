@@ -77,7 +77,7 @@ export default {
 
 <template>
   <div>
-    <p class="gl-mb-3" data-testid="compliance-frameworks-header">
+    <p class="gl-mb-2" data-testid="compliance-frameworks-header">
       {{ header }}
     </p>
 
