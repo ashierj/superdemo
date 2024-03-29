@@ -97,8 +97,8 @@ describe('DefaultRuleBuilder', () => {
     ]);
   });
 
-  it('does not render branch exceptions selector on group level', () => {
-    expect(findBranchExceptionSelector().exists()).toBe(false);
+  it('render branch exceptions selector on group level', () => {
+    expect(findBranchExceptionSelector().exists()).toBe(true);
   });
 
   it('selects branch exceptions', () => {

@@ -1,8 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BranchExceptionSelector from '../../branch_exception_selector.vue';
 import ScanFilterSelector from '../../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS, BRANCH_EXCEPTIONS_KEY } from '../../constants';
@@ -29,7 +27,6 @@ export default {
     ScanTypeSelect,
     StatusFilter,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -48,9 +45,6 @@ export default {
   },
   licenseStatuses: LICENSE_STATES,
   computed: {
-    isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
-    },
     branchExceptions() {
       return this.initRule.branch_exceptions;
     },
@@ -111,7 +105,6 @@ export default {
 
               <template #branchExceptions>
                 <branch-exception-selector
-                  v-if="isProject"
                   :selected-exceptions="branchExceptions"
                   @remove="removeExceptions"
                   @select="triggerChanged"

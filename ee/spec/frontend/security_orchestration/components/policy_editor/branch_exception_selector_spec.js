@@ -1,7 +1,9 @@
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
-import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
-import ProjectBranchSelector from 'ee/vue_shared/components/branches_selector/project_branch_selector.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component';
+import BranchSelector from 'ee/security_orchestration/components/policy_editor/branch_selector.vue';
+import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { NO_EXCEPTION_KEY, EXCEPTION_KEY } from 'ee/security_orchestration/components/constants';
 
 describe('BranchExceptionSelector', () => {
@@ -15,29 +17,27 @@ describe('BranchExceptionSelector', () => {
       propsData,
       provide: {
         namespacePath: NAMESPACE_PATH,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
       },
       stubs: {
-        GlSprintf,
+        GlSprintf: stubComponent(GlSprintf, {
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
       },
     });
   };
 
+  const findBranchSelector = () => wrapper.findComponent(BranchSelector);
   const findNamespaceTypeListbox = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findProjectBranchSelector = () => wrapper.findComponent(ProjectBranchSelector);
 
   describe('default rendering states', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('should display no exception mode by default', () => {
-      expect(findNamespaceTypeListbox().props('selected')).toBe(NO_EXCEPTION_KEY);
-      expect(findProjectBranchSelector().exists()).toBe(false);
-    });
-
-    it('should display branches listbox for  exceptions', async () => {
+    it('should display branches listbox for exceptions', async () => {
       await findNamespaceTypeListbox().vm.$emit('select', EXCEPTION_KEY);
-      expect(findProjectBranchSelector().exists()).toBe(true);
+      expect(findBranchSelector().exists()).toBe(true);
     });
   });
 
@@ -47,8 +47,7 @@ describe('BranchExceptionSelector', () => {
         propsData: { selectedExceptions: MOCK_BRANCHES },
       });
 
-      expect(findProjectBranchSelector().props('selected')).toEqual(MOCK_BRANCHES);
-      expect(findProjectBranchSelector().exists()).toBe(true);
+      expect(findBranchSelector().props('selectedExceptions')).toEqual(MOCK_BRANCHES);
     });
   });
 
@@ -58,7 +57,7 @@ describe('BranchExceptionSelector', () => {
 
       await findNamespaceTypeListbox().vm.$emit('select', EXCEPTION_KEY);
 
-      await findProjectBranchSelector().vm.$emit('select', MOCK_BRANCHES);
+      await findBranchSelector().vm.$emit('select-branches', MOCK_BRANCHES);
 
       expect(wrapper.emitted('select')).toEqual([[{ branch_exceptions: MOCK_BRANCHES }]]);
     });

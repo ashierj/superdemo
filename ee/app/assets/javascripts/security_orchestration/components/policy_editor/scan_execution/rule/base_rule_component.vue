@@ -7,7 +7,6 @@ import {
   SPECIFIC_BRANCHES,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { SCAN_EXECUTION_RULES_LABELS, SCAN_EXECUTION_RULES_PIPELINE_KEY } from '../constants';
 import BranchExceptionSelector from '../../branch_exception_selector.vue';
 import BranchTypeSelector from './branch_type_selector.vue';
@@ -94,9 +93,6 @@ export default {
       return this.initRule.type === SCAN_EXECUTION_RULES_PIPELINE_KEY
         ? this.$options.i18n.pipelineRule
         : this.$options.i18n.scheduleRule;
-    },
-    isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
     },
   },
   methods: {
@@ -197,7 +193,6 @@ export default {
 
           <template #branchExceptions>
             <branch-exception-selector
-              v-if="isProject"
               :selected-exceptions="branchExceptions"
               @remove="removeExceptions"
               @select="setBranchException"

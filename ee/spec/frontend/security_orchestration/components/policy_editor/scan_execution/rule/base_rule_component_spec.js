@@ -214,9 +214,9 @@ describe('BaseRuleComponent', () => {
     const exceptions = { branch_exceptions: ['main', 'test'] };
 
     it.each`
-      title                                                             | namespaceType              | expectedResult
-      ${'renders branch exception selector on the project level'}       | ${NAMESPACE_TYPES.PROJECT} | ${true}
-      ${'does not render branch exception selector on the group level'} | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      title                                                       | namespaceType              | expectedResult
+      ${'renders branch exception selector on the project level'} | ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${'renders branch exception selector on the group level'}   | ${NAMESPACE_TYPES.GROUP}   | ${true}
     `('$title', ({ namespaceType, expectedResult }) => {
       createComponent({
         provide: {

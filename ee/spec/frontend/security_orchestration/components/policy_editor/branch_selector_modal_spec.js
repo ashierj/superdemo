@@ -1,9 +1,19 @@
-import { GlButton, GlFormTextarea, GlPopover, GlSprintf } from '@gitlab/ui';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import { GlFormTextarea, GlModal, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import BranchSelectorPopover from 'ee/security_orchestration/components/policy_editor/branch_selector_popover.vue';
+import BranchSelectorModal from 'ee/security_orchestration/components/policy_editor/branch_selector_modal.vue';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import branchesQuery from '~/projects/settings/branch_rules/queries/branches.query.graphql';
+import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component';
 
-describe('BranchSelectorPopover', () => {
+describe('BranchSelectorModal', () => {
   let wrapper;
+  let requestHandler;
+
+  const hideMock = jest.fn();
+  const openMock = jest.fn();
 
   const VALID_BRANCHES_STRING = 'test@project, test1@project';
   const BRANCHES_WITHOUT_PROJECT_STRING = 'test@project, test1';
@@ -37,21 +47,53 @@ describe('BranchSelectorPopover', () => {
     },
   ];
 
-  const createComponent = ({ propsData = {} } = {}) => {
-    wrapper = shallowMountExtended(BranchSelectorPopover, {
+  const mockDefaultRequestHandler = (branchNames = VALID_BRANCHES.map(({ name }) => name)) =>
+    jest.fn().mockResolvedValue({
+      data: {
+        project: {
+          id: '1',
+          repository: {
+            branchNames,
+          },
+        },
+      },
+    });
+
+  const createMockApolloProvider = (handler) => {
+    Vue.use(VueApollo);
+    requestHandler = handler;
+
+    return createMockApollo([[branchesQuery, handler]]);
+  };
+
+  const createComponent = ({ propsData = {}, handler = mockDefaultRequestHandler() } = {}) => {
+    wrapper = shallowMountExtended(BranchSelectorModal, {
       propsData,
+      apolloProvider: createMockApolloProvider(handler),
       provide: {
         namespacePath: 'gitlab-policies',
+      },
+      stubs: {
+        GlSprintf,
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            open: openMock,
+            hide: hideMock,
+          },
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
       },
     });
   };
 
-  const findPopover = () => wrapper.findComponent(GlPopover);
-  const findAddButton = () => wrapper.findComponent(GlButton);
+  const findModal = () => wrapper.findComponent(GlModal);
+  const findAddButton = () => wrapper.findByTestId('add-button');
+  const findLoadingState = () => wrapper.findByTestId('loading-state');
   const findTextArea = () => wrapper.findComponent(GlFormTextarea);
-  const findDescription = () => wrapper.findComponent(GlSprintf);
+  const findAsyncValidationError = () => wrapper.findByTestId('async-validation-error');
   const findValidationError = () => wrapper.findByTestId('validation-error');
   const findDuplicationError = () => wrapper.findByTestId('duplicate-error');
+  const findModalDescription = () => wrapper.findByTestId('branch-exceptions-modal-description');
 
   describe('initial state for regular branches', () => {
     beforeEach(() => {
@@ -60,15 +102,19 @@ describe('BranchSelectorPopover', () => {
 
     it('should render required components', () => {
       expect(findAddButton().exists()).toBe(true);
-      expect(findDescription().exists()).toBe(true);
+      expect(findModalDescription().exists()).toBe(true);
+      expect(findModalDescription().text()).toBe(
+        'List branches in the format branch-name@group-name/project-name, separated by a comma (,).',
+      );
 
       expect(findTextArea().props('value')).toBe('');
-      expect(findPopover().props('title')).toBe('Add regular branches');
+      expect(findModal().props('title')).toBe('Add regular branches');
     });
 
     it('adds new branches', async () => {
       findTextArea().vm.$emit('input', VALID_BRANCHES_STRING);
-      await findAddButton().vm.$emit('click');
+      findAddButton().vm.$emit('click');
+      await waitForPromises();
 
       expect(wrapper.emitted('add-branches')).toEqual([
         [
@@ -76,12 +122,12 @@ describe('BranchSelectorPopover', () => {
             {
               fullPath: 'project',
               name: 'test',
-              value: 'test@project_0',
+              value: 'test@project',
             },
             {
               fullPath: 'project',
               name: 'test1',
-              value: 'test1@project_1',
+              value: 'test1@project',
             },
           ],
         ],
@@ -90,7 +136,8 @@ describe('BranchSelectorPopover', () => {
 
     it('adds current project path to branches without full path on project level', async () => {
       findTextArea().vm.$emit('input', BRANCHES_WITHOUT_PROJECT_STRING);
-      await findAddButton().vm.$emit('click');
+      findAddButton().vm.$emit('click');
+      await waitForPromises();
 
       expect(wrapper.emitted('add-branches')).toEqual([
         [
@@ -98,12 +145,12 @@ describe('BranchSelectorPopover', () => {
             {
               fullPath: 'project',
               name: 'test',
-              value: 'test@project_0',
+              value: 'test@project',
             },
             {
               fullPath: 'gitlab-policies',
               name: 'test1',
-              value: 'test1@gitlab-policies_1',
+              value: 'test1@gitlab-policies',
             },
           ],
         ],
@@ -152,7 +199,7 @@ describe('BranchSelectorPopover', () => {
       expect(findTextArea().props('value')).toBe(expectedResult);
     });
 
-    it('emits same branches when there are now changes', () => {
+    it('emits same branches when there are now changes', async () => {
       createComponent({
         propsData: {
           branches: VALID_BRANCHES,
@@ -160,21 +207,22 @@ describe('BranchSelectorPopover', () => {
       });
 
       expect(findTextArea().props('value')).toBe(VALID_BRANCHES_STRING);
-
       findAddButton().vm.$emit('click');
+      await waitForPromises();
 
+      expect(requestHandler).toHaveBeenCalled();
       expect(wrapper.emitted('add-branches')).toEqual([
         [
           [
             {
               fullPath: 'project',
               name: 'test',
-              value: 'test@project_0',
+              value: 'test@project',
             },
             {
               fullPath: 'project',
               name: 'test1',
-              value: 'test1@project_1',
+              value: 'test1@project',
             },
           ],
         ],
@@ -194,23 +242,52 @@ describe('BranchSelectorPopover', () => {
         },
       });
 
-      expect(findPopover().props('title')).toBe(title);
+      expect(findModal().props('title')).toBe(title);
     });
   });
 
-  describe('popover state', () => {
-    it('renders correct popover state', () => {
+  describe('branches async validation', () => {
+    it('renders validation error if branch does not exist', async () => {
       createComponent({
-        propsData: {
-          container: 'container',
-          placement: 'left',
-          target: 'target',
-        },
+        handler: mockDefaultRequestHandler([]),
       });
 
-      expect(findPopover().props('container')).toBe('container');
-      expect(findPopover().props('placement')).toBe('left');
-      expect(findPopover().props('target')).toBe('target');
+      findTextArea().vm.$emit('input', VALID_BRANCHES_STRING);
+      await findAddButton().vm.$emit('click');
+
+      expect(findLoadingState().exists()).toBe(true);
+
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenCalled();
+      expect(findLoadingState().exists()).toBe(false);
+      expect(findAsyncValidationError().exists()).toBe(true);
+      expect(findAsyncValidationError().text()).toBe(
+        'Branch: test was not found in project: project. Edit or remove this entry.\r\nBranch: test1 was not found in project: project. Edit or remove this entry.',
+      );
+    });
+
+    it('renders validation error if project does not exist', async () => {
+      createComponent({
+        handler: jest.fn().mockResolvedValue({
+          data: {
+            project: null,
+          },
+        }),
+      });
+
+      findTextArea().vm.$emit('input', VALID_BRANCHES_STRING);
+      await findAddButton().vm.$emit('click');
+
+      expect(findLoadingState().exists()).toBe(true);
+
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenCalled();
+
+      expect(findAsyncValidationError().text()).toBe(
+        "Can't find project: project. Edit or remove this entry.\r\nCan't find project: project. Edit or remove this entry.",
+      );
     });
   });
 });

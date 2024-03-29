@@ -1,24 +1,26 @@
 import { nextTick } from 'vue';
-import { GlDisclosureDropdown, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component';
+import { GlDisclosureDropdown, GlListboxItem, GlModal } from '@gitlab/ui';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import BranchSelector from 'ee/security_orchestration/components/policy_editor/branch_selector.vue';
-import BranchSelectorPopover from 'ee/security_orchestration/components/policy_editor/branch_selector_popover.vue';
-import { PROTECTED_BRANCH } from 'ee/security_orchestration/components/policy_editor/constants';
+import BranchSelectorModal from 'ee/security_orchestration/components/policy_editor/branch_selector_modal.vue';
+import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component';
+import * as urlUtils from '~/lib/utils/url_utility';
 
 describe('BranchSelector', () => {
   let wrapper;
+  const closeMock = jest.fn();
+  const openMock = jest.fn();
 
   const VALID_BRANCHES = [
     {
       fullPath: 'project',
       name: 'test',
-      value: 'test@project_0',
+      value: 'test@project',
     },
     {
       fullPath: 'project',
       name: 'test1',
-      value: 'test1@project_1',
+      value: 'test1@project',
     },
   ];
 
@@ -26,21 +28,26 @@ describe('BranchSelector', () => {
     {
       full_path: 'project',
       name: 'test',
-      type: PROTECTED_BRANCH,
     },
     {
       full_path: 'project',
       name: 'test1',
-      type: PROTECTED_BRANCH,
     },
   ];
 
   const createComponent = ({ propsData = {} } = {}) => {
-    wrapper = shallowMountExtended(BranchSelector, {
+    wrapper = mountExtended(BranchSelector, {
       propsData,
+      provide: {
+        namespacePath: 'namespacePath',
+        policyType: 'approval_policy',
+      },
       stubs: {
         GlDisclosureDropdown: stubComponent(GlDisclosureDropdown, {
-          methods: { close: jest.fn() },
+          methods: {
+            open: openMock,
+            close: closeMock,
+          },
           template: RENDER_ALL_SLOTS_TEMPLATE,
         }),
       },
@@ -48,13 +55,16 @@ describe('BranchSelector', () => {
   };
 
   const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
-  const findBranchTypeSelector = () => wrapper.findComponent(GlCollapsibleListbox);
   const findAllListboxItems = () => wrapper.findAllComponents(GlListboxItem);
-  const findBranchSelectorPopover = () => wrapper.findComponent(BranchSelectorPopover);
+  const findBranchSelectorModal = () => wrapper.findComponent(BranchSelectorModal);
+  const findModal = () => findBranchSelectorModal().findComponent(GlModal);
   const findEmptyState = () => wrapper.findByTestId('empty-state');
-  const findDoneButton = () => wrapper.findByTestId('done-button');
   const findResetButton = () => wrapper.findByTestId('reset-button');
-  const findAddAnotherButton = () => wrapper.findByTestId('add-button');
+  const findAddButton = () => wrapper.findByTestId('add-button');
+
+  beforeEach(() => {
+    jest.spyOn(urlUtils, 'getParameterValues').mockReturnValue(['approval_policy']);
+  });
 
   describe('initial state for regular branches', () => {
     beforeEach(() => {
@@ -65,31 +75,23 @@ describe('BranchSelector', () => {
       expect(findDropdown().exists()).toBe(true);
       expect(findEmptyState().exists()).toBe(true);
       expect(findResetButton().exists()).toBe(false);
-      expect(findBranchSelectorPopover().exists()).toBe(false);
-
-      expect(findBranchTypeSelector().exists()).toBe(true);
-      expect(findAllListboxItems()).toHaveLength(0);
+      expect(findBranchSelectorModal().exists()).toBe(true);
+      expect(findModal().props('visible')).toBe(false);
 
       expect(findDropdown().props('toggleText')).toBe('Choose exception branches');
     });
 
-    it('selects branches', async () => {
-      findBranchTypeSelector().vm.$emit('select', PROTECTED_BRANCH);
-      await nextTick();
+    it('selects branches', () => {
+      expect(findBranchSelectorModal().exists()).toBe(true);
+      expect(findBranchSelectorModal().props('forProtectedBranches')).toBe(true);
 
-      expect(findBranchSelectorPopover().exists()).toBe(true);
-      expect(findBranchSelectorPopover().props('forProtectedBranches')).toBe(true);
-      expect(findBranchSelectorPopover().props('show')).toBe(true);
+      findBranchSelectorModal().vm.$emit('add-branches', VALID_BRANCHES);
+      expect(openMock).toHaveBeenCalled();
 
-      findBranchSelectorPopover().vm.$emit('add-branches', VALID_BRANCHES);
+      findDropdown().vm.$emit('hidden');
 
-      await nextTick();
-
-      expect(findBranchSelectorPopover().exists()).toBe(false);
-
-      findDoneButton().vm.$emit('click');
-
-      expect(wrapper.emitted('select-branches')).toEqual([[VALID_BRANCHES_YAML_FORMAT]]);
+      expect(closeMock).toHaveBeenCalled();
+      expect(wrapper.emitted('select-branches')[0]).toEqual([VALID_BRANCHES_YAML_FORMAT]);
     });
   });
 
@@ -105,8 +107,7 @@ describe('BranchSelector', () => {
     it('renders existing exceptions', () => {
       expect(findAllListboxItems()).toHaveLength(VALID_BRANCHES_YAML_FORMAT.length);
       expect(findDropdown().props('toggleText')).toBe('test, test1');
-      expect(findDoneButton().exists()).toBe(true);
-      expect(findAddAnotherButton().exists()).toBe(true);
+      expect(findAddButton().exists()).toBe(true);
       expect(findResetButton().exists()).toBe(true);
     });
 
@@ -118,22 +119,17 @@ describe('BranchSelector', () => {
       expect(wrapper.emitted('select-branches')).toEqual([[[]]]);
     });
 
-    it('unselects single branch', async () => {
+    it('unselects single branch', () => {
       findAllListboxItems().at(0).vm.$emit('select');
-      await nextTick();
+      findDropdown().vm.$emit('hidden');
 
-      findDoneButton().vm.$emit('click');
-      await nextTick();
-
+      expect(closeMock).toHaveBeenCalled();
       expect(wrapper.emitted('select-branches')).toEqual([[[VALID_BRANCHES_YAML_FORMAT[1]]]]);
     });
 
     it('can add more branches', async () => {
-      findAddAnotherButton().vm.$emit('click');
-      await nextTick();
-
-      expect(findBranchSelectorPopover().props('forProtectedBranches')).toBe(true);
-      expect(findBranchSelectorPopover().props('branches')).toEqual(VALID_BRANCHES);
+      expect(findBranchSelectorModal().props('forProtectedBranches')).toBe(true);
+      expect(findBranchSelectorModal().props('branches')).toEqual(VALID_BRANCHES);
 
       const newBranches = [
         ...VALID_BRANCHES,
@@ -144,24 +140,34 @@ describe('BranchSelector', () => {
         },
       ];
 
-      findBranchSelectorPopover().vm.$emit('add-branches', newBranches);
+      findBranchSelectorModal().vm.$emit('add-branches', newBranches);
+      expect(openMock).toHaveBeenCalled();
 
       await nextTick();
 
-      expect(findBranchSelectorPopover().exists()).toBe(false);
+      expect(findModal().props('visible')).toBe(false);
 
-      findDoneButton().vm.$emit('click');
+      findDropdown().vm.$emit('hidden');
+      expect(closeMock).toHaveBeenCalled();
 
       const expected = [
         ...VALID_BRANCHES_YAML_FORMAT,
         {
           full_path: 'project',
           name: 'test3',
-          type: PROTECTED_BRANCH,
         },
       ];
 
-      expect(wrapper.emitted('select-branches')).toEqual([[expected]]);
+      expect(wrapper.emitted('select-branches')[0]).toEqual([expected]);
+    });
+  });
+
+  describe('regular branches', () => {
+    it('renders modal for regular branches for execution policy', () => {
+      jest.spyOn(urlUtils, 'getParameterValues').mockReturnValue(['scan_execution_policy']);
+      createComponent();
+
+      expect(findBranchSelectorModal().props('forProtectedBranches')).toBe(false);
     });
   });
 });

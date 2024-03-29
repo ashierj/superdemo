@@ -3,8 +3,6 @@ import { xor } from 'lodash';
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BranchExceptionSelector from '../../branch_exception_selector.vue';
 import {
   ANY_OPERATOR,
@@ -65,7 +63,6 @@ export default {
     AttributeFilters,
     NumberRangeSelect,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -79,9 +76,6 @@ export default {
     };
   },
   computed: {
-    isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
-    },
     severityLevels: {
       get() {
         const { severity_levels: severityLevels = [] } = this.initRule;
@@ -358,7 +352,6 @@ export default {
 
               <template #branchExceptions>
                 <branch-exception-selector
-                  v-if="isProject"
                   :selected-exceptions="branchExceptions"
                   @remove="removeExceptions"
                   @select="triggerChanged"
