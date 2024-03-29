@@ -41,7 +41,7 @@ module ProductAnalytics
         return ServiceResponse.error(message: 'Product analytics is disabled')
       end
 
-      return if container.product_analytics_enabled?
+      return if container.product_analytics_enabled? && container.connected_to_cluster?
 
       ServiceResponse.error(message: 'Product analytics is disabled for this project')
     end

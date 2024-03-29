@@ -97,4 +97,26 @@ module ProductAnalyticsHelpers
   def product_analytics_billing_enabled?
     root_ancestor.present? && ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :wip)
   end
+
+  def connected_to_cluster?
+    return false unless is_a?(Project)
+
+    return true unless product_analytics_billing_enabled?
+
+    self_managed_product_analytics_cluster? || product_analytics_add_on_purchased?
+  end
+
+  private
+
+  def product_analytics_add_on_purchased?
+    ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(root_ancestor.id).any?
+  end
+
+  def self_managed_product_analytics_cluster?
+    collector_host.present? && collector_host.exclude?('gl-product-analytics.com')
+  end
+
+  def collector_host
+    ::ProductAnalytics::Settings.for_project(self).product_analytics_data_collector_host
+  end
 end

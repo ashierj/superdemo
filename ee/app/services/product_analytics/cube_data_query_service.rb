@@ -17,6 +17,12 @@ module ProductAnalytics
         return ServiceResponse.error(message: 'Product Analytics is not enabled', reason: :not_found)
       end
 
+      unless project.connected_to_cluster?
+        return ServiceResponse.error(message: 'Access to product analytics is restricted.
+          Please consider purchasing product analytics add on or setup your own cluster to continue',
+          reason: :unauthorized)
+      end
+
       return ServiceResponse.error(message: 'Access Denied', reason: :unauthorized) unless has_access?
 
       ServiceResponse.error(message: 'Must provide a url to query', reason: :bad_request) unless params[:path].present?

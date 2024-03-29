@@ -266,4 +266,43 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       end
     end
   end
+
+  describe '#connected_to_cluster?' do
+    subject { project.connected_to_cluster? }
+
+    before do
+      stub_feature_flags(product_analytics_billing: project.root_ancestor)
+      stub_application_setting(product_analytics_data_collector_host: 'https://gl-product-analytics.com:4567')
+    end
+
+    context 'when the product_analytics_billing flag is disabled' do
+      before do
+        stub_feature_flags(product_analytics_billing: false)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the product_analytics_billing flag is enabled' do
+      context 'when product_analytics add on is not purchased' do
+        it { is_expected.to be_falsey }
+
+        context 'when user brings their own cluster' do
+          before do
+            stub_application_setting(product_analytics_data_collector_host: 'https://my-data-collector.customer-xyz.com')
+          end
+
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context 'when product_analytics add on has been purchased' do
+        before do
+          create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
 end
