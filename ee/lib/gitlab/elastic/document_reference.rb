@@ -132,6 +132,42 @@ module Gitlab
       def serialize
         self.class.serialize_array([klass_name, db_id, es_id, es_parent].compact)
       end
+
+      def index?
+        database_record.present?
+      end
+
+      def index_operation
+        if Feature.enabled?(:elastic_bulk_indexer_use_upsert, type: :gitlab_com_derisk)
+          [{ update: build_op(proxy: proxy) }, { doc: as_indexed_json, doc_as_upsert: true }]
+        else
+          [{ index: build_op(proxy: proxy) }, as_indexed_json]
+        end
+      end
+
+      def delete_operation(index_name: nil)
+        [{ delete: build_op(proxy: klass.__elasticsearch__, index_name: index_name) }]
+      end
+
+      def as_indexed_json
+        proxy.as_indexed_json
+      end
+
+      def proxy
+        database_record.__elasticsearch__
+      end
+
+      def build_op(proxy:, index_name: nil)
+        op = {
+          _index: index_name || proxy.index_name,
+          _type: proxy.document_type,
+          _id: es_id
+        }
+
+        op[:routing] = es_parent if es_parent
+
+        op
+      end
     end
   end
 end

@@ -35,7 +35,7 @@ module Gitlab
       # Adds or removes a document in elasticsearch, depending on whether the
       # database record it refers to can be found
       def process(ref)
-        if ref.database_record
+        if ref.index?
           index(ref)
         else
           delete(ref)
@@ -57,12 +57,9 @@ module Gitlab
       attr_reader :body, :body_size_bytes, :ref_buffer
 
       def index(ref)
-        proxy = ref.database_record.__elasticsearch__
-        op = build_op(ref, proxy)
-
         # return bytesize to calculate total bytes in calling method
-        submit(ref, { index: op }, proxy.as_indexed_json).tap do |_bytesize|
-          delete_from_rolled_over_indices(alias_name: proxy.index_name, ref: ref)
+        submit(ref, ref.index_operation).tap do |_bytesize|
+          delete_from_rolled_over_indices(alias_name: ref.proxy.index_name, ref: ref)
         end
       rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => error
         logger.warn(message: error.message, record_id: error.record_id, class_name: error.class_name)
@@ -70,30 +67,15 @@ module Gitlab
       end
 
       def delete(ref, index_name: nil)
-        proxy = ref.klass.__elasticsearch__
-        op = build_op(ref, proxy, index_name: index_name)
-
-        submit(ref, delete: op)
-      end
-
-      def build_op(ref, proxy, index_name: nil)
-        op = {
-          _index: index_name || proxy.index_name,
-          _type: proxy.document_type,
-          _id: ref.es_id
-        }
-
-        op[:routing] = ref.es_parent if ref.es_parent
-
-        op
+        submit(ref, ref.delete_operation(index_name: index_name))
       end
 
       def bulk_limit_bytes
         Gitlab::CurrentSettings.elasticsearch_max_bulk_size_mb.megabytes
       end
 
-      def submit(ref, *hashes)
-        jsons = hashes.map(&:to_json)
+      def submit(ref, ops)
+        jsons = ops.map(&:to_json)
 
         calculate_bytesize(jsons).tap do |bytesize|
           # if new ref will exceed the bulk limit, send existing buffer of records
@@ -156,7 +138,7 @@ module Gitlab
         # Example succces: {"index": {"result": "created", "status": 201}}
         # Example failure: {"index": {"error": {...}, "status": 400}}
         result['items'].each_with_index do |item, i|
-          op = item['index'] || item['delete']
+          op = item['index'] || item['update'] || item['delete']
 
           if op.nil? || op['error']
             logger.warn(message: 'bulk_error', item: item)
