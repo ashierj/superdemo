@@ -31,10 +31,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
 
   describe '#execute' do
     context 'when context is not authorized' do
-      before do
-        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
-          .and_return(false)
-      end
+      include_context 'with stubbed LLM authorizer', allowed: false
 
       it 'returns error answer' do
         allow(tool).to receive(:authorize).and_return(false)
@@ -45,10 +42,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
     end
 
     context 'when context is authorized' do
-      before do
-        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
-          .and_return(true)
-      end
+      include_context 'with stubbed LLM authorizer', allowed: true
 
       context 'when response is successful' do
         it 'returns success answer' do

@@ -44,10 +44,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Executor, feature_category
 
   describe '#execute' do
     context 'when context is authorized' do
-      before do
-        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
-          .and_return(true)
-      end
+      include_context 'with stubbed LLM authorizer', allowed: true
 
       it_behaves_like 'slash command tool' do
         let(:prompt_class) { Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic }

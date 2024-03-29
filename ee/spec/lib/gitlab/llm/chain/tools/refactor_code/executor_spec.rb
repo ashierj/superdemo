@@ -49,10 +49,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
 
   describe '#execute' do
     context 'when context is authorized' do
-      before do
-        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive(:context_allowed?)
-          .and_return(true)
-      end
+      include_context 'with stubbed LLM authorizer', allowed: true
 
       it_behaves_like 'slash command tool' do
         let(:prompt_class) { Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::Anthropic }
@@ -113,10 +110,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
     end
 
     context 'when context is not authorized' do
-      before do
-        allow(Gitlab::Llm::Chain::Utils::ChatAuthorizer).to receive_message_chain(:context_authorized, :allowed?)
-          .and_return(false)
-      end
+      include_context 'with stubbed LLM authorizer', allowed: false
 
       it 'returns error answer' do
         allow(tool).to receive(:authorize).and_return(false)

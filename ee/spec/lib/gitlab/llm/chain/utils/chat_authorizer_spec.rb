@@ -47,6 +47,15 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
     end
 
     describe '.context.allowed?' do
+      context 'when current user is not present' do
+        include_context 'with ai chat enabled for group on SaaS'
+        let(:user) { nil }
+
+        it 'returns false' do
+          expect(authorizer.context(context: context).allowed?).to be(false)
+        end
+      end
+
       context 'when both resource and container are present' do
         context 'when container is authorized' do
           include_context 'with ai chat enabled for group on SaaS'
@@ -357,7 +366,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       context 'when only container is present' do
         let(:context) do
           Gitlab::Llm::Chain::GitlabContext.new(
-            current_user: nil,
+            current_user: user,
             container: container,
             resource: nil,
             ai_request: nil
@@ -367,8 +376,8 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         context 'when ai is enabled for self-managed' do
           include_context 'with experiment features enabled for self-managed'
 
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
+          it 'returns true' do
+            expect(authorizer.context(context: context).allowed?).to be(true)
           end
         end
 
