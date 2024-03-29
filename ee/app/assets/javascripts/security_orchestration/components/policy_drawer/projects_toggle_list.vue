@@ -104,7 +104,7 @@ export default {
 
 <template>
   <div>
-    <p class="gl-mb-3" data-testid="toggle-list-header">{{ header }}</p>
+    <p class="gl-mb-2" data-testid="toggle-list-header">{{ header }}</p>
 
     <toggle-list
       v-if="projects.length"

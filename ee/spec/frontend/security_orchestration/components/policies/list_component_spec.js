@@ -108,6 +108,7 @@ describe('List component', () => {
   const findPolicySourceCells = () => wrapper.findAllByTestId('policy-source-cell');
   const findPolicyTypeCells = () => wrapper.findAllByTestId('policy-type-cell');
   const findPolicyDrawer = () => wrapper.findByTestId('policyDrawer');
+  const findPolicyScopeCells = () => wrapper.findAllByTestId('policy-scope-cell');
 
   describe('initial state', () => {
     it('renders closed editor drawer', () => {
@@ -411,6 +412,83 @@ describe('List component', () => {
 
         expect(findPolicySourceFilter().props('value')).toBe(expectedSource);
         expect(findPolicyTypeFilter().props('value')).toBe(expectedType);
+        expect(findPolicyScopeCells()).toHaveLength(0);
+      },
+    );
+  });
+
+  describe('scope column', () => {
+    const SCOPE_HEADER_FIELD = {
+      key: 'scope',
+      label: 'Scope',
+      sortable: true,
+      tdAttr: { 'data-testid': 'policy-scope-cell' },
+    };
+
+    it('renders scope column on group level', async () => {
+      mountShallowWrapper({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.GROUP,
+          glFeatures: {
+            securityPoliciesPolicyScope: true,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findPoliciesTable().props('fields')[4]).toEqual(SCOPE_HEADER_FIELD);
+    });
+
+    it('renders scope column on project level', async () => {
+      mountShallowWrapper({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          glFeatures: {
+            securityPoliciesPolicyScopeProject: true,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findPoliciesTable().props('fields')[4]).toEqual(SCOPE_HEADER_FIELD);
+    });
+
+    it('renders policy scope column inside table on group level', async () => {
+      mountWrapper({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.GROUP,
+          glFeatures: {
+            securityPoliciesPolicyScope: true,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findPolicyScopeCells()).toHaveLength(4);
+    });
+
+    it.each`
+      securityPoliciesPolicyScopeProject | expectedLength
+      ${true}                            | ${4}
+      ${false}                           | ${0}
+    `(
+      'renders policy scope column inside table on project level when ff enabled',
+      async ({ securityPoliciesPolicyScopeProject, expectedLength }) => {
+        mountWrapper({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+            glFeatures: {
+              securityPoliciesPolicyScopeProject,
+            },
+          },
+        });
+
+        await waitForPromises();
+
+        expect(findPolicyScopeCells()).toHaveLength(expectedLength);
       },
     );
   });

@@ -4,6 +4,7 @@ import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective }
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { createAlert } from '~/alert';
 import { __, s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
@@ -12,6 +13,7 @@ import {
   extractTypeParameter,
   extractSourceParameter,
 } from 'ee/security_orchestration/components/policies/utils';
+import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
@@ -27,6 +29,7 @@ import {
 import SourceFilter from './filters/source_filter.vue';
 import TypeFilter from './filters/type_filter.vue';
 import EmptyState from './empty_state.vue';
+import ListComponentScope from './list_component_scope.vue';
 
 const NAMESPACE_QUERY_DICT = {
   scanExecution: {
@@ -63,6 +66,7 @@ export default {
     GlSprintf,
     GlTable,
     EmptyState,
+    ListComponentScope,
     SourceFilter,
     TypeFilter,
     DrawerWrapper,
@@ -71,6 +75,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: [
     'documentationPath',
     'namespacePath',
@@ -91,6 +96,25 @@ export default {
     },
   },
   apollo: {
+    linkedSppItems: {
+      query: getSppLinkedProjectsNamespaces,
+      variables() {
+        return {
+          fullPath: this.namespacePath,
+        };
+      },
+      update(data) {
+        const {
+          securityPolicyProjectLinkedProjects: { nodes: linkedProjects = [] } = {},
+          securityPolicyProjectLinkedNamespaces: { nodes: linkedNamespaces = [] } = {},
+        } = data?.project || {};
+
+        return [...linkedProjects, ...linkedNamespaces];
+      },
+      skip() {
+        return this.shouldSkipDependenciesCheck;
+      },
+    },
     scanExecutionPolicies: {
       query() {
         return NAMESPACE_QUERY_DICT.scanExecution[this.namespaceType];
@@ -132,9 +156,22 @@ export default {
       scanResultPolicies: [],
       selectedPolicySource,
       selectedPolicyType,
+      linkedSppItems: [],
     };
   },
   computed: {
+    shouldSkipDependenciesCheck() {
+      return this.isGroup || !this.glFeatures.securityPoliciesPolicyScopeProject;
+    },
+    showLoader() {
+      return this.$apollo.queries.linkedSppItems?.loading && this.isProject;
+    },
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
+    isGroup() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+    },
     allPolicyTypes() {
       return {
         [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: this.scanExecutionPolicies,
@@ -166,8 +203,13 @@ export default {
     hasSelectedPolicy() {
       return Boolean(this.selectedPolicy);
     },
+    showPolicyScope() {
+      return this.isGroup
+        ? this.glFeatures.securityPoliciesPolicyScope
+        : this.glFeatures.securityPoliciesPolicyScopeProject;
+    },
     typeLabel() {
-      if (this.namespaceType === NAMESPACE_TYPES.GROUP) {
+      if (this.isGroup) {
         return this.$options.i18n.groupTypeLabel;
       }
       return this.$options.i18n.projectTypeLabel;
@@ -184,7 +226,7 @@ export default {
       );
     },
     fields() {
-      return [
+      const fields = [
         {
           key: 'status',
           label: '',
@@ -194,7 +236,7 @@ export default {
         {
           key: 'name',
           label: __('Name'),
-          thClass: 'gl-w-half',
+          thClass: this.showPolicyScope ? 'gl-w-30p' : 'gl-w-half',
           sortable: true,
         },
         {
@@ -215,6 +257,19 @@ export default {
           sortable: true,
         },
       ];
+
+      if (this.showPolicyScope) {
+        const insertIndex = fields.length - 1;
+
+        fields.splice(insertIndex, 0, {
+          key: 'scope',
+          label: s__('SecurityOrchestration|Scope'),
+          sortable: true,
+          tdAttr: { 'data-testid': 'policy-scope-cell' },
+        });
+      }
+
+      return fields;
     },
   },
   watch: {
@@ -346,20 +401,30 @@ export default {
       </template>
 
       <template #cell(source)="{ value: source }">
-        <gl-sprintf
+        <span
           v-if="isPolicyInherited(source) && policyHasNamespace(source)"
-          :message="$options.i18n.inheritedLabel"
+          class="gl-white-space-nowrap"
         >
-          <template #namespace>
-            <gl-link :href="getSecurityPolicyListUrl(policyListUrlArgs(source))" target="_blank">
-              {{ getPolicyText(source) }}
-            </gl-link>
-          </template>
-        </gl-sprintf>
+          <gl-sprintf :message="$options.i18n.inheritedLabel">
+            <template #namespace>
+              <gl-link :href="getSecurityPolicyListUrl(policyListUrlArgs(source))" target="_blank">
+                {{ getPolicyText(source) }}
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </span>
         <span v-else-if="isPolicyInherited(source) && !policyHasNamespace(source)">{{
           $options.i18n.inheritedShortLabel
         }}</span>
-        <span v-else>{{ typeLabel }}</span>
+        <span v-else class="gl-white-space-nowrap">{{ typeLabel }}</span>
+      </template>
+
+      <template v-if="showPolicyScope" #cell(scope)="{ item: { policyScope } }">
+        <list-component-scope
+          :policy-scope="policyScope"
+          :linked-spp-items="linkedSppItems"
+          :loading="showLoader"
+        />
       </template>
 
       <template #cell(updatedAt)="{ value: updatedAt }">
