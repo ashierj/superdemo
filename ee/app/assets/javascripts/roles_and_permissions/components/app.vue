@@ -4,8 +4,10 @@ import { createAlert } from '~/alert';
 import { s__, n__, sprintf } from '~/locale';
 import groupMemberRolesQuery from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
 import instanceMemberRolesQuery from '../graphql/instance_member_roles.query.graphql';
+import deleteMemberRoleMutation from '../graphql/delete_member_role.mutation.graphql';
 import CustomRolesEmptyState from './custom_roles_empty_state.vue';
 import CustomRolesTable from './custom_roles_table.vue';
+import CustomRolesDeleteModal from './custom_roles_delete_modal.vue';
 
 export default {
   name: 'CustomRolesApp',
@@ -16,6 +18,9 @@ export default {
     ),
     newRoleText: s__('MemberRole|New role'),
     fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
+    deleteErrorWithReason: s__('MemberRole|Failed to delete role. %{error}'),
+    deleteError: s__('MemberRole|Failed to delete role.'),
+    roleDeletedText: s__('MemberRole|Role successfully deleted.'),
   },
   components: {
     GlLoadingIcon,
@@ -25,11 +30,15 @@ export default {
     GlIcon,
     CustomRolesEmptyState,
     CustomRolesTable,
+    CustomRolesDeleteModal,
   },
   inject: ['documentationPath', 'groupFullPath'],
   data() {
     return {
       customRoles: [],
+      isDeletingRole: false,
+      customRoleToDelete: null,
+      alert: null,
     };
   },
   apollo: {
@@ -72,12 +81,59 @@ export default {
         },
       );
     },
+    isDeleteModalVisible() {
+      return Boolean(this.customRoleToDelete);
+    },
+  },
+  methods: {
+    showDeleteModal(role) {
+      this.customRoleToDelete = role;
+    },
+    hideDeleteModal() {
+      this.customRoleToDelete = null;
+    },
+    async deleteCustomRole() {
+      this.isDeletingRole = true;
+      this.clearAlert();
+
+      try {
+        const { data } = await this.$apollo.mutate({
+          mutation: deleteMemberRoleMutation,
+          variables: {
+            input: {
+              id: this.customRoleToDelete.id,
+            },
+          },
+        });
+
+        const error = data.memberRoleDelete.errors[0];
+
+        if (error) {
+          this.alert = createAlert({
+            message: sprintf(this.$options.i18n.deleteErrorWithReason, { error }),
+          });
+        } else {
+          this.$toast.show(this.$options.i18n.roleDeletedText);
+          this.$apollo.queries.customRoles.refetch();
+        }
+      } catch {
+        this.alert = createAlert({
+          message: this.$options.i18n.deleteError,
+        });
+      } finally {
+        this.customRoleToDelete = null;
+        this.isDeletingRole = false;
+      }
+    },
+    clearAlert() {
+      this.alert?.dismiss();
+    },
   },
 };
 </script>
 
 <template>
-  <gl-loading-icon v-if="isLoading" size="md" class="gl-mt-5" />
+  <gl-loading-icon v-if="isLoading || isDeletingRole" size="md" class="gl-mt-5" />
 
   <custom-roles-empty-state v-else-if="!customRoles.length" />
 
@@ -110,6 +166,12 @@ export default {
       <span>{{ customRolesCount }}</span>
     </div>
 
-    <custom-roles-table :custom-roles="customRoles" />
+    <custom-roles-table :custom-roles="customRoles" @delete-role="showDeleteModal" />
+
+    <custom-roles-delete-modal
+      :visible="isDeleteModalVisible"
+      @delete="deleteCustomRole"
+      @cancel="hideDeleteModal"
+    />
   </section>
 </template>

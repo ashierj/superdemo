@@ -44,7 +44,7 @@ export default {
     </template>
 
     <template #cell(actions)="{ item }">
-      <custom-roles-actions :custom-role="item" />
+      <custom-roles-actions :custom-role="item" @delete="$emit('delete-role', item)" />
     </template>
   </gl-table>
 </template>

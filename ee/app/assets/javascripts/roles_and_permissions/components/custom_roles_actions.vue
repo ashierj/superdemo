@@ -34,6 +34,7 @@ export default {
     deleteRoleItem() {
       return {
         text: this.$options.i18n.deleteRoleText,
+        action: () => this.$emit('delete'),
         extraAttrs: {
           disabled: this.hasAssignedUsers,
           class: this.hasAssignedUsers ? '' : 'gl-text-red-500!',
