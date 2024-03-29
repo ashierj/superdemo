@@ -38,9 +38,12 @@ module Gitlab
             @action_input = action_input&.strip
           end
 
+          # If the whole output contains only keywords, the thought is empty
           # Match everything before "Action:" or "Final Answer:" and remove
           # everything before and including "Thought: " if it's present
           def parse_thought
+            return if 'Thought: Action:' == output.to_s.strip
+
             /^(?<thought>.*?)(?=Action:|Final Answer:)/m =~ output
 
             @thought = thought&.sub(/.*Thought:/m, '')&.strip
@@ -60,7 +63,10 @@ module Gitlab
           def final_answer_from_unformatted_response
             return if action.present? || action_input.present? || thought.present? || final_answer.present?
 
-            answer = output.to_s.strip.sub(/\AAction: DirectAnswer\s*/, '')
+            answer = output.to_s.strip.sub(/\AThought:\s*/, '')
+            answer = answer.sub(/\AAction: DirectAnswer\s*/, '')
+            answer = answer.sub(/\AAction:\s*/, '')
+
             return if answer.empty?
 
             @final_answer = answer
