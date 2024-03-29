@@ -31,7 +31,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
 
     it 'instantiates zoekt cache with correct arguments' do
       query = 'use.*egex'
-      results = described_class.new(user, query, limit_projects, node_id: node_id)
+      results = described_class.new(user, query, limit_projects, node_id: node_id, filters: { include_archived: true })
 
       expect(Search::Zoekt::Cache).to receive(:new).with(
         query,
@@ -355,6 +355,56 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
           context 'when search_add_archived_filter_to_zoekt flag is disabled' do
             before do
               stub_feature_flags(search_add_archived_filter_to_zoekt: false)
+            end
+
+            it_behaves_like 'a non-filtered search'
+          end
+        end
+      end
+
+      describe 'fork filters' do
+        context 'when include_forked filter is set to true' do
+          let(:filters) { { include_forked: true } }
+
+          it_behaves_like 'a non-filtered search'
+
+          context 'when search_add_fork_filter_to_zoekt flag is disabled' do
+            before do
+              stub_feature_flags(search_add_fork_filter_to_zoekt: false)
+            end
+
+            it_behaves_like 'a non-filtered search'
+          end
+        end
+
+        context 'when include_forked filter is set to false' do
+          let(:filters) { { include_forked: false } }
+
+          it 'calls search on Gitlab::Search::Zoekt::Client with non archived project ids' do
+            expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
+              query,
+              num: described_class::ZOEKT_COUNT_LIMIT,
+              project_ids: non_forked_project_ids,
+              node_id: node_id,
+              search_mode: :exact
+            ).and_call_original
+
+            search
+          end
+
+          context 'and all projects are forked' do
+            let(:limit_projects) { ::Project.id_in(forked_project.id) }
+
+            it 'returns an empty result set' do
+              expect(Gitlab::Search::Zoekt::Client).not_to receive(:search)
+
+              expect(search).to be_empty
+            end
+          end
+
+          context 'when search_add_fork_filter_to_zoekt flag is disabled' do
+            before do
+              stub_feature_flags(search_add_fork_filter_to_zoekt: false)
             end
 
             it_behaves_like 'a non-filtered search'
