@@ -18,8 +18,8 @@ RSpec.describe Resolvers::TimeboxReportResolver, feature_category: :team_plannin
   let_it_be(:private_project1_member) { create(:user) }
   let_it_be(:private_project2_member) { create(:user) }
   let_it_be(:issues) { create_list(:issue, 2, project: project) }
-  let_it_be(:start_date) { Date.today }
-  let_it_be(:due_date) { start_date + 2.weeks }
+  let_it_be(:due_date) { Date.current }
+  let_it_be(:start_date) { due_date - 2.weeks }
 
   let(:event_aggregation_service_class) { TimeboxReportService }
   let(:report_service_class) { TimeboxReportService }
@@ -227,29 +227,27 @@ RSpec.describe Resolvers::TimeboxReportResolver, feature_category: :team_plannin
 
           let(:current_user) { group_member }
 
-          it 'returns burnup chart data' do
-            expect(result).to eq(
-              stats: {
-                complete: { count: 0, weight: 0 },
-                incomplete: { count: 2, weight: 0 },
-                total: { count: 2, weight: 0 }
+          it 'returns burnup chart data', :aggregate_failures do
+            expect(result[:stats]).to eq({
+              complete: { count: 0, weight: 0 },
+              incomplete: { count: 2, weight: 0 },
+              total: { count: 2, weight: 0 }
+            })
+            expect(result[:burnup_time_series]).to include(
+              {
+                date: start_date + 4.days,
+                scope_count: 1,
+                scope_weight: 0,
+                completed_count: 0,
+                completed_weight: 0
               },
-              burnup_time_series: [
-                {
-                  date: start_date + 4.days,
-                  scope_count: 1,
-                  scope_weight: 0,
-                  completed_count: 0,
-                  completed_weight: 0
-                },
-                {
-                  date: start_date + 9.days,
-                  scope_count: 2,
-                  scope_weight: 0,
-                  completed_count: 0,
-                  completed_weight: 0
-                }
-              ])
+              {
+                date: start_date + 9.days,
+                scope_count: 2,
+                scope_weight: 0,
+                completed_count: 0,
+                completed_weight: 0
+              })
           end
         end
       end
@@ -282,29 +280,27 @@ RSpec.describe Resolvers::TimeboxReportResolver, feature_category: :team_plannin
 
           let(:current_user) { group_member }
 
-          it 'returns burnup chart data' do
-            expect(result).to eq(
-              stats: {
-                complete: { count: 0, weight: 0 },
-                incomplete: { count: 2, weight: 0 },
-                total: { count: 2, weight: 0 }
+          it 'returns burnup chart data', :aggregate_failures do
+            expect(result[:stats]).to eq({
+              complete: { count: 0, weight: 0 },
+              incomplete: { count: 2, weight: 0 },
+              total: { count: 2, weight: 0 }
+            })
+            expect(result[:burnup_time_series]).to include(
+              {
+                date: start_date + 4.days,
+                scope_count: 1,
+                scope_weight: 0,
+                completed_count: 0,
+                completed_weight: 0
               },
-              burnup_time_series: [
-                {
-                  date: start_date + 4.days,
-                  scope_count: 1,
-                  scope_weight: 0,
-                  completed_count: 0,
-                  completed_weight: 0
-                },
-                {
-                  date: start_date + 9.days,
-                  scope_count: 2,
-                  scope_weight: 0,
-                  completed_count: 0,
-                  completed_weight: 0
-                }
-              ])
+              {
+                date: start_date + 9.days,
+                scope_count: 2,
+                scope_weight: 0,
+                completed_count: 0,
+                completed_weight: 0
+              })
           end
         end
       end

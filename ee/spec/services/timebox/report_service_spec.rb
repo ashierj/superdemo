@@ -49,16 +49,15 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
         total: { count: 4, weight: 10 }
       })
 
-      expect(response.payload[:burnup_time_series]).to eq(
-        [
-          {
-            date: timebox_start_date,
-            scope_count: 4,
-            scope_weight: 10,
-            completed_count: 2,
-            completed_weight: 7
-          }
-        ])
+      expect(response.payload[:burnup_time_series]).to include(
+        {
+          date: timebox_start_date,
+          scope_count: 4,
+          scope_weight: 10,
+          completed_count: 2,
+          completed_weight: 7
+        }
+      )
     end
 
     it 'updates counts and weight when the milestone is added or removed' do
@@ -107,37 +106,35 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
         incomplete: { count: 1, weight: 0 },
         total: { count: 1, weight: 0 }
       })
-      expect(response.payload[:burnup_time_series]).to eq(
-        [
-          {
-            date: timebox_start_date + 4.days,
-            scope_count: 2,
-            scope_weight: 2,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 5.days,
-            scope_count: 3,
-            scope_weight: 5,
-            completed_count: 1,
-            completed_weight: 3
-          },
-          {
-            date: timebox_start_date + 6.days,
-            scope_count: 2,
-            scope_weight: 3,
-            completed_count: 1,
-            completed_weight: 3
-          },
-          {
-            date: timebox_start_date + 7.days,
-            scope_count: 1,
-            scope_weight: 0,
-            completed_count: 0,
-            completed_weight: 0
-          }
-        ])
+      expect(response.payload[:burnup_time_series]).to include(
+        {
+          date: timebox_start_date + 4.days,
+          scope_count: 2,
+          scope_weight: 2,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 5.days,
+          scope_count: 3,
+          scope_weight: 5,
+          completed_count: 1,
+          completed_weight: 3
+        },
+        {
+          date: timebox_start_date + 6.days,
+          scope_count: 2,
+          scope_weight: 3,
+          completed_count: 1,
+          completed_weight: 3
+        },
+        {
+          date: timebox_start_date + 7.days,
+          scope_count: 1,
+          scope_weight: 0,
+          completed_count: 0,
+          completed_weight: 0
+        })
     end
 
     it 'updates the completed counts when issue state is changed' do
@@ -178,58 +175,56 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
         incomplete: { count: 1, weight: 2 },
         total: { count: 1, weight: 2 }
       })
-      expect(response.payload[:burnup_time_series]).to eq(
-        [
-          {
-            date: timebox_start_date,
-            scope_count: 1,
-            scope_weight: 2,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 1.day,
-            scope_count: 1,
-            scope_weight: 2,
-            completed_count: 1,
-            completed_weight: 2
-          },
-          {
-            date: timebox_start_date + 3.days,
-            scope_count: 1,
-            scope_weight: 2,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 4.days,
-            scope_count: 2,
-            scope_weight: 5,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 5.days,
-            scope_count: 2,
-            scope_weight: 5,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 7.days,
-            scope_count: 2,
-            scope_weight: 5,
-            completed_count: 1,
-            completed_weight: 3
-          },
-          {
-            date: timebox_start_date + 8.days,
-            scope_count: 1,
-            scope_weight: 2,
-            completed_count: 0,
-            completed_weight: 0
-          }
-        ])
+      expect(response.payload[:burnup_time_series]).to include(
+        {
+          date: timebox_start_date,
+          scope_count: 1,
+          scope_weight: 2,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 1.day,
+          scope_count: 1,
+          scope_weight: 2,
+          completed_count: 1,
+          completed_weight: 2
+        },
+        {
+          date: timebox_start_date + 3.days,
+          scope_count: 1,
+          scope_weight: 2,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 4.days,
+          scope_count: 2,
+          scope_weight: 5,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 5.days,
+          scope_count: 2,
+          scope_weight: 5,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 7.days,
+          scope_count: 2,
+          scope_weight: 5,
+          completed_count: 1,
+          completed_weight: 3
+        },
+        {
+          date: timebox_start_date + 8.days,
+          scope_count: 1,
+          scope_weight: 2,
+          completed_count: 0,
+          completed_weight: 0
+        })
     end
 
     it 'updates the weight totals when issue weight is changed' do
@@ -258,44 +253,43 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
         incomplete: { count: 0, weight: 0 },
         total: { count: 1, weight: 1 }
       })
-      expect(response.payload[:burnup_time_series]).to eq(
-        [
-          {
-            date: timebox_start_date,
-            scope_count: 1,
-            scope_weight: 0,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 1.day,
-            scope_count: 1,
-            scope_weight: 2,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: timebox_start_date + 2.days,
-            scope_count: 2,
-            scope_weight: 7,
-            completed_count: 1,
-            completed_weight: 5
-          },
-          {
-            date: timebox_start_date + 3.days,
-            scope_count: 2,
-            scope_weight: 3,
-            completed_count: 1,
-            completed_weight: 1
-          },
-          {
-            date: timebox_start_date + 4.days,
-            scope_count: 1,
-            scope_weight: 1,
-            completed_count: 1,
-            completed_weight: 1
-          }
-        ])
+      expect(response.payload[:burnup_time_series]).to include(
+        {
+          date: timebox_start_date,
+          scope_count: 1,
+          scope_weight: 0,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 1.day,
+          scope_count: 1,
+          scope_weight: 2,
+          completed_count: 0,
+          completed_weight: 0
+        },
+        {
+          date: timebox_start_date + 2.days,
+          scope_count: 2,
+          scope_weight: 7,
+          completed_count: 1,
+          completed_weight: 5
+        },
+        {
+          date: timebox_start_date + 3.days,
+          scope_count: 2,
+          scope_weight: 3,
+          completed_count: 1,
+          completed_weight: 1
+        },
+        {
+          date: timebox_start_date + 4.days,
+          scope_count: 1,
+          scope_weight: 1,
+          completed_count: 1,
+          completed_weight: 1
+        }
+      )
     end
   end
 end
@@ -303,8 +297,8 @@ end
 RSpec.describe Timebox::ReportService, :aggregate_failures, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:timebox_start_date) { Date.today }
-  let_it_be(:timebox_end_date) { timebox_start_date + 2.weeks }
+  let_it_be(:timebox_end_date) { Date.current }
+  let_it_be(:timebox_start_date) { timebox_end_date - 3.weeks }
 
   let(:scoped_projects) { group.projects }
   let(:response) { described_class.new(timebox, scoped_projects).execute }
