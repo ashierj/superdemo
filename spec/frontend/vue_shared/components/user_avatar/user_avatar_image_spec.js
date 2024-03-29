@@ -150,4 +150,21 @@ describe('User Avatar Image Component', () => {
       });
     });
   });
+
+  describe('when pseudo prop is true', () => {
+    beforeEach(() => {
+      wrapper = shallowMount(UserAvatarImage, {
+        propsData: { ...PROVIDED_PROPS, pseudo: true },
+      });
+    });
+
+    it('passes image to GlAvatar through style attribute', () => {
+      // using falsy here to avoid issues with Vue 3
+      // eslint-disable-next-line jest/no-restricted-matchers
+      expect(wrapper.findComponent(GlAvatar).props('src')).toBeFalsy();
+      expect(wrapper.findComponent(GlAvatar).attributes('style')).toBe(
+        `background-image: url(${PROVIDED_PROPS.imgSrc}?width=${PROVIDED_PROPS.size});`,
+      );
+    });
+  });
 });
