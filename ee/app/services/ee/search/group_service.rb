@@ -18,7 +18,7 @@ module EE
 
       override :zoekt_filters
       def zoekt_filters
-        super.merge(include_archived: params[:include_archived])
+        super.merge(include_archived: params[:include_archived], include_forked: params[:include_forked])
       end
 
       override :elastic_global

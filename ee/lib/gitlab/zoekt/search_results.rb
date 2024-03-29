@@ -251,10 +251,17 @@ module Gitlab
 
       def filtered_project_ids(projects)
         return projects if projects == :any
-        return projects.pluck_primary_key if Feature.disabled?(:search_add_archived_filter_to_zoekt, current_user)
 
-        filtered_projects = projects
-        filtered_projects = filtered_projects.non_archived unless filters[:include_archived]
+        filtered_projects = projects.without_order
+
+        if Feature.enabled?(:search_add_archived_filter_to_zoekt, current_user) && !filters[:include_archived]
+          filtered_projects = filtered_projects.non_archived
+        end
+
+        if Feature.enabled?(:search_add_fork_filter_to_zoekt, current_user) && !filters[:include_forked]
+          filtered_projects = filtered_projects.not_a_fork
+        end
+
         filtered_projects.pluck_primary_key
       end
     end
