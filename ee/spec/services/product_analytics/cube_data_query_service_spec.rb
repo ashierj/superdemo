@@ -12,6 +12,7 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
   let(:cube_api_meta_url) { "http://cube.dev/cubejs-api/v1/meta" }
   let(:query) { { query: { measures: ['TrackedEvents.count'] }, queryType: 'multi' } }
   let(:cube_data) { "{}" }
+  let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
 
   let(:request_meta) do
     described_class.new(container: project, current_user: current_user, params: { path: 'meta' }).execute
@@ -24,6 +25,7 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
       experiment_features_enabled: true,
       product_analytics_enabled: true
     )
+    stub_feature_flags(product_analytics_billing: false)
   end
 
   shared_examples 'a not found error' do
@@ -65,6 +67,42 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
       end
 
       it_behaves_like 'a not found error'
+    end
+
+    context 'when product analytics billing is enabled' do
+      before do
+        stub_feature_flags(product_analytics_billing: project.root_ancestor)
+      end
+
+      context 'when product_analytics add on is not purchased' do
+        it 'returns an unauthorized error' do
+          response = request_load(is_dry_run)
+
+          expect(response.reason).to eq(:unauthorized)
+        end
+      end
+
+      context 'when product_analytics add on has been purchased' do
+        before do
+          create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on)
+        end
+
+        it 'allows the query' do
+          response = request_load(is_dry_run)
+          expect(response.success?).to be_truthy
+        end
+      end
+
+      context 'when user brings their own cluster' do
+        before do
+          stub_application_setting(product_analytics_data_collector_host: 'https://my-data-collector.customer-xyz.com')
+        end
+
+        it 'allows the query' do
+          response = request_load(is_dry_run)
+          expect(response.success?).to be_truthy
+        end
+      end
     end
 
     context 'when current user has guest project access' do

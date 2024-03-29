@@ -19,6 +19,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
       before do
         project.add_guest(current_user)
         stub_cube_data_service_unauthorized if options[:stub_service]
+        stub_feature_flags(product_analytics_billing: false)
       end
 
       it 'returns an unauthorized error' do
@@ -34,6 +35,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
       before do
         project.add_developer(current_user)
         stub_cube_data_service_success if options[:stub_service]
+        stub_feature_flags(product_analytics_billing: false)
       end
 
       it 'returns a 200' do
