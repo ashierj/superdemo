@@ -24,10 +24,6 @@ module Gitlab
             end
           end
 
-          def self.context_allowed?(context:)
-            context(context: context).allowed?
-          end
-
           def self.container(container:, user:)
             response = super(container: container, user: user)
             return response unless response.allowed?

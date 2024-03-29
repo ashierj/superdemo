@@ -72,7 +72,7 @@ module Gitlab
             attr_accessor :data, :retries
 
             def authorize
-              Utils::ChatAuthorizer.context_allowed?(context: context)
+              Utils::ChatAuthorizer.context(context: context).allowed?
             end
 
             def process_short_path(resource_serialized)
