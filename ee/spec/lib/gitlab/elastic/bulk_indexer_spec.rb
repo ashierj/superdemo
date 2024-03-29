@@ -25,6 +25,17 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
 
   subject(:indexer) { described_class.new(logger: logger) }
 
+  RSpec::Matchers.define :valid_request do |op, expected_op_hash, expected_json|
+    match do |actual|
+      op_hash, doc_hash = actual[:body].map { |hash| Gitlab::Json.parse(hash) }
+
+      doc_hash = doc_hash['doc'] if op == :update
+      doc_without_timestamps = doc_hash.except('created_at', 'updated_at')
+
+      op_hash == expected_op_hash && doc_without_timestamps == expected_json
+    end
+  end
+
   describe '#process' do
     it 'returns bytesize for the indexing operation and data' do
       bytesize = instance_double(Integer)
@@ -78,6 +89,50 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       end
 
       expect(indexer.failures).to be_empty
+    end
+
+    it 'calls bulk with an update request' do
+      set_bulk_limit(indexer, 1)
+      indexer.process(issue_as_ref)
+      allow(es_client).to receive(:bulk).and_return({})
+
+      indexer.process(issue_as_ref)
+
+      expected_op_hash = {
+        update: {
+          _index: issue_as_ref.proxy.index_name,
+          _type: nil,
+          _id: issue.id.to_s,
+          routing: "project_#{issue.project.id}"
+        }
+      }.with_indifferent_access
+
+      expect(es_client).to have_received(:bulk).with(valid_request(:update, expected_op_hash, issue_as_json))
+    end
+
+    context 'when the elastic_bulk_indexer_use_upsert feature flag is disabled' do
+      before do
+        stub_feature_flags(elastic_bulk_indexer_use_upsert: false)
+      end
+
+      it 'calls bulk with an index request' do
+        set_bulk_limit(indexer, 1)
+        indexer.process(issue_as_ref)
+        allow(es_client).to receive(:bulk).and_return({})
+
+        indexer.process(issue_as_ref)
+
+        expected_op_hash = {
+          index: {
+            _index: issue_as_ref.proxy.index_name,
+            _type: nil,
+            _id: issue.id.to_s,
+            routing: "project_#{issue.project.id}"
+          }
+        }.with_indifferent_access
+
+        expect(es_client).to have_received(:bulk).with(valid_request(:index, expected_op_hash, issue_as_json))
+      end
     end
   end
 
@@ -184,7 +239,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
 
     it 'fails documents that elasticsearch refuses to accept' do
       # Indexes with uppercase characters are invalid
-      allow(other_issue_as_ref.database_record.__elasticsearch__)
+      allow(other_issue_as_ref.proxy)
         .to receive(:index_name)
         .and_return('Invalid')
 
