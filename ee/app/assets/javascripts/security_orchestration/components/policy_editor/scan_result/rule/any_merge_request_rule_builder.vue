@@ -1,8 +1,6 @@
 <script>
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   ANY_COMMIT,
   ANY_UNSIGNED_COMMIT,
@@ -42,7 +40,6 @@ export default {
     GlSprintf,
     BranchSelection,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -51,9 +48,6 @@ export default {
     },
   },
   computed: {
-    isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
-    },
     branchTypes() {
       return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
     },
@@ -111,7 +105,6 @@ export default {
 
             <template #branchExceptions>
               <branch-exception-selector
-                v-if="isProject"
                 :selected-exceptions="branchExceptions"
                 @remove="removeExceptions"
                 @select="triggerChanged"

@@ -1,15 +1,11 @@
 <script>
-import {
-  GlButton,
-  GlCollapsibleListbox,
-  GlDisclosureDropdown,
-  GlListboxItem,
-  GlTruncate,
-} from '@gitlab/ui';
+import { GlButton, GlDisclosureDropdown, GlListboxItem, GlTruncate, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
+import { getParameterValues } from '~/lib/utils/url_utility';
 import { mapExceptionsListBoxItem } from 'ee/security_orchestration/components/policy_editor/utils';
-import BranchSelectorPopover from './branch_selector_popover.vue';
-import { BRANCH_TYPES, BRANCH_TYPES_ITEMS, PROTECTED_BRANCH } from './constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
+import BranchSelectorModal from './branch_selector_modal.vue';
+import { BRANCH_TYPES_ITEMS } from './constants';
 
 const BRANCH_SELECTOR_UNSELECTED = 'branch-selector-unselected';
 const BRANCH_SELECTOR_SELECTED = 'branch-selector-selected';
@@ -20,23 +16,23 @@ export default {
   BRANCH_TYPES_ITEMS,
   name: 'BranchSelector',
   i18n: {
-    buttonAnotherText: __('Add another branch'),
-    buttonDoneText: __('Done'),
+    buttonAddBranchText: __('Add branches'),
+    buttonAddProtectedText: __('Add protected branches'),
     buttonClearAllText: __('Clear all'),
     header: s__('SecurityOrchestration|Exception branches'),
-    noBranchesText: s__('SecurityOrchestration|No branches yet'),
-    toggleText: s__('SecurityOrchestration|Choose exception branches'),
-    popoverDescription: s__(
-      'SecurityOrchestration|Fill in branch name with project name in the format of %{boldStart}branch-name@project-path,%{boldEnd} separate with `,`',
+    noBranchesText: s__('SecurityOrchestration|There are no exception branches yet.'),
+    noBranchesAddText: s__(
+      'SecurityOrchestration|%{boldStart}Add branches%{boldEnd} first before selection.',
     ),
+    toggleText: s__('SecurityOrchestration|Choose exception branches'),
   },
   components: {
-    BranchSelectorPopover,
+    BranchSelectorModal,
     GlButton,
-    GlCollapsibleListbox,
     GlDisclosureDropdown,
     GlListboxItem,
     GlTruncate,
+    GlSprintf,
   },
   props: {
     isGroup: {
@@ -51,26 +47,19 @@ export default {
     },
   },
   data() {
-    const selectedBranchType = this.selectedExceptions?.[0]?.type || '';
-
     return {
-      selectedBranchType,
-      showPopover: false,
       branches: this.selectedExceptions.map(mapExceptionsListBoxItem),
     };
   },
   computed: {
-    container() {
-      return this.hasBranches ? BRANCH_SELECTOR_SELECTED : BRANCH_SELECTOR_UNSELECTED;
+    isMergeRequestApprovalPolicy() {
+      const [value] = getParameterValues('type');
+      return value === POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter;
     },
-    target() {
-      return this.hasBranches ? BRANCH_SELECTOR_SELECTED : BRANCH_SELECTOR_UNSELECTED;
-    },
-    isProtectedBranch() {
-      return this.selectedBranchType === PROTECTED_BRANCH;
-    },
-    popoverTitle() {
-      return BRANCH_TYPES[this.selectedBranchType] || BRANCH_TYPES[PROTECTED_BRANCH];
+    addButtonText() {
+      return this.isMergeRequestApprovalPolicy
+        ? this.$options.i18n.buttonAddProtectedText
+        : this.$options.i18n.buttonAddBranchText;
     },
     mappedToYamlFormatBranches() {
       return this.branches.map(({ name, fullPath }) => {
@@ -78,7 +67,6 @@ export default {
           return {
             name,
             full_path: fullPath,
-            type: this.selectedBranchType,
           };
         }
 
@@ -94,25 +82,15 @@ export default {
   },
   methods: {
     finishEditing() {
-      this.showPopover = false;
-
       this.$emit('select-branches', this.mappedToYamlFormatBranches);
       this.$refs.dropdown.close();
     },
-    selectBranchType(key) {
-      this.selectedBranchType = key;
-      this.refreshPopover();
-    },
-    refreshPopover() {
-      this.showPopover = false;
-
-      this.$nextTick(() => {
-        this.showPopover = true;
-      });
+    showModal() {
+      this.$refs.modal.showModalWindow();
     },
     selectBranches(branches) {
       this.branches = branches;
-      this.showPopover = false;
+      this.$refs.dropdown.open();
     },
     unselectBranch({ name, fullPath }) {
       this.branches = this.branches.filter(
@@ -131,7 +109,7 @@ export default {
   <div>
     <gl-disclosure-dropdown
       ref="dropdown"
-      fluid-width
+      toggle-class="gl-max-w-34"
       :toggle-text="toggleText"
       @hidden="finishEditing"
     >
@@ -144,7 +122,7 @@ export default {
           <gl-button
             v-if="hasBranches"
             category="tertiary"
-            class="gl-focus-inset-border-2-blue-400! gl-flex-shrink-0 gl-font-sm! gl-px-2! gl-py-2! gl-w-auto! gl-m-0! gl-max-w-50p gl-text-overflow-ellipsis"
+            class="gl-focus-inset-border-2-blue-400! gl-flex-shrink-0 gl-font-sm! gl-px-2! gl-py-0! gl-w-auto! gl-m-0! gl-max-w-50p gl-text-overflow-ellipsis"
             data-testid="reset-button"
             @click="onResetButtonClicked"
           >
@@ -156,10 +134,17 @@ export default {
       <div class="gl-w-full">
         <template v-if="!hasBranches">
           <div
-            class="gl-pl-7 gl-pr-4 gl-pt-2 gl-font-base gl-text-gray-600 security-policies-popover-content-height"
+            class="gl-pl-4 gl-pr-4 gl-pt-2 gl-font-base security-policies-popover-content-height"
             data-testid="empty-state"
           >
-            {{ $options.i18n.noBranchesText }}
+            <p class="gl-mb-2">{{ $options.i18n.noBranchesText }}</p>
+            <p>
+              <gl-sprintf :message="$options.i18n.noBranchesAddText">
+                <template #bold="{ content }">
+                  <strong>{{ content }}</strong>
+                </template>
+              </gl-sprintf>
+            </p>
           </div>
         </template>
         <template v-else>
@@ -179,43 +164,19 @@ export default {
       </div>
 
       <template #footer>
-        <div class="gl-py-2 gl-px-4 gl-display-flex gl-justify-content-end">
-          <gl-collapsible-listbox
-            v-if="!hasBranches"
-            :id="$options.BRANCH_SELECTOR_UNSELECTED"
-            :items="$options.BRANCH_TYPES_ITEMS"
-            :toggle-text="popoverTitle"
-            :selected="0"
-            variant="confirm"
-            size="small"
-            @select="selectBranchType"
-          />
-
-          <div v-else :id="$options.BRANCH_SELECTOR_SELECTED">
-            <gl-button data-testid="add-button" size="small" @click="refreshPopover">
-              {{ $options.i18n.buttonAnotherText }}
-            </gl-button>
-            <gl-button
-              data-testid="done-button"
-              variant="confirm"
-              size="small"
-              @click="finishEditing"
-            >
-              {{ $options.i18n.buttonDoneText }}
-            </gl-button>
-          </div>
+        <div class="gl-py-2 gl-px-2 gl-display-flex gl-border-t">
+          <gl-button data-testid="add-button" category="tertiary" size="small" @click="showModal">
+            {{ addButtonText }}
+          </gl-button>
         </div>
       </template>
     </gl-disclosure-dropdown>
 
-    <branch-selector-popover
-      v-if="showPopover"
-      :container="container"
-      :target="target"
+    <branch-selector-modal
+      ref="modal"
       :branches="branches"
       :has-validation="isGroup"
-      :for-protected-branches="isProtectedBranch"
-      :show="showPopover"
+      :for-protected-branches="isMergeRequestApprovalPolicy"
       @add-branches="selectBranches"
     />
   </div>

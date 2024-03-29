@@ -127,17 +127,20 @@ describe('SecurityScanRuleBuilder', () => {
     it.each`
       namespaceType              | expectedResult
       ${NAMESPACE_TYPES.PROJECT} | ${true}
-      ${NAMESPACE_TYPES.GROUP}   | ${false}
-    `('should select exceptions only on project level', ({ namespaceType, expectedResult }) => {
-      factory(
-        {},
-        {
-          namespaceType,
-        },
-      );
+      ${NAMESPACE_TYPES.GROUP}   | ${true}
+    `(
+      'should select exceptions on project and group level',
+      ({ namespaceType, expectedResult }) => {
+        factory(
+          {},
+          {
+            namespaceType,
+          },
+        );
 
-      expect(findBranchExceptionSelector().exists()).toBe(expectedResult);
-    });
+        expect(findBranchExceptionSelector().exists()).toBe(expectedResult);
+      },
+    );
 
     it('should select exceptions', () => {
       factory();

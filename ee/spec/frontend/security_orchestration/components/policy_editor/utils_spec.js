@@ -4,8 +4,10 @@ import {
   getPolicyLimitDetails,
   modifyPolicy,
   createHumanizedScanners,
+  findBranchesWithErrors,
   isValidPolicy,
   hasInvalidCron,
+  hasDuplicates,
   slugify,
   slugifyToArray,
   renderMultiSelectText,
@@ -13,6 +15,7 @@ import {
   parseCustomFileConfiguration,
   mapExceptionsListBoxItem,
   mapBranchesToString,
+  mapBranchesToExceptions,
   removeIdsFromPolicy,
   validateBranchProjectFormat,
 } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -287,9 +290,9 @@ describe('renderMultiSelectText', () => {
       item                                        | expectedResult
       ${'test'}                                   | ${{ value: 'test_1', name: 'test', fullPath: '' }}
       ${''}                                       | ${undefined}
-      ${{ name: 'test', full_path: 'full-path' }} | ${{ value: 'test@full-path_1', name: 'test', fullPath: 'full-path' }}
-      ${{ name: 'test', fullPath: 'full-path' }}  | ${{ value: 'test@full-path_1', name: 'test', fullPath: 'full-path' }}
-      ${{ name: 'test', fullPath: undefined }}    | ${{ value: 'test@_1', name: 'test', fullPath: '' }}
+      ${{ name: 'test', full_path: 'full-path' }} | ${{ value: 'test@full-path', name: 'test', fullPath: 'full-path' }}
+      ${{ name: 'test', fullPath: 'full-path' }}  | ${{ value: 'test@full-path', name: 'test', fullPath: 'full-path' }}
+      ${{ name: 'test', fullPath: undefined }}    | ${{ value: 'test@', name: 'test', fullPath: '' }}
     `('should map exception to list box item', ({ item, expectedResult }) => {
       expect(mapExceptionsListBoxItem(item, index)).toEqual(expectedResult);
     });
@@ -376,5 +379,50 @@ describe('getPolicyLimitDetails', () => {
         ).toBe(expectedOutput);
       },
     );
+  });
+});
+
+describe('hasDuplicates', () => {
+  it.each`
+    branches                                                                    | output
+    ${[]}                                                                       | ${false}
+    ${undefined}                                                                | ${false}
+    ${null}                                                                     | ${false}
+    ${{}}                                                                       | ${true}
+    ${[{ name: 'name', value: 'values' }, { name: 'name1', value: 'values1' }]} | ${false}
+    ${[{ name: 'name', value: 'values' }, { name: 'name1', value: 'values' }]}  | ${true}
+  `('should check if branches has duplicates', ({ branches, output }) => {
+    expect(hasDuplicates(branches)).toBe(output);
+  });
+});
+
+describe('findBranchesWithErrors', () => {
+  it.each`
+    branches                                                                              | output
+    ${[]}                                                                                 | ${[]}
+    ${undefined}                                                                          | ${[]}
+    ${null}                                                                               | ${[]}
+    ${[{ name: 'name', value: 'values' }, { name: 'name1', value: 'values1' }]}           | ${['name', 'name1']}
+    ${[{ name: 'name', value: 'values' }, { name: 'name1', value: 'values1' }]}           | ${['name', 'name1']}
+    ${[{ name: 'name', value: 'name@values' }, { name: 'name1', value: 'name@values1' }]} | ${[]}
+  `('should check if branches has duplicates', ({ branches, output }) => {
+    expect(findBranchesWithErrors(branches)).toEqual(output);
+  });
+});
+
+describe('mapBranchesToExceptions', () => {
+  const mockBranches = [
+    { name: 'name', value: 'values', fullPath: 'fullPath' },
+    { name: 'name1', value: 'values1', fullPath: 'fullPath1' },
+  ];
+
+  it.each`
+    branches        | output
+    ${[]}           | ${[]}
+    ${undefined}    | ${[]}
+    ${null}         | ${[]}
+    ${mockBranches} | ${mockBranches.map(mapExceptionsListBoxItem)}
+  `('should check if branches has duplicates', ({ branches, output }) => {
+    expect(mapBranchesToExceptions(branches)).toEqual(output);
   });
 });

@@ -1,4 +1,4 @@
-import { intersection, uniqueId } from 'lodash';
+import { intersection, uniqBy, uniqueId } from 'lodash';
 import { isValidCron } from 'cron-validator';
 import { sprintf, s__ } from '~/locale';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -353,7 +353,7 @@ export const mapExceptionsListBoxItem = (item, index) => {
   const fullPath = item.fullPath || item.full_path || '';
 
   return {
-    value: `${item.name}@${fullPath}_${index}`,
+    value: `${item.name}@${fullPath}`,
     name: item.name,
     fullPath,
   };
@@ -365,7 +365,7 @@ export const mapExceptionsListBoxItem = (item, index) => {
  * @param branches
  * @returns {*}
  */
-export const mapBranchesToString = (branches) => {
+export const mapBranchesToString = (branches = []) => {
   return branches
     .filter(Boolean)
     .map(({ name = '', fullPath = '', full_path = '' }) => {
@@ -386,6 +386,41 @@ export const mapBranchesToString = (branches) => {
 export const validateBranchProjectFormat = (value) => {
   const branchProjectRegexp = /\S+@\S/;
   return branchProjectRegexp.test(value);
+};
+
+/**
+ * Check if branches have duplicates by value
+ * @param branches
+ * @returns {boolean}
+ */
+export const hasDuplicates = (branches = []) => {
+  if (!branches) return false;
+
+  return uniqBy(branches, 'value').length !== branches?.length;
+};
+
+/**
+ * Extract branches with wrong format
+ * @param branches
+ * @returns {*[]}
+ */
+export const findBranchesWithErrors = (branches = []) => {
+  if (!branches) return [];
+
+  return branches
+    ?.filter(({ value }) => !validateBranchProjectFormat(value))
+    ?.map(({ name }) => name);
+};
+
+/**
+ * Map selected branches to exception
+ * @param branches
+ * @returns {*[]}
+ */
+export const mapBranchesToExceptions = (branches = []) => {
+  if (!branches) return [];
+
+  return branches.map(mapExceptionsListBoxItem).filter(({ name }) => Boolean(name));
 };
 
 export const addIdsToPolicy = (policy) => {

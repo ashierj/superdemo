@@ -1,8 +1,9 @@
 <script>
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import ProjectBranchSelector from 'ee/vue_shared/components/branches_selector/project_branch_selector.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { EXCEPTION_TYPE_ITEMS, NO_EXCEPTION_KEY, EXCEPTION_KEY } from '../constants';
+import BranchSelector from './branch_selector.vue';
 
 export default {
   EXCEPTION_TYPE_ITEMS,
@@ -10,15 +11,14 @@ export default {
   i18n: {
     exceptionText: s__('SecurityOrchestration|with %{exceptionType} on %{branchSelector}'),
     noExceptionText: s__('SecurityOrchestration|with %{exceptionType}'),
-    branchSelectorHeader: s__('SecurityOrchestration|Select exception branches'),
   },
   name: 'BranchExceptionSelector',
   components: {
-    ProjectBranchSelector,
     GlCollapsibleListbox,
     GlSprintf,
+    BranchSelector,
   },
-  inject: ['namespacePath'],
+  inject: ['namespacePath', 'namespaceType'],
   props: {
     selectedExceptions: {
       type: Array,
@@ -36,6 +36,9 @@ export default {
       return this.selectedExceptionType === EXCEPTION_KEY
         ? this.$options.i18n.exceptionText
         : this.$options.i18n.noExceptionText;
+    },
+    isGroup() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
   },
   methods: {
@@ -65,13 +68,10 @@ export default {
       </template>
 
       <template #branchSelector>
-        <project-branch-selector
-          class="gl-max-w-48"
-          :header="$options.i18n.branchSelectorHeader"
-          :text="$options.i18n.branchSelectorHeader"
-          :project-full-path="namespacePath"
-          :selected="selectedExceptions"
-          @select="selectExceptions"
+        <branch-selector
+          :is-group="isGroup"
+          :selected-exceptions="selectedExceptions"
+          @select-branches="selectExceptions"
         />
       </template>
     </gl-sprintf>
