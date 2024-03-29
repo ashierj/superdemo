@@ -103,23 +103,44 @@ RSpec.describe 'Querying a Milestone', feature_category: :team_planning do
         stub_licensed_features(milestone_charts: true, issue_weights: true)
       end
 
-      it 'returns burnup chart data' do
+      it 'returns burnup chart data', :aggregate_failures do
         post_graphql(query, current_user: current_user)
 
-        expect(subject).to eq({
-          'report' => {
-            'error' => nil,
-            'burnupTimeSeries' => [
-              {
-                'date' => '2020-01-05',
-                'scopeCount' => 1,
-                'scopeWeight' => 0,
-                'completedCount' => 0,
-                'completedWeight' => 0
-              }
-            ]
+        expect(subject['report']['error']).to be_nil
+        expect(subject['report']['burnupTimeSeries']).to include(
+          {
+            'date' => '2020-01-05',
+            'scopeCount' => 1,
+            'scopeWeight' => 0,
+            'completedCount' => 0,
+            'completedWeight' => 0
           }
-        })
+        )
+      end
+
+      context 'when "rollup_timebox_chart" feature flag is disabled' do
+        before do
+          stub_feature_flags(rollup_timebox_chart: false)
+        end
+
+        it 'returns burnup chart data' do
+          post_graphql(query, current_user: current_user)
+
+          expect(subject).to eq({
+            'report' => {
+              'error' => nil,
+              'burnupTimeSeries' => [
+                {
+                  'date' => '2020-01-05',
+                  'scopeCount' => 1,
+                  'scopeWeight' => 0,
+                  'completedCount' => 0,
+                  'completedWeight' => 0
+                }
+              ]
+            }
+          })
+        end
       end
     end
   end
