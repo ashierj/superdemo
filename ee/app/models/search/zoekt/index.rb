@@ -50,8 +50,7 @@ module Search
       end
 
       def delete_from_index
-        ::Search::Zoekt::NamespaceIndexerWorker.perform_async(zoekt_enabled_namespace.root_namespace_id,
-          :delete, zoekt_node_id)
+        ::Search::Zoekt::NamespaceIndexerWorker.perform_async(namespace_id, :delete, zoekt_node_id)
       end
     end
   end
