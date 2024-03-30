@@ -212,6 +212,45 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
           expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
         end
       end
+
+      context 'when additional params are passed in as options' do
+        let(:options) do
+          { temperature: 1, stop_sequences: %W[\n\nHuman Observation:], max_tokens_to_sample: 1024,
+            disallowed_param: 1 }
+        end
+
+        let(:expected_response) { "Hello World" }
+
+        before do
+          allow(Gitlab::HTTP).to receive(:post).and_yield("Hello").and_yield(" ").and_yield("World")
+        end
+
+        it 'passes the allowed options as params' do
+          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+
+          expect(Gitlab::HTTP).to have_received(:post).with(
+            anything,
+            hash_including(
+              body: including(
+                '"temperature":1',
+                '"stop_sequences":["\n\nHuman","Observation:"]',
+                '"max_tokens_to_sample":1024'
+              )
+            )
+          )
+        end
+
+        it 'does not pass the disallowed options as params' do
+          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+
+          expect(Gitlab::HTTP).to have_received(:post).with(
+            anything,
+            hash_excluding(
+              body: include('disallowed_param')
+            )
+          )
+        end
+      end
     end
   end
 end
