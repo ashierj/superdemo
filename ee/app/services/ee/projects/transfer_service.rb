@@ -62,7 +62,7 @@ module EE
       end
 
       def delete_compliance_framework_setting(old_group)
-        return if old_group == project.group&.root_ancestor
+        return if old_group&.root_ancestor == project.group&.root_ancestor
 
         project.compliance_framework_setting&.delete
       end

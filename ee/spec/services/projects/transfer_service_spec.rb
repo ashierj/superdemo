@@ -172,6 +172,22 @@ RSpec.describe Projects::TransferService, feature_category: :groups_and_projects
         end
       end
 
+      context 'when the project is transferring under a nested sub group' do
+        let_it_be(:sub_group) { create(:group, parent: create(:group, :public)) }
+        let_it_be(:project) { create(:project, group: sub_group) }
+        let_it_be(:nested_sub_group) { create(:group, parent: sub_group) }
+
+        before do
+          sub_group.add_owner(user)
+        end
+
+        it 'does not delete the compliance framework setting' do
+          subject.execute(nested_sub_group)
+
+          expect(project.reload.compliance_framework_setting).to eq(compliance_framework_setting)
+        end
+      end
+
       context 'when the project is transferring to a new group' do
         let_it_be(:old_group) { create(:group, :public) }
         let_it_be(:project) { create(:project, group: old_group) }
