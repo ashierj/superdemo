@@ -492,4 +492,57 @@ describe('List component', () => {
       },
     );
   });
+
+  describe('breaking changes icon', () => {
+    it('does not render breaking changes icon when flag is disabled', async () => {
+      mountWrapper();
+      await waitForPromises();
+
+      const icons = findPolicyStatusCells().at(0).findAll('svg');
+
+      expect(icons.length).toBe(1);
+      expect(icons.at(0).props('name')).toBe('check-circle-filled');
+    });
+
+    it('does not render breaking changes icon when flag is enabled but there are no deprecated properties', async () => {
+      mountWrapper({
+        provide: {
+          glFeatures: {
+            securityPoliciesBreakingChanges: true,
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      const icons = findPolicyStatusCells().at(0).findAll('svg');
+
+      expect(icons.length).toBe(1);
+      expect(icons.at(0).props('name')).toBe('check-circle-filled');
+    });
+
+    it('renders breaking changes icon when flag is enabled but there are deprecated properties', async () => {
+      mountWrapper({
+        provide: {
+          glFeatures: {
+            securityPoliciesBreakingChanges: true,
+          },
+        },
+        handlers: {
+          projectScanResultPolicies: projectScanResultPolicies([
+            {
+              ...mockProjectScanResultPolicy,
+              deprecatedProperties: ['test', 'test1'],
+            },
+          ]),
+        },
+      });
+
+      await waitForPromises();
+
+      const icon = findPolicyStatusCells().at(2).find('svg');
+
+      expect(icon.props('name')).toBe('warning');
+    });
+  });
 });
