@@ -17,6 +17,7 @@ query projectScanResultPolicies(
         policyScope {
           ...PolicyScope
         }
+        deprecatedProperties
         userApprovers {
           id
           name

@@ -26,6 +26,7 @@ import {
   POLICY_TYPE_FILTER_OPTIONS,
   POLICY_TYPES_WITH_INHERITANCE,
 } from './constants';
+import BreakingChangesIcon from './breaking_changes_icon.vue';
 import SourceFilter from './filters/source_filter.vue';
 import TypeFilter from './filters/type_filter.vue';
 import EmptyState from './empty_state.vue';
@@ -60,6 +61,7 @@ const getPoliciesWithType = (policies, policyType) =>
 
 export default {
   components: {
+    BreakingChangesIcon,
     GlIcon,
     GlLink,
     GlLoadingIcon,
@@ -284,6 +286,9 @@ export default {
     },
   },
   methods: {
+    showBreakingChangesIcon(deprecatedProperties) {
+      return this.glFeatures.securityPoliciesBreakingChanges && deprecatedProperties?.length > 0;
+    },
     policyListUrlArgs(source) {
       return { namespacePath: source?.namespace?.fullPath || '' };
     },
@@ -389,15 +394,23 @@ export default {
       selected-variant="primary"
       @row-selected="presentPolicyDrawer"
     >
-      <template #cell(status)="{ item: { enabled } }">
-        <gl-icon
-          v-if="enabled"
-          v-gl-tooltip="$options.i18n.statusEnabled"
-          :aria-label="$options.i18n.statusEnabled"
-          name="check-circle-filled"
-          class="gl-text-green-700"
-        />
-        <span v-else class="gl-sr-only">{{ $options.i18n.statusDisabled }}</span>
+      <template #cell(status)="{ item: { enabled, name, deprecatedProperties } }">
+        <div class="gl-display-flex gl-gap-4">
+          <gl-icon
+            v-if="enabled"
+            v-gl-tooltip="$options.i18n.statusEnabled"
+            :aria-label="$options.i18n.statusEnabled"
+            name="check-circle-filled"
+            class="gl-text-green-700"
+          />
+          <span v-else class="gl-sr-only">{{ $options.i18n.statusDisabled }}</span>
+
+          <breaking-changes-icon
+            v-if="showBreakingChangesIcon(deprecatedProperties)"
+            :id="name"
+            :deprecated-properties="deprecatedProperties"
+          />
+        </div>
       </template>
 
       <template #cell(source)="{ value: source }">
