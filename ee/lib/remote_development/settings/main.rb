@@ -22,6 +22,7 @@ module RemoteDevelopment
             # NOTE: EnvVarReader is kept as last step, so it can always be used to easily override any settings for
             #       local or temporary testing.
             .and_then(EnvVarReader.method(:read))
+            .and_then(RemoteDevelopment::Settings::ExtensionsGalleryValidator.method(:validate))
             .map(
               # As the final step, return the settings in a SettingsGetSuccessful message
               ->(value) do
@@ -35,6 +36,8 @@ module RemoteDevelopment
         in { err: SettingsEnvironmentVariableReadFailed => message }
           generate_error_response_from_message(message: message, reason: :internal_server_error)
         in { err: SettingsCurrentSettingsReadFailed => message }
+          generate_error_response_from_message(message: message, reason: :internal_server_error)
+        in { err: SettingsVscodeExtensionsGalleryValidationFailed => message }
           generate_error_response_from_message(message: message, reason: :internal_server_error)
         in { ok: SettingsGetSuccessful => message }
           { settings: message.context.fetch(:settings), status: :success }
