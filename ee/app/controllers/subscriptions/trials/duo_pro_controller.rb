@@ -69,12 +69,6 @@ module Subscriptions
         @eligible_namespaces = Users::DuoProTrialEligibleNamespacesFinder.new(current_user).execute
       end
 
-      def authenticate_user!
-        return if current_user
-
-        redirect_to new_trial_registration_path(glm_tracking_params), alert: I18n.t('devise.failure.unauthenticated')
-      end
-
       def check_feature_available!
         if Feature.enabled?(:duo_pro_trials, current_user, type: :wip) &&
             ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&

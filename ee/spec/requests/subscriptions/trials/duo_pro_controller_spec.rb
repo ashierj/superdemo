@@ -34,7 +34,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
     end
 
     context 'when not authenticated' do
-      it { is_expected.to redirect_to_trial_registration }
+      it { is_expected.to redirect_to_sign_in }
     end
 
     context 'when authenticated as a user with eligible namespaces' do
@@ -124,7 +124,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
 
     context 'when not authenticated' do
       it 'redirects to trial registration' do
-        expect(post_create).to redirect_to_trial_registration
+        expect(post_create).to redirect_to_sign_in
       end
     end
 
@@ -294,9 +294,9 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
     end
   end
 
-  RSpec::Matchers.define :redirect_to_trial_registration do
+  RSpec::Matchers.define :redirect_to_sign_in do
     match do |response|
-      expect(response).to redirect_to(new_trial_registration_path)
+      expect(response).to redirect_to(new_user_session_path)
       expect(flash[:alert]).to include('You need to sign in or sign up before continuing')
     end
   end
