@@ -2,17 +2,37 @@
 
 module Gitlab
   module Timebox
+    # SnapshotBuilder can build snapshots (`Gitlab::Timebox::Snapshot`s) of issues and tasks for a timebox.
+    # As of March 2024, SnapshotBuilder was designed to work with issues and tasks, not generally with work items.
+    #
+    # The `issues` table only captures the latest state of an issue/task.
+    # SnapshotBuilder can reconstruct the ending states of issues and tasks
+    #  assigned to a timebox using resource events records (e.g., ResourceStateEvent) for each date in the timebox.
+    #
+    # Example. Given some timebox, say Milestone A (starts on date N and ends on date N + 2),
+    # SnapshotBuilder can reconstruct the end states of the issues/tasks assigned to the timebox on each date.
+    #
+    #   Snapshot on Date N:
+    #     Issue 1 was open (open => open) and assigned to Milestone A.
+    #
+    #   Snapshot on Date N+1:
+    #     Issue 1 got closed (open => closed) and still assigned to Milestone A.
+    #       Task 1 was added to Issue 1
+    #
+    #   Snapshot on Date N+2:
+    #     Issue 1 got reopened (closed => reopened).
+    #       Task 1 was removed from Issue 1
+    #     Issue 2 was added to Milestone A
+    #
     class SnapshotBuilder
       ArgumentError = Class.new(StandardError)
       FieldsError = Class.new(StandardError)
+      UnsupportedTimeboxError = Class.new(StandardError)
 
       REQUIRED_RESOURCE_EVENT_FIELDS = %w[id event_type issue_id value action created_at].freeze
 
-      # This class builds snapshots of issue or work item states for a timebox
-      # based on their relevant resource events.
-      #
-      # timebox - the timebox (either milestone or iteration) of interest
-      # resource_events - PG::Result of a query for resource events.
+      # @params timebox [Milestone, Iteration] the timebox of interest
+      # @params resource_events [PG::Result] the query result for resource events.
       #   Resource event models must select the correct columns
       #   using the scope "aliased_for_timebox_report" and ordered by creation date.
       def initialize(timebox, resource_events)
@@ -21,6 +41,8 @@ module Gitlab
         @item_states = {}
       end
 
+      # @return [Array<Snapshot>] An array of snapshots.
+      #                           Each snapshot captures the end states of issues and tasks for the timebox on a date.
       def build
         check_arguments!
 
@@ -59,6 +81,7 @@ module Gitlab
 
       def check_arguments!
         raise ArgumentError unless timebox.is_a?(Milestone) || timebox.is_a?(Iteration)
+        raise UnsupportedTimeboxError if timebox.start_date.blank? || timebox.due_date.blank?
         raise ArgumentError unless @resource_events.is_a? PG::Result
         raise FieldsError unless valid_resource_event_columns?
       end
@@ -70,27 +93,32 @@ module Gitlab
       end
 
       def timebox_date_range
-        return timebox.start_date..Date.current if Date.current < timebox.due_date
+        due_date = [
+          [Date.current, timebox.due_date].compact.min,
+          timebox.start_date
+        ].compact.max
 
-        timebox.start_date..timebox.due_date
+        timebox.start_date..due_date
       end
 
       def take_snapshot(snapshot_date:)
-        snapshot = item_states.map do |id, item|
-          prev_item_state = @snapshots.last[:item_states].find { |i| i[:item_id] == id } if @snapshots.any?
+        snapshot = Snapshot.new(date: snapshot_date)
 
-          {
+        item_states.each do |id, item|
+          prev_item_state = @snapshots.last.item_states.find { |i| i[:item_id] == id } if @snapshots.any?
+
+          snapshot.add_item(
             item_id: id,
             timebox_id: item[:timebox],
-            weight: item[:weight],
             start_state: prev_item_state ? prev_item_state[:end_state] : ResourceStateEvent.states[:opened],
             end_state: item[:state],
             parent_id: item[:parent_id],
-            children_ids: Set.new(item[:children_ids])
-          }
+            children_ids: Set.new(item[:children_ids]),
+            weight: item[:weight]
+          )
         end
 
-        @snapshots.push({ date: snapshot_date, item_states: snapshot })
+        @snapshots.push(snapshot)
       end
 
       def handle_resource_timebox_event(event)
