@@ -153,6 +153,19 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
           expect(post_create).to redirect_to(group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab'))
         end
 
+        it 'shows valid flash message' do
+          post_create
+
+          expect(flash[:success]).to include(
+            'You have successfully created a trial subscription for GitLab Duo Pro. It will expire on'
+          )
+
+          expect(flash[:success]).to include(
+            'To get started, enable the GitLab Duo Pro add-on for team members on this page by ' \
+            'turning on the toggle for each team member. The subscription may take a minute to sync'
+          )
+        end
+
         it_behaves_like 'with tracking trial registration', 'duo_pro_trial_registration_success'
       end
 
