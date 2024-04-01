@@ -59,6 +59,17 @@ RSpec.describe Gitlab::Timebox::SnapshotBuilder, :aggregate_failures, feature_ca
           end
         end
 
+        context 'with a future timebox' do
+          it 'only builds a snapshot for the start date of the timebox' do
+            travel_to timebox.start_date - 1.day do
+              assign_timebox(issue, timebox)
+
+              expect(snapshots.size).to eq(1)
+              expect(snapshots).to have_snapshot(timebox.start_date, [{ item_id: issue.id, timebox_id: timebox.id }])
+            end
+          end
+        end
+
         context 'when issue is assigned to timebox prior to the start of the timebox' do
           it 'builds a correct snapshot' do
             travel_to timebox.start_date - 5.days do
@@ -459,7 +470,7 @@ RSpec.describe Gitlab::Timebox::SnapshotBuilder, :aggregate_failures, feature_ca
   end
 
   describe 'checking arguments' do
-    let(:timebox) { build_stubbed(:milestone) }
+    let(:timebox) { build_stubbed(:iteration) }
 
     it 'raises ArgumentError when timebox is not Milestone or Iteration' do
       expect { described_class.new(Class.new, Class.new).build }
@@ -469,6 +480,15 @@ RSpec.describe Gitlab::Timebox::SnapshotBuilder, :aggregate_failures, feature_ca
     it 'raises ArgumentError when resource_events is not PG::Result' do
       expect { described_class.new(timebox, Class.new).build }
         .to raise_error(Gitlab::Timebox::SnapshotBuilder::ArgumentError)
+    end
+
+    context 'when timebox is missing date(s)' do
+      let(:timebox) { build_stubbed(:milestone) }
+
+      it 'raises UnsupportedTimeboxError' do
+        expect { described_class.new(timebox, Class.new).build }
+          .to raise_error(Gitlab::Timebox::SnapshotBuilder::UnsupportedTimeboxError)
+      end
     end
 
     it 'raises FieldsError when resource_events do not select the correct columns' do
