@@ -11,20 +11,19 @@ module Epics
       last_edited_by_id last_edited_at closed_by_id closed_at state_id external_key
     ].freeze
 
-    def create_work_item_for!(epic)
+    def create_work_item_for!
       return unless work_item_sync_enabled?
 
       service_response = ::WorkItems::CreateService.new(
-        container: epic.group,
+        container: group,
         current_user: current_user,
-        params: create_params(epic),
-        widget_params: extract_widget_params(epic)
+        params: create_params,
+        widget_params: extract_widget_params
       ).execute_without_rate_limiting
 
-      handle_response!(:create, service_response, epic)
+      handle_response!(:create, service_response)
 
-      epic.issue_id = service_response.payload[:work_item].id
-      epic.save!
+      service_response.payload[:work_item]
     end
 
     def update_work_item_for!(epic)
@@ -35,7 +34,7 @@ module Epics
         container: epic.group,
         current_user: current_user,
         params: update_params(epic),
-        widget_params: extract_widget_params(epic)
+        widget_params: extract_widget_params
       ).execute(epic.work_item)
 
       handle_response!(:update, service_response, epic)
@@ -47,19 +46,11 @@ module Epics
       params.to_h.with_indifferent_access.slice(*ALLOWED_PARAMS)
     end
 
-    def create_params(epic)
-      create_params = filtered_params.merge(
+    def create_params
+      filtered_params.merge(
         work_item_type: WorkItems::Type.default_by_type(:epic),
-        iid: epic.iid,
-        created_at: epic.created_at,
-        relative_position: epic.id,
         extra_params: { synced_work_item: true }
       )
-
-      create_params[:title_html] = epic.title_html if params[:title].present?
-      create_params[:description_html] = epic.description_html if params[:description].present?
-
-      create_params
     end
 
     def update_params(epic)
@@ -80,13 +71,13 @@ module Epics
       update_params
     end
 
-    def handle_response!(action, service_response, epic)
+    def handle_response!(action, service_response, epic = nil)
       return true if service_response[:status] == :success
 
       error_message = Array.wrap(service_response[:message])
       Gitlab::EpicWorkItemSync::Logger.error(
         message: "Not able to #{action} epic work item", error_message: error_message, group_id: group.id,
-        epic_id: epic.id
+        epic_id: epic&.id
       )
 
       raise SyncAsWorkItemError, error_message.join(", ")
@@ -96,10 +87,10 @@ module Epics
       ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
     end
 
-    def extract_widget_params(epic)
+    def extract_widget_params
       work_item_type = WorkItems::Type.default_by_type(:epic)
 
-      work_item_type.widgets(epic.group).each_with_object({}) do |widget, widget_params|
+      work_item_type.widgets(group).each_with_object({}) do |widget, widget_params|
         attributes = params.slice(*widget.sync_params)
         next unless attributes.present?
 
