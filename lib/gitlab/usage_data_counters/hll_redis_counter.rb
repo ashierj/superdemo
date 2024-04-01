@@ -15,9 +15,6 @@ module Gitlab
         i_analytics_dev_ops_adoption
         i_analytics_dev_ops_score
         g_project_management_issue_cross_referenced
-        k8s_api_proxy_requests_unique_users_via_ci_access
-        k8s_api_proxy_requests_unique_users_via_pat_access
-        k8s_api_proxy_requests_unique_users_via_user_access
       ].freeze
 
       EventError = Class.new(StandardError)
