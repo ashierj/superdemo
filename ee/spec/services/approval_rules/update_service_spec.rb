@@ -311,6 +311,140 @@ RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_work
               "Removed User Batman from approval group on Gotham rule"
             )
           end
+
+          it 'audits the name change of a approval rule' do
+            described_class.new(approval_rule, user, name: 'Avenger').execute
+
+            expect(AuditEvent.last).to have_attributes(
+              author: user,
+              entity: project,
+              target_id: approval_rule.id,
+              target_type: approval_rule.class.name,
+              target_details: approval_rule.name,
+              details: include(custom_message: "Changed name from Gotham to Avenger")
+            )
+          end
+
+          context 'when changing target branch' do
+            before do
+              stub_licensed_features(multiple_approval_rules: true)
+            end
+
+            let(:protected_branch) { create(:protected_branch, project: target) }
+
+            context 'when new target branch is applied' do
+              subject(:execute) do
+                described_class.new(
+                  approval_rule,
+                  user,
+                  protected_branch_ids: [protected_branch.id]
+                ).execute
+              end
+
+              it 'calls auditor with correct args' do
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).ordered.and_call_original
+
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+                  hash_including(
+                    author: user,
+                    name: 'update_approval_rules',
+                    scope: project,
+                    target: approval_rule,
+                    message: "Changed target branch to #{protected_branch.name} branch"
+                  )
+                ).ordered
+
+                execute
+              end
+            end
+
+            context 'when target branch is changed to all branches' do
+              before do
+                approval_rule.update!(protected_branches: [protected_branch])
+              end
+
+              subject(:execute) do
+                described_class.new(
+                  approval_rule,
+                  user,
+                  protected_branch_ids: []
+                ).execute
+              end
+
+              it 'calls auditor with correct args' do
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).ordered.and_call_original
+
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+                  hash_including(
+                    author: user,
+                    name: 'update_approval_rules',
+                    scope: project,
+                    target: approval_rule,
+                    message: "Changed target branch to all branches"
+                  )
+                ).ordered
+
+                execute
+              end
+            end
+
+            context 'when target branch is changed to all protected branches' do
+              subject(:execute) do
+                described_class.new(
+                  approval_rule,
+                  user,
+                  applies_to_all_protected_branches: true
+                ).execute
+              end
+
+              it 'calls auditor with correct args' do
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).ordered.and_call_original
+
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+                  hash_including(
+                    author: user,
+                    name: 'update_approval_rules',
+                    scope: project,
+                    target: approval_rule,
+                    message: "Changed target branch to all protected branches"
+                  )
+                ).ordered
+
+                execute
+              end
+            end
+
+            context 'when target branch is changed from all protected branches to a protected branch' do
+              before do
+                approval_rule.update!(applies_to_all_protected_branches: true)
+              end
+
+              subject(:execute) do
+                described_class.new(
+                  approval_rule,
+                  user,
+                  protected_branch_ids: [protected_branch.id],
+                  applies_to_all_protected_branches: false
+                ).execute
+              end
+
+              it 'calls auditor with correct args' do
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).ordered.and_call_original
+
+                expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+                  hash_including(
+                    author: user,
+                    name: 'update_approval_rules',
+                    scope: project,
+                    target: approval_rule,
+                    message: "Changed target branch to #{protected_branch.name} branch"
+                  )
+                ).ordered
+
+                execute
+              end
+            end
+          end
         end
 
         context 'when rule update operation fails', :request_store do
