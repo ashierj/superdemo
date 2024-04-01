@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::NamespaceSettings::UpdateService, feature_category: :groups_and_projects do
+RSpec.describe EE::NamespaceSettings::AssignAttributesService, feature_category: :groups_and_projects do
   let_it_be_with_reload(:group) { create(:group) }
   let_it_be_with_reload(:user) { create(:user) }
 
-  subject(:update_settings) { NamespaceSettings::UpdateService.new(user, group, params).execute }
+  subject(:update_settings) { NamespaceSettings::AssignAttributesService.new(user, group, params).execute }
 
   describe '#execute' do
     context 'when prevent_forking_outside_group param present' do
