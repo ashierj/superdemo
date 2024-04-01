@@ -42,9 +42,8 @@ export default {
         </template>
         <template #link="{ content }">
           <gl-link
-            target="_blank"
-            rel="noopener noreferrer"
             href="https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#required-roles"
+            target="_blank"
           >
             {{ content }}
             <gl-icon name="external-link" :aria-label="__('(external link)')" />

@@ -47,9 +47,8 @@ curl --request GET \\
         >
         <template #link2="{ content }">
           <gl-link
-            target="_blank"
-            rel="noopener noreferrer"
             href="https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#required-roles"
+            target="_blank"
           >
             {{ content }}
             <gl-icon name="external-link" :aria-label="__('(external link)')" />
@@ -70,7 +69,6 @@ curl --request GET \\
         <template #link="{ content }">
           <gl-link
             target="_blank"
-            rel="noopener noreferrer"
             href="https://cloud.google.com/sdk/docs/install#installation_instructions"
           >
             {{ content }}
@@ -123,7 +121,6 @@ curl --request GET \\
             <gl-link
               href="https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects"
               target="_blank"
-              rel="noopener noreferrer"
               >{{ content }}
               <gl-icon name="external-link" :aria-label="__('(external link)')" />
             </gl-link>

@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapGetters } from 'vuex';
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
 import Connection from '~/integrations/edit/components/sections/connection.vue';
@@ -21,7 +19,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['propsSource']),
     gcProjectFields() {
       return this.fields.filter((field) => field.name.includes('workload_identity_federation'));
     },
@@ -49,7 +46,6 @@ export default {
           <gl-link
             href="https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects"
             target="_blank"
-            rel="noopener noreferrer"
             >{{ content }}
             <gl-icon name="external-link" :aria-label="__('(external link)')" />
           </gl-link>
