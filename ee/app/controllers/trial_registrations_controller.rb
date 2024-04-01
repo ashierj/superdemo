@@ -5,6 +5,7 @@
 class TrialRegistrationsController < RegistrationsController
   extend ::Gitlab::Utils::Override
 
+  include ::Onboarding::SetRedirect
   include OneTrustCSP
   include BizibleCSP
   include GoogleAnalyticsCSP

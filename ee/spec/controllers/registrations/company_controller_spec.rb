@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::CompanyController, feature_category: :onboarding do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user, reload: true) { create(:user, onboarding_in_progress: true) }
 
   let(:logged_in) { true }
   let(:onboarding_enabled?) { true }
@@ -146,7 +146,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           let(:trial_registration) { 'false' }
 
           before do
-            user.update_onboarding_status(:initial_registration_type, 'trial')
+            user.update!(onboarding_status_initial_registration_type: 'trial')
           end
 
           it 'creates trial lead and redirects to the correct path' do
@@ -175,17 +175,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           end
         end
 
-        context 'when current user onboarding is disabled' do
-          it 'does not store onboarding url' do
-            post_create
-
-            expect(user.onboarding_status_step_url).to be_nil
-          end
-        end
-
         context 'when user is onboarding' do
-          let_it_be(:user, reload: true) { create(:user, onboarding_in_progress: true) }
-
           context 'when onboarding feature is available' do
             it 'stores onboarding url' do
               post_create

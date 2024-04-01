@@ -52,7 +52,7 @@ module Registrations
     private
 
     def actions_after_success(payload)
-      finish_onboarding(current_user)
+      ::Onboarding::FinishService.new(current_user).execute
 
       experiment(:default_to_import_tab, actor: current_user).track(
         :assignment,

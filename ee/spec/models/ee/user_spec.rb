@@ -724,43 +724,6 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#update_onboarding_status' do
-    let_it_be(:user, reload: true) { create(:user) }
-
-    context 'with adding attribute' do
-      it 'sets the attribute' do
-        expect(user.onboarding_status_step_url).to eq(nil)
-        expect(user.update_onboarding_status(:step_url, '_step_url_')).to be_truthy
-        expect(user.reload.onboarding_status_step_url).to eq('_step_url_')
-      end
-    end
-
-    context 'with overriding existing attribute' do
-      before do
-        user.update!(onboarding_status_step_url: '_foo_')
-      end
-
-      it 'sets the attribute' do
-        expect(user.update_onboarding_status(:step_url, '_step_url_')).to be_truthy
-        expect(user.reload.onboarding_status_step_url).to eq('_step_url_')
-      end
-
-      context 'when overriding with string field value' do
-        it 'sets the attribute' do
-          expect(user.update_onboarding_status('step_url', '_step_url_')).to be_truthy
-          expect(user.reload.onboarding_status_step_url).to eq('_step_url_')
-        end
-      end
-    end
-
-    context 'with an unknown attribute' do
-      it 'does not set the attribute' do
-        expect(user.update_onboarding_status(:foo, '_foo_')).to be(false)
-        expect(user).to be_invalid
-      end
-    end
-  end
-
   describe '#can_read_all_resources?' do
     it 'returns true for auditor user' do
       user = build(:user, :auditor)

@@ -174,42 +174,20 @@ module EE
         session['user_return_to']
       end
 
-      def registration_type
-        # maybe we initialize different classes here eventually about the registration type and then
-        # use that logic the rest of the time and they all answer the same way
-        if trial_registration_type?
-          REGISTRATION_TYPE[:trial]
-        elsif invited_registration_type?
-          REGISTRATION_TYPE[:invite]
-        elsif subscription_registration_type?
-          REGISTRATION_TYPE[:subscription]
-        elsif free_registration_type?
-          REGISTRATION_TYPE[:free]
-        end
-      end
-
       private
 
       attr_reader :params, :session
 
-      def free_registration_type?
-        # This is mainly to give the free registration type declarative meaning in the elseif
-        # it is used in. This reads better in the elsif than merely using else for now.
-        true
-      end
-
-      def trial_registration_type?
+      def trial_from_params?
         ::Gitlab::Utils.to_boolean(params[:trial], default: false)
       end
-      alias_method :trial_from_params?, :trial_registration_type?
 
-      def subscription_registration_type?
+      def subscription_from_stored_location?
         # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
         # subscription_from_stored_location? alias and use as we will drive off the DB.
         # This method will need to remain though long term.
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path
       end
-      alias_method :subscription_from_stored_location?, :subscription_registration_type?
 
       def invited_registration_type?
         members.any?

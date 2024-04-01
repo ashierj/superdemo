@@ -6,7 +6,6 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      include ::Onboarding::SetRedirect
       include ::Gitlab::RackLoadBalancingHelpers
     end
 
@@ -51,14 +50,10 @@ module EE
       # as we don't want those to onboard.
       return unless provider.to_sym.in?(::AuthHelper.providers_for_base_controller)
 
-      start_onboarding!(
-        user,
-        onboarding_status: {
-          step_url: onboarding_first_step_path,
-          initial_registration_type: onboarding_status.registration_type,
-          registration_type: onboarding_status.registration_type
-        }
-      )
+      ::Onboarding::StatusCreateService
+        .new(
+          request.env.fetch('omniauth.params', {}).deep_symbolize_keys, session, user, onboarding_first_step_path
+        ).execute
     end
 
     def onboarding_params

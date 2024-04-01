@@ -72,7 +72,8 @@ module Registrations
 
       # Now we are in automatic trial and we'll update our status as such, initial_registration_type
       # will be how we know if they weren't a trial originally from here on out.
-      status_params.merge(onboarding_status_registration_type: ::Onboarding::Status::REGISTRATION_TYPE[:trial])
+      status_params
+        .merge(onboarding_status_registration_type: ::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
     end
 
     def passed_through_params
@@ -112,7 +113,7 @@ module Registrations
     end
 
     def successful_update_hooks
-      finish_onboarding(current_user) unless onboarding_status.continue_full_onboarding?
+      ::Onboarding::FinishService.new(current_user).execute unless onboarding_status.continue_full_onboarding?
 
       return unless onboarding_status.eligible_for_iterable_trigger?
 
@@ -121,16 +122,13 @@ module Registrations
 
     def signup_onboarding_path
       if onboarding_status.joining_a_project?
-        finish_onboarding(current_user)
+        Onboarding::FinishService.new(current_user).execute
         path_for_signed_in_user
       elsif onboarding_status.redirect_to_company_form?
-        path = new_users_sign_up_company_path(passed_through_params)
-        save_onboarding_step_url(path, current_user)
-        path
+        Onboarding::StatusStepUpdateService
+          .new(current_user, new_users_sign_up_company_path(passed_through_params)).execute[:step_url]
       else
-        path = new_users_sign_up_group_path
-        save_onboarding_step_url(path, current_user)
-        path
+        Onboarding::StatusStepUpdateService.new(current_user, new_users_sign_up_group_path).execute[:step_url]
       end
     end
 
