@@ -20,7 +20,7 @@
 
     = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan, read_only: read_only
     - if show_code_suggestions_card?(@group)
-      = render 'paid_and_trial_plan_duo_pro_card'
+      = render 'paid_and_trial_plan_duo_pro_card', namespace: @group
 
     - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only)
     #js-billing-plans{ data: data_attributes }
