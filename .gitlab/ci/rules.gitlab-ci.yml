@@ -1444,6 +1444,12 @@
     - <<: *if-foss-schedule
     - <<: *if-merge-request-labels-update-caches
 
+.qa:rules:update-gem-cache-e2e:
+  rules:
+    - <<: *if-not-dot-com-gitlab-org-and-not-jihulab
+      when: never
+    - !reference [.qa:rules:update-gem-cache, rules]
+
 .qa:rules:code-merge-request:
   rules:
     - <<: *if-merge-request
