@@ -17,11 +17,26 @@ module Epics
 
     private
 
+    # Override this method from issuable_base_service.rb
+    # We should call epic.save here to save the object and since
+    # transaction_create is using `with_transaction_returning_status`
     def transaction_create(epic)
-      super.tap do |save_result|
-        break save_result unless save_result && work_item_sync_enabled?
+      return super unless epic.valid?
 
-        create_work_item_for!(epic)
+      work_item = create_work_item_for! if work_item_sync_enabled?
+      if work_item
+        epic.issue_id = work_item.id
+        epic.iid = work_item.iid
+        epic.created_at = work_item.created_at
+      end
+
+      super.tap do |save_result|
+        break save_result unless save_result && work_item
+
+        work_item.relative_position = epic.id
+        work_item.title_html = epic.title_html
+        work_item.description_html = epic.description_html
+        work_item.save!
       end
     end
 

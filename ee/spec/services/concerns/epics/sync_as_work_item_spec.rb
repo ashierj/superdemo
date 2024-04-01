@@ -25,9 +25,7 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
         end
 
         def execute
-          epic = group.epics.new(params.merge({ group: group, author: current_user }))
-          epic.save!
-          create_work_item_for!(epic)
+          create_work_item_for!
         end
       end
     end
@@ -48,18 +46,14 @@ RSpec.describe Epics::SyncAsWorkItem, feature_category: :portfolio_management do
           current_user: user,
           widget_params: {},
           params: {
-            iid: be_a_kind_of(Numeric),
-            created_at: be_a_kind_of(Time),
             title: 'foo',
-            title_html: 'foo',
             confidential: true,
-            relative_position: be_a_kind_of(Numeric),
             work_item_type: WorkItems::Type.default_by_type(:epic),
             extra_params: { synced_work_item: true }
           }
         ).and_call_original
 
-      expect(service.execute).to eq true
+      expect(service.execute).to be_an_instance_of(WorkItem)
     end
   end
 

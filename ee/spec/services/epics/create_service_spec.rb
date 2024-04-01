@@ -165,7 +165,7 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
               message: "Not able to create epic work item",
               error_message: error_message,
               group_id: group.id,
-              epic_id: an_instance_of(Integer)
+              epic_id: nil
             })
 
           expect { subject }.to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
