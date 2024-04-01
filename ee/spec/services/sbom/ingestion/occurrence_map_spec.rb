@@ -17,6 +17,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
       source: report_source.data,
       source_id: nil,
       source_type: report_source.source_type,
+      uuid: nil,
       source_package_id: nil,
       source_package_name: report_component.source_package_name,
       version: report_component.version
@@ -66,6 +67,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: nil,
             source_id: nil,
             source_type: nil,
+            uuid: nil,
             source_package_id: nil,
             source_package_name: report_component.source_package_name,
             version: report_component.version
@@ -88,6 +90,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: report_source.data,
             source_id: nil,
             source_type: report_source.source_type,
+            uuid: nil,
             source_package_id: nil,
             source_package_name: report_component.source_package_name,
             version: report_component.version
@@ -113,6 +116,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
             source: report_source.data,
             source_id: nil,
             source_type: report_source.source_type,
+            uuid: nil,
             source_package_id: nil,
             source_package_name: report_component.source_package_name,
             version: report_component.version
