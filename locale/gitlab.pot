@@ -16853,6 +16853,9 @@ msgstr ""
 msgid "Delete table"
 msgstr ""
 
+msgid "Delete the pipeline"
+msgstr ""
+
 msgid "Delete this attachment"
 msgstr ""
 
