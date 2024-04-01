@@ -37,9 +37,9 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
           stub_feature_flags(epic_creation_with_synced_work_item: false)
         end
 
-        it 'removes the epic but not the work item relation' do
+        it 'removes the epic and the work item relation' do
           expect { subject }.to change { issuable_link.class.count }.by(-1)
-          .and not_change { WorkItems::RelatedWorkItemLink.count }
+            .and change { WorkItems::RelatedWorkItemLink.count }.by(-1)
         end
       end
 
