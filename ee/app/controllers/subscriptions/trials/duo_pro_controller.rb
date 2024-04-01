@@ -8,6 +8,7 @@ module Subscriptions
       include GoogleAnalyticsCSP
       include RegistrationsTracking
       include ::Gitlab::Utils::StrongMemoize
+      include SafeFormatHelper
 
       layout 'minimal'
 
@@ -38,6 +39,8 @@ module Subscriptions
           # lead and trial created
 
           track_event('duo_pro_trial_registration_success')
+
+          flash[:success] = success_flash_message
 
           redirect_to group_usage_quotas_path(@result.payload[:namespace], anchor: 'code-suggestions-usage-tab')
         elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::NO_SINGLE_NAMESPACE
@@ -97,6 +100,19 @@ module Subscriptions
 
       def trial_params
         params.permit(:new_group_name, :namespace_id, :trial_entity, :glm_source, :glm_content).to_h
+      end
+
+      def success_flash_message
+        safe_format(
+          s_(
+            'DuoProTrial|You have successfully created a trial subscription for GitLab Duo Pro. ' \
+            'It will expire on %{exp_date}.%{new_line}To get started, enable the GitLab Duo Pro ' \
+            'add-on for team members on this page by turning on the toggle for each team member. ' \
+            "The subscription may take a minute to sync, so refresh the page if it's not visible yet."
+          ),
+          exp_date: 30.days.from_now.strftime('%Y-%m-%d'),
+          new_line: '<br>'.html_safe
+        )
       end
     end
   end
