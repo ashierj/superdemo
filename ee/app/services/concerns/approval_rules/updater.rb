@@ -4,6 +4,9 @@ module ApprovalRules
   module Updater
     include ::Audit::Changes
 
+    APPROVAL_RULE_UPDATE_EVENT_NAME = 'update_approval_rules'
+    APPROVAL_RULE_CREATE_EVENT_NAME = 'approval_rule_created'
+
     def execute
       if group_rule? && Feature.disabled?(:approval_group_rules, rule.group)
         return ServiceResponse.error(message: "The feature approval_group_rules is not enabled.")
@@ -29,7 +32,11 @@ module ApprovalRules
       filter_eligible_groups!
       filter_eligible_protected_branches!
 
-      update_rule ? success : error
+      old_protected_branches_names = nil
+
+      old_protected_branches_names = rule.protected_branches.map(&:name) if rule.is_a? ApprovalProjectRule
+
+      update_rule ? success_with_audit_logging(old_protected_branches_names) : error
     end
 
     def filter_eligible_users!
@@ -85,7 +92,7 @@ module ApprovalRules
       return rule.update(params) unless current_user
 
       audit_context = {
-        name: rule.new_record? ? 'approval_rule_created' : 'update_approval_rules',
+        name: rule.new_record? ? APPROVAL_RULE_CREATE_EVENT_NAME : APPROVAL_RULE_UPDATE_EVENT_NAME,
         author: current_user,
         scope: container,
         target: rule
@@ -94,21 +101,40 @@ module ApprovalRules
       ::Gitlab::Audit::Auditor.audit(audit_context) { rule.update(params) }
     end
 
-    def success
-      audit_changes_to_approvals_required if current_user
+    def success_with_audit_logging(old_protected_branches_names)
+      log_audit_changes(old_protected_branches_names) if current_user
 
       rule.reset
 
-      super
+      success
     end
 
-    def audit_changes_to_approvals_required
+    def log_audit_changes(old_protected_branches_names)
       audit_changes(
         :approvals_required,
         as: 'number of required approvals',
         entity: container,
         model: rule,
-        event_type: 'update_approval_rules'
+        event_type: APPROVAL_RULE_UPDATE_EVENT_NAME
+      )
+      audit_changes(:name,
+        as: 'name',
+        entity: container,
+        model: rule,
+        event_type: APPROVAL_RULE_UPDATE_EVENT_NAME)
+
+      return unless rule.is_a? ApprovalProjectRule
+
+      audit_message = protected_branch_change_audit_message(rule, old_protected_branches_names)
+
+      return unless audit_message.present?
+
+      ::Gitlab::Audit::Auditor.audit(
+        author: current_user,
+        name: APPROVAL_RULE_UPDATE_EVENT_NAME,
+        scope: container,
+        target: rule,
+        message: audit_message
       )
     end
 
@@ -117,6 +143,24 @@ module ApprovalRules
       return false if group_container? || !project.multiple_approval_rules_available?
 
       skip_authorization || can?(current_user, :admin_project, project)
+    end
+
+    def protected_branch_change_audit_message(rule, old_protected_branches_names)
+      new_protected_branches_names = rule.protected_branches.map(&:name)
+      recently_added_branch = new_protected_branches_names - old_protected_branches_names
+      enabled_all_protected_branches = rule.previous_changes["applies_to_all_protected_branches"] == [false, true]
+      disabled_all_protected_branches = rule.previous_changes["applies_to_all_protected_branches"] == [true, false]
+      from_protected_branch_to_empty = (rule.protected_branches.empty? && old_protected_branches_names.present?)
+
+      if enabled_all_protected_branches
+        "Changed target branch to all protected branches"
+      elsif disabled_all_protected_branches && new_protected_branches_names.present?
+        "Changed target branch to #{new_protected_branches_names.first} branch"
+      elsif from_protected_branch_to_empty
+        "Changed target branch to all branches"
+      elsif recently_added_branch.present?
+        "Changed target branch to #{recently_added_branch.first} branch"
+      end
     end
   end
 end
