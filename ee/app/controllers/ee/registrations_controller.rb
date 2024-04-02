@@ -5,6 +5,7 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
     include ::Gitlab::Utils::StrongMemoize
+    include ::Users::IdentityVerificationHelper
 
     prepended do
       include Arkose::ContentSecurityPolicy
@@ -15,6 +16,7 @@ module EE
       include GoogleSyndicationCSP
 
       skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
+      before_action :restrict_registration, only: [:new, :create]
       before_action only: [:new, :create] do
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
@@ -42,6 +44,32 @@ module EE
 
       render action: 'new'
     end
+
+    def restrict_registration
+      return unless restricted_country?(request.env['HTTP_CF_IPCOUNTRY'], invite_root_namespace)
+      return if allow_invited_user?
+
+      member&.destroy
+      redirect_to restricted_identity_verification_path
+    end
+
+    def allow_invited_user?
+      return false unless invite_root_namespace
+
+      invite_root_namespace.paid? || invite_root_namespace.trial?
+    end
+
+    def invite_root_namespace
+      member&.source&.root_ancestor
+    end
+
+    def member
+      member_id = session[:originating_member_id]
+      return unless member_id
+
+      ::Member.find_by_id(member_id)
+    end
+    strong_memoize_attr :member
 
     override :after_successful_create_hook
     def after_successful_create_hook(user)

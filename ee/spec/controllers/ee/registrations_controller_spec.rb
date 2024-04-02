@@ -3,6 +3,118 @@
 require 'spec_helper'
 
 RSpec.describe RegistrationsController, feature_category: :system_access do
+  let(:member) { nil }
+
+  shared_examples 'an unrestricted IP address' do
+    it 'does not redirect to the restricted identity verification path' do
+      subject
+
+      expect(response).not_to redirect_to restricted_identity_verification_path
+    end
+  end
+
+  shared_examples 'a restricted IP address' do
+    it 'redirects to the restricted identity verification path' do
+      subject
+
+      expect(response).to redirect_to restricted_identity_verification_path
+    end
+  end
+
+  shared_examples 'a restricted invite' do
+    it_behaves_like 'a restricted IP address'
+
+    it 'deletes the invite' do
+      subject
+
+      expect(Member.find_by(id: member.id)).to be_nil
+    end
+  end
+
+  shared_examples 'geo-ip restriction' do
+    context 'when IP is not from a restricted location' do
+      it_behaves_like 'an unrestricted IP address'
+    end
+
+    context 'when IP is from a restricted location' do
+      before do
+        request.headers['Cf-IPCountry'] = 'CN'
+      end
+
+      it_behaves_like 'a restricted IP address'
+
+      context 'when user is invited', :saas do
+        let_it_be(:user) { create(:user) }
+
+        let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+        let_it_be(:ultimate_project) { create(:project, group: ultimate_group) }
+        let_it_be(:ultimate_group_trial) do
+          create(:group_with_plan, :public, plan: :ultimate_plan, trial_ends_on: Time.current + 30.days)
+        end
+
+        let_it_be(:project_member, reload: true) { create(:project_member, :invited, invite_email: user.email) }
+        let_it_be(:group_member, reload: true) { create(:group_member, :invited, invite_email: user.email) }
+
+        let(:member) { group_member }
+        let(:params) { { id: member.raw_invite_token } }
+
+        before do
+          session[:originating_member_id] = member.id
+        end
+
+        it_behaves_like 'a restricted invite'
+
+        context 'when member is associated with a project' do
+          let(:member) { project_member }
+
+          it_behaves_like 'a restricted invite'
+        end
+
+        context 'when the user is already logged in' do
+          before do
+            sign_in(user)
+          end
+
+          it_behaves_like 'an unrestricted IP address'
+        end
+
+        context 'when the namespace is paid' do
+          before do
+            allow_next_instance_of(described_class) do |instance|
+              allow(instance).to receive(:current_user_matches_invite?).and_return(true)
+            end
+          end
+
+          context 'when the namespace is a group' do
+            let_it_be(:member) { create(:group_member, :invited, invite_email: user.email, group: ultimate_group) }
+
+            it_behaves_like 'an unrestricted IP address'
+          end
+
+          context 'when the namespace is a project' do
+            let_it_be(:member) do
+              create(:project_member, :invited, invite_email: user.email, project: ultimate_project)
+            end
+
+            it_behaves_like 'an unrestricted IP address'
+          end
+        end
+
+        context 'when the namespace is a trial' do
+          let_it_be(:member) { create(:group_member, :invited, invite_email: user.email, group: ultimate_group_trial) }
+
+          it_behaves_like 'an unrestricted IP address'
+        end
+      end
+    end
+  end
+
+  describe '#new' do
+    subject { get :new }
+
+    it_behaves_like 'geo-ip restriction'
+  end
+
   describe '#create', :clean_gitlab_redis_rate_limiting do
     let_it_be(:base_user_params) { build_stubbed(:user).slice(:first_name, :last_name, :username, :password) }
     let_it_be(:new_user_email) { 'new@user.com' }
@@ -15,6 +127,8 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     end
 
     subject(:post_create) { post :create, params: params.merge(user_params), session: session }
+
+    it_behaves_like 'geo-ip restriction'
 
     shared_examples 'blocked user by default' do
       it 'registers the user in blocked_pending_approval state' do
