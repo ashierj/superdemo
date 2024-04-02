@@ -1,6 +1,7 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import EmptyRule from 'ee/approvals/components/rules/empty_rule.vue';
+import RuleBranches from 'ee/approvals/components/rules/rule_branches.vue';
 
 describe('Empty Rule', () => {
   let wrapper;
@@ -13,6 +14,23 @@ describe('Empty Rule', () => {
       },
     });
   };
+
+  describe('isBranchRulesEdit', () => {
+    const findBranches = () => wrapper.findComponent(RuleBranches);
+    const defaultProps = { allowMultiRule: true, isMrEdit: false, canEdit: true };
+
+    it('does not render branches when `true`', () => {
+      createComponent({ ...defaultProps, isBranchRulesEdit: true });
+
+      expect(findBranches().exists()).toBe(false);
+    });
+
+    it('renders branches when `false`', () => {
+      createComponent({ ...defaultProps, isBranchRulesEdit: false });
+
+      expect(findBranches().exists()).toBe(true);
+    });
+  });
 
   describe('multiple rules', () => {
     it('does not display "Add approval rule" button', () => {

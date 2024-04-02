@@ -380,8 +380,8 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
+      v-show="!isBranchRulesEdit"
       v-if="showProtectedBranch"
-      :disabled="isBranchRulesEdit"
       :label="$options.APPROVAL_DIALOG_I18N.form.protectedBranchLabel"
       :description="$options.APPROVAL_DIALOG_I18N.form.protectedBranchDescription"
       :state="isValidBranches"

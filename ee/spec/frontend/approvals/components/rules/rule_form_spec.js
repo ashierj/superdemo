@@ -116,10 +116,10 @@ describe('EE Approvals RuleForm', () => {
     });
 
     describe('isBranchRulesEdit set to `true`', () => {
-      it('disables the branch selector', () => {
+      it('hides the branch selector', () => {
         createComponent({ isBranchRulesEdit: true, isMrEdit: false });
 
-        expect(findBranchesValidation().attributes('disabled')).toBeDefined();
+        expect(findBranchesValidation().isVisible()).toBe(false);
       });
     });
 
