@@ -410,9 +410,6 @@
   - "{,ee/,jh/}fixtures/**/*"
   - "{,ee/,jh/}rubocop/**/*"
   - "{,ee/,jh/}spec/**/*"
-
-.tooling-patterns: &tooling-patterns
-  - "spec/dot_gitlab_ci/**/*"
   - "{,spec/}tooling/**/*"
 
 .qa-patterns: &qa-patterns
@@ -481,6 +478,7 @@
   - "{,ee/,jh/}fixtures/**/*"
   - "{,ee/,jh/}rubocop/**/*"
   - "{,ee/,jh/}spec/**/*"
+  - "{,spec/}tooling/**/*"
 
 # .code-patterns + .qa-patterns
 .code-qa-patterns: &code-qa-patterns
@@ -538,6 +536,7 @@
   - "{,ee/,jh/}fixtures/**/*"
   - "{,ee/,jh/}rubocop/**/*"
   - "{,ee/,jh/}spec/**/*"
+  - "{,spec/}tooling/**/*"
   # QA changes
   - ".dockerignore"
   - "{,jh/}qa/**/*"
@@ -578,6 +577,7 @@
   - "{,ee/,jh/}fixtures/**/*"
   - "{,ee/,jh/}rubocop/**/*"
   - "{,ee/,jh/}spec/**/*"
+  - "{,spec/}tooling/**/*"
   # QA changes
   - ".dockerignore"
   - "{,jh/}qa/**/*"
@@ -680,8 +680,6 @@
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *core-backend-patterns
-    - <<: *if-merge-request
-      changes: *tooling-patterns
     - <<: *if-automated-merge-request
       changes: *backend-patterns
     - <<: *if-security-merge-request
@@ -1958,9 +1956,6 @@
     - <<: *if-merge-request
       changes: *core-backend-patterns
       when: never
-    - <<: *if-merge-request
-      changes: *tooling-patterns
-      when: never
     - <<: *if-automated-merge-request
       changes: *backend-patterns
       when: never
@@ -2047,14 +2042,6 @@
       changes: *backend-patterns
     - <<: *if-default-refs
       changes: *core-backend-patterns
-
-.rails:rules:tooling:
-  rules:
-    - <<: *if-merge-request-labels-run-all-rspec
-    - <<: *if-merge-request
-      changes: *tooling-patterns
-    - <<: *if-default-refs
-      changes: *tooling-patterns
 
 .rails:rules:code-backstage-qa:
   rules:
@@ -2220,9 +2207,6 @@
     - <<: *if-merge-request-labels-as-if-foss
       when: never
     - <<: *if-merge-request-labels-pipeline-expedite
-      when: never
-    - <<: *if-merge-request
-      changes: *tooling-patterns
       when: never
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
