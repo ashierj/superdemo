@@ -28,10 +28,10 @@
 
   - if namespace.trial_active?
     .gl-mb-9.gl-mx-auto.billing-plan-divider
-      - if show_code_suggestions_card?(@group)
-        = render 'paid_and_trial_plan_duo_pro_card'
+      - if show_code_suggestions_card?(namespace)
+        = render 'paid_and_trial_plan_duo_pro_card', namespace: namespace
 
-      #js-billing-plans{ data: subscription_plan_data_attributes(@group, current_plan, read_only: read_only) }
+      #js-billing-plans{ data: subscription_plan_data_attributes(namespace, current_plan, read_only: read_only) }
 
   .gl-font-lg.gl-mb-5
     = s_("BillingPlans|Trusted by")
