@@ -81,6 +81,25 @@ RSpec.describe Vulnerabilities::FindingPresenter, feature_category: :vulnerabili
     end
   end
 
+  describe '#blob_url' do
+    subject { presenter.blob_url }
+
+    let(:blob_path) { 'blob_path' }
+
+    before do
+      allow(presenter).to receive(:blob_path).and_return(blob_path)
+    end
+
+    it { is_expected.to start_with(Gitlab::Routing.url_helpers.root_url) }
+    it { is_expected.to end_with('blob_path') }
+
+    context 'without blob_path' do
+      let(:blob_path) { '' }
+
+      it { is_expected.to eq '' }
+    end
+  end
+
   describe '#links' do
     let(:link_name) { 'Cipher does not check for integrity first?' }
     let(:link_url) { 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first' }

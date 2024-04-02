@@ -28,6 +28,7 @@ module Security
         vulnerabilities = vulnerabilities.with_report_types(params[:report_type]) if params[:report_type].present?
         vulnerabilities = vulnerabilities.by_age(vulnerability_age[:operator], age_in_days) if vulnerability_age_valid?
         vulnerabilities = vulnerabilities.with_fix_available(params[:fix_available]) unless params[:fix_available].nil?
+        vulnerabilities = vulnerabilities.with_findings_by_uuid(params[:uuids]) if params[:uuids].present?
 
         unless params[:false_positive].nil?
           vulnerabilities = vulnerabilities.with_false_positive(params[:false_positive])

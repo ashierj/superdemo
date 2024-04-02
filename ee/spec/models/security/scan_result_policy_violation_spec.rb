@@ -107,7 +107,7 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
 
     let(:violations) { ['uuid'] * (Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 2) }
 
-    it 'saves only MAX_VIOLATIONS+1 amount of violations' do
+    it 'returns MAX_VIOLATIONS+1 number of violations' do
       expect(trimmed_violations.size).to eq Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 1
       expect(trimmed_violations).to eq(violations[..Security::ScanResultPolicyViolation::MAX_VIOLATIONS])
     end

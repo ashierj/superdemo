@@ -21,6 +21,12 @@ module Vulnerabilities
       add_line_numbers(location['start_line'], location['end_line'])
     end
 
+    def blob_url
+      return '' if blob_path.blank?
+
+      ::Gitlab::Utils.append_path(root_url, blob_path)
+    end
+
     delegator_override :links
     def links
       @links ||= finding.links.map(&:with_indifferent_access)
@@ -48,6 +54,10 @@ module Vulnerabilities
 
     def vulnerability_path
       @vulnerability_path ||= project_blob_path(project, File.join(sha, location['file']))
+    end
+
+    def root_url
+      Gitlab::Routing.url_helpers.root_url
     end
   end
 end

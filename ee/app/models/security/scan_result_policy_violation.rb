@@ -27,7 +27,7 @@ module Security
       artifacts_missing: 'ARTIFACTS_MISSING'
     }.freeze
 
-    MAX_VIOLATIONS = 20
+    MAX_VIOLATIONS = 10
 
     def self.trim_violations(violations)
       Array.wrap(violations)[..MAX_VIOLATIONS]
