@@ -16,7 +16,13 @@ module Gitlab
         DEFAULT_TYPE = 'prompt'
         DEFAULT_SOURCE = 'GitLab EE'
 
+        JWT_AUDIENCE = 'gitlab-ai-gateway'
+
         ALLOWED_PAYLOAD_PARAM_KEYS = %i[temperature max_tokens_to_sample stop_sequences].freeze
+
+        def self.access_token(scopes:)
+          ::CloudConnector::AccessService.new.access_token(audience: JWT_AUDIENCE, scopes: scopes)
+        end
 
         def initialize(user, tracking_context: {})
           @user = user
@@ -82,23 +88,23 @@ module Gitlab
         end
 
         def enabled?
-          access_token.present?
+          chat_access_token.present?
         end
 
         def request_headers
           {
             'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
             'X-Gitlab-Authentication-Type' => 'oidc',
-            'Authorization' => "Bearer #{access_token}",
+            'Authorization' => "Bearer #{chat_access_token}",
             'Content-Type' => 'application/json',
             'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
           }.merge(cloud_connector_headers(user))
         end
 
-        def access_token
-          ::CloudConnector::AccessService.new.access_token(scopes: [:duo_chat])
+        def chat_access_token
+          self.class.access_token(scopes: [:duo_chat])
         end
-        strong_memoize_attr :access_token
+        strong_memoize_attr :chat_access_token
 
         def request_body(prompt:, options: {})
           {
