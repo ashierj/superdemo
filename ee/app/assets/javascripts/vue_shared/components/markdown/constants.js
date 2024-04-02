@@ -10,5 +10,9 @@ export {
   TRACKING_SAVED_REPLIES_USE_IN_OTHER,
 } from '~/vue_shared/components/markdown/constants';
 
-export const COMMENT_TEMPLATES_KEYS = [...COMMENT_TEMPLATES_KEYS_FOSS, 'group'];
-export const COMMENT_TEMPLATES_TITLES = { ...COMMENT_TEMPLATES_TITLES_FOSS, group: __('Group') };
+export const COMMENT_TEMPLATES_KEYS = [...COMMENT_TEMPLATES_KEYS_FOSS, 'project', 'group'];
+export const COMMENT_TEMPLATES_TITLES = {
+  ...COMMENT_TEMPLATES_TITLES_FOSS,
+  project: __('Project'),
+  group: __('Group'),
+};
