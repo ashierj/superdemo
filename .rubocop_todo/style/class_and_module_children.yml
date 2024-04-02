@@ -107,7 +107,6 @@ Style/ClassAndModuleChildren:
     - 'app/controllers/profiles/avatars_controller.rb'
     - 'app/controllers/profiles/chat_names_controller.rb'
     - 'app/controllers/profiles/emails_controller.rb'
-    - 'app/controllers/profiles/gpg_keys_controller.rb'
     - 'app/controllers/profiles/groups_controller.rb'
     - 'app/controllers/profiles/keys_controller.rb'
     - 'app/controllers/profiles/notifications_controller.rb'

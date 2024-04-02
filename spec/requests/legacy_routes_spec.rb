@@ -68,4 +68,18 @@ RSpec.describe "Legacy routes", type: :request, feature_category: :system_access
     get "/-/profile/password/edit?abc=xyz"
     expect(response).to redirect_to('/-/user_settings/password/edit?abc=xyz')
   end
+
+  it "/-/profile/gpg_keys" do
+    get "/-/profile/gpg_keys"
+    expect(response).to redirect_to('/-/user_settings/gpg_keys#index')
+
+    post("/-/profile/gpg_keys")
+    expect(response).to redirect_to('/-/user_settings/gpg_keys#create')
+
+    get("/-/profile/gpg_keys/1")
+    expect(response).to redirect_to('/-/user_settings/gpg_keys#show')
+
+    delete("/-/profile/gpg_keys/1")
+    expect(response).to redirect_to('/-/user_settings/gpg_keys#destroy')
+  end
 end

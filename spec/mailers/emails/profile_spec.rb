@@ -116,7 +116,7 @@ RSpec.describe Emails::Profile, feature_category: :user_profile do
     end
 
     it 'includes a link to gpg keys page' do
-      is_expected.to have_body_text /#{profile_gpg_keys_path}/
+      is_expected.to have_body_text /#{user_settings_gpg_keys_path}/
     end
 
     context 'with GPG key that does not exist' do
