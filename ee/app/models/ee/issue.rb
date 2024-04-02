@@ -328,8 +328,12 @@ module EE
     end
 
     def has_parent_link?
-      existing_relation = ::WorkItems::ParentLink.find_by_work_item_id(id)
+      # the WorkItems::ParentLink#validate_legacy_hierarchy validation only allows one type of parent at a time so we
+      # don't expect a parent work item if the issue is already assigned to an epic. There is one exception for epics
+      # that have synced work items, but those cases should ignore the parent link in favour of returning the epic.
+      return false if has_epic?
 
+      existing_relation = ::WorkItems::ParentLink.find_by_work_item_id(id)
       existing_relation.present?
     end
 
