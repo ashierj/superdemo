@@ -13,6 +13,7 @@ import {
   buildDefaultDashboardFilters,
   getDashboardConfig,
   updateApolloCache,
+  getUniquePanelId,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import {
@@ -101,6 +102,7 @@ export default {
       changesSaved: false,
       alert: null,
       hasDashboardError: false,
+      savedPanels: null,
     };
   },
   computed: {
@@ -170,7 +172,16 @@ export default {
 
         return {
           ...dashboard,
-          panels: dashboard.panels?.nodes || [],
+          panels:
+            // Panel ids need to remain consistent and they are unique to the
+            // frontend. Thus they don't get saved with GraphQL and we need to
+            // reference the saved panels array to persist the ids.
+            this.savedPanels ||
+            dashboard.panels?.nodes?.map((panel) => ({
+              ...panel,
+              id: getUniquePanelId(),
+            })) ||
+            [],
         };
       },
       result() {
@@ -268,6 +279,8 @@ export default {
             isProject: this.isProject,
             isGroup: this.isGroup,
           });
+
+          this.savedPanels = dashboard.panels;
 
           if (this.isNewDashboard) {
             // We redirect now to the new route

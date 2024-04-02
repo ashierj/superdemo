@@ -242,3 +242,33 @@ export const updateApolloCache = ({
   });
   updateDashboardsListApolloCache({ apolloClient, slug, dashboard, fullPath, isProject, isGroup });
 };
+
+const filterUndefinedValues = (obj) => {
+  // eslint-disable-next-line no-unused-vars
+  return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined));
+};
+
+/**
+ * Parses a dashboard panel config into a GridStack item.
+ */
+export const parsePanelToGridItem = ({
+  gridAttributes: { xPos, yPos, width, height, minHeight, minWidth, maxHeight, maxWidth },
+  id,
+  ...rest
+}) =>
+  // GridStack renders undefined layout values so we need to filter them out.
+  filterUndefinedValues({
+    x: xPos,
+    y: yPos,
+    w: width,
+    h: height,
+    minH: minHeight,
+    minW: minWidth,
+    maxH: maxHeight,
+    maxW: maxWidth,
+    id,
+    props: {
+      id,
+      ...rest,
+    },
+  });

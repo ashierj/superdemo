@@ -212,7 +212,7 @@ export default {
 <template>
   <div
     :id="popoverId"
-    class="grid-stack-item-content gl-border gl-rounded-base gl-p-4 gl-bg-white gl-overflow-visible!"
+    class="grid-stack-item-content gl-border gl-rounded-base gl-p-4 gl-bg-white gl-overflow-visible! gl-h-full"
     :class="{
       'gl-border-t-2 gl-border-t-solid gl-border-t-red-500': showErrorState,
     }"
@@ -254,6 +254,7 @@ export default {
           fluid-width
           toggle-class="gl-ml-1"
           category="tertiary"
+          positioning-strategy="fixed"
         >
           <template #list-item="{ item }">
             <span :data-testId="`panel-action-${item.testId}`">
@@ -296,6 +297,7 @@ export default {
         :css-classes="['gl-max-w-50p']"
         :target="popoverId"
         :delay="$options.PANEL_POPOVER_DELAY"
+        boundary="viewport"
       >
         <gl-sprintf :message="errorPopoverMessage">
           <template #link="{ content }">

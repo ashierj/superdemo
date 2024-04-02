@@ -8,6 +8,7 @@ import {
   getDashboardConfig,
   updateApolloCache,
   getVisualizationCategory,
+  parsePanelToGridItem,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 import {
@@ -30,7 +31,7 @@ import {
   TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   getGraphQLDashboard,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
-import { mockDateRangeFilterChangePayload, dashboard } from './mock_data';
+import { mockDateRangeFilterChangePayload, dashboard, mockPanel } from './mock_data';
 
 const option = DATE_RANGE_OPTIONS[0];
 
@@ -404,5 +405,31 @@ describe('getVisualizationCategory', () => {
     ${CATEGORY_CHARTS}       | ${'FooBar'}
   `('returns $category when the visualization type is $type', ({ category, type }) => {
     expect(getVisualizationCategory({ type })).toBe(category);
+  });
+});
+
+describe('parsePanelToGridItem', () => {
+  it('parses all panel configs to GridStack format', () => {
+    const { gridAttributes, ...rest } = mockPanel;
+
+    expect(parsePanelToGridItem(mockPanel)).toStrictEqual({
+      x: gridAttributes.xPos,
+      y: gridAttributes.yPos,
+      w: gridAttributes.width,
+      h: gridAttributes.height,
+      minH: gridAttributes.minHeight,
+      minW: gridAttributes.minWidth,
+      maxH: gridAttributes.maxHeight,
+      maxW: gridAttributes.maxWidth,
+      id: mockPanel.id,
+      props: rest,
+    });
+  });
+
+  it('filters out props with undefined values', () => {
+    const local = { ...mockPanel };
+    local.id = undefined;
+
+    expect(Object.keys(parsePanelToGridItem(local))).not.toContain('id');
   });
 });

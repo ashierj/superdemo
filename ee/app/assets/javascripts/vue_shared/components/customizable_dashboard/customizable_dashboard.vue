@@ -106,7 +106,6 @@ export default {
       filters: this.defaultFilters,
       alert: null,
       visualizationDrawerOpen: false,
-      dashboardRenderKey: 0,
     };
   },
   computed: {
@@ -215,8 +214,6 @@ export default {
     },
     resetToInitialDashboard() {
       this.dashboard = this.createDraftDashboard(this.initialDashboard);
-      // Update the element key to force re-render
-      this.dashboardRenderKey += 1;
     },
     onTitleInput(submitting) {
       this.$emit('title-input', this.dashboard.title, submitting);
@@ -318,10 +315,15 @@ export default {
     panelTestId({ visualization: { slug = '' } }) {
       return `panel-${slug.replaceAll('_', '-')}`;
     },
-    createVisualizationPanels(visualizations) {
+    deletePanel(panel) {
+      const removeIndex = this.dashboard.panels.findIndex((p) => p.id === panel.id);
+      this.dashboard.panels.splice(removeIndex, 1);
+    },
+    addPanels(visualizations) {
       this.closeVisualizationDrawer();
 
-      return visualizations.map((viz) => createNewVisualizationPanel(viz));
+      const panels = visualizations.map((viz) => createNewVisualizationPanel(viz));
+      this.dashboard.panels.push(...panels);
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
@@ -458,8 +460,8 @@ export default {
             </div>
           </button>
 
-          <gridstack-wrapper :key="dashboardRenderKey" v-model="dashboard" :editing="editing">
-            <template #panel="{ panel, deletePanel }">
+          <gridstack-wrapper v-model="dashboard" :editing="editing">
+            <template #panel="{ panel }">
               <panels-base
                 :title="panel.title"
                 :visualization="panel.visualization"
@@ -470,17 +472,16 @@ export default {
                 @delete="deletePanel(panel)"
               />
             </template>
-            <template #drawer="{ addPanels }">
-              <available-visualizations-drawer
-                :visualizations="availableVisualizations.visualizations"
-                :loading="availableVisualizations.loading"
-                :has-error="availableVisualizations.hasError"
-                :open="visualizationDrawerOpen"
-                @select="(visualizations) => addPanels(createVisualizationPanels(visualizations))"
-                @close="closeVisualizationDrawer"
-              />
-            </template>
           </gridstack-wrapper>
+
+          <available-visualizations-drawer
+            :visualizations="availableVisualizations.visualizations"
+            :loading="availableVisualizations.loading"
+            :has-error="availableVisualizations.hasError"
+            :open="visualizationDrawerOpen"
+            @select="addPanels"
+            @close="closeVisualizationDrawer"
+          />
         </div>
       </div>
     </div>

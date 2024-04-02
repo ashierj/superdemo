@@ -244,6 +244,20 @@ describe('AnalyticsDashboard', () => {
 
       expect(findDashboard().exists()).toBe(true);
     });
+
+    it('should add unique panel ids to each panel', async () => {
+      createWrapper();
+
+      await waitForPromises();
+
+      expect(findDashboard().props().initialDashboard.panels).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.stringContaining('panel-'),
+          }),
+        ]),
+      );
+    });
   });
 
   describe('when dashboard fails to load', () => {
@@ -422,7 +436,15 @@ describe('AnalyticsDashboard', () => {
       });
 
       describe('with a valid dashboard', () => {
-        beforeEach(() => mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED })));
+        let originalPanels;
+
+        beforeEach(async () => {
+          await waitForPromises();
+
+          originalPanels = findDashboard().props().initialDashboard.panels;
+
+          await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+        });
 
         it('saves the dashboard and shows a success toast', () => {
           expect(saveCustomDashboard).toHaveBeenCalledWith({
@@ -448,6 +470,10 @@ describe('AnalyticsDashboard', () => {
             EVENT_LABEL_EDITED_DASHBOARD,
             expect.any(Object),
           );
+        });
+
+        it('persists the original panels array after saving', () => {
+          expect(findDashboard().props().initialDashboard.panels).toStrictEqual(originalPanels);
         });
       });
 
@@ -590,8 +616,14 @@ describe('AnalyticsDashboard', () => {
       });
 
       describe('when saving', () => {
-        beforeEach(() => {
-          return mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+        let originalPanels;
+
+        beforeEach(async () => {
+          await waitForPromises();
+
+          originalPanels = findDashboard().props().initialDashboard.panels;
+
+          await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
         });
 
         it('saves the dashboard as a new file', () => {
@@ -612,6 +644,10 @@ describe('AnalyticsDashboard', () => {
             EVENT_LABEL_CREATED_DASHBOARD,
             expect.any(Object),
           );
+        });
+
+        it('persists the original panels array after saving', () => {
+          expect(findDashboard().props().initialDashboard.panels).toStrictEqual(originalPanels);
         });
       });
     });

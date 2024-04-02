@@ -12,24 +12,29 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import { parsePanelToGridItem } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
 import { dashboard, builtinDashboard } from './mock_data';
 
 const mockGridSetStatic = jest.fn();
 const mockGridDestroy = jest.fn();
-jest.mock('gridstack', () => ({
-  GridStack: {
-    init: jest.fn(() => {
-      return {
-        on: jest.fn(),
-        destroy: mockGridDestroy,
-        makeWidget: jest.fn(),
-        setStatic: mockGridSetStatic,
-        removeWidget: jest.fn(),
-      };
-    }),
-  },
-}));
+const mockGridLoad = jest.fn();
+
+jest.mock('gridstack', () => {
+  const actualModule = jest.requireActual('gridstack');
+
+  return {
+    GridStack: {
+      init: jest.fn().mockImplementation((config) => {
+        const instance = actualModule.GridStack.init(config);
+        instance.load = mockGridLoad.mockImplementation(instance.load);
+        instance.setStatic = mockGridSetStatic;
+        instance.destroy = mockGridDestroy;
+        return instance;
+      }),
+    },
+  };
+});
 
 jest.mock('~/lib/utils/css_utils', () => ({
   loadCSSFile: jest.fn(),
@@ -39,7 +44,6 @@ describe('GridstackWrapper', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let panelSlots = [];
-  let drawerSlot;
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(GridstackWrapper, {
@@ -51,14 +55,14 @@ describe('GridstackWrapper', () => {
         panel(data) {
           panelSlots.push(data);
         },
-        drawer(data) {
-          drawerSlot = data;
-        },
       },
+      attachTo: document.body,
     });
   };
 
   const findGridStackPanels = () => wrapper.findAllByTestId('grid-stack-panel');
+  const findGridItemContentById = (panelId) =>
+    wrapper.find(`[gs-id="${panelId}"]`).find('.grid-stack-item-content');
   const findPanelById = (panelId) => wrapper.find(`#${panelId}`);
 
   afterEach(() => {
@@ -87,14 +91,51 @@ describe('GridstackWrapper', () => {
       });
     });
 
-    it('does not render the grab cursor on grid panels', () => {
+    it('loads the parsed dashboard config', () => {
+      expect(mockGridLoad).toHaveBeenCalledWith(dashboard.panels.map(parsePanelToGridItem));
+    });
+
+    it('does not render a the grab cursor on grid panels', () => {
       expect(findGridStackPanels().at(0).classes()).not.toContain('gl-cursor-grab');
     });
 
-    it('passes data to drawer slot', () => {
-      expect(drawerSlot).toStrictEqual({
-        addPanels: expect.any(Function),
+    it('renders a panel once it has been added', async () => {
+      const newPanel = createNewVisualizationPanel(builtinDashboard.panels[0].visualization);
+
+      expect(findPanelById(newPanel.id).exists()).toBe(false);
+
+      wrapper.setProps({
+        value: {
+          ...dashboard,
+          panels: [...dashboard.panels, newPanel],
+        },
       });
+
+      await waitForPromises();
+
+      const gridItem = findGridItemContentById(newPanel.id);
+      const panel = findPanelById(newPanel.id);
+
+      expect(panel.element.parentElement).toBe(gridItem.element);
+    });
+
+    it('does not render a removed panel', async () => {
+      const panelToRemove = dashboard.panels[0];
+
+      expect(findGridStackPanels()).toHaveLength(dashboard.panels.length);
+      expect(findPanelById(panelToRemove.id).exists()).toBe(true);
+
+      wrapper.setProps({
+        value: {
+          ...dashboard,
+          panels: dashboard.panels.filter((panel) => panel.id !== panelToRemove.id),
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findGridStackPanels()).toHaveLength(dashboard.panels.length - 1);
+      expect(findPanelById(panelToRemove.id).exists()).toBe(false);
     });
 
     describe.each(dashboard.panels.map((panel, index) => [panel, index]))(
@@ -103,22 +144,21 @@ describe('GridstackWrapper', () => {
         it('renders a grid panel', () => {
           const element = findGridStackPanels().at(index);
 
-          expect(element.attributes()).toMatchObject({
-            'gs-id': expect.stringContaining('panel-'),
-            'gs-h': `${panel.gridAttributes.height}`,
-            'gs-w': `${panel.gridAttributes.width}`,
-          });
+          expect(element.attributes().id).toContain('panel-');
         });
 
-        it('passes data to the panel slot', () => {
-          expect(panelSlots[index]).toStrictEqual({
-            panel: {
-              ...dashboard.panels[index],
-              id: expect.stringContaining('panel-'),
-            },
-            editing: false,
-            deletePanel: expect.any(Function),
-          });
+        it('sets the panel props on the panel slot', () => {
+          const { gridAttributes, ...panelProps } = panel;
+
+          expect(panelSlots[index]).toStrictEqual({ panel: panelProps });
+        });
+
+        it("renders the panel inside the grid item's content", async () => {
+          const gridItem = findGridItemContentById(panel.id);
+
+          await nextTick();
+
+          expect(findGridStackPanels().at(index).element.parentElement).toBe(gridItem.element);
         });
       },
     );
@@ -153,122 +193,47 @@ describe('GridstackWrapper', () => {
     });
   });
 
-  describe('when a panel is updated', () => {
-    let gridPanel;
-
-    beforeEach(() => {
+  describe('when the grid changes', () => {
+    beforeEach(async () => {
       loadCSSFile.mockResolvedValue();
       createWrapper();
 
-      gridPanel = findGridStackPanels().at(0);
+      await waitForPromises();
 
-      wrapper.vm.updatePanelWithGridStackItem({
-        id: gridPanel.attributes('id'),
-        x: 10,
-        y: 20,
-        w: 30,
-        h: 40,
+      const gridEl = wrapper.find('.grid-stack').element;
+      const event = new CustomEvent('change', {
+        detail: [
+          {
+            id: dashboard.panels[1].id,
+            x: 10,
+            y: 20,
+            w: 30,
+            h: 40,
+          },
+        ],
       });
-    });
 
-    it('updates the panels grid attributes', () => {
-      expect(gridPanel.attributes()).toMatchObject({
-        'gs-h': '40',
-        'gs-w': '30',
-        'gs-x': '10',
-        'gs-y': '20',
-      });
+      gridEl.dispatchEvent(event);
     });
 
     it('emits the changed dashboard object', () => {
-      expect(wrapper.emitted('input')).toMatchObject([
+      expect(wrapper.emitted('input')).toStrictEqual([
         [
           {
             ...dashboard,
             panels: [
+              dashboard.panels[0],
               {
-                ...dashboard.panels[0],
+                ...dashboard.panels[1],
                 gridAttributes: {
+                  ...dashboard.panels[1].gridAttributes,
                   xPos: 10,
                   yPos: 20,
                   width: 30,
                   height: 40,
                 },
               },
-              ...dashboard.panels.slice(1),
             ],
-          },
-        ],
-      ]);
-    });
-  });
-
-  describe('when panels are added', () => {
-    let newPanel;
-
-    beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-      createWrapper();
-
-      newPanel = createNewVisualizationPanel(builtinDashboard.panels[0].visualization);
-    });
-
-    it('adds panels to the dashboard', async () => {
-      expect(findGridStackPanels().length).toEqual(2);
-      expect(findPanelById(newPanel.id).exists()).toBe(false);
-
-      drawerSlot.addPanels([newPanel]);
-      await nextTick();
-
-      expect(findGridStackPanels().length).toEqual(3);
-      expect(findPanelById(newPanel.id).exists()).toBe(true);
-    });
-
-    it('emits the changed dashboard object', async () => {
-      drawerSlot.addPanels([newPanel]);
-      await nextTick();
-
-      expect(wrapper.emitted('input')).toMatchObject([
-        [
-          {
-            ...dashboard,
-            panels: [...dashboard.panels, newPanel],
-          },
-        ],
-      ]);
-    });
-  });
-
-  describe('when a panel is deleted', () => {
-    let removePanel;
-
-    beforeEach(() => {
-      loadCSSFile.mockResolvedValue();
-      createWrapper();
-
-      removePanel = panelSlots[0].panel;
-    });
-
-    it('should remove the panel from the dashboard', async () => {
-      expect(findGridStackPanels().length).toEqual(2);
-      expect(findPanelById(removePanel.id).exists()).toBe(true);
-
-      panelSlots[0].deletePanel(removePanel);
-      await nextTick();
-
-      expect(findGridStackPanels().length).toEqual(1);
-      expect(findPanelById(removePanel.id).exists()).toBe(false);
-    });
-
-    it('emits the changed dashboard object', async () => {
-      panelSlots[0].deletePanel(removePanel);
-      await nextTick();
-
-      expect(wrapper.emitted('input')).toMatchObject([
-        [
-          {
-            ...dashboard,
-            panels: dashboard.panels.slice(1),
           },
         ],
       ]);
