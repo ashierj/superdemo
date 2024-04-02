@@ -67,7 +67,8 @@ describe('ListMemberRoles', () => {
   const findModal = () => wrapper.findComponent(GlModal);
   const findTable = () => wrapper.findComponent(GlTable);
   const findCellByText = (text) => wrapper.findByRole('cell', { name: text });
-  const findCells = () => wrapper.findAllByRole('cell');
+  const findRowCell = ({ row = 0, cell }) =>
+    wrapper.findAll('tbody tr').at(row).findAll('td').at(cell);
 
   const expectSortableColumn = (fieldKey) => {
     const fields = findTable().props('fields');
@@ -225,8 +226,19 @@ describe('ListMemberRoles', () => {
       expectSortableColumn('baseAccessLevel');
     });
 
+    it.each`
+      row  | expectedDescription
+      ${0} | ${'Test description'}
+      ${1} | ${'No description'}
+    `(
+      'renders the description "$expectedDescription" for row $row',
+      ({ row, expectedDescription }) => {
+        expect(findRowCell({ row, cell: 2 }).text()).toBe(expectedDescription);
+      },
+    );
+
     it('shows list of permissions', () => {
-      const permissionsText = findCells().at(3).text();
+      const permissionsText = findRowCell({ cell: 4 }).text();
 
       expect(permissionsText).toContain('Read code');
       expect(permissionsText).toContain('Read vulnerability');

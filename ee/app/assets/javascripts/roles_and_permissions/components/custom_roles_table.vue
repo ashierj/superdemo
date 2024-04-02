@@ -6,7 +6,6 @@ import { TABLE_FIELDS } from '../constants';
 import CustomRolesActions from './custom_roles_actions.vue';
 
 export default {
-  name: 'CustomRolesTable',
   components: {
     GlTable,
     CustomRolesActions,
@@ -31,6 +30,11 @@ export default {
   <gl-table :fields="$options.TABLE_FIELDS" :items="customRoles" stacked="md">
     <template #cell(id)="{ item: { id } }">
       {{ $options.getIdFromGraphQLId(id) }}
+    </template>
+
+    <template #cell(description)="{ item: { description } }">
+      <template v-if="description">{{ description }}</template>
+      <span v-else class="gl-text-gray-400">{{ s__('MemberRole|No description') }}</span>
     </template>
 
     <template #cell(baseRole)="{ item: { baseAccessLevel } }">

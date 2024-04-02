@@ -19,8 +19,9 @@ import deleteMemberRoleMutation from '../graphql/delete_member_role.mutation.gra
 import CreateMemberRole from './create_member_role.vue';
 
 export const FIELDS = [
-  { key: 'name', label: s__('MemberRole|Name'), sortable: true },
   { key: 'id', label: s__('MemberRole|ID'), sortable: true },
+  { key: 'name', label: s__('MemberRole|Name'), sortable: true },
+  { key: 'description', label: s__('MemberRole|Description') },
   { key: 'baseAccessLevel', label: s__('MemberRole|Base role'), sortable: true },
   { key: 'permissions', label: s__('MemberRole|Permissions') },
   {
@@ -57,6 +58,7 @@ export default {
       'MemberRole|To delete custom role, remove role from all group members.',
     ),
     createSuccess: s__('MemberRole|Role successfully created.'),
+    noDescription: s__('MemberRole|No description'),
   },
   components: {
     CreateMemberRole,
@@ -104,10 +106,10 @@ export default {
 
         const memberRoles = nodes || [];
 
-        return memberRoles.map((member) => ({
+        return memberRoles.map(({ baseAccessLevel, enabledPermissions, ...member }) => ({
           ...member,
-          baseAccessLevel: ACCESS_LEVEL_LABELS[member.baseAccessLevel.integerValue],
-          permissions: member.enabledPermissions.nodes,
+          baseAccessLevel: ACCESS_LEVEL_LABELS[baseAccessLevel.integerValue],
+          permissions: enabledPermissions.nodes,
         }));
       },
       error() {
@@ -235,6 +237,10 @@ export default {
       </template>
       <template #cell(id)="{ item }">
         {{ $options.getIdFromGraphQLId(item.id) }}
+      </template>
+      <template #cell(description)="{ item: { description } }">
+        <template v-if="description">{{ description }}</template>
+        <span v-else class="gl-text-gray-400">{{ $options.i18n.noDescription }}</span>
       </template>
       <template #cell(baseAccessLevel)="{ item: { baseAccessLevel } }">
         <gl-badge class="gl-my-n4">{{ baseAccessLevel }}</gl-badge>
