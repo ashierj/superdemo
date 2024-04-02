@@ -11,7 +11,7 @@ import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
 
-import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import { createCubeApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
@@ -64,7 +64,7 @@ export default {
   },
   data() {
     return {
-      cubejsApi: createCubeJsApi(document.body.dataset.projectId),
+      cubeApi: createCubeApi(document.body.dataset.projectId),
       queryState: DEFAULT_VISUALIZATION_QUERY_STATE(),
       visualizationTitle: '',
       titleValidationError: null,
@@ -378,7 +378,7 @@ export default {
     <section class="gl-border-t gl-border-b gl-mb-6">
       <query-builder
         ref="builder"
-        :cubejs-api="cubejsApi"
+        :cube-api="cubeApi"
         :initial-viz-state="queryState"
         :query="queryState.query"
         :wrap-with-query-renderer="true"

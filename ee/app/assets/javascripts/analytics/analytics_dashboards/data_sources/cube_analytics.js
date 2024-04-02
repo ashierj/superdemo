@@ -1,4 +1,4 @@
-import { CubejsApi, HttpTransport } from '@cubejs-client/core';
+import { CubeApi, HttpTransport } from '@cubejs-client/core';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import csrf from '~/lib/utils/csrf';
@@ -135,8 +135,8 @@ const VISUALIZATION_PARSERS = {
   SingleStat: convertToSingleValue,
 };
 
-export const createCubeJsApi = (projectId) =>
-  new CubejsApi(CUBE_API_TOKEN, {
+export const createCubeApi = (projectId) =>
+  new CubeApi(CUBE_API_TOKEN, {
     transport: new HttpTransport({
       apiUrl: PRODUCT_ANALYTICS_CUBE_PROXY.replace(':id', projectId),
       method: 'POST',
@@ -157,7 +157,7 @@ export const fetch = async ({
   filters = {},
 }) => {
   const userQuery = buildCubeQuery(query, queryOverrides, filters);
-  const resultSet = await createCubeJsApi(projectId).load(userQuery, { castNumerics: true });
+  const resultSet = await createCubeApi(projectId).load(userQuery, { castNumerics: true });
 
   return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions);
 };
