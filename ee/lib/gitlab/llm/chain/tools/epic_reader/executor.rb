@@ -23,7 +23,7 @@ module Gitlab
                   The question is about an epic, so you need to use "EpicReader" tool.
                   Based on this information you can present final answer.
                 Action: EpicReader
-                ActionInput: Please identify the author of &123 epic.
+                Action Input: Please identify the author of &123 epic.
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
