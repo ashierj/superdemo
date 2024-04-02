@@ -35515,9 +35515,6 @@ msgstr ""
 msgid "Organization|Search for an organization"
 msgstr ""
 
-msgid "Organization|Search or filter list"
-msgstr ""
-
 msgid "Organization|Select an organization"
 msgstr ""
 
