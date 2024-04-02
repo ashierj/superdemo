@@ -8,7 +8,8 @@ module EE
     def issuable_sidebar_options(sidebar_data)
       super.merge(
         weightOptions: ::Issue.weight_options,
-        weightNoneValue: ::Issue::WEIGHT_NONE
+        weightNoneValue: ::Issue::WEIGHT_NONE,
+        multipleApprovalRulesAvailable: sidebar_data[:multiple_approval_rules_available]
       )
     end
 
