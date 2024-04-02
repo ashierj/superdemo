@@ -13,5 +13,6 @@ scope :users, module: :users do
     get :verify_credit_card
     post :verify_credit_card_captcha
     get :success
+    get :restricted
   end
 end

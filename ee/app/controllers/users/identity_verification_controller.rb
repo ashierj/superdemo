@@ -19,10 +19,11 @@ module Users
 
     skip_before_action :authenticate_user!
 
-    before_action :require_verification_user!
-    before_action :require_unverified_user!, except: [:verification_state, :success]
+    before_action :require_verification_user!, except: [:restricted]
+    before_action :require_unverified_user!, except: [:verification_state, :success, :restricted]
     before_action :load_captcha, :redirect_banned_user, only: [:show]
-    before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
+    before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session,
+      :restricted]
     before_action :ensure_verification_method_attempt_allowed!,
       only: PHONE_VERIFICATION_ACTIONS + CREDIT_CARD_VERIFICATION_ACTIONS
 
@@ -38,6 +39,10 @@ module Users
       # signed cookie exist with the info we need for migration.
       experiment(:signup_intent_step_one, actor: @user).run
       experiment(:signup_intent_step_one, actor: @user).track(:show, label: :identity_verification)
+    end
+
+    def restricted
+      render_404
     end
 
     def verification_state

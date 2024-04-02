@@ -186,6 +186,30 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       end
     end
 
+    describe '#restricted_country?' do
+      let(:country_code) { 'CN' }
+
+      subject(:restricted_country?) { helper.restricted_country?(country_code) }
+
+      context 'when the country is restricted' do
+        it { is_expected.to eq(true) }
+
+        context 'when the feature is disabled' do
+          before do
+            stub_feature_flags(prevent_registration_from_china: false)
+          end
+
+          it { is_expected.to eq(false) }
+        end
+      end
+
+      context 'when the country is not restricted' do
+        let(:country_code) { 'US' }
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
     private
 
     def expected_data

@@ -503,6 +503,16 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     end
   end
 
+  describe 'GET restricted' do
+    subject(:do_request) { get restricted_identity_verification_path }
+
+    it 'returns 404' do
+      do_request
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+  end
+
   describe 'GET verification_state' do
     subject(:do_request) { get verification_state_identity_verification_path }
 
