@@ -63,7 +63,7 @@ export const mockMemberRoles = {
             },
             id: 'gid://gitlab/MemberRole/2',
             name: 'Test 2',
-            description: 'Test description',
+            description: '',
             membersCount: 1,
             enabledPermissions: {
               nodes: [

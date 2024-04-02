@@ -6,21 +6,18 @@ import { mockMemberRoles } from '../mock_data';
 describe('CustomRolesTable', () => {
   let wrapper;
 
-  const mockCustomRoles = mockMemberRoles.data.namespace.memberRoles.nodes;
-  const mockCustomRole = mockCustomRoles[0];
+  const customRoles = mockMemberRoles.data.namespace.memberRoles.nodes;
 
-  const createComponent = (props = {}) => {
+  const createComponent = () => {
     wrapper = mountExtended(CustomRolesTable, {
-      propsData: {
-        customRoles: mockCustomRoles,
-        ...props,
-      },
+      propsData: { customRoles },
     });
   };
 
   const findHeaders = () => wrapper.find('thead').find('tr').findAll('th');
-  const findCells = () => wrapper.findAllByRole('cell');
-  const findActions = () => wrapper.findAllComponents(CustomRolesActions).at(0);
+  const findRowCell = ({ row = 0, cell }) =>
+    wrapper.findAll('tbody tr').at(row).findAll('td').at(cell);
+  const findActions = () => wrapper.findComponent(CustomRolesActions);
 
   beforeEach(() => {
     createComponent();
@@ -38,35 +35,39 @@ describe('CustomRolesTable', () => {
     });
 
     it('renders the id', () => {
-      expect(findCells().at(0).text()).toContain('1');
+      expect(findRowCell({ cell: 0 }).text()).toContain('1');
     });
 
     it('renders the name', () => {
-      expect(findCells().at(1).text()).toContain('Test');
+      expect(findRowCell({ cell: 1 }).text()).toContain('Test');
     });
 
-    it('renders the description', () => {
-      expect(findCells().at(2).text()).toContain('Test description');
-    });
+    it.each`
+      row  | expectedDescription
+      ${0} | ${'Test description'}
+      ${1} | ${'No description'}
+    `(
+      'renders the description "$expectedDescription" for row $row',
+      ({ row, expectedDescription }) => {
+        expect(findRowCell({ row, cell: 2 }).text()).toBe(expectedDescription);
+      },
+    );
 
     it('renders the base access level', () => {
-      expect(findCells().at(3).text()).toContain('Reporter');
+      expect(findRowCell({ cell: 3 }).text()).toContain('Reporter');
     });
 
     it('renders the permissions', () => {
-      expect(findCells().at(4).text()).toContain('Read code');
-      expect(findCells().at(4).text()).toContain('Read vulnerability');
+      expect(findRowCell({ cell: 4 }).text()).toContain('Read code');
+      expect(findRowCell({ cell: 4 }).text()).toContain('Read vulnerability');
     });
 
     it('renders the member count', () => {
-      expect(findCells().at(5).text()).toContain('0');
+      expect(findRowCell({ cell: 5 }).text()).toContain('0');
     });
 
     it('renders the actions', () => {
       expect(findActions().exists()).toBe(true);
-
-      expect(findCells().at(6).text()).toContain('Edit role');
-      expect(findCells().at(6).text()).toContain('Delete role');
     });
   });
 
@@ -76,7 +77,7 @@ describe('CustomRolesTable', () => {
     });
 
     it('emits `delete-role` event', () => {
-      expect(wrapper.emitted('delete-role')).toEqual([[mockCustomRole]]);
+      expect(wrapper.emitted('delete-role')[0][0]).toBe(customRoles[0]);
     });
   });
 });

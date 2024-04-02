@@ -218,8 +218,12 @@ export default {
         />
       </gl-form-group>
 
-      <gl-form-group class="col-lg-8" :label="$options.i18n.descriptionLabel">
-        <gl-form-textarea v-model="description" />
+      <gl-form-group
+        class="col-lg-8"
+        :label="$options.i18n.descriptionLabel"
+        label-for="description"
+      >
+        <gl-form-textarea id="description" v-model="description" />
       </gl-form-group>
     </div>
 
