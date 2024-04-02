@@ -158,12 +158,12 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
 
               params = { issuable_references: issues.map { |i| i.to_reference(full: true) } }
 
-              # threshold 24 because 6 queries are generated for each insert
-              # (savepoint, find, exists, relative_position get, insert, release savepoint)
+              # threshold 28 because ~5 queries are generated for each insert
+              # (work item parent link checks for sync, savepoint, find, exists, relative_position get, insert, release savepoint)
               # and we insert 5 issues instead of 1 which we do for control count
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(24)
+                .with_threshold(28)
             end
 
             context 'when epic has synced work item' do
@@ -237,14 +237,36 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                   described_class.new(another_epic, user, params).execute
                 end
 
-                let_it_be(:another_epic) { create(:epic, :with_synced_work_item, group: group) }
+                context 'and new parent has associated work item' do
+                  let_it_be(:another_epic) { create(:epic, :with_synced_work_item, group: group) }
 
-                it 'updates the existing link' do
-                  expect { subject }.not_to change { WorkItems::ParentLink.count }
-                  expect(subject[:status]).to eq(:success)
+                  it 'updates the existing link' do
+                    expect { subject }.not_to change { WorkItems::ParentLink.count }
+                    expect(subject[:status]).to eq(:success)
 
-                  expect(issue.reload.epic).to eq(another_epic)
-                  expect(WorkItem.find(issue.id).work_item_parent).to eq(another_epic.work_item)
+                    expect(issue.reload.epic).to eq(another_epic)
+                    expect(WorkItem.find(issue.id).work_item_parent).to eq(another_epic.work_item)
+                  end
+
+                  context 'when :epic_creation_with_synced_work_item FF is disabled' do
+                    it 'deletes old parent link' do
+                      stub_feature_flags(epic_creation_with_synced_work_item: false)
+
+                      expect { subject }.to change { WorkItems::ParentLink.count }.by(-1)
+                      expect(WorkItems::ParentLink.where(work_item_id: issue.id)).to be_empty
+                    end
+                  end
+                end
+
+                context 'and new parent does not have associated work item' do
+                  let_it_be(:another_epic) { create(:epic, group: group) }
+
+                  it 'deletes the old work item parent link' do
+                    expect { subject }.to change { WorkItems::ParentLink.count }.by(-1)
+                    expect(WorkItems::ParentLink.where(work_item_id: issue.id)).to be_empty
+                    expect(created_link.issue).to eq(issue)
+                    expect(created_link.epic).to eq(another_epic)
+                  end
                 end
               end
 

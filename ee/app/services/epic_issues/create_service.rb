@@ -21,7 +21,7 @@ module EpicIssues
         # As we change the epic before changing the `ParentLink` it would error.
         # We therefore run this in a transaction and skip the validation.
         link.work_item_syncing = true
-        create_synced_work_item_link!(link) if link.save
+        sync_work_item_link!(link) if link.save
       end
 
       ::GraphqlTriggers.issuable_epic_updated(referenced_issue) if transaction_result
@@ -73,9 +73,15 @@ module EpicIssues
       end
     end
 
-    def create_synced_work_item_link!(epic_issue_link)
-      return true unless issuable.group.epic_synced_with_work_item_enabled? && issuable.work_item
+    def sync_work_item_link!(epic_issue_link)
+      if issuable.group.epic_synced_with_work_item_enabled? && issuable.work_item
+        create_synced_work_item_link!(epic_issue_link)
+      else
+        delete_synced_work_item_link!(epic_issue_link)
+      end
+    end
 
+    def create_synced_work_item_link!(epic_issue_link)
       child_work_items = WorkItem.id_in(epic_issue_link.issue_id)
       response = ::WorkItems::ParentLinks::CreateService
                    .new(issuable.work_item, current_user, { target_issuable: child_work_items, synced_work_item: true })
@@ -86,6 +92,18 @@ module EpicIssues
       else
         sync_work_item_parent_error!(response[:message], epic_issue_link)
       end
+    end
+
+    def delete_synced_work_item_link!(epic_issue_link)
+      work_item_link = epic_issue_link.work_item.parent_link
+
+      return true unless work_item_link
+
+      ::WorkItems::ParentLinks::DestroyService.new(
+        work_item_link,
+        current_user,
+        synced_work_item: true
+      ).execute
     end
 
     def sync_relative_position!(epic_issue_link, work_item_link)
