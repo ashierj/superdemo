@@ -22,6 +22,10 @@ FactoryBot.define do
       remediation_byte_offsets { [{ "end_byte" => 13602, "start_byte" => 12719 }] }
     end
 
+    transient do
+      location { {} }
+    end
+
     trait :with_finding_data do
       finding_data do
         {
@@ -36,7 +40,7 @@ FactoryBot.define do
             }
           ],
           false_positive?: false_positive,
-          location: {},
+          location: location,
           evidence: {},
           assets: [],
           details: {},

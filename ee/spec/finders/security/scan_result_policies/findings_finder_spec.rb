@@ -146,5 +146,17 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
         it { is_expected.to be_empty }
       end
     end
+
+    context 'with uuids' do
+      let(:params) { { uuids: [dismissed_finding.uuid, container_scanning_finding.uuid] } }
+
+      it { is_expected.to contain_exactly(dismissed_finding, container_scanning_finding) }
+
+      context 'when it is an empty array' do
+        let(:params) { { uuids: [] } }
+
+        it { is_expected.to match_array(all_findings) }
+      end
+    end
   end
 end

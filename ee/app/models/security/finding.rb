@@ -120,6 +120,9 @@ module Security
     scope :with_issue_links, -> { with_vulnerability.includes(:issue_links) }
     scope :with_external_issue_links, -> { with_vulnerability.includes(:external_issue_links) }
     scope :with_merge_request_links, -> { with_vulnerability.includes(:merge_request_links) }
+    scope :with_scan_partition_number, -> do
+      with_scan.where(arel_table[:partition_number].eq(Security::Scan.arel_table[:findings_partition_number]))
+    end
     scope :deduplicated, -> { where(deduplicated: true) }
     scope :grouped_by_scan_type, -> { joins(:scan).group('security_scans.scan_type') }
     scope :false_positives, -> do

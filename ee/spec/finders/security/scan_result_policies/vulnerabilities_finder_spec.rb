@@ -207,6 +207,12 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesFinder, feature_cate
     end
   end
 
+  context 'when filtered by uuids' do
+    let(:filters) { { uuids: [vulnerability1.finding.uuid, vulnerability2.finding.uuid] } }
+
+    it { is_expected.to contain_exactly(vulnerability1, vulnerability2) }
+  end
+
   context 'when there are vulnerabilities on non default branches' do
     let_it_be(:vulnerability4) do
       create(:vulnerability, report_type: :dast, project: project, present_on_default_branch: false)

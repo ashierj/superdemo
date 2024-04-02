@@ -38,6 +38,7 @@ module Security
         findings = findings.non_false_positives if params[:false_positive] == false
         findings = findings.fix_available if params[:fix_available] == true
         findings = findings.no_fix_available if params[:fix_available] == false
+        findings = findings.with_scan_partition_number.by_uuid(params[:uuids]) if params[:uuids].present?
 
         findings
       end

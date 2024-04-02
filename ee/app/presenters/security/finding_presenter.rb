@@ -22,9 +22,5 @@ module Security
     def finding_path
       @finding_path ||= project_raw_path(finding.project, File.join(finding.sha, location[:file])).gsub(%r{^/}, '')
     end
-
-    def root_url
-      Gitlab::Routing.url_helpers.root_url
-    end
   end
 end
