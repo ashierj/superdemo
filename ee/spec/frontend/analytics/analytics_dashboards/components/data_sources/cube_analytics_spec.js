@@ -1,4 +1,4 @@
-import { CubejsApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
+import { CubeApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
 import { fetch } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import {
@@ -16,8 +16,8 @@ jest.mock('~/lib/utils/csrf', () => ({
 }));
 
 const itSetsUpCube = () => {
-  it('creates a new CubejsApi connection', () => {
-    expect(CubejsApi).toHaveBeenCalledWith('1', { transport: {} });
+  it('creates a new CubeApi connection', () => {
+    expect(CubeApi).toHaveBeenCalledWith('1', { transport: {} });
   });
 
   it('creates a new HttpTransport with the proxy URL and csrf headers', () => {
