@@ -47,21 +47,38 @@ module EE
       end
 
       def redirect_to_company_form?
-        trial? || convert_to_automatic_trial?
+        trial? || converted_to_automatic_trial?
+      end
+
+      def convert_to_automatic_trial?
+        return false if invite?
+
+        setup_for_company?
       end
 
       def invite?
-        members.any?
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # invited_registration_type? from this logic as we will be fully driving off the db value.
+        return invited_registration_type? if ::Feature.disabled?(:use_registration_type_db_value, user)
+
+        user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite] || invited_registration_type?
       end
-      alias_method :invited_registration_type?, :invite?
 
       def trial?
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # the params and stored location considerations as we will be fully driving off the db registration_type.
         return false unless enabled?
 
-        trial_from_params? || trial_from_stored_location?
+        if ::Feature.disabled?(:use_registration_type_db_value, user)
+          return trial_from_params? || trial_from_stored_location?
+        end
+
+        user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial] ||
+          trial_from_params? || trial_from_stored_location?
       end
 
       def oauth?
+        # During authorization for oauth, we want to allow it to finish.
         return false unless base_stored_user_location_path.present?
 
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.oauth_authorization_path
@@ -98,14 +115,18 @@ module EE
       def setup_for_company?
         ::Gitlab::Utils.to_boolean(params.dig(:user, :setup_for_company), default: false)
       end
-      alias_method :convert_to_automatic_trial?, :setup_for_company?
+      alias_method :converted_to_automatic_trial?, :setup_for_company?
 
       def enabled?
         self.class.enabled?
       end
 
       def subscription?
-        enabled? && subscription_from_stored_location?
+        return false unless enabled?
+        return subscription_from_stored_location? if ::Feature.disabled?(:use_registration_type_db_value, user)
+
+        user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription] ||
+          subscription_from_stored_location?
       end
 
       def iterable_product_interaction
@@ -117,11 +138,21 @@ module EE
       end
 
       def company_lead_product_interaction
-        if trial?
+        if trial? && initial_trial?
           PRODUCT_INTERACTION[:trial]
         else
           PRODUCT_INTERACTION[:automatic_trial]
         end
+      end
+
+      def trial_from_the_beginning?
+        # We do not need to consider trial_from_stored_location? here as this is only used in the
+        # identity_verification area and this method is not called there.
+        # TODO: We can simplify/remove this method once we cutover to DB only solution as the next step in
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/435745.
+        return trial_from_params? if ::Feature.disabled?(:use_registration_type_db_value, user)
+
+        trial_from_params? || (user.onboarding_status_initial_registration_type.present? && initial_trial?)
       end
 
       def eligible_for_iterable_trigger?
@@ -173,9 +204,25 @@ module EE
       alias_method :trial_from_params?, :trial_registration_type?
 
       def subscription_registration_type?
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # subscription_from_stored_location? alias and use as we will drive off the DB.
+        # This method will need to remain though long term.
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path
       end
       alias_method :subscription_from_stored_location?, :subscription_registration_type?
+
+      def invited_registration_type?
+        members.any?
+      end
+
+      def initial_trial?
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # return true condition here and simplify this area as we drive off the db values.
+        return true if ::Feature.disabled?(:use_registration_type_db_value, user)
+        return true unless user.onboarding_status_initial_registration_type
+
+        user.onboarding_status_initial_registration_type == REGISTRATION_TYPE[:trial]
+      end
 
       def base_stored_user_location_path
         return unless stored_user_location
@@ -189,6 +236,10 @@ module EE
       end
 
       def trial_from_stored_location?
+        # TODO: See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/143148
+        # This is used for detection of proper tracking in the identity_verification
+        # area. We can also look to remove this in the next step where we rely
+        # on the database in https://gitlab.com/gitlab-org/gitlab/-/issues/435745.
         return false unless session
 
         # for regular signup it will be in `redirect`, but for SSO it will be in `user`

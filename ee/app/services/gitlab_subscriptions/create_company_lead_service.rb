@@ -3,7 +3,8 @@
 module GitlabSubscriptions
   class CreateCompanyLeadService
     def initialize(user:, params:)
-      merged_params = params.merge(hardcoded_values).merge(user_values(user))
+      @user = user
+      merged_params = params.merge(hardcoded_values).merge(user_values)
       @params = remapping_for_api(merged_params)
     end
 
@@ -17,6 +18,8 @@ module GitlabSubscriptions
 
     private
 
+    attr_reader :user
+
     def hardcoded_values
       {
         provider: 'gitlab',
@@ -25,7 +28,7 @@ module GitlabSubscriptions
       }
     end
 
-    def user_values(user)
+    def user_values
       {
         uid: user.id,
         work_email: user.email,
@@ -42,7 +45,10 @@ module GitlabSubscriptions
     end
 
     def build_product_interaction
-      @product_interaction = ::Onboarding::Status.new(@params, nil, nil).company_lead_product_interaction
+      @product_interaction = ::Onboarding::Status.new(@params, nil, user).company_lead_product_interaction
+      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+      # reliance on passing of trial once we cut over to fully use db solution as this is merely tracking initial
+      # trial and so we can merely call that in the places that consume this.
       @params.delete(:trial)
     end
   end

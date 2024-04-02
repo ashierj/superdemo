@@ -434,11 +434,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               }.merge(trial_concerns)
             end
 
-            before do
-              patch_update
-            end
-
             it 'redirects to the company path and stores the url' do
+              patch_update
               user.reload
 
               expect(user.onboarding_in_progress).to be(true)
@@ -450,6 +447,10 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
             context 'with trial param sent with update' do
               let(:trial_concerns) { extra_params }
+
+              before do
+                patch_update
+              end
 
               context 'with trial as true' do
                 let(:extra_params) { { trial: 'true' } }
@@ -465,6 +466,20 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                 it 'does not include the trial param in the redirect path' do
                   expect(response).to redirect_to redirect_path
                 end
+              end
+            end
+
+            context 'when user is an invite flow eligible registration' do
+              before do
+                create(:group_member, source: group, user: user)
+              end
+
+              it 'does not convert to a trial' do
+                patch_update
+                user.reload
+
+                expect(user.onboarding_status_registration_type)
+                  .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:invite])
               end
             end
           end

@@ -57,6 +57,9 @@ module Registrations
     end
 
     def update_params
+      # TODO: this is getting hit 3 times at least due to calls to it.
+      # There likely isn't any perf impact, but should we look to memoize in a
+      # future step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745?
       params.require(:user)
             .permit(:role, :setup_for_company, :registration_objective, :onboarding_status_email_opt_in)
             .merge(onboarding_status_params)
@@ -76,6 +79,9 @@ module Registrations
       update_params.slice(:role, :registration_objective)
                    .merge(params.permit(:jobs_to_be_done_other))
                    .merge(glm_tracking_params)
+                   # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove this
+                   # passing of trial once we cut over to fully use db solution as this is merely tracking initial
+                   # trial and so we can merely call that in the places that consume this.
                    .merge(params.permit(:trial))
     end
 
