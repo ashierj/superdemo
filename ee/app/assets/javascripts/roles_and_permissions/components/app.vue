@@ -32,7 +32,7 @@ export default {
     CustomRolesTable,
     CustomRolesDeleteModal,
   },
-  inject: ['documentationPath', 'groupFullPath'],
+  inject: ['documentationPath', 'groupFullPath', 'newRolePath'],
   data() {
     return {
       customRoles: [],
@@ -145,7 +145,7 @@ export default {
         <h1 class="gl-font-size-h-display gl-m-0 gl-mr-auto gl-white-space-nowrap">
           {{ $options.i18n.title }}
         </h1>
-        <gl-button variant="confirm">
+        <gl-button :href="newRolePath" variant="confirm">
           {{ $options.i18n.newRoleText }}
         </gl-button>
       </div>

@@ -40,7 +40,7 @@ export const initCustomRolesApp = () => {
     return null;
   }
 
-  const { documentationPath, emptyStateSvgPath, groupFullPath } = el.dataset;
+  const { documentationPath, emptyStateSvgPath, groupFullPath, newRolePath } = el.dataset;
 
   return new Vue({
     el,
@@ -50,6 +50,7 @@ export const initCustomRolesApp = () => {
       documentationPath,
       emptyStateSvgPath,
       groupFullPath,
+      newRolePath,
     },
     render(createElement) {
       return createElement(CustomRolesApp);

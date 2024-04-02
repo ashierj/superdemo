@@ -23,8 +23,8 @@ RSpec.describe 'Member Roles', :js, feature_category: :permissions do
 
   def create_role(access_level, name, description, permissions)
     click_button 'New role'
-    select access_level, from: 'Base role to use as template'
-    fill_in 'Role name', with: name
+    select access_level, from: 'Base role'
+    fill_in 'Name', with: name
     fill_in 'Description', with: description
     permissions.each do |permission|
       page.check permission

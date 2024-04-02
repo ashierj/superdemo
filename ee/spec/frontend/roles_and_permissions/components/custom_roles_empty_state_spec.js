@@ -10,6 +10,7 @@ describe('CustomRolesEmptyState', () => {
       provide: {
         documentationPath: 'http://foo.bar',
         emptyStateSvgPath: 'empty.svg',
+        newRolePath: 'new/role/path',
       },
     });
   };
@@ -26,7 +27,7 @@ describe('CustomRolesEmptyState', () => {
     expect(findEmptyState().props()).toMatchObject({
       title: 'Create custom roles',
       svgPath: 'empty.svg',
-      primaryButtonLink: '#',
+      primaryButtonLink: 'new/role/path',
       primaryButtonText: 'New role',
     });
 

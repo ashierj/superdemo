@@ -214,6 +214,7 @@ export default {
       <create-member-role
         :group-full-path="groupFullPath"
         :available-permissions="availablePermissions"
+        embedded
         @cancel="showCreateMemberForm = false"
         @success="onCreatedMemberRole"
       />

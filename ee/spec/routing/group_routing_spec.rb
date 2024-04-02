@@ -110,7 +110,7 @@ RSpec.describe 'Group routing', "routing" do
 
   describe Groups::Settings::RolesAndPermissionsController, 'routing' do
     it 'routes to the new member role' do
-      expect(get('/groups/gitlabhq/-/settings/roles_and_permissions/new')).to route_to('groups/settings/roles_and_permissions#index', group_id: 'gitlabhq', vueroute: 'new')
+      expect(get('/groups/gitlabhq/-/settings/roles_and_permissions/new')).to route_to('groups/settings/roles_and_permissions#new', group_id: 'gitlabhq')
     end
   end
 end

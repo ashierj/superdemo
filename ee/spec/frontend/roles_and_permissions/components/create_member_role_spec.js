@@ -1,7 +1,6 @@
 import {
   GlFormInput,
   GlFormSelect,
-  GlFormTextarea,
   GlFormCheckbox,
   GlFormCheckboxGroup,
   GlSkeletonLoader,
@@ -16,6 +15,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
 import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
+import { visitUrl } from '~/lib/utils/url_utility';
 import { mockPermissions, mockDefaultPermissions } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -25,6 +25,11 @@ jest.mock('~/alert', () => ({
   createAlert: jest.fn().mockImplementation(() => ({
     dismiss: mockAlertDismiss,
   })),
+}));
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn(),
 }));
 
 describe('CreateMemberRole', () => {
@@ -41,9 +46,10 @@ describe('CreateMemberRole', () => {
     mutationMock = mutationSuccessHandler,
     availablePermissionsHandler = defaultAvailablePermissionsHandler,
     groupFullPath = 'test-group',
+    embedded = false,
   } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
-      propsData: { groupFullPath },
+      propsData: { groupFullPath, embedded, listPagePath: 'http://list/page/path' },
       stubs,
       apolloProvider: createMockApollo([
         [memberRolePermissionsQuery, availablePermissionsHandler],
@@ -56,16 +62,16 @@ describe('CreateMemberRole', () => {
 
   const findButtonSubmit = () => wrapper.findByTestId('submit-button');
   const findButtonCancel = () => wrapper.findByTestId('cancel-button');
-  const findNameField = () => wrapper.findComponent(GlFormInput);
+  const findNameField = () => wrapper.findAllComponents(GlFormInput).at(0);
   const findCheckboxes = () => wrapper.findAllComponents(GlFormCheckbox);
   const findSelect = () => wrapper.findComponent(GlFormSelect);
-  const findTextArea = () => wrapper.findComponent(GlFormTextarea);
+  const findDescriptionField = () => wrapper.findAllComponents(GlFormInput).at(1);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
 
   const fillForm = () => {
     findSelect().setValue('GUEST');
     findNameField().setValue('My role name');
-    findTextArea().setValue('My description');
+    findDescriptionField().setValue('My description');
     findCheckboxes().at(0).find('input').setChecked();
 
     return nextTick();
@@ -90,14 +96,24 @@ describe('CreateMemberRole', () => {
     ]);
   });
 
-  it('emits cancel event when the cancel button is clicked', () => {
+  it('navigates back to list page when cancel button is clicked', () => {
     createComponent();
-
-    expect(wrapper.emitted('cancel')).toBeUndefined();
 
     findButtonCancel().trigger('click');
 
-    expect(wrapper.emitted('cancel')).toHaveLength(1);
+    expect(visitUrl).toHaveBeenCalledWith('http://list/page/path');
+  });
+
+  describe('embedded mode', () => {
+    it('emits cancel event when the cancel button is clicked', () => {
+      createComponent({ embedded: true });
+
+      expect(wrapper.emitted('cancel')).toBeUndefined();
+
+      findButtonCancel().trigger('click');
+
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
+    });
   });
 
   describe('available permissions', () => {
@@ -217,17 +233,25 @@ describe('CreateMemberRole', () => {
   });
 
   describe('when create role succeeds', () => {
-    beforeEach(async () => {
+    it('redirects to the list page path', async () => {
       await createComponent();
       await fillForm();
-    });
-
-    it('emits success event', async () => {
-      expect(wrapper.emitted('success')).toBeUndefined();
-
       await submitForm(waitForPromises);
 
-      expect(wrapper.emitted('success')).toHaveLength(1);
+      expect(visitUrl).toHaveBeenCalledWith('http://list/page/path');
+    });
+
+    describe('embedded mode', () => {
+      it('emits success event', async () => {
+        await createComponent({ embedded: true });
+        await fillForm();
+
+        expect(wrapper.emitted('success')).toBeUndefined();
+
+        await submitForm(waitForPromises);
+
+        expect(wrapper.emitted('success')).toHaveLength(1);
+      });
     });
   });
 

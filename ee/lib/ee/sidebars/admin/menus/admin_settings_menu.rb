@@ -30,7 +30,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Roles and Permissions'),
               link: admin_application_settings_roles_and_permissions_path,
-              active_routes: { path: 'admin/application_settings/roles_and_permissions#index' },
+              active_routes: { controller: :roles_and_permissions },
               item_id: :roles_and_permissions
             )
           end
