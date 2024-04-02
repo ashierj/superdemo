@@ -3,10 +3,13 @@
 module Gitlab
   module GitGuardian
     class Client
+      include ActionView::Helpers::TextHelper
+
       API_URL = "https://api.gitguardian.com/v1/multiscan"
       TIMEOUT = 5.seconds
       BATCH_SIZE = 20
       FILENAME_LIMIT = 256
+      NA = 'N/A'
 
       Error = Class.new(StandardError)
       ConfigError = Class.new(Error)
@@ -50,8 +53,7 @@ module Gitlab
           end
 
           response = perform_request(params)
-          blobs_paths = blobs_batch.map(&:path)
-          policy_breaks = process_response(response, blobs_paths)
+          policy_breaks = process_response(response, blobs_batch)
 
           policy_breaks.presence
         end
@@ -89,25 +91,85 @@ module Gitlab
         }
       end
 
-      def process_response(response, file_paths)
+      def process_response(response, blobs)
         parsed_response = Gitlab::Json.parse(response.body)
 
-        parsed_response.map.with_index do |policy_break_for_file, blob_index|
+        parsed_response.filter_map.with_index do |policy_break_for_file, blob_index|
           next if policy_break_for_file['policy_break_count'] == 0
 
-          file_path = file_paths[blob_index]
+          blob = blobs[blob_index]
 
-          policy_break_for_file['policy_breaks'].map do |policy_break|
-            violation_match = policy_break['matches'].first
-            match_type = violation_match['type']
-            match_value = violation_match['match']
-            file_path_substring = file_path.present? ? " at '#{file_path}'" : ''
+          next unless blob
 
-            "#{policy_break['policy']} policy violated#{file_path_substring} for #{match_type} '#{match_value}'"
-          end
-        end.compact.flatten
+          formatted_errors_for_file(policy_break_for_file['policy_breaks'], blob)
+        end
       rescue JSON::ParserError
         raise Error, 'invalid response format'
+      end
+
+      # Format the message with indentation to print it like:
+      #
+      # remote: GitLab: .env: 1 incident detected:
+      # remote:
+      # remote:  >> Filenames: .env
+      # remote:     Validity: N/A
+      # remote:     Known by GitGuardian: N/A
+      # remote:     Incident URL: N/A
+      # remote:     Violation: filename `.env` detected
+      def formatted_errors_for_file(policy_breaks, blob)
+        result = "#{blob.path}: #{pluralize(policy_breaks.size, 'incident')} detected:\n\n"
+
+        error_output_for_file(policy_breaks, blob).each do |messages|
+          result << " >> "
+          result << messages.join("\n    ")
+          result << "\n\n"
+        end
+
+        result
+      end
+
+      def error_output_for_file(policy_breaks, blob)
+        policy_breaks.map do |policy_break|
+          result = [
+            "#{policy_break['policy']}: #{policy_break['type']}",
+            "Validity: #{policy_break['validity']&.humanize || NA}",
+            "Known by GitGuardian: #{Gitlab::Utils.boolean_to_yes_no(policy_break['known_secret'])}",
+            "Incident URL: #{policy_break['incident_url'].presence || NA}"
+          ]
+
+          blob_lines = blob.lines
+
+          policy_break['matches'].each do |violation_match|
+            type, match = violation_match.values_at('type', 'match')
+            result << "Violation: #{type} `#{match}` detected"
+
+            next unless violation_match['line_start'].present?
+
+            line_start = violation_match['line_start']
+            line_end = violation_match['line_end'] || line_start
+
+            (line_start..line_end).each do |line_number|
+              # line_start field index origin is 1
+              line = blob_lines[line_number - 1]
+
+              next unless line && line.index(match)
+
+              # Prefix the printed line with the line number and
+              # print the match type underneath the matched value
+              #
+              # Violation: password `password` detected
+              # 201 | url = 'http://user:password123456@hi.gitlab.com/hello.json'
+              #                          |__password__|
+              line_number_prefix = "#{line_number} | "
+              result << "#{line_number_prefix}#{line}"
+
+              index_start = line_number_prefix.size + line.index(match)
+              result << "#{' ' * index_start}|#{type.center(match.size - 2, '_')}|"
+            end
+          end
+
+          result
+        end
       end
     end
   end

@@ -126,13 +126,31 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
     end
 
     context 'with policy breaking blobs' do
-      let(:file_paths) { %w[test_path/file.md lib/.env] }
+      let(:file_paths) { %w[file.md .env] }
+
+      let(:blobs) do
+        document_with_policy_breaks = <<~DOCUMENT
+          import urllib.request
+          url = 'http://simple_username:simple_password@hi@gitlab.com/hello.json'
+          response = urllib.request.urlopen(url)
+          consume(response.read())
+        DOCUMENT
+
+        blob_with_policy_breaks = fake_blob(
+          path: ".env",
+          data: document_with_policy_breaks
+        )
+
+        [
+          fake_blob(path: "file.md"),
+          blob_with_policy_breaks
+        ]
+      end
 
       let(:request_body) do
-        [
-          { document: 'foo', filename: 'file.md' },
-          { document: 'foo', filename: '.env' }
-        ]
+        blobs.map do |blob|
+          { document: blob.data, filename: blob.name }
+        end
       end
 
       let(:stubbed_response) do
@@ -169,12 +187,30 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
                 type: "Basic Auth String",
                 policy: "Secrets detection",
                 validity: "cannot_check",
+                known_secret: true,
+                incident_url: 'https://incident.example.com',
                 matches: [
                   {
                     type: "username",
-                    match: "jen_barber",
-                    index_start: 52,
+                    match: "simple_username",
+                    index_start: 37,
+                    index_end: 45,
+                    line_start: 2,
+                    line_end: 2
+                  },
+                  {
+                    type: "password",
+                    match: "simple_password",
+                    index_start: 46,
                     index_end: 61,
+                    line_start: 2,
+                    line_end: 2
+                  },
+                  {
+                    type: "host",
+                    match: "hi@gitlab.com",
+                    index_start: 62,
+                    index_end: 70,
                     line_start: 2,
                     line_end: 2
                   }
@@ -186,10 +222,33 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
       end
 
       it 'returns appropriate error messages' do
-        expect(client_response).to eq [
-          "Filenames policy violated at 'lib/.env' for filename '.env'",
-          "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
-        ]
+        expected_message = <<~POLICY_BREAKS
+          .env: 2 incidents detected:
+
+           >> Filenames: .env
+              Validity: N/A
+              Known by GitGuardian: No
+              Incident URL: N/A
+              Violation: filename `.env` detected
+
+           >> Secrets detection: Basic Auth String
+              Validity: Cannot check
+              Known by GitGuardian: Yes
+              Incident URL: https://incident.example.com
+              Violation: username `simple_username` detected
+              2 | url = 'http://simple_username:simple_password@hi@gitlab.com/hello.json'
+                                |__username___|
+              Violation: password `simple_password` detected
+              2 | url = 'http://simple_username:simple_password@hi@gitlab.com/hello.json'
+                                                |__password___|
+              Violation: host `hi@gitlab.com` detected
+              2 | url = 'http://simple_username:simple_password@hi@gitlab.com/hello.json'
+                                                                |___host____|
+
+        POLICY_BREAKS
+
+        expect(client_response).to eq [expected_message]
+
         expect(guardian_api_request).to have_been_requested
       end
     end
@@ -198,8 +257,15 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
       let(:blobs) { Array.new(46) { |i| fake_blob(path: "fake_path#{i}.txt") } }
       let(:policies_breaks_message) do
         [
-          "Filenames policy violated at 'lib/.env' for filename '.env'",
-          "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
+          <<~POLICY_BREAK
+          .env: 2 incidents detected:
+
+           >> Filenames: .env
+              Validity: N/A
+              Known by GitGuardian: No
+              Incident URL: N/A
+              Violation: filename `.env` detected
+          POLICY_BREAK
         ]
       end
 
@@ -214,10 +280,7 @@ RSpec.describe ::Gitlab::GitGuardian::Client, feature_category: :source_code_man
       end
 
       it 'returns appropriate error messages' do
-        expect(client_response).to eq [
-          "Filenames policy violated at 'lib/.env' for filename '.env'",
-          "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
-        ]
+        expect(client_response).to eq policies_breaks_message
         expect(guardian_api_request).to have_been_requested.times(3)
       end
     end
