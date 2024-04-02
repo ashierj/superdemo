@@ -1,15 +1,14 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
-import searchProjectUsers from '~/graphql_shared/queries/users_search.query.graphql';
+import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
 import { s__ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 import UserAvatarImage from '~/vue_shared/components/user_avatar/user_avatar_image.vue';
 import { setError } from '~/boards/graphql/cache_updates';
 
-import { AssigneesPreset, ANY_ASSIGNEE } from '../constants';
+import { AssigneesPreset, ANY_ASSIGNEE, BoardType } from '../constants';
 
 export default {
   AssigneesPreset,
@@ -42,22 +41,22 @@ export default {
   apollo: {
     searchUsers: {
       query() {
-        return this.isProjectBoard ? searchProjectUsers : searchGroupUsers;
+        return usersAutocompleteQuery;
       },
       variables() {
         return {
           fullPath: this.fullPath,
           search: this.search,
-          first: 20,
+          isProject: this.isProjectBoard,
         };
       },
       skip() {
         return !this.isEditing;
       },
       update(data) {
-        // TODO Remove null filter (BE fix required)
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/329750
-        return data.workspace?.users?.nodes.filter((x) => x?.user).map(({ user }) => user) || [];
+        const namespace = this.isProjectBoard ? BoardType.project : BoardType.group;
+
+        return data[namespace]?.autocompleteUsers;
       },
       debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
       error(error) {
