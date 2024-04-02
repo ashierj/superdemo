@@ -207,7 +207,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
     context 'when notifications have been disabled' do
       before do
-        group.update_attribute(:emails_disabled, true)
+        group.update_attribute(:emails_enabled, false)
 
         refresh_and_click_first_card
       end

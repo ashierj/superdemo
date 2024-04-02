@@ -57,7 +57,7 @@ function mountBoardApp(el) {
       timeTrackingLimitToHours: parseBoolean(el.dataset.timeTrackingLimitToHours),
       boardWeight: el.dataset.boardWeight ? parseInt(el.dataset.boardWeight, 10) : null,
       issuableType: TYPE_EPIC,
-      emailsDisabled: parseBoolean(el.dataset.emailsDisabled),
+      emailsDisabled: !parseBoolean(el.dataset.emailsEnabled),
       hasMissingBoards: parseBoolean(el.dataset.hasMissingBoards),
       weights: JSON.parse(el.dataset.weights),
       isIssueBoard: false,
