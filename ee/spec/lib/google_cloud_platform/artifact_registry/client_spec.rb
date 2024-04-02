@@ -18,13 +18,20 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
   let(:artifact_registry_location) { artifact_registry_integration&.artifact_registry_location }
   let(:artifact_registry_repository) { artifact_registry_integration&.artifact_registry_repository }
   let(:client) { described_class.new(wlif_integration: wlif_integration, user: user) }
+  let(:expected_metadata) { { 'user-agent' => "gitlab-rails-dot-com:google-cloud-integration/#{Gitlab::VERSION}" } }
 
   shared_context 'with a client double' do
-    let(:client_double) { instance_double('::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client') }
     let(:config_double) do
       instance_double('Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client::Configuration')
     end
 
+    let(:rpcs_double) do
+      instance_double('Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client::Configuration::Rpcs')
+    end
+
+    let(:rpc_list_docker_images_double) { instance_double('Gapic::Config::Method') }
+    let(:rpc_get_docker_image_double) { instance_double('Gapic::Config::Method') }
+    let(:client_double) { instance_double('::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client') }
     let(:dummy_response) { Object.new }
 
     before do
@@ -34,6 +41,11 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
 
       allow(config_double).to receive(:credentials=)
         .with(instance_of(::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Credentials))
+      allow(config_double).to receive(:rpcs).and_return(rpcs_double)
+      allow(rpcs_double).to receive(:list_docker_images).and_return(rpc_list_docker_images_double)
+      allow(rpcs_double).to receive(:get_docker_image).and_return(rpc_get_docker_image_double)
+      allow(rpc_list_docker_images_double).to receive(:metadata=)
+      allow(rpc_get_docker_image_double).to receive(:metadata=)
       allow(::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Client).to receive(:new) do |_, &block|
         block.call(config_double)
         client_double
@@ -96,6 +108,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
 
     shared_examples 'returning the expected response' do |expected_page_size: described_class::DEFAULT_PAGE_SIZE|
       it 'returns the expected response' do
+        expect(rpc_list_docker_images_double).to receive(:metadata=).with(expected_metadata)
         expect(client_double).to receive(:list_docker_images) do |request|
           expect(request).to be_a ::Google::Cloud::ArtifactRegistry::V1::ListDockerImagesRequest
           expect(request.page_size).to eq(expected_page_size)
@@ -140,6 +153,7 @@ RSpec.describe GoogleCloudPlatform::ArtifactRegistry::Client, feature_category: 
     subject(:docker_image) { client.docker_image(name: name) }
 
     it 'returns the expected response' do
+      expect(rpc_get_docker_image_double).to receive(:metadata=).with(expected_metadata)
       expect(client_double).to receive(:get_docker_image) do |request|
         expect(request).to be_a ::Google::Cloud::ArtifactRegistry::V1::GetDockerImageRequest
         expect(request.name).to eq(name)

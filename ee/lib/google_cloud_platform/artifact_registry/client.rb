@@ -125,12 +125,20 @@ module GoogleCloudPlatform
             scope: CLOUD_PLATFORM_SCOPE
           )
           config.credentials = ::Google::Cloud::ArtifactRegistry::V1::ArtifactRegistry::Credentials.new(ext_credentials)
+          config.rpcs.list_docker_images.metadata = user_agent_metadata
+          config.rpcs.get_docker_image.metadata = user_agent_metadata
         end
       end
       strong_memoize_attr :client
 
       def artifact_registry_integration
         project.google_cloud_platform_artifact_registry_integration
+      end
+
+      def user_agent_metadata
+        user_agent = "gitlab-rails-dot-com:google-cloud-integration/#{Gitlab::VERSION}"
+
+        { 'user-agent' => user_agent }
       end
     end
   end
