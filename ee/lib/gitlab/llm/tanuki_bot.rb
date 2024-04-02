@@ -26,8 +26,6 @@ module Gitlab
       end
 
       def self.show_breadcrumbs_entry_point?(user:, container: nil)
-        return false unless Feature.enabled?(:tanuki_bot_breadcrumbs_entry_point, user)
-
         enabled_for?(user: user, container: container)
       end
 
