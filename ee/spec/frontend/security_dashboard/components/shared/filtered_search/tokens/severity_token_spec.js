@@ -1,12 +1,18 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueRouter from 'vue-router';
 import SeverityToken from 'ee/security_dashboard/components/shared/filtered_search/tokens/severity_token.vue';
+import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
+import eventHub from 'ee/security_dashboard/components/shared/filtered_search/event_hub';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+Vue.use(VueRouter);
+
 describe('Severity Token component', () => {
   let wrapper;
+  let router;
 
   const mockConfig = {
     multiSelect: true,
@@ -20,7 +26,10 @@ describe('Severity Token component', () => {
     stubs,
     mountFn = shallowMountExtended,
   } = {}) => {
+    router = new VueRouter({ mode: 'history' });
+
     wrapper = mountFn(SeverityToken, {
+      router,
       propsData: {
         config: mockConfig,
         value,
@@ -36,8 +45,10 @@ describe('Severity Token component', () => {
     });
   };
 
+  const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
   const findFilteredSearchToken = () => wrapper.findComponent(GlFilteredSearchToken);
   const findCheckedIcon = (value) => wrapper.findByTestId(`severity-icon-${value}`);
+  const isOptionChecked = (v) => !findCheckedIcon(v).classes('gl-visibility-hidden');
 
   const clickDropdownItem = async (...ids) => {
     await Promise.all(
@@ -47,11 +58,14 @@ describe('Severity Token component', () => {
       }),
     );
 
+    findFilteredSearchToken().vm.$emit('complete');
     await nextTick();
   };
 
   const allOptionsExcept = (value) => {
-    return SeverityToken.items.map((i) => i.value).filter((i) => i !== value);
+    const exempt = Array.isArray(value) ? value : [value];
+
+    return SeverityToken.items.map((i) => i.value).filter((i) => !exempt.includes(i));
   };
 
   describe('default view', () => {
@@ -98,8 +112,6 @@ describe('Severity Token component', () => {
     });
 
     it('toggles the item selection when clicked on', async () => {
-      const isOptionChecked = (v) => !findCheckedIcon(v).classes('gl-visibility-hidden');
-
       await clickDropdownItem('CRITICAL', 'HIGH');
 
       expect(isOptionChecked('ALL')).toBe(false);
@@ -129,6 +141,18 @@ describe('Severity Token component', () => {
         expect(isOptionChecked(value)).toBe(false);
       });
     });
+
+    it('emits filters-changed event when a filter is selected', async () => {
+      const spy = jest.fn();
+      eventHub.$on('filters-changed', spy);
+
+      // Select 2 states
+      await clickDropdownItem('MEDIUM', 'HIGH');
+
+      expect(spy).toHaveBeenCalledWith({
+        severity: ['MEDIUM', 'HIGH'],
+      });
+    });
   });
 
   describe('toggle text', () => {
@@ -156,6 +180,43 @@ describe('Severity Token component', () => {
     it('shows "Low" when only low severity is selected', async () => {
       await clickDropdownItem('LOW');
       expect(findSlotView().text()).toBe('Low');
+    });
+  });
+
+  describe('QuerystringSync component', () => {
+    beforeEach(() => {
+      createWrapper({});
+    });
+
+    it('has expected props', () => {
+      expect(findQuerystringSync().props()).toMatchObject({
+        querystringKey: 'severity',
+        value: ['ALL'],
+        validValues: SeverityToken.VALID_IDS,
+      });
+    });
+
+    it('receives ALL_STATUS_VALUE when All Statuses option is clicked', async () => {
+      await clickDropdownItem('ALL');
+
+      expect(findQuerystringSync().props('value')).toEqual(['ALL']);
+    });
+
+    it.each`
+      emitted                   | expected
+      ${['CRITICAL', 'MEDIUM']} | ${['CRITICAL', 'MEDIUM']}
+      ${['ALL']}                | ${['ALL']}
+    `('restores selected items from the query string - $emitted', async ({ emitted, expected }) => {
+      findQuerystringSync().vm.$emit('input', emitted);
+      await nextTick();
+
+      expected.forEach((item) => {
+        expect(isOptionChecked(item)).toBe(true);
+      });
+
+      allOptionsExcept(expected).forEach((item) => {
+        expect(isOptionChecked(item)).toBe(false);
+      });
     });
   });
 });
