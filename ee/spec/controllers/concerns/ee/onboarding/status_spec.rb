@@ -47,7 +47,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#redirect_to_company_form?' do
-    where(:convert_to_automatic_trial?, :trial?, :expected_result) do
+    where(:converted_to_automatic_trial?, :trial?, :expected_result) do
       true  | false | true
       false | false | false
       false | true  | true
@@ -60,7 +60,28 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
       before do
         allow(instance).to receive(:trial?).and_return(trial?)
-        allow(instance).to receive(:convert_to_automatic_trial?).and_return(convert_to_automatic_trial?)
+        allow(instance).to receive(:converted_to_automatic_trial?).and_return(converted_to_automatic_trial?)
+      end
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '#convert_to_automatic_trial?' do
+    where(:setup_for_company?, :invite?, :expected_result) do
+      true  | false | true
+      false | false | false
+      false | true  | false
+    end
+
+    with_them do
+      let(:instance) { described_class.new({}, nil, nil) }
+
+      subject { instance.convert_to_automatic_trial? }
+
+      before do
+        allow(instance).to receive(:invite?).and_return(invite?)
+        allow(instance).to receive(:setup_for_company?).and_return(setup_for_company?)
       end
 
       it { is_expected.to eq(expected_result) }
@@ -84,16 +105,35 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#invite?' do
-    subject { described_class.new(nil, nil, user).invite? }
-
-    context 'with members for the user' do
-      it { is_expected.to eq(true) }
+    let(:user_without_members) { build_stubbed(:user) }
+    let(:user_with_invite_registration_type) do
+      user_without_members.onboarding_status_registration_type = 'invite'
+      user_without_members
     end
 
-    context 'without members for the user' do
-      let(:user) { build_stubbed(:user) }
+    let(:user_without_invite_registration_type) do
+      user_without_members.onboarding_status_registration_type = 'free'
+      user_without_members
+    end
 
-      it { is_expected.to eq(false) }
+    where(:current_user, :use_registration_type_db_value, :expected_result) do
+      ref(:user)                                  | true  | true
+      ref(:user_without_members)                  | true  | false
+      ref(:user_with_invite_registration_type)    | true  | true
+      ref(:user_with_invite_registration_type)    | false | false
+      ref(:user_without_invite_registration_type) | true  | false
+    end
+
+    with_them do
+      let(:instance) { described_class.new(nil, nil, current_user) }
+
+      before do
+        stub_feature_flags(use_registration_type_db_value: use_registration_type_db_value)
+      end
+
+      subject { instance.invite? }
+
+      it { is_expected.to eq(expected_result) }
     end
   end
 
@@ -244,34 +284,68 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       { 'redirect_return_to' => 'some/path?trial=true', 'user_return_to' => 'some/path?trial=false' }
     end
 
-    where(:params, :session, :onboarding_enabled?, :expected_result) do
-      { trial: 'true' }  | {}                          | false | false
-      { trial: 'false' } | {}                          | true  | false
-      { trial: 'true' }  | {}                          | true  | true
-      { trial: 'false' } | ref(:user_on_trial)         | false | false
-      { trial: 'false' } | ref(:user_on_trial)         | true  | true
-      { trial: 'true' }  | ref(:user_on_trial)         | true  | true
-      { trial: 'false' } | ref(:redirect_on_trial)     | false | false
-      { trial: 'false' } | ref(:redirect_on_trial)     | true  | true
-      { trial: 'true' }  | ref(:redirect_on_trial)     | true  | true
-      { trial: 'false' } | ref(:user_not_on_trial)     | true  | false
-      { trial: 'false' } | ref(:redirect_not_on_trial) | true  | false
-      { trial: 'false' } | ref(:combined_on_trial)     | true  | true
-      {}                 | {}                          | true  | false
-      {}                 | {}                          | false | false
-      { trial: '' }      | {}                          | false | false
-      { trial: '' }      | {}                          | true  | false
-      { trial: '' }      | nil                         | true  | false
+    let(:user_with_trial) { build_stubbed(:user) { |u| u.onboarding_status_registration_type = 'trial' } }
+
+    where(:params, :current_user, :session, :onboarding_enabled?, :use_registration_type_db_value, :expected_result) do
+      { trial: 'true' }  | ref(:user)            | {}                          | false | true  | false
+      { trial: 'false' } | ref(:user_with_trial) | {}                          | true  | true  | true
+      { trial: 'false' } | ref(:user_with_trial) | {}                          | true  | false | false
+      { trial: 'false' } | ref(:user)            | {}                          | true  | true  | false
+      { trial: 'true' }  | ref(:user)            | {}                          | true  | true  | true
+      { trial: 'false' } | ref(:user)            | ref(:user_on_trial)         | false | true  | false
+      { trial: 'false' } | ref(:user)            | ref(:user_on_trial)         | true  | true  | true
+      { trial: 'true' }  | ref(:user)            | ref(:user_on_trial)         | true  | true  | true
+      { trial: 'false' } | ref(:user)            | ref(:redirect_on_trial)     | false | true  | false
+      { trial: 'false' } | ref(:user)            | ref(:redirect_on_trial)     | true  | true  | true
+      { trial: 'true' }  | ref(:user)            | ref(:redirect_on_trial)     | true  | true  | true
+      { trial: 'false' } | ref(:user)            | ref(:user_not_on_trial)     | true  | true  | false
+      { trial: 'false' } | ref(:user)            | ref(:redirect_not_on_trial) | true  | true  | false
+      { trial: 'false' } | ref(:user)            | ref(:combined_on_trial)     | true  | true  | true
+      {}                 | ref(:user)            | {}                          | true  | true  | false
+      {}                 | ref(:user)            | {}                          | false | true  | false
+      { trial: '' }      | ref(:user)            | {}                          | false | true  | false
+      { trial: '' }      | ref(:user)            | {}                          | true  | true  | false
+      { trial: '' }      | ref(:user)            | nil                         | true  | true  | false
     end
 
     with_them do
-      let(:instance) { described_class.new(params, session, nil) }
+      let(:instance) { described_class.new(params, session, current_user) }
 
       subject { instance.trial? }
 
       before do
+        stub_feature_flags(use_registration_type_db_value: use_registration_type_db_value)
         stub_saas_features(onboarding: onboarding_enabled?)
       end
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '#trial_from_the_beginning?' do
+    let(:user_with_initial_trial) do
+      build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'trial' }
+    end
+
+    let(:user_with_initial_free) { build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'free' } }
+
+    before do
+      stub_saas_features(onboarding: true)
+      stub_feature_flags(use_registration_type_db_value: use_registration_type_db_value)
+    end
+
+    where(:params, :current_user, :use_registration_type_db_value, :expected_result) do
+      { trial: 'true' }  | ref(:user)                    | true  | true
+      { trial: 'false' } | ref(:user)                    | true  | false
+      { trial: 'false' } | ref(:user_with_initial_trial) | true  | true
+      { trial: 'false' } | ref(:user_with_initial_trial) | false | false
+      { trial: 'false' } | ref(:user_with_initial_free)  | true  | false
+    end
+
+    with_them do
+      let(:instance) { described_class.new(params, nil, current_user) }
+
+      subject { instance.trial_from_the_beginning? }
 
       it { is_expected.to eq(expected_result) }
     end
@@ -329,12 +403,28 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   describe '#subscription?' do
     let(:return_to) { ::Gitlab::Routing.url_helpers.new_subscriptions_path }
     let(:session) { { 'user_return_to' => return_to } }
+    let(:current_user) { user }
 
-    subject { described_class.new(nil, session, nil).subscription? }
+    subject { described_class.new(nil, session, current_user).subscription? }
 
     context 'when on SaaS', :saas do
       context 'when in subscription flow' do
         it { is_expected.to eq(true) }
+
+        context 'when subscription is the registration_type in the database' do
+          let(:return_to) { nil }
+          let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_registration_type = 'subscription' } }
+
+          it { is_expected.to eq(true) }
+
+          context 'when feature flag use_registration_type_db_value is disabled' do
+            before do
+              stub_feature_flags(use_registration_type_db_value: false)
+            end
+
+            it { is_expected.to eq(false) }
+          end
+        end
       end
 
       context 'when not in subscription flow' do
@@ -352,6 +442,13 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
         context 'when user location does not have value in session' do
           let(:session) { {} }
+
+          it { is_expected.to eq(false) }
+        end
+
+        context 'when the registration type is not subscription' do
+          let(:return_to) { nil }
+          let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_registration_type = 'free' } }
 
           it { is_expected.to eq(false) }
         end
@@ -380,12 +477,13 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   describe '#company_lead_product_interaction' do
     let(:params) { { trial: true } }
     let(:session) { { some_key: 'some_value' } }
+    let(:current_user) { user }
 
     before do
       stub_saas_features(onboarding: true)
     end
 
-    subject { described_class.new(params, session, nil).company_lead_product_interaction }
+    subject { described_class.new(params, session, current_user).company_lead_product_interaction }
 
     context 'with a trial registration' do
       it { is_expected.to eq('SaaS Trial') }
@@ -395,6 +493,70 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:params) { { trial: false } }
 
       it { is_expected.to eq('SaaS Trial - defaulted') }
+    end
+
+    context 'when it has an initial trial registration_type' do
+      let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'trial' } }
+
+      context 'when it has trial set from params' do
+        it { is_expected.to eq('SaaS Trial') }
+      end
+
+      context 'when it is no longer a trial registration_type' do
+        let(:params) { {} }
+
+        it { is_expected.to eq('SaaS Trial - defaulted') }
+      end
+
+      context 'when it is still a trial registration_type' do
+        let(:params) { {} }
+
+        before do
+          current_user.onboarding_status_registration_type = 'trial'
+        end
+
+        it { is_expected.to eq('SaaS Trial') }
+      end
+    end
+
+    context 'when feature flag use_registration_type_db_value is disabled' do
+      let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'trial' } }
+
+      before do
+        stub_feature_flags(use_registration_type_db_value: false)
+      end
+
+      it { is_expected.to eq('SaaS Trial') }
+
+      context 'with no trial in params' do
+        let(:params) { {} }
+
+        it { is_expected.to eq('SaaS Trial - defaulted') }
+      end
+    end
+
+    context 'when it is initially free registration_type' do
+      let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'free' } }
+
+      context 'when it has trial set from params' do
+        it { is_expected.to eq('SaaS Trial - defaulted') }
+      end
+
+      context 'when it does not have trial set from params' do
+        let(:params) { {} }
+
+        it { is_expected.to eq('SaaS Trial - defaulted') }
+      end
+
+      context 'when it is now a trial registration_type' do
+        let(:params) { {} }
+
+        before do
+          current_user.onboarding_status_registration_type = 'trial'
+        end
+
+        it { is_expected.to eq('SaaS Trial - defaulted') }
+      end
     end
   end
 

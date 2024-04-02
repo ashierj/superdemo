@@ -127,7 +127,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
       context 'when it is a trial registration' do
         let(:trial_registration) { 'true' }
 
-        it 'creates trial and redirects to the correct path' do
+        it 'creates trial lead and redirects to the correct path' do
           expect_next_instance_of(
             GitlabSubscriptions::CreateCompanyLeadService,
             user: user,
@@ -140,6 +140,29 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           end
 
           post :create, params: params
+        end
+
+        context 'when driving from the onboarding_status.initial_registration_type' do
+          let(:trial_registration) { 'false' }
+
+          before do
+            user.update_onboarding_status(:initial_registration_type, 'trial')
+          end
+
+          it 'creates trial lead and redirects to the correct path' do
+            expect_next_instance_of(
+              GitlabSubscriptions::CreateCompanyLeadService,
+              user: user,
+              params: ActionController::Parameters.new(params.merge(
+                trial_onboarding_flow: true,
+                trial: true
+              )).permit!
+            ) do |service|
+              expect(service).to receive(:execute).and_return(ServiceResponse.success)
+            end
+
+            post :create, params: params
+          end
         end
       end
 
