@@ -54,21 +54,6 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
         it_behaves_like 'GitLab Duo drawer'
       end
     end
-
-    context 'when the :tanuki_bot_breadcrumbs_entry_point feature flag is off' do
-      include_context 'with ai features enabled for group'
-
-      before do
-        stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: false)
-        visit root_path
-      end
-
-      it 'does not show the entry point in the breadcrumbs' do
-        within_testid('top-bar') do
-          expect(page).not_to have_button('GitLab Duo Chat')
-        end
-      end
-    end
   end
 
   context 'for self-managed' do
@@ -112,19 +97,6 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
         end
 
         it_behaves_like 'GitLab Duo drawer'
-      end
-    end
-
-    context 'when the :tanuki_bot_breadcrumbs_entry_point feature flag is off' do
-      before do
-        stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: false)
-        visit root_path
-      end
-
-      it 'does not show the entry point in the breadcrumbs' do
-        within_testid('top-bar') do
-          expect(page).not_to have_button('GitLab Duo Chat')
-        end
       end
     end
   end

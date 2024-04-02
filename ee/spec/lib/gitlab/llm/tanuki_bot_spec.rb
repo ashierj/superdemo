@@ -92,18 +92,15 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     end
 
     describe '.show_breadcrumbs_entry_point' do
-      where(:tanuki_bot_breadcrumbs_feature_flag_enabled, :ai_features_enabled_for_user, :result) do
+      where(:ai_features_enabled_for_user, :result) do
         [
-          [true, true, true],
-          [true, false, false],
-          [false, true, false],
-          [false, false, false]
+          [true, true],
+          [false, false]
         ]
       end
 
       with_them do
         before do
-          stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: tanuki_bot_breadcrumbs_feature_flag_enabled)
           allow(described_class).to receive(:enabled_for?).with(user: user, container: nil)
             .and_return(ai_features_enabled_for_user)
         end
