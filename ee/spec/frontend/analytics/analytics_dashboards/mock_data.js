@@ -585,6 +585,12 @@ export const mockUsageMetricsQueryResponse = {
       count: 97,
       recordedAt: '2023-11-27T21:59:59Z',
     },
+    users: {
+      __typename: 'ValueStreamDashboardCount',
+      identifier: 'USERS',
+      count: 90,
+      recordedAt: '2023-11-27T21:59:59Z',
+    },
     issues: {
       __typename: 'ValueStreamDashboardCount',
       identifier: 'ISSUES',
@@ -623,6 +629,15 @@ export const mockUsageMetrics = [
     options: {
       title: 'Projects',
       titleIcon: 'project',
+    },
+  },
+  {
+    identifier: 'users',
+    value: 90,
+    recordedAt: '2023-11-27T21:59:59Z',
+    options: {
+      title: 'Users',
+      titleIcon: 'user',
     },
   },
   {
@@ -666,6 +681,12 @@ export const mockUsageMetricsNoData = [
     value: 0,
     recordedAt: undefined,
     options: { title: 'Projects', titleIcon: 'project' },
+  },
+  {
+    identifier: 'users',
+    value: 0,
+    recordedAt: undefined,
+    options: { title: 'Users', titleIcon: 'user' },
   },
   {
     identifier: 'issues',

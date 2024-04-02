@@ -4,6 +4,7 @@ query getUsageOverview(
   $endDate: Date!
   $includeGroups: Boolean = true
   $includeProjects: Boolean = true
+  $includeUsers: Boolean = true
   $includeIssues: Boolean = true
   $includeMergeRequests: Boolean = true
   $includePipelines: Boolean = true
@@ -22,6 +23,14 @@ query getUsageOverview(
       identifier: PROJECTS
       timeframe: { start: $startDate, end: $endDate }
     ) @include(if: $includeProjects) {
+      identifier
+      count
+      recordedAt
+    }
+    users: valueStreamDashboardUsageOverview(
+      identifier: USERS
+      timeframe: { start: $startDate, end: $endDate }
+    ) @include(if: $includeUsers) {
       identifier
       count
       recordedAt

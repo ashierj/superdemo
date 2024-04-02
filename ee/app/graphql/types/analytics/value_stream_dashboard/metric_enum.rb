@@ -14,6 +14,7 @@ module Types
         value 'GROUPS', 'Group count.', value: 'groups'
         value 'MERGE_REQUESTS', 'Merge request count.', value: 'merge_requests'
         value 'PIPELINES', 'Pipeline count.', value: 'pipelines'
+        value 'USERS', 'User count.', value: 'direct_members'
 
         text = 'Contributor count. EXPERIMENTAL: Only available on the SaaS ' \
                'version of GitLab when the ClickHouse database backend is enabled.'
