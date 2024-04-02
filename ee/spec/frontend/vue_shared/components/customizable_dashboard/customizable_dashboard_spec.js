@@ -415,24 +415,6 @@ describe('CustomizableDashboard', () => {
             },
           );
         });
-
-        it.each`
-          action                | confirmed | expectedKey
-          ${'confirm discard'}  | ${true}   | ${1}
-          ${'continue editing'} | ${false}  | ${0}
-        `(
-          'sets the gridstack-wrapper render key to "$expectedKey" on $action',
-          async ({ confirmed, expectedKey }) => {
-            confirmAction.mockResolvedValue(confirmed);
-
-            expect(findGridstackWrapper().vm.$vnode.key).toBe(0);
-
-            await findCancelButton().vm.$emit('click');
-            await waitForPromises();
-
-            expect(findGridstackWrapper().vm.$vnode.key).toBe(expectedKey);
-          },
-        );
       });
     });
 
@@ -485,26 +467,31 @@ describe('CustomizableDashboard', () => {
           expect(findVisualizationDrawer().props('open')).toBe(false);
         });
 
-        it('calls the wrapper method to add new panels', () => {
-          expect(addPanelsMock).toHaveBeenCalledWith(
-            expect.arrayContaining([
-              expect.objectContaining({
-                ...createNewVisualizationPanel(TEST_VISUALIZATION()),
-                id: expect.stringContaining('panel-'),
-              }),
-            ]),
-          );
+        it('adds new panels to the dashboard', () => {
+          const { panels } = findGridstackWrapper().props().value;
+
+          expect(panels).toHaveLength(3);
+          expect(panels[2]).toMatchObject({
+            ...createNewVisualizationPanel(TEST_VISUALIZATION()),
+            id: expect.stringContaining('panel-'),
+          });
         });
       });
     });
 
     describe('add a panel is deleted', () => {
+      const removePanel = dashboard.panels[0];
+
       beforeEach(async () => {
-        await findPanels().at(0).vm.$emit('delete', dashboard.panels[0]);
+        await findPanels().at(0).vm.$emit('delete', removePanel);
       });
 
-      it('calls the wrapper method to delete the panel', () => {
-        expect(deletePanelMock).toHaveBeenCalledWith(dashboard.panels[0]);
+      it('removes the chosen panel from the dashboard', () => {
+        const { panels } = findGridstackWrapper().props().value;
+        const panelIds = panels.map(({ id }) => id);
+
+        expect(panels).toHaveLength(1);
+        expect(panelIds).not.toContain(removePanel.id);
       });
     });
   });

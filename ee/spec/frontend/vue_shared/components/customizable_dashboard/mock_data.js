@@ -1,4 +1,5 @@
 import { __ } from '~/locale';
+import { getUniquePanelId } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
 const cubeLineChart = {
   type: 'LineChart',
@@ -36,14 +37,16 @@ export const dashboard = {
       gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,
       queryOverrides: null,
+      id: getUniquePanelId(),
     },
     {
       title: __('Test B'),
-      gridAttributes: { width: 2, height: 4 },
+      gridAttributes: { width: 2, height: 4, minHeight: 2, minWidth: 2 },
       visualization: cubeLineChart,
       queryOverrides: {
         limit: 200,
       },
+      id: getUniquePanelId(),
     },
   ],
 };
@@ -77,6 +80,7 @@ export const builtinDashboard = {
       gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,
       queryOverrides: {},
+      id: getUniquePanelId(),
     },
   ],
 };
@@ -85,4 +89,21 @@ export const mockDateRangeFilterChangePayload = {
   startDate: new Date('2016-01-01'),
   endDate: new Date('2016-02-01'),
   dateRangeOption: 'foo',
+};
+
+export const mockPanel = {
+  title: __('Test A'),
+  gridAttributes: {
+    width: 1,
+    height: 2,
+    xPos: 0,
+    yPos: 3,
+    minWidth: 1,
+    minHeight: 2,
+    maxWidth: 1,
+    maxHeight: 2,
+  },
+  visualization: cubeLineChart,
+  queryOverrides: {},
+  id: getUniquePanelId(),
 };
