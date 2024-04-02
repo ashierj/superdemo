@@ -2,8 +2,9 @@
 import { GlAvatar, GlCollapsibleListbox, GlTruncate, GlTooltipDirective } from '@gitlab/ui';
 import produce from 'immer';
 import { __ } from '~/locale';
-import { NAMESPACE_TYPES, PAGE_SIZE } from 'ee/security_orchestration/constants';
+import { PAGE_SIZE } from 'ee/security_orchestration/constants';
 import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
+import { isProject } from 'ee/security_orchestration/components/utils';
 import getProjectSPPSuggestions from '../../graphql/queries/get_project_spp_suggestions.query.graphql';
 import getGroupSPPSuggestions from '../../graphql/queries/get_group_spp_suggestions.query.graphql';
 
@@ -24,9 +25,7 @@ export default {
   apollo: {
     projects: {
       query() {
-        return this.namespaceType === NAMESPACE_TYPES.PROJECT
-          ? getProjectSPPSuggestions
-          : getGroupSPPSuggestions;
+        return isProject(this.namespaceType) ? getProjectSPPSuggestions : getGroupSPPSuggestions;
       },
       variables() {
         return {
@@ -122,11 +121,6 @@ export default {
       return this.isSearchQueryTooShort
         ? this.$options.i18n.searchText
         : this.$options.i18n.noResultsText;
-    },
-    sppQuery() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT
-        ? getProjectSPPSuggestions
-        : getGroupSPPSuggestions;
     },
   },
   methods: {

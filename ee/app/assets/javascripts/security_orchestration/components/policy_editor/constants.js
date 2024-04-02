@@ -16,6 +16,7 @@ import {
   REPORT_TYPE_DEPENDENCY_SCANNING,
   REPORT_TYPE_CONTAINER_SCANNING,
 } from '~/vue_shared/security_reports/constants';
+import { isGroup } from 'ee/security_orchestration/components/utils';
 
 export const EDITOR_MODE_RULE = 'rule';
 export const EDITOR_MODE_YAML = 'yaml';
@@ -156,14 +157,14 @@ export const VULNERABILITY_AGE_OPERATORS = [
 ];
 
 export const SCAN_RESULT_BRANCH_TYPE_OPTIONS = (nameSpaceType = NAMESPACE_TYPES.GROUP) => [
-  nameSpaceType === NAMESPACE_TYPES.GROUP ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
+  isGroup(nameSpaceType) ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
 ];
 
 export const SCAN_EXECUTION_BRANCH_TYPE_OPTIONS = (nameSpaceType = NAMESPACE_TYPES.GROUP) => [
   ALL_BRANCHES,
-  nameSpaceType === NAMESPACE_TYPES.GROUP ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
+  isGroup(nameSpaceType) ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
 ];

@@ -7,8 +7,8 @@ import {
   SETTINGS_POPOVER_STRINGS,
   SETTINGS_TOOLTIP,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { ALL_PROTECTED_BRANCHES } from 'ee/security_orchestration/components/policy_editor/constants';
+import { isProject } from 'ee/security_orchestration/components/utils';
 import SettingPopover from './setting_popover.vue';
 
 export default {
@@ -62,7 +62,7 @@ export default {
   },
   computed: {
     isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+      return isProject(this.namespaceType);
     },
     showLink() {
       return this.isProject && Boolean(this.link);

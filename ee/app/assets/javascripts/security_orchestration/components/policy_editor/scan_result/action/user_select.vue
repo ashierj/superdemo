@@ -6,7 +6,8 @@ import searchProjectMembers from '~/graphql_shared/queries/project_user_members_
 import searchGroupMembers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { NAMESPACE_TYPES, USER_TYPE } from 'ee/security_orchestration/constants';
+import { USER_TYPE } from 'ee/security_orchestration/constants';
+import { isProject } from 'ee/security_orchestration/components/utils';
 
 const createUserObject = (user) => ({
   ...user,
@@ -36,9 +37,7 @@ export default {
   apollo: {
     users: {
       query() {
-        return this.namespaceType === NAMESPACE_TYPES.PROJECT
-          ? searchProjectMembers
-          : searchGroupMembers;
+        return isProject(this.namespaceType) ? searchProjectMembers : searchGroupMembers;
       },
       variables() {
         return {
@@ -47,10 +46,9 @@ export default {
         };
       },
       update(data) {
-        const nodes =
-          this.namespaceType === NAMESPACE_TYPES.PROJECT
-            ? data?.project?.projectMembers?.nodes
-            : data?.workspace?.users?.nodes;
+        const nodes = isProject(this.namespaceType)
+          ? data?.project?.projectMembers?.nodes
+          : data?.workspace?.users?.nodes;
 
         const users = (nodes || []).map(({ user }) => createUserObject(user));
         return uniqBy(users, 'id');

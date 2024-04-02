@@ -1,7 +1,7 @@
 <script>
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { isGroup } from 'ee/security_orchestration/components/utils';
 import { EXCEPTION_TYPE_ITEMS, NO_EXCEPTION_KEY, EXCEPTION_KEY } from '../constants';
 import BranchSelector from './branch_selector.vue';
 
@@ -38,7 +38,7 @@ export default {
         : this.$options.i18n.noExceptionText;
     },
     isGroup() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+      return isGroup(this.namespaceType);
     },
   },
   methods: {

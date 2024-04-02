@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { n__, s__ } from '~/locale';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { isProject } from 'ee/security_orchestration/components/utils';
 import { slugifyToArray } from '../../utils';
 import {
   ALL_PROTECTED_BRANCHES,
@@ -80,7 +80,7 @@ export default {
       },
     },
     displayBranchSelector() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+      return isProject(this.namespaceType);
     },
     showInput() {
       return this.selected === SPECIFIC_BRANCHES.value;

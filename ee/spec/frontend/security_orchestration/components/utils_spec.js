@@ -9,11 +9,14 @@ import {
   policyScopeProjectLength,
   policyScopeComplianceFrameworks,
   policyScopeProjects,
+  isProject,
+  isGroup,
 } from 'ee/security_orchestration/components/utils';
 import {
   EXCLUDING,
   INCLUDING,
 } from 'ee/security_orchestration/components/policy_editor/scope/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe(isPolicyInherited, () => {
   it.each`
@@ -166,5 +169,29 @@ describe(policyScopeProjects, () => {
     ${{ includingProjects: { nodes: [{ id: 1 }, { id: 2 }] } }} | ${{ pageInfo: {}, projects: [{ id: 1 }, { id: 2 }] }}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(policyScopeProjects(input)).toEqual(output);
+  });
+});
+
+describe(isProject, () => {
+  it.each`
+    input                      | output
+    ${NAMESPACE_TYPES.PROJECT} | ${true}
+    ${NAMESPACE_TYPES.GROUP}   | ${false}
+    ${null}                    | ${false}
+    ${undefined}               | ${false}
+  `('returns `$output` when passed `$input`', ({ input, output }) => {
+    expect(isProject(input)).toEqual(output);
+  });
+});
+
+describe(isGroup, () => {
+  it.each`
+    input                      | output
+    ${NAMESPACE_TYPES.PROJECT} | ${false}
+    ${NAMESPACE_TYPES.GROUP}   | ${true}
+    ${null}                    | ${false}
+    ${undefined}               | ${false}
+  `('returns `$output` when passed `$input`', ({ input, output }) => {
+    expect(isGroup(input)).toEqual(output);
   });
 });

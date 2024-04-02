@@ -20,7 +20,7 @@ import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_r
 import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
-import { isPolicyInherited, policyHasNamespace } from '../utils';
+import { isPolicyInherited, policyHasNamespace, isGroup, isProject } from '../utils';
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -169,10 +169,10 @@ export default {
       return this.$apollo.queries.linkedSppItems?.loading && this.isProject;
     },
     isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+      return isProject(this.namespaceType);
     },
     isGroup() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+      return isGroup(this.namespaceType);
     },
     allPolicyTypes() {
       return {

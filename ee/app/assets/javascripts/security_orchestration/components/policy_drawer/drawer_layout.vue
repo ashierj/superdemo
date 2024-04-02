@@ -2,8 +2,7 @@
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { isPolicyInherited, policyHasNamespace } from '../utils';
+import { isPolicyInherited, policyHasNamespace, isProject, isGroup } from '../utils';
 import {
   DEFAULT_DESCRIPTION_LABEL,
   DESCRIPTION_TITLE,
@@ -65,14 +64,8 @@ export default {
     },
   },
   computed: {
-    isGroup() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
-    },
-    isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
-    },
     showScopeInfoBox() {
-      return this.isProject
+      return isProject(this.namespaceType)
         ? this.glFeatures.securityPoliciesPolicyScopeProject
         : this.glFeatures.securityPoliciesPolicyScope;
     },
@@ -89,7 +82,7 @@ export default {
       return this.policy?.enabled ? ENABLED_LABEL : NOT_ENABLED_LABEL;
     },
     typeLabel() {
-      if (this.isGroup) {
+      if (isGroup(this.namespaceType)) {
         return this.$options.i18n.groupTypeLabel;
       }
       return this.$options.i18n.projectTypeLabel;
