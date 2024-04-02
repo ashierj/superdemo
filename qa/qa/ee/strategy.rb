@@ -8,7 +8,7 @@ module QA
       DEB_PURL_TYPE = 11
 
       def perform_before_hooks
-        QA::CE::Strategy.perform_before_hooks
+        return unless QA::CE::Strategy.perform_before_hooks
 
         if QA::Runtime::Env.ee_license.present?
           QA::Runtime::Logger.info("Performing initial license fabrication!")
