@@ -4,6 +4,7 @@ module Security
   class OrchestrationPolicyRuleScheduleNamespaceWorker
     BATCH_SIZE = 50
     include ApplicationWorker
+    include ::ScanExecutionPolicy::CadenceHelper
 
     feature_category :security_policy_management
 
@@ -25,6 +26,10 @@ module Security
         bots_by_project_id = security_policy_bot_ids_by_project_ids(projects)
 
         projects.each do |project|
+          if Feature.enabled?(:scan_execution_policy_cadence_validation, project) && !valid_cadence?(schedule.cron)
+            next log_invalid_cadence_error(project.id, schedule.cron)
+          end
+
           user_id = bots_by_project_id[project.id]
           next prepare_security_policy_bot_user(project) unless user_id
 

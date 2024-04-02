@@ -7,6 +7,6 @@ FactoryBot.define do
 
     policy_index { 0 }
     rule_index { 0 }
-    cron { '*/10 * * * *' }
+    cron { '0 20 * * *' }
   end
 end

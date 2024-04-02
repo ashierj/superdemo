@@ -9,6 +9,7 @@ module Security
     # This worker does not perform work scoped to a context
     include CronjobQueue
     # rubocop:enable Scalability/CronWorkerContext
+    include ::ScanExecutionPolicy::CadenceHelper
 
     feature_category :security_policy_management
 
@@ -33,6 +34,11 @@ module Security
       return if project.marked_for_deletion?
 
       user = project.security_policy_bot
+
+      if Feature.enabled?(:scan_execution_policy_cadence_validation, project) && !valid_cadence?(schedule.cron)
+        log_invalid_cadence_error(project.id, schedule.cron)
+        return
+      end
 
       return prepare_security_policy_bot_user(project) unless user
 
