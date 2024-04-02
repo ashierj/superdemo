@@ -1,7 +1,6 @@
 <script>
 import ComplianceFrameworksToggleList from 'ee/security_orchestration/components/policy_drawer/compliance_frameworks_toggle_list.vue';
 import ProjectsToggleList from 'ee/security_orchestration/components/policy_drawer/projects_toggle_list.vue';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { s__ } from '~/locale';
 import ScopeDefaultLabel from 'ee/security_orchestration/components/scope_default_label.vue';
 import LoaderWithMessage from 'ee/security_orchestration/components/loader_with_message.vue';
@@ -12,6 +11,7 @@ import {
   policyScopeHasIncludingProjects,
   policyScopeProjects,
   isDefaultMode,
+  isGroup,
 } from 'ee/security_orchestration/components/utils';
 
 export default {
@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     isGroup() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+      return isGroup(this.namespaceType);
     },
     isDefaultMode() {
       return isDefaultMode(this.policyScope);

@@ -3,6 +3,7 @@ import {
   EXCLUDING,
   INCLUDING,
 } from 'ee/security_orchestration/components/policy_editor/scope/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 export const isPolicyInherited = (source) => source?.inherited === true;
 
@@ -104,3 +105,17 @@ export const policyScopeProjects = (policyScope = {}) => {
     pageInfo,
   };
 };
+
+/**
+ * Check if namespace is a project type
+ * @param namespaceType
+ * @returns {boolean}
+ */
+export const isProject = (namespaceType) => namespaceType === NAMESPACE_TYPES.PROJECT;
+
+/**
+ * Check if namespace is a group type
+ * @param namespaceType
+ * @returns {boolean}
+ */
+export const isGroup = (namespaceType) => namespaceType === NAMESPACE_TYPES.GROUP;

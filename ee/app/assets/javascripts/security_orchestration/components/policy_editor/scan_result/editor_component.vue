@@ -5,7 +5,7 @@ import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { isProject } from 'ee/security_orchestration/components/utils';
 import {
   ADD_ACTION_LABEL,
   BRANCHES_KEY,
@@ -352,11 +352,7 @@ export default {
       if (this.isActiveRuleMode) {
         this.hasParsingError = this.invalidForRuleMode();
 
-        if (
-          !this.hasEmptyRules &&
-          this.namespaceType === NAMESPACE_TYPES.PROJECT &&
-          this.rulesHaveBranches
-        ) {
+        if (!this.hasEmptyRules && isProject(this.namespaceType) && this.rulesHaveBranches) {
           this.invalidBranches = await getInvalidBranches({
             branches: this.allBranches,
             projectId: this.namespaceId,

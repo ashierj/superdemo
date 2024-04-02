@@ -2,8 +2,8 @@
 import { isEmpty } from 'lodash';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
+import { isProject, isGroup } from 'ee/security_orchestration/components/utils';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../../constants';
 import ScanFilterSelector from '../../scan_filter_selector.vue';
@@ -82,10 +82,10 @@ export default {
       return this.actionIndex === 0;
     },
     isGroup() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+      return isGroup(this.namespaceType);
     },
     isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+      return isProject(this.namespaceType);
     },
     siteProfile() {
       return this.initAction.site_profile?.trim() ?? '';

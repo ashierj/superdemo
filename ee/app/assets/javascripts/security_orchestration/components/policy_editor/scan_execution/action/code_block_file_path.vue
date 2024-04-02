@@ -14,7 +14,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { isGroup } from 'ee/security_orchestration/components/utils';
 
 export default {
   i18n: {
@@ -116,9 +116,7 @@ export default {
       return this.selectedProject?.fullPath || this.$options.i18n.tooltipText;
     },
     groupProjectsPath() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP
-        ? this.namespacePath
-        : this.rootNamespacePath;
+      return isGroup(this.namespaceType) ? this.namespacePath : this.rootNamespacePath;
     },
   },
   methods: {

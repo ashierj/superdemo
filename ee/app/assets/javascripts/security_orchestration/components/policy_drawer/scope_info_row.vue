@@ -4,13 +4,14 @@ import {
   SCOPE_TITLE,
 } from 'ee/security_orchestration/components/policy_drawer/constants';
 import ScopeDefaultLabel from 'ee/security_orchestration/components/scope_default_label.vue';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   policyScopeHasComplianceFrameworks,
   policyScopeHasExcludingProjects,
   policyScopeHasIncludingProjects,
   policyScopeProjects,
   policyScopeComplianceFrameworks,
+  isGroup,
+  isProject,
 } from 'ee/security_orchestration/components/utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
@@ -69,10 +70,10 @@ export default {
   },
   computed: {
     isGroup() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+      return isGroup(this.namespaceType);
     },
     isProject() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+      return isProject(this.namespaceType);
     },
     policyScopeHasComplianceFrameworks() {
       return policyScopeHasComplianceFrameworks(this.policyScope);

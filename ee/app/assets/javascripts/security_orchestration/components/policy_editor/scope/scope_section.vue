@@ -14,7 +14,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { isProject, isGroup } from 'ee/security_orchestration/components/utils';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import LoaderWithMessage from '../../loader_with_message.vue';
@@ -168,10 +168,10 @@ export default {
       return Boolean(this.existingPolicy);
     },
     isGroupLevel() {
-      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+      return isGroup(this.namespaceType);
     },
     isProjectLevel() {
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+      return isProject(this.namespaceType);
     },
     shouldSkipDependenciesCheck() {
       return this.isGroupLevel || !this.glFeatures.securityPoliciesPolicyScopeProject;

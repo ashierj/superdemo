@@ -5,6 +5,7 @@ import { getBaseURL } from '~/lib/utils/url_utility';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import RunnerTagsDropdown from 'ee/vue_shared/components/runner_tags_dropdown/runner_tags_dropdown.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { isGroup } from 'ee/security_orchestration/components/utils';
 import {
   TAGS_MODE_SELECTED_ITEMS,
   ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY,
@@ -58,7 +59,7 @@ export default {
       return this.selectedTagsMode === ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY;
     },
     runnersTagLink() {
-      if (this.namespaceType === NAMESPACE_TYPES.GROUP) {
+      if (isGroup(this.namespaceType)) {
         return `${getBaseURL()}/groups/${this.namespacePath}/-/runners`;
       }
 
