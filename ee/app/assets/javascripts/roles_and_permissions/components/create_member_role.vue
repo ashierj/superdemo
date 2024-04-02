@@ -7,14 +7,17 @@ import {
   GlFormGroup,
   GlFormInput,
   GlFormSelect,
-  GlFormTextarea,
   GlSkeletonLoader,
+  GlSprintf,
+  GlLink,
 } from '@gitlab/ui';
 import { difference, pull } from 'lodash';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
 import { BASE_ROLES } from '~/access_level/constants';
 import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
+import { visitUrl } from '~/lib/utils/url_utility';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import createMemberRoleMutation from '../graphql/create_member_role.mutation.graphql';
 
 export default {
@@ -24,14 +27,22 @@ export default {
     permissionsFetchError: s__('MemberRole|Could not fetch available permissions.'),
     createRole: s__('MemberRole|Create role'),
     cancel: __('Cancel'),
-    baseRoleLabel: s__('MemberRole|Base role to use as template'),
-    baseRoleDescription: s__('MemberRole|Select a standard role to add permissions.'),
-    nameLabel: s__('MemberRole|Role name'),
-    nameDescription: s__('MemberRole|Enter a short name.'),
-    namePlaceholder: s__('MemberRole|Incident manager'),
+    baseRoleLabel: s__('MemberRole|Base role'),
+    baseRoleDescription: s__(
+      'MemberRole|Select a %{linkStart}pre-existing static role%{linkEnd} to predefine a set of permissions.',
+    ),
+    nameLabel: s__('MemberRole|Name'),
     descriptionLabel: s__('MemberRole|Description'),
+    descriptionDescription: s__(
+      'MemberRole|Example: "Developer with admin and read access to vulnerability"',
+    ),
     permissionsLabel: s__('MemberRole|Permissions'),
+    customPermissionsLabel: s__('MemberRole|Custom permissions'),
+    customPermissionsDescription: s__(
+      'MemberRole|Add at least one custom permission to the base role.',
+    ),
     invalidFeedback: __('This field is required.'),
+    validationError: s__('MemberRole|You must fill out all required fields.'),
   },
   components: {
     GlButton,
@@ -41,14 +52,25 @@ export default {
     GlFormGroup,
     GlFormInput,
     GlFormSelect,
-    GlFormTextarea,
     GlSkeletonLoader,
+    GlSprintf,
+    GlLink,
   },
   props: {
     groupFullPath: {
       type: String,
       required: false,
       default: null,
+    },
+    listPagePath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    embedded: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -57,6 +79,7 @@ export default {
       baseRole: null,
       baseRoleValid: true,
       description: '',
+      descriptionValid: true,
       name: '',
       nameValid: true,
       permissions: [],
@@ -103,6 +126,9 @@ export default {
         return acc;
       }, {});
     },
+    staticRolesHelpPagePath() {
+      return helpPagePath('user/permissions', { anchor: 'roles' });
+    },
   },
   watch: {
     permissions(newPermissions, oldPermissions) {
@@ -137,16 +163,18 @@ export default {
       });
     },
     validateFields() {
+      this.nameValid = this.name.length > 0;
+      this.descriptionValid = this.description.length > 0;
       this.baseRoleValid = this.baseRole !== null;
-      this.nameValid = Boolean(this.name);
       this.permissionsValid = this.permissions.length > 0;
 
-      return this.baseRoleValid && this.nameValid && this.permissionsValid;
+      return this.nameValid && this.descriptionValid && this.baseRoleValid && this.permissionsValid;
     },
     async createMemberRole() {
       this.alert?.dismiss();
 
       if (!this.validateFields()) {
+        this.alert = createAlert({ message: this.$options.i18n.validationError });
         return;
       }
 
@@ -170,13 +198,22 @@ export default {
           this.alert = createAlert({
             message: sprintf(this.$options.i18n.createErrorWithReason, { error }, false),
           });
-        } else {
+        } else if (this.embedded) {
           this.$emit('success');
+        } else {
+          visitUrl(this.listPagePath);
         }
       } catch {
-        this.alert = createAlert({ message: sprintf(this.$options.i18n.createError) });
+        this.alert = createAlert({ message: this.$options.i18n.createError });
       } finally {
         this.isSubmitting = false;
+      }
+    },
+    handleCancelClick() {
+      if (this.embedded) {
+        this.$emit('cancel');
+      } else {
+        visitUrl(this.listPagePath);
       }
     },
   },
@@ -186,50 +223,78 @@ export default {
 
 <template>
   <gl-form @submit.prevent="createMemberRole">
-    <h4 class="gl-mt-0">{{ $options.i18n.createRole }}</h4>
-    <div class="row">
-      <gl-form-group
-        class="col-md-4"
-        :label="$options.i18n.baseRoleLabel"
-        :description="$options.i18n.baseRoleDescription"
-        :invalid-feedback="$options.i18n.invalidFeedback"
-        label-for="base-role-select"
-      >
-        <gl-form-select
-          id="base-role-select"
-          v-model.number="baseRole"
-          :options="$options.BASE_ROLES"
-          :state="baseRoleValid"
-        />
-      </gl-form-group>
+    <h4 v-if="embedded" class="gl-mt-0">{{ $options.i18n.createRole }}</h4>
+    <h2 v-else class="gl-mb-6">{{ $options.i18n.createRole }}</h2>
 
-      <gl-form-group
-        class="col-md-4"
-        :label="$options.i18n.nameLabel"
-        :description="$options.i18n.nameDescription"
-        :invalid-feedback="$options.i18n.invalidFeedback"
-        label-for="role-name"
-      >
-        <gl-form-input
-          id="role-name"
-          v-model.trim="name"
-          :placeholder="$options.i18n.namePlaceholder"
-          :state="nameValid"
-        />
-      </gl-form-group>
+    <gl-form-group
+      :label="$options.i18n.nameLabel"
+      label-for="role-name"
+      :invalid-feedback="$options.i18n.invalidFeedback"
+    >
+      <gl-form-input
+        id="role-name"
+        v-model.trim="name"
+        :state="nameValid"
+        width="xl"
+        maxlength="255"
+      />
+    </gl-form-group>
 
-      <gl-form-group
-        class="col-lg-8"
-        :label="$options.i18n.descriptionLabel"
-        label-for="description"
-      >
-        <gl-form-textarea id="description" v-model="description" />
-      </gl-form-group>
-    </div>
+    <gl-form-group
+      :label="$options.i18n.descriptionLabel"
+      :invalid-feedback="$options.i18n.invalidFeedback"
+      :description="$options.i18n.descriptionDescription"
+      label-for="description"
+    >
+      <gl-form-input
+        id="description"
+        v-model.trim="description"
+        :state="descriptionValid"
+        width="xl"
+        maxlength="255"
+      />
+    </gl-form-group>
 
-    <gl-form-group :label="$options.i18n.permissionsLabel">
-      <gl-skeleton-loader v-if="isLoadingPermissions" />
-      <gl-form-checkbox-group v-model="permissions" :state="permissionsState">
+    <h4 v-if="embedded" class="gl-mt-7">{{ $options.i18n.permissionsLabel }}</h4>
+    <h3 v-else class="gl-mt-8 gl-mb-6">{{ $options.i18n.permissionsLabel }}</h3>
+
+    <gl-form-group
+      :label="$options.i18n.baseRoleLabel"
+      :invalid-feedback="$options.i18n.invalidFeedback"
+      label-for="base-role-select"
+      label-class="gl-pb-1!"
+      class="gl-mb-6"
+    >
+      <template #label-description>
+        <div class="gl-mb-3">
+          <gl-sprintf :message="$options.i18n.baseRoleDescription">
+            <template #link="{ content }">
+              <gl-link :href="staticRolesHelpPagePath">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </div>
+      </template>
+      <gl-form-select
+        id="base-role-select"
+        v-model="baseRole"
+        width="md"
+        :options="$options.BASE_ROLES"
+        :state="baseRoleValid"
+      />
+    </gl-form-group>
+
+    <gl-form-group :label="$options.i18n.customPermissionsLabel" label-class="gl-pb-1!">
+      <template #label-description>
+        <div v-if="!isLoadingPermissions" class="gl-mb-6">
+          {{ $options.i18n.customPermissionsDescription }}
+        </div>
+      </template>
+
+      <div v-if="isLoadingPermissions" class="gl-mt-5">
+        <gl-skeleton-loader />
+      </div>
+
+      <gl-form-checkbox-group v-else v-model="permissions" :state="permissionsState">
         <gl-form-checkbox
           v-for="permission in availablePermissions"
           :key="permission.value"
@@ -258,7 +323,7 @@ export default {
         type="reset"
         data-testid="cancel-button"
         :disabled="isSubmitting"
-        @click="$emit('cancel')"
+        @click="handleCancelClick"
       >
         {{ $options.i18n.cancel }}
       </gl-button>

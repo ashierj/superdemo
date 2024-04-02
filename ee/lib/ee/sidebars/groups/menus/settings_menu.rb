@@ -41,7 +41,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Roles and Permissions'),
               link: group_settings_roles_and_permissions_path(context.group),
-              active_routes: { path: 'roles_and_permissions#index' },
+              active_routes: { controller: :roles_and_permissions },
               item_id: :roles_and_permissions
             )
           end

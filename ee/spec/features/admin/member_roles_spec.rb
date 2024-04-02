@@ -18,8 +18,8 @@ RSpec.describe 'Instance-level Member Roles', feature_category: :permissions do
 
   def create_role(access_level, name, description, permissions)
     click_button 'New role'
-    select access_level, from: 'Base role to use as template'
-    fill_in 'Role name', with: name
+    select access_level, from: 'Base role'
+    fill_in 'Name', with: name
     fill_in 'Description', with: description
     permissions.each do |permission|
       page.check permission
@@ -43,7 +43,7 @@ RSpec.describe 'Instance-level Member Roles', feature_category: :permissions do
         create_role(access_level, name, description, [permission_name])
 
         created_member_role = MemberRole.permissions_where(permission => true)
-          .find_by(name: name, base_access_level: Gitlab::Access.options[access_level])
+                                        .find_by(name: name, base_access_level: Gitlab::Access.options[access_level])
 
         expect(created_member_role).not_to be_nil
 

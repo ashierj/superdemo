@@ -55,6 +55,7 @@ describe('CustomRolesApp', () => {
       provide: {
         groupFullPath,
         documentationPath: 'http://foo.bar',
+        newRolePath: 'new/role/path',
       },
       mocks: {
         $toast: {
@@ -116,6 +117,7 @@ describe('CustomRolesApp', () => {
 
       it('renders the new role button', () => {
         expect(findButton().text()).toContain('New role');
+        expect(findButton().attributes('href')).toBe('new/role/path');
       });
 
       it('renders the number of roles', () => {

@@ -16,7 +16,7 @@ export default {
     GlSprintf,
     GlLink,
   },
-  inject: ['documentationPath', 'emptyStateSvgPath'],
+  inject: ['documentationPath', 'emptyStateSvgPath', 'newRolePath'],
 };
 </script>
 
@@ -24,7 +24,7 @@ export default {
   <gl-empty-state
     :title="$options.i18n.emptyStateTitle"
     :svg-path="emptyStateSvgPath"
-    primary-button-link="#"
+    :primary-button-link="newRolePath"
     :primary-button-text="$options.i18n.newRoleButton"
   >
     <template #description>
