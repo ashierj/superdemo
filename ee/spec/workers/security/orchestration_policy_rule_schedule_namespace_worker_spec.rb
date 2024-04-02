@@ -113,6 +113,31 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           worker.perform(schedule_id)
         end
       end
+
+      context 'when the cadence is not valid' do
+        before do
+          schedule.update_column(:cron, '*/5 * * * *')
+          schedule.update_column(:next_run_at, 1.minute.ago)
+        end
+
+        it 'does not execute the rule schedule worker' do
+          expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
+
+          worker.perform(schedule_id)
+        end
+
+        it 'logs the error' do
+          [project_1, project_2].each do |project|
+            expect(::Gitlab::AppJsonLogger).to receive(:info).once.with(
+              event: 'scheduled_scan_execution_policy_validation',
+              message: 'Invalid cadence',
+              project_id: project.id,
+              cadence: schedule.cron).and_call_original
+          end
+
+          worker.perform(schedule_id)
+        end
+      end
     end
 
     context 'when schedule does not exist' do

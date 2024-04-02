@@ -70,6 +70,29 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
 
           worker.perform
         end
+
+        context 'when the cadence is not valid' do
+          before do
+            schedule.update_column(:cron, '*/5 * * * *')
+            schedule.update_column(:next_run_at, 1.minute.ago)
+          end
+
+          it 'does not invoke rule schedule worker' do
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
+
+            worker.perform
+          end
+
+          it 'logs the error' do
+            expect(::Gitlab::AppJsonLogger).to receive(:info).once.with(
+              event: 'scheduled_scan_execution_policy_validation',
+              message: 'Invalid cadence',
+              project_id: security_orchestration_policy_configuration.project.id,
+              cadence: schedule.cron).and_call_original
+
+            worker.perform
+          end
+        end
       end
 
       context 'when schedule is created for security orchestration policy configuration in namespace' do
