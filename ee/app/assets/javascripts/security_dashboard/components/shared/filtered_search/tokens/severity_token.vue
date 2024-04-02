@@ -3,13 +3,20 @@ import { GlIcon, GlFilteredSearchToken, GlFilteredSearchSuggestion } from '@gitl
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import { s__ } from '~/locale';
+import QuerystringSync from '../../filters/querystring_sync.vue';
 import { ALL_ID as ALL_SEVERITIES_VALUE } from '../../filters/constants';
+import eventHub from '../event_hub';
+
+const VALID_IDS = Object.entries(SEVERITY_LEVELS).map(([id]) => id.toUpperCase());
 
 export default {
+  VALID_IDS,
+
   components: {
     GlIcon,
     GlFilteredSearchToken,
     GlFilteredSearchSuggestion,
+    QuerystringSync,
   },
   props: {
     config: {
@@ -28,7 +35,7 @@ export default {
   },
   data() {
     return {
-      selectedSeverities: [ALL_SEVERITIES_VALUE],
+      selectedSeverities: this.value.data || [ALL_SEVERITIES_VALUE],
     };
   },
   computed: {
@@ -49,6 +56,26 @@ export default {
     },
   },
   methods: {
+    emitFiltersChanged() {
+      eventHub.$emit('filters-changed', {
+        severity: this.selectedSeverities.filter((value) => value !== ALL_SEVERITIES_VALUE),
+      });
+    },
+    resetSelected() {
+      this.selectedSeverities = [ALL_SEVERITIES_VALUE];
+      this.emitFiltersChanged();
+    },
+    updateSelectedFromQS(values) {
+      // This happens when we clear the token and re-select `Severity`
+      // to open the dropdown. At that stage we simply want to wait
+      // for the user to select new severities.
+      if (!values.length) {
+        return;
+      }
+
+      this.selectedSeverities = values;
+      this.emitFiltersChanged();
+    },
     toggleSelected(selectedValue) {
       const allSeveritiesSelected = selectedValue === ALL_SEVERITIES_VALUE;
 
@@ -84,33 +111,42 @@ export default {
 </script>
 
 <template>
-  <gl-filtered-search-token
-    :config="config"
-    v-bind="{ ...$props, ...$attrs }"
-    :multi-select-values="selectedSeverities"
-    :value="tokenValue"
-    v-on="$listeners"
-    @select="toggleSelected"
+  <querystring-sync
+    querystring-key="severity"
+    :value="selectedSeverities"
+    :valid-values="$options.VALID_IDS"
+    @input="updateSelectedFromQS"
   >
-    <template #view>
-      {{ toggleText }}
-    </template>
-    <template #suggestions>
-      <gl-filtered-search-suggestion
-        v-for="severity in $options.items"
-        :key="severity.value"
-        :value="severity.value"
-      >
-        <div class="gl-display-flex gl-align-items-center">
-          <gl-icon
-            name="check"
-            class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-            :class="{ 'gl-visibility-hidden': !isSeveritySelected(severity.value) }"
-            :data-testid="`severity-icon-${severity.value}`"
-          />
-          {{ severity.text }}
-        </div>
-      </gl-filtered-search-suggestion>
-    </template>
-  </gl-filtered-search-token>
+    <gl-filtered-search-token
+      :config="config"
+      v-bind="{ ...$props, ...$attrs }"
+      :multi-select-values="selectedSeverities"
+      :value="tokenValue"
+      v-on="$listeners"
+      @select="toggleSelected"
+      @destroy="resetSelected"
+      @complete="emitFiltersChanged"
+    >
+      <template #view>
+        {{ toggleText }}
+      </template>
+      <template #suggestions>
+        <gl-filtered-search-suggestion
+          v-for="severity in $options.items"
+          :key="severity.value"
+          :value="severity.value"
+        >
+          <div class="gl-display-flex gl-align-items-center">
+            <gl-icon
+              name="check"
+              class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
+              :class="{ 'gl-visibility-hidden': !isSeveritySelected(severity.value) }"
+              :data-testid="`severity-icon-${severity.value}`"
+            />
+            {{ severity.text }}
+          </div>
+        </gl-filtered-search-suggestion>
+      </template>
+    </gl-filtered-search-token>
+  </querystring-sync>
 </template>
