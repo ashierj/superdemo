@@ -7,6 +7,7 @@ import SecretTabs from 'ee/ci/secrets/components/secret_details/secret_tabs.vue'
 import SecretDetails from 'ee/ci/secrets/components/secret_details/secret_details.vue';
 import SecretAuditLog from 'ee/ci/secrets/components/secret_details/secret_audit_log.vue';
 import createRouter from 'ee/ci/secrets/router';
+import { ENTITY_GROUP } from 'ee/ci/secrets/constants';
 import SecretsApp from 'ee//ci/secrets/components/secrets_app.vue';
 
 Vue.use(VueRouter);
@@ -84,7 +85,7 @@ describe('Secrets router', () => {
       createSecretsApp({ route: '/', props });
 
       expect(wrapper.findComponent(SecretsTable).props()).toMatchObject({
-        entity,
+        isGroup: entity === ENTITY_GROUP,
         fullPath,
       });
     });

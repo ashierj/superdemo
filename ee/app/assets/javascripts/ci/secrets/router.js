@@ -23,6 +23,7 @@ export default (base, props) => {
 
   const entity = projectPath ? ENTITY_PROJECT : ENTITY_GROUP;
   const fullPath = projectPath || groupPath;
+  const isGroup = entity === ENTITY_GROUP;
 
   return new VueRouter({
     mode: 'history',
@@ -33,7 +34,7 @@ export default (base, props) => {
         path: '/',
         component: SecretsTable,
         props: () => {
-          return { entity, fullPath };
+          return { isGroup, fullPath };
         },
         meta: {
           getBreadcrumbText: () => s__('Secrets|Secrets'),

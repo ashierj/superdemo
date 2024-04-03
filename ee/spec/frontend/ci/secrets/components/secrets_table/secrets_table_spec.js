@@ -12,6 +12,7 @@ import {
   EDIT_ROUTE_NAME,
   INITIAL_PAGE,
   PAGE_SIZE,
+  ENTITY_GROUP,
 } from 'ee/ci/secrets/constants';
 import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
 import SecretActionsCell from 'ee/ci/secrets/components/secrets_table/secret_actions_cell.vue';
@@ -61,7 +62,7 @@ describe('SecretsTable component', () => {
     wrapper = mountExtended(SecretsTable, {
       propsData: {
         fullPath: `path/to/${entity}`,
-        entity,
+        isGroup: entity === ENTITY_GROUP,
       },
       apolloProvider,
       stubs: {
