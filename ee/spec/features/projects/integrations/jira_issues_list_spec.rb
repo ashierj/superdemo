@@ -67,7 +67,8 @@ RSpec.describe 'Jira issues list', :js, feature_category: :integrations do
           aggregate_failures do
             within('ul.issuable-list') do
               issues[offset...per_page].each_with_index do |issue, idx|
-                issuable_row = find("li#issuable_#{idx + offset}", wait: 0)
+                issuable_reference = issues[idx + offset][:key]
+                issuable_row = find("li#issuable_#{issuable_reference}", wait: 0)
                 expect(issuable_row.text).to include(jira_user)
                 expect(issuable_row.text).to include(issue[:key])
                 expect(issuable_row.text).to include(issue.dig(:fields, :summary))

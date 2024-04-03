@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
   describe '#execute' do
-    let(:expected_project_keys) { project_keys.is_a?(Array) ? project_keys.join(',').delete(' ') : project_keys.delete(' ') }
+    let(:expected_project_keys) { project_keys }
 
     subject { described_class.new(project_keys, params).execute }
 
@@ -147,6 +147,15 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
       end
     end
 
+    context 'when project key is empty' do
+      let(:project_keys) { '' }
+      let(:params) { {} }
+
+      it 'builds jql without project filter' do
+        expect(subject).to eq("order by created DESC")
+      end
+    end
+
     context 'when a single project key is provided' do
       let(:project_keys) { 'PROJECT_KEY' }
 
@@ -154,19 +163,7 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
     end
 
     context 'when multiple project keys are provided' do
-      let(:project_keys) { 'PROJECT_KEY, FOO, BAR' }
-
-      include_examples 'builds jql'
-    end
-
-    context 'when a single project key is provided as an array' do
-      let(:project_keys) { %w[PROJECT_KEY] }
-
-      include_examples 'builds jql'
-    end
-
-    context 'when multiple project keys are provided as an array' do
-      let(:project_keys) { %w[PROJECT_KEY FOO BAR] }
+      let(:project_keys) { 'PROJECT_KEY,FOO,BAR' }
 
       include_examples 'builds jql'
     end

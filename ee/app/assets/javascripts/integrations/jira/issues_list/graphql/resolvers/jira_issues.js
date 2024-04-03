@@ -45,9 +45,8 @@ export const transformJiraIssuesREST = (response) => {
       return {
         __typename: 'JiraIssue',
         ...jiraIssue,
-        // JIRA issues don't have ID so we extract
-        // an ID equivalent from references.relative
-        id: parseInt(rawIssue.references.relative.split('-').pop(), 10),
+        // JIRA issues don't have `id` so we use references.relative
+        id: rawIssue.references.relative,
         author: transformJiraIssueAuthor(jiraIssue, index),
         labels: transformJiraIssueLabels(jiraIssue),
         assignees: transformJiraIssueAssignees(jiraIssue),
