@@ -3,7 +3,10 @@
 module QA
   RSpec.describe 'Govern', :jira, :orchestrated, :requires_admin, product_group: :threat_insights do
     describe 'vulnerability report with jira integration',
-      testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
+      quarantine: {
+        type: :investigating,
+        issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/454198"
+      } do
       let(:jira_project_key) { 'JITP' }
       let!(:project) do
         create(:project,
