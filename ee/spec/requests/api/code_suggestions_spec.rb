@@ -30,6 +30,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                                         .and_return(false)
 
     allow(Gitlab::InternalEvents).to receive(:track_event)
+    allow(Gitlab::Tracking::AiTracking).to receive(:track_event)
   end
 
   shared_examples 'a response' do |case_name|
@@ -239,6 +240,14 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           )
         end
 
+        it 'tracks code_suggestions_requested ai event' do
+          post_api
+
+          expect(Gitlab::Tracking::AiTracking)
+            .to have_received(:track_event)
+                  .with('code_suggestions_requested', user_id: current_user.id)
+        end
+
         context 'with telemetry headers' do
           let(:headers) do
             {
@@ -394,8 +403,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             let(:current_user) { authorized_user }
             let(:prefix) do
               <<~PREFIX
-              def is_even(n: int) ->
-              # A function that outputs the first 20 fibonacci numbers
+                def is_even(n: int) ->
+                # A function that outputs the first 20 fibonacci numbers
               PREFIX
             end
 
@@ -550,8 +559,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             let(:current_user) { authorized_user }
             let(:prefix) do
               <<~PREFIX
-              def is_even(n: int) ->
-              # A function that outputs the first 20 fibonacci numbers
+                def is_even(n: int) ->
+                # A function that outputs the first 20 fibonacci numbers
               PREFIX
             end
 
