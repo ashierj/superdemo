@@ -21,6 +21,7 @@ RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projec
   it { expect(described_class).to have_graphql_field(:stats) }
   it { expect(described_class).to have_graphql_field(:billable_members_count) }
   it { expect(described_class).to have_graphql_field(:external_audit_event_destinations) }
+  it { expect(described_class).to have_graphql_field(:external_audit_event_streaming_destinations) }
   it { expect(described_class).to have_graphql_field(:google_cloud_logging_configurations) }
   it { expect(described_class).to have_graphql_field(:merge_request_violations) }
   it { expect(described_class).to have_graphql_field(:allow_stale_runner_pruning) }

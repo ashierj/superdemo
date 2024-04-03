@@ -37,6 +37,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     it { is_expected.to have_many(:approval_rules).class_name('ApprovalRules::ApprovalGroupRule').inverse_of(:group) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:group) }
     it { is_expected.to have_many(:external_audit_event_destinations) }
+    it { is_expected.to have_many(:external_audit_event_streaming_destinations) }
     it { is_expected.to have_many(:google_cloud_logging_configurations) }
     it { is_expected.to have_many(:amazon_s3_configurations) }
     it { is_expected.to have_one(:analytics_dashboards_pointer) }
