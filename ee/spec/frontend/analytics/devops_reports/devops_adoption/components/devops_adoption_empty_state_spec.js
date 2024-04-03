@@ -6,7 +6,7 @@ import {
   I18N_EMPTY_STATE_DESCRIPTION,
 } from 'ee/analytics/devops_reports/devops_adoption/constants';
 
-const emptyStateSvgPath = 'illustrations/monitoring/getting_started.svg';
+const emptyStateSvgPath = 'illustrations/empty-state/empty-groups-md.svg';
 
 describe('DevopsAdoptionEmptyState', () => {
   let wrapper;

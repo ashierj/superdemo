@@ -28,6 +28,5 @@ export default {
     :title="$options.i18n.title"
     :description="$options.i18n.description"
     :svg-path="emptyStateSvgPath"
-    :svg-height="null"
   />
 </template>
