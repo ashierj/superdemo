@@ -6,6 +6,10 @@ module Gitlab
       class SsoState
         SESSION_STORE_KEY = :active_group_sso_sign_ins
 
+        def self.active_saml_sessions
+          Gitlab::NamespacedSessionStore.new(SESSION_STORE_KEY).to_h
+        end
+
         attr_reader :saml_provider_id
 
         def initialize(saml_provider_id)

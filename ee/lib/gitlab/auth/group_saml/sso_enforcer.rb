@@ -7,6 +7,15 @@ module Gitlab
         DEFAULT_SESSION_TIMEOUT = 1.day
 
         class << self
+          def sessions_time_remaining_for_expiry
+            SsoState.active_saml_sessions.map do |id, last_sign_in_at|
+              expires_at = last_sign_in_at + DEFAULT_SESSION_TIMEOUT
+              # expires_at is DateTime; convert to Time; Time - Time yields a Float
+              time_remaining_for_expiry = expires_at.to_time - Time.current
+              { provider_id: id, time_remaining: time_remaining_for_expiry }
+            end
+          end
+
           def access_restricted?(user:, resource:, session_timeout: DEFAULT_SESSION_TIMEOUT)
             group = resource.is_a?(::Group) ? resource : resource.group
 
