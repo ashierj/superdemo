@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import IntegrationSectionGoogleCloudArtifactRegistry from 'ee/integrations/edit/components/sections/google_cloud_artifact_registry.vue';
@@ -27,6 +28,9 @@ describe('IntegrationSectionGoogleCloudArtifactRegistry', () => {
     });
 
     wrapper = shallowMount(IntegrationSectionGoogleCloudArtifactRegistry, {
+      propsData: {
+        isValidated: false,
+      },
       store,
     });
   };
@@ -71,6 +75,14 @@ describe('IntegrationSectionGoogleCloudArtifactRegistry', () => {
     expect(findConnection().exists()).toBe(true);
   });
 
+  it('emits toggle-integration-active event when connection component emits event', () => {
+    createComponent();
+
+    findConnection().vm.$emit('toggle-integration-active', true);
+
+    expect(wrapper.emitted('toggle-integration-active')).toEqual([[true]]);
+  });
+
   it('renders form title', () => {
     createComponent();
 
@@ -80,12 +92,34 @@ describe('IntegrationSectionGoogleCloudArtifactRegistry', () => {
   it('renders configuration component', () => {
     createComponent();
 
-    expect(findConfiguration().props('fields')).toBe(mockIntegrationProps.fields);
+    expect(findConfiguration().props()).toMatchObject({
+      fields: mockIntegrationProps.fields,
+      isValidated: false,
+    });
   });
 
   it('renders configuration instructions', () => {
     createComponent();
 
-    expect(findConfigurationInstructions().exists()).toBe(true);
+    expect(findConfigurationInstructions().props('id')).toBe('');
+  });
+
+  it('renders configuration instructions with id prop filled', () => {
+    createComponent({ fields: [{ name: 'artifact_registry_project_id', value: 'project-id' }] });
+
+    expect(findConfigurationInstructions().props('id')).toBe('project-id');
+  });
+
+  it('updates configuration instructions id prop when configuration component emits update event', async () => {
+    createComponent();
+
+    findConfiguration().vm.$emit('update', {
+      value: 'project-id',
+      field: mockIntegrationProps.fields[0],
+    });
+
+    await nextTick();
+
+    expect(findConfigurationInstructions().props('id')).toBe('project-id');
   });
 });
