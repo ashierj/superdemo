@@ -7,6 +7,8 @@ import Connection from '~/integrations/edit/components/sections/connection.vue';
 import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
 import EmptyState from 'ee/integrations/edit/components/google_cloud_artifact_registry/empty_state.vue';
 
+const PROJECT_ID_FIELD_NAME = 'artifact_registry_project_id';
+
 export default {
   name: 'IntegrationSectionGoogleCloudArtifactRegistry',
   components: {
@@ -15,6 +17,17 @@ export default {
     Connection,
     EmptyState,
     GlButton,
+  },
+  props: {
+    isValidated: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      googleCloudProjectId: null,
+    };
   },
   computed: {
     ...mapGetters(['propsSource']),
@@ -35,6 +48,24 @@ export default {
         this.propsSource.googleCloudArtifactRegistryProps?.workloadIdentityFederationPath ?? '#'
       );
     },
+    propsSourceGoogleCloudProjectId() {
+      return (
+        this.propsSource.fields.find((field) => field.name === PROJECT_ID_FIELD_NAME)?.value ?? ''
+      );
+    },
+    derivedGoogleCloudProjectId() {
+      if (this.googleCloudProjectId === null) {
+        return this.propsSourceGoogleCloudProjectId;
+      }
+      return this.googleCloudProjectId;
+    },
+  },
+  methods: {
+    updateGoogleCloudProjectId({ value, field }) {
+      if (field.name === PROJECT_ID_FIELD_NAME) {
+        this.googleCloudProjectId = value;
+      }
+    },
   },
 };
 </script>
@@ -54,11 +85,16 @@ export default {
       </div>
       <hr />
     </template>
-    <connection />
+    <connection @toggle-integration-active="$emit('toggle-integration-active', $event)" />
     <h3 class="gl-mt-0">{{ s__('GoogleArtifactRegistry|Repository') }}</h3>
-    <configuration :fields="dynamicFields" class="gl-form-input-xl" />
+    <configuration
+      :fields="dynamicFields"
+      :is-validated="isValidated"
+      class="gl-form-input-xl"
+      @update="updateGoogleCloudProjectId"
+    />
     <hr />
-    <configuration-instructions />
+    <configuration-instructions :id="derivedGoogleCloudProjectId" />
   </div>
   <empty-state v-else :path="workloadIdentityFederationPath" />
 </template>

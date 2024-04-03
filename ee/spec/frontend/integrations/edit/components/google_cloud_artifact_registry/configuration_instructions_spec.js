@@ -17,12 +17,15 @@ describe('ConfigurationInstructions', () => {
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
   const findLinks = () => wrapper.findAllComponents(GlLink);
 
-  const createComponent = (customState = {}) => {
+  const createComponent = ({ id = '', customState = {} } = {}) => {
     const store = createStore({
       customState: { ...mockIntegrationProps, ...customState },
     });
 
     wrapper = shallowMount(ConfigurationInstructions, {
+      propsData: {
+        id,
+      },
       store,
       stubs: {
         GlSprintf,
@@ -66,7 +69,7 @@ describe('ConfigurationInstructions', () => {
   });
 
   it('renders expanded accordion item when `operating=false`', () => {
-    createComponent({ operating: false });
+    createComponent({ customState: { operating: false } });
 
     expect(findAccordionItem().props('visible')).toBe(true);
   });
@@ -109,5 +112,16 @@ describe('ConfigurationInstructions', () => {
       language: 'powershell',
       code: instructions,
     });
+  });
+
+  it('renders code instruction with id passed', () => {
+    createComponent({ id: 'project-id' });
+
+    expect(findCodeBlockHighlighted().props('code')).toBe(`curl --request GET \\
+--header "PRIVATE-TOKEN: <your_access_token>" \\
+--data 'google_cloud_artifact_registry_project_id=project-id' \\
+--data 'enable_google_cloud_artifact_registry=true' \\
+--url "https://gitlab.com/api/v4/projects/1/google_cloud/setup/integrations.sh" \\
+| bash`);
   });
 });

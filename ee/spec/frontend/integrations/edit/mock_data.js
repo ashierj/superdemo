@@ -8,5 +8,5 @@ export const mockIntegrationProps = {
     artifactRegistryPath: '/path/to/artifact/registry',
   },
   sections: [],
-  fields: [],
+  fields: [{ name: 'artifact_registry_project_id', value: null }],
 };

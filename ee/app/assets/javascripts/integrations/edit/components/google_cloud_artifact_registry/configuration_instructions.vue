@@ -15,6 +15,13 @@ export default {
     GlLink,
     GlSprintf,
   },
+  props: {
+    id: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
   computed: {
     ...mapGetters(['propsSource']),
     operating() {
@@ -26,13 +33,19 @@ export default {
     personalAccessTokensPath() {
       return this.propsSource.personalAccessTokensPath;
     },
+    googleCloudProjectId() {
+      return this.id || '<your_google_cloud_project_id>';
+    },
     instructions() {
       return `curl --request GET \\
 --header "PRIVATE-TOKEN: <your_access_token>" \\
---data 'google_cloud_artifact_registry_project_id=<your_google_cloud_project_id>' \\
+--data 'google_cloud_artifact_registry_project_id=${this.googleCloudProjectId}' \\
 --data 'enable_google_cloud_artifact_registry=true' \\
 --url "https://gitlab.com/api/v4/projects/${this.projectId}/google_cloud/setup/integrations.sh" \\
 | bash`;
+    },
+    hasId() {
+      return Boolean(this.id);
     },
   },
 };
@@ -105,7 +118,7 @@ export default {
               </template>
             </gl-sprintf>
           </li>
-          <li>
+          <li v-if="!hasId">
             <gl-sprintf
               :message="
                 s__(
