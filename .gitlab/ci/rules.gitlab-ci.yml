@@ -1904,6 +1904,12 @@
     - <<: *if-merge-request
       changes: *decomposed-db-models-patterns
 
+.rails:rules:db:migrate:multi-version-upgrade:
+  rules:
+    - if: '$DISABLE_DB_MULTI_VERSION_UPGRADE =~ /true|yes|1/i'
+      when: never
+    - !reference [".rails:rules:ee-and-foss-migration", rules]
+
 .rails:rules:db-backup:
   rules:
     - <<: *if-merge-request-labels-pipeline-expedite
