@@ -289,7 +289,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         let(:prompt_resource) do
           <<~CONTEXT
-            Here is additional data in <resource></resource> tags about the resource the user is working with:
             <resource>
             #{metadata}
             </resource>
