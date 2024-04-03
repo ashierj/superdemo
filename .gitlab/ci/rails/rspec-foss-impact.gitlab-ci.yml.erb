@@ -87,3 +87,11 @@ rspec system foss-impact:
   parallel: <%= rspec_files_per_test_level[:system][:parallelization] %>
 <% end %>
 <% end %>
+
+<% if rspec_files_per_test_level[:tooling][:files].size > 0 %>
+rspec tooling foss-impact:
+  extends: .base-rspec-foss-impact
+<% if rspec_files_per_test_level[:tooling][:parallelization] > 1 %>
+  parallel: <%= rspec_files_per_test_level[:tooling][:parallelization] %>
+<% end %>
+<% end %>
