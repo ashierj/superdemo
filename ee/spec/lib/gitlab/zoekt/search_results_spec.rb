@@ -302,6 +302,14 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
 
           search
         end
+
+        context 'when search_add_archived_filter_to_zoekt flag is disabled' do
+          before do
+            stub_feature_flags(search_add_archived_filter_to_zoekt: false)
+          end
+
+          it_behaves_like 'a non-filtered search'
+        end
       end
 
       describe 'archive filters' do
@@ -309,6 +317,14 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
           let(:filters) { { include_archived: true } }
 
           it_behaves_like 'a non-filtered search'
+
+          context 'when search_add_archived_filter_to_zoekt flag is disabled' do
+            before do
+              stub_feature_flags(search_add_archived_filter_to_zoekt: false)
+            end
+
+            it_behaves_like 'a non-filtered search'
+          end
         end
 
         context 'when include_archived filter is set to false' do
@@ -334,6 +350,14 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
 
               expect(search).to be_empty
             end
+          end
+
+          context 'when search_add_archived_filter_to_zoekt flag is disabled' do
+            before do
+              stub_feature_flags(search_add_archived_filter_to_zoekt: false)
+            end
+
+            it_behaves_like 'a non-filtered search'
           end
         end
       end

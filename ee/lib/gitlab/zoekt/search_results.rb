@@ -253,7 +253,10 @@ module Gitlab
         return projects if projects == :any
 
         filtered_projects = projects.without_order
-        filtered_projects = filtered_projects.non_archived unless filters[:include_archived]
+
+        if Feature.enabled?(:search_add_archived_filter_to_zoekt, current_user) && !filters[:include_archived]
+          filtered_projects = filtered_projects.non_archived
+        end
 
         if Feature.enabled?(:search_add_fork_filter_to_zoekt, current_user) && !filters[:include_forked]
           filtered_projects = filtered_projects.not_a_fork
