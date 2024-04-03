@@ -3,6 +3,7 @@
 require "gitlab/backup/cli"
 require 'tmpdir'
 require 'fileutils'
+require 'factory_bot'
 
 # Load spec support code
 Dir['spec/support/**/*.rb'].each { |f| load f }
