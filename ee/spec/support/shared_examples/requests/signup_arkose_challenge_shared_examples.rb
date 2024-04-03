@@ -22,8 +22,6 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
   let(:arkose_status_response) { ServiceResponse.success }
 
   before do
-    stub_feature_flags(arkose_labs_signup_challenge: true)
-
     allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
 
     allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
@@ -97,16 +95,6 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
 
       create_user
     end
-  end
-
-  context 'when the feature flag is disabled' do
-    before do
-      stub_feature_flags(arkose_labs_signup_challenge: false)
-    end
-
-    it_behaves_like 'creates the user'
-
-    it_behaves_like 'skips verification and data recording'
   end
 
   context 'when feature is disabled' do

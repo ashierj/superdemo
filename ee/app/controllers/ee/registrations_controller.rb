@@ -17,9 +17,6 @@ module EE
 
       skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
       before_action :restrict_registration, only: [:new, :create]
-      before_action only: [:new, :create] do
-        push_frontend_feature_flag(:arkose_labs_signup_challenge)
-      end
       before_action :ensure_can_remove_self, only: [:destroy]
       before_action :verify_arkose_labs_challenge!, only: :create
     end
@@ -78,7 +75,7 @@ module EE
       # RegistrationsController#after_inactive_sign_up_path_for is correctly called with the custom_attributes
       # that are added by this action so that the IdentityVerifiable module observation of them is correct.
       # Identity Verification feature specs cover this ordering.
-      record_arkose_data
+      record_arkose_data(user)
 
       super
 
@@ -154,20 +151,19 @@ module EE
       glm_tracking_params.to_h
     end
 
-    def record_arkose_data
-      return unless arkose_labs_enabled?
+    def record_arkose_data(user)
+      return unless arkose_labs_enabled?(user: user)
       return unless arkose_labs_verify_response
 
       Arkose::RecordUserDataService.new(
         response: arkose_labs_verify_response,
-        user: resource
+        user: user
       ).execute
     end
 
     override :arkose_labs_enabled?
-    def arkose_labs_enabled?
-      ::Feature.enabled?(:arkose_labs_signup_challenge) &&
-        ::Arkose::Settings.enabled?(user: resource, user_agent: request.user_agent)
+    def arkose_labs_enabled?(user: nil)
+      ::Arkose::Settings.enabled?(user: user, user_agent: request.user_agent)
     end
 
     def allow_account_deletion?

@@ -86,17 +86,18 @@ RSpec.describe Arkose::Settings, feature_category: :instance_resiliency do
   end
 
   describe '.enabled?' do
-    let_it_be(:user) { create(:user) }
+    let_it_be(:a_user) { create(:user) }
 
     subject { described_class.enabled?(user: user, user_agent: 'user_agent') }
 
-    where(:private_key, :public_key, :namespace, :qa_request, :group_saml_user, :result) do
-      nil       | 'public' | 'namespace' | false | false | false
-      'private' | nil      | 'namespace' | false | false | false
-      'private' | 'public' | nil         | false | false | false
-      'private' | 'public' | 'namespace' | true  | false | false
-      'private' | 'public' | 'namespace' | false | true  | false
-      'private' | 'public' | 'namespace' | false | false | true
+    where(:private_key, :public_key, :namespace, :qa_request, :user, :group_saml_user, :result) do
+      nil       | 'public' | 'namespace' | false | ref(:a_user) | false | false
+      'private' | nil      | 'namespace' | false | ref(:a_user) | false | false
+      'private' | 'public' | nil         | false | ref(:a_user) | false | false
+      'private' | 'public' | 'namespace' | true  | ref(:a_user) | false | false
+      'private' | 'public' | 'namespace' | false | ref(:a_user) | true  | false
+      'private' | 'public' | 'namespace' | false | ref(:a_user) | false | true
+      'private' | 'public' | 'namespace' | false | nil          | false | true
     end
 
     with_them do

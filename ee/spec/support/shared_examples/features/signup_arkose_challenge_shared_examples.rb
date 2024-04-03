@@ -8,7 +8,6 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band' do
   end
 
   before do
-    stub_feature_flags(arkose_labs_signup_challenge: true)
     stub_application_setting(
       arkose_labs_public_api_key: 'public_key',
       arkose_labs_private_api_key: mock_arkose_labs_key

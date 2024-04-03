@@ -7,7 +7,6 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
 
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
-    stub_feature_flags(arkose_labs_signup_challenge: false)
   end
 
   context 'for SaaS', :saas do
