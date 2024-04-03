@@ -242,7 +242,7 @@ export default {
     button: s__('DeploymentApproval|Approval options'),
     title: s__('DeploymentApproval|Approve or reject deployment #%{deploymentIid}'),
     message: s__(
-      'DeploymentApproval|Approving will run the manual job from deployment #%{deploymentIid}. Rejecting will fail the manual job.',
+      'DeploymentApproval|After deployment #%{deploymentIid} has the required approvals, you can run the manual job. Rejecting will fail the manual job.',
     ),
     environment: s__('DeploymentApproval|Environment: %{environment}'),
     tier: s__('DeploymentApproval|Deployment tier: %{tier}'),

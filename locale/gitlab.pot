@@ -17615,6 +17615,9 @@ msgstr ""
 msgid "DeploymentApproval| Current approvals: %{current}"
 msgstr ""
 
+msgid "DeploymentApproval|After deployment #%{deploymentIid} has the required approvals, you can run the manual job. Rejecting will fail the manual job."
+msgstr ""
+
 msgid "DeploymentApproval|Approval options"
 msgstr ""
 
@@ -17625,9 +17628,6 @@ msgid "DeploymentApproval|Approved %{time}"
 msgstr ""
 
 msgid "DeploymentApproval|Approved by you %{time}"
-msgstr ""
-
-msgid "DeploymentApproval|Approving will run the manual job from deployment #%{deploymentIid}. Rejecting will fail the manual job."
 msgstr ""
 
 msgid "DeploymentApproval|Deployment approved"

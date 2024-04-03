@@ -103,7 +103,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
     it('should show which deployment this is approving', () => {
       const main = sprintf(
         s__(
-          'DeploymentApproval|Approving will run the manual job from deployment #%{deploymentIid}. Rejecting will fail the manual job.',
+          'DeploymentApproval|After deployment #%{deploymentIid} has the required approvals, you can run the manual job. Rejecting will fail the manual job.',
         ),
         {
           deploymentIid: environment.upcomingDeployment.iid,
