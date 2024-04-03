@@ -19,14 +19,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::DefaultBranchUpdationChe
     it { is_expected.to be_falsey }
   end
 
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(scan_result_policies_block_unprotecting_branches: false)
-    end
-
-    it { is_expected.to be_falsey }
-  end
-
   context 'without blocking scan result policy' do
     it { is_expected.to be_falsey }
   end
