@@ -19077,6 +19077,9 @@ msgstr ""
 msgid "Edit public deploy key"
 msgstr ""
 
+msgid "Edit release"
+msgstr ""
+
 msgid "Edit sidebar"
 msgstr ""
 
@@ -19090,9 +19093,6 @@ msgid "Edit template"
 msgstr ""
 
 msgid "Edit this file only."
-msgstr ""
-
-msgid "Edit this release"
 msgstr ""
 
 msgid "Edit title and description"
