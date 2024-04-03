@@ -1699,14 +1699,10 @@
       changes: *qa-patterns
       when: manual
       allow_failure: true
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
-      changes: *ci-build-images-patterns
-      when: manual
-      allow_failure: true
     - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
-      changes: *code-qa-patterns
+      changes: *code-patterns
       when: manual
       allow_failure: true
     - <<: *if-default-branch-schedule-nightly
