@@ -63,5 +63,12 @@ module EE
     def review_llm_summary(merge_request, reviewer)
       merge_request.latest_merge_request_diff&.latest_review_summary_from_reviewer(reviewer)
     end
+
+    def show_video_component?(project)
+      experiment(:issues_mrs_empty_state, type: :experiment, user: current_user, project: project) do |e|
+        e.control { false }
+        e.candidate { true }
+      end.run
+    end
   end
 end
