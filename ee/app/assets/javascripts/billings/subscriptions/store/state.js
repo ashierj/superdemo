@@ -1,5 +1,44 @@
 import { s__ } from '~/locale';
 
+const baseUsageColumns = [
+  {
+    id: 'seatsInSubscription',
+    label: s__('SubscriptionTable|Seats in subscription'),
+    value: null,
+    colClass: 'number',
+  },
+  {
+    id: 'seatsInUse',
+    label: s__('SubscriptionTable|Seats currently in use'),
+    value: null,
+    colClass: 'number',
+    popover: {
+      content: s__('SubscriptionTable|Usage count is performed once a day at 12:00 PM.'),
+    },
+  },
+];
+
+const baseBillingColumns = [
+  {
+    id: 'subscriptionStartDate',
+    label: s__('SubscriptionTable|Subscription start date'),
+    value: null,
+    isDate: true,
+  },
+  {
+    id: 'subscriptionEndDate',
+    label: s__('SubscriptionTable|Subscription end date'),
+    value: null,
+    isDate: true,
+  },
+  {
+    id: 'nextTermStartDate',
+    label: s__('SubscriptionTable|Next subscription term start date'),
+    value: null,
+    isDate: true,
+  },
+];
+
 export default () => ({
   isLoadingSubscription: false,
   hasErrorSubscription: false,
@@ -9,6 +48,7 @@ export default () => ({
     name: null,
     trial: false,
     upgradable: false,
+    maximumSeatLimit: null,
   },
   billing: {
     subscriptionStartDate: null,
@@ -87,21 +127,7 @@ export default () => ({
             title: s__('SubscriptionTable|Usage'),
           },
           columns: [
-            {
-              id: 'seatsInSubscription',
-              label: s__('SubscriptionTable|Seats in subscription'),
-              value: null,
-              colClass: 'number',
-            },
-            {
-              id: 'seatsInUse',
-              label: s__('SubscriptionTable|Seats currently in use'),
-              value: null,
-              colClass: 'number',
-              popover: {
-                content: s__('SubscriptionTable|Usage count is performed once a day at 12:00 PM.'),
-              },
-            },
+            ...baseUsageColumns,
             {
               id: 'maxSeatsUsed',
               label: s__('SubscriptionTable|Max seats used'),
@@ -132,24 +158,7 @@ export default () => ({
             title: s__('SubscriptionTable|Billing'),
           },
           columns: [
-            {
-              id: 'subscriptionStartDate',
-              label: s__('SubscriptionTable|Subscription start date'),
-              value: null,
-              isDate: true,
-            },
-            {
-              id: 'subscriptionEndDate',
-              label: s__('SubscriptionTable|Subscription end date'),
-              value: null,
-              isDate: true,
-            },
-            {
-              id: 'nextTermStartDate',
-              label: s__('SubscriptionTable|Next subscription term start date'),
-              value: null,
-              isDate: true,
-            },
+            ...baseBillingColumns,
             {
               id: 'nextInvoice',
               label: s__('SubscriptionTable|Next invoice'),
@@ -163,6 +172,30 @@ export default () => ({
               hideContent: true, // temporarily display a blank cell (as we don't have content yet)
             },
           ],
+        },
+      ],
+    },
+    ramon: {
+      rows: [
+        {
+          header: {
+            icon: 'monitor',
+            title: s__('SubscriptionTable|Usage'),
+          },
+          columns: [
+            ...baseUsageColumns,
+            {
+              id: 'spacer',
+              hideContent: true, // This is to align the columns on both rows
+            },
+          ],
+        },
+        {
+          header: {
+            icon: 'calendar',
+            title: s__('SubscriptionTable|Billing'),
+          },
+          columns: [...baseBillingColumns],
         },
       ],
     },
