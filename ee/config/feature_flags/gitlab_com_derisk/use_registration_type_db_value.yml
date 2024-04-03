@@ -1,9 +1,0 @@
----
-name: use_registration_type_db_value
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435745
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146261
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/453987
-milestone: '16.11'
-group: group::acquisition
-type: gitlab_com_derisk
-default_enabled: false
