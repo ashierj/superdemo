@@ -30,6 +30,13 @@ export const POLICY_TYPE_FILTER_OPTIONS = {
   },
 };
 
+export const PIPELINE_EXECUTION_FILTER_OPTION = {
+  PIPELINE_EXECUTION: {
+    value: 'PIPELINE_EXECUTION',
+    text: s__('SecurityOrchestration|Pipeline execution'),
+  },
+};
+
 export const POLICY_TYPES_WITH_INHERITANCE = [
   POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value,
   POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value,

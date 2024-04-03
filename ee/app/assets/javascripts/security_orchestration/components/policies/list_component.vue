@@ -24,6 +24,7 @@ import { isPolicyInherited, policyHasNamespace, isGroup, isProject } from '../ut
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
+  PIPELINE_EXECUTION_FILTER_OPTION,
   POLICY_TYPES_WITH_INHERITANCE,
 } from './constants';
 import BreakingChangesIcon from './breaking_changes_icon.vue';
@@ -79,6 +80,7 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   inject: [
+    'customCiToggleEnabled',
     'documentationPath',
     'namespacePath',
     'namespaceType',
@@ -150,10 +152,14 @@ export default {
   },
   data() {
     const selectedPolicySource = extractSourceParameter(getParameterByName('source'));
-    const selectedPolicyType = extractTypeParameter(getParameterByName('type'));
+    const selectedPolicyType = extractTypeParameter(
+      getParameterByName('type'),
+      this.customCiToggleEnabled,
+    );
 
     return {
       selectedPolicy: null,
+      pipelineExecutionPolicies: [],
       scanExecutionPolicies: [],
       scanResultPolicies: [],
       selectedPolicySource,
@@ -162,6 +168,17 @@ export default {
     };
   },
   computed: {
+    policyTypeFilterOptions() {
+      return this.pipelineExecutionPolicyEnabled
+        ? {
+            ...POLICY_TYPE_FILTER_OPTIONS,
+            ...PIPELINE_EXECUTION_FILTER_OPTION,
+          }
+        : POLICY_TYPE_FILTER_OPTIONS;
+    },
+    pipelineExecutionPolicyEnabled() {
+      return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
+    },
     shouldSkipDependenciesCheck() {
       return this.isGroup || !this.glFeatures.securityPoliciesPolicyScopeProject;
     },
@@ -178,6 +195,12 @@ export default {
       return {
         [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: this.scanExecutionPolicies,
         [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: this.scanResultPolicies,
+        ...(this.pipelineExecutionPolicyEnabled
+          ? {
+              [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value]: this
+                .pipelineExecutionPolicies,
+            }
+          : {}),
       };
     },
     policies() {
@@ -191,7 +214,7 @@ export default {
       }
 
       const policies = policyTypes.map((type) =>
-        getPoliciesWithType(this.allPolicyTypes[type], POLICY_TYPE_FILTER_OPTIONS[type].text),
+        getPoliciesWithType(this.allPolicyTypes[type], this.policyTypeFilterOptions[type].text),
       );
 
       return policies.flat();
