@@ -335,7 +335,7 @@ RSpec.describe API::Deployments, feature_category: :continuous_delivery do
   end
 
   describe 'POST /projects/:id/deployments/:deployment_id/approval' do
-    shared_examples_for 'not created' do |approval_status: 'approved', response_status:, message:|
+    shared_examples_for 'not created' do |response_status:, message:, approval_status: 'approved'|
       it 'does not create an approval' do
         expect { post(api(path, user), params: { status: approval_status }) }.not_to change { Deployments::Approval.count }
 

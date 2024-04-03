@@ -4,7 +4,7 @@
 # and for all of a user's groups when the user is impersonated.
 module AuditEvents
   class UserImpersonationGroupAuditEventService
-    def initialize(impersonator:, user:, remote_ip:, action: :started, created_at:)
+    def initialize(impersonator:, user:, remote_ip:, created_at:, action: :started)
       @impersonator = impersonator
       @user = user
       @remote_ip = remote_ip
