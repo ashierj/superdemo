@@ -12,7 +12,7 @@ module Projects
 
         class << self
           def valid_params
-            @valid_params ||= %i[page per_page search state status author_username assignee_username]
+            @valid_params ||= %i[page per_page search state status author_username assignee_username project]
             # to permit array params you need to init them to an empty array
             @valid_params << { labels: [], vulnerability_ids: [], issue_ids: [] }
           end
@@ -30,10 +30,15 @@ module Projects
 
           raise IntegrationError, _('Jira service not configured.') unless jira_integration&.active?
 
-          project_key = jira_integration.project_key
-          raise IntegrationError, _('Jira project key is not configured.') if project_key.blank?
+          if Feature.disabled?(:jira_multiple_project_keys, project.group)
+            project_keys = jira_integration.project_key
 
-          fetch_issues(project_key)
+            raise IntegrationError, _('Jira project key is not configured.') if project_keys.blank?
+          else
+            project_keys = (params[:project].presence || jira_integration.project_keys_as_string)
+          end
+
+          fetch_issues(project_keys)
         end
 
         private
@@ -41,8 +46,8 @@ module Projects
         attr_reader :project, :jira_integration, :page, :params
 
         # rubocop: disable CodeReuse/ServiceClass
-        def fetch_issues(project_key)
-          jql = ::Jira::JqlBuilderService.new(project_key, params).execute
+        def fetch_issues(project_keys)
+          jql = ::Jira::JqlBuilderService.new(project_keys, params).execute
           response = ::Jira::Requests::Issues::ListService
                        .new(jira_integration, { jql: jql, page: page, per_page: per_page })
                        .execute
