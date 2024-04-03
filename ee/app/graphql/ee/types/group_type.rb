@@ -118,6 +118,13 @@ module EE
           description: 'External locations that receive audit events belonging to the group.',
           authorize: :admin_external_audit_events
 
+        field :external_audit_event_streaming_destinations,
+          ::Types::AuditEvents::Group::StreamingDestinationType.connection_type,
+          null: true,
+          description: 'External destinations that receive audit events belonging to the group.',
+          authorize: :admin_external_audit_events,
+          alpha: { milestone: '16.11' }
+
         field :google_cloud_logging_configurations,
           ::Types::AuditEvents::GoogleCloudLoggingConfigurationType.connection_type,
           null: true,
