@@ -48,7 +48,7 @@ feature_category: :continuous_integration do
   end
 
   context 'with one FK' do
-    it 'generates foreign key migrations' do
+    it 'generates foreign key migrations', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/454333' do
       run_generator
 
       expect(migrations.sort_by(&:version).map(&:name)).to eq(%w[
