@@ -52944,6 +52944,9 @@ msgstr ""
 msgid "Timeout for the fastest Gitaly operations (in seconds)."
 msgstr ""
 
+msgid "Timeout: Element not found"
+msgstr ""
+
 msgid "Timezone"
 msgstr ""
 
