@@ -96,6 +96,7 @@ module API
             'code_suggestions_requested',
             user: current_user
           )
+          Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', user_id: current_user.id)
 
           workhorse_headers =
             Gitlab::Workhorse.send_url(
