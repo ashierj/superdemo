@@ -155,12 +155,6 @@
 .if-dot-com-gitlab-org-merge-request: &if-dot-com-gitlab-org-merge-request
   if: '$CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "gitlab-org" && ($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached")'
 
-.if-dot-com-gitlab-org-and-security-merge-request: &if-dot-com-gitlab-org-and-security-merge-request
-  if: '$CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "gitlab-org/security" && ($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached")'
-
-.if-dot-com-gitlab-org-and-security-tag: &if-dot-com-gitlab-org-and-security-tag
-  if: '$CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE == "gitlab-org/security" && $CI_COMMIT_TAG'
-
 .if-ruby-branch: &if-ruby-branch
   if: '$CI_COMMIT_BRANCH =~ /^ruby\d+(_\d)*$/ || $CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby\d+(_\d)*/'
 
@@ -976,7 +970,7 @@
       changes: *nodejs-patterns
     - <<: *if-merge-request
       changes: *ci-qa-patterns
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+    - <<: *if-security-merge-request
       changes: *code-patterns
     - <<: *if-merge-request
       changes: *code-qa-patterns
@@ -1554,7 +1548,7 @@
       changes: *nodejs-patterns
     - <<: *if-merge-request
       changes: *ci-qa-patterns
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+    - <<: *if-security-merge-request
       changes: *code-patterns
     - <<: *if-merge-request-and-specific-devops-stage
       changes: *code-patterns
@@ -1605,7 +1599,7 @@
     - <<: *if-merge-request
       changes: *ci-qa-patterns
       allow_failure: true
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+    - <<: *if-security-merge-request
       changes: *code-patterns
       allow_failure: true
     - <<: *if-merge-request-and-specific-devops-stage
@@ -1695,13 +1689,13 @@
 .qa:rules:package-and-test-ce:
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+    - <<: *if-security-merge-request
       changes: *qa-patterns
       when: manual
       allow_failure: true
     - <<: *if-merge-request-not-approved
       when: never
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+    - <<: *if-security-merge-request
       changes: *code-patterns
       when: manual
       allow_failure: true
@@ -1802,7 +1796,7 @@
     - <<: *if-merge-request
       changes: *ci-qa-patterns
       when: never
-    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+    - <<: *if-security-merge-request
       changes: *code-patterns
       when: never
     - <<: *if-merge-request-and-specific-devops-stage
