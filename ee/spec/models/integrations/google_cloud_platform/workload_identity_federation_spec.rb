@@ -74,13 +74,26 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
   end
 
   describe '.wlif_issuer_url' do
-    subject { described_class.wlif_issuer_url(project) }
+    context 'when call with a group' do
+      subject { described_class.wlif_issuer_url(group) }
 
-    let_it_be(:project) { create(:project, :in_subgroup) }
+      let_it_be(:root_group) { create(:group) }
+      let_it_be(:group) { create(:group, parent: root_group) }
 
-    it { is_expected.to start_with('https://') }
-    it { is_expected.to end_with("/oidc/#{project.root_namespace.path}") }
-    it { is_expected.not_to include(project.path) }
+      it { is_expected.to start_with('https://') }
+      it { is_expected.to end_with("/oidc/#{group.root_ancestor.path}") }
+      it { is_expected.not_to include(group.path) }
+    end
+
+    context 'when call with a project' do
+      subject { described_class.wlif_issuer_url(project) }
+
+      let_it_be(:project) { create(:project, :in_subgroup) }
+
+      it { is_expected.to start_with('https://') }
+      it { is_expected.to end_with("/oidc/#{project.root_ancestor.path}") }
+      it { is_expected.not_to include(project.path) }
+    end
   end
 
   describe '.jwt_claim_mapping' do
