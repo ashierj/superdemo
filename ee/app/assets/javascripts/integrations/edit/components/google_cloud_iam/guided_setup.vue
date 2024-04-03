@@ -2,6 +2,7 @@
 import { GlButton, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
+import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import { STATE_MANUAL } from './constants';
 
 export default {
@@ -11,6 +12,7 @@ export default {
     GlLink,
     GlSprintf,
     ClipboardButton,
+    CodeBlockHighlighted,
   },
   curlLine: `export GL_PAT=<your_access_token>
 curl --request GET \\
@@ -130,10 +132,14 @@ curl --request GET \\
       <li>{{ s__('GoogleCloudPlatformService|You might be prompted to sign in to Google.') }}</li>
     </ul>
     <div class="position-relative">
-      <pre class="gl-w-full">{{ $options.curlLine }}</pre>
+      <code-block-highlighted
+        class="gl-border gl-p-4"
+        language="powershell"
+        :code="$options.curlLine"
+      />
       <clipboard-button
         :text="$options.curlLine"
-        :title="__('Copy')"
+        :title="__('Copy command')"
         category="tertiary"
         class="gl-display-none gl-md-display-flex position-absolute position-top-0 position-right-0 gl-m-3"
       />

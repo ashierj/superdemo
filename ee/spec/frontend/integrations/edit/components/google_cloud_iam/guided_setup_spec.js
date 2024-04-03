@@ -3,6 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import { STATE_MANUAL } from 'ee/integrations/edit/components/google_cloud_iam/constants';
 import GuidedSetup from 'ee/integrations/edit/components/google_cloud_iam/guided_setup.vue';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
+import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   ...jest.requireActual('~/lib/utils/url_utility'),
@@ -18,6 +20,8 @@ describe('GuidedSetup', () => {
   const findFirstLink = () => wrapper.findAllComponents(GlLink).at(0);
   const findButton = (variant) =>
     wrapper.findAllComponents(GlButton).filter((button) => button.props('variant') === variant);
+  const findCodeBlockHighlighted = () => wrapper.findComponent(CodeBlockHighlighted);
+  const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
 
   beforeEach(() => {
     createComponent();
@@ -82,6 +86,18 @@ describe('GuidedSetup', () => {
 
       expect(wrapper.emitted().show).toHaveLength(1);
       expect(wrapper.emitted().show[0]).toContain('empty');
+    });
+  });
+
+  it('renders code instruction with copy button', () => {
+    expect(findCodeBlockHighlighted().props()).toMatchObject({
+      language: 'powershell',
+      code: wrapper.vm.$options.curlLine,
+    });
+
+    expect(findClipboardButton().props()).toMatchObject({
+      title: 'Copy command',
+      text: wrapper.vm.$options.curlLine,
     });
   });
 });
