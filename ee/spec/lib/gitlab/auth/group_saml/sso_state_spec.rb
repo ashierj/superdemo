@@ -7,6 +7,25 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoState, feature_category: :system_acce
 
   subject(:sso_state) { described_class.new(saml_provider_id) }
 
+  describe '.active_saml_sessions' do
+    subject(:active_saml_sessions) { described_class.active_saml_sessions }
+
+    context 'when session data is stored' do
+      let(:session_data) do
+        {
+          27 => (Time.current - 1.day),
+          99 => (Time.current - 12.hours)
+        }
+      end
+
+      around do |ex|
+        Gitlab::Session.with_session(described_class::SESSION_STORE_KEY => session_data) { ex.run }
+      end
+
+      it { is_expected.to match(session_data) }
+    end
+  end
+
   describe '#update_active' do
     it 'updates the current sign in state' do
       Gitlab::Session.with_session({}) do

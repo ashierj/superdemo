@@ -504,4 +504,55 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
       expect { described_class.access_restricted_groups(groups) }.not_to exceed_all_query_limit(control)
     end
   end
+
+  describe '.sessions_time_remaining_for_expiry' do
+    subject(:sessions_time_remaining_for_expiry) { described_class.sessions_time_remaining_for_expiry }
+
+    it 'returns data for existing sessions' do
+      freeze_time do
+        described_class.new(saml_provider).update_session
+
+        expect(sessions_time_remaining_for_expiry).to match_array(
+          [
+            {
+              provider_id: saml_provider.id,
+              time_remaining: described_class::DEFAULT_SESSION_TIMEOUT
+            }
+          ]
+        )
+      end
+    end
+
+    it 'returns empty array when no session data exists' do
+      expect(sessions_time_remaining_for_expiry).to eq([])
+    end
+
+    it 'returns calculated data when sessions have been around for some time' do
+      other_saml_provider = build_stubbed(:saml_provider)
+      frozen_time = Time.utc(2024, 2, 2, 1, 44)
+
+      travel_to(frozen_time) do
+        described_class.new(saml_provider).update_session
+      end
+
+      travel_to(frozen_time + 4.hours) do
+        described_class.new(other_saml_provider).update_session
+      end
+
+      travel_to(frozen_time + 6.hours) do
+        expect(sessions_time_remaining_for_expiry).to match_array(
+          [
+            {
+              provider_id: saml_provider.id,
+              time_remaining: 18.hours.to_f
+            },
+            {
+              provider_id: other_saml_provider.id,
+              time_remaining: 22.hours.to_f
+            }
+          ]
+        )
+      end
+    end
+  end
 end
