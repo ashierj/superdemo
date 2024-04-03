@@ -9,6 +9,7 @@ module MergeRequests
       def execute
         return inactive unless merge_request.reviewer_requests_changes_feature
 
+        return warning if merge_request.override_requested_changes?
         return failure if merge_request.has_changes_requested?
 
         success

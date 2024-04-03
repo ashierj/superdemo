@@ -19,6 +19,12 @@ module EE
 
         create_note(NoteSummary.new(noteable, project, author, body, action: 'approvals_reset'))
       end
+
+      def override_requested_changes(event)
+        body = event ? 'bypassed reviews on this merge request' : 'removed the bypass on this merge request'
+
+        create_note(NoteSummary.new(noteable, project, author, body, action: 'override'))
+      end
     end
   end
 end

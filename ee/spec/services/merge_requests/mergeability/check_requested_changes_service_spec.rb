@@ -55,5 +55,11 @@ RSpec.describe MergeRequests::Mergeability::CheckRequestedChangesService, featur
 
       it { expect(result.status).to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS }
     end
+
+    describe 'when override_requested_changes is set' do
+      let_it_be(:merge_request) { build(:merge_request, source_project: project, override_requested_changes: true) }
+
+      it { expect(result.status).to eq Gitlab::MergeRequests::Mergeability::CheckResult::WARNING_STATUS }
+    end
   end
 end

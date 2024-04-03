@@ -5,6 +5,13 @@ module EE
     module UpdateService
       extend ::Gitlab::Utils::Override
 
+      override :handle_changes
+      def handle_changes(merge_request, options)
+        super
+
+        handle_override_requested_changes(merge_request, merge_request.previous_changes)
+      end
+
       private
 
       override :general_fallback
@@ -59,6 +66,15 @@ module EE
 
       def notify_for_policy_violations(merge_request)
         ::Security::SyncPolicyViolationCommentWorker.perform_async(merge_request.id)
+      end
+
+      def handle_override_requested_changes(merge_request, changed_fields)
+        return unless changed_fields.include?('override_requested_changes')
+
+        override_requested_changes = changed_fields['override_requested_changes']
+
+        ::SystemNoteService.override_requested_changes(merge_request, current_user, override_requested_changes.last)
+        trigger_merge_request_status_updated(merge_request)
       end
     end
   end

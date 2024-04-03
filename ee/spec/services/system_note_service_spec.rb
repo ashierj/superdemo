@@ -267,6 +267,16 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
     end
   end
 
+  describe '.override_requested_changes' do
+    it 'calls MergeRequestsService' do
+      expect_next_instance_of(::SystemNotes::MergeRequestsService) do |service|
+        expect(service).to receive(:override_requested_changes).with(true)
+      end
+
+      described_class.override_requested_changes(noteable, author, true)
+    end
+  end
+
   describe '.change_color_note' do
     it 'calls IssuableResourceLinksService' do
       expect_next_instance_of(::SystemNotes::IssuablesService) do |service|

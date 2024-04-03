@@ -48,4 +48,32 @@ RSpec.describe SystemNotes::MergeRequestsService, feature_category: :code_review
       end
     end
   end
+
+  describe '#override_requested_changes' do
+    let(:overriding) { true }
+
+    subject(:override_requested_changes_note) do
+      described_class
+        .new(noteable: noteable, project: project, author: author)
+        .override_requested_changes(overriding)
+    end
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'override' }
+    end
+
+    it 'sets the note text' do
+      expect(override_requested_changes_note.note)
+        .to eq('bypassed reviews on this merge request')
+    end
+
+    context 'when removing override' do
+      let(:overriding) { false }
+
+      it 'sets the note text' do
+        expect(override_requested_changes_note.note)
+          .to eq('removed the bypass on this merge request')
+      end
+    end
+  end
 end
