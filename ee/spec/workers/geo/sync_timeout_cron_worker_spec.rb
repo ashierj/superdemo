@@ -9,7 +9,6 @@ RSpec.describe Geo::SyncTimeoutCronWorker, :geo, feature_category: :geo_replicat
 
       expect(replicator).to receive(:fail_sync_timeouts)
       expect(Gitlab::Geo).to receive(:enabled_replicator_classes).and_return([replicator])
-      expect(Geo::ContainerRepositoryRegistry).to receive(:fail_sync_timeouts)
 
       described_class.new.perform
     end
