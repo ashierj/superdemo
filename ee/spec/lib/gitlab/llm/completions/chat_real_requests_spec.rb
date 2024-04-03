@@ -140,18 +140,18 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           end
         end
 
-        context 'with `this issue`' do
+        context 'with `this issue`, direct answer using current resource' do
           let(:resource) { issue }
           let(:input) { format(input_template, issue_identifier: "this issue") }
 
           # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools) do
-            'Please summarize %<issue_identifier>s' | %w[IssueReader]
-            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueReader]
-            'How old is %<issue_identifier>s?' | %w[IssueReader]
-            'How many days ago %<issue_identifier>s was created?' | %w[IssueReader]
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueReader]
-            'What should be the final solution for %<issue_identifier>s?' | %w[IssueReader]
+            'Please summarize %<issue_identifier>s' | %w[]
+            'Can you list all the labels on %<issue_identifier>s?' | %w[]
+            'How old is %<issue_identifier>s?' | %w[]
+            'How many days ago %<issue_identifier>s was created?' | %w[]
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[]
+            'What should be the final solution for %<issue_identifier>s?' | %w[]
           end
           # rubocop: enable Layout/LineLength
 
@@ -357,12 +357,12 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
           end
         end
 
-        context 'with `this epic`' do
+        context 'with `this epic, direct answer using current resource`' do
           let(:resource) { epic }
 
           where(:input_template, :tools) do
-            'Can you list all labels on this epic?'       | %w[EpicReader]
-            'How many days ago was current epic created?' | %w[EpicReader]
+            'Can you list all labels on this epic?'       | %w[]
+            'How many days ago was current epic created?' | %w[]
           end
 
           with_them do

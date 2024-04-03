@@ -187,7 +187,6 @@ module Gitlab
               # slow down every request. This also reduces the possibility that the complete prompt exceeds the maximum.
               <<~CONTEXT
                 #{context.current_page_sentence}
-                Here is additional data in <resource></resource> tags about the resource the user is working with:
                 <resource>
                 #{context.resource_serialized(content_limit: provider_prompt_class::MAX_CHARACTERS / 10)}
                 </resource>
