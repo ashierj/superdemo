@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'active_support/testing/stream'
 
 RSpec.describe Gitlab::Partitioning::ForeignKeysGenerator, :migration, :silence_stdout,
-feature_category: :continuous_integration do
+feature_category: :continuous_integration, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/454333' do
   include ActiveSupport::Testing::Stream
   include MigrationsHelpers
 
@@ -48,7 +48,7 @@ feature_category: :continuous_integration do
   end
 
   context 'with one FK' do
-    it 'generates foreign key migrations', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/454333' do
+    it 'generates foreign key migrations' do
       run_generator
 
       expect(migrations.sort_by(&:version).map(&:name)).to eq(%w[
