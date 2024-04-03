@@ -389,6 +389,8 @@ rspec:artifact-collector unit:
       optional: true
     - job: rspec unit clickhouse  # 1 job
       optional: true
+    - job: rspec tooling # 1 job
+      optional: true
 
 rspec:artifact-collector system:
   extends:
