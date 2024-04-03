@@ -9,6 +9,4 @@ trackNewRegistrations();
 // (which is executed when '~/pages/registrations/new' is imported)
 initPasswordValidator();
 
-if (gon.features.arkoseLabsSignupChallenge) {
-  setupArkoseLabsForSignup();
-}
+setupArkoseLabsForSignup();

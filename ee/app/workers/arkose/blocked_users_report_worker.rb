@@ -14,8 +14,6 @@ module Arkose
     feature_category :system_access
 
     def perform
-      return unless ::Feature.enabled?(:arkose_labs_signup_challenge)
-
       ::Arkose::BlockedUsersReportService.new.execute
     end
   end

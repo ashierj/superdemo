@@ -122,10 +122,6 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     let(:params) { {} }
     let(:session) { {} }
 
-    before do
-      stub_feature_flags(arkose_labs_signup_challenge: false)
-    end
-
     subject(:post_create) { post :create, params: params.merge(user_params), session: session }
 
     it_behaves_like 'geo-ip restriction'

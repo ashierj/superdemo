@@ -254,7 +254,7 @@ module Users
     end
 
     def require_arkose_verification!
-      return unless arkose_labs_enabled?
+      return unless arkose_labs_enabled?(user: @user)
       return unless @user.identities.any?
       return if @user.arkose_verified?
 
@@ -346,8 +346,8 @@ module Users
       true
     end
 
-    def arkose_labs_enabled?
-      ::Arkose::Settings.enabled?(user: @user, user_agent: request.user_agent)
+    def arkose_labs_enabled?(user: nil)
+      ::Arkose::Settings.enabled?(user: user, user_agent: request.user_agent)
     end
 
     def username

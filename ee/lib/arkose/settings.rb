@@ -35,6 +35,8 @@ module Arkose
     end
 
     def self.group_saml_user(user)
+      return unless user
+
       user.group_saml_identities.with_provider(::Users::BuildService::GROUP_SAML_PROVIDER).any?
     end
     private_class_method :group_saml_user

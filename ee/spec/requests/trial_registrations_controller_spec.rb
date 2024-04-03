@@ -47,7 +47,6 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
 
     before do
       allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
-      stub_feature_flags(arkose_labs_signup_challenge: false)
     end
 
     context 'with onboarding' do

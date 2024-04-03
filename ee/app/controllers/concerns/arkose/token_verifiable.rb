@@ -8,7 +8,7 @@ module Arkose
     private
 
     def verify_arkose_labs_token(user: nil)
-      return true unless arkose_labs_enabled?
+      return true unless arkose_labs_enabled?(user: user)
       return true if arkose_labs_verify_response(user: user).present?
 
       if arkose_down?

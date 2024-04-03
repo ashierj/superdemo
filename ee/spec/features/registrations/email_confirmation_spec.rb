@@ -19,7 +19,6 @@ RSpec.describe 'Email Confirmation', feature_category: :instance_resiliency do
 
   with_them do
     before do
-      stub_feature_flags(arkose_labs_signup_challenge: false)
       stub_feature_flags(identity_verification_credit_card: false)
 
       stub_feature_flags(identity_verification: identity_verification)

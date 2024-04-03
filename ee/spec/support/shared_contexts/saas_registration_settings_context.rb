@@ -20,11 +20,7 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
     # SaaS always requires confirmation, since the default is set to `off` we want to ensure SaaS is set to `hard`
     stub_application_setting_enum('email_confirmation_setting', 'hard')
 
-    stub_feature_flags(
-      # our focus isn't around the arkose challenge, so we'll omit it
-      arkose_labs_signup_challenge: false,
-      identity_verification: true
-    )
+    stub_feature_flags(identity_verification: true)
 
     stub_config(extra: { 'google_tag_manager_nonce_id' => 'key' })
 
