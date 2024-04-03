@@ -19,9 +19,7 @@ RSpec.describe Ci::RunnersFinder, feature_category: :fleet_visibility do
 
         before_all do
           runners.map.with_index do |runner, number_of_builds|
-            create_list(:ci_build, number_of_builds, runner: runner, project: project).each do |build|
-              create(:ci_running_build, runner: build.runner, build: build, project: project)
-            end
+            create_list(:ci_build, number_of_builds, :picked, runner: runner, project: project)
           end
         end
 

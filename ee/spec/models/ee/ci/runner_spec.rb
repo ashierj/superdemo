@@ -215,9 +215,7 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
 
     before_all do
       runners.map.with_index do |runner, idx|
-        create_list(:ci_build, 10 - idx, runner: runner, project: project).each do |build|
-          create(:ci_running_build, runner: build.runner, build: build, project: project)
-        end
+        create_list(:ci_build, 10 - idx, :picked, runner: runner, project: project)
       end
     end
 
