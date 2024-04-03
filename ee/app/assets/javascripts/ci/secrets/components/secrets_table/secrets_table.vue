@@ -17,11 +17,6 @@ import {
 } from '../../constants';
 import SecretActionsCell from './secret_actions_cell.vue';
 
-const emptySecrets = {
-  count: 0,
-  nodes: [],
-};
-
 export default {
   name: 'SecretsTable',
   components: {
@@ -59,9 +54,9 @@ export default {
       },
       update(data) {
         if (this.isGroup) {
-          return data.group?.secrets || emptySecrets;
+          return data.group?.secrets;
         }
-        return data.project?.secrets || emptySecrets;
+        return data.project?.secrets;
       },
     },
   },
