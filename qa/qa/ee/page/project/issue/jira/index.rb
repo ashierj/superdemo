@@ -26,8 +26,7 @@ module QA
               end
 
               def click_issue(issue_key)
-                id = issue_key.split('-')[-1]
-                within_element('issuable-container', issue_id: id) do
+                within_element('issuable-container', issue_id: issue_key) do
                   find('a.issue-title-text').click
                 end
               end
