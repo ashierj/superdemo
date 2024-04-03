@@ -289,7 +289,7 @@ if [ "$DATA_TYPE" == "license" ]; then
 elif [ "$DATA_TYPE" == "advisory" ]; then
   PKG_METADATA_DIR="$GITLAB_RAILS_ROOT_DIR/vendor/package_metadata/advisories"
 else
-  echo "Usage: import_script.sh [licenses|advisories]"
+  echo "Usage: import_script.sh [license|advisory]"
   exit 1
 fi
 
