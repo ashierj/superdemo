@@ -14,10 +14,6 @@ module EE
         include GitlabSubscriptions::SeatCountAlert
         include IframeYoutubeVideoCSP
 
-        before_action only: :index do
-          experiment(:issues_mrs_empty_state, type: :experiment, actor: current_user).publish
-        end
-
         before_action :disable_query_limiting_ee, only: [:update]
         before_action only: [:new, :create] do
           if can?(current_user, :generate_description, project)
@@ -38,6 +34,7 @@ module EE
         before_action :redirect_if_test_case, only: [:show]
 
         before_action only: :index do
+          experiment(:issues_mrs_empty_state, type: :experiment, user: current_user, project: project).publish
           push_force_frontend_feature_flag(:okrs_mvc, project&.okrs_mvc_feature_flag_enabled?)
           push_licensed_feature(:okrs, project)
         end

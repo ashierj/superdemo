@@ -8,6 +8,7 @@ module EE
       prepended do
         include DescriptionDiffActions
         include GeoInstrumentation
+        include IframeYoutubeVideoCSP
 
         before_action only: [:show] do
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
