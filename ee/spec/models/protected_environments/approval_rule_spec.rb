@@ -1,21 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe ProtectedEnvironments::ApprovalRule do
-  let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:environment) { create(:environment, project: project) }
-  let_it_be(:approver) { create(:user) }
-
-  let!(:protected_environment) { create(:protected_environment, project: project, name: environment.name) }
-
-  let!(:approval_rule) do
-    create(
-      :protected_environment_approval_rule,
-      protected_environment: protected_environment,
-      user: approver,
-      required_approvals: 1
-    )
-  end
+RSpec.describe ProtectedEnvironments::ApprovalRule,
+  feature_category: :deployment_management do
+  include_context 'with an approval rule and approver'
 
   describe 'associations' do
     it { is_expected.to have_many(:deployment_approvals).class_name('Deployments::Approval').inverse_of(:approval_rule) }
