@@ -402,7 +402,7 @@ gem 'prometheus-client-mmap', '~> 1.1', '>= 1.1.1', require: 'prometheus/client'
 gem 'warning', '~> 1.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 group :development do
-  gem 'lefthook', '~> 1.5.6', require: false, feature_category: :tooling
+  gem 'lefthook', '~> 1.6.8', require: false, feature_category: :tooling
   gem 'rubocop', feature_category: :tooling
   gem 'solargraph', '~> 0.47.2', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
