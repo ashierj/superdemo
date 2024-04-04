@@ -1,6 +1,7 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
+import { setLanguage } from 'jest/__helpers__/locale_helper';
 import {
   TABLE_METRICS,
   CHART_GRADIENT,
@@ -157,38 +158,43 @@ describe('Comparison table', () => {
     });
 
     describe.each`
-      description                                               | timePeriod            | shouldRenderTrendIndicator
-      ${'When value has changed from previous month'}           | ${mockTimePeriods[1]} | ${true}
-      ${'When value has not changed or exceeded maximum value'} | ${mockTimePeriods[2]} | ${false}
-    `('$description', ({ timePeriod, shouldRenderTrendIndicator }) => {
-      beforeEach(() => {
-        createWrapper({
-          tableData: [
-            {
-              metric: mockMetric,
-              thisMonth: timePeriod,
-              valueLimit,
-            },
-          ],
+      description                                               | timePeriodIndex | shouldRenderTrendIndicator | formattedValue | language
+      ${'When value has changed from previous month'}           | ${1}            | ${true}                    | ${'8,000'}     | ${'en-US'}
+      ${'When value has not changed or exceeded maximum value'} | ${2}            | ${false}                   | ${'6.000'}     | ${'de-DE'}
+    `(
+      '$description',
+      ({ timePeriodIndex, shouldRenderTrendIndicator, formattedValue, language }) => {
+        const findMetricDataRow = () => wrapper.find('tbody tr');
+
+        beforeEach(() => {
+          setLanguage(language);
+
+          createWrapper({
+            tableData: [
+              {
+                metric: mockMetric,
+                thisMonth: mockTimePeriods[timePeriodIndex],
+                valueLimit,
+              },
+            ],
+          });
         });
-      });
 
-      it('displays correct value', () => {
-        const { value } = timePeriod;
+        it('displays correct value', () => {
+          expect(findMetricDataRow().html()).toContain(formattedValue);
+        });
 
-        expect(wrapper.findByText(`${value}`).exists()).toBe(true);
-      });
+        it(`${
+          shouldRenderTrendIndicator ? 'should render' : 'should not render'
+        } trend indicator`, () => {
+          expect(findTrendIndicator().exists()).toBe(shouldRenderTrendIndicator);
+        });
 
-      it(`${
-        shouldRenderTrendIndicator ? 'should render' : 'should not render'
-      } trend indicator`, () => {
-        expect(findTrendIndicator().exists()).toBe(shouldRenderTrendIndicator);
-      });
-
-      it(`should not render value limit info icon`, () => {
-        expect(findValueLimitInfoIcon().exists()).toBe(false);
-      });
-    });
+        it(`should not render value limit info icon`, () => {
+          expect(findValueLimitInfoIcon().exists()).toBe(false);
+        });
+      },
+    );
   });
 
   describe('sparkline chart', () => {

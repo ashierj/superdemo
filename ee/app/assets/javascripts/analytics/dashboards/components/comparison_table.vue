@@ -3,6 +3,7 @@ import { GlSkeletonLoader, GlTableLite, GlIcon, GlTooltipDirective } from '@gitl
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { InternalEvents } from '~/tracking';
+import { formatNumber } from '~/locale';
 import { CHART_GRADIENT, CHART_GRADIENT_INVERTED } from '../constants';
 import { generateDashboardTableFields } from '../utils';
 import MetricTableCell from './metric_table_cell.vue';
@@ -66,6 +67,9 @@ export default {
         'data-testid': `dora-chart-metric-${identifier.replaceAll('_', '-')}`,
       };
     },
+    formatValueToLocale(value) {
+      return formatNumber(value);
+    },
   },
 };
 </script>
@@ -91,7 +95,7 @@ export default {
         <gl-skeleton-loader :lines="1" :width="100" />
       </span>
       <template v-else>
-        {{ value }}
+        {{ formatValueToLocale(value) }}
         <gl-icon
           v-if="valueLimitMessage"
           v-gl-tooltip.hover
