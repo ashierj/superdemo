@@ -14,7 +14,7 @@ module Gitlab
         #
         # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/421213
         ::Gitlab::Database::BatchCounter.new(relation, column: column, max_allowed_loops: MAX_ALLOWED_LOOPS)
-          .count
+          .count(start: 0)
       end
     end
   end

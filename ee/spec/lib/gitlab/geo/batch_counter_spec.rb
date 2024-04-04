@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Geo::BatchCounter, :geo, feature_category: :geo_replicati
     it 'passes 100_000 to max_allowed_loops' do
       expect_next_instance_of(::Gitlab::Database::BatchCounter, model,
         column: column, max_allowed_loops: 100_000) do |instance|
-        expect(instance).to receive(:count).once
+        expect(instance).to receive(:count).with(start: 0).once
       end
 
       batch_counter.batch_count(model, column)
