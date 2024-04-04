@@ -24,6 +24,14 @@ module Types
             type: [::Types::Deployments::ApprovalType],
             description: 'Current approvals of the deployment.',
             method: :approvals_for_summary
+
+      field :can_approve,
+            type: GraphQL::Types::Boolean,
+            description: 'Indicates whether a user is authorized to approve.'
+
+      def can_approve
+        object.check_access(current_user)
+      end
     end
     # rubocop:enable Graphql/AuthorizeTypes
   end

@@ -27664,6 +27664,7 @@ Which group, user or role is allowed to approve deployments to the environment.
 | <a id="protectedenvironmentapprovalruleforsummaryaccesslevel"></a>`accessLevel` | [`AccessLevel`](#accesslevel) | Role details. Present if it's role specific access control. |
 | <a id="protectedenvironmentapprovalruleforsummaryapprovals"></a>`approvals` | [`[DeploymentApproval!]`](#deploymentapproval) | Current approvals of the deployment. |
 | <a id="protectedenvironmentapprovalruleforsummaryapprovedcount"></a>`approvedCount` | [`Int`](#int) | Approved count. |
+| <a id="protectedenvironmentapprovalruleforsummarycanapprove"></a>`canApprove` | [`Boolean`](#boolean) | Indicates whether a user is authorized to approve. |
 | <a id="protectedenvironmentapprovalruleforsummarygroup"></a>`group` | [`Group`](#group) | Group details. Present if it's group specific access control. |
 | <a id="protectedenvironmentapprovalruleforsummarypendingapprovalcount"></a>`pendingApprovalCount` | [`Int`](#int) | Pending approval count. |
 | <a id="protectedenvironmentapprovalruleforsummaryrequiredapprovals"></a>`requiredApprovals` | [`Int`](#int) | Number of required approvals. |
