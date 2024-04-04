@@ -325,6 +325,7 @@ rspec fast_spec_helper:
 rspec tooling:
   extends:
     - .rspec-base-pg14
+    - .rails:rules:ee-and-foss-tooling
 
 rspec unit clickhouse:
   extends:
@@ -389,8 +390,6 @@ rspec:artifact-collector unit:
       optional: true
     - job: rspec unit clickhouse  # 1 job
       optional: true
-    - job: rspec tooling # 1 job
-      optional: true
 
 rspec:artifact-collector system:
   extends:
@@ -410,6 +409,14 @@ rspec:artifact-collector remainder:
     - job: rspec migration pg14  # 15 jobs
       optional: true
     - job: rspec background_migration pg14  # 5 jobs
+      optional: true
+
+rspec:artifact-collector tooling:
+  extends:
+    - .artifact-collector
+    - .rails:rules:artifact-collector-tooling
+  needs:
+    - job: rspec tooling  # 1 job
       optional: true
 
 rspec:artifact-collector unit single-redis:
@@ -498,6 +505,8 @@ rspec:coverage:
     - job: rspec:artifact-collector system single-redis
       optional: true
     - job: rspec:artifact-collector remainder single-redis
+      optional: true
+    - job: rspec:artifact-collector tooling
       optional: true
     # as-if-foss jobs
     - job: rspec:artifact-collector as-if-foss
