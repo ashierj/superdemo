@@ -388,8 +388,23 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_helpers, :silence
       end
 
       it 'outputs index settings' do
+        helper = Gitlab::Elastic::Helper.default
+        allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+        allow(helper).to receive(:documents_count).and_return(1000)
+
         indices = instance_double(Elasticsearch::API::Indices::IndicesClient)
         allow(es_helper.client).to receive(:indices).and_return(indices)
+        allow(indices).to receive(:stats).with(index: setting.alias_name).and_return({
+          "indices" => {
+            "index" => {
+              "primaries" => {
+                "docs" => {
+                  "count" => 1000
+                }
+              }
+            }
+          }
+        })
         allow(indices).to receive(:get_settings).with(index: setting.alias_name).and_return({
           setting.alias_name => {
             "settings" => {
@@ -406,6 +421,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_helpers, :silence
         })
 
         expected = "#{setting.alias_name}:\n  " \
+                   "document_count: 1000\n  " \
                    "number_of_shards: 5\n  " \
                    "number_of_replicas: 1\n  " \
                    "refresh_interval: 2s\n  " \

@@ -217,6 +217,11 @@ namespace :gitlab do
       tasks.execute(:estimate_cluster_size)
     end
 
+    desc "GitLab | Elasticsearch | Estimate cluster shard sizes"
+    task estimate_shard_sizes: :environment do
+      tasks.execute(:estimate_shard_sizes)
+    end
+
     desc "GitLab | Elasticsearch | Pause indexing"
     task pause_indexing: :environment do
       tasks.execute(:pause_indexing)
@@ -280,15 +285,18 @@ namespace :gitlab do
       puts "Indices".color(:yellow)
       indices = ::Elastic::IndexSetting.order(:alias_name).pluck(:alias_name)
       indices.each do |alias_name|
-        setting = begin
-          helper.client.indices.get_settings(index: alias_name)
+        index_setting = {}
+
+        begin
+          index_setting = helper.client.indices.get_settings(index: alias_name).with_indifferent_access
+          document_count = helper.documents_count(index_name: alias_name)
         rescue StandardError
           puts "  - failed to load indices for #{alias_name}".color(:red)
-          {}
         end
 
-        setting.sort.each do |index_name, hash|
+        index_setting.sort.each do |index_name, hash|
           puts "- #{index_name}:"
+          puts "  document_count: #{document_count}"
           puts "  number_of_shards: #{hash.dig('settings', 'index', 'number_of_shards')}"
           puts "  number_of_replicas: #{hash.dig('settings', 'index', 'number_of_replicas')}"
           refresh_interval = hash.dig('settings', 'index', 'refresh_interval')

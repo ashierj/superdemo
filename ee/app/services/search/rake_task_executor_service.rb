@@ -5,18 +5,24 @@ module Search
     include ActionView::Helpers::NumberHelper
 
     TASKS = %i[
+      enable_search_with_elasticsearch
+      estimate_cluster_size
+      estimate_shard_sizes
+      index_epics
+      index_projects
+      index_projects_status
       index_snippets
+      index_users
+      list_pending_migrations
+      mark_reindex_failed
       pause_indexing
       resume_indexing
-      estimate_cluster_size
-      mark_reindex_failed
-      list_pending_migrations
-      enable_search_with_elasticsearch
-      index_projects_status
-      index_users
-      index_projects
-      index_epics
     ].freeze
+
+    CLASSES_TO_COUNT = Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES - [Repository, Commit, ::Wiki].freeze
+    SHARDS_MIN = 5
+    SHARDS_DIVISOR = 5_000_000
+    REPOSITORY_MULTIPLIER = 0.5
 
     attr_reader :logger
 
@@ -63,19 +69,60 @@ module Search
       end
     end
 
+    def estimate_shard_sizes
+      estimates = {}
+
+      klasses = CLASSES_TO_COUNT
+      unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
+        klasses -= [Project]
+      end
+
+      unless ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)
+        klasses -= [Epic]
+      end
+
+      counts = ::Gitlab::Database::Count.approximate_counts(klasses)
+
+      klasses.each do |klass|
+        shards = (counts[klass] / SHARDS_DIVISOR) + SHARDS_MIN
+        formatted_doc_count = number_with_delimiter(counts[klass], delimiter: ',')
+        estimates[klass.index_name] = { document_count: formatted_doc_count, shards: shards }
+      end
+
+      puts "Using approximate counts to estimate shard counts for data indexed from database. " \
+           "This does not include repository data."
+      puts "The approximate document counts, recommended shard size, and replica size for each index are:"
+
+      estimates.each do |index_name, estimate|
+        puts "- #{index_name}:"
+        puts "   document count: #{estimate[:document_count]}" if estimate.key?(:document_count)
+        puts "   largest repository: #{estimate[:max_size]}" if estimate.key?(:max_size)
+        puts "   largest repository size: #{estimate[:total_size]}" if estimate.key?(:total_size)
+        puts "   recommended shards: #{estimate[:shards]}"
+        puts "   recommended replicas: 1"
+      end
+
+      puts "Please note that it is possible to index only selected namespaces/projects by using " \
+           "Advanced search indexing restrictions. This estimate does not take into account indexing " \
+           "restrictions."
+    end
+
     def estimate_cluster_size
-      total_size = Namespace::RootStorageStatistics.sum(:repository_size).to_i
+      total_repository_size = Namespace::RootStorageStatistics.sum(:repository_size).to_i
+      total_wiki_size = Namespace::RootStorageStatistics.sum(:wiki_size).to_i
+      total_size = total_wiki_size + total_repository_size
       total_size_human = number_to_human_size(total_size, delimiter: ',', precision: 1, significant: false)
 
-      estimated_cluster_size = total_size * 0.5
+      estimated_cluster_size = total_size * REPOSITORY_MULTIPLIER
       estimated_cluster_size_human = number_to_human_size(estimated_cluster_size, delimiter: ',', precision: 1,
         significant: false)
 
-      puts "This GitLab instance repository size is #{total_size_human}."
-      puts "By our estimates for such repository size, " \
+      puts "This GitLab instance combined repository and wiki size is #{total_size_human}. "
+      puts "By our estimates, " \
            "your cluster size should be at least #{estimated_cluster_size_human}.".color(:green)
       puts "Please note that it is possible to index only selected namespaces/projects by using " \
-           "Elasticsearch indexing restrictions."
+           "Advanced search indexing restrictions."
     end
 
     def mark_reindex_failed
