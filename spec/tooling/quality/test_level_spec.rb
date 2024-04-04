@@ -5,8 +5,6 @@ require 'fast_spec_helper'
 require_relative '../../../tooling/quality/test_level'
 
 RSpec.describe Quality::TestLevel, feature_category: :tooling do
-  subject(:test_level) { described_class.new }
-
   describe 'TEST_LEVEL_FOLDERS constant' do
     it 'ensures all directories it refers to exists', :aggregate_failures do
       ee_only_directories = %w[
@@ -33,56 +31,49 @@ RSpec.describe Quality::TestLevel, feature_category: :tooling do
   describe '#pattern' do
     context 'when level is all' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:all))
+        expect(subject.pattern(:all))
         .to eq("spec/**{,/**/}*_spec.rb")
       end
     end
 
     context 'when level is frontend_fixture' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:frontend_fixture))
+        expect(subject.pattern(:frontend_fixture))
           .to eq("spec/{frontend/fixtures}{,/**/}*.rb")
       end
     end
 
     context 'when level is unit' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:unit))
-          .to eq("spec/{bin,channels,components,config,contracts,db,dependencies,elastic,elastic_integration,experiments,factories,finders,frontend,graphql,haml_lint,helpers,initializers,keeps,lib,metrics_server,models,policies,presenters,rack_servers,replicators,routing,rubocop,scripts,serializers,services,sidekiq,sidekiq_cluster,spam,support_specs,tasks,uploaders,validators,views,workers}{,/**/}*_spec.rb")
-      end
-    end
-
-    context 'when level is tooling' do
-      it 'returns a pattern' do
-        expect(test_level.pattern(:tooling))
-          .to eq("spec/{dot_gitlab_ci,tooling}{,/**/}*_spec.rb")
+        expect(subject.pattern(:unit))
+          .to eq("spec/{bin,channels,components,config,contracts,db,dependencies,elastic,elastic_integration,experiments,factories,finders,frontend,graphql,haml_lint,helpers,initializers,keeps,lib,metrics_server,models,policies,presenters,rack_servers,replicators,routing,rubocop,scripts,serializers,services,sidekiq,sidekiq_cluster,spam,support_specs,tasks,uploaders,validators,views,workers,tooling,dot_gitlab_ci}{,/**/}*_spec.rb")
       end
     end
 
     context 'when level is migration' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:migration))
+        expect(subject.pattern(:migration))
           .to eq("spec/{migrations}{,/**/}*_spec.rb")
       end
     end
 
     context 'when level is background_migration' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:background_migration))
+        expect(subject.pattern(:background_migration))
           .to eq("spec/{lib/gitlab/background_migration,lib/ee/gitlab/background_migration}{,/**/}*_spec.rb")
       end
     end
 
     context 'when level is integration' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:integration))
+        expect(subject.pattern(:integration))
           .to eq("spec/{commands,controllers,mailers,requests}{,/**/}*_spec.rb")
       end
     end
 
     context 'when level is system' do
       it 'returns a pattern' do
-        expect(test_level.pattern(:system))
+        expect(subject.pattern(:system))
           .to eq("spec/{features}{,/**/}*_spec.rb")
       end
     end
@@ -103,11 +94,11 @@ RSpec.describe Quality::TestLevel, feature_category: :tooling do
 
     describe 'performance' do
       it 'memoizes the pattern for a given level' do
-        expect(test_level.pattern(:system).object_id).to eq(test_level.pattern(:system).object_id)
+        expect(subject.pattern(:system).object_id).to eq(subject.pattern(:system).object_id)
       end
 
       it 'freezes the pattern for a given level' do
-        expect(test_level.pattern(:system)).to be_frozen
+        expect(subject.pattern(:system)).to be_frozen
       end
     end
   end
@@ -115,56 +106,49 @@ RSpec.describe Quality::TestLevel, feature_category: :tooling do
   describe '#regexp' do
     context 'when level is all' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:all))
+        expect(subject.regexp(:all))
         .to eq(%r{spec/})
       end
     end
 
     context 'when level is frontend_fixture' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:frontend_fixture))
+        expect(subject.regexp(:frontend_fixture))
           .to eq(%r{spec/(frontend/fixtures)/})
       end
     end
 
     context 'when level is unit' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:unit))
-          .to eq(%r{spec/(bin|channels|components|config|contracts|db|dependencies|elastic|elastic_integration|experiments|factories|finders|frontend|graphql|haml_lint|helpers|initializers|keeps|lib|metrics_server|models|policies|presenters|rack_servers|replicators|routing|rubocop|scripts|serializers|services|sidekiq|sidekiq_cluster|spam|support_specs|tasks|uploaders|validators|views|workers)/})
-      end
-    end
-
-    context 'when level is tooling' do
-      it 'returns a regexp' do
-        expect(test_level.regexp(:tooling))
-          .to eq(%r{spec/(dot_gitlab_ci|tooling)/})
+        expect(subject.regexp(:unit))
+          .to eq(%r{spec/(bin|channels|components|config|contracts|db|dependencies|elastic|elastic_integration|experiments|factories|finders|frontend|graphql|haml_lint|helpers|initializers|keeps|lib|metrics_server|models|policies|presenters|rack_servers|replicators|routing|rubocop|scripts|serializers|services|sidekiq|sidekiq_cluster|spam|support_specs|tasks|uploaders|validators|views|workers|tooling|dot_gitlab_ci)/})
       end
     end
 
     context 'when level is migration' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:migration))
+        expect(subject.regexp(:migration))
           .to eq(%r{spec/(migrations)/})
       end
     end
 
     context 'when level is background_migration' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:background_migration))
+        expect(subject.regexp(:background_migration))
           .to eq(%r{spec/(lib/gitlab/background_migration|lib/ee/gitlab/background_migration)/})
       end
     end
 
     context 'when level is integration' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:integration))
+        expect(subject.regexp(:integration))
           .to eq(%r{spec/(commands|controllers|mailers|requests)/})
       end
     end
 
     context 'when level is system' do
       it 'returns a regexp' do
-        expect(test_level.regexp(:system))
+        expect(subject.regexp(:system))
           .to eq(%r{spec/(features)/})
       end
     end
@@ -192,39 +176,38 @@ RSpec.describe Quality::TestLevel, feature_category: :tooling do
 
     describe 'performance' do
       it 'memoizes the regexp for a given level' do
-        expect(test_level.regexp(:system).object_id).to eq(test_level.regexp(:system).object_id)
+        expect(subject.regexp(:system).object_id).to eq(subject.regexp(:system).object_id)
       end
 
       it 'freezes the regexp for a given level' do
-        expect(test_level.regexp(:system)).to be_frozen
+        expect(subject.regexp(:system)).to be_frozen
       end
     end
   end
 
   describe '#level_for' do
     it 'returns the correct level for a unit test' do
-      expect(test_level.level_for('spec/models/abuse_report_spec.rb')).to eq(:unit)
+      expect(subject.level_for('spec/models/abuse_report_spec.rb')).to eq(:unit)
     end
 
     it 'returns the correct level for a frontend fixture test' do
-      expect(test_level.level_for('spec/frontend/fixtures/pipelines.rb')).to eq(:frontend_fixture)
+      expect(subject.level_for('spec/frontend/fixtures/pipelines.rb')).to eq(:frontend_fixture)
     end
 
-    it 'returns the correct level for a tooling test', :aggregate_failures do
-      expect(test_level.level_for('spec/dot_gitlab_ci/rules_spec.rb')).to eq(:tooling)
-      expect(test_level.level_for('spec/tooling/lib/tooling/test_file_finder_spec.rb')).to eq(:tooling)
+    it 'returns the correct level for a tooling test' do
+      expect(subject.level_for('spec/tooling/lib/tooling/test_file_finder_spec.rb')).to eq(:unit)
     end
 
     it 'returns the correct level for a migration test' do
-      expect(test_level.level_for('spec/migrations/add_default_and_free_plans_spec.rb')).to eq(:migration)
+      expect(subject.level_for('spec/migrations/add_default_and_free_plans_spec.rb')).to eq(:migration)
     end
 
     it 'returns the correct level for a background migration test' do
-      expect(test_level.level_for('spec/lib/gitlab/background_migration/archive_legacy_traces_spec.rb')).to eq(:background_migration)
+      expect(subject.level_for('spec/lib/gitlab/background_migration/archive_legacy_traces_spec.rb')).to eq(:background_migration)
     end
 
     it 'returns the correct level for an EE file without passing a prefix' do
-      expect(test_level.level_for('ee/spec/migrations/geo/migrate_ci_job_artifacts_to_separate_registry_spec.rb')).to eq(:migration)
+      expect(subject.level_for('ee/spec/migrations/geo/migrate_ci_job_artifacts_to_separate_registry_spec.rb')).to eq(:migration)
     end
 
     it 'returns the correct level for a geo migration test' do
@@ -236,35 +219,32 @@ RSpec.describe Quality::TestLevel, feature_category: :tooling do
     end
 
     it 'returns the correct level for an integration test' do
-      expect(test_level.level_for('spec/mailers/abuse_report_mailer_spec.rb')).to eq(:integration)
+      expect(subject.level_for('spec/mailers/abuse_report_mailer_spec.rb')).to eq(:integration)
     end
 
     it 'returns the correct level for an integration test in a subfolder' do
-      expect(test_level.level_for('spec/commands/sidekiq_cluster/cli.rb')).to eq(:integration)
+      expect(subject.level_for('spec/commands/sidekiq_cluster/cli.rb')).to eq(:integration)
     end
 
     it 'returns the correct level for a system test' do
-      expect(test_level.level_for('spec/features/abuse_report_spec.rb')).to eq(:system)
+      expect(subject.level_for('spec/features/abuse_report_spec.rb')).to eq(:system)
     end
 
     it 'returns the correct level for a keep test' do
-      expect(test_level.level_for('spec/keeps/helpers/postgres_ai_spec.rb')).to eq(:unit)
+      expect(subject.level_for('spec/keeps/helpers/postgres_ai_spec.rb')).to eq(:unit)
     end
 
     it 'raises an error for an unknown level' do
-      expect { test_level.level_for('spec/unknown/foo_spec.rb') }
-        .to raise_error(described_class::UnknownTestLevelError, <<~MESSAGE)
-          Test level for spec/unknown/foo_spec.rb couldn't be set.
-
-          Please rename the file properly or change the test level detection regexes in tooling/quality/test_level.rb.
-        MESSAGE
+      expect { subject.level_for('spec/unknown/foo_spec.rb') }
+        .to raise_error(described_class::UnknownTestLevelError,
+          %r{Test level for spec/unknown/foo_spec.rb couldn't be set. Please rename the file properly or change the test level detection regexes in .+/tooling/quality/test_level.rb.})
     end
 
     it 'ensures all spec/ folders are covered by a test level' do
       Dir['{,ee/}spec/**/*/'].each do |path|
         next if %r{\A(ee/)?spec/(benchmarks|docs_screenshots|fixtures|frontend_integration|support)/}.match?(path)
 
-        expect { test_level.level_for(path) }.not_to raise_error
+        expect { subject.level_for(path) }.not_to raise_error
       end
     end
   end

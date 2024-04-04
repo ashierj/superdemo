@@ -603,6 +603,11 @@
   - ".gitlab/ci/static-analysis.gitlab-ci.yml"
   - "config/feature_categories.yml"  # Used by RSpec/FeatureCategory
 
+.danger-patterns: &danger-patterns
+  - "Dangerfile"
+  - "danger/**/*"
+  - "tooling/danger/**/*"
+
 .core-backend-patterns: &core-backend-patterns
   - "{,jh/}Gemfile{,.lock}"
   - "{,ee/,jh/}config/**/*.rb"
@@ -2053,13 +2058,6 @@
     - <<: *if-default-refs
       changes: *core-backend-patterns
 
-.rails:rules:ee-and-foss-tooling:
-  rules:
-    - <<: *if-fork-merge-request
-      when: never
-    - <<: *if-merge-request
-    - <<: *if-default-refs
-
 .rails:rules:code-backstage-qa:
   rules:
     - <<: *if-default-refs
@@ -2200,11 +2198,6 @@
     - !reference ['.rails:rules:ee-and-foss-integration', rules]
     - !reference ['.rails:rules:ee-and-foss-migration', rules]
     - !reference ['.rails:rules:ee-and-foss-background-migration', rules]
-
-.rails:rules:artifact-collector-tooling:
-  rules:
-    - if: '$START_AS_IF_FOSS == "true"'
-    - !reference ['.rails:rules:ee-and-foss-tooling', rules]
 
 .rails:rules:detect-tests:
   rules:
@@ -2728,6 +2721,11 @@
 .review:rules:danger:
   rules:
     - <<: *if-merge-request
+
+.review:rules:danger-local:
+  rules:
+    - <<: *if-merge-request
+      changes: *danger-patterns
 
 ###############
 # Setup rules #

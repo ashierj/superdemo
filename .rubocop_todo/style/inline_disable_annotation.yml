@@ -3150,3 +3150,4 @@ Style/InlineDisableAnnotation:
     - 'tooling/lib/tooling/helm3_client.rb'
     - 'tooling/lib/tooling/job_metrics.rb'
     - 'tooling/lib/tooling/kubernetes_client.rb'
+    - 'tooling/quality/test_level.rb'

@@ -55,11 +55,9 @@ module Quality
         validators
         views
         workers
-      ],
-      tooling: %w[
-        dot_gitlab_ci
         tooling
-      ],
+        dot_gitlab_ci
+      ], # ^ tooling and dot_gitlab_ci might be worth to move to another level
       integration: %w[
         commands
         controllers
@@ -78,7 +76,7 @@ module Quality
     end
 
     def pattern(level)
-      @patterns[level] ||= "#{prefixes_for_pattern}spec/#{folders_pattern(level)}{,/**/}*#{suffix(level)}".freeze
+      @patterns[level] ||= "#{prefixes_for_pattern}spec/#{folders_pattern(level)}{,/**/}*#{suffix(level)}".freeze # rubocop:disable Style/RedundantFreeze
     end
 
     def regexp(level, start_with = false)
@@ -99,20 +97,12 @@ module Quality
         :frontend_fixture
       when regexp(:unit)
         :unit
-      when regexp(:tooling)
-        :tooling
       when regexp(:integration)
         :integration
       when regexp(:system)
         :system
       else
-        file = Pathname.new(__FILE__).relative_path_from(File.expand_path("../..", __dir__)).to_s
-
-        raise UnknownTestLevelError, <<~MESSAGE
-          Test level for #{file_path} couldn't be set.
-
-          Please rename the file properly or change the test level detection regexes in #{file}.
-        MESSAGE
+        raise UnknownTestLevelError, "Test level for #{file_path} couldn't be set. Please rename the file properly or change the test level detection regexes in #{__FILE__}."
       end
     end
 
