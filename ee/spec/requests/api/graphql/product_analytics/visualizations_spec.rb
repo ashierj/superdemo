@@ -49,7 +49,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
 
       expect(
         graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
-      ).to eq('LineChart')
+      ).to eq('AiImpactTable')
     end
 
     context 'when the visualization does not exist' do
@@ -63,6 +63,20 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
         get_graphql(query, current_user: user)
 
         expect(graphql_errors).to include(a_hash_including('message' => 'Visualization does not exist'))
+      end
+    end
+
+    context 'when `ai_impact_analytics_dashboard` is disabled' do
+      before do
+        stub_feature_flags(ai_impact_analytics_dashboard: false)
+      end
+
+      it 'does not return the `AiImpactTable` visualization' do
+        get_graphql(query, current_user: user)
+
+        expect(
+          graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
+        ).to eq('LineChart')
       end
     end
 
@@ -168,7 +182,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
             :panels, :nodes, 0, :visualization, :errors, 0))
           .to eq("property '/type' is not one of: " \
                  "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", " \
-                 "\"DORAChart\", \"UsageOverview\", \"DoraPerformersScore\"]")
+                 "\"DORAChart\", \"UsageOverview\", \"DoraPerformersScore\", \"AiImpactTable\"]")
       end
     end
   end

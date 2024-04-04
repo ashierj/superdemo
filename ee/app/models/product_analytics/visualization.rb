@@ -28,6 +28,9 @@ module ProductAnalytics
     VALUE_STREAM_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations'
     VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[dora_chart usage_overview dora_performers_score].freeze
 
+    AI_IMPACT_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/ai_impact_dashboard/visualizations'
+    AI_IMPACT_DASHBOARD_VISUALIZATIONS = %w[ai_impact_table].freeze
+
     def self.for(container:, user:)
       config_project =
         container.analytics_dashboards_configuration_project ||
@@ -52,7 +55,18 @@ module ProductAnalytics
       end
     end
 
-    def self.load_visualization_data(path, data)
+    def self.get_path_for_visualization(data)
+      if VALUE_STREAM_DASHBOARD_VISUALIZATIONS.include?(data)
+        VALUE_STREAM_DASHBOARD_PATH
+      elsif AI_IMPACT_DASHBOARD_VISUALIZATIONS.include?(data)
+        AI_IMPACT_DASHBOARD_PATH
+      else
+        PRODUCT_ANALYTICS_PATH
+      end
+    end
+
+    def self.load_visualization_data(data)
+      path = get_path_for_visualization(data)
       file = Rails.root.join(path, "#{data}.yaml")
       Gitlab::PathTraversal.check_path_traversal!(data)
       Gitlab::PathTraversal.check_allowed_absolute_path!(
@@ -65,14 +79,6 @@ module ProductAnalytics
         init_error = "Visualization file #{data}.yaml not found"
       end
       new(config: config_file, slug: data, init_error: init_error)
-    end
-
-    def self.load_product_analytics_visualization(data)
-      load_visualization_data(PRODUCT_ANALYTICS_PATH, data)
-    end
-
-    def self.load_value_stream_dashboard_visualization(data)
-      load_visualization_data(VALUE_STREAM_DASHBOARD_PATH, data)
     end
 
     def self.from_data(data:, project:)
@@ -88,11 +94,7 @@ module ProductAnalytics
 
       return new(config: config, slug: data) if config
 
-      if VALUE_STREAM_DASHBOARD_VISUALIZATIONS.include?(data)
-        load_value_stream_dashboard_visualization(data)
-      else
-        load_product_analytics_visualization(data)
-      end
+      load_visualization_data(data)
     end
 
     def initialize_with_error(init_error, slug)
