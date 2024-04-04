@@ -88,6 +88,7 @@ describe('CreateMemberRole', () => {
     createComponent({ stubs });
 
     expect(findSelect().props('options')).toEqual([
+      { value: 'MINIMAL_ACCESS', text: 'Minimal Access' },
       { value: 'GUEST', text: 'Guest' },
       { value: 'REPORTER', text: 'Reporter' },
       { value: 'DEVELOPER', text: 'Developer' },

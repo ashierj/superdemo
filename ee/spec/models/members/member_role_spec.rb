@@ -17,7 +17,11 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:base_access_level) }
-    it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
+
+    it do
+      is_expected.to validate_inclusion_of(:base_access_level)
+        .in_array(::Gitlab::Access.options_with_minimal_access.values.freeze)
+    end
 
     describe 'name uniqueness validation' do
       let_it_be(:group) { create(:group) }

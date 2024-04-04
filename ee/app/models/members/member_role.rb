@@ -6,7 +6,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
 
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
 
-  LEVELS = ::Gitlab::Access.options_with_owner.values.freeze
+  # base_access_level is validated against this array,
+  # so a migration may be needed if you change it
+  LEVELS = ::Gitlab::Access.options_with_minimal_access.values.freeze
 
   has_many :members
   has_many :saml_providers

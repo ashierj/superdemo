@@ -14,7 +14,7 @@ import {
 import { difference, pull } from 'lodash';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
-import { BASE_ROLES } from '~/access_level/constants';
+import { BASE_ROLES_INC_MINIMAL_ACCESS } from '~/access_level/constants';
 import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -217,7 +217,7 @@ export default {
       }
     },
   },
-  BASE_ROLES,
+  BASE_ROLES_INC_MINIMAL_ACCESS,
 };
 </script>
 
@@ -278,7 +278,7 @@ export default {
         id="base-role-select"
         v-model="baseRole"
         width="md"
-        :options="$options.BASE_ROLES"
+        :options="$options.BASE_ROLES_INC_MINIMAL_ACCESS"
         :state="baseRoleValid"
       />
     </gl-form-group>
