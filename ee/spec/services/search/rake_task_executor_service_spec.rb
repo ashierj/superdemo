@@ -107,6 +107,82 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
     end
   end
 
+  describe '#estimate_shard_sizes' do
+    let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000, 4_000] }
+    let(:counted_items) { described_class::CLASSES_TO_COUNT }
+
+    subject(:task) { service.execute(:estimate_shard_sizes) }
+
+    before do
+      allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).and_return(true)
+      allow(::Gitlab::Database::Count).to receive(:approximate_counts).with(counted_items).and_return(
+        Hash[counted_items.zip(counts)]
+      )
+    end
+
+    context 'when epics are not in a standalone index' do
+      let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000] }
+      let(:counted_items) { described_class::CLASSES_TO_COUNT - [Epic] }
+
+      before do
+        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+          .with(:backfill_epics).and_return(false)
+      end
+
+      it 'does not include epics index in shard size estimates' do
+        expect { task }.not_to output(/gitlab-test-epics/).to_stdout
+      end
+    end
+
+    context 'when projects are not in a standalone index' do
+      let(:counts) { [1500, 10_000_000, 50_000_000, 100_000_000, 4_000] }
+      let(:counted_items) { described_class::CLASSES_TO_COUNT - [Project] }
+
+      before do
+        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+          .with(:migrate_projects_to_separate_index).and_return(false)
+      end
+
+      it 'does not include projects index in shard size estimates' do
+        expect { task }.not_to output(/gitlab-test-projects/).to_stdout
+      end
+    end
+
+    it 'outputs shard size estimates' do
+      expected = <<~STD_OUT
+        Using approximate counts to estimate shard counts for data indexed from database. This does not include repository data.
+        The approximate document counts, recommended shard size, and replica size for each index are:
+        - gitlab-test-issues:
+           document count: 400
+           recommended shards: 5
+           recommended replicas: 1
+        - gitlab-test-notes:
+           document count: 1,500
+           recommended shards: 5
+           recommended replicas: 1
+        - gitlab-test-merge_requests:
+           document count: 10,000,000
+           recommended shards: 7
+           recommended replicas: 1
+        - gitlab-test-epics:
+           document count: 50,000,000
+           recommended shards: 15
+           recommended replicas: 1
+        - gitlab-test-users:
+           document count: 100,000,000
+           recommended shards: 25
+           recommended replicas: 1
+        - gitlab-test-projects:
+           document count: 4,000
+           recommended shards: 5
+           recommended replicas: 1
+        Please note that it is possible to index only selected namespaces/projects by using Advanced search indexing restrictions. This estimate does not take into account indexing restrictions.
+      STD_OUT
+
+      expect { task }.to output(expected).to_stdout
+    end
+  end
+
   describe '#mark_reindex_failed' do
     subject(:task) { service.execute(:mark_reindex_failed) }
 
