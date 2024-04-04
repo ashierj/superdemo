@@ -17556,6 +17556,18 @@ Details of a container repository.
 
 #### Fields with arguments
 
+##### `ContainerRepositoryDetails.manifest`
+
+An image manifest from the container repository.
+
+Returns [`String`](#string).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="containerrepositorydetailsmanifestreference"></a>`reference` | [`String!`](#string) | Tag name or digest of the manifest. |
+
 ##### `ContainerRepositoryDetails.tags`
 
 Tags of the container repository.
