@@ -10,6 +10,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:group_pointer) { create(:analytics_dashboards_pointer, namespace: group, target_project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+  let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
   let(:product_analytics_instrumentation_key) { '1234567890' }
 
@@ -70,6 +71,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             }.to_json,
             can_configure_dashboards_project: user_can_admin_project.to_s,
             can_select_gitlab_managed_provider: 'false',
+            managed_cluster_purchased: 'false',
             tracking_key: user_has_permission ? product_analytics_instrumentation_key : nil,
             collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
             chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -116,6 +118,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           dashboard_project: nil,
           can_configure_dashboards_project: 'false',
           can_select_gitlab_managed_provider: 'false',
+          managed_cluster_purchased: 'false',
           tracking_key: nil,
           collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -168,6 +171,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           }.to_json,
           can_configure_dashboards_project: 'false',
           can_select_gitlab_managed_provider: 'false',
+          managed_cluster_purchased: 'false',
           tracking_key: nil,
           collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -294,6 +298,35 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         it 'returns the expected value' do
           expect(data[:can_select_gitlab_managed_provider]).to eq(expected_value)
+        end
+      end
+    end
+
+    describe '#managed_cluster_purchased' do
+      where(:is_project, :purchased_product_analytics_add_on, :product_analytics_billing, :expected_value) do
+        true  | true  | true  | 'true'
+        true  | true  | false | 'false'
+        true  | false | true  | 'false'
+        true  | false | false | 'false'
+        false | true  | true  | 'false'
+        false | true  | false | 'false'
+        false | false | true  | 'false'
+        false | false | false | 'false'
+      end
+
+      with_them do
+        before do
+          if purchased_product_analytics_add_on
+            create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on) # rubocop:disable RSpec/FactoryBot/AvoidCreate
+          end
+
+          stub_feature_flags(product_analytics_billing: product_analytics_billing)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
+
+        it 'returns the expected value' do
+          expect(data[:managed_cluster_purchased]).to eq(expected_value)
         end
       end
     end

@@ -2,6 +2,7 @@
 import { GlButton, GlFormCheckbox, GlSprintf } from '@gitlab/ui';
 
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
+import { PROMO_URL } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 
 import { getRedirectConfirmationMessage } from './utils';
@@ -9,7 +10,14 @@ import { getRedirectConfirmationMessage } from './utils';
 export default {
   name: 'GitlabManagedProviderCard',
   components: { GlButton, GlFormCheckbox, GlSprintf },
-  inject: { projectLevelAnalyticsProviderSettings: {} },
+  inject: {
+    projectLevelAnalyticsProviderSettings: {
+      default: () => ({}),
+    },
+    managedClusterPurchased: {
+      default: false,
+    },
+  },
   props: {
     projectAnalyticsSettingsPath: {
       type: String,
@@ -69,6 +77,7 @@ export default {
     },
   },
   zone: 'us-central-1',
+  contactSalesUrl: `${PROMO_URL}/sales/`,
 };
 </script>
 <template>
@@ -109,21 +118,32 @@ export default {
           </gl-sprintf>
         </li>
       </ul>
-      <div class="gl-mb-6 gl-mt-auto">
-        <gl-form-checkbox v-model="hasAgreedToGCPZone" data-testid="region-agreement-checkbox">{{
-          s__('ProductAnalytics|I agree to event collection and processing in this region.')
-        }}</gl-form-checkbox>
-        <div v-if="gcpZoneError" class="gl-text-red-500" data-testid="gcp-zone-error">
-          {{ gcpZoneError }}
+      <template v-if="managedClusterPurchased">
+        <div class="gl-mb-6 gl-mt-auto">
+          <gl-form-checkbox v-model="hasAgreedToGCPZone" data-testid="region-agreement-checkbox">{{
+            s__('ProductAnalytics|I agree to event collection and processing in this region.')
+          }}</gl-form-checkbox>
+          <div v-if="gcpZoneError" class="gl-text-red-500" data-testid="gcp-zone-error">
+            {{ gcpZoneError }}
+          </div>
         </div>
-      </div>
+        <gl-button
+          category="primary"
+          variant="confirm"
+          class="gl-align-self-start"
+          data-testid="connect-gitlab-managed-provider-btn"
+          @click="onSelected"
+          >{{ s__('ProductAnalytics|Use GitLab-managed provider') }}</gl-button
+        >
+      </template>
       <gl-button
+        v-else
         category="primary"
         variant="confirm"
         class="gl-align-self-start"
-        data-testid="connect-gitlab-managed-provider-btn"
-        @click="onSelected"
-        >{{ s__('ProductAnalytics|Use GitLab-managed provider') }}</gl-button
+        data-testid="contact-sales-team-btn"
+        :href="$options.contactSalesUrl"
+        >{{ s__('ProductAnalytics|Contact our sales team') }}</gl-button
       >
     </div>
   </div>
