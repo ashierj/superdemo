@@ -42,6 +42,34 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
     end
   end
 
+  context 'for duo features enabled' do
+    before do
+      allow(group).to receive(:licensed_feature_available?).and_call_original
+    end
+
+    context 'when licensed feature is not available' do
+      it 'renders nothing' do
+        allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(false)
+
+        render
+
+        expect(rendered).to render_template('groups/settings/_duo_features_enabled')
+        expect(rendered).not_to have_content('Duo features')
+      end
+    end
+
+    context 'when licensed feature is available' do
+      it 'renders the experiment settings' do
+        allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(true)
+
+        render
+
+        expect(rendered).to render_template('groups/settings/_duo_features_enabled')
+        expect(rendered).to have_content('Duo features')
+      end
+    end
+  end
+
   context 'for experimental settings' do
     context 'when settings are disabled' do
       it 'renders nothing' do
