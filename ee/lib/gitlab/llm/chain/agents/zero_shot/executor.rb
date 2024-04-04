@@ -19,8 +19,7 @@ module Gitlab
 
             PROVIDER_PROMPT_CLASSES = {
               ai_gateway: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic,
-              anthropic: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic,
-              vertex_ai: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::VertexAi
+              anthropic: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic
             }.freeze
 
             # @param [String] user_input - a question from a user
@@ -102,10 +101,12 @@ module Gitlab
                 agent_scratchpad: +"",
                 conversation: conversation,
                 prompt_version: prompt_version,
+                zero_shot_prompt: zero_shot_prompt,
                 agent_version_prompt: context.agent_version&.prompt,
                 current_resource: current_resource,
                 current_code: current_code,
-                resources: available_resources_names
+                resources: available_resources_names,
+                current_user: context.current_user
               }
             end
 
@@ -141,6 +142,10 @@ module Gitlab
 
             def prompt_version
               PROMPT_TEMPLATE
+            end
+
+            def zero_shot_prompt
+              ZERO_SHOT_PROMPT
             end
 
             def last_conversation
@@ -196,9 +201,7 @@ module Gitlab
               ""
             end
 
-            PROMPT_TEMPLATE = [
-              Utils::Prompt.as_system(
-                <<~PROMPT
+            ZERO_SHOT_PROMPT = <<~PROMPT.freeze
                   Answer the question as accurate as you can.
 
                   You have access only to the following tools:
@@ -233,8 +236,10 @@ module Gitlab
 
                   %<current_resource>s
                   Begin!
-                PROMPT
-              ),
+            PROMPT
+
+            PROMPT_TEMPLATE = [
+              Utils::Prompt.as_system(ZERO_SHOT_PROMPT),
               Utils::Prompt.as_user("Question: %<user_input>s"),
               # We're explicitly adding "\n" before the `Assistant:` in order to avoid the Anthropic API error
               # `prompt must end with "\n\nAssistant:" turn`.

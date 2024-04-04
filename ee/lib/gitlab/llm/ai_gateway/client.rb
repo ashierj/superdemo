@@ -10,6 +10,7 @@ module Gitlab
         include ::API::Helpers::CloudConnector
         include Langsmith::RunHelpers
 
+        CLAUDE_3_SONNET = 'claude-3-sonnet-20240229'
         DEFAULT_PROVIDER = 'anthropic'
         DEFAULT_MODEL = 'claude-2.1'
         DEFAULT_TIMEOUT = 30.seconds
@@ -140,7 +141,11 @@ module Gitlab
         end
 
         def model
-          DEFAULT_MODEL
+          if Feature.enabled?(:ai_claude_3_sonnet, user)
+            CLAUDE_3_SONNET
+          else
+            DEFAULT_MODEL
+          end
         end
       end
     end

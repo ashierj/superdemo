@@ -10,12 +10,21 @@ module Gitlab
               def self.base_prompt(options)
                 return agent_version_prompt(options) if options[:agent_version_prompt]
 
-                base_prompt = Utils::Prompt.no_role_text(
-                  options.fetch(:prompt_version),
-                  options
-                )
+                if options[:current_user] && Feature.enabled?(:ai_claude_3_sonnet, options[:current_user])
+                  zero_shot_prompt = format(options[:zero_shot_prompt], options)
 
-                "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
+                  Utils::Prompt.role_conversation([
+                    Utils::Prompt.as_system(Utils::Prompt.default_system_prompt, zero_shot_prompt),
+                    Utils::Prompt.as_user(options[:user_input]),
+                    Utils::Prompt.as_assistant(options[:agent_scratchpad], "Thought:")
+                  ])
+                else
+                  base_prompt = Utils::Prompt.no_role_text(options.fetch(:prompt_version),
+                    options
+                  )
+
+                  "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
+                end
               end
 
               def self.agent_version_prompt(options)

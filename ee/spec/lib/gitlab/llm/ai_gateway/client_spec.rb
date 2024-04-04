@@ -55,7 +55,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
       "response" => "Completion Response",
       "metadata" => {
         "provider" => "anthropic",
-        "model" => "claude-2.0",
+        "model" => model,
         "timestamp" => 1000000000 # The number of seconds passed since epoch
       }
     }
@@ -68,6 +68,8 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
   let(:response_headers) { { 'Content-Type' => 'application/json' } }
 
   before do
+    stub_feature_flags(ai_claude_3_sonnet: false)
+
     stub_request(:post, request_url)
       .with(
         body: expected_request_body,
@@ -128,6 +130,21 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
         .and_call_original
       expect(complete.parsed_response).to eq(expected_response)
+    end
+
+    context 'when ai_claude_3_sonnet feature flag is enabled' do
+      let(:model) { described_class::CLAUDE_3_SONNET }
+
+      before do
+        stub_feature_flags(ai_claude_3_sonnet: true)
+      end
+
+      it 'returns expected response' do
+        expect(Gitlab::HTTP).to receive(:post)
+          .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+          .and_call_original
+        expect(complete.parsed_response).to eq(expected_response)
+      end
     end
 
     context 'when AI_GATEWAY_URL is not set' do

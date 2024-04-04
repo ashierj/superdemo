@@ -45,10 +45,10 @@ module Gitlab
             ': '
           end
 
-          def self.role_conversation(prompt_template, input_variables)
+          def self.role_conversation(prompt_template)
             prompt_template.map do |x|
-              { role: x.first, content: format(x.last, input_variables) }
-            end.to_json
+              { role: x.first, content: x.last }
+            end
           end
 
           def self.default_system_prompt
