@@ -1,6 +1,5 @@
 <script>
 import {
-  GlAvatar,
   GlLoadingIcon,
   GlBadge,
   GlButton,
@@ -11,9 +10,9 @@ import {
 } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { visitUrl } from '~/lib/utils/url_utility';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import UserAccessRoleBadge from '~/vue_shared/components/user_access_role_badge.vue';
 import VisibilityIcon from '~/vue_shared/components/visibility_icon.vue';
-import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __ } from '~/locale';
 import { VISIBILITY_LEVELS_STRING_TO_INTEGER } from '~/visibility_level/constants';
@@ -31,7 +30,6 @@ export default {
     SafeHtml,
   },
   components: {
-    GlAvatar,
     GlBadge,
     GlButton,
     GlLoadingIcon,
@@ -42,6 +40,7 @@ export default {
     ItemTypeIcon,
     ItemActions,
     ItemStats,
+    ProjectAvatar,
     VisibilityIcon,
   },
   inject: {
@@ -144,7 +143,6 @@ export default {
     },
   ),
   safeHtmlConfig: { ADD_TAGS: ['gl-emoji'] },
-  AVATAR_SHAPE_OPTION_RECT,
 };
 </script>
 
@@ -187,14 +185,12 @@ export default {
         :href="group.relativePath"
         :aria-label="group.name"
       >
-        <gl-avatar
-          :shape="$options.AVATAR_SHAPE_OPTION_RECT"
-          :entity-id="group.id"
-          :entity-name="group.name"
-          :src="group.avatarUrl"
+        <project-avatar
           :alt="group.name"
-          :size="32"
           :itemprop="microdata.imageItemprop"
+          :project-avatar-url="group.avatarUrl"
+          :project-id="group.id"
+          :project-name="group.name"
         />
       </a>
       <div class="group-text-container d-flex flex-fill gl-align-items-center">
