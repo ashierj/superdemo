@@ -6,6 +6,8 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   include AdminModeHelper
   include LoginHelpers
 
+  using RSpec::Parameterized::TableSyntax
+
   def stub_group_saml_config(enabled)
     allow(::Gitlab::Auth::GroupSaml::Config).to receive_messages(enabled?: enabled)
   end
@@ -747,8 +749,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     context 'reading a group' do
       context 'when SAML SSO is enabled for resource' do
-        using RSpec::Parameterized::TableSyntax
-
         let(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: false) }
         let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
         let(:root_group) { saml_provider.group }
@@ -2021,8 +2021,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   describe ':admin_ci_minutes' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:policy) { :admin_ci_minutes }
 
     where(:role, :admin_mode, :allowed) do
@@ -2047,8 +2045,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   describe ':read_group_audit_events' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:policy) { :read_group_audit_events }
 
     where(:role, :admin_mode, :allowed) do
@@ -2252,8 +2248,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     describe ':admin_merge_request_approval_settings' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:policy) { :admin_merge_request_approval_settings }
 
       where(:role, :licensed, :admin_mode, :root_group, :allowed) do
@@ -2289,8 +2283,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     describe ':start_trial' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:policy) { :start_trial }
 
       where(:role, :eligible_for_trial, :admin_mode, :allowed) do
@@ -2325,8 +2317,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
   describe 'compliance framework permissions' do
     shared_examples 'compliance framework permissions' do
-      using RSpec::Parameterized::TableSyntax
-
       where(:role, :licensed, :admin_mode, :allowed) do
         :owner      | true  | nil   | true
         :owner      | false | nil   | false
@@ -2382,8 +2372,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'when license includes the feature' do
-      using RSpec::Parameterized::TableSyntax
-
       where(:role, :allowed) do
         :admin            | true
         :owner            | true
@@ -2424,8 +2412,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'when license includes the feature' do
-      using RSpec::Parameterized::TableSyntax
-
       where(:role, :allowed) do
         :admin            | true
         :owner            | true
@@ -2449,8 +2435,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'when license plan does not include the feature' do
-      using RSpec::Parameterized::TableSyntax
-
       where(:role, :allowed) do
         :admin            | true
         :owner            | false
@@ -2502,8 +2486,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   describe 'a pending membership' do
-    using RSpec::Parameterized::TableSyntax
-
     let_it_be(:user) { create(:user) }
 
     context 'with a private group' do
@@ -2692,8 +2674,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
   describe 'read_usage_quotas policy' do
     context 'reading usage quotas' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:policy) { :read_usage_quotas }
 
       where(:role, :admin_mode, :allowed) do
@@ -2856,8 +2836,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   describe 'ban_group_member' do
-    using RSpec::Parameterized::TableSyntax
-
     let_it_be(:user) { create(:user) }
 
     let(:group) { create(:group) }
@@ -3019,8 +2997,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'for self-managed' do
-      using RSpec::Parameterized::TableSyntax
-
       let_it_be_with_reload(:group) { create(:group) }
       let(:policy) { :access_duo_chat }
 
@@ -3046,8 +3022,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   end
 
   context 'access_duo_features' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:current_user, :duo_features_enabled, :cs_matcher) do
       ref(:guest) | true | be_allowed(:access_duo_features)
       ref(:guest) | false | be_disallowed(:access_duo_features)
@@ -3093,9 +3067,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       before_all do
         create(:saml_provider, group: group)
       end
-
-      using RSpec::Parameterized::TableSyntax
-
       where(:the_group, :licensed, :saml_enabled, :sso_enforced, :role, :allowed) do
         ref(:group)     | false | false | false | Gitlab::Access::OWNER      | false
         ref(:group)     | false | false | false | Gitlab::Access::MAINTAINER | false
@@ -3450,6 +3421,26 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         let(:current_user) { guest }
 
         it { is_expected.to be_disallowed(:provision_cloud_runner) }
+      end
+    end
+  end
+
+  describe 'read_jobs_statistics' do
+    let(:current_user) { developer }
+
+    it { is_expected.to be_disallowed(:read_jobs_statistics) }
+
+    context 'when runner performance insights feature is available' do
+      before do
+        stub_licensed_features(runner_performance_insights: true)
+      end
+
+      it { is_expected.to be_disallowed(:read_jobs_statistics) }
+
+      context 'when user is a maintainer' do
+        let(:current_user) { maintainer }
+
+        it { is_expected.to be_allowed(:read_jobs_statistics) }
       end
     end
   end

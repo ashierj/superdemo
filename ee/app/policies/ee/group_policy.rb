@@ -307,6 +307,10 @@ module EE
 
       condition(:duo_features_enabled, scope: :subject) { @subject.namespace_settings&.duo_features_enabled }
 
+      condition(:runner_performance_insights_available, scope: :subject) do
+        @subject.feature_available?(:runner_performance_insights)
+      end
+
       rule { user_banned_from_namespace }.prevent_all
 
       rule { public_group | logged_in_viewable }.policy do
@@ -334,6 +338,7 @@ module EE
         enable :maintainer_access
         enable :admin_wiki
         enable :modify_product_analytics_settings
+        enable :read_jobs_statistics
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
@@ -731,6 +736,10 @@ module EE
       rule { google_cloud_support_available & can?(:maintainer_access) }.policy do
         enable :read_runner_cloud_provisioning_info
         enable :provision_cloud_runner
+      end
+
+      rule { ~runner_performance_insights_available }.policy do
+        prevent :read_jobs_statistics
       end
     end
 

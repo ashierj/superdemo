@@ -78,7 +78,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       end
     end
 
-    it "set's runner_owner_namespace_id only for group runners" do
+    it 'sets runner_owner_namespace_id only for group runners' do
       execute
 
       records = ci_finished_builds

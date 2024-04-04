@@ -118,6 +118,8 @@ module EE
         enable :read_all_geo
         enable :read_all_workspaces
         enable :manage_subscription
+        enable :read_jobs_statistics
+        enable :read_runner_usage
       end
 
       rule { admin & custom_roles_allowed }.policy do
@@ -126,11 +128,12 @@ module EE
 
       rule { admin & pages_size_limit_available }.enable :update_max_pages_size
 
-      rule { admin & runner_performance_insights_available }.enable :read_jobs_statistics
-
-      rule { admin & runner_performance_insights_available & clickhouse_main_database_available }.policy do
-        enable :read_runner_usage
+      rule { ~runner_performance_insights_available }.policy do
+        prevent :read_jobs_statistics
+        prevent :read_runner_usage
       end
+
+      rule { ~clickhouse_main_database_available }.prevent :read_runner_usage
 
       rule { admin & service_accounts_available }.enable :admin_service_accounts
 
