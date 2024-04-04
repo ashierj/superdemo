@@ -10753,6 +10753,12 @@ msgstr ""
 msgid "CiCatalog|Create a pipeline component repository and make reusing pipeline configurations faster and easier."
 msgstr ""
 
+msgid "CiCatalog|Created and maintained by %{boldStart}GitLab%{boldEnd}"
+msgstr ""
+
+msgid "CiCatalog|Created and maintained by a %{boldStart}GitLab Partner%{boldEnd}"
+msgstr ""
+
 msgid "CiCatalog|Discover CI/CD components that can improve your pipeline with additional functionality."
 msgstr ""
 
@@ -10762,10 +10768,16 @@ msgstr ""
 msgid "CiCatalog|Get started with the CI/CD Catalog"
 msgstr ""
 
+msgid "CiCatalog|GitLab-maintained"
+msgstr ""
+
 msgid "CiCatalog|Go to the project"
 msgstr ""
 
 msgid "CiCatalog|How do I publish a component?"
+msgstr ""
+
+msgid "CiCatalog|Learn more about designated creators"
 msgstr ""
 
 msgid "CiCatalog|No component available"
@@ -10775,6 +10787,9 @@ msgid "CiCatalog|No release available"
 msgstr ""
 
 msgid "CiCatalog|No result found"
+msgstr ""
+
+msgid "CiCatalog|Partner"
 msgstr ""
 
 msgid "CiCatalog|Publish the CI/CD components in this project to the CI/CD Catalog"
