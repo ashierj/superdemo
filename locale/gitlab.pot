@@ -4597,6 +4597,9 @@ msgstr ""
 msgid "AiAgents|Create your own AI Agents"
 msgstr ""
 
+msgid "AiAnalytics|the ClickHouse data store is not available"
+msgstr ""
+
 msgid "Akismet"
 msgstr ""
 
