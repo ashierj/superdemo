@@ -19,8 +19,6 @@ module Security
       return unless policy_configuration_ids.any?
 
       framework.security_orchestration_policy_configurations.id_in(policy_configuration_ids).find_each do |config|
-        next if config.namespace? && Feature.disabled?(:security_policies_policy_scope, config.namespace)
-
         Security::ProcessScanResultPolicyWorker.perform_async(project.id, config.id)
       end
     end

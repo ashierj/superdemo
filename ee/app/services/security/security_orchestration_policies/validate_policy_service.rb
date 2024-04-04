@@ -69,7 +69,6 @@ module Security
 
       def invalid_compliance_framework_ids?
         return false if project_container?
-        return false unless Feature.enabled?(:security_policies_policy_scope, container)
         return false if compliance_framework_ids.blank?
 
         container.root_ancestor.compliance_management_frameworks.id_in(compliance_framework_ids).count != compliance_framework_ids.count

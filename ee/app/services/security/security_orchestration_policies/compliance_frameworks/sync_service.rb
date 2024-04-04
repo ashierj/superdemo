@@ -10,9 +10,6 @@ module Security
 
         def execute
           container = configuration.source
-          return if configuration.namespace? && Feature.disabled?(:security_policies_policy_scope,
-            configuration.namespace)
-
           framework_ids_with_policy_index = configuration.compliance_framework_ids_with_policy_index
           framework_ids = framework_ids_with_policy_index.flat_map { |ids_with_idx| ids_with_idx[:framework_ids] }.uniq
 

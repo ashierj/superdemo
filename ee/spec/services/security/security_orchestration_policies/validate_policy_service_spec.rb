@@ -703,14 +703,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
           }
         end
 
-        context 'when feature is disabled' do
-          before do
-            stub_feature_flags(security_policies_policy_scope: false)
-          end
-
-          it { expect(result[:status]).to eq(:success) }
-        end
-
         context 'when policy_scope is empty' do
           let(:policy_scope) { {} }
 

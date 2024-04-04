@@ -29,14 +29,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ComplianceFrameworks::Sy
     it_behaves_like 'does not create ComplianceFramework::SecurityPolicy'
   end
 
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(security_policies_policy_scope: false)
-    end
-
-    it_behaves_like 'does not create ComplianceFramework::SecurityPolicy'
-  end
-
   context 'when policy configuration is scoped to a project' do
     let_it_be(:project) { create(:project, :repository, namespace: namespace) }
     let_it_be(:policy_configuration) do

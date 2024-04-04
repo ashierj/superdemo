@@ -84,18 +84,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeFetcher, :agg
       end
     end
 
-    context 'when security_policies_policy_scope is disabled' do
-      before do
-        stub_feature_flags(security_policies_policy_scope: false)
-      end
-
-      it 'returns empty result' do
-        response = service.execute
-
-        expect(response).to be_nil
-      end
-    end
-
     context 'when compliance framework is not associated with the namespace' do
       let_it_be(:framework) { create(:compliance_framework) }
       let(:policy_scope) do
