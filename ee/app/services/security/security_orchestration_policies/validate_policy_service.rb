@@ -4,6 +4,7 @@ module Security
   module SecurityOrchestrationPolicies
     class ValidatePolicyService < ::BaseContainerService
       include ::Gitlab::Utils::StrongMemoize
+      include Security::SecurityOrchestrationPolicies::CadenceChecker
 
       ValidationError = Struct.new(:field, :level, :message, :title)
 
@@ -23,6 +24,10 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Invalid Compliance Framework ID(s)'), field: :compliance_frameworks) if invalid_compliance_framework_ids?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers.'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
+
+        if Feature.enabled?(:scan_execution_policy_cadence_validation) && invalid_cadence?
+          return error_with_title(s_('SecurityOrchestration|Cadence is invalid'), field: :cadence)
+        end
 
         success
       end
@@ -204,6 +209,15 @@ module Security
         policy[:actions]&.find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
       end
       strong_memoize_attr :approval_requiring_action
+
+      def invalid_cadence?
+        return false if scan_result_policy?
+
+        policy[:rules].select { |rule| rule[:cadence] }
+                      .any? do |rule|
+          !(Gitlab::Ci::CronParser.new(rule[:cadence]).cron_valid? && valid_cadence?(rule[:cadence]))
+        end
+      end
     end
   end
 end
