@@ -76,6 +76,15 @@ RSpec.describe API::ProtectedTags, feature_category: :source_code_management do
         expect(json_response['create_access_levels'][0]['access_level']).to eq(Gitlab::Access::MAINTAINER)
       end
 
+      context 'when allowed_to_create format is incorrect' do
+        it 'returns a bad request error' do
+          post post_endpoint, params: { name: tag_name, allowed_to_create: [''] }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['error']).to eq('allowed_to_create is invalid')
+        end
+      end
+
       context 'when protected_refs_for_users feature is not available' do
         before do
           stub_licensed_features(protected_refs_for_users: false)
