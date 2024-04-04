@@ -8,22 +8,27 @@ module Gitlab
 
       ZOEKT_COUNT_LIMIT = 5_000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
+      ZOEKT_TARGETS_CACHE_EXPIRES_IN = 10.minutes
 
       attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error, :modes
 
       # Limit search results by passed projects
       # It allows us to search only for projects user has access to
-      attr_reader :limit_project_ids, :node_id
+      attr_reader :projects, :node_id
 
-      def initialize(current_user, query, projects = nil, node_id:, order_by: nil, sort: nil, filters: {}, modes: {})
+      def initialize(current_user, query, projects, node_id: nil, order_by: nil, sort: nil, filters: {}, modes: {})
         @current_user = current_user
         @query = query
         @filters = filters
-        @limit_project_ids = filtered_project_ids(projects)
+        @projects = filtered_projects(projects)
         @node_id = node_id
         @order_by = order_by
         @sort = sort
         @modes = modes
+      end
+
+      def limit_project_ids
+        @limit_project_ids ||= projects.pluck_primary_key
       end
 
       def objects(_scope, page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil)
@@ -78,10 +83,10 @@ module Gitlab
       def base_options
         {
           current_user: current_user,
-          project_ids: limit_project_ids,
           public_and_internal_projects: public_and_internal_projects,
           order_by: order_by,
           sort: sort,
+          projects: projects,
           node_id: node_id
         }
       end
@@ -132,21 +137,30 @@ module Gitlab
       # @param page_limit [Integer] maximum number of pages we parse
       # @return [Array<Hash, Integer>] the results and total count
       def zoekt_search(query, per_page:, options:, page_limit:)
-        response = ::Gitlab::Search::Zoekt::Client.search(
-          query,
-          num: ZOEKT_COUNT_LIMIT,
-          project_ids: options[:project_ids],
-          node_id: options[:node_id],
-          search_mode: search_mode
-        )
+        response = if node_id
+                     ::Gitlab::Search::Zoekt::Client.search(
+                       query,
+                       num: ZOEKT_COUNT_LIMIT,
+                       node_id: node_id,
+                       project_ids: limit_project_ids,
+                       search_mode: search_mode
+                     )
+                   else
+                     ::Gitlab::Search::Zoekt::Client.search_multi_node(
+                       query,
+                       num: ZOEKT_COUNT_LIMIT,
+                       targets: zoekt_targets,
+                       search_mode: search_mode
+                     )
+                   end
 
-        if response[:Error]
+        if response.failure?
           @blobs_count = 0
-          @error = response[:Error]
+          @error = response.error_message
           return [{}, @blobs_count]
         end
 
-        total_count = response[:Result][:MatchCount].clamp(0, ZOEKT_COUNT_LIMIT)
+        total_count = response.match_count.clamp(0, ZOEKT_COUNT_LIMIT)
         results = zoekt_extract_result_pages(response, per_page: per_page, page_limit: page_limit)
 
         [results, total_count]
@@ -166,13 +180,12 @@ module Gitlab
         results = {}
         i = 0
 
-        files = response.dig(:Result, :Files) || []
-        files.each do |file|
+        response.each_file do |file|
           project_id = file[:Repository].to_i
 
-          file[:LineMatches].each do |match|
+          cont = file[:LineMatches].each do |match|
             current_page = i / per_page
-            return results if current_page == page_limit
+            break false if current_page == page_limit
 
             results[current_page] ||= []
             results[current_page] << {
@@ -184,6 +197,8 @@ module Gitlab
 
             i += 1
           end
+
+          break unless cont
         end
 
         results
@@ -195,7 +210,7 @@ module Gitlab
           current_user: current_user,
           page: page,
           per_page: per_page,
-          project_ids: options[:project_ids],
+          project_ids: limit_project_ids,
           max_per_page: DEFAULT_PER_PAGE * 2,
           search_mode: search_mode
         )
@@ -249,8 +264,8 @@ module Gitlab
         Feature.enabled?(:zoekt_exact_search, type: :wip) ? :exact : :regex
       end
 
-      def filtered_project_ids(projects)
-        return projects if projects == :any
+      def filtered_projects(projects)
+        return Project.all if projects == :any
 
         filtered_projects = projects.without_order
 
@@ -262,7 +277,16 @@ module Gitlab
           filtered_projects = filtered_projects.not_a_fork
         end
 
-        filtered_projects.pluck_primary_key
+        filtered_projects
+      end
+
+      def zoekt_targets
+        sha = OpenSSL::Digest.hexdigest('SHA256', limit_project_ids.sort.join(','))
+        cache_key = [self.class.name, :zoekt_targets, current_user&.id, sha]
+
+        Rails.cache.fetch(cache_key, expires_in: ZOEKT_TARGETS_CACHE_EXPIRES_IN) do
+          ::Search::Zoekt::RoutingService.execute(projects)
+        end
       end
     end
   end

@@ -6,6 +6,7 @@ module Gitlab
       class Client # rubocop:disable Search/NamespacedClass
         include ::Gitlab::Loggable
         INDEXING_TIMEOUT_S = 30.minutes.to_i
+        MAXIMUM_THREADS = 16
 
         TooManyRequestsError = Class.new(StandardError)
 
@@ -14,7 +15,7 @@ module Gitlab
             @instance ||= new
           end
 
-          delegate :search, :index, :delete, :truncate, to: :instance
+          delegate :search, :search_multi_node, :index, :delete, :truncate, to: :instance
         end
 
         def search(query, num:, project_ids:, node_id:, search_mode:)
@@ -45,10 +46,28 @@ module Gitlab
 
             log_error('Zoekt search failed', status: response.code, response: response.body) unless response.success?
 
-            parse_response(response)
+            Gitlab::Search::Zoekt::Response.new parse_response(response)
           end
         ensure
           add_request_details(start_time: start, path: path, body: payload)
+        end
+
+        def search_multi_node(query, num:, targets:, search_mode:)
+          if targets.size > MAXIMUM_THREADS
+            raise ArgumentError, "Too many targets #{targets.size}, maximum allowed #{MAXIMUM_THREADS}"
+          end
+
+          threads = []
+
+          targets.each do |node_id, project_ids|
+            threads << Thread.new do
+              response = search(query, num: num, project_ids: project_ids, node_id: node_id, search_mode: search_mode)
+
+              [node_id, response]
+            end
+          end
+
+          Gitlab::Search::Zoekt::MultiNodeResponse.new threads.each(&:join).map(&:value).to_h
         end
 
         def index(project, node_id, force: false, callback_payload: {})

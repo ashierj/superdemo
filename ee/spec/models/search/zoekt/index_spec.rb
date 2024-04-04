@@ -113,5 +113,15 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
         expect(described_class.with_all_repositories_ready).to contain_exactly(idx2)
       end
     end
+
+    describe '#searchable' do
+      let_it_be(:zoekt_index_ready) do
+        create(:zoekt_index, node: zoekt_node, zoekt_enabled_namespace: zoekt_enabled_namespace_2, state: :ready)
+      end
+
+      it 'returns correct indices' do
+        expect(described_class.searchable).to contain_exactly(zoekt_index_ready)
+      end
+    end
   end
 end

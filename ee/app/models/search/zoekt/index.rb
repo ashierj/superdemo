@@ -6,6 +6,8 @@ module Search
       self.table_name = 'zoekt_indices'
       include EachBatch
 
+      SEARCHEABLE_STATES = %i[ready].freeze
+
       belongs_to :zoekt_enabled_namespace, inverse_of: :indices, class_name: '::Search::Zoekt::EnabledNamespace'
       belongs_to :node, foreign_key: :zoekt_node_id, inverse_of: :indices, class_name: '::Search::Zoekt::Node'
 
@@ -29,6 +31,12 @@ module Search
 
       scope :for_root_namespace_id, ->(root_namespace_id) do
         where(namespace_id: root_namespace_id)
+      end
+
+      scope :searchable, -> do
+        where(state: SEARCHEABLE_STATES)
+          .joins(:zoekt_enabled_namespace)
+          .where(zoekt_enabled_namespace: { search: true })
       end
 
       scope :for_root_namespace_id_with_search_enabled, ->(root_namespace_id) do

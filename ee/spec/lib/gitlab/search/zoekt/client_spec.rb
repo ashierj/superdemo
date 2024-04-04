@@ -145,11 +145,11 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it 'returns the matching files from all searched projects' do
-      expect(search[:Result][:Files].pluck(:FileName)).to include(
+      expect(search.result[:Files].pluck(:FileName)).to include(
         "files/ruby/regex.rb", "files/markdown/ruby-style-guide.md"
       )
 
-      expect(search[:Result][:Files].map { |r| r[:Repository].to_i }.uniq).to contain_exactly(
+      expect(search.result[:Files].map { |r| r[:Repository].to_i }.uniq).to contain_exactly(
         project_1.id, project_2.id
       )
     end
@@ -174,7 +174,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:query) { 'lots code do a' }
 
       it 'performs regex search and result is not empty' do
-        expect(search[:Result][:Files]).not_to be_nil
+        expect(search.result[:Files]).not_to be_nil
       end
     end
 
@@ -183,7 +183,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:search_mode) { 'exact' }
 
       it 'performs exact search and result is empty' do
-        expect(search[:Result][:Files]).to be_nil
+        expect(search.result[:Files]).to be_nil
       end
     end
 
@@ -210,7 +210,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
         expect(::Zoekt::Logger).to receive(:build).and_return(logger)
         expect(logger).to receive(:error).with(hash_including('status' => 400))
 
-        expect(search[:Error]).to include('error parsing regexp')
+        expect(search.error_message).to include('error parsing regexp')
       end
     end
 
@@ -228,6 +228,42 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     it_behaves_like 'with connection errors', :post
+  end
+
+  describe '#search_multi_node' do
+    let(:project_ids) { [project_1.id, project_2.id] }
+    let(:query) { 'use.*egex' }
+    let(:node) { ::Search::Zoekt::Node.last }
+    let(:node_id) { node.id }
+    let(:search_mode) { 'regex' }
+    let(:targets) { { node_id => project_ids } }
+
+    subject(:search) do
+      client.search_multi_node(query, num: 10, targets: targets, search_mode: search_mode)
+    end
+
+    before do
+      zoekt_ensure_project_indexed!(project_1)
+      zoekt_ensure_project_indexed!(project_2)
+      zoekt_ensure_project_indexed!(project_3)
+    end
+
+    it_behaves_like 'an authenticated zoekt request' do
+      let(:make_request) { search }
+    end
+
+    it_behaves_like 'with relative base_url', :post do
+      let(:make_request) { search }
+      let(:expected_path) { '/api/search' }
+    end
+
+    context 'when too many targets' do
+      let(:targets) { Array.new(described_class::MAXIMUM_THREADS + 1) { |i| [i, i] }.to_h }
+
+      it 'raises an error' do
+        expect { search }.to raise_error(/Too many targets/)
+      end
+    end
   end
 
   describe '#index' do
@@ -250,21 +286,21 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it 'indexes the project to make it searchable' do
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
         search_mode: :regex)
-      expect(search_results[:Result][:Files].to_a.size).to eq(0)
+      expect(search_results.result[:Files].to_a.size).to eq(0)
 
       index
 
       # Add delay to allow Zoekt wbeserver to finish the indexing
       10.times do
         results = client.search('.*', num: 1, project_ids: [project_1.id], node_id: node_id, search_mode: :regex)
-        break if results[:Result][:FileCount] > 0
+        break if results.result[:FileCount] > 0
 
         sleep 0.01
       end
 
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id,
         search_mode: :regex)
-      expect(search_results[:Result][:Files].to_a.size).to be > 0
+      expect(search_results.result[:Files].to_a.size).to be > 0
     end
 
     context 'with an error in the response' do
@@ -358,21 +394,21 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       it 'removes project data from the Zoekt node' do
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
           node_id: node_id, search_mode: :regex)
-        expect(search_results[:Result][:Files].to_a.size).to eq(2)
+        expect(search_results.result[:Files].to_a.size).to eq(2)
 
         delete
 
         # Add delay to allow Zoekt wbeserver to finish the deletion
         10.times do
           results = client.search('.*', num: 1, project_ids: [project_1.id], node_id: node_id, search_mode: :regex)
-          break if results[:Result][:FileCount] == 0
+          break if results.result[:FileCount] == 0
 
           sleep 0.01
         end
 
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
           node_id: node_id, search_mode: :regex)
-        expect(search_results[:Result][:Files].to_a).to be_empty
+        expect(search_results.result[:Files].to_a).to be_empty
       end
     end
 
@@ -414,10 +450,10 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it 'removes all data from the Zoekt nodes' do
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id,
         search_mode: :regex)
-      expect(search_results[:Result][:Files].to_a.size).to be > 0
+      expect(search_results.result[:Files].to_a.size).to be > 0
       search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], node_id: node.id,
         search_mode: :regex)
-      expect(search_results[:Result][:Files].to_a.size).to be > 0
+      expect(search_results.result[:Files].to_a.size).to be > 0
 
       client.truncate
 
@@ -425,17 +461,17 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       project_ids = [project_1, project_2].pluck(:id)
       10.times do
         results = client.search('.*', num: 1, project_ids: project_ids, node_id: node.id, search_mode: :regex)
-        break if results[:Result][:FileCount] == 0
+        break if results.result[:FileCount] == 0
 
         sleep 0.01
       end
 
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node.id,
         search_mode: :regex)
-      expect(search_results[:Result][:Files].to_a.size).to eq(0)
+      expect(search_results.result[:Files].to_a.size).to eq(0)
       search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], node_id: node.id,
         search_mode: :regex)
-      expect(search_results[:Result][:Files].to_a.size).to eq(0)
+      expect(search_results.result[:Files].to_a.size).to eq(0)
     end
 
     it 'calls post on ::Gitlab::HTTP for all nodes' do

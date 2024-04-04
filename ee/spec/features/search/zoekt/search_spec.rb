@@ -35,6 +35,7 @@ RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, fea
     # not available without Elasticsearch enabled
     # even though it's using Zoekt.
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_feature_flags(zoekt_cross_namespace_search: false)
 
     zoekt_ensure_project_indexed!(project1)
     zoekt_ensure_project_indexed!(project2)

@@ -31,11 +31,6 @@ module EE
         @elastic_projects ||= projects.pluck_primary_key
       end
 
-      override :zoekt_projects
-      def zoekt_projects
-        @zoekt_projects ||= projects
-      end
-
       override :execute
       def execute
         return zoekt_search_results if use_zoekt?

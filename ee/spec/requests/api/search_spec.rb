@@ -9,6 +9,10 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
 
   let(:project) { create(:project, :public, :repository, :wiki_repo, name: 'awesome project', group: group) }
 
+  before do
+    stub_feature_flags(search_code_with_zoekt: false)
+  end
+
   shared_examples 'response is correct' do |schema:, size: 1|
     it 'responds correctly' do
       expect(response).to have_gitlab_http_status(:ok)
@@ -462,7 +466,11 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
 
       context 'when zoekt is enabled', :zoekt do
         before do
-          stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+          stub_ee_application_setting(
+            elasticsearch_search: true,
+            elasticsearch_indexing: true
+          )
+          stub_feature_flags(search_code_with_zoekt: true)
           zoekt_ensure_project_indexed!(project)
         end
 

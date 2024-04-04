@@ -6,9 +6,11 @@ module EE
       extend ::Gitlab::Utils::Override
       include ::Gitlab::Utils::StrongMemoize
       include ::Search::Elasticsearchable
+      include ::Search::ZoektSearchable
 
       override :execute
       def execute
+        return zoekt_search_results if use_zoekt?
         return super unless use_elasticsearch?
 
         ::Gitlab::Elastic::SearchResults.new(
@@ -20,6 +22,28 @@ module EE
           sort: params[:sort],
           filters: filters
         )
+      end
+
+      override :zoekt_searchable_scope?
+      def zoekt_searchable_scope?
+        scope == 'blobs' && ::Feature.enabled?(:zoekt_cross_namespace_search, current_user)
+      end
+
+      override :root_ancestor
+      def root_ancestor
+        nil
+      end
+
+      override :zoekt_node_id
+      def zoekt_node_id
+        nil
+      end
+
+      # This method isn't compatible with multi-node search, so we override it
+      # to always return true.
+      override :zoekt_node_available_for_search?
+      def zoekt_node_available_for_search?
+        true
       end
 
       def elasticsearchable_scope
