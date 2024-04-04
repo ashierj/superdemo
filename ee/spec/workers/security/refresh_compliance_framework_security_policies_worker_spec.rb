@@ -55,28 +55,14 @@ RSpec.describe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker, fea
     end
   end
 
-  context 'when feature flag is enabled' do
-    it 'invokes Security::ProcessScanResultPolicyWorker with the project_id and configuration_id' do
-      expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).once.with(project.id,
-        policy_configuration.id)
-      expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).with(project.id,
-        project_policy_configuration.id)
-      expect(Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async).with(project.id,
-        other_policy_configuration.id)
+  it 'invokes Security::ProcessScanResultPolicyWorker with the project_id and configuration_id' do
+    expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).once.with(project.id,
+      policy_configuration.id)
+    expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).with(project.id,
+      project_policy_configuration.id)
+    expect(Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async).with(project.id,
+      other_policy_configuration.id)
 
-      consume_event(subscriber: described_class, event: compliance_framework_changed_event)
-    end
-  end
-
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(security_policies_policy_scope: false)
-    end
-
-    it 'does not invoke Security::ProcessScanResultPolicyWorker' do
-      consume_event(subscriber: described_class, event: compliance_framework_changed_event)
-
-      expect(Security::ProcessScanResultPolicyWorker).not_to receive(:perform_async)
-    end
+    consume_event(subscriber: described_class, event: compliance_framework_changed_event)
   end
 end

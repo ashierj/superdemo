@@ -10,7 +10,6 @@ module Security
       end
 
       def execute
-        return unless policy_scope_enabled?
         return result if policy_scope.blank?
 
         including_projects, excluding_projects = scoped_projects
@@ -64,12 +63,6 @@ module Security
         return container if container.is_a?(Namespace)
 
         container.namespace
-      end
-
-      def policy_scope_enabled?
-        return false unless group
-
-        Feature.enabled?(:security_policies_policy_scope, group)
       end
     end
   end
