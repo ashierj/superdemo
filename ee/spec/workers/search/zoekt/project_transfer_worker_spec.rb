@@ -15,11 +15,14 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
     let(:job_args) { [project.id, namespace.id] }
 
     describe '#perform' do
+      before do
+        allow(::Search::Zoekt).to receive(:index?).with(old_namespace).and_return(namespace_zoekt_enabled)
+        allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
+      end
+
       context 'when zoekt is enabled' do
         before do
           stub_feature_flags(index_code_with_zoekt: true)
-          allow(::Search::Zoekt).to receive(:index?).with(old_namespace).and_return(namespace_zoekt_enabled)
-          allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
         end
 
         context 'when moving the project from a non-indexed namespace to an indexed namespace' do
@@ -47,6 +50,9 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
       end
 
       context 'when zoekt is disabled' do
+        let(:namespace_zoekt_enabled) { false }
+        let(:project_zoekt_enabled) { true }
+
         before do
           stub_feature_flags(index_code_with_zoekt: false)
         end

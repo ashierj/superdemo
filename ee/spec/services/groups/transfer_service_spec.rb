@@ -108,7 +108,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
   describe 'zoekt indexing', :aggregate_failures do
     let(:interval) { 0 }
 
-    context 'when zoekt is enabled' do
+    context 'when index_code_with_zoekt is enabled' do
       before do
         stub_feature_flags(index_code_with_zoekt: true)
         allow(::Search::Zoekt).to receive(:index?).with(group).and_return(namespace_zoekt_enabled)
@@ -161,49 +161,66 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
           transfer_service.execute(new_group)
         end
       end
-    end
 
-    context 'when project is moved in same root namespace' do
-      let(:root_group) { create(:group, :public) }
-      let(:group) { create(:group, :public, parent: root_group) }
-      let(:new_group) { create(:group, :public, parent: root_group) }
-      let(:project) { create(:project, :public, namespace: group) }
+      context 'when project is moved in same root namespace' do
+        let_it_be(:root_group) { create(:group, :public) }
+        let_it_be(:group) { create(:group, :public, parent: root_group) }
+        let_it_be(:new_group) { create(:group, :public, parent: root_group) }
+        let_it_be(:project) { create(:project, :public, namespace: group) }
+        let(:namespace_zoekt_enabled) { true }
+        let(:project_zoekt_enabled) { true }
 
-      before do
-        stub_feature_flags(index_code_with_zoekt: false)
-      end
+        before do
+          allow(::Search::Zoekt).to receive(:index?).with(root_group).and_return(namespace_zoekt_enabled)
+        end
 
-      it 'does nothing' do
-        expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
-        expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
-        expect(transfer_service).not_to receive(:process_zoekt_project)
-        transfer_service.execute(new_group)
+        it 'does nothing' do
+          expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
+          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(transfer_service).not_to receive(:process_zoekt_project)
+          transfer_service.execute(new_group)
+        end
       end
     end
 
     context 'when index_code_with_zoekt is disabled' do
       before do
         stub_feature_flags(index_code_with_zoekt: false)
+        allow(::Search::Zoekt).to receive(:index?).with(group).and_return(namespace_zoekt_enabled)
+        allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
       end
 
-      it 'does nothing' do
-        expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_async)
-        expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
-        expect(transfer_service).not_to receive(:process_zoekt_project)
-        transfer_service.execute(new_group)
+      context 'when moving the project from a non-indexed namespace to an indexed namespace' do
+        let(:namespace_zoekt_enabled) { false }
+        let(:project_zoekt_enabled) { true }
+
+        it 'does nothing' do
+          expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
+          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(transfer_service).not_to receive(:process_zoekt_project)
+          transfer_service.execute(new_group)
+        end
       end
     end
 
     context 'when zoekt_code_search feature is not available' do
       before do
+        stub_feature_flags(index_code_with_zoekt: true)
         stub_licensed_features(zoekt_code_search: false)
+        allow(::Search::Zoekt).to receive(:index?).with(group).and_return(namespace_zoekt_enabled)
+        allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
       end
 
-      it 'does nothing' do
-        expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_async)
-        expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
-        expect(transfer_service).not_to receive(:process_zoekt_project)
-        transfer_service.execute(new_group)
+      context 'when moving the project from a non-indexed namespace to an indexed namespace' do
+        let(:namespace_zoekt_enabled) { false }
+        let(:project_zoekt_enabled) { true }
+
+        it 'does nothing' do
+          expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
+          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(transfer_service).not_to receive(:process_zoekt_project)
+          transfer_service.execute(new_group)
+        end
       end
     end
   end
