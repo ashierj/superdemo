@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Project show page', :feature, feature_category: :groups_and_projects do
+  include BillableMembersHelpers
+
   let_it_be(:user) { create(:user) }
 
   describe 'stat button existence' do
@@ -92,6 +94,31 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
 
         it_behaves_like 'over the free user limit alert'
       end
+    end
+  end
+
+  context 'when there is a seat overage', :saas, :use_clean_rails_memory_store_caching do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 1) }
+    let_it_be(:project) { create(:project, namespace: group) }
+
+    before_all do
+      group.add_owner(user)
+      group.add_developer(create(:user))
+    end
+
+    before do
+      stub_feature_flags(block_seat_overages: true)
+
+      stub_billable_members_reactive_cache(group)
+
+      sign_in(user)
+    end
+
+    it 'displays an overage banner' do
+      visit project_path(project)
+
+      expect(page).to have_text "Your top-level group #{group.name} is now read-only."
     end
   end
 

@@ -8461,6 +8461,18 @@ msgstr ""
 msgid "Block user"
 msgstr ""
 
+msgid "BlockSeatOverages|%{root_namespace_name} has exceeded the number of seats in its subscription and is now %{link_start}read-only%{link_end}. To remove the read-only state, reduce the number of users in your top-level group to make seats available, or purchase more seats for the subscription."
+msgstr ""
+
+msgid "BlockSeatOverages|The top-level group %{root_namespace_name} is now read-only."
+msgstr ""
+
+msgid "BlockSeatOverages|To remove the %{link_start}read-only%{link_end} state, ask a user with the Owner role for %{root_namespace_name} to reduce the number of users in the group, or to purchase more seats for the subscription."
+msgstr ""
+
+msgid "BlockSeatOverages|Your top-level group %{root_namespace_name} is now read-only."
+msgstr ""
+
 msgid "Blocked"
 msgstr ""
 
@@ -41374,6 +41386,9 @@ msgid "PumbleIntegration|Send notifications about project events to Pumble. %{do
 msgstr ""
 
 msgid "Purchase more minutes"
+msgstr ""
+
+msgid "Purchase more seats"
 msgstr ""
 
 msgid "Purchase more storage"

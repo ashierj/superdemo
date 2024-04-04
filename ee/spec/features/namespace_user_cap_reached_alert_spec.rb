@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rails_memory_store_caching,
   feature_category: :seat_cost_management do
-  include ReactiveCachingHelpers
+  include BillableMembersHelpers
 
   let_it_be(:group, refind: true) do
     create(:group, :public, namespace_settings: create(:namespace_settings, new_user_signups_cap: 2))
@@ -30,7 +30,7 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
 
-      stub_cache(group)
+      stub_billable_members_reactive_cache(group)
     end
 
     it 'displays the banner to a group owner' do
@@ -119,7 +119,7 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
     it 'is dismissed independently for each root group' do
       other_group = create(:group, :public, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
       other_group.add_owner(owner)
-      stub_cache(other_group)
+      stub_billable_members_reactive_cache(other_group)
       sign_in(owner)
       visit group_path(group)
       dismiss_button.click
@@ -154,7 +154,7 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
   context 'with a user cap that has not been exceeded' do
     before do
       group.namespace_settings.update!(new_user_signups_cap: 4)
-      stub_cache(group)
+      stub_billable_members_reactive_cache(group)
     end
 
     it 'does not display the banner to a group owner' do
@@ -169,7 +169,7 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
   context 'without a user cap set' do
     before do
       group.namespace_settings.update!(new_user_signups_cap: nil)
-      stub_cache(group)
+      stub_billable_members_reactive_cache(group)
     end
 
     it 'does not display the banner to a group owner' do
@@ -212,11 +212,5 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
 
   def expect_banner_to_be_absent
     expect(page).not_to have_text 'Your group has reached its billable member limit'
-  end
-
-  def stub_cache(group)
-    group_with_fresh_memoization = Group.find(group.id)
-    result = group_with_fresh_memoization.calculate_reactive_cache
-    stub_reactive_cache(group, result)
   end
 end
