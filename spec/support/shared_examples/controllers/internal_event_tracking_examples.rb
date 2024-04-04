@@ -35,6 +35,7 @@ RSpec.shared_examples 'internal event tracking' do
     expect(Gitlab::Tracking::StandardContext)
       .to have_received(:new)
         .with(
+          feature_enabled_by_namespace_ids: try(:feature_enabled_by_namespace_ids),
           project_id: project&.id,
           user_id: user&.id,
           namespace_id: namespace&.id,
