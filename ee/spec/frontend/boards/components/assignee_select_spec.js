@@ -14,8 +14,7 @@ import { projectMembersResponse, groupMembersResponse, mockUser2 } from 'jest/si
 
 import { BoardType } from '~/boards/constants';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
-import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
-import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query.graphql';
+import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
@@ -37,14 +36,10 @@ describe('Assignee select component', () => {
   const createComponent = ({
     props = {},
     usersQueryHandler = usersQueryHandlerSuccess,
-    groupUsersQueryHandler = groupUsersQueryHandlerSuccess,
     isGroupBoard = false,
     isProjectBoard = false,
   } = {}) => {
-    fakeApollo = createMockApollo([
-      [searchProjectUsersQuery, usersQueryHandler],
-      [searchGroupUsersQuery, groupUsersQueryHandler],
-    ]);
+    fakeApollo = createMockApollo([[usersAutocompleteQuery, usersQueryHandler]]);
     wrapper = shallowMount(AssigneeSelect, {
       apolloProvider: fakeApollo,
       propsData: {
@@ -95,16 +90,37 @@ describe('Assignee select component', () => {
   });
 
   describe('when editing', () => {
-    it('trigger query and renders dropdown with returned users', async () => {
+    it('triggers query and renders dropdown with returned users', async () => {
       findEditButton().vm.$emit('click');
       await waitForPromises();
       jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
       await waitForPromises();
+
       expect(usersQueryHandlerSuccess).toHaveBeenCalled();
 
       expect(findDropdown().isVisible()).toBe(true);
       expect(findDropdown().props('options')).toHaveLength(3);
       expect(findDropdown().props('presetOptions')).toHaveLength(1);
+    });
+
+    describe('group boards', () => {
+      it('triggers query and renders dropdown with returned users', async () => {
+        createComponent({
+          usersQueryHandler: groupUsersQueryHandlerSuccess,
+          isGroupBoard: true,
+        });
+
+        findEditButton().vm.$emit('click');
+        await waitForPromises();
+        jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+        await waitForPromises();
+
+        expect(groupUsersQueryHandlerSuccess).toHaveBeenCalled();
+
+        expect(findDropdown().isVisible()).toBe(true);
+        expect(findDropdown().props('options')).toHaveLength(2);
+        expect(findDropdown().props('presetOptions')).toHaveLength(1);
+      });
     });
   });
 
@@ -122,32 +138,12 @@ describe('Assignee select component', () => {
   });
 
   it.each`
-    boardType            | queryHandler                     | notCalledHandler
-    ${BoardType.group}   | ${groupUsersQueryHandlerSuccess} | ${usersQueryHandlerSuccess}
-    ${BoardType.project} | ${usersQueryHandlerSuccess}      | ${groupUsersQueryHandlerSuccess}
-  `('fetches $boardType users', async ({ boardType, queryHandler, notCalledHandler }) => {
-    createComponent({
-      isProjectBoard: boardType === BoardType.project,
-      isGroupBoard: boardType === BoardType.group,
-    });
-
-    findEditButton().vm.$emit('click');
-    await waitForPromises();
-    jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-    await nextTick();
-
-    expect(queryHandler).toHaveBeenCalled();
-    expect(notCalledHandler).not.toHaveBeenCalled();
-  });
-
-  it.each`
     boardType
     ${BoardType.group}
     ${BoardType.project}
   `('sets error when fetch $boardType board query fails', async ({ boardType }) => {
     createComponent({
       usersQueryHandler: usersQueryHandlerFailure,
-      groupUsersQueryHandler: usersQueryHandlerFailure,
       isProjectBoard: boardType === BoardType.project,
       isGroupBoard: boardType === BoardType.group,
     });
