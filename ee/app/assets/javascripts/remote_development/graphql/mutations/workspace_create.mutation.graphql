@@ -1,17 +1,9 @@
+#import "../fragments/workspace_item.fragment.graphql"
+
 mutation workspaceCreate($input: WorkspaceCreateInput!) {
   workspaceCreate(input: $input) {
     workspace {
-      id
-      name
-      namespace
-      projectId
-      desiredState
-      actualState
-      url
-      devfileRef
-      devfilePath
-      devfileWebUrl
-      createdAt
+      ...WorkspaceItem
     }
     errors
   }

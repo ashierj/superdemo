@@ -1,4 +1,5 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "../fragments/workspace_item.fragment.graphql"
 
 query userWorkspacesList(
   $first: Int
@@ -17,17 +18,7 @@ query userWorkspacesList(
       projectIds: $projectIds
     ) {
       nodes {
-        id
-        name
-        namespace
-        projectId
-        desiredState
-        actualState
-        url
-        devfileRef
-        devfilePath
-        devfileWebUrl
-        createdAt
+        ...WorkspaceItem
       }
       pageInfo {
         ...PageInfo

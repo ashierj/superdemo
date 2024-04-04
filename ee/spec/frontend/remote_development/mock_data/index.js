@@ -3,6 +3,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { WORKSPACE_DESIRED_STATES, WORKSPACE_STATES } from 'ee/remote_development/constants';
 
 export const WORKSPACE = {
+  __typename: 'Workspace',
   id: 1,
   name: 'Workspace 1',
   namespace: 'Namespace',
@@ -32,6 +33,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
       workspaces: {
         nodes: [
           {
+            __typename: 'Workspace',
             id: 'gid://gitlab/RemoteDevelopment::Workspace/2',
             name: 'workspace-1-1-idmi02',
             namespace: 'gl-rd-ns-1-1-idmi02',
@@ -45,6 +47,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             createdAt: '2023-04-29T18:24:34Z',
           },
           {
+            __typename: 'Workspace',
             id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
             name: 'workspace-1-1-rfu27q',
             namespace: 'gl-rd-ns-1-1-rfu27q',
@@ -95,6 +98,7 @@ export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
         workspaces: {
           nodes: [
             {
+              __typename: 'Workspace',
               id: 'gid://gitlab/RemoteDevelopment::Workspace/2',
               name: 'workspace-1-1-idmi02',
               namespace: 'gl-rd-ns-1-1-idmi02',
@@ -109,6 +113,7 @@ export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
               createdAt: '2023-04-29T18:24:34Z',
             },
             {
+              __typename: 'Workspace',
               id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
               name: 'workspace-1-1-rfu27q',
               namespace: 'gl-rd-ns-1-1-rfu27q',
@@ -307,6 +312,7 @@ export const WORKSPACE_UPDATE_MUTATION_RESULT = {
     workspaceUpdate: {
       errors: [],
       workspace: {
+        __typename: 'Workspace',
         id: WORKSPACE.id,
         actualState: WORKSPACE_STATES.running,
         desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
