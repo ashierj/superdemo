@@ -95,12 +95,6 @@ module Gitlab
             Answer.error_answer(context: context, content: content)
           end
 
-          def wrong_resource
-            content = "I am sorry, I cannot proceed with this resource, it is #{resource_name}."
-
-            Answer.error_answer(context: context, content: content)
-          end
-
           def already_used_answer
             content = "You already have the answer from #{self.class::NAME} tool, read carefully."
 

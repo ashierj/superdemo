@@ -50,8 +50,6 @@ module Gitlab
             ].freeze
 
             def perform(&block)
-              return wrong_resource unless resource.is_a?(::Noteable)
-
               notes = NotesFinder.new(context.current_user, target: resource).execute.by_humans
 
               content = if notes.exists?

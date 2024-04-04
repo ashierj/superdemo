@@ -111,23 +111,5 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
         end
       end
     end
-
-    context 'when resource is not a noteable type' do
-      let(:context) do
-        Gitlab::Llm::Chain::GitlabContext.new(
-          container: project,
-          resource: project,
-          current_user: user,
-          ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
-        )
-      end
-
-      it 'responds with error' do
-        expect(tool).not_to receive(:request)
-
-        response = "I am sorry, I am unable to find what you are looking for."
-        expect(tool.execute.content).to eq(response)
-      end
-    end
   end
 end
