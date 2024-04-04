@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: :groups_and_projects do
+  include BillableMembersHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -88,5 +90,25 @@ RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: 
     let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
     it_behaves_like 'over the free user limit alert'
+  end
+
+  context 'when there is a seat overage', :saas, :use_clean_rails_memory_store_caching do
+    let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 1) }
+
+    before_all do
+      group.add_developer(create(:user))
+    end
+
+    before do
+      stub_feature_flags(block_seat_overages: true)
+
+      stub_billable_members_reactive_cache(group)
+    end
+
+    it 'displays an overage banner' do
+      visit_page
+
+      expect(page).to have_text "Your top-level group #{group.name} is now read-only."
+    end
   end
 end
