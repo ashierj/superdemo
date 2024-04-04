@@ -54,6 +54,7 @@ describe('ArtifactRegistryImageDetails', () => {
     createComponent();
 
     expect(findClipboardButton().props()).toMatchObject({
+      size: 'small',
       text: defaultProps.data.digest,
       title: 'Copy digest',
     });

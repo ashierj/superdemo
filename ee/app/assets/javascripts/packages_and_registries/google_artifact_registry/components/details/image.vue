@@ -107,6 +107,7 @@ export default {
           :title="s__('GoogleArtifactRegistry|Copy digest')"
           :text="row.value"
           category="tertiary"
+          size="small"
         />
       </span>
     </li>

@@ -54,8 +54,9 @@ describe('Google Artifact Registry details page header', () => {
       createComponent();
 
       expect(findClipboardButton().props()).toMatchObject({
+        size: 'small',
         text: 'location.dev/uri',
-        title: 'Copy image URI',
+        title: 'Copy image path',
       });
     });
 
@@ -63,10 +64,7 @@ describe('Google Artifact Registry details page header', () => {
       it('renders URI', () => {
         createComponent();
 
-        expect(findURI().props()).toMatchObject({
-          text: 'location.dev/uri',
-          size: 'l',
-        });
+        expect(findURI().text()).toBe('location.dev/uri');
       });
     });
 

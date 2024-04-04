@@ -23867,9 +23867,6 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Copy digest"
 msgstr ""
 
-msgid "GoogleArtifactRegistry|Copy image URI"
-msgstr ""
-
 msgid "GoogleArtifactRegistry|Copy image path"
 msgstr ""
 

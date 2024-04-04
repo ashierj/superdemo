@@ -125,7 +125,7 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
 
       expect(page).to have_text _('ruby@4ca5c21b')
       expect(page).to have_link _('Open in Google Cloud')
-      expect(page).to have_button _('Copy image URI')
+      expect(page).to have_button _('Copy image path')
       expect(page).to have_button _('Copy digest')
     end
   end
