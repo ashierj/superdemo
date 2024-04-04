@@ -25,6 +25,7 @@ module EE
           overage_members_modal
           advanced_search
           code_suggestions_x_ray
+          identity_verification
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'

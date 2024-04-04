@@ -2,14 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::ApplicationSettingsHelper do
+RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
   describe '.visible_attributes' do
     it 'contains personal access token parameters' do
       expect(visible_attributes).to include(*%i[max_personal_access_token_lifetime])
-    end
-
-    it 'contains telesign values' do
-      expect(visible_attributes).to include(*%i[telesign_customer_xid telesign_api_key])
     end
 
     it 'contains openai_api_key value' do
@@ -26,6 +22,42 @@ RSpec.describe EE::ApplicationSettingsHelper do
 
     it 'contains zoekt parameters' do
       expect(visible_attributes).to include(*%i[zoekt_indexing_enabled zoekt_indexing_paused zoekt_search_enabled])
+    end
+
+    context 'when identity verification is enabled' do
+      before do
+        stub_saas_features(identity_verification: true)
+      end
+
+      it 'contains telesign values' do
+        expect(visible_attributes).to include(*%i[telesign_customer_xid telesign_api_key])
+      end
+
+      it 'contains arkose values' do
+        expect(visible_attributes).to include(*%i[
+          arkose_labs_client_secret
+          arkose_labs_client_xid
+          arkose_labs_namespace
+          arkose_labs_private_api_key
+          arkose_labs_public_api_key
+        ])
+      end
+    end
+
+    context 'when identity verification is not enabled' do
+      it 'does not contain telesign values' do
+        expect(visible_attributes).not_to include(*%i[telesign_customer_xid telesign_api_key])
+      end
+
+      it 'does not contain arkose values' do
+        expect(visible_attributes).not_to include(*%i[
+          arkose_labs_client_secret
+          arkose_labs_client_xid
+          arkose_labs_namespace
+          arkose_labs_private_api_key
+          arkose_labs_public_api_key
+        ])
+      end
     end
   end
 
