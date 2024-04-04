@@ -241,6 +241,10 @@ module EE
         security_findings.exists?
       end
 
+      def has_security_findings_in_self_and_descendants?
+        Security::Finding.by_project_id_and_pipeline_ids(project_id, self_and_project_descendants.pluck(:id)).exists?
+      end
+
       def triggered_for_ondemand_dast_scan?
         ondemand_dast_scan? && parameter_source?
       end

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Security::RelatedPipelinesFinder, feature_category: :security_policy_management do
+  include Ci::SourcePipelineHelpers
+
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:pipeline) do
     create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:push])
@@ -91,6 +93,37 @@ RSpec.describe Security::RelatedPipelinesFinder, feature_category: :security_pol
       let_it_be(:sha) { pipeline.source_sha }
 
       it { is_expected.to contain_exactly(pipeline.id, security_policy_pipeline.id, web_pipeline.id, push_pipeline.id) }
+    end
+
+    context 'with child pipelines' do
+      let_it_be(:child_pipeline_1) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
+      let_it_be(:child_pipeline_2) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
+      let_it_be(:child_pipeline_3) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
+
+      before do
+        create_source_pipeline(pipeline, child_pipeline_1)
+        create_source_pipeline(pipeline, child_pipeline_2)
+        create_source_pipeline(merge_request_pipeline_2, child_pipeline_3)
+      end
+
+      it {
+        is_expected.to contain_exactly(
+          pipeline.id, web_pipeline.id, security_policy_pipeline.id, merge_request_pipeline_2.id,
+          child_pipeline_1.id, child_pipeline_2.id, child_pipeline_3.id
+        )
+      }
+
+      context 'when approval_policy_parent_child_pipeline is disabled' do
+        before do
+          stub_feature_flags(approval_policy_parent_child_pipeline: false)
+        end
+
+        it {
+          is_expected.to contain_exactly(
+            pipeline.id, web_pipeline.id, security_policy_pipeline.id, merge_request_pipeline_2.id
+          )
+        }
+      end
     end
   end
 end

@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
+  include Ci::SourcePipelineHelpers
   using RSpec::Parameterized::TableSyntax
 
   let(:user) { create(:user) }
@@ -1033,6 +1034,30 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
 
     context 'when the pipeline does not have security_findings' do
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#has_security_findings_in_self_and_descendants?' do
+    subject { pipeline.has_security_findings_in_self_and_descendants? }
+
+    let_it_be(:child_pipeline) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
+
+    before do
+      create_source_pipeline(pipeline, child_pipeline)
+    end
+
+    context 'when a child_pipeline has security_findings' do
+      before do
+        create(:security_finding,
+          scan: create(:security_scan, status: :succeeded, project: project, pipeline: child_pipeline)
+        )
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when a child_pipeline does not have security_findings' do
       it { is_expected.to be_falsey }
     end
   end
