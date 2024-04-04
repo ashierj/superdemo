@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analytics_visualization do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:group) { create(:group) }
   let_it_be(:project, reload: true) do
     create(:project, :with_product_analytics_dashboard, group: group,
@@ -139,11 +141,39 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     end
   end
 
+  describe '.get_path_for_visualization' do
+    where(:input, :path) do
+      'average_session_duration' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'average_sessions_per_user' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'browsers_per_users' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'daily_active_users' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'events_over_time' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'page_views_over_time' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'returning_users_percentage' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'sessions_over_time' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'sessions_per_browser' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'top_pages' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'total_events' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'total_pageviews' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'total_sessions' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'total_unique_users' | ProductAnalytics::Visualization::PRODUCT_ANALYTICS_PATH
+      'usage_overview' | ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_PATH
+      'dora_chart' | ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_PATH
+      'dora_performers_score' | ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_PATH
+      'ai_impact_table' | ProductAnalytics::Visualization::AI_IMPACT_DASHBOARD_PATH
+    end
+
+    with_them do
+      it 'returns the correct visualization path' do
+        expect(described_class.get_path_for_visualization(input)).to eq(path)
+      end
+    end
+  end
+
   describe '.load_visualization_data' do
     context "when file exists" do
       subject do
-        described_class.load_visualization_data("ee/lib/gitlab/analytics/product_analytics/visualizations",
-          "total_sessions")
+        described_class.load_visualization_data("total_sessions")
       end
 
       it "initializes visualization from file" do
@@ -153,20 +183,12 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     end
 
     context 'when file cannot be opened' do
-      subject { described_class.load_visualization_data("ee/lib", "not-existing-file") }
+      subject { described_class.load_visualization_data("not-existing-file") }
 
       it 'initializes visualization with errors' do
         expect(subject.slug).to eq('not_existing_file')
         expect(subject.errors).to match_array(["Visualization file not-existing-file.yaml not found"])
       end
-    end
-  end
-
-  describe '.load_value_stream_dashboard_visualization' do
-    subject { described_class.load_value_stream_dashboard_visualization('dora_chart') }
-
-    it 'returns the value stream dashboard builtin visualization' do
-      expect(subject.slug).to eq('dora_chart')
     end
   end
 
@@ -231,7 +253,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       vis = (subject.select { |v| v.slug == 'example_invalid_custom_visualization' }).first
       expected = ["property '/type' is not one of: " \
                   "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", " \
-                  "\"DORAChart\", \"UsageOverview\", \"DoraPerformersScore\"]"]
+                  "\"DORAChart\", \"UsageOverview\", \"DoraPerformersScore\", \"AiImpactTable\"]"]
       expect(vis&.errors).to match_array(expected)
     end
   end

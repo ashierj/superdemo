@@ -1,0 +1,12 @@
+---
+title: AI impact analytics
+description: Visualize the relation between AI usage and SDLC trends.
+panels:
+  - title: 'Metric trends for group: %{namespaceName}'
+    visualization: ai_impact_table
+    gridAttributes:
+      yPos: 0
+      xPos: 0
+      width: 12
+      height: 2
+    options: {}

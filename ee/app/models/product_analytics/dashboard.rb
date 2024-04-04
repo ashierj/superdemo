@@ -114,19 +114,31 @@ module ProductAnalytics
       end
     end
 
-    def self.has_builtin_dashboards?(container)
-      container.product_analytics_enabled? || container.value_streams_dashboard_available?
+    def self.ai_impact_dashboard(container, config_project)
+      return [] unless container.ai_impact_dashboard_available?
+
+      config = load_yaml_dashboard_config('dashboard', 'ee/lib/gitlab/analytics/ai_impact_dashboard')
+
+      new(
+        container: container,
+        title: config['title'],
+        slug: 'ai_impact',
+        description: config['description'],
+        schema_version: config['version'],
+        panels: ProductAnalytics::Panel.from_data(config['panels'], config_project),
+        user_defined: false,
+        config_project: config_project
+      )
     end
 
     def self.builtin_dashboards(container, config_project, user)
-      return [] unless has_builtin_dashboards?(container)
-
       builtin = []
 
       builtin << product_analytics_dashboards(container, config_project, user)
       builtin << value_stream_dashboard(container, config_project)
+      builtin << ai_impact_dashboard(container, config_project)
 
-      builtin
+      builtin.flatten
     end
 
     def ==(other)

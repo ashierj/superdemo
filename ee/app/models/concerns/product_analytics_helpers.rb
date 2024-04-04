@@ -49,6 +49,10 @@ module ProductAnalyticsHelpers
     licensed_feature_available?(licensed_feature) && project_value_streams_dashboards_enabled?
   end
 
+  def ai_impact_dashboard_available?
+    Feature.enabled?(:ai_impact_analytics_dashboard, is_a?(Project) ? group : self)
+  end
+
   def product_analytics_dashboards(user)
     ::ProductAnalytics::Dashboard.for(container: self, user: user)
   end

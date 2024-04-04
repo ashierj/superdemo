@@ -20,6 +20,7 @@ import {
   BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS,
   BUILT_IN_VALUE_STREAM_DASHBOARD,
   CUSTOM_VALUE_STREAM_DASHBOARD,
+  AI_IMPACT_DASHBOARD,
 } from 'ee/analytics/dashboards/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -36,7 +37,13 @@ import {
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
 
-const HIDE_DASHBOARD_FILTERS = [BUILT_IN_VALUE_STREAM_DASHBOARD, CUSTOM_VALUE_STREAM_DASHBOARD];
+// Avoid adding new values here, as this will eventually be migrated to the dashboard YAML config.
+// See: https://gitlab.com/gitlab-org/gitlab/-/issues/452228
+const HIDE_DASHBOARD_FILTERS = [
+  BUILT_IN_VALUE_STREAM_DASHBOARD,
+  CUSTOM_VALUE_STREAM_DASHBOARD,
+  AI_IMPACT_DASHBOARD,
+];
 
 export default {
   name: 'AnalyticsDashboard',

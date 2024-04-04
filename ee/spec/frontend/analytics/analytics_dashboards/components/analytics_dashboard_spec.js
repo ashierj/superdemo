@@ -43,6 +43,7 @@ import {
   TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_AI_IMPACT_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
   createDashboardGraphqlSuccessResponse,
   getGraphQLDashboard,
@@ -702,6 +703,35 @@ describe('AnalyticsDashboard', () => {
     );
   });
 
+  describe('with an AI impact dashboard', () => {
+    beforeEach(() => {
+      mockDashboardResponse(TEST_AI_IMPACT_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+      createWrapper();
+      return waitForPromises();
+    });
+
+    it('renders the dashboard correctly', () => {
+      expect(findDashboard().props()).toMatchObject({
+        initialDashboard: {
+          ...getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
+          title: 'AI impact analytics',
+          slug: 'ai_impact',
+        },
+        showDateRangeFilter: false,
+        showAnonUsersFilter: false,
+      });
+    });
+
+    it('does not render the value stream feedback banner', () => {
+      expect(findValueStreamFeedbackBanner().exists()).toBe(false);
+    });
+
+    it('does not render the product analytics feedback banner', () => {
+      expect(findProductAnalyticsFeedbackBanner().exists()).toBe(false);
+    });
+  });
+
   describe('with a value stream dashboard', () => {
     beforeEach(async () => {
       mockDashboardResponse(TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
@@ -718,6 +748,7 @@ describe('AnalyticsDashboard', () => {
           slug: 'value_streams_dashboard',
         },
         showDateRangeFilter: false,
+        showAnonUsersFilter: false,
       });
     });
 

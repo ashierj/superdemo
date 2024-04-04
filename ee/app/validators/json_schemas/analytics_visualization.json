@@ -17,7 +17,8 @@
             "SingleStat",
             "DORAChart",
             "UsageOverview",
-            "DoraPerformersScore"
+            "DoraPerformersScore",
+            "AiImpactTable"
           ]
         },
         "options": {

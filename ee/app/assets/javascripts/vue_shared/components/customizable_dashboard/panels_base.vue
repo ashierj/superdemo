@@ -47,6 +47,8 @@ export default {
       import(
         'ee/analytics/analytics_dashboards/components/visualizations/dora_performers_score.vue'
       ),
+    AiImpactTable: () =>
+      import('ee/analytics/analytics_dashboards/components/visualizations/ai_impact_table.vue'),
   },
   inject: [
     'namespaceId',

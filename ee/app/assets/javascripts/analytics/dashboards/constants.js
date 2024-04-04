@@ -283,6 +283,8 @@ export const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_streams_dashboard';
 // YAML configured VSD uses `/value_streams` for the custom file name
 export const CUSTOM_VALUE_STREAM_DASHBOARD = 'value_streams';
 
+export const AI_IMPACT_DASHBOARD = 'ai_impact';
+
 export const BUILT_IN_PRODUCT_ANALYTICS_DASHBOARDS = ['behavior', 'audience'];
 
 export const PRODUCT_ANALYTICS_DASHBOARD_FEEDBACK_CALLOUT_ID =

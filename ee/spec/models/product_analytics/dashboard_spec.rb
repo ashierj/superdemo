@@ -45,8 +45,10 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       end
 
       it 'returns a collection of builtin dashboards' do
-        expect(subject.size).to eq(3)
-        expect(subject.map(&:title)).to match_array(['Audience', 'Behavior', 'Value Streams Dashboard'])
+        expect(subject.size).to eq(4)
+        expect(subject.map(&:title)).to match_array(
+          ['Audience', 'Behavior', 'Value Streams Dashboard', 'AI impact analytics']
+        )
       end
 
       context 'when configuration project is set' do
@@ -56,7 +58,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
         it 'returns custom and builtin dashboards' do
           expect(subject).to be_a(Array)
-          expect(subject.size).to eq(4)
+          expect(subject.size).to eq(5)
           expect(subject.last).to be_a(described_class)
           expect(subject.last.title).to eq('Dashboard Example 1')
           expect(subject.last.slug).to eq('dashboard_example_1')
@@ -77,7 +79,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         end
 
         it 'excludes the dashboard from the list' do
-          expect(subject.size).to eq(4)
+          expect(subject.size).to eq(5)
         end
       end
 
@@ -87,7 +89,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         end
 
         it 'excludes product analytics dashboards' do
-          expect(subject.size).to eq(2)
+          expect(subject.size).to eq(3)
         end
       end
     end
@@ -97,9 +99,9 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
       subject { described_class.for(container: resource_parent, user: user) }
 
-      it 'returns value stream dashboards' do
-        expect(subject.size).to eq(1)
-        expect(subject.map(&:title)).to match_array(['Value Streams Dashboard'])
+      it 'returns a collection of builtin dashboards' do
+        expect(subject.size).to eq(2)
+        expect(subject.map(&:title)).to match_array(['Value Streams Dashboard', 'AI impact analytics'])
       end
 
       context 'when configuration project is set' do
@@ -109,8 +111,10 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
         it 'returns custom and value stream dashboards' do
           expect(subject).to be_a(Array)
-          expect(subject.size).to eq(2)
-          expect(subject.map(&:title)).to match_array(['Value Streams Dashboard', 'Dashboard Example 1'])
+          expect(subject.size).to eq(3)
+          expect(subject.map(&:title)).to match_array(
+            ['Value Streams Dashboard', 'AI impact analytics', 'Dashboard Example 1']
+          )
         end
       end
 
@@ -126,7 +130,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         end
 
         it 'excludes the dashboard from the list' do
-          expect(subject.size).to eq(2)
+          expect(subject.size).to eq(3)
         end
       end
     end
@@ -228,6 +232,48 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
           expect(dashboard).to be_a(described_class)
           expect(dashboard.title).to eq('Value Streams Dashboard')
           expect(dashboard.slug).to eq('value_streams_dashboard')
+        end
+      end
+    end
+  end
+
+  describe '.ai_impact_dashboard' do
+    context 'for groups' do
+      subject { described_class.ai_impact_dashboard(group, config_project) }
+
+      it 'returns the dashboard' do
+        expect(subject.title).to eq('AI impact analytics')
+        expect(subject.slug).to eq('ai_impact')
+        expect(subject.schema_version).to eq(nil)
+      end
+
+      context 'when feature is not available' do
+        before do
+          stub_feature_flags(ai_impact_analytics_dashboard: false)
+        end
+
+        it 'returns an empty array' do
+          expect(subject).to match_array([])
+        end
+      end
+    end
+
+    context 'for projects' do
+      subject { described_class.ai_impact_dashboard(project, config_project) }
+
+      it 'returns the dashboard' do
+        expect(subject.title).to eq('AI impact analytics')
+        expect(subject.slug).to eq('ai_impact')
+        expect(subject.schema_version).to eq(nil)
+      end
+
+      context 'when feature is not available' do
+        before do
+          stub_feature_flags(ai_impact_analytics_dashboard: false)
+        end
+
+        it 'returns an empty array' do
+          expect(subject).to match_array([])
         end
       end
     end
