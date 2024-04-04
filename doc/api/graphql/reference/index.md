@@ -33145,6 +33145,7 @@ State of a Sentry error.
 | <a id="servicetypemattermost_slash_commands_service"></a>`MATTERMOST_SLASH_COMMANDS_SERVICE` | MattermostSlashCommandsService type. |
 | <a id="servicetypemicrosoft_teams_service"></a>`MICROSOFT_TEAMS_SERVICE` | MicrosoftTeamsService type. |
 | <a id="servicetypepackagist_service"></a>`PACKAGIST_SERVICE` | PackagistService type. |
+| <a id="servicetypephorge_service"></a>`PHORGE_SERVICE` | PhorgeService type. |
 | <a id="servicetypepipelines_email_service"></a>`PIPELINES_EMAIL_SERVICE` | PipelinesEmailService type. |
 | <a id="servicetypepivotaltracker_service"></a>`PIVOTALTRACKER_SERVICE` | PivotaltrackerService type. |
 | <a id="servicetypeprometheus_service"></a>`PROMETHEUS_SERVICE` | PrometheusService type. |
