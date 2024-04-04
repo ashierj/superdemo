@@ -7,13 +7,15 @@ module Search
 
       TASKS = %i[
         dot_com_rollout
+        reallocation
         remove_expired_subscriptions
         node_assignment
         mark_indices_as_ready
       ].freeze
 
       BUFFER_FACTOR = 3
-      WATERMARK_LIMIT = 0.8
+      WATERMARK_LIMIT_LOW = 0.7
+      WATERMARK_LIMIT_HIGH = 0.8
 
       DOT_COM_ROLLOUT_TARGET_BYTES = 200.gigabytes
       DOT_COM_ROLLOUT_LIMIT = 2000
@@ -51,6 +53,51 @@ module Search
           break false unless key_set
 
           yield
+        end
+      end
+
+      # An initial implementation of reallocation logic. For now, it's a .com-only task
+      def reallocation
+        return false unless ::Gitlab::Saas.feature_available?(:exact_code_search)
+        return false if Feature.disabled?(:zoekt_reallocation_task)
+
+        execute_every 12.hours, cache_key: :reallocation do
+          nodes = ::Search::Zoekt::Node.online.find_each.to_a
+          over_watermark_nodes = nodes.select { |n| (n.used_bytes / n.total_bytes.to_f) >= WATERMARK_LIMIT_HIGH }
+
+          over_watermark_nodes.each do |node|
+            sizes = {}
+
+            node.indices.each_batch do |batch|
+              scope = Namespace.includes(:root_storage_statistics) # rubocop:disable CodeReuse/ActiveRecord -- this is a temporary incident mitigation task
+                                .by_parent(nil)
+                                .id_in(batch.select(:namespace_id))
+
+              scope.each do |group|
+                sizes[group.id] = group.root_storage_statistics&.repository_size || 0
+              end
+            end
+
+            sorted = sizes.to_a.sort_by { |_k, v| v }
+
+            namespaces_to_move = []
+            sorted.each do |namespace_id, repository_size|
+              node.used_bytes -= repository_size
+
+              break if (node.used_bytes / node.total_bytes.to_f) < WATERMARK_LIMIT_HIGH
+
+              namespaces_to_move << namespace_id
+            end
+
+            namespaces_to_move.each_slice(100) do |namespace_ids|
+              scope = node.indices.for_root_namespace_id(namespace_ids)
+
+              # Mark namespaces as not searchable so that it has enough time to re-index these
+              Search::Zoekt::EnabledNamespace.id_in(scope.select(:zoekt_enabled_namespace_id))
+                                             .update_all(search: false, updated_at: Time.zone.now)
+              scope.destroy_all # rubocop:disable Cop/DestroyAll -- we need to execute the on_destroy callbacks
+            end
+          end
         end
       end
 
@@ -132,7 +179,7 @@ module Search
 
           node = nodes.max_by { |n| n.total_bytes - n.used_bytes }
 
-          if (node.used_bytes + space_required) <= node.total_bytes * WATERMARK_LIMIT
+          if (node.used_bytes + space_required) <= node.total_bytes * WATERMARK_LIMIT_LOW
             # TODO: Once we have the task which moves pending to ready then remove the state attribute from here
             # https://gitlab.com/gitlab-org/gitlab/-/issues/439042
             zoekt_index = Search::Zoekt::Index.new(namespace_id: zoekt_enabled_namespace.root_namespace_id,

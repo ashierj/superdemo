@@ -42,6 +42,37 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
     end
   end
 
+  describe '#reallocation' do
+    let(:task) { :reallocation }
+
+    it 'returns false unless saas' do
+      expect(execute_task).to eq(false)
+    end
+
+    context 'when on .com', :saas do
+      let_it_be(:namespace) { create(:group) }
+      let_it_be(:namespace_statistics) { create(:namespace_root_storage_statistics, repository_size: 1000) }
+      let_it_be(:namespace_with_statistics) { create(:group, root_storage_statistics: namespace_statistics) }
+      let_it_be(:zoekt_index) { create(:zoekt_index) }
+
+      context 'when nodes have enough storage' do
+        it 'returns false' do
+          expect { execute_task }.not_to change { Search::Zoekt::Index.count }.from(1)
+        end
+      end
+
+      context 'when nodes are over the watermark high limit' do
+        let_it_be(:node_out_of_storage) { create(:zoekt_node, :not_enough_free_space) }
+        let_it_be(:zoekt_index2) { create(:zoekt_index, node: node_out_of_storage) }
+
+        it 'removes extra indices' do
+          expect { execute_task }.to change { Search::Zoekt::Index.count }.from(2).to(1)
+          expect(zoekt_index2.zoekt_enabled_namespace.reload.search).to eq(false)
+        end
+      end
+    end
+  end
+
   describe '#dot_com_rollout' do
     let(:task) { :dot_com_rollout }
 
@@ -190,7 +221,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           expect(zkt_enabled_namespace2.indices).to be_empty
         end
 
-        context 'when there is space for the repository but not for the WATERMARK_LIMIT' do
+        context 'when there is space for the repository but not for the WATERMARK_LIMIT_LOW' do
           before do
             node.update_column(:total_bytes,
               (namespace_statistics.repository_size * described_class::BUFFER_FACTOR) + node.used_bytes)

@@ -16,5 +16,10 @@ FactoryBot.define do
     trait :enough_free_space do
       total_bytes { 100_000_000 }
     end
+
+    trait :not_enough_free_space do
+      total_bytes { 100_000_000 }
+      used_bytes { 90_000_000 }
+    end
   end
 end
