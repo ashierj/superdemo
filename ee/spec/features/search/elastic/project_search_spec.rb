@@ -8,7 +8,11 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
   let(:project) { create(:project, :repository, :wiki_repo, namespace: user.namespace) }
 
   before do
-    stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_ee_application_setting(
+      elasticsearch_search: true,
+      elasticsearch_indexing: true
+    )
+    stub_feature_flags(search_code_with_zoekt: false)
   end
 
   describe 'searching' do
@@ -168,7 +172,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
         allow(service).to receive(:show_epics?).and_return(false)
         allow(service).to receive(:search_results).and_return(results)
         allow(::Gitlab::Search::Zoekt::Client.instance).to receive(:search)
-          .and_return({ Error: 'failed to parse query' })
+          .and_return(Gitlab::Search::Zoekt::Response.new({ Error: 'failed to parse query' }))
       end
 
       visit search_path(search: query, project_id: project.id)

@@ -91,12 +91,6 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 2
     end
 
-    it 'raises an exception when limit_project_ids is passed as :any' do
-      expect do
-        described_class.new(user, 'project_name_regex', :any, node_id: node_id).objects('blobs')
-      end.to raise_error('Global search is not supported')
-    end
-
     it 'returns zero when blobs are not found' do
       results = described_class.new(user, 'asdfg', limit_projects, node_id: node_id)
 

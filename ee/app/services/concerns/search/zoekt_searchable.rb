@@ -21,12 +21,16 @@ module Search
       scope == 'blobs' && zoekt_searchable_scope.try(:search_code_with_zoekt?)
     end
 
+    def root_ancestor
+      zoekt_searchable_scope&.root_ancestor
+    end
+
     def zoekt_projects
-      raise NotImplementedError
+      @zoekt_projects ||= projects
     end
 
     def zoekt_filters
-      { language: params[:language] }
+      { language: params[:language], include_archived: params[:include_archived] }
     end
 
     def zoekt_node_id
@@ -44,7 +48,7 @@ module Search
 
     def skip_api?
       params[:source] == 'api' &&
-        Feature.disabled?(:zoekt_search_api, zoekt_searchable_scope&.root_ancestor, type: :ops)
+        Feature.disabled?(:zoekt_search_api, root_ancestor, type: :ops)
     end
 
     def zoekt_search_results

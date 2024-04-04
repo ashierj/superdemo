@@ -41,7 +41,7 @@ module Zoekt
       10.times do
         results = Gitlab::Search::Zoekt::Client.new.search('.*', num: 1, project_ids: [project.id],
           node_id: zoekt_node.id, search_mode: :regex)
-        break if results[:Result][:FileCount] > 0
+        break if results.file_count > 0
 
         sleep 0.01
       end

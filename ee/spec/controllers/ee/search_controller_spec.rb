@@ -154,7 +154,11 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
         let(:project) { create(:project, :public, :repository) }
 
         before do
-          stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+          stub_ee_application_setting(
+            elasticsearch_search: true,
+            elasticsearch_indexing: true
+          )
+          allow(::Search::Zoekt).to receive(:enabled_for_user?).and_return(false)
 
           project.repository.index_commits_and_blobs
           ensure_elasticsearch_index!
