@@ -27,7 +27,14 @@ module Security
       pipelines = pipelines.with_pipeline_source(params[:sources]) if params[:sources].present?
 
       # Using map here as `pluck` would not work due to usage of `SELECT max(id)`
-      pipelines.map(&:id)
+      pipeline_ids = pipelines.map(&:id)
+      return pipeline_ids unless Feature.enabled?(:approval_policy_parent_child_pipeline, project)
+
+      # rubocop:disable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord -- number of pipelines is limited by source
+      Ci::Pipeline
+        .object_hierarchy(all_pipelines.id_in(pipeline_ids), project_condition: :same)
+        .base_and_descendant_ids.pluck(:id)
+      # rubocop:enable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord
     end
 
     private
