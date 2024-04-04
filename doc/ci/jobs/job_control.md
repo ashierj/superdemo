@@ -125,12 +125,12 @@ job:
       changes:
         compare_to: 'refs/heads/main'
         paths:
-          - '*'
+          - '**/*'
 ```
 
-The rule for this job compares all files and paths (`*`) in the current branch against
-the default branch `main`. The rule matches and the job runs only when there are
-changes to the files in the branch.
+The rule for this job compares all files and paths in the current branch
+recursively (`**/*`) against the `main` branch. The rule matches and the
+job runs only when there are changes to the files in the branch.
 
 ### Complex rules
 
