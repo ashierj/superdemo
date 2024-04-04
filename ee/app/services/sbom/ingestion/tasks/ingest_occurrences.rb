@@ -4,18 +4,17 @@ module Sbom
   module Ingestion
     module Tasks
       class IngestOccurrences < Base
-        include Gitlab::Ingestion::BulkInsertableTask
         include Gitlab::Utils::StrongMemoize
 
         self.model = Sbom::Occurrence
-        self.unique_by = :uuid
-        self.uses = :id
+        self.unique_by = %i[uuid].freeze
+        self.uses = %i[id uuid].freeze
 
         private
 
         def after_ingest
-          return_data.each_with_index do |occurrence_id, index|
-            occurrence_maps[index].occurrence_id = occurrence_id
+          each_pair do |occurrence_map, row|
+            occurrence_map.occurrence_id = row.first
           end
         end
 
@@ -56,6 +55,10 @@ module Sbom
           ).merge(project_id: project.id)
 
           ::Sbom::OccurrenceUUID.generate(**uuid_attributes)
+        end
+
+        def grouping_key_for_map(map)
+          [uuid(map)]
         end
 
         def licenses

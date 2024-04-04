@@ -4,15 +4,13 @@ module Sbom
   module Ingestion
     module Tasks
       class IngestOccurrencesVulnerabilities < Base
-        include Gitlab::Ingestion::BulkInsertableTask
-
         self.model = Sbom::OccurrencesVulnerability
-        self.unique_by = %i[sbom_occurrence_id vulnerability_id]
+        self.unique_by = %i[sbom_occurrence_id vulnerability_id].freeze
 
         private
 
         def attributes
-          occurrence_maps.flat_map do |occurrence_map|
+          insertable_maps.flat_map do |occurrence_map|
             occurrence_map.vulnerability_ids.map do |vulnerability_id|
               {
                 sbom_occurrence_id: occurrence_map.occurrence_id,
