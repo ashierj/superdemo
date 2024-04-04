@@ -1,29 +1,20 @@
 # frozen_string_literal: true
 
 module Users
-  class IdentityVerificationController < ApplicationController
-    include AcceptsPendingInvitations
-    include ActionView::Helpers::DateHelper
+  class BaseIdentityVerificationController < ApplicationController
     include Arkose::ContentSecurityPolicy
     include Arkose::TokenVerifiable
+    include ActionView::Helpers::DateHelper
     include IdentityVerificationHelper
     include ::Gitlab::RackLoadBalancingHelpers
     include Recaptcha::Adapters::ControllerMethods
-    include ::Gitlab::Utils::StrongMemoize
-
-    helper_method :onboarding_status
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
     PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
     CREDIT_CARD_VERIFICATION_ACTIONS = %i[verify_credit_card].freeze
 
-    skip_before_action :authenticate_user!
-
     before_action :require_verification_user!, except: [:restricted]
-    before_action :require_unverified_user!, except: [:verification_state, :success, :restricted]
     before_action :load_captcha, :redirect_banned_user, only: [:show]
-    before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session,
-      :restricted]
     before_action :ensure_verification_method_attempt_allowed!,
       only: PHONE_VERIFICATION_ACTIONS + CREDIT_CARD_VERIFICATION_ACTIONS
 
@@ -51,34 +42,7 @@ module Users
       # if the back button is pressed, don't cache the user's identity verification state
       no_cache_headers if params['no_cache']
 
-      render json: {
-        verification_methods: @user.required_identity_verification_methods,
-        verification_state: @user.identity_verification_state
-      }
-    end
-
-    def verify_email_code
-      result = verify_token
-
-      if result[:status] == :success
-        confirm_user
-
-        render json: { status: :success }
-      else
-        log_event(:email, :failed_attempt, result[:reason])
-
-        render json: result
-      end
-    end
-
-    def resend_email_code
-      if send_rate_limited?
-        render json: { status: :failure, message: rate_limited_error_message(:email_verification_code_send) }
-      else
-        reset_confirmation_token
-
-        render json: { status: :success }
-      end
+      render json: verification_state_json
     end
 
     def send_phone_verification_code
@@ -121,34 +85,6 @@ module Users
       render json: { status: :success }
     end
 
-    def arkose_labs_challenge; end
-
-    def verify_arkose_labs_session
-      unless verify_arkose_labs_token(user: @user)
-        flash[:alert] = s_('IdentityVerification|Complete verification to sign up.')
-        return render action: :arkose_labs_challenge
-      end
-
-      service = PhoneVerification::Users::RateLimitService
-      service.assume_user_high_risk_if_daily_limit_exceeded!(@user)
-
-      redirect_to action: :show
-    end
-
-    def success
-      return redirect_to identity_verification_path unless @user.identity_verified?
-
-      accept_pending_invitations(user: @user)
-      sign_in(@user)
-      session.delete(:verification_user_id)
-
-      # order matters here because set_redirect_url removes our ability to detect trial in the tracking label
-      @tracking_label = onboarding_status.tracking_label
-
-      set_redirect_url
-      experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
-    end
-
     def verify_credit_card
       return render_404 unless json_request? && @user.credit_card_validation.present?
 
@@ -182,13 +118,11 @@ module Users
 
     def toggle_phone_exemption
       if @user.offer_phone_number_exemption?
+
         @user.toggle_phone_number_verification
 
         log_event(:toggle_phone_exemption, :success)
-        render json: {
-          verification_methods: @user.required_identity_verification_methods,
-          verification_state: @user.identity_verification_state
-        }
+        render json: verification_state_json
       else
         log_event(:toggle_phone_exemption, :failed)
         render status: :bad_request, json: {}
@@ -196,21 +130,6 @@ module Users
     end
 
     private
-
-    def onboarding_status
-      Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, @user)
-    end
-    strong_memoize_attr :onboarding_status
-
-    def set_redirect_url
-      @redirect_url = if onboarding_status.subscription?
-                        # Since we need this value to stay in the stored_location_for(user) in order for
-                        # us to be properly redirected for subscription signups.
-                        onboarding_status.stored_user_location
-                      else
-                        after_sign_in_path_for(@user)
-                      end
-    end
 
     def require_verification_user!
       @user = find_verification_user || current_user
@@ -228,8 +147,11 @@ module Users
       User.find_by_id(verification_user_id)
     end
 
-    def require_unverified_user!
-      redirect_to success_identity_verification_path if @user.identity_verified?
+    def redirect_banned_user
+      return unless @user.banned?
+
+      session.delete(:verification_user_id)
+      redirect_to new_user_session_path, alert: user_banned_error_message
     end
 
     def ensure_verification_method_attempt_allowed!
@@ -246,19 +168,11 @@ module Users
       render status: :bad_request, json: {}
     end
 
-    def redirect_banned_user
-      return unless @user.banned?
-
-      session.delete(:verification_user_id)
-      redirect_to new_user_session_path, alert: user_banned_error_message
-    end
-
-    def require_arkose_verification!
-      return unless arkose_labs_enabled?(user: @user)
-      return unless @user.identities.any?
-      return if @user.arkose_verified?
-
-      redirect_to action: :arkose_labs_challenge
+    def verification_state_json
+      {
+        verification_methods: @user.required_identity_verification_methods,
+        verification_state: @user.identity_verification_state
+      }
     end
 
     def log_event(category, event, reason = nil)
@@ -279,41 +193,16 @@ module Users
       ::Gitlab::Tracking.event(category, event.to_s, property: reason.to_s, user: user)
     end
 
-    def verify_token
-      ::Users::EmailVerification::ValidateTokenService.new(
-        attr: :confirmation_token,
-        user: @user,
-        token: params.require(:identity_verification).permit(:code)[:code]
-      ).execute
-    end
-
-    def confirm_user
-      @user.confirm
-      log_event(:email, :success)
-    end
-
-    def reset_confirmation_token
-      service = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token, user: @user)
-      token, encrypted_token = service.execute
-      @user.update!(confirmation_token: encrypted_token, confirmation_sent_at: Time.current)
-      Notify.confirmation_instructions_email(@user.email, token: token).deliver_later
-      log_event(:email, :sent_instructions)
-    end
-
-    def send_rate_limited?
-      ::Gitlab::ApplicationRateLimiter.throttled?(:email_verification_code_send, scope: @user)
-    end
-
     def check_for_reuse_rate_limited?
       check_rate_limit!(:credit_card_verification_check_for_reuse, scope: request.ip) { true }
     end
 
     def phone_verification_params
-      params.require(:identity_verification).permit(:country, :international_dial_code, :phone_number)
+      required_params.permit(:country, :international_dial_code, :phone_number)
     end
 
     def verify_phone_verification_code_params
-      params.require(:identity_verification).permit(:verification_code)
+      required_params.permit(:verification_code)
     end
 
     def load_captcha

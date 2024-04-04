@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 scope :users, module: :users do
-  resource :identity_verification, controller: :identity_verification, only: :show do
+  resource :identity_verification, controller: :registrations_identity_verification, only: :show do
     get :verification_state
     post :verify_email_code
     post :resend_email_code

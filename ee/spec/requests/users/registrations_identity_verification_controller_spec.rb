@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessions, :clean_gitlab_redis_rate_limiting,
-  feature_category: :system_access do
+RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab_redis_sessions,
+  :clean_gitlab_redis_rate_limiting, feature_category: :system_access do
   include SessionHelpers
   using RSpec::Parameterized::TableSyntax
 
@@ -40,6 +40,10 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     allow_next_instance_of(::Arkose::StatusService) do |instance|
       allow(instance).to receive(:execute).and_return(status_service_response)
+    end
+
+    allow_next_found_instance_of(User) do |instance|
+      allow(instance).to receive(:verification_method_allowed?).and_return(true)
     end
   end
 
@@ -253,7 +257,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
       context 'when phone verification challenge rate-limit has been reached' do
         let(:params) do
-          { arkose_labs_token: 'verification-token', identity_verification: { phone_number: '555' } }
+          { arkose_labs_token: 'verification-token', registrations_identity_verification: { phone_number: '555' } }
         end
 
         before do
@@ -563,7 +567,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
   describe 'POST verify_email_code' do
     let_it_be(:user) { unconfirmed_user }
-    let_it_be(:params) { { identity_verification: { code: '123456' } } }
+    let_it_be(:params) { { registrations_identity_verification: { code: '123456' } } }
     let_it_be(:service_response) { { status: :success } }
 
     subject(:do_request) { post verify_email_code_identity_verification_path(params) }
@@ -632,8 +636,8 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       it 'renders the result as json' do
         expect(response.body).to eq({
           status: :failure,
-          message: format(s_("IdentityVerification|You've reached the maximum amount of resends. Wait %{interval} "\
-            'and try again.'), interval: 'about 1 hour')
+          message: format(s_("IdentityVerification|You've reached the maximum amount of resends. Wait %{interval} " \
+                             "and try again."), interval: 'about 1 hour')
         }.to_json)
       end
     end
@@ -679,7 +683,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:service_response) { ServiceResponse.success(payload: { container: 'contents' }) }
     let_it_be(:params) do
-      { identity_verification: { country: 'US', international_dial_code: '1', phone_number: '555' } }
+      { registrations_identity_verification: { country: 'US', international_dial_code: '1', phone_number: '555' } }
     end
 
     subject(:do_request) { post send_phone_verification_code_identity_verification_path(params) }
@@ -738,7 +742,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:service_response) { ServiceResponse.success }
     let_it_be(:params) do
-      { identity_verification: { verification_code: '999' } }
+      { registrations_identity_verification: { verification_code: '999' } }
     end
 
     subject(:do_request) { post verify_phone_verification_code_identity_verification_path(params) }
@@ -976,10 +980,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     before do
       stub_session(verification_user_id: user.id)
-
-      allow_next_found_instance_of(User) do |instance|
-        allow(instance).to receive(:verification_method_allowed?).and_return(true)
-      end
     end
 
     subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
@@ -1115,18 +1115,13 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
   end
 
   describe 'PATCH toggle_phone_exemption' do
+    let_it_be(:unconfirmed_user) { create(:user, :unconfirmed, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
-
-    let(:offer_phone_number_exemption) { true }
 
     subject(:do_request) { patch toggle_phone_exemption_identity_verification_path(format: :json) }
 
     before do
       stub_session(verification_user_id: user.id)
-
-      allow_next_found_instance_of(User) do |user|
-        allow(user).to receive(:offer_phone_number_exemption?).and_return(offer_phone_number_exemption)
-      end
     end
 
     it_behaves_like 'it requires an unconfirmed user'
@@ -1150,7 +1145,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     end
 
     context 'when not offering phone exemption' do
-      let(:offer_phone_number_exemption) { false }
+      let_it_be(:user) { create(:user, :unconfirmed, :low_risk) }
 
       it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :failed
 
