@@ -37521,7 +37521,7 @@ msgstr ""
 msgid "Pipelines|This pipeline ran on the contents of the merge request combined with the contents of the target branch."
 msgstr ""
 
-msgid "Pipelines|This pipeline ran on the contents of the merge request's source branch, not the target branch."
+msgid "Pipelines|This pipeline ran on the contents of the merge requests source branch, not the target branch."
 msgstr ""
 
 msgid "Pipelines|This pipeline will run code originating from a forked project merge request. This means that the code can potentially have security considerations like exposing CI variables."
