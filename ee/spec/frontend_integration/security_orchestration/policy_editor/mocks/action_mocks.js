@@ -51,6 +51,9 @@ export const mockGroupApproversApprovalManifest = `type: approval_policy
 name: ''
 description: ''
 enabled: true
+policy_scope:
+  projects:
+    excluding: []
 rules:
   - type: ''
 actions:
@@ -92,6 +95,23 @@ export const mockDastActionScanExecutionManifest = `type: scan_execution_policy
 name: ''
 description: ''
 enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: dast
+    site_profile: ''
+    scanner_profile: ''
+`;
+
+export const mockGroupDastActionScanExecutionManifest = `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+policy_scope:
+  projects:
+    excluding: []
 rules:
   - type: pipeline
     branches:

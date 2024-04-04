@@ -4,6 +4,7 @@ import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
+import { isGroup } from 'ee/security_orchestration/components/utils';
 import {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
@@ -23,8 +24,8 @@ import {
   buildScannerAction,
   buildDefaultPipeLineRule,
   createPolicyObject,
-  DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE,
   DEFAULT_SCAN_EXECUTION_POLICY,
+  DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE,
   fromYaml,
   policyToYaml,
 } from './lib';
@@ -74,6 +75,7 @@ export default {
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
     'namespacePath',
+    'namespaceType',
     'scanPolicyDocumentationPath',
     'customCiToggleEnabled',
   ],
@@ -99,7 +101,7 @@ export default {
     if (this.existingPolicy) {
       yamlEditorValue = policyToYaml(this.existingPolicy);
     } else {
-      yamlEditorValue = this.glFeatures.securityPoliciesPolicyScope
+      yamlEditorValue = isGroup(this.namespaceType)
         ? DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE
         : DEFAULT_SCAN_EXECUTION_POLICY;
     }

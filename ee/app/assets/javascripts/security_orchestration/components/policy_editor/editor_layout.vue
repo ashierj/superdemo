@@ -183,9 +183,7 @@ export default {
       return isGroup(this.namespaceType);
     },
     shouldShowScope() {
-      return this.isGroupLevel
-        ? this.glFeatures.securityPoliciesPolicyScope
-        : this.glFeatures.securityPoliciesPolicyScopeProject;
+      return this.isGroupLevel || this.glFeatures.securityPoliciesPolicyScopeProject;
     },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {

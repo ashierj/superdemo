@@ -303,23 +303,18 @@ describe('EditorLayout component', () => {
 
   describe('policy scope', () => {
     it.each`
-      flagEnabledGroup | flagEnabledProject | type                       | expectedResult
-      ${false}         | ${false}           | ${NAMESPACE_TYPES.GROUP}   | ${false}
-      ${false}         | ${false}           | ${NAMESPACE_TYPES.PROJECT} | ${false}
-      ${true}          | ${false}           | ${NAMESPACE_TYPES.GROUP}   | ${true}
-      ${true}          | ${false}           | ${NAMESPACE_TYPES.PROJECT} | ${false}
-      ${false}         | ${true}            | ${NAMESPACE_TYPES.PROJECT} | ${true}
-      ${true}          | ${true}            | ${NAMESPACE_TYPES.GROUP}   | ${true}
+      flagEnabledProject | type                       | expectedResult
+      ${true}            | ${NAMESPACE_TYPES.GROUP}   | ${true}
+      ${false}           | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${true}            | ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${true}            | ${NAMESPACE_TYPES.GROUP}   | ${true}
     `(
       'renders policy scope conditionally for $namespaceType level based on feature flag',
-      ({ flagEnabledGroup, flagEnabledProject, type, expectedResult }) => {
+      ({ flagEnabledProject, type, expectedResult }) => {
         factory({
           provide: {
             namespaceType: type,
-            glFeatures: {
-              securityPoliciesPolicyScope: flagEnabledGroup,
-              securityPoliciesPolicyScopeProject: flagEnabledProject,
-            },
+            glFeatures: { securityPoliciesPolicyScopeProject: flagEnabledProject },
           },
         });
 
@@ -333,7 +328,6 @@ describe('EditorLayout component', () => {
       factory({
         provide: {
           namespaceType: NAMESPACE_TYPES.GROUP,
-          glFeatures: { securityPoliciesPolicyScope: true },
         },
       });
 
@@ -345,7 +339,6 @@ describe('EditorLayout component', () => {
       factory({
         provide: {
           namespaceType: NAMESPACE_TYPES.GROUP,
-          glFeatures: { securityPoliciesPolicyScope: true },
         },
       });
 

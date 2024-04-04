@@ -117,7 +117,7 @@ describe('Scan result policy actions', () => {
 
   describe('groups', () => {
     beforeEach(() => {
-      createWrapper();
+      createWrapper({ provide: { existingPolicy: null, namespaceType: 'group' } });
     });
 
     it('selects group approvers', async () => {

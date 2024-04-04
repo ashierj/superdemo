@@ -5,7 +5,7 @@ import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { isProject } from 'ee/security_orchestration/components/utils';
+import { isGroup, isProject } from 'ee/security_orchestration/components/utils';
 import {
   ADD_ACTION_LABEL,
   BRANCHES_KEY,
@@ -31,8 +31,8 @@ import {
   BLOCK_BRANCH_MODIFICATION,
   buildSettingsList,
   createPolicyObject,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
   DEFAULT_SCAN_RESULT_POLICY,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
   getInvalidBranches,
   fromYaml,
   policyToYaml,
@@ -112,7 +112,7 @@ export default {
     },
   },
   data() {
-    const manifest = this.glFeatures.securityPoliciesPolicyScope
+    const manifest = isGroup(this.namespaceType)
       ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE
       : DEFAULT_SCAN_RESULT_POLICY;
 

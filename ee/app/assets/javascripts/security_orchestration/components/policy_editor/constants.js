@@ -108,6 +108,7 @@ export const PRIMARY_POLICY_KEYS = [
   'rules',
   'actions',
   'approval_settings',
+  'policy_scope',
 ];
 
 export const SPECIFIC_BRANCHES = {

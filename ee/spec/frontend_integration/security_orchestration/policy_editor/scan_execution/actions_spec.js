@@ -23,6 +23,7 @@ import { DEFAULT_PROVIDE } from '../mocks/mocks';
 import {
   createScanActionScanExecutionManifest,
   mockDastActionScanExecutionManifest,
+  mockGroupDastActionScanExecutionManifest,
   mockActionsVariablesScanExecutionManifest,
 } from '../mocks/action_mocks';
 import { verify } from '../utils';
@@ -38,6 +39,7 @@ describe('Scan execution policy actions', () => {
       },
       provide: {
         ...DEFAULT_PROVIDE,
+        existingPolicy: null,
         ...provide,
       },
       stubs: {
@@ -91,7 +93,7 @@ describe('Scan execution policy actions', () => {
       ${REPORT_TYPE_SAST_IAC}
       ${REPORT_TYPE_CONTAINER_SCANNING}
       ${REPORT_TYPE_DEPENDENCY_SCANNING}
-    `(`selects secret detection $scanType as action`, async ({ scanType }) => {
+    `(`selects $scanType as action`, async ({ scanType }) => {
       const verifyRuleMode = () => {
         expect(findScanTypeSelector().exists()).toBe(true);
         expect(findRunnerTagsList().exists()).toBe(true);
@@ -109,26 +111,25 @@ describe('Scan execution policy actions', () => {
 
   describe('dast scanner', () => {
     it.each`
-      namespaceType              | findDastSelector
-      ${NAMESPACE_TYPES.PROJECT} | ${findProjectDastProfileSelector}
-      ${NAMESPACE_TYPES.GROUP}   | ${findGroupDastProfileSelector}
-    `('selects secret detection dast as action', async ({ namespaceType, findDastSelector }) => {
-      createWrapper({
-        provide: {
-          namespaceType,
-        },
-      });
+      namespaceType              | findDastSelector                  | manifest
+      ${NAMESPACE_TYPES.PROJECT} | ${findProjectDastProfileSelector} | ${mockDastActionScanExecutionManifest}
+      ${NAMESPACE_TYPES.GROUP}   | ${findGroupDastProfileSelector}   | ${mockGroupDastActionScanExecutionManifest}
+    `(
+      'selects secret detection dast as action',
+      async ({ namespaceType, findDastSelector, manifest }) => {
+        createWrapper({ provide: { namespaceType } });
 
-      const verifyRuleMode = () => {
-        expect(findScanTypeSelector().exists()).toBe(true);
-        expect(findDastSelector().exists()).toBe(true);
-        expect(findRunnerTagsList().exists()).toBe(true);
-      };
+        const verifyRuleMode = () => {
+          expect(findScanTypeSelector().exists()).toBe(true);
+          expect(findDastSelector().exists()).toBe(true);
+          expect(findRunnerTagsList().exists()).toBe(true);
+        };
 
-      await findScanTypeSelector().vm.$emit('select', REPORT_TYPE_DAST);
+        await findScanTypeSelector().vm.$emit('select', REPORT_TYPE_DAST);
 
-      await verify({ manifest: mockDastActionScanExecutionManifest, verifyRuleMode, wrapper });
-    });
+        await verify({ manifest, verifyRuleMode, wrapper });
+      },
+    );
   });
 
   describe('actions filters', () => {

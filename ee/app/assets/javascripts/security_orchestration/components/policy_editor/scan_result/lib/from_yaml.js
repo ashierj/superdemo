@@ -1,11 +1,7 @@
 import { safeLoad } from 'js-yaml';
 import { isBoolean, isEqual } from 'lodash';
 import { addIdsToPolicy, hasInvalidKey, isValidPolicy } from '../../utils';
-import {
-  MATCH_ON_INCLUSION,
-  MATCH_ON_INCLUSION_LICENSE,
-  PRIMARY_POLICY_KEYS,
-} from '../../constants';
+import { MATCH_ON_INCLUSION, MATCH_ON_INCLUSION_LICENSE } from '../../constants';
 import {
   VALID_APPROVAL_SETTINGS,
   PERMITTED_INVALID_SETTINGS,
@@ -28,14 +24,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * the UI for new attributes may not be available.
        */
 
-      const hasPolicyScope =
-        gon?.features?.securityPoliciesPolicyScope ||
-        gon?.features?.securityPoliciesPolicyScopeProject;
       const MATCH_LICENSE_KEY = gon?.features?.securityPoliciesBreakingChanges
         ? MATCH_ON_INCLUSION_LICENSE
         : MATCH_ON_INCLUSION;
 
-      const primaryKeys = [...PRIMARY_POLICY_KEYS, ...(hasPolicyScope ? ['policy_scope'] : [])];
       const rulesKeys = [
         'type',
         'branches',
@@ -76,7 +68,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         ? !Object.values(settings).every((setting) => isBoolean(setting))
         : false;
 
-      return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
+      return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
         !hasInvalidApprovalSettings &&
         !hasInvalidSettingStructure
         ? policy

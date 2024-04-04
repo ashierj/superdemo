@@ -52,11 +52,6 @@ export default {
     approvalPolicyNameBannerEnabled() {
       return this.approvalPolicyNameBannerVisible || !this.breakingChangesBannerEnabled;
     },
-    feedbackBannerEnabled() {
-      return (
-        this.glFeatures.securityPoliciesPolicyScope || this.glFeatures.compliancePipelineInPolicies
-      );
-    },
     breakingChangesBannerEnabled() {
       return this.glFeatures.securityPoliciesBreakingChanges;
     },
@@ -158,7 +153,7 @@ export default {
         </gl-button>
       </div>
 
-      <experiment-features-banner v-if="feedbackBannerEnabled" />
+      <experiment-features-banner />
 
       <project-modal
         :visible="modalVisible"
