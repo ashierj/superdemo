@@ -44,6 +44,9 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation', :real_ai_request, :saas, :clean_
     # TODO: We can't run this QA spec with AI Gateway because the service is not available in test jobs.
     # See https://gitlab.com/gitlab-org/gitlab/-/issues/434445 for more information.
     stub_feature_flags(gitlab_duo_chat_requests_to_ai_gateway: false)
+    # TODO: Claude 3 only works with AI Gateway, which supports the Anthropic
+    # Messages API
+    stub_feature_flags(ai_claude_3_sonnet: false)
   end
 
   shared_examples 'the questions are correctly answered' do

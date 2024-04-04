@@ -90,13 +90,28 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Prompt, feature_category: :duo_chat do
   end
 
   describe '#role_conversation' do
+    let(:content) { %w[multi line message] }
     let(:prompt) { described_class.as_assistant(content) }
-    let(:input_vars) { { message: 'input' } }
 
     it 'returns bare text from role based prompt' do
-      result = { role: :assistant, content: "multi\nline\ninput" }
+      result = { role: :assistant, content: "multi\nline\nmessage" }
 
-      expect(described_class.role_conversation([prompt], input_vars)).to eq([result].to_json)
+      expect(described_class.role_conversation([prompt])).to eq([result])
+    end
+
+    # if the user input contains % chars, a parsing error will occur if `format`
+    # is used on the text. As a result, only gitlab-controlled prompts should
+    # use `format` to interpolate variables. This tests ensures we don't accidentally add `format` to
+    # this method in the future.
+    context 'when user prompt contains a %' do
+      let(:content) { ["multi", "line", "%essage"] }
+      let(:prompt) { described_class.as_user(content) }
+
+      it 'does not return an error' do
+        result = { role: :user, content: "multi\nline\n%essage" }
+
+        expect(described_class.role_conversation([prompt])).to eq([result])
+      end
     end
   end
 
