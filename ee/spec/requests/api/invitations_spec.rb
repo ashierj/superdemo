@@ -122,7 +122,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         expect(group.members.map(&:user_id)).to contain_exactly(owner.id)
         expect(json_response).to eq({
           'status' => 'error',
-          'message' => 'Not enough seats for this many users.'
+          'message' => 'There are not enough available seats to invite this many users.'
         })
       end
 
@@ -134,7 +134,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         expect(group.members.map(&:user_id)).to contain_exactly(owner.id)
         expect(json_response).to eq({
           'status' => 'error',
-          'message' => 'Not enough seats for this many users.'
+          'message' => 'There are not enough available seats to invite this many users.'
         })
       end
 
@@ -379,7 +379,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         expect(project.members.map(&:user_id)).to be_empty
         expect(json_response).to eq({
           'status' => 'error',
-          'message' => 'Not enough seats for this many users.'
+          'message' => 'There are not enough available seats to invite this many users.'
         })
       end
 
