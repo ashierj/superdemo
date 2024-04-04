@@ -30,7 +30,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::BaseCreateService, fea
 
       it 'logs an error and returns a failure response' do
         expect(Gitlab::AppLogger).to receive(:info).with(hash_including(
-          message: 'User AddOn assignment creation failed', error: 'NO_SEATS_AVAILABLE'))
+          message: 'User AddOn assignment creation failed', error: 'NO_SEATS_AVAILABLE', username: user.username))
 
         result = described_class.new(add_on_purchase: add_on_purchase, user: user).execute
 
@@ -61,7 +61,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::BaseCreateService, fea
         end
 
         expect(Gitlab::AppLogger).to receive(:info).with(hash_including(
-          message: 'User AddOn assignment creation failed', error: 'INVALID_USER_MEMBERSHIP'))
+          message: 'User AddOn assignment creation failed', error: 'INVALID_USER_MEMBERSHIP', username: user.username))
 
         result = described_class.new(add_on_purchase: add_on_purchase, user: user).execute
 

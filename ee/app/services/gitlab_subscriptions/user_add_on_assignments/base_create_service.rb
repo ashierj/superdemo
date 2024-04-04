@@ -88,7 +88,7 @@ module GitlabSubscriptions
 
       def base_log_params
         {
-          user: user.username.to_s,
+          username: user.username.to_s,
           add_on: add_on_purchase.add_on.name
         }
       end

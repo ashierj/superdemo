@@ -23,7 +23,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
   describe '#execute' do
     let(:log_params) do
       {
-        user: user.username,
+        username: user.username,
         add_on: add_on_purchase.add_on.name,
         namespace: namespace.full_path
       }
