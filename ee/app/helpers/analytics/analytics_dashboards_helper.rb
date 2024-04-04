@@ -15,6 +15,7 @@ module Analytics
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
         can_configure_dashboards_project: can_configure_dashboards_project?(namespace).to_s,
         can_select_gitlab_managed_provider: can_select_gitlab_managed_provider?(namespace).to_s,
+        managed_cluster_purchased: managed_cluster_purchased?(namespace).to_s,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
         collector_host: can_read_product_analytics ? collector_host(namespace) : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
@@ -89,6 +90,13 @@ module Analytics
       # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- GitLab-managed provider is currently ONLY available on .com
       Gitlab::CurrentSettings.should_check_namespace_plan?
       # rubocop:enable Gitlab/AvoidGitlabInstanceChecks
+    end
+
+    def managed_cluster_purchased?(project)
+      return false unless project?(project)
+      return false unless ::Feature.enabled?(:product_analytics_billing, project.root_ancestor)
+
+      ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(project.root_ancestor.id).any?
     end
 
     def project_dashboard_pointer(project)

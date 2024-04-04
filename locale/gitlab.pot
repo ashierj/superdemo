@@ -38523,6 +38523,9 @@ msgstr ""
 msgid "ProductAnalytics|Connect your own provider"
 msgstr ""
 
+msgid "ProductAnalytics|Contact our sales team"
+msgstr ""
+
 msgid "ProductAnalytics|Creating your product analytics instance..."
 msgstr ""
 
