@@ -166,6 +166,15 @@ describe('EditorComponent', () => {
   });
 
   describe('rendering', () => {
+    it.each`
+      namespaceType              | manifest
+      ${NAMESPACE_TYPES.GROUP}   | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE}
+      ${NAMESPACE_TYPES.PROJECT} | ${APPROVAL_POLICY_DEFAULT_POLICY}
+    `('should render default policy for a $namespaceType', ({ namespaceType, manifest }) => {
+      factory({ provide: { namespaceType } });
+      expect(findPolicyEditorLayout().props('policy')).toEqual(manifest);
+    });
+
     it('passes the default yamlEditorValue prop to the PolicyEditorLayout component', () => {
       factory();
       expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(mockForcePushSettingsManifest);
@@ -257,9 +266,9 @@ describe('EditorComponent', () => {
         ${'policy_scope'} | ${undefined} | ${{ compliance_frameworks: [{ id: 'id1' }, { id: 'id2' }] }}
       `('updates the $component property', ({ component, newValue, oldValue }) => {
         factory();
-        expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
+        expect(findPolicyEditorLayout().props('policy')[component]).toEqual(oldValue);
         findPolicyEditorLayout().vm.$emit('update-property', component, newValue);
-        expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+        expect(findPolicyEditorLayout().props('policy')[component]).toEqual(newValue);
       });
 
       it('removes the policy scope property', async () => {
@@ -267,16 +276,7 @@ describe('EditorComponent', () => {
           policy_scope: { compliance_frameworks: [{ id: 'id1' }, { id: 'id2' }] },
         };
 
-        const features = {
-          securityPoliciesPolicyScope: true,
-        };
-
-        window.gon = { features };
-
-        factoryWithExistingPolicy({
-          policy: oldValue,
-          glFeatures: features,
-        });
+        factoryWithExistingPolicy({ policy: oldValue });
         expect(findPolicyEditorLayout().props('policy').policy_scope).toEqual(
           oldValue.policy_scope,
         );
@@ -734,25 +734,6 @@ describe('EditorComponent', () => {
       await waitForPromises();
 
       expect(getInvalidBranches).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('policy scope', () => {
-    it.each`
-      securityPoliciesPolicyScope | manifest
-      ${true}                     | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE}
-      ${false}                    | ${APPROVAL_POLICY_DEFAULT_POLICY}
-    `('should render default policy', ({ securityPoliciesPolicyScope, manifest }) => {
-      const features = {
-        securityPoliciesPolicyScope,
-      };
-      window.gon = { features };
-
-      factory({
-        glFeatures: features,
-      });
-
-      expect(findPolicyEditorLayout().props('policy')).toEqual(manifest);
     });
   });
 

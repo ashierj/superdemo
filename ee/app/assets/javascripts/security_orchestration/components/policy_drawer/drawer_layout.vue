@@ -2,7 +2,7 @@
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { isPolicyInherited, policyHasNamespace, isProject, isGroup } from '../utils';
+import { isPolicyInherited, policyHasNamespace, isGroup } from '../utils';
 import {
   DEFAULT_DESCRIPTION_LABEL,
   DESCRIPTION_TITLE,
@@ -39,9 +39,7 @@ export default {
     projectTypeLabel: PROJECT_TYPE_LABEL,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: {
-    namespaceType: {},
-  },
+  inject: { namespaceType: {} },
   props: {
     description: {
       type: String,
@@ -65,9 +63,7 @@ export default {
   },
   computed: {
     showScopeInfoBox() {
-      return isProject(this.namespaceType)
-        ? this.glFeatures.securityPoliciesPolicyScopeProject
-        : this.glFeatures.securityPoliciesPolicyScope;
+      return isGroup(this.namespaceType) || this.glFeatures.securityPoliciesPolicyScopeProject;
     },
     isInherited() {
       return isPolicyInherited(this.policy.source);

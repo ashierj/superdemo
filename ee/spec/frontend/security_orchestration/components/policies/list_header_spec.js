@@ -62,7 +62,7 @@ describe('List Header Component', () => {
       expect(findNewPolicyButton().exists()).toBe(true);
       expect(findNewPolicyButton().text()).toBe(NEW_POLICY_BUTTON_TEXT);
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
-      expect(findExperimentFeaturesBanner().exists()).toBe(false);
+      expect(findExperimentFeaturesBanner().exists()).toBe(true);
     });
 
     it.each`
@@ -197,29 +197,5 @@ describe('List Header Component', () => {
         expect(findFn().exists()).toBe(false);
       });
     });
-  });
-
-  describe('experiments promotion banner', () => {
-    it.each`
-      securityPoliciesPolicyScope | compliancePipelineInPolicies | expectedResult
-      ${true}                     | ${true}                      | ${true}
-      ${true}                     | ${false}                     | ${true}
-      ${false}                    | ${true}                      | ${true}
-      ${false}                    | ${false}                     | ${false}
-    `(
-      'renders experiments promotion banner',
-      ({ securityPoliciesPolicyScope, compliancePipelineInPolicies, expectedResult }) => {
-        createWrapper({
-          provide: {
-            glFeatures: {
-              securityPoliciesPolicyScope,
-              compliancePipelineInPolicies,
-            },
-          },
-        });
-
-        expect(findExperimentFeaturesBanner().exists()).toBe(expectedResult);
-      },
-    );
   });
 });

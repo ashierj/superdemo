@@ -3,7 +3,6 @@ import { CUSTOM_ACTION_KEY } from 'ee/security_orchestration/components/policy_e
 import { addIdsToPolicy, isValidPolicy, hasInvalidCron } from '../../utils';
 import {
   BRANCH_TYPE_KEY,
-  PRIMARY_POLICY_KEYS,
   RULE_MODE_SCANNERS,
   VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from '../../constants';
@@ -77,16 +76,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         actionsKeys.push('ci_configuration');
       }
 
-      const hasPolicyScope =
-        gon?.features?.securityPoliciesPolicyScope ||
-        gon?.features?.securityPoliciesPolicyScopeProject;
-
-      /**
-       * Can be removed after ff is enabled
-       */
-      const primaryKeys = [...PRIMARY_POLICY_KEYS, ...(hasPolicyScope ? ['policy_scope'] : [])];
-
-      return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
+      return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
         !hasInvalidCron(policy) &&
         !hasInvalidBranchType(policy.rules) &&
         hasRuleModeSupportedScanners(policy)

@@ -137,33 +137,20 @@ describe('DrawerLayout component', () => {
 
   describe('policy scope', () => {
     it.each`
-      namespaceType              | securityPoliciesPolicyScopeProject | securityPoliciesPolicyScope | expectedResult
-      ${NAMESPACE_TYPES.PROJECT} | ${true}                            | ${false}                    | ${true}
-      ${NAMESPACE_TYPES.GROUP}   | ${true}                            | ${true}                     | ${true}
-      ${NAMESPACE_TYPES.GROUP}   | ${false}                           | ${false}                    | ${false}
-      ${NAMESPACE_TYPES.PROJECT} | ${true}                            | ${true}                     | ${true}
-      ${NAMESPACE_TYPES.GROUP}   | ${false}                           | ${true}                     | ${true}
-      ${NAMESPACE_TYPES.PROJECT} | ${true}                            | ${true}                     | ${true}
-      ${NAMESPACE_TYPES.GROUP}   | ${true}                            | ${false}                    | ${false}
+      namespaceType              | securityPoliciesPolicyScopeProject | expectedResult
+      ${NAMESPACE_TYPES.PROJECT} | ${true}                            | ${true}
+      ${NAMESPACE_TYPES.PROJECT} | ${false}                           | ${false}
+      ${NAMESPACE_TYPES.GROUP}   | ${true}                            | ${true}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}                           | ${true}
     `(
       `renders policy scope for $namespaceType $expectedResult`,
-      ({
-        namespaceType,
-        securityPoliciesPolicyScopeProject,
-        securityPoliciesPolicyScope,
-        expectedResult,
-      }) => {
+      ({ namespaceType, securityPoliciesPolicyScopeProject, expectedResult }) => {
         factory({
           propsData: {
             policy: mockProjectScanExecutionPolicy,
           },
           provide: {
-            ...{
-              glFeatures: {
-                securityPoliciesPolicyScopeProject,
-                securityPoliciesPolicyScope,
-              },
-            },
+            glFeatures: { securityPoliciesPolicyScopeProject },
             namespaceType,
           },
         });
