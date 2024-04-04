@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::WelcomeController, feature_category: :system_access do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, onboarding_in_progress: true) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
 
@@ -441,7 +441,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(redirect_path)
               expect(user.onboarding_status_email_opt_in).to eq(true)
-              expect(user.onboarding_status_registration_type).to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+              expect(user.onboarding_status_registration_type)
+                .to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
               expect(response).to redirect_to redirect_path
             end
 
@@ -495,7 +496,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(path)
               expect(user.onboarding_status_registration_type)
-                .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                .not_to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
               expect(response).to redirect_to path
             end
 

@@ -431,11 +431,6 @@ module EE
       License.current.present?
     end
 
-    def update_onboarding_status(field, value)
-      onboarding_status[field] = value
-      save
-    end
-
     def using_license_seat?
       active? &&
         !internal? &&

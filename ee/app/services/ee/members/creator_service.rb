@@ -44,14 +44,13 @@ module EE
       end
 
       def finish_onboarding_user
-        return unless ::Onboarding.user_onboarding_in_progress?(member.user)
         return unless finished_welcome_step?
 
-        member.user.update(onboarding_in_progress: false)
+        ::Onboarding::FinishService.new(member.user).execute
       end
 
       def finished_welcome_step?
-        member.user.role?
+        member.user&.role?
       end
 
       def security_bot_and_member_of_other_project?

@@ -225,30 +225,6 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
-  describe '#registration_type' do
-    let_it_be(:memberless_user) { create(:user) }
-    let(:subscription_return) { { 'user_return_to' => ::Gitlab::Routing.url_helpers.new_subscriptions_path } }
-
-    where(:params, :session, :current_user, :expected_result) do
-      { trial: 'true' }  | {}                                  | ref(:memberless_user) | 'trial'
-      { trial: 'true' }  | {}                                  | ref(:user)            | 'trial'
-      { trial: 'true' }  | ref(:subscription_return)           | ref(:user)            | 'trial'
-      {}                 | {}                                  | ref(:user)            | 'invite'
-      {}                 | ref(:subscription_return)           | ref(:user)            | 'invite'
-      {}                 | ref(:subscription_return)           | ref(:memberless_user) | 'subscription'
-      {}                 | { 'user_return_to' => 'some/path' } | ref(:memberless_user) | 'free'
-      {}                 | {}                                  | ref(:memberless_user) | 'free'
-    end
-
-    with_them do
-      let(:instance) { described_class.new(params, session, current_user) }
-
-      subject { instance.registration_type }
-
-      it { is_expected.to eq(expected_result) }
-    end
-  end
-
   describe '#group_creation_tracking_label' do
     where(:trial_onboarding_flow?, :trial?, :expected_result) do
       true  | true  | 'trial_registration'

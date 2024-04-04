@@ -26,9 +26,10 @@ module Registrations
       if result.success?
         track_event('successfully_submitted_form')
 
-        path = new_users_sign_up_group_path(redirect_params)
-        save_onboarding_step_url(path, current_user)
-        redirect_to path
+        response = Onboarding::StatusStepUpdateService
+                     .new(current_user, new_users_sign_up_group_path(redirect_params)).execute
+
+        redirect_to response[:step_url]
       else
         flash.now[:alert] = result.errors.to_sentence
         render :new, status: :unprocessable_entity

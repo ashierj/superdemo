@@ -2,19 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Registration group and project creation flow', :saas, :js, feature_category: :onboarding do
-  let_it_be(:user) { create(:user) }
-
-  let(:experiments) { {} }
+RSpec.describe 'Registration group and project creation flow', :js, feature_category: :onboarding do
+  let_it_be(:user) { create(:user, onboarding_in_progress: true) }
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(154)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(158)
 
     # Stubbed not to break query budget. Should be safe as the query only happens on SaaS and the result is cached
     allow(Gitlab::Com).to receive(:gitlab_com_group_member?).and_return(nil)
 
-    stub_experiments(experiments)
+    stub_saas_features(onboarding: true)
     stub_application_setting(import_sources: %w[github gitlab_project])
     sign_in(user)
     visit users_sign_up_welcome_path

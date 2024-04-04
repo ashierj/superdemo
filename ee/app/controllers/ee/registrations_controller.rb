@@ -11,7 +11,6 @@ module EE
       include Arkose::ContentSecurityPolicy
       include Arkose::TokenVerifiable
       include RegistrationsTracking
-      include ::Onboarding::SetRedirect
       include GoogleAnalyticsCSP
       include GoogleSyndicationCSP
 
@@ -84,14 +83,8 @@ module EE
       service = PhoneVerification::Users::RateLimitService
       service.assume_user_high_risk_if_daily_limit_exceeded!(user)
 
-      start_onboarding!(
-        resource,
-        onboarding_status: {
-          step_url: onboarding_first_step_path,
-          initial_registration_type: onboarding_status.registration_type,
-          registration_type: onboarding_status.registration_type
-        }
-      )
+      ::Onboarding::StatusCreateService
+        .new(onboarding_status_params, session, resource, onboarding_first_step_path).execute
 
       log_audit_event(user)
     end

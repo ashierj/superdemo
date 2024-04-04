@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Company Information', :js, :saas, feature_category: :activation do
+RSpec.describe 'Company Information', :js, feature_category: :activation do
   include SaasRegistrationHelpers
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, onboarding_in_progress: true) }
   let_it_be(:fields) do
     [
       'First Name',
@@ -19,6 +19,8 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
   end
 
   before do
+    stub_saas_features(onboarding: true)
+
     sign_in(user)
     visit new_users_sign_up_company_path
   end
