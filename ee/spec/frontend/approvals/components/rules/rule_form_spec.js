@@ -115,6 +115,14 @@ describe('EE Approvals RuleForm', () => {
       store.state.settings.allowMultiRule = true;
     });
 
+    describe('isBranchRulesEdit set to `true`', () => {
+      it('disables the branch selector', () => {
+        createComponent({ isBranchRulesEdit: true, isMrEdit: false });
+
+        expect(findBranchesValidation().attributes('disabled')).toBeDefined();
+      });
+    });
+
     describe('when has protected branch feature', () => {
       describe('with initial rule', () => {
         it('on load, it populates initial protected branch ids', () => {

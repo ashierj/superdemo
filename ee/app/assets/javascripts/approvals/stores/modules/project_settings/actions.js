@@ -12,6 +12,10 @@ export const requestRules = ({ commit }) => {
   commit(types.SET_LOADING, true);
 };
 
+export const setRulesFilter = ({ commit }, rules) => {
+  commit(types.SET_RULES_FILTER, rules);
+};
+
 export const receiveRulesSuccess = ({ commit }, approvalSettings) => {
   commit(types.SET_APPROVAL_SETTINGS, approvalSettings);
   commit(types.SET_LOADING, false);
@@ -40,7 +44,12 @@ export const fetchRules = ({ rootState, dispatch }) => {
 
   return axios
     .get(rulesPath)
-    .then((response) => dispatch('receiveRulesSuccess', mapApprovalSettingsResponse(response.data)))
+    .then(({ data }) => {
+      const filter = rootState.approvals?.rulesFilter;
+      const rules = filter ? data.filter(({ name }) => filter.includes(name)) : data;
+
+      dispatch('receiveRulesSuccess', mapApprovalSettingsResponse(rules));
+    })
     .catch(() => dispatch('receiveRulesError'));
 };
 

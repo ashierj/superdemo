@@ -27,6 +27,11 @@ export default {
       default: true,
       required: false,
     },
+    isBranchRulesEdit: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   computed: {
     ...mapState({
@@ -51,7 +56,9 @@ export default {
     },
   },
   mounted() {
-    return this.fetchRules({ targetBranch: this.targetBranch });
+    if (!this.isBranchRulesEdit) {
+      this.fetchRules({ targetBranch: this.targetBranch });
+    }
   },
   methods: {
     ...mapActions(['fetchRules', 'undoRulesChange']),
@@ -139,10 +146,18 @@ export default {
     <drawer-rule-create
       v-if="glFeatures.approvalRulesDrawer"
       :is-mr-edit="isMrEdit"
+      :is-branch-rules-edit="isBranchRulesEdit"
       :is-open="drawerOpen"
+      v-on="$listeners"
       @close="closeCreateDrawer"
     />
-    <modal-rule-create v-else :modal-id="createModalId" :is-mr-edit="isMrEdit" />
+    <modal-rule-create
+      v-else
+      :modal-id="createModalId"
+      :is-mr-edit="isMrEdit"
+      :is-branch-rules-edit="isBranchRulesEdit"
+      v-on="$listeners"
+    />
     <modal-rule-remove :modal-id="removeModalId" />
   </gl-card>
 </template>

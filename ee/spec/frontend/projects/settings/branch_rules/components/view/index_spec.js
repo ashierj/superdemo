@@ -1,7 +1,15 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
+import Vuex from 'vuex';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import RuleView from 'ee/projects/settings/branch_rules/components/view/index.vue';
+import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
+import ProjectRules from 'ee/approvals/project_settings/project_rules.vue';
 import branchRulesQuery from 'ee/projects/settings/branch_rules/queries/branch_rules_details.query.graphql';
+import { createStoreOptions } from 'ee/approvals/stores';
+import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
 import deleteBranchRuleMutation from '~/projects/settings/branch_rules/mutations/branch_rule_delete.mutation.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -18,7 +26,6 @@ import { sprintf } from '~/locale';
 import {
   deleteBranchRuleMockResponse,
   branchProtectionsMockResponse,
-  approvalRulesMock,
   statusChecksRulesMock,
 } from './mock_data';
 
@@ -29,6 +36,7 @@ jest.mock('~/lib/utils/url_utility', () => ({
 }));
 
 Vue.use(VueApollo);
+Vue.use(Vuex);
 
 const protectionMockProps = {
   headerLinkHref: 'protected/branches',
@@ -40,6 +48,8 @@ const protectionMockProps = {
 describe('View branch rules in enterprise edition', () => {
   let wrapper;
   let fakeApollo;
+  let store;
+  let axiosMock;
   const projectPath = 'test/testing';
   const protectedBranchesPath = 'protected/branches';
   const approvalRulesPath = 'approval/rules';
@@ -54,12 +64,18 @@ describe('View branch rules in enterprise edition', () => {
     mockResponse,
     mutationMockResponse,
   ) => {
+    axiosMock = new MockAdapter(axios);
+    store = createStoreOptions({ approvals: projectSettingsModule() });
+    jest.spyOn(store.modules.approvals.actions, 'setRulesFilter');
+    jest.spyOn(store.modules.approvals.actions, 'fetchRules');
+
     fakeApollo = createMockApollo([
       [branchRulesQuery, branchProtectionsMockRequestHandler(mockResponse)],
       [deleteBranchRuleMutation, deleteBranchRuleMockRequestHandler(mutationMockResponse)],
     ]);
 
     wrapper = shallowMountExtended(RuleView, {
+      store: new Vuex.Store(store),
       apolloProvider: fakeApollo,
       provide: {
         projectPath,
@@ -77,8 +93,11 @@ describe('View branch rules in enterprise edition', () => {
 
   beforeEach(() => createComponent());
 
+  afterEach(() => axiosMock.restore());
+
   const findBranchProtections = () => wrapper.findAllComponents(Protection);
-  const findApprovalsTitle = () => wrapper.findByText(I18N.approvalsTitle);
+  const findApprovalsApp = () => wrapper.findComponent(ApprovalRulesApp);
+  const findProjectRules = () => wrapper.findComponent(ProjectRules);
   const findStatusChecksTitle = () => wrapper.findByText(I18N.statusChecksTitle);
   const findCodeOwnerApprovalIcon = () => wrapper.findByTestId('code-owners-icon');
   const findCodeOwnerApprovalTitle = (title) => wrapper.findByText(title);
@@ -127,20 +146,38 @@ describe('View branch rules in enterprise edition', () => {
   });
 
   it('does not render approvals and status checks sections by default', () => {
-    expect(findApprovalsTitle().exists()).toBe(false);
+    expect(findApprovalsApp().exists()).toBe(false);
     expect(findStatusChecksTitle().exists()).toBe(false);
   });
 
-  it('renders a branch protection component for approvals if "showApprovers" is true', async () => {
-    await createComponent({ showApprovers: true });
+  describe('if "showApprovers" is true', () => {
+    beforeEach(() => createComponent({ showApprovers: true }));
 
-    expect(findApprovalsTitle().exists()).toBe(true);
+    it('sets an approval rules filter', () => {
+      expect(store.modules.approvals.actions.setRulesFilter).toHaveBeenCalledWith(
+        expect.anything(),
+        ['test'],
+      );
+    });
 
-    expect(findBranchProtections().at(2).props()).toMatchObject({
-      header: sprintf(I18N.approvalsHeader, { total: 3 }),
-      headerLinkHref: approvalRulesPath,
-      headerLinkTitle: I18N.manageApprovalsLinkTitle,
-      approvals: approvalRulesMock,
+    it('fetches the approval rules', () => {
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-fetches the approval rules when a rule is successfully added/edited', async () => {
+      findApprovalsApp().vm.$emit('submitted');
+      await waitForPromises();
+
+      expect(store.modules.approvals.actions.setRulesFilter).toHaveBeenCalledTimes(2);
+      expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalledTimes(2);
+    });
+
+    it('renders the approval rules component with correct props', () => {
+      expect(findApprovalsApp().props('isMrEdit')).toBe(false);
+    });
+
+    it('renders the project rules component', () => {
+      expect(findProjectRules().exists()).toBe(true);
     });
   });
 

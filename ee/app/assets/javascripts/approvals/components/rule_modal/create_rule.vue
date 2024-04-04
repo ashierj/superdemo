@@ -20,6 +20,11 @@ export default {
       default: true,
       required: false,
     },
+    isBranchRulesEdit: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   computed: {
     ...mapState('createModal', {
@@ -65,7 +70,9 @@ export default {
       ref="form"
       :init-rule="rule"
       :is-mr-edit="isMrEdit"
+      :is-branch-rules-edit="isBranchRulesEdit"
       :default-rule-name="defaultRuleName"
+      v-on="$listeners"
     />
   </gl-modal-vuex>
 </template>

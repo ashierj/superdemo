@@ -46,6 +46,11 @@ export default {
       default: true,
       required: false,
     },
+    isBranchRulesEdit: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
     defaultRuleName: {
       type: String,
       required: false,
@@ -215,6 +220,9 @@ export default {
     isEditing() {
       return Boolean(this.initRule);
     },
+    selectedBranchNames() {
+      return [this.settings.targetBranch];
+    },
   },
   watch: {
     approversToAdd(value) {
@@ -258,6 +266,7 @@ export default {
 
       try {
         await submission();
+        this.$emit('submitted');
         this.$emit('close');
       } catch (failureResponse) {
         this.serverValidationErrors = mapServerResponseToValidationErrors(
@@ -372,6 +381,7 @@ export default {
     </gl-form-group>
     <gl-form-group
       v-if="showProtectedBranch"
+      :disabled="isBranchRulesEdit"
       :label="$options.APPROVAL_DIALOG_I18N.form.protectedBranchLabel"
       :description="$options.APPROVAL_DIALOG_I18N.form.protectedBranchDescription"
       :state="isValidBranches"
@@ -384,6 +394,7 @@ export default {
         :is-invalid="!isValidBranches"
         :allow-all-protected-branches-option="settings.allowAllProtectedBranchesOption"
         :selected-branches="branches"
+        :selected-branches-names="selectedBranchNames"
       />
     </gl-form-group>
     <gl-form-group

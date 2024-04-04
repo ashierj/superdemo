@@ -32,6 +32,11 @@ export default {
       default: true,
       required: false,
     },
+    isBranchRulesEdit: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   data() {
     return { isLoading: false };
@@ -85,6 +90,7 @@ export default {
         ref="form"
         :init-rule="rule"
         :is-mr-edit="isMrEdit"
+        :is-branch-rules-edit="isBranchRulesEdit"
         :default-rule-name="defaultRuleName"
         v-on="$listeners"
       />

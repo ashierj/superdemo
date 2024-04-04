@@ -179,9 +179,9 @@ describe('Protected Branches Selector', () => {
       findListbox().vm.$emit('select', TEST_PROTECTED_BRANCHES[0].name);
       await nextTick();
 
-      expect(wrapper.emitted('input')).toStrictEqual([
+      expect(wrapper.emitted('input')[1]).toStrictEqual(
         addValueToBranches([TEST_PROTECTED_BRANCHES[0]]),
-      ]);
+      );
     });
 
     it('emits the new branch when selected', async () => {
@@ -190,7 +190,7 @@ describe('Protected Branches Selector', () => {
       findListbox().vm.$emit('select', TEST_PROTECTED_BRANCHES[1].name);
       await nextTick();
 
-      expect(wrapper.emitted('input')[1]).toStrictEqual(
+      expect(wrapper.emitted('input')[2]).toStrictEqual(
         addValueToBranches([TEST_PROTECTED_BRANCHES[1]]),
       );
     });
@@ -237,7 +237,7 @@ describe('Protected Branches Selector', () => {
       await waitForPromises();
       await findAllBranchesOption().vm.$emit('click');
 
-      expect(wrapper.emitted('input')).toStrictEqual([[null]]);
+      expect(wrapper.emitted('input')[1]).toStrictEqual([null]);
     });
 
     it('emits the correct branch when the footer is clicked for single branches', async () => {
@@ -245,9 +245,9 @@ describe('Protected Branches Selector', () => {
       await waitForPromises();
       await findAllProtectedBranchesOption().vm.$emit('click');
 
-      expect(wrapper.emitted('input')).toStrictEqual([
+      expect(wrapper.emitted('input')[1]).toStrictEqual(
         addValueToBranches([ALL_PROTECTED_BRANCHES]),
-      ]);
+      );
     });
 
     it('emits the correct branch when the footer is clicked for multiple branches', async () => {

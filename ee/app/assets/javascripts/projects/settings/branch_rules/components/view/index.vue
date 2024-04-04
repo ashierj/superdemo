@@ -2,6 +2,8 @@
 import { sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import RuleViewFoss from '~/projects/settings/branch_rules/components/view/index.vue';
+import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
+import ProjectRules from 'ee/approvals/project_settings/project_rules.vue';
 import {
   I18N,
   APPROVALS_HELP_PATH,
@@ -16,6 +18,7 @@ const statusChecksHelpDocLink = helpPagePath(STATUS_CHECKS_HELP_PATH);
 // eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   name: 'EERuleView',
+  components: { ApprovalRulesApp, ProjectRules }, // used in the CE template
   extends: RuleViewFoss,
   i18n: I18N,
   approvalsHelpDocLink,
@@ -29,15 +32,6 @@ export default {
     },
   },
   computed: {
-    approvalsHeader() {
-      const total = this.approvalRules.reduce(
-        (sum, { approvalsRequired }) => sum + approvalsRequired,
-        0,
-      );
-      return sprintf(this.$options.i18n.approvalsHeader, {
-        total,
-      });
-    },
     statusChecksHeader() {
       return sprintf(this.$options.i18n.statusChecksHeader, {
         total: this.statusChecks.length,
