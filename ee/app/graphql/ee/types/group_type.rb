@@ -42,6 +42,15 @@ module EE
           description: 'Find iteration cadences.',
           resolver: ::Resolvers::Iterations::CadencesResolver
 
+        field :ci_queueing_history,
+          ::Types::Ci::QueueingHistoryType,
+          null: true,
+          alpha: { milestone: '16.11' },
+          description: "Time taken for CI jobs to be picked up by this group's runners by percentile. " \
+                       "Available to users with Maintainer role for the group.",
+          resolver: ::Resolvers::Ci::GroupQueueingHistoryResolver,
+          extras: [:lookahead]
+
         field :runner_cloud_provisioning,
           ::Types::Ci::RunnerCloudProvisioningType,
           null: true,

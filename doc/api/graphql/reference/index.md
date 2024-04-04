@@ -239,7 +239,7 @@ Returns [`CiStage`](#cistage).
 
 ### `Query.ciQueueingHistory`
 
-Time it took for ci job to be picked up by runner in percentiles.
+Time taken for CI jobs to be picked up by runner by percentile.
 
 DETAILS:
 **Introduced** in GitLab 16.4.
@@ -251,9 +251,9 @@ Returns [`QueueingDelayHistory`](#queueingdelayhistory).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="queryciqueueinghistoryfromtime"></a>`fromTime` | [`Time`](#time) | Start of the requested time frame. Defaults to 3 hours ago. |
+| <a id="queryciqueueinghistoryfromtime"></a>`fromTime` | [`Time`](#time) | Start of the requested time frame. Defaults to three hours ago. |
 | <a id="queryciqueueinghistoryrunnertype"></a>`runnerType` | [`CiRunnerType`](#cirunnertype) | Filter jobs by the type of runner that executed them. |
-| <a id="queryciqueueinghistorytotime"></a>`toTime` | [`Time`](#time) | End of the requested time frame. Defaults to current time. |
+| <a id="queryciqueueinghistorytotime"></a>`toTime` | [`Time`](#time) | End of the requested time frame. Defaults to the current time. |
 
 ### `Query.ciVariables`
 
@@ -20415,6 +20415,23 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="groupboardsid"></a>`id` | [`BoardID`](#boardid) | Find a board by its ID. |
+
+##### `Group.ciQueueingHistory`
+
+Time taken for CI jobs to be picked up by this group's runners by percentile. Available to users with Maintainer role for the group.
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Returns [`QueueingDelayHistory`](#queueingdelayhistory).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupciqueueinghistoryfromtime"></a>`fromTime` | [`Time`](#time) | Start of the requested time frame. Defaults to three hours ago. |
+| <a id="groupciqueueinghistorytotime"></a>`toTime` | [`Time`](#time) | End of the requested time frame. Defaults to the current time. |
 
 ##### `Group.ciVariables`
 

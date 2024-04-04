@@ -112,8 +112,8 @@ module EE
           ::Types::Ci::QueueingHistoryType,
           null: true,
           alpha: { milestone: '16.4' },
-          description: 'Time it took for ci job to be picked up by runner in percentiles.',
-          resolver: ::Resolvers::Ci::QueueingHistoryResolver,
+          description: 'Time taken for CI jobs to be picked up by runner by percentile.',
+          resolver: ::Resolvers::Ci::InstanceQueueingHistoryResolver,
           extras: [:lookahead]
         field :runner_usage_by_project,
           [::Types::Ci::RunnerUsageByProjectType],
