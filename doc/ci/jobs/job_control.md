@@ -333,8 +333,6 @@ You can use the `$` character for both variables and paths. For example, if the
 
 ### Reuse rules in different jobs
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/322992) in GitLab 14.3.
-
 Use [`!reference` tags](../yaml/yaml_optimization.md#reference-tags) to reuse rules in different
 jobs. You can combine `!reference` rules with regular job-defined rules:
 
@@ -568,8 +566,6 @@ deploystacks: [vultr, data]
 ```
 
 ### Select different runner tags for each parallel matrix job
-
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/239737) in GitLab 14.1.
 
 You can use variables defined in `parallel: matrix` with the [`tags`](../yaml/index.md#tags)
 keyword for dynamic runner selection:
