@@ -36,35 +36,26 @@ RSpec.describe Admin::DevOpsReportController, feature_category: :devops_reports 
       sign_in(user)
     end
 
-    shared_examples 'tracks usage event' do |event, tab|
-      it "tracks #{event} usage event for #{tab}" do
-        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
-          .to receive(:track_event).with(event, values: kind_of(String))
-
-        get :show, params: { tab: tab }, format: :html
-      end
-    end
-
     context 'with devops adoption available' do
       before do
         stub_licensed_features(devops_adoption: true)
       end
 
       ['', 'dev', 'sec', 'ops'].each do |tab|
-        it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_adoption', tab
-
-        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-          subject { get :show, params: { tab: tab }, format: :html }
-
+        it_behaves_like 'internal event tracking' do
+          let(:event) { 'i_analytics_dev_ops_adoption' }
           let(:category) { described_class.name }
-          let(:action) { 'perform_analytics_usage_action' }
-          let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
-          let(:property) { 'i_analytics_dev_ops_adoption' }
-          let(:namespace) { nil }
+
+          subject { get :show, params: { tab: tab }, format: :html }
         end
       end
 
-      it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_score', 'devops-score'
+      it_behaves_like 'internal event tracking' do
+        let(:event) { 'i_analytics_dev_ops_score' }
+        let(:category) { described_class.name }
+
+        subject { get :show, params: { tab: 'devops-score' }, format: :html }
+      end
     end
 
     context 'with devops adoption not available' do
@@ -73,7 +64,12 @@ RSpec.describe Admin::DevOpsReportController, feature_category: :devops_reports 
       end
 
       ['', 'dev', 'sec', 'ops', 'devops-score'].each do |tab|
-        it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_score', tab
+        it_behaves_like 'internal event tracking' do
+          let(:event) { 'i_analytics_dev_ops_score' }
+          let(:category) { described_class.name }
+
+          subject { get :show, params: { tab: tab }, format: :html }
+        end
       end
     end
   end
