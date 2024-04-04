@@ -6,6 +6,7 @@ import {
   percentChange,
   formatMetric,
   generateSkeletonTableData,
+  isMetricInTimePeriods,
   generateMetricComparisons,
   generateSparklineCharts,
   mergeTableData,
@@ -107,6 +108,23 @@ describe('Analytics Dashboards utils', () => {
 
       const metrics = tableData.map(({ metric }) => metric.identifier);
       expect(metrics).not.toEqual(expect.arrayContaining(excludeMetrics));
+    });
+  });
+
+  describe('isMetricInTimePeriods', () => {
+    const timePeriods = [
+      mockMonthToDateTimePeriod,
+      mockPreviousMonthTimePeriod,
+      mockTwoMonthsAgoTimePeriod,
+      mockThreeMonthsAgoTimePeriod,
+    ];
+
+    it('returns true if the time periods reference the metric', () => {
+      expect(isMetricInTimePeriods(LEAD_TIME_METRIC_TYPE, timePeriods)).toBe(true);
+    });
+
+    it('returns false if the time periods do not reference the metric', () => {
+      expect(isMetricInTimePeriods('unknown', timePeriods)).toBe(false);
     });
   });
 

@@ -8,6 +8,7 @@ import {
   extractDoraPerformanceScoreCounts,
   scaledValueForDisplay,
   extractGraphqlContributorCountData,
+  extractQueryResponseFromNamespace,
 } from 'ee/analytics/dashboards/api';
 import { UNITS } from 'ee/analytics/dashboards/constants';
 import {
@@ -176,6 +177,38 @@ describe('Analytics Dashboards api', () => {
       expect(extractGraphqlContributorCountData({ contributors: null })).toEqual({
         contributor_count: { identifier: 'contributor_count', value: 0 },
       });
+    });
+  });
+
+  describe('extractQueryResponseFromNamespace', () => {
+    const resultKey = 'over';
+    const response = 9000;
+
+    it('returns the project response when there is data present', () => {
+      expect(
+        extractQueryResponseFromNamespace({
+          resultKey,
+          result: { data: { project: { [resultKey]: response } } },
+        }),
+      ).toEqual(response);
+    });
+
+    it('returns the group response when there is data present', () => {
+      expect(
+        extractQueryResponseFromNamespace({
+          resultKey,
+          result: { data: { group: { [resultKey]: response } } },
+        }),
+      ).toEqual(response);
+    });
+
+    it('returns an empty object when there is no data present', () => {
+      expect(
+        extractQueryResponseFromNamespace({
+          resultKey,
+          result: { data: {} },
+        }),
+      ).toEqual({});
     });
   });
 });

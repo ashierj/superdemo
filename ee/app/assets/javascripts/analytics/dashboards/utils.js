@@ -168,7 +168,7 @@ const buildMetricComparisonTableRow = ({ identifier, units, timePeriods, valueLi
  * @param {Array} timePeriods - Array of the DORA metrics for different time periods
  * @returns {Boolean} true if the dataset contains the metric, false otherwise
  */
-const isMetricInTimePeriods = (identifier, timePeriods) =>
+export const isMetricInTimePeriods = (identifier, timePeriods) =>
   timePeriods.some((timePeriod) => timePeriod[identifier] !== undefined);
 
 /**

@@ -26,6 +26,7 @@ import {
   extractGraphqlFlowData,
   extractGraphqlMergeRequestsData,
   extractGraphqlContributorCountData,
+  extractQueryResponseFromNamespace,
 } from '../api';
 import {
   generateSkeletonTableData,
@@ -41,15 +42,6 @@ import ComparisonTable from './comparison_table.vue';
 const now = generateValueStreamDashboardStartDate();
 const DASHBOARD_TIME_PERIODS = generateDateRanges(now);
 const CHART_TIME_PERIODS = generateChartTimePeriods(now);
-
-const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
-  const { group = null, project = null } = result.data;
-  if (group || project) {
-    const namespace = group ?? project;
-    return namespace[resultKey];
-  }
-  return {};
-};
 
 export default {
   name: 'ComparisonChart',

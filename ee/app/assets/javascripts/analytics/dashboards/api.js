@@ -267,3 +267,24 @@ export const extractDoraPerformanceScoreCounts = (data = []) => {
     data: scoreCountsByCategory[category] ?? [],
   }));
 };
+
+/**
+ * Takes a raw GraphQL response which could contain data for a group or project namespace,
+ * and returns the data for the namespace which is present in the response.
+ *
+ * @param {Object} params
+ * @param {string} params.resultKey - The data to be extracted from the namespace.
+ * @param {Object} params.result
+ * @param {Object} params.result.data
+ * @param {Object} params.result.data.group - The group GraphQL response.
+ * @param {Object} params.result.data.project - The project GraphQL response.
+ * @returns {Object} The data extracted from either group[resultKey] or project[resultKey].
+ */
+export const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
+  const { group = null, project = null } = result.data;
+  if (group || project) {
+    const namespace = group ?? project;
+    return namespace[resultKey];
+  }
+  return {};
+};

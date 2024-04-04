@@ -4,6 +4,7 @@ import { joinPaths, mergeUrlParams } from '~/lib/utils/url_utility';
 import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
 import { s__ } from '~/locale';
 import { TABLE_METRICS } from '../constants';
+import { TABLE_METRICS as AI_IMPACT_TABLE_METRICS } from '../ai_impact/constants';
 
 export default {
   name: 'MetricTableCell',
@@ -33,7 +34,7 @@ export default {
   },
   computed: {
     metric() {
-      return TABLE_METRICS[this.identifier];
+      return TABLE_METRICS[this.identifier] || AI_IMPACT_TABLE_METRICS[this.identifier];
     },
     tooltip() {
       return METRIC_TOOLTIPS[this.identifier];
