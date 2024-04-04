@@ -40,6 +40,12 @@ describe('MetricsFilteredSearch', () => {
   const findGroupByFilter = () => wrapper.findComponent(GroupByFilter);
   const findSubmitButton = () => wrapper.findComponent(GlButton);
 
+  const mockFilter = {
+    id: 'namespace',
+    type: 'a-token',
+    value: { operator: 'is not', data: 'foo' },
+  };
+
   it('renders the filtered search component with tokens based on attributes', () => {
     const filteredSeach = findFilteredSearch();
     expect(filteredSeach.exists()).toBe(true);
@@ -54,7 +60,7 @@ describe('MetricsFilteredSearch', () => {
   });
 
   it('renders the filtered search component with with initial tokens', () => {
-    const filters = [{ type: 'key.name', value: 'foo' }];
+    const filters = [mockFilter];
 
     mount({ attributeFilters: filters });
 
@@ -202,7 +208,7 @@ describe('MetricsFilteredSearch', () => {
   });
 
   it('emits the submit event when the attributes filter is changed and submit button is clicked', async () => {
-    const filters = [{ attribute: 'namespace', operator: 'is not', value: 'test' }];
+    const filters = [mockFilter];
 
     await findFilteredSearch().vm.$emit('onFilter', filters);
 
@@ -213,7 +219,7 @@ describe('MetricsFilteredSearch', () => {
     expect(wrapper.emitted('submit')).toEqual([
       [
         {
-          attributes: [{ attribute: 'namespace', operator: 'is not', value: 'test' }],
+          attributes: [mockFilter],
           groupBy: {
             attributes: defaultSearchMetadata.default_group_by_attributes,
             func: defaultSearchMetadata.default_group_by_function,
@@ -222,6 +228,35 @@ describe('MetricsFilteredSearch', () => {
       ],
     ]);
     expect(findFilteredSearch().props('initialFilterValue')).toEqual(filters);
+  });
+
+  it('handles the onInput event by removing incomplete filters', async () => {
+    const filters = [
+      mockFilter,
+      {
+        id: 'namespace',
+        type: 'a-token',
+        value: { operator: '', data: '' },
+      },
+    ];
+
+    await findFilteredSearch().vm.$emit('onInput', filters);
+
+    await findSubmitButton().vm.$emit('click');
+
+    expect(wrapper.emitted('submit')).toEqual([
+      [
+        {
+          attributes: [mockFilter],
+          dateRange: undefined,
+          groupBy: {
+            attributes: defaultSearchMetadata.default_group_by_attributes,
+            func: defaultSearchMetadata.default_group_by_function,
+          },
+        },
+      ],
+    ]);
+    expect(findFilteredSearch().props('initialFilterValue')).toEqual([mockFilter]);
   });
 
   it('emits the filter event when the date range is changed and submit button is clicked', async () => {

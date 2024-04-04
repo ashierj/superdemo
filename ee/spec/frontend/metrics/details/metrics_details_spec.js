@@ -364,7 +364,19 @@ describe('MetricsDetails', () => {
       });
 
       describe('on search submit', () => {
+        const updatedMetricData = [
+          {
+            name: 'container_cpu_usage_seconds_total',
+            type: 'Gauge',
+            unit: 'gb',
+            attributes: {
+              beta_kubernetes_io_arch: 'amd64',
+            },
+            values: [[1700118610000, 0.25595267476015443]],
+          },
+        ];
         beforeEach(async () => {
+          observabilityClientMock.fetchMetric.mockResolvedValue(updatedMetricData);
           await setFilters(
             {
               'key.one': [{ operator: '=', value: 'test' }],
@@ -432,6 +444,10 @@ describe('MetricsDetails', () => {
             func: 'sum',
             attributes: ['attr_1', 'attr_2'],
           });
+        });
+
+        it('updates the details chart data', () => {
+          expect(findChart().props('metricData')).toEqual(updatedMetricData);
         });
       });
     });

@@ -133,11 +133,17 @@ export default {
       this.loading = true;
       try {
         this.apiAbortController = new AbortController();
-        this.metricData = await this.observabilityClient.fetchMetric(
+        const metricData = await this.observabilityClient.fetchMetric(
           this.metricId,
           this.metricType,
           { filters: this.filters, abortController: this.apiAbortController },
         );
+        // gl-chart is merging data by default. As I workaround we can
+        // set the data to [] first, as explained in https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2577
+        this.metricData = [];
+        this.$nextTick(() => {
+          this.metricData = metricData;
+        });
       } catch (e) {
         if (axios.isCancel(e)) {
           this.cancel();
