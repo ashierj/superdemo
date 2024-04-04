@@ -2,7 +2,8 @@
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'Jira issues integration', :jira, :orchestrated, :requires_admin, product_group: :import_and_integrate do
+    describe 'Jira issues integration', :jira, :orchestrated, :requires_admin, product_group: :import_and_integrate,
+      feature_flag: { name: 'jira_multiple_project_keys', scope: :project } do
       # rubocop:disable RSpec/InstanceVariable
       before(:context) do
         jira_project_key = Vendor::Jira::JiraAPI.perform(&:create_project)
