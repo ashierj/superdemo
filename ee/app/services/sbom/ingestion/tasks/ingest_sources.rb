@@ -8,10 +8,8 @@ module Sbom
         # so all occurrence maps in the batch will use the same one.
         # This is likely to change in the future, so the interface
         # allows for multiple sources.
-        include Gitlab::Ingestion::BulkInsertableTask
-
         self.model = Sbom::Source
-        self.uses = :id
+        self.uses = %i[id].freeze
         self.unique_by = %i[source_type source].freeze
 
         private
