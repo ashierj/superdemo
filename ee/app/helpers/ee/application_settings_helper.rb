@@ -68,8 +68,6 @@ module EE
         :product_analytics_configurator_connection_string,
         :cube_api_base_url,
         :cube_api_key,
-        :telesign_customer_xid,
-        :telesign_api_key,
         :openai_api_key,
         :security_policy_global_group_approvers_enabled,
         :security_approval_policies_limit,
@@ -80,7 +78,9 @@ module EE
         :zoekt_indexing_enabled,
         :zoekt_indexing_paused,
         :zoekt_search_enabled
-      ]
+      ].tap do |settings|
+        settings.concat(identity_verification_attributes)
+      end
     end
 
     def elasticsearch_objects_options(objects)
@@ -226,6 +226,22 @@ module EE
           unchecked_value: nil
         )
       end
+    end
+
+    private
+
+    def identity_verification_attributes
+      return [] unless ::Gitlab::Saas.feature_available?(:identity_verification)
+
+      %i[
+        arkose_labs_client_secret
+        arkose_labs_client_xid
+        arkose_labs_namespace
+        arkose_labs_private_api_key
+        arkose_labs_public_api_key
+        telesign_api_key
+        telesign_customer_xid
+      ]
     end
   end
 end
