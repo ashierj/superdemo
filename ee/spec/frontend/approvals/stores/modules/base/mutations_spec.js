@@ -19,6 +19,17 @@ describe('EE approvals base module mutations', () => {
     });
   });
 
+  describe(types.SET_RULES_FILTER, () => {
+    it('sets rulesFilter', () => {
+      const filter = ['test'];
+      state.rulesFilter = [];
+
+      mutations[types.SET_RULES_FILTER](state, filter);
+
+      expect(state.rulesFilter).toStrictEqual(filter);
+    });
+  });
+
   describe(types.SET_APPROVAL_SETTINGS, () => {
     it('sets rules', () => {
       const settings = {

@@ -24,11 +24,12 @@ describe('EE Approvals App', () => {
   let slots;
 
   const targetBranchName = 'development';
-  const factory = (approvalRulesDrawer = false) => {
+  const factory = (approvalRulesDrawer = false, propsData = {}) => {
     wrapper = shallowMountExtended(ApprovalRulesApp, {
       slots,
       store: new Vuex.Store(store),
       provide: { glFeatures: { approvalRulesDrawer } },
+      propsData,
       stubs: {
         GlCard,
       },
@@ -225,7 +226,11 @@ describe('EE Approvals App', () => {
       beforeEach(() => factory(true));
 
       it('renders a RuleCreateDrawer drawer component with correct props', () => {
-        expect(findRuleCreateDrawer().props()).toEqual({ isMrEdit: true, isOpen: false });
+        expect(findRuleCreateDrawer().props()).toEqual({
+          isBranchRulesEdit: false,
+          isMrEdit: true,
+          isOpen: false,
+        });
       });
 
       it('opens the drawer when a rule is added', () => {
@@ -281,6 +286,15 @@ describe('EE Approvals App', () => {
           onClick: expect.anything(),
         },
       });
+    });
+  });
+
+  describe('when isBranchRulesEdit is set to `true`', () => {
+    it('does not call fetchRules', async () => {
+      factory(false, { isBranchRulesEdit: true });
+
+      await nextTick();
+      expect(store.modules.approvals.actions.fetchRules).not.toHaveBeenCalled();
     });
   });
 });

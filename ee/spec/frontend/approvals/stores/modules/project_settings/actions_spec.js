@@ -116,6 +116,20 @@ describe('EE approvals project settings module actions', () => {
     });
   });
 
+  describe('setRulesFilter', () => {
+    it('sets rules', () => {
+      const rules = ['test'];
+
+      return testAction(
+        actions.setRulesFilter,
+        rules,
+        {},
+        [{ type: types.SET_RULES_FILTER, payload: rules }],
+        [],
+      );
+    });
+  });
+
   describe('fetchRules', () => {
     it('dispatches request/receive', async () => {
       const data = [TEST_RULE_RESPONSE];

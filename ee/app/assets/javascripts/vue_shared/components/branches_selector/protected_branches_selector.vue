@@ -134,6 +134,10 @@ export default {
       .catch(() => {})
       .finally(() => {
         this.initialLoading = false;
+        if (this.selectedBranch?.id) {
+          // Since the component can have a pre-selected branch we need to make sure onSelect is handled when mounted
+          this.onSelect(this.selectedBranch);
+        }
       });
   },
   methods: {

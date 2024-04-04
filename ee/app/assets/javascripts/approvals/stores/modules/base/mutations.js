@@ -5,6 +5,9 @@ export default {
   [types.SET_LOADING](state, isLoading) {
     state.isLoading = isLoading;
   },
+  [types.SET_RULES_FILTER](state, rules) {
+    state.rulesFilter = rules;
+  },
   [types.SET_APPROVAL_SETTINGS](state, settings) {
     state.hasLoaded = true;
     state.rules = settings.rules;

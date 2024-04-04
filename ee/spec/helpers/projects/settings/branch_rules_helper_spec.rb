@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::Settings::BranchRulesHelper, feature_category: :source_code_management do
+  include Devise::Test::ControllerHelpers
+
   let_it_be(:project) { build_stubbed(:project) }
 
   describe '#branch_rules_data' do
@@ -27,7 +29,11 @@ RSpec.describe Projects::Settings::BranchRulesHelper, feature_category: :source_
         branches_path: project_branches_path(project),
         show_status_checks: 'true',
         show_approvers: 'true',
-        show_code_owners: 'true'
+        show_code_owners: 'true',
+        allow_multi_rule: 'false',
+        can_edit: 'false',
+        project_id: project.id,
+        rules_path: expose_path(api_v4_projects_approval_rules_path(id: project.id))
       })
     end
 

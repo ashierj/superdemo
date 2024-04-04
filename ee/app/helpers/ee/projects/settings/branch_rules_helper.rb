@@ -19,7 +19,11 @@ module EE
             branches_path: project_branches_path(project),
             show_status_checks: show_status_checks.to_s,
             show_approvers: show_approvers.to_s,
-            show_code_owners: show_code_owners.to_s
+            show_code_owners: show_code_owners.to_s,
+            project_id: project.id,
+            rules_path: expose_path(api_v4_projects_approval_rules_path(id: project.id)),
+            can_edit: can?(current_user, :modify_approvers_rules, project).to_s,
+            allow_multi_rule: project.multiple_approval_rules_available?.to_s
           }
         end
       end

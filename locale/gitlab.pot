@@ -8908,9 +8908,6 @@ msgstr ""
 msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
-msgid "BranchRules|Required approvals (%{total})"
-msgstr ""
-
 msgid "BranchRules|Requires CODEOWNERS approval"
 msgstr ""
 
