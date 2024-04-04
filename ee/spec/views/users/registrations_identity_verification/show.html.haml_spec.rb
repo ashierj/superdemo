@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'user/identity_verification/show', feature_category: :onboarding do
-  let_it_be(:template) { 'users/identity_verification/show' }
+RSpec.describe 'user/registrations_identity_verification/show', feature_category: :onboarding do
+  let_it_be(:template) { 'users/registrations_identity_verification/show' }
   let_it_be(:user) { create_default(:user) }
 
   before do

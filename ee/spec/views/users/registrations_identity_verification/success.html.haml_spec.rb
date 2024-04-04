@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'users/identity_verification/success.html.haml', feature_category: :onboarding do
+RSpec.describe 'users/registrations_identity_verification/success.html.haml', feature_category: :onboarding do
   context 'when tracking_label is set' do
     before do
       assign(:tracking_label, '_tracking_label_')

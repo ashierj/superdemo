@@ -41,6 +41,7 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :system_a
       end
     end
 
-    it_behaves_like 'configures Content Security Policy headers correctly', Users::IdentityVerificationController
+    it_behaves_like 'configures Content Security Policy headers correctly',
+      Users::RegistrationsIdentityVerificationController
   end
 end
