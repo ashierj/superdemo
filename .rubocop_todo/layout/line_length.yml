@@ -4806,3 +4806,4 @@ Layout/LineLength:
     - 'tooling/lib/tooling/helm3_client.rb'
     - 'tooling/lib/tooling/kubernetes_client.rb'
     - 'tooling/merge_request_rspec_failure_rake_task.rb'
+    - 'tooling/quality/test_level.rb'

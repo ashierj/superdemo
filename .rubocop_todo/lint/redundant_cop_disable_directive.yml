@@ -287,3 +287,4 @@ Lint/RedundantCopDisableDirective:
     - 'tooling/danger/suggestor.rb'
     - 'tooling/lib/tooling/helm3_client.rb'
     - 'tooling/lib/tooling/kubernetes_client.rb'
+    - 'tooling/quality/test_level.rb'
