@@ -88,6 +88,10 @@ export default {
     onFilter(filters) {
       this.filters = filters;
     },
+    onInput(filters) {
+      // on input event filters might be incomplete
+      this.filters = filters.filter(({ value }) => value.data && value.operator);
+    },
     onDateRangeSelected({ value, startDate, endDate }) {
       this.dateRange = { value, startDate, endDate };
     },
@@ -123,6 +127,7 @@ export default {
       terms-as-tokens
       :show-search-button="false"
       @onFilter="onFilter"
+      @onInput="onInput"
     />
 
     <hr class="gl-my-3" />
