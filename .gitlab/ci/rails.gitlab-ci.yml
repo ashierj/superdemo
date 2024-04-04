@@ -322,6 +322,11 @@ rspec fast_spec_helper:
     # Load fast_spec_helper as well just in case there are no specs available.
     - rspec_section bin/rspec --dry-run spec/fast_spec_helper.rb ${fast_spec_helper_specs}
 
+rspec tooling:
+  extends:
+    - .rspec-base-pg14
+    - .rails:rules:ee-and-foss-tooling
+
 rspec unit clickhouse:
   extends:
     - .rspec-base-pg14-clickhouse23
@@ -404,6 +409,14 @@ rspec:artifact-collector remainder:
     - job: rspec migration pg14  # 15 jobs
       optional: true
     - job: rspec background_migration pg14  # 5 jobs
+      optional: true
+
+rspec:artifact-collector tooling:
+  extends:
+    - .artifact-collector
+    - .rails:rules:artifact-collector-tooling
+  needs:
+    - job: rspec tooling  # 1 job
       optional: true
 
 rspec:artifact-collector unit single-redis:
@@ -492,6 +505,8 @@ rspec:coverage:
     - job: rspec:artifact-collector system single-redis
       optional: true
     - job: rspec:artifact-collector remainder single-redis
+      optional: true
+    - job: rspec:artifact-collector tooling
       optional: true
     # as-if-foss jobs
     - job: rspec:artifact-collector as-if-foss
