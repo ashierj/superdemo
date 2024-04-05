@@ -120,7 +120,7 @@ describe('ee/ml/ai_agents/views/show_agent', () => {
       await nextTick();
       expect(chatMutationHandlerMock).toHaveBeenCalledWith({
         resourceId: MOCK_USER_ID,
-        agentVersionId: `gid://gitlab/Ai::AgentVersion/${agentId}`,
+        agentVersionId: 'gid://gitlab/Ai::AgentVersion/1',
         question: MOCK_USER_MESSAGE.content,
       });
     });

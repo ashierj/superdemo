@@ -107,6 +107,7 @@ export default {
           <gl-form-textarea
             :id="id"
             ref="promptInput"
+            data-testid="agent-prompt"
             :value="value"
             :no-resize="false"
             @input="input"

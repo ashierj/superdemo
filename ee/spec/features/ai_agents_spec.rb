@@ -30,6 +30,7 @@ RSpec.describe 'AI Agents', :js, feature_category: :mlops do
 
     it 'shows the view screen when clicking on an agent name' do
       agent1 = create(:ai_agent, name: "my-agent", project: project)
+      create(:ai_agent_version, agent: agent1, project: project)
       create(:ai_agent, name: "my-agent-2", project: project)
 
       visit project_ml_agents_path(project)
@@ -60,6 +61,7 @@ RSpec.describe 'AI Agents', :js, feature_category: :mlops do
       expect(page).to have_content('Prompt (optional)')
 
       find('input[data-testid="agent-name"]').set('my-agent-name')
+      find('textarea[data-testid="agent-prompt"]').set('my-agent-prompt')
 
       click_on('Create agent')
 
