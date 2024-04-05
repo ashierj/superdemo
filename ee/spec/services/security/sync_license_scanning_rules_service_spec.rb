@@ -199,6 +199,22 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           end
         end
 
+        describe 'violation data' do
+          let(:dependencies) { ('A'..'Z').to_a }
+
+          before do
+            dependencies.each { |name| pipeline_report.add_license(id: nil, name: 'GPL v3').add_dependency(name: name) }
+          end
+
+          it 'saves a trimmed list of violated dependencies' do
+            service.execute
+
+            expect(scan_result_policy_read.violations.last.violation_data)
+              .to eq({ 'violations' => { 'license_scanning' =>
+                { 'GPL v3' => dependencies.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 1) } } })
+          end
+        end
+
         context 'when the approval rules had approvals previously removed and rules are violated' do
           let_it_be(:approval_project_rule) do
             create(:approval_project_rule, :license_scanning, project: project, approvals_required: 2)
@@ -216,43 +232,48 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         end
       end
 
+      # rubocop:disable RSpec/MultipleMemoizedHelpers -- let variables used to improve readability of table syntax
       describe 'possible combinations' do
         using RSpec::Parameterized::TableSyntax
 
-        where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :violated_license, :result) do
-          ref(:case1) | ref(:case2) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case2) | ref(:case3) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | false
-          ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | false
-          ref(:case3) | ref(:case4) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | false
-          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | false
-          ref(:case1) | ref(:case2) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | false
-          ref(:case1) | ref(:case2) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | false
-          ref(:case2) | ref(:case3) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case3) | ref(:case4) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case4) | ref(:case5) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | 'GNU 3' | true
-          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'GNU 3'] | :denied | 'GNU 3' | true
+        let(:violation1) { { 'GNU 3' => %w[A] } }
+        let(:violation2) { { 'GNU 3' => %w[A C] } }
+        let(:violation3) { { 'GNU 3' => %w[C] } }
+        let(:violation4) { { 'Apache License 2' => %w[D] } }
 
-          ref(:case1) | ref(:case2) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
+        where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :violated_licenses, :result) do
+          ref(:case1) | ref(:case2) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | true
+          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | true
+          ref(:case2) | ref(:case3) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | false
+          ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | false
+          ref(:case3) | ref(:case4) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation3) | true
+          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation3) | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | false
+          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | false
+          ref(:case1) | ref(:case2) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | false
+          ref(:case1) | ref(:case2) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | false
+          ref(:case2) | ref(:case3) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | true
+          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | true
+          ref(:case3) | ref(:case4) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation2) | true
+          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation2) | true
+          ref(:case4) | ref(:case5) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation2) | true
+          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation2) | true
+
+          ref(:case1) | ref(:case2) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation1) | true
+          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | ref(:violation1) | true
           ref(:case2) | ref(:case3) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
-          ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'MIT'] | :allowed | nil | false
-          ref(:case3) | ref(:case4) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | 'Apache License 2' | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | 'Apache License 2' | true
+          ref(:case3) | ref(:case4) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation3) | true
+          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | ref(:violation3) | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation4) | true
+          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | ref(:violation4) | true
           ref(:case1) | ref(:case2) | ['detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
           ref(:case1) | ref(:case2) | ['detected'] | [nil, 'MIT License'] | :allowed | nil | false
-          ref(:case2) | ref(:case3) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case3) | ref(:case4) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case4) | ref(:case5) | ['detected'] | ['MIT', 'MIT License'] | :allowed | 'GNU 3' | true
-          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'MIT License'] | :allowed | 'GNU 3' | true
+          ref(:case2) | ref(:case3) | ['detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation1) | true
+          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'MIT License'] | :allowed | ref(:violation1) | true
+          ref(:case3) | ref(:case4) | ['detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation2) | true
+          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'MIT License'] | :allowed | ref(:violation2) | true
+          ref(:case4) | ref(:case5) | ['detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation2) | true
+          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'MIT License'] | :allowed | ref(:violation2) | true
 
           ref(:case2) | ref(:case2) | ['detected'] | [nil, 'GPL v3'] | :allowed | nil | false
         end
@@ -305,8 +326,11 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
             it 'persists violation data' do
               if result
                 expect { execute }.to change { scan_result_policy_read.violations.count }.by(1)
-                expect(scan_result_policy_read.violations.last.violation_data)
-                  .to eq({ 'violations' => { 'license_scanning' => [violated_license] } })
+                last_violation = scan_result_policy_read.violations.last
+
+                expect(last_violation.violation_data)
+                  .to eq({ 'violations' => { 'license_scanning' => violated_licenses } })
+                expect(last_violation).to be_valid
               else
                 expect { execute }.not_to change { scan_result_policy_read.violations.count }
               end
@@ -329,6 +353,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           end
         end
       end
+      # rubocop:enable RSpec/MultipleMemoizedHelpers
     end
   end
 end

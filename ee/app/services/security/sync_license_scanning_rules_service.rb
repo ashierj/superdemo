@@ -81,26 +81,28 @@ module Security
 
       if scan_result_policy_read.match_on_inclusion_license
         all_denied_licenses = licenses_from_policy
-        policy_denied_license_names = (all_denied_licenses & licenses_from_report) - license_ids
+        policy_denied_license_names = all_denied_licenses & licenses_from_report
         violates_license_policy = report.violates_for_licenses?(license_policies, license_ids, license_names)
       else
         # when match_on_inclusion_license is false, only the licenses mentioned in the policy are allowed
         all_denied_licenses = (licenses_from_report - licenses_from_policy).uniq
         comparison_licenses = join_ids_and_names(license_ids, license_names)
-        policy_denied_license_names = (comparison_licenses - licenses_from_policy).uniq - license_ids
+        policy_denied_license_names = (comparison_licenses - licenses_from_policy).uniq
         violates_license_policy = policy_denied_license_names.present?
       end
+
+      denied_licenses_with_dependencies = licenses_with_dependencies_from_report(policy_denied_license_names)
 
       # when there are no license violations, but new dependency with policy licenses is added, require approval
       if scan_result_policy_read.newly_detected?
         new_license_dependency_map = new_dependencies_with_denied_licenses(target_branch_report, all_denied_licenses)
         if new_license_dependency_map.present?
           violates_license_policy = true
-          policy_denied_license_names = new_license_dependency_map.keys.uniq
+          denied_licenses_with_dependencies = new_license_dependency_map
         end
       end
 
-      save_violation_data(violations, rule, policy_denied_license_names) if violates_license_policy
+      save_violation_data(violations, rule, denied_licenses_with_dependencies) if violates_license_policy
       violates_license_policy
     end
 
@@ -143,9 +145,14 @@ module Security
     def new_dependencies_with_denied_licenses(target_branch_report, denied_licenses)
       new_dependency_names_in_report = new_dependency_names(target_branch_report)
 
-      report_licenses_matching_name_or_id(denied_licenses)
-            .to_h { |license| [license.name, license.dependencies.map(&:name)] }
-            .select { |_license, dependency_names| (dependency_names & new_dependency_names_in_report).present? }
+      licenses_with_dependencies_from_report(denied_licenses)
+        .transform_values { |dependency_names| dependency_names & new_dependency_names_in_report }
+        .select { |_license, dependency_names| dependency_names.present? }
+    end
+
+    def licenses_with_dependencies_from_report(licenses)
+      report_licenses_matching_name_or_id(licenses)
+        .to_h { |license| [license.name, license.dependencies.map(&:name)] }
     end
 
     # Licenses from policies may match either spdx or name.
@@ -208,10 +215,16 @@ module Security
       Gitlab::AppJsonLogger.info(message: 'Updating MR approval rule', **default_attributes.merge(attributes))
     end
 
-    def save_violation_data(violations, rule, policy_denied_licenses)
-      return if policy_denied_licenses.blank?
+    def save_violation_data(violations, rule, denied_licenses_with_dependencies)
+      return if denied_licenses_with_dependencies.blank?
 
-      violations.add_violation(rule.scan_result_policy_id, policy_denied_licenses)
+      trimmed_license_list = denied_licenses_with_dependencies
+                                            .first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS)
+                                            .to_h
+                                            .transform_values do |dependencies|
+        Security::ScanResultPolicyViolation.trim_violations(dependencies)
+      end
+      violations.add_violation(rule.scan_result_policy_id, trimmed_license_list)
     end
   end
 end

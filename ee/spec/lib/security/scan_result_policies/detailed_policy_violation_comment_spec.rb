@@ -86,6 +86,12 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
             expect(body).not_to include 'Any merge request'
           end
 
+          it 'includes a bullet point for licenses' do
+            expect(body)
+              .to include('Remove all denied licenses identified by the following merge request approval policies: ' \
+                          'License')
+          end
+
           context 'with "any_merge_request" rule violations' do
             before do
               create(:scan_result_policy_violation, project: project, merge_request: merge_request,
@@ -210,6 +216,17 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
             it { is_expected.to include 'Acquire approvals from eligible approvers' }
             it { is_expected.not_to include 'Unsigned commits' }
           end
+        end
+
+        describe 'license_scanning_violations' do
+          before do
+            build_violation_details(:license_scanning,
+              {
+                violations: { license_scanning: { 'MIT' => %w[A B] } }
+              })
+          end
+
+          it { is_expected.to include 'Out-of-policy licenses', 'MIT', 'Used by A, B' }
         end
       end
     end

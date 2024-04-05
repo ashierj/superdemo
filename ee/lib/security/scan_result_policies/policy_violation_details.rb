@@ -8,6 +8,7 @@ module Security
       Violation = Struct.new(:report_type, :name, :scan_result_policy_id, :data, keyword_init: true)
       ScanFindingViolation = Struct.new(:name, :report_type, :severity, :location, :path, keyword_init: true)
       AnyMergeRequestViolation = Struct.new(:name, :commits, keyword_init: true)
+      LicenseScanningViolation = Struct.new(:license, :dependencies, :url, keyword_init: true)
 
       def initialize(merge_request)
         @merge_request = merge_request
@@ -58,6 +59,25 @@ module Security
         previously_existing_violations(uuids)
       end
       strong_memoize_attr :previous_scan_finding_violations
+
+      def license_scanning_violations
+        merged_by_license = violations.each_with_object({}) do |violation, result|
+          license_map = violation.data&.dig('violations', 'license_scanning')
+          next unless license_map
+
+          license_map.each { |license, dependencies| (result[license] ||= Set.new).merge(dependencies) }
+        end
+
+        license_spdx_map = license_spdx(merged_by_license.keys)
+        merged_by_license.map do |license, dependencies|
+          LicenseScanningViolation.new(
+            license: license,
+            dependencies: dependencies.to_a,
+            url: Gitlab::LicenseScanning::PackageLicenses.url_for(license_spdx_map[license])
+          )
+        end
+      end
+      strong_memoize_attr :license_scanning_violations
 
       def any_merge_request_violations
         violations.select { |violation| violation.report_type == 'any_merge_request' }.flat_map do |violation|
@@ -119,6 +139,12 @@ module Security
 
       def uuids_limit
         Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 1
+      end
+
+      def license_spdx(licenses)
+        SoftwareLicense.spdx.by_name(licenses).select(:name, :spdx_identifier).to_h do |license|
+          [license.name, license.spdx_identifier]
+        end
       end
     end
   end

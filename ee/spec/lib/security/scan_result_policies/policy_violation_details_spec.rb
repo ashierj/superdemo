@@ -62,10 +62,22 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
   describe '#violations' do
     subject(:violations) { details.violations }
 
+    let(:scan_finding_violation_data) do
+      { 'violations' => { 'scan_finding' => { 'newly_detected' => ['uuid'] } } }
+    end
+
+    let(:license_scanning_violation_data) do
+      { 'violations' => { 'license_scanning' => { 'MIT' => ['A'] } } }
+    end
+
+    let(:any_merge_request_violation_data) do
+      { 'violations' => { 'any_merge_request' => { 'commits' => true } } }
+    end
+
     where(:policy, :name, :report_type, :data) do
-      ref(:policy1) | 'Policy 1' | 'scan_finding' | { 'violations' => { 'scan_finding' => {} } }
-      ref(:policy2) | 'Policy 2' | 'license_scanning' | { 'violations' => { 'license_scanning' => {} } }
-      ref(:policy3) | 'Policy 3' | 'any_merge_request' | { 'violations' => { 'any_merge_request' => {} } }
+      ref(:policy1) | 'Policy 1' | 'scan_finding' | ref(:scan_finding_violation_data)
+      ref(:policy2) | 'Policy 2' | 'license_scanning' | ref(:license_scanning_violation_data)
+      ref(:policy3) | 'Policy 3' | 'any_merge_request' | ref(:any_merge_request_violation_data)
     end
 
     with_them do
@@ -318,6 +330,51 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         violation = violations.first
         expect(violation.name).to eq 'Policy 3'
         expect(violation.commits).to match_array(['abcd1234'])
+      end
+    end
+  end
+
+  describe '#license_scanning_violations' do
+    subject(:violations) { details.license_scanning_violations }
+
+    before do
+      build_violation_details(policy1, violations: { license_scanning: { 'MIT License' => %w[A B C] } })
+    end
+
+    it 'returns list of licenses with dependencies' do
+      expect(violations.size).to eq 1
+      violation = violations.first
+      expect(violation.license).to eq 'MIT License'
+      expect(violation.dependencies).to contain_exactly('A', 'B', 'C')
+      expect(violation.url).to be_nil
+    end
+
+    context 'when software license matching the name exists' do
+      before do
+        create(:software_license, name: 'MIT License', spdx_identifier: 'MIT')
+      end
+
+      it 'includes license URL' do
+        violation = violations.first
+        expect(violation.url).to eq 'https://spdx.org/licenses/MIT.html'
+      end
+    end
+
+    context 'when multiple violations exist' do
+      before do
+        build_violation_details(policy2,
+          violations: { license_scanning: { 'MIT License' => %w[C D], 'GPL 3' => %w[A] } }
+        )
+      end
+
+      it 'merges the licenses and dependencies' do
+        expect(violations.size).to eq 2
+        expect(violations).to contain_exactly(
+          Security::ScanResultPolicies::PolicyViolationDetails::LicenseScanningViolation.new(license: 'GPL 3',
+            dependencies: %w[A]),
+          Security::ScanResultPolicies::PolicyViolationDetails::LicenseScanningViolation.new(license: 'MIT License',
+            dependencies: %w[A B C D])
+        )
       end
     end
   end

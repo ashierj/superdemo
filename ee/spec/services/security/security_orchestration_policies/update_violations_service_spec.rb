@@ -15,6 +15,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
 
   subject(:violations) { merge_request.scan_result_policy_violations }
 
+  def last_violation
+    violations.last.reload
+  end
+
   describe '#execute' do
     describe 'attributes' do
       subject(:attrs) { project.scan_result_policy_violations.last.attributes }
@@ -47,8 +51,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
         service.add_violation(policy_b.id, { uuid: { newly_detected: [123] } })
         service.execute
 
-        expect(violations.last.violation_data)
+        expect(last_violation.violation_data)
           .to eq({ "violations" => { "scan_finding" => { "uuid" => { "newly_detected" => [123] } } } })
+        expect(last_violation).to be_valid
       end
     end
 
@@ -69,18 +74,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
         service.add_error(policy_a.id, :scan_removed, missing_scans: ['sast'])
 
         expect { service.execute }
-          .to change { violations.last.violation_data }.to match(
+          .to change { last_violation.violation_data }.to match(
             { 'violations' => { 'scan_finding' => { 'uuids' => { 'newly_detected' => [123] } } },
               'errors' => [{ 'error' => 'SCAN_REMOVED', 'missing_scans' => ['sast'] }] }
           )
+        expect(last_violation).to be_valid
       end
 
       context 'with identical state' do
         it 'does not clear violations' do
           service.add([policy_a.id], [])
 
-          expect { service.execute }.not_to change { violations.last.violation_data }
+          expect { service.execute }.not_to change { last_violation.violation_data }
           expect(violated_policies).to contain_exactly(policy_a)
+          expect(last_violation).to be_valid
         end
       end
     end
