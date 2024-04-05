@@ -76,7 +76,7 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
             wait_for_requests
 
             expect(page).to have_content "Requires 1 approval from #{policy_name}"
-            expect(page).to have_content 'Policy violation(s) detected'
+            expect(page).to have_content 'merge request has policy violations and errors'
             expect(page).to have_content 'Merge blocked'
             expect(page).not_to have_button('Merge', exact: true)
           end
@@ -130,7 +130,7 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
           wait_for_requests
 
           expect(page).to have_content "Requires 1 approval from #{policy_name}"
-          expect(page).to have_content 'Policy violation(s) detected'
+          expect(page).to have_content 'merge request has policy violations and errors'
           expect(page).to have_content 'Merge blocked'
         end
       end

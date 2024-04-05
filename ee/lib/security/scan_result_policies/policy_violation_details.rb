@@ -26,6 +26,19 @@ module Security
       end
       strong_memoize_attr :violations
 
+      # rubocop:disable CodeReuse/ActiveRecord -- Pluck used on hashes
+      def unique_policy_names(report_type = nil)
+        filtered_violations = violations
+
+        if report_type
+          filtered_violations = filtered_violations.select { |violation| violation.report_type == report_type.to_s }
+        end
+
+        # If multiple rules belong to the same policy, the names include numbers - Policy, Policy 2, Policy 3, etc.
+        filtered_violations.pluck(:name).compact.map { |name| name.gsub(/\s\d+\z/, '') }.uniq.sort
+      end
+      # rubocop:enable CodeReuse/ActiveRecord
+
       def new_scan_finding_violations
         new_uuids = violations.each_with_object(Set.new) do |violation, result|
           result.merge(violation.data&.dig('violations', 'scan_finding', 'uuids', 'newly_detected') || [])
@@ -92,13 +105,14 @@ module Security
         return [] if uuids.blank?
 
         Security::ScanResultPolicies::FindingsFinder.new(project, pipeline,
-          { related_pipeline_ids: related_pipeline_ids, uuids: uuids.first(uuids_limit) }).execute.map do |finding|
+          { related_pipeline_ids: related_pipeline_ids, uuids: uuids.first(uuids_limit) }).execute
+        .uniq(&:uuid).map do |finding|
           ScanFindingViolation.new(
             report_type: finding.report_type,
             severity: finding.severity,
-            path: finding.present.blob_url,
-            location: finding.location.with_indifferent_access,
-            name: finding.name
+            path: finding.finding_data.present? ? finding.present.blob_url : nil,
+            location: finding.finding_data.present? ? finding.location : nil,
+            name: finding.finding_data.present? ? finding.name : nil
           )
         end
       end
