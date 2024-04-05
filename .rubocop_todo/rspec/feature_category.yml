@@ -5096,7 +5096,6 @@ RSpec/FeatureCategory:
     - 'spec/serializers/paginated_diff_entity_spec.rb'
     - 'spec/serializers/personal_access_token_entity_spec.rb'
     - 'spec/serializers/personal_access_token_serializer_spec.rb'
-    - 'spec/serializers/pipeline_serializer_spec.rb'
     - 'spec/serializers/project_access_token_entity_spec.rb'
     - 'spec/serializers/project_access_token_serializer_spec.rb'
     - 'spec/serializers/project_mirror_serializer_spec.rb'

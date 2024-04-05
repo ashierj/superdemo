@@ -668,6 +668,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_fb587b1ae7ad() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."head_pipeline_id_convert_to_bigint" := NEW."head_pipeline_id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_ff16c1fd43ea() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -11254,6 +11263,7 @@ CREATE TABLE merge_requests (
     prepared_at timestamp with time zone,
     merged_commit_sha bytea,
     override_requested_changes boolean DEFAULT false NOT NULL,
+    head_pipeline_id_convert_to_bigint bigint,
     CONSTRAINT check_970d272570 CHECK ((lock_version IS NOT NULL))
 );
 
@@ -29584,6 +29594,8 @@ CREATE TRIGGER trigger_b2d852e1e2cb BEFORE INSERT OR UPDATE ON ci_pipelines FOR 
 CREATE TRIGGER trigger_catalog_resource_sync_event_on_project_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((((old.name)::text IS DISTINCT FROM (new.name)::text) OR (old.description IS DISTINCT FROM new.description) OR (old.visibility_level IS DISTINCT FROM new.visibility_level))) EXECUTE FUNCTION insert_catalog_resource_sync_event();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
+
+CREATE TRIGGER trigger_fb587b1ae7ad BEFORE INSERT OR UPDATE ON merge_requests FOR EACH ROW EXECUTE FUNCTION trigger_fb587b1ae7ad();
 
 CREATE TRIGGER trigger_ff16c1fd43ea BEFORE INSERT OR UPDATE ON geo_event_log FOR EACH ROW EXECUTE FUNCTION trigger_ff16c1fd43ea();
 
