@@ -59,7 +59,6 @@ module EE
       def invite?
         # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
         # invited_registration_type? from this logic as we will be fully driving off the db value.
-        return invited_registration_type? if ::Feature.disabled?(:use_registration_type_db_value, user)
 
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite] || invited_registration_type?
       end
@@ -68,10 +67,6 @@ module EE
         # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
         # the params and stored location considerations as we will be fully driving off the db registration_type.
         return false unless enabled?
-
-        if ::Feature.disabled?(:use_registration_type_db_value, user)
-          return trial_from_params? || trial_from_stored_location?
-        end
 
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial] ||
           trial_from_params? || trial_from_stored_location?
@@ -123,7 +118,6 @@ module EE
 
       def subscription?
         return false unless enabled?
-        return subscription_from_stored_location? if ::Feature.disabled?(:use_registration_type_db_value, user)
 
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription] ||
           subscription_from_stored_location?
@@ -150,7 +144,6 @@ module EE
         # identity_verification area and this method is not called there.
         # TODO: We can simplify/remove this method once we cutover to DB only solution as the next step in
         # https://gitlab.com/gitlab-org/gitlab/-/issues/435745.
-        return trial_from_params? if ::Feature.disabled?(:use_registration_type_db_value, user)
 
         trial_from_params? || (user.onboarding_status_initial_registration_type.present? && initial_trial?)
       end
@@ -196,7 +189,6 @@ module EE
       def initial_trial?
         # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
         # return true condition here and simplify this area as we drive off the db values.
-        return true if ::Feature.disabled?(:use_registration_type_db_value, user)
         return true unless user.onboarding_status_initial_registration_type
 
         user.onboarding_status_initial_registration_type == REGISTRATION_TYPE[:trial]
