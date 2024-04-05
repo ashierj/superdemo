@@ -1,0 +1,420 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AI impact Dashboard utils generateDateRanges returns the expected date ranges in a leap year 1`] = `
+Array [
+  Object {
+    "end": 2019-09-30T23:59:59.000Z,
+    "key": "6-months-ago",
+    "label": "Sep",
+    "start": 2019-09-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2019-10-31T23:59:59.000Z,
+    "key": "5-months-ago",
+    "label": "Oct",
+    "start": 2019-10-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2019-11-30T23:59:59.000Z,
+    "key": "4-months-ago",
+    "label": "Nov",
+    "start": 2019-11-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2019-12-31T23:59:59.000Z,
+    "key": "3-months-ago",
+    "label": "Dec",
+    "start": 2019-12-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-01-31T23:59:59.000Z,
+    "key": "2-months-ago",
+    "label": "Jan",
+    "start": 2020-01-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-02-29T23:59:59.000Z,
+    "key": "1-months-ago",
+    "label": "Feb",
+    "start": 2020-02-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateDateRanges returns the expected date ranges on the first of the month 1`] = `
+Array [
+  Object {
+    "end": 2021-01-31T23:59:59.000Z,
+    "key": "6-months-ago",
+    "label": "Jan",
+    "start": 2021-01-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-02-28T23:59:59.000Z,
+    "key": "5-months-ago",
+    "label": "Feb",
+    "start": 2021-02-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-03-31T23:59:59.000Z,
+    "key": "4-months-ago",
+    "label": "Mar",
+    "start": 2021-03-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-04-30T23:59:59.000Z,
+    "key": "3-months-ago",
+    "label": "Apr",
+    "start": 2021-04-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-05-31T23:59:59.000Z,
+    "key": "2-months-ago",
+    "label": "May",
+    "start": 2021-05-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-06-30T23:59:59.000Z,
+    "key": "1-months-ago",
+    "label": "Jun",
+    "start": 2021-06-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateDateRanges returns the expected date ranges on the last of the month 1`] = `
+Array [
+  Object {
+    "end": 2020-09-30T23:59:59.000Z,
+    "key": "6-months-ago",
+    "label": "Sep",
+    "start": 2020-09-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-10-31T23:59:59.000Z,
+    "key": "5-months-ago",
+    "label": "Oct",
+    "start": 2020-10-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-11-30T23:59:59.000Z,
+    "key": "4-months-ago",
+    "label": "Nov",
+    "start": 2020-11-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-12-31T23:59:59.000Z,
+    "key": "3-months-ago",
+    "label": "Dec",
+    "start": 2020-12-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-01-31T23:59:59.000Z,
+    "key": "2-months-ago",
+    "label": "Jan",
+    "start": 2021-01-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-02-28T23:59:59.000Z,
+    "key": "1-months-ago",
+    "label": "Feb",
+    "start": 2021-02-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateSkeletonTableData returns the skeleton based on the table fields 1`] = `
+Array [
+  Object {
+    "invertTrendColor": true,
+    "metric": Object {
+      "identifier": "cycle_time",
+      "value": "Cycle time",
+    },
+  },
+  Object {
+    "invertTrendColor": true,
+    "metric": Object {
+      "identifier": "lead_time",
+      "value": "Lead time",
+    },
+  },
+  Object {
+    "invertTrendColor": undefined,
+    "metric": Object {
+      "identifier": "deployment_frequency",
+      "value": "Deployment frequency",
+    },
+  },
+  Object {
+    "invertTrendColor": true,
+    "metric": Object {
+      "identifier": "change_failure_rate",
+      "value": "Change failure rate",
+    },
+  },
+  Object {
+    "invertTrendColor": true,
+    "metric": Object {
+      "identifier": "vulnerability_critical",
+      "value": "Critical vulnerabilities over time",
+    },
+  },
+  Object {
+    "invertTrendColor": undefined,
+    "metric": Object {
+      "identifier": "code_suggestions_usage_rate",
+      "value": "Code Suggestions usage",
+    },
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateTableColumns returns the expected table fields in a leap year 1`] = `
+Array [
+  Object {
+    "key": "metric",
+    "label": "Metric",
+    "thClass": "gl-w-20p",
+  },
+  Object {
+    "end": 2019-09-30T23:59:59.000Z,
+    "key": "6-months-ago",
+    "label": "Sep",
+    "start": 2019-09-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2019-10-31T23:59:59.000Z,
+    "key": "5-months-ago",
+    "label": "Oct",
+    "start": 2019-10-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2019-11-30T23:59:59.000Z,
+    "key": "4-months-ago",
+    "label": "Nov",
+    "start": 2019-11-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2019-12-31T23:59:59.000Z,
+    "key": "3-months-ago",
+    "label": "Dec",
+    "start": 2019-12-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-01-31T23:59:59.000Z,
+    "key": "2-months-ago",
+    "label": "Jan",
+    "start": 2020-01-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-02-29T23:59:59.000Z,
+    "key": "1-months-ago",
+    "label": "Feb",
+    "start": 2020-02-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "description": "Past 6 Months",
+    "end": 2020-02-29T23:59:59.000Z,
+    "key": "change",
+    "label": "Change (%%)",
+    "start": 2019-09-01T00:00:00.000Z,
+    "thClass": "gl-w-20p",
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateTableColumns returns the expected table fields on the first of the month 1`] = `
+Array [
+  Object {
+    "key": "metric",
+    "label": "Metric",
+    "thClass": "gl-w-20p",
+  },
+  Object {
+    "end": 2021-01-31T23:59:59.000Z,
+    "key": "6-months-ago",
+    "label": "Jan",
+    "start": 2021-01-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-02-28T23:59:59.000Z,
+    "key": "5-months-ago",
+    "label": "Feb",
+    "start": 2021-02-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-03-31T23:59:59.000Z,
+    "key": "4-months-ago",
+    "label": "Mar",
+    "start": 2021-03-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-04-30T23:59:59.000Z,
+    "key": "3-months-ago",
+    "label": "Apr",
+    "start": 2021-04-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-05-31T23:59:59.000Z,
+    "key": "2-months-ago",
+    "label": "May",
+    "start": 2021-05-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-06-30T23:59:59.000Z,
+    "key": "1-months-ago",
+    "label": "Jun",
+    "start": 2021-06-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "description": "Past 6 Months",
+    "end": 2021-06-30T23:59:59.000Z,
+    "key": "change",
+    "label": "Change (%%)",
+    "start": 2021-01-01T00:00:00.000Z,
+    "thClass": "gl-w-20p",
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateTableColumns returns the expected table fields on the last of the month 1`] = `
+Array [
+  Object {
+    "key": "metric",
+    "label": "Metric",
+    "thClass": "gl-w-20p",
+  },
+  Object {
+    "end": 2020-09-30T23:59:59.000Z,
+    "key": "6-months-ago",
+    "label": "Sep",
+    "start": 2020-09-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-10-31T23:59:59.000Z,
+    "key": "5-months-ago",
+    "label": "Oct",
+    "start": 2020-10-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-11-30T23:59:59.000Z,
+    "key": "4-months-ago",
+    "label": "Nov",
+    "start": 2020-11-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2020-12-31T23:59:59.000Z,
+    "key": "3-months-ago",
+    "label": "Dec",
+    "start": 2020-12-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-01-31T23:59:59.000Z,
+    "key": "2-months-ago",
+    "label": "Jan",
+    "start": 2021-01-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "end": 2021-02-28T23:59:59.000Z,
+    "key": "1-months-ago",
+    "label": "Feb",
+    "start": 2021-02-01T00:00:00.000Z,
+    "thClass": "gl-w-10p",
+  },
+  Object {
+    "description": "Past 6 Months",
+    "end": 2021-02-28T23:59:59.000Z,
+    "key": "change",
+    "label": "Change (%%)",
+    "start": 2020-09-01T00:00:00.000Z,
+    "thClass": "gl-w-20p",
+  },
+]
+`;
+
+exports[`AI impact Dashboard utils generateTableRows returns the data formatted as a table row 1`] = `
+Object {
+  "change_failure_rate": Object {
+    "1-months-ago": Object {
+      "value": "4.0%",
+    },
+    "2-months-ago": Object {
+      "value": "7.5%",
+    },
+    "3-months-ago": Object {
+      "value": "0.0%",
+    },
+    "4-months-ago": Object {
+      "value": "0.0%",
+    },
+    "5-months-ago": Object {
+      "value": "5.6%",
+    },
+    "6-months-ago": Object {
+      "value": "8.9%",
+    },
+    "change": Object {
+      "value": -0.550561797752809,
+    },
+  },
+  "deployment_frequency": Object {
+    "1-months-ago": Object {
+      "value": "30.0/d",
+    },
+    "2-months-ago": Object {
+      "value": "-",
+    },
+    "3-months-ago": Object {
+      "value": "30.0/d",
+    },
+    "4-months-ago": Object {
+      "value": "0.0/d",
+    },
+    "5-months-ago": Object {
+      "value": "15.0/d",
+    },
+    "6-months-ago": Object {
+      "value": "10.0/d",
+    },
+    "change": Object {
+      "value": 2,
+    },
+  },
+}
+`;
