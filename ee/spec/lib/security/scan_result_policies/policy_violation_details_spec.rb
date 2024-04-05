@@ -86,18 +86,51 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
     end
   end
 
-  describe 'scan finding violations' do
-    before_all do
-      pipeline_scan = create(:security_scan, :succeeded, build: ci_build, scan_type: 'dependency_scanning')
-      create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner, severity: 'high',
-        uuid: uuid, location: { start_line: 3, file: '.env' })
-      create(:vulnerabilities_finding, :with_secret_detection, project: project, scanner: scanner,
-        uuid: uuid_previous, name: 'AWS API key')
+  describe '#unique_policy_names' do
+    subject(:unique_policy_names) { details.unique_policy_names }
 
+    before do
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: policy1)
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: policy2)
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: policy3)
+      create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+        scan_result_policy_read: policy3, name: 'Other')
+      create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+        scan_result_policy_read: policy3, name: 'Other 2')
+    end
+
+    it { is_expected.to contain_exactly 'Policy', 'Other' }
+
+    context 'when filtered by report_type' do
+      subject(:unique_policy_names) { details.unique_policy_names(:license_scanning) }
+
+      it { is_expected.to contain_exactly 'Policy' }
+    end
+  end
+
+  describe 'scan finding violations' do
+    let_it_be_with_reload(:policy1_violation) do
       build_violation_details(policy1,
         context: { pipeline_ids: [pipeline.id] },
         violations: { scan_finding: { uuids: { newly_detected: [uuid], previously_existing: [uuid_previous] } } }
       )
+    end
+
+    let_it_be_with_reload(:policy1_security_finding) do
+      pipeline_scan = create(:security_scan, :succeeded, build: ci_build, scan_type: 'dependency_scanning')
+      create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner, severity: 'high',
+        uuid: uuid, location: { start_line: 3, file: '.env' })
+    end
+
+    let_it_be_with_reload(:policy1_vulnerability_finding) do
+      create(:vulnerabilities_finding, :with_secret_detection, project: project, scanner: scanner,
+        uuid: uuid_previous, name: 'AWS API key')
+    end
+
+    before_all do
       # Unrelated violation that is expected to be filtered out
       build_violation_details(policy3, violations: { any_merge_request: { commits: true } })
     end
@@ -115,6 +148,33 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         end
 
         it 'returns only related new scan finding violations', :aggregate_failures do
+          expect(new_scan_finding_violations.size).to eq 1
+
+          expect(violation.report_type).to eq 'dependency_scanning'
+          expect(violation.name).to eq 'Test finding'
+          expect(violation.severity).to eq 'high'
+          expect(violation.path).to match(/^http.+\.env#L3$/)
+          expect(violation.location).to match(file: '.env', start_line: 3)
+        end
+      end
+
+      context 'with multiple pipelines detecting the same uuid' do
+        let_it_be(:other_pipeline) do
+          create(:ee_ci_pipeline, :success, :with_dependency_scanning_report, project: project,
+            ref: merge_request.source_branch, sha: merge_request.diff_head_sha)
+        end
+
+        before_all do
+          pipeline_scan = create(:security_scan, :succeeded, build: other_pipeline.builds.first,
+            scan_type: 'dependency_scanning')
+          create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner, severity: 'high',
+            uuid: uuid, location: { start_line: 3, file: '.env' })
+          policy1_violation.update!(violation_data: policy1_violation.violation_data.merge(
+            context: { pipeline_ids: [pipeline.id, other_pipeline.id] }
+          ))
+        end
+
+        it 'returns only one violation', :aggregate_failures do
           expect(new_scan_finding_violations.size).to eq 1
 
           expect(violation.report_type).to eq 'dependency_scanning'
@@ -143,6 +203,22 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
           expect(violation.severity).to eq 'high'
           expect(violation.path).to match(/^http.+\.env#L3$/)
           expect(violation.location).to match(file: '.env', start_line: 3)
+        end
+      end
+
+      context 'when the referenced finding does not contain any finding_data' do
+        before do
+          policy1_security_finding.update!(finding_data: {})
+        end
+
+        it 'returns violations without location, path and name', :aggregate_failures do
+          expect(new_scan_finding_violations.size).to eq 1
+
+          expect(violation.report_type).to eq 'dependency_scanning'
+          expect(violation.severity).to eq 'high'
+          expect(violation.name).to be_nil
+          expect(violation.path).to be_nil
+          expect(violation.location).to be_nil
         end
       end
     end
@@ -188,6 +264,22 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
           expect(violation.severity).to eq 'critical'
           expect(violation.path).to match(/^http.+aws-key\.py#L5$/)
           expect(violation.location).to match(hash_including(file: 'aws-key.py', start_line: 5))
+        end
+      end
+
+      context 'when the referenced finding does not contain any raw_metadata' do
+        before do
+          policy1_vulnerability_finding.update! raw_metadata: {}
+        end
+
+        it 'returns violations without location and path', :aggregate_failures do
+          expect(previous_scan_finding_violations.size).to eq 1
+
+          expect(violation.report_type).to eq 'secret_detection'
+          expect(violation.severity).to eq 'critical'
+          expect(violation.name).to eq 'AWS API key'
+          expect(violation.path).to be_nil
+          expect(violation.location).to eq({})
         end
       end
     end

@@ -6,7 +6,8 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationComment, feature_cat
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:project) { create(:project) }
-  let(:comment) { described_class.new(existing_comment, project) }
+  let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+  let(:comment) { described_class.new(existing_comment, merge_request) }
 
   def build_comment(reports: [], optional_approvals: [])
     build(:note,

@@ -31,13 +31,13 @@ Several factors can lead to a violation or required approval in your merge reque
         Consider including optional reviewers based on the policy rules in the MR widget.
       TEXT
 
-      attr_reader :reports, :optional_approval_reports, :existing_comment, :project
+      attr_reader :reports, :optional_approval_reports, :existing_comment, :merge_request
 
-      def initialize(existing_comment, project)
+      def initialize(existing_comment, merge_request)
         @existing_comment = existing_comment
         @reports = Set.new
         @optional_approval_reports = Set.new
-        @project = project
+        @merge_request = merge_request
 
         return unless existing_comment
 
@@ -66,6 +66,8 @@ Several factors can lead to a violation or required approval in your merge reque
 
       private
 
+      delegate :project, to: :merge_request
+
       def parse_reports
         parse_report_list(VIOLATED_REPORTS_HEADER_PATTERN) { |report_type| add_report_type(report_type, true) }
         parse_report_list(OPTIONAL_APPROVALS_HEADER_PATTERN) { |report_type| add_optional_approval_report(report_type) }
@@ -88,19 +90,26 @@ Several factors can lead to a violation or required approval in your merge reque
         MARKDOWN
       end
 
+      def reports_header
+        optional_approvals_sorted_list = optional_approval_reports.sort.join(',')
+
+        <<~MARKDOWN
+        <!-- violated_reports: #{reports.sort.join(',')} -->
+        #{"<!-- optional_approvals: #{optional_approvals_sorted_list} -->" if optional_approval_reports.any?}
+        MARKDOWN
+      end
+
       def body_message
         return fixed_note_body if reports.empty?
 
-        message, links = if reports == optional_approval_reports
+        message, links = if only_optional_approvals?
                            [MESSAGE_REQUIRES_NO_APPROVAL, '']
                          else
                            [MESSAGE_REQUIRES_APPROVAL, links_approvals_required]
                          end
 
-        optional_approvals_sorted_list = optional_approval_reports.sort.join(',')
         <<~MARKDOWN
-          <!-- violated_reports: #{reports.sort.join(',')} -->
-          #{"<!-- optional_approvals: #{optional_approvals_sorted_list} -->" if optional_approval_reports.any?}
+          #{reports_header}
           :warning: **Policy violation(s) detected**
 
           #{message}#{links}
@@ -108,6 +117,10 @@ Several factors can lead to a violation or required approval in your merge reque
           #{format('Learn more about [Security and Compliance policies](%{url}).',
             url: help_page_url('user/application_security/policies/index'))}
         MARKDOWN
+      end
+
+      def only_optional_approvals?
+        reports == optional_approval_reports
       end
     end
   end
