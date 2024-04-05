@@ -25,7 +25,7 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
           {
             violations: {
               scan_finding: { uuids: { newly_detected: ['123'], previously_existing: ['456'] } },
-              license_scanning: { licenses: ['MIT'] },
+              license_scanning: { 'MIT' => ['A'] },
               any_merge_request: { commits: ['abcd1234'] }
             },
             context: { pipeline_ids: [123], target_pipeline_ids: [456] },

@@ -39,6 +39,7 @@ module Security
         #{newly_introduced_violations}
         #{previously_existing_violations}
         #{any_merge_request_commits}
+        #{license_scanning_violations}
         MARKDOWN
       end
 
@@ -50,12 +51,18 @@ module Security
       def violation_summary
         all_policies = details.unique_policy_names
         any_merge_request_policies = details.unique_policy_names(:any_merge_request)
+        license_scanning_policies = details.unique_policy_names(:license_scanning)
         summary = ["Resolve all violations in the following merge request approval policies" \
                    "#{all_policies.present? ? ": #{all_policies.join(', ')}." : '.'}"]
 
         if any_merge_request_policies.present?
           summary << "Acquire approvals from eligible approvers defined in the following " \
                      "merge request approval policies: #{any_merge_request_policies.join(', ')}."
+        end
+
+        if license_scanning_policies.present?
+          summary << ("Remove all denied licenses identified by the following merge request approval policies: " \
+            "#{license_scanning_policies.join(', ')}")
         end
 
         summary.map { |list_item| "- #{list_item}" }.join("\n")
@@ -82,6 +89,22 @@ module Security
         ---
 
         #{title}:
+
+        #{violations_list(list)}
+        MARKDOWN
+      end
+
+      def license_scanning_violations
+        list = details.license_scanning_violations.map do |violation|
+          dependencies = violation.dependencies
+          "1. #{violation.url.present? ? "[#{violation.license}](#{violation.url})" : violation.license}: " \
+            "Used by #{dependencies.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS).join(', ')}" \
+            "#{dependencies.size > Security::ScanResultPolicyViolation::MAX_VIOLATIONS ? ', …and more' : ''}"
+        end
+        return '' if list.empty?
+
+        <<~MARKDOWN
+        :warning: **Out-of-policy licenses:**
 
         #{violations_list(list)}
         MARKDOWN
