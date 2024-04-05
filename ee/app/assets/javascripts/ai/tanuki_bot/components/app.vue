@@ -227,7 +227,7 @@ export default {
       badge-type="beta"
       :badge-help-page-url="$options.helpPagePath"
       :tool-name="toolName"
-      class="gl-drawer-default"
+      class="duo-chat-container"
       @send-chat-prompt="onSendChatPrompt"
       @chat-hidden="onChatClose"
       @track-feedback="onTrackFeedback"
