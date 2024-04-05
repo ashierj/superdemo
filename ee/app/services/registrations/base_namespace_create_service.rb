@@ -15,6 +15,7 @@ module Registrations
     attr_reader :user, :params, :project, :group
 
     def after_successful_group_creation(group_track_action:)
+      ::Groups::CreateEventWorker.perform_async(group.id, user.id, :created)
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
       ::Onboarding::Progress.onboard(group)
 
@@ -67,10 +68,7 @@ module Registrations
         :name,
         :path,
         :visibility_level
-      ).merge(
-        create_event: true,
-        setup_for_company: user.setup_for_company
-      )
+      ).merge(setup_for_company: user.setup_for_company)
     end
 
     def onboarding_status

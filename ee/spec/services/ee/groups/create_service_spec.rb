@@ -150,34 +150,4 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
       end
     end
   end
-
-  context 'when create_event is true' do
-    let(:extra_params) { { create_event: true } }
-
-    it 'enqueues a create event worker' do
-      expect(Groups::CreateEventWorker).to receive(:perform_async).with(anything, user.id, :created)
-
-      response
-    end
-
-    context 'when user can not create a group' do
-      before do
-        user.update_attribute(:can_create_group, false)
-      end
-
-      it 'does not enqueue a create event worker' do
-        expect(Groups::CreateEventWorker).not_to receive(:perform_async)
-
-        response
-      end
-    end
-  end
-
-  context 'when create_event is NOT true' do
-    it 'does not enqueue a create event worker' do
-      expect(Groups::CreateEventWorker).not_to receive(:perform_async)
-
-      response
-    end
-  end
 end

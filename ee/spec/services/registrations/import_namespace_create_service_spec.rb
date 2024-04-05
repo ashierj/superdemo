@@ -34,8 +34,8 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         end.to change { Group.count }.by(1).and change { ::Onboarding::Progress.count }.by(1)
       end
 
-      it 'passes create_event: true to the Groups::CreateService' do
-        added_params = { create_event: true, setup_for_company: nil }
+      it 'passes setup_for_company to the Groups::CreateService' do
+        added_params = { setup_for_company: nil }
 
         expect(Groups::CreateService).to receive(:new)
                                            .with(user, ActionController::Parameters
@@ -43,6 +43,12 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
                                            .and_call_original
 
         expect(execute).to be_success
+      end
+
+      it 'enqueues a create event worker' do
+        expect(Groups::CreateEventWorker).to receive(:perform_async).with(anything, user.id, :created)
+
+        execute
       end
 
       it 'tracks group creation events' do
@@ -83,6 +89,12 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         expect(execute).to be_error
 
         expect(execute.payload[:project].namespace).to be_present
+      end
+
+      it 'does not enqueue a create event worker' do
+        expect(Groups::CreateEventWorker).not_to receive(:perform_async)
+
+        execute
       end
 
       context 'with trial concerns' do
