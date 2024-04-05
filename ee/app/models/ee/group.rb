@@ -636,8 +636,14 @@ module EE
       )
     end
 
-    def vulnerability_reads
+    def vulnerability_reads(use_traversal_ids: false)
+      return ::Vulnerabilities::Read.by_group(self) if use_traversal_ids
+
       ::Vulnerabilities::Read.where(namespace_id: self_and_descendants.select(:id))
+    end
+
+    def next_traversal_ids
+      traversal_ids.dup.tap { |ids| ids[-1] += 1 }
     end
 
     def vulnerability_scanners

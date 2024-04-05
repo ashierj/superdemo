@@ -42,6 +42,24 @@ module Vulnerabilities
     scope :order_detected_at_asc, -> { reorder(vulnerability_id: :asc) }
     scope :order_detected_at_desc, -> { reorder(vulnerability_id: :desc) }
 
+    scope :by_group, -> (group) { traversal_ids_gteq(group.traversal_ids).traversal_ids_lt(group.next_traversal_ids) }
+    scope :traversal_ids_gteq, -> (traversal_ids) { where(arel_table[:traversal_ids].gteq(traversal_ids)) }
+    scope :traversal_ids_lt, -> (traversal_ids) { where(arel_table[:traversal_ids].lt(traversal_ids)) }
+    scope :unarchived, -> { where(archived: false) }
+    scope :order_traversal_ids_asc, -> do
+      reorder(Gitlab::Pagination::Keyset::Order.build([
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: 'traversal_ids',
+          order_expression: arel_table[:traversal_ids].asc,
+          distinct: false,
+          nullable: :not_nullable
+        ),
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: 'vulnerability_id',
+          order_expression: arel_table[:vulnerability_id].asc
+        )
+      ]))
+    end
     scope :by_projects, -> (values) { where(project_id: values) }
     scope :by_scanner, -> (scanner) { where(scanner: scanner) }
     scope :by_scanner_ids, -> (scanner_ids) { where(scanner_id: scanner_ids) }

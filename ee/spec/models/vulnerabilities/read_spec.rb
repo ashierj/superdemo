@@ -646,6 +646,59 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.by_group' do
+    let_it_be(:group_1) { create(:group) }
+    let_it_be(:group_2) { create(:group) }
+    let_it_be(:group_1_1) { create(:group, parent: group_1) }
+    let_it_be(:project_1) { create(:project, group: group_1) }
+    let_it_be(:project_1_1) { create(:project, group: group_1_1) }
+    let_it_be(:project_2) { create(:project, group: group_2) }
+    let_it_be(:vulnerability_reads_1) { create_list(:vulnerability_read, 3, project: project_1) }
+    let_it_be(:vulnerability_reads_1_1) { create_list(:vulnerability_read, 3, project: project_1_1) }
+    let_it_be(:vulnerability_reads_2) { create_list(:vulnerability_read, 3, project: project_2) }
+
+    subject { described_class.by_group(group_1) }
+
+    it 'returns all records within the group hierarchy' do
+      is_expected.to match_array(vulnerability_reads_1 + vulnerability_reads_1_1)
+    end
+  end
+
+  describe '.unarchived' do
+    let_it_be(:active_project) { create(:project) }
+    let_it_be(:archived_project) { create(:project, :archived) }
+    let_it_be(:archived_vulnerability_read) { create(:vulnerability_read, project: archived_project) }
+    let_it_be(:unarchived_vulnerability_read) { create(:vulnerability_read, project: active_project) }
+
+    subject(:unarchived) { described_class.unarchived }
+
+    it { is_expected.to contain_exactly(unarchived_vulnerability_read) }
+  end
+
+  describe '.order_traversal_ids_asc' do
+    let_it_be(:group_1) { create(:group) }
+    let_it_be(:group_3) { create(:group) }
+    let_it_be(:group_2) { create(:group, parent: group_1) }
+    let_it_be(:project_1) { create(:project, group: group_1) }
+    let_it_be(:project_2) { create(:project, group: group_2) }
+    let_it_be(:project_3) { create(:project, group: group_3) }
+    let_it_be(:vulnerability_read_3_1) { create(:vulnerability_read, project: project_3) }
+    let_it_be(:vulnerability_read_3_2) { create(:vulnerability_read, project: project_3) }
+    let_it_be(:vulnerability_read_2) { create(:vulnerability_read, project: project_2) }
+    let_it_be(:vulnerability_read_1) { create(:vulnerability_read, project: project_1) }
+
+    subject(:order_traversal_ids_asc) { described_class.order_traversal_ids_asc }
+
+    it 'returns the records ordered by traversal_id and then by vulnerability_id' do
+      is_expected.to eq([
+        vulnerability_read_1,
+        vulnerability_read_2,
+        vulnerability_read_3_1,
+        vulnerability_read_3_2
+      ])
+    end
+  end
+
   private
 
   def create_vulnerability(severity: 7, confidence: 7, report_type: 0)
