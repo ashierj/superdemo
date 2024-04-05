@@ -19,6 +19,7 @@ export default {
   directives: {
     autofocusonshow,
   },
+  inject: { stateValueField: { default: 'id' } },
   props: {
     country: {
       type: String,
@@ -138,7 +139,7 @@ export default {
         v-autofocusonshow
         name="state"
         :options="stateOptionsWithDefault"
-        value-field="id"
+        :value-field="stateValueField"
         text-field="name"
         data-testid="state"
         :required="required"
