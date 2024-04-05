@@ -4,7 +4,7 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { renderMarkdown } from '~/notes/utils';
-import { TYPENAME_AI_AGENT, TYPENAME_AI_AGENT_VERSION } from 'ee/graphql_shared/constants';
+import { TYPENAME_AI_AGENT } from 'ee/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
@@ -36,7 +36,7 @@ export default {
   },
   inject: ['projectPath', 'userId'],
   apollo: {
-    latestAgentVersion: {
+    agentWithVersion: {
       query: getLatestAiAgentVersion,
       variables() {
         return this.queryVariables;
@@ -49,7 +49,6 @@ export default {
         Sentry.captureException(error);
       },
     },
-    // https://apollo.vuejs.org/guide-option/subscriptions.html#simple-subscription
     $subscribe: {
       aiCompletionResponse: {
         query: aiResponseSubscription,
@@ -89,7 +88,7 @@ export default {
   },
   computed: {
     isAgentLoading() {
-      return this.$apollo.queries.latestAgentVersion.loading;
+      return this.$apollo.queries.agentWithVersion.loading;
     },
     queryVariables() {
       return {
@@ -97,8 +96,11 @@ export default {
         agentId: convertToGraphQLId(TYPENAME_AI_AGENT, this.$route.params.agentId),
       };
     },
+    latestVersion() {
+      return this.agentWithVersion?.latestVersion;
+    },
     agentVersionGraphQLId() {
-      return convertToGraphQLId(TYPENAME_AI_AGENT_VERSION, this.$route.params.agentId);
+      return this.latestVersion?.id;
     },
   },
   methods: {
@@ -131,16 +133,11 @@ export default {
   <div>
     <gl-loading-icon v-if="isAgentLoading" size="lg" class="gl-my-5" />
 
-    <gl-empty-state
-      v-else-if="latestAgentVersion && Object.keys(latestAgentVersion).length === 0"
-      :title="$options.I18N_DEFAULT_NOT_FOUND_ERROR"
-    />
-
-    <div v-else>
+    <div v-else-if="latestVersion">
       <title-area>
         <template #title>
           <div class="gl-flex-grow-1 gl-display-flex gl-align-items-center">
-            <span>{{ latestAgentVersion.name }}</span>
+            <span>{{ agentWithVersion.name }}</span>
             <gl-experiment-badge />
           </div>
         </template>
@@ -168,5 +165,7 @@ export default {
         @send-chat-prompt="onSendChatPrompt"
       />
     </div>
+
+    <gl-empty-state v-else :title="$options.I18N_DEFAULT_NOT_FOUND_ERROR" />
   </div>
 </template>
