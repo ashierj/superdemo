@@ -682,29 +682,39 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   end
 
   describe '#vulnerability_reads' do
-    subject { group.vulnerability_reads }
+    let_it_be(:root_group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: root_group) }
+    let_it_be(:group_project) { create(:project, namespace: root_group) }
+    let_it_be(:subgroup_project) { create(:project, namespace: subgroup) }
+    let_it_be(:archived_project) { create(:project, :archived, namespace: root_group) }
+    let_it_be(:group_vulnerability_read) { create(:vulnerability_read, project: group_project) }
+    let_it_be(:subgroup_vulnerability_read) { create(:vulnerability_read, project: subgroup_project) }
+    let_it_be(:archived_vulnerability_read) { create(:vulnerability_read, project: archived_project) }
 
-    let(:subgroup) { create(:group, parent: group) }
-    let(:group_project) { create(:project, namespace: group) }
-    let(:subgroup_project) { create(:project, namespace: subgroup) }
-    let(:archived_project) { create(:project, :archived, namespace: group) }
-    let(:deleted_project) { create(:project, pending_delete: true, namespace: group) }
-    let(:group_vulnerability) { create(:vulnerability, :with_findings, project: group_project) }
-    let(:subgroup_vulnerability) { create(:vulnerability, :with_findings, project: subgroup_project) }
-    let(:archived_vulnerability) { create(:vulnerability, :with_findings, project: archived_project) }
-    let(:deleted_vulnerability) { create(:vulnerability, :with_findings, project: deleted_project) }
-    let!(:expected_vulnerabilities) do
-      [
-        group_vulnerability.vulnerability_read,
-        subgroup_vulnerability.vulnerability_read,
-        archived_vulnerability.vulnerability_read,
-        deleted_vulnerability.vulnerability_read
-      ]
+    let(:use_traversal_ids) { false }
+    let(:expected_vulnerability_reads) do
+      [group_vulnerability_read, subgroup_vulnerability_read, archived_vulnerability_read]
     end
+
+    subject { root_group.vulnerability_reads(use_traversal_ids: use_traversal_ids) }
 
     it 'returns vulnerabilities for projects in the group and its subgroups' do
-      is_expected.to match_array(expected_vulnerabilities)
+      is_expected.to match_array(expected_vulnerability_reads)
     end
+
+    context 'when `use_traversal_ids` kwarg is true' do
+      let(:use_traversal_ids) { true }
+
+      it { is_expected.to match_array(expected_vulnerability_reads) }
+    end
+  end
+
+  describe '#next_traversal_ids' do
+    subject { group.next_traversal_ids }
+
+    let(:group) { build(:group, traversal_ids: [1, 2, 3]) }
+
+    it { is_expected.to eq([1, 2, 4]) }
   end
 
   describe '#vulnerability_scanners' do
