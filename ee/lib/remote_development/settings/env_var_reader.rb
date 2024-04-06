@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'oj'
+
 module RemoteDevelopment
   module Settings
     class EnvVarReader
@@ -53,9 +55,38 @@ module RemoteDevelopment
           end
 
           env_var_value_string.to_i
+        elsif setting_type == Hash
+          # NOTE: A Hash type is expected to be represented in an ENV var as a valid JSON string
+          parsed_value = parse_json(env_var_name: env_var_name, value: env_var_value_string)
+
+          unless parsed_value.is_a?(Hash)
+            raise "ENV var '#{env_var_name}' was a JSON array type, but it should be an object type"
+          end
+
+          parsed_value
+        elsif setting_type == Array
+          # NOTE: An Array type is expected to be represented in an ENV var as a valid JSON string
+          parsed_value = parse_json(env_var_name: env_var_name, value: env_var_value_string)
+
+          unless parsed_value.is_a?(Array)
+            raise "ENV var '#{env_var_name}' was a JSON object type, but it should be an array type"
+          end
+
+          parsed_value
         else
           raise "Unsupported Remote Development setting type: #{setting_type}"
         end
+      end
+
+      # @param [String] env_var_name
+      # @param [String] value
+      # @return [Object, Array]
+      # @raise [EncodingError]
+      def self.parse_json(env_var_name:, value:)
+        # noinspection InvalidCallToProtectedPrivateMethod - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+        Oj.load(value, mode: :rails, symbol_keys: true)
+      rescue EncodingError => e
+        raise "ENV var '#{env_var_name}' value was not valid parseable JSON. Parse error was: '#{e.message}'"
       end
     end
   end

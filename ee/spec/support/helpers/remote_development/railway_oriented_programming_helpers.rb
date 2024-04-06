@@ -21,5 +21,9 @@ module RemoteDevelopment
         allow(method).to receive(:call).with(value) { value }
       end
     end
+
+    def stub_method_to_modify_and_return_value(method, expected_value:, returned_value:)
+      allow(method).to receive(:call).with(expected_value) { returned_value }
+    end
   end
 end

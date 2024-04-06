@@ -36,6 +36,7 @@ module RemoteDevelopment
     # Settings errors
     SettingsEnvironmentVariableReadFailed = Class.new(Message)
     SettingsCurrentSettingsReadFailed = Class.new(Message)
+    SettingsVscodeExtensionsGalleryValidationFailed = Class.new(Message)
 
     #---------------------------------------------------------
     # Domain Events - message name should describe the outcome
