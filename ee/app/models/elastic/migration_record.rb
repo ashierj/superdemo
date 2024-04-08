@@ -86,6 +86,15 @@ module Elastic
       halted? || completed?
     end
 
+    # Determines if a migration should be executed based on skip_if proc
+    # Skippable obsolete migrations should always be skipped
+    def skip?
+      return false unless skippable?
+      return true if obsolete?
+
+      skip_migration?
+    end
+
     def started_at
       started_at = load_from_index&.dig('_source', 'started_at')
       return unless started_at
@@ -134,7 +143,9 @@ module Elastic
       completed_migrations = completed_versions
 
       # use exclude to support new migrations which do not exist in the index yet
-      Elastic::DataMigrationService.migrations.find { |migration| completed_migrations.exclude?(migration.version) } # rubocop: disable CodeReuse/ServiceClass
+      Elastic::DataMigrationService # rubocop: disable CodeReuse/ServiceClass
+        .migrations(exclude_skipped: true)
+        .find { |migration| completed_migrations.exclude?(migration.version) }
     end
 
     def to_h(completed:)

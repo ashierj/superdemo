@@ -33,6 +33,14 @@ module Elastic
       max_attempts.present?
     end
 
+    def skip_migration?
+      self.class.skip_migration?
+    end
+
+    def skippable?
+      self.class.skippable?
+    end
+
     def max_attempts
       self.class.get_max_attempts
     end
@@ -84,6 +92,18 @@ module Elastic
 
       def get_max_attempts
         class_attributes[:max_attempts]
+      end
+
+      def skip_if(lambda)
+        class_attributes[:skip_lambda] = lambda
+      end
+
+      def skippable?
+        class_attributes.has_key?(:skip_lambda)
+      end
+
+      def skip_migration?
+        class_attributes[:skip_lambda]&.call || false
       end
     end
   end

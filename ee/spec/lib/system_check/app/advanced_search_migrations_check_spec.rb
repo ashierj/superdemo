@@ -4,7 +4,18 @@ require 'spec_helper'
 RSpec.describe SystemCheck::App::AdvancedSearchMigrationsCheck, feature_category: :global_search do
   subject(:instance) { described_class.new }
 
-  let(:migration_files) { ['ee/elastic/migrate/20220101800000_test_migrate.rb'] }
+  let(:version) { '20220101800000' }
+  let(:file) { 'test_migrate.rb' }
+  let(:migration_files) { ["ee/elastic/migrate/#{version}_#{file}"] }
+  let(:migration) do
+    instance_double(
+      Elastic::MigrationRecord, version: version, name_for_key: 'test_migrate', filename: file, skip?: false
+    )
+  end
+
+  before do
+    allow(Elastic::MigrationRecord).to receive(:new).and_return(migration)
+  end
 
   describe '.skip?' do
     context 'with elasticsearch disabled' do
@@ -87,6 +98,14 @@ RSpec.describe SystemCheck::App::AdvancedSearchMigrationsCheck, feature_category
       end
 
       it { is_expected.to eq 1 }
+
+      context 'when the migration is skipped' do
+        before do
+          allow(migration).to receive(:skip?).and_return true
+        end
+
+        it { is_expected.to eq 0 }
+      end
     end
 
     context 'without pending migrations' do

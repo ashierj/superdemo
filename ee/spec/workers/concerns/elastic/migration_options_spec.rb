@@ -92,4 +92,24 @@ RSpec.describe Elastic::MigrationOptions, feature_category: :global_search do
       expect(subject).to eq(1_000)
     end
   end
+
+  describe '#skip_migration?' do
+    subject { migration_class.new }
+
+    it 'defaults to false' do
+      expect(subject.skippable?).to be_falsey
+      expect(subject.skip_migration?).to be_falsey
+    end
+
+    context 'when skip_if is defined' do
+      [true, false].each do |skip_if_value|
+        it "is #{skip_if_value} if skip_if evaluates to #{skip_if_value}" do
+          migration_class.skip_if -> { skip_if_value }
+
+          expect(subject.skippable?).to be_truthy
+          expect(subject.skip_migration?).to eq(skip_if_value)
+        end
+      end
+    end
+  end
 end

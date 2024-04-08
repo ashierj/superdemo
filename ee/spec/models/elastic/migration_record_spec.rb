@@ -208,6 +208,39 @@ RSpec.describe Elastic::MigrationRecord, :elastic_delete_by_query, feature_categ
     end
   end
 
+  describe '#skip?' do
+    context 'when the migration is not skippable' do
+      before do
+        allow(record).to receive(:skippable?).and_return(false)
+      end
+
+      it 'returns false' do
+        expect(record.skip?).to be_falsey
+      end
+    end
+
+    context 'when the migration is skippable' do
+      before do
+        allow(record).to receive(:skippable?).and_return(true)
+        allow(record).to receive(:obsolete?).and_return(obsolete)
+        allow(record).to receive(:skip_migration?).and_return(skip_migration)
+      end
+
+      where(:obsolete, :skip_migration, :expected) do
+        false | false | false
+        false | true  | true
+        true  | false | true
+        true  | true  | true
+      end
+
+      with_them do
+        it 'returns the expected result' do
+          expect(record.skip?).to eq(expected)
+        end
+      end
+    end
+  end
+
   describe '#completed_at', :freeze_time do
     subject(:completed_at) { record.completed_at }
 
