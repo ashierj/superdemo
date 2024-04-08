@@ -70,8 +70,15 @@ RSpec.describe Gitlab::Checks::Integrations::GitGuardianCheck, feature_category:
         context 'when policies were broken' do
           let(:policy_breaks) do
             [
-              "Filenames policy violated at 'lib/.env' for filename '.env'",
-              "Secrets detection policy violated at 'lib/.env' for username 'jen_barber'"
+              <<~POLICY_BREAK
+              .env: 2 incidents detected:
+
+               >> Filenames: .env
+                  Validity: N/A
+                  Known by GitGuardian: No
+                  Incident URL: N/A
+                  Violation: filename `.env` detected
+              POLICY_BREAK
             ]
           end
 
@@ -89,7 +96,8 @@ RSpec.describe Gitlab::Checks::Integrations::GitGuardianCheck, feature_category:
             end
 
             expect { git_guardian_check.validate! }
-              .to raise_error(::Gitlab::GitAccess::ForbiddenError, policy_breaks_message)
+              .to raise_error(::Gitlab::GitAccess::ForbiddenError,
+                policy_breaks_message + described_class::REMEDIATION_MESSAGE)
           end
 
           context 'when a commit contains a special flag' do
