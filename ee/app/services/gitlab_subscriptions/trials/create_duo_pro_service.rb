@@ -27,7 +27,7 @@ module GitlabSubscriptions
         super.merge(
           {
             product_interaction: 'duo_pro_trial',
-            preferred_language: user.preferred_language,
+            preferred_language: ::Gitlab::I18n.trimmed_language_name(user.preferred_language),
             opt_in: user.onboarding_status_email_opt_in
           }
         )

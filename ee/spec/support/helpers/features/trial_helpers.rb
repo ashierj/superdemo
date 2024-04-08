@@ -108,8 +108,11 @@ module Features
 
       if trial_type == DUO_PRO_TRIAL
         trial_user_params = trial_user_params.merge(
-          { product_interaction: DUO_PRO_TRIAL, preferred_language: user.preferred_language,
-            opt_in: user.onboarding_status_email_opt_in }
+          {
+            product_interaction: DUO_PRO_TRIAL,
+            preferred_language: ::Gitlab::I18n.trimmed_language_name(user.preferred_language),
+            opt_in: user.onboarding_status_email_opt_in
+          }
         )
       end
 
