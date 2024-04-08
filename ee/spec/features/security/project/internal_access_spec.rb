@@ -231,6 +231,7 @@ RSpec.describe '[EE] Internal Project Access', feature_category: :groups_and_pro
       stub_container_registry_config(enabled: true)
       stub_container_registry_info
       project.container_repositories << container_repository
+      allow(ContainerRegistry::GitlabApiClient).to receive(:supports_gitlab_api?).and_return(true)
     end
 
     subject { project_container_registry_index_path(project) }
