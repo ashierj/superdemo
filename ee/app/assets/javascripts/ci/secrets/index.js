@@ -2,12 +2,14 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
-import getGroupSecretsQuery from './graphql/queries/client/get_group_secrets.query.graphql';
-import getProjectSecretsQuery from './graphql/queries/client/get_project_secrets.query.graphql';
+import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { resolvers, cacheConfig } from './graphql/settings';
+import getSecretsQuery from './graphql/queries/client/get_secrets.query.graphql';
+
 import createRouter from './router';
 
-import GroupSecretsApp from './components/group_secrets_app.vue';
-import ProjectSecretsApp from './components/project_secrets_app.vue';
+import SecretsApp from './components/secrets_app.vue';
 import SecretsBreadcrumbs from './components/secrets_breadcrumbs.vue';
 
 import { mockGroupSecretsData, mockProjectSecretsData } from './mock_data';
@@ -15,7 +17,7 @@ import { mockGroupSecretsData, mockProjectSecretsData } from './mock_data';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
+  defaultClient: createDefaultClient(resolvers, { cacheConfig }),
 });
 
 const initSecretsApp = (el, app, props, basePath) => {
@@ -44,19 +46,21 @@ export const initGroupSecretsApp = () => {
   const { groupPath, groupId, basePath } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
-    query: getGroupSecretsQuery,
-    variables: { fullPath: groupPath },
+    query: getSecretsQuery,
+    variables: { fullPath: groupPath, isGroup: true },
     data: {
       group: {
-        id: groupId,
+        id: convertToGraphQLId(TYPENAME_GROUP, groupId),
+        fullPath: groupPath,
         secrets: {
+          count: mockGroupSecretsData.length,
           nodes: mockGroupSecretsData,
         },
       },
     },
   });
 
-  return initSecretsApp(el, GroupSecretsApp, { groupPath, groupId }, basePath);
+  return initSecretsApp(el, SecretsApp, { groupPath, groupId }, basePath);
 };
 
 export const initProjectSecretsApp = () => {
@@ -69,17 +73,19 @@ export const initProjectSecretsApp = () => {
   const { projectPath, projectId, basePath } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
-    query: getProjectSecretsQuery,
-    variables: { fullPath: projectPath },
+    query: getSecretsQuery,
+    variables: { fullPath: projectPath, isProject: true },
     data: {
       project: {
-        id: projectId,
+        id: convertToGraphQLId(TYPENAME_PROJECT, projectId),
+        fullPath: projectPath,
         secrets: {
+          count: mockProjectSecretsData.length,
           nodes: mockProjectSecretsData,
         },
       },
     },
   });
 
-  return initSecretsApp(el, ProjectSecretsApp, { projectPath, projectId }, basePath);
+  return initSecretsApp(el, SecretsApp, { projectPath, projectId }, basePath);
 };

@@ -1,15 +1,19 @@
 <script>
-import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel } from '@gitlab/ui';
+import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel, GlPagination } from '@gitlab/ui';
+import { updateHistory, getParameterByName, setUrlParams } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
+import getSecretsQuery from '../../graphql/queries/client/get_secrets.query.graphql';
 import {
   NEW_ROUTE_NAME,
   DETAILS_ROUTE_NAME,
   EDIT_ROUTE_NAME,
   SCOPED_LABEL_COLOR,
   UNSCOPED_LABEL_COLOR,
+  INITIAL_PAGE,
+  PAGE_SIZE,
 } from '../../constants';
 import SecretActionsCell from './secret_actions_cell.vue';
 
@@ -21,21 +25,67 @@ export default {
     GlTableLite,
     GlSprintf,
     GlLabel,
+    GlPagination,
     TimeAgo,
     UserDate,
     SecretActionsCell,
   },
   props: {
+    isGroup: {
+      type: Boolean,
+      required: true,
+    },
+    fullPath: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      secrets: null,
+      page: INITIAL_PAGE,
+    };
+  },
+  apollo: {
     secrets: {
-      type: Array,
-      required: false,
-      default: () => [],
+      query: getSecretsQuery,
+      variables() {
+        return this.queryVariables;
+      },
+      update(data) {
+        if (this.isGroup) {
+          return data.group?.secrets;
+        }
+        return data.project?.secrets;
+      },
     },
   },
   computed: {
-    secretsCount() {
-      return this.secrets.length;
+    queryVariables() {
+      return {
+        fullPath: this.fullPath,
+        isGroup: this.isGroup,
+        offset: (this.page - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
+      };
     },
+    secretsCount() {
+      return this.secrets?.count || 0;
+    },
+    secretsNodes() {
+      return this.secrets?.nodes || [];
+    },
+    showPagination() {
+      return this.secretsCount > PAGE_SIZE;
+    },
+  },
+  created() {
+    this.updateQueryParamsFromUrl();
+
+    window.addEventListener('popstate', this.updateQueryParamsFromUrl);
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.updateQueryParamsFromUrl);
   },
   methods: {
     getDetailsRoute: (key) => ({ name: DETAILS_ROUTE_NAME, params: { key } }),
@@ -45,6 +95,15 @@ export default {
     },
     getLabelBackgroundColor(label) {
       return this.isScopedLabel(label) ? SCOPED_LABEL_COLOR : UNSCOPED_LABEL_COLOR;
+    },
+    updateQueryParamsFromUrl() {
+      this.page = Number(getParameterByName('page')) || INITIAL_PAGE;
+    },
+    handlePageChange(page) {
+      this.page = page;
+      updateHistory({
+        url: setUrlParams({ page }),
+      });
     },
   },
   fields: [
@@ -63,11 +122,12 @@ export default {
     {
       key: 'actions',
       label: '',
-      tdClass: 'gl-py-3! gl-px-0!',
+      tdClass: 'gl-text-right gl-p-3!',
     },
   ],
   LONG_DATE_FORMAT_WITH_TZ,
   NEW_ROUTE_NAME,
+  PAGE_SIZE,
 };
 </script>
 <template>
@@ -101,7 +161,7 @@ export default {
           </gl-button>
         </div>
       </template>
-      <gl-table-lite :fields="$options.fields" :items="secrets" stacked="md" class="gl-mb-0">
+      <gl-table-lite :fields="$options.fields" :items="secretsNodes" stacked="md" class="gl-mb-0">
         <template #cell(name)="{ item: { key, name, labels } }">
           <router-link
             data-testid="secret-details-link"
@@ -135,5 +195,18 @@ export default {
         </template>
       </gl-table-lite>
     </gl-card>
+    <gl-pagination
+      v-if="showPagination"
+      :value="page"
+      :per-page="$options.PAGE_SIZE"
+      :total-items="secretsCount"
+      :prev-text="__('Prev')"
+      :next-text="__('Next')"
+      :label-next-page="__('Go to next page')"
+      :label-prev-page="__('Go to previous page')"
+      align="center"
+      class="gl-mt-5"
+      @input="handlePageChange"
+    />
   </div>
 </template>

@@ -1,13 +1,31 @@
-import { GlTableLite, GlLabel } from '@gitlab/ui';
+import { GlTableLite, GlLabel, GlPagination } from '@gitlab/ui';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { RouterLinkStub } from '@vue/test-utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME, EDIT_ROUTE_NAME } from 'ee/ci/secrets/constants';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import setWindowLocation from 'helpers/set_window_location_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import {
+  NEW_ROUTE_NAME,
+  DETAILS_ROUTE_NAME,
+  EDIT_ROUTE_NAME,
+  INITIAL_PAGE,
+  PAGE_SIZE,
+  ENTITY_GROUP,
+} from 'ee/ci/secrets/constants';
 import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
 import SecretActionsCell from 'ee/ci/secrets/components/secrets_table/secret_actions_cell.vue';
+import { cacheConfig } from 'ee/ci/secrets/graphql/settings';
+import getSecretsQuery from 'ee/ci/secrets/graphql/queries/client/get_secrets.query.graphql';
 import { mockGroupSecretsData, mockProjectSecretsData } from 'ee/ci/secrets/mock_data';
+
+Vue.use(VueApollo);
 
 describe('SecretsTable component', () => {
   let wrapper;
+  let apolloProvider;
+  let resolverMock;
 
   const findNewSecretButton = () => wrapper.findByTestId('new-secret-button');
   const findSecretsTable = () => wrapper.findComponent(GlTableLite);
@@ -18,27 +36,56 @@ describe('SecretsTable component', () => {
   const findSecretLastAccessed = () => wrapper.findByTestId('secret-last-accessed');
   const findSecretCreatedAt = () => wrapper.findByTestId('secret-created-at');
   const findSecretActionsCell = () => wrapper.findComponent(SecretActionsCell);
+  const findPagination = () => wrapper.findComponent(GlPagination);
 
-  const createComponent = (props) => {
+  const createComponent = async ({
+    entity = 'group',
+    secretsMockData = mockGroupSecretsData,
+  } = {}) => {
+    const mockPaginatedSecretsData = ({ offset, limit }) => ({
+      data: {
+        [entity]: {
+          id: `${entity}Id`,
+          fullPath: `path/to/${entity}`,
+          secrets: {
+            count: secretsMockData.length,
+            nodes: secretsMockData.slice(offset, offset + limit),
+          },
+        },
+      },
+    });
+
+    resolverMock = jest.fn().mockImplementation(mockPaginatedSecretsData);
+
+    apolloProvider = createMockApollo([[getSecretsQuery, resolverMock]], undefined, cacheConfig);
+
     wrapper = mountExtended(SecretsTable, {
       propsData: {
-        ...props,
+        fullPath: `path/to/${entity}`,
+        isGroup: entity === ENTITY_GROUP,
       },
+      apolloProvider,
       stubs: {
         RouterLink: RouterLinkStub,
       },
     });
+
+    await waitForPromises();
   };
 
+  afterEach(() => {
+    apolloProvider = null;
+  });
+
   describe.each`
-    scope        | secretsMockData
+    entity       | secretsMockData
     ${'group'}   | ${mockGroupSecretsData}
     ${'project'} | ${mockProjectSecretsData}
-  `('$scope secrets table', ({ secretsMockData }) => {
+  `('$entity secrets table', ({ entity, secretsMockData }) => {
     const secret = secretsMockData[0];
 
-    beforeEach(() => {
-      createComponent({ secrets: secretsMockData });
+    beforeEach(async () => {
+      await createComponent({ entity, secretsMockData });
     });
 
     it('shows a total count of secrets', () => {
@@ -51,7 +98,7 @@ describe('SecretsTable component', () => {
 
     it('renders a table of secrets', () => {
       expect(findSecretsTable().exists()).toBe(true);
-      expect(findSecretsTableRows().length).toBe(secretsMockData.length);
+      expect(findSecretsTableRows().length).toBe(PAGE_SIZE);
     });
 
     it('shows the secret name as a link to the secret details', () => {
@@ -82,6 +129,77 @@ describe('SecretsTable component', () => {
           name: EDIT_ROUTE_NAME,
           params: { key: secret.key },
         },
+      });
+    });
+  });
+
+  describe('pagination', () => {
+    it.each`
+      secretsCount     | description          | paginationShouldExist
+      ${PAGE_SIZE - 1} | ${'does not render'} | ${false}
+      ${PAGE_SIZE + 1} | ${'renders'}         | ${true}
+    `(
+      '$description when there are $secretsCount secrets',
+      async ({ secretsCount, paginationShouldExist }) => {
+        await createComponent({
+          secretsMockData: mockGroupSecretsData.slice(0, secretsCount),
+        });
+
+        expect(findPagination().exists()).toBe(paginationShouldExist);
+      },
+    );
+
+    it('starts on initial page by default', async () => {
+      await createComponent();
+
+      expect(findPagination().props('value')).toBe(INITIAL_PAGE);
+    });
+
+    it('starts on page from URL when provided', async () => {
+      const page = 2;
+      setWindowLocation(`?page=${page}`);
+      await createComponent();
+
+      expect(findPagination().props('value')).toBe(2);
+      expect(resolverMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          offset: (page - 1) * PAGE_SIZE,
+          limit: PAGE_SIZE,
+        }),
+      );
+    });
+
+    describe('page changes', () => {
+      beforeEach(async () => {
+        jest.spyOn(window.history, 'pushState');
+        await createComponent();
+      });
+
+      it.each`
+        fromPage | toPage
+        ${1}     | ${2}
+        ${2}     | ${1}
+      `('updates when going from page $fromPage to $toPage', async ({ fromPage, toPage }) => {
+        findPagination().vm.$emit('input', fromPage);
+        findPagination().vm.$emit('input', toPage);
+
+        // pushes page change to browser history
+        expect(window.history.pushState).toHaveBeenCalledWith(
+          {},
+          '',
+          `http://test.host/?page=${toPage}`,
+        );
+
+        await waitForPromises();
+
+        // updates secrets data in table and page in pagination
+        expect(findPagination().props('value')).toBe(toPage);
+        expect(resolverMock).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            offset: (toPage - 1) * PAGE_SIZE,
+            limit: PAGE_SIZE,
+          }),
+        );
       });
     });
   });
