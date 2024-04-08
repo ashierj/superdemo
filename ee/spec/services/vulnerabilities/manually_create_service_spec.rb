@@ -11,8 +11,9 @@ RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulner
 
   let(:project) { create(:project) } # cannot use let_it_be here: caching causes problems with permission-related tests
   let(:different_project) { create(:project) }
+  let(:service_object) { described_class.new(project, user, params: params) }
 
-  subject { described_class.new(project, user, params: params).execute }
+  subject(:create_vulnerability) { service_object.execute }
 
   context 'with an authorized user with proper permissions' do
     before do
@@ -254,6 +255,8 @@ RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulner
           end
         end
       end
+
+      it_behaves_like 'reacting to archived and traversal_ids changes'
     end
 
     context 'with invalid parameters' do

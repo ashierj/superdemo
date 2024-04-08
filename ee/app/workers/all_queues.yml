@@ -2271,6 +2271,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: vulnerabilities_update_archived_attribute_of_vulnerability_reads
+  :worker_name: Vulnerabilities::UpdateArchivedAttributeOfVulnerabilityReadsWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :memory
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: vulnerabilities_update_namespace_ids_of_vulnerability_reads
   :worker_name: Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker
   :feature_category: :vulnerability_management
