@@ -179,8 +179,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
             /Health Status: /,
             /Sync Settings: /,
             /Database replication lag: /,
-            /Uploads: /,
-            /Container repositories: /,
             /Last event ID seen from primary: /,
             /Last status report was: /
           ] + self_service_framework_checks

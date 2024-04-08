@@ -24,7 +24,6 @@ module Gitlab
         print_geo_role
         print_node_health_status
 
-        print_container_repositories_status
         print_replicators_status
         print_repositories_checked_status
         print_replicators_verification_status
@@ -38,7 +37,6 @@ module Gitlab
       end
 
       def print_replication_verification_status
-        print_container_repositories_status
         print_replicators_status
         print_replicators_verification_status
       end
@@ -72,10 +70,6 @@ module Gitlab
           if Gitlab::CurrentSettings.repository_checks_enabled && current_node_status.repositories_count.to_i > 0 && \
               !Gitlab::Geo.secondary?
             status.push current_node_status.repositories_checked_in_percentage
-          end
-
-          if ::Geo::ContainerRepositoryRegistry.replication_enabled? && current_node_status.container_repositories_count.to_i > 0
-            status.push current_node_status.container_repositories_synced_in_percentage
           end
         end
       end
@@ -176,18 +170,6 @@ module Gitlab
             succeeded: replicator_class.synced_count,
             total: replicator_class.registry_count,
             percentage: current_node_status.synced_in_percentage_for(replicator_class)
-          )
-        end
-      end
-
-      def print_container_repositories_status
-        if ::Geo::ContainerRepositoryRegistry.replication_enabled?
-          print_counts_row(
-            description: 'Container repositories',
-            failed: current_node_status.container_repositories_failed_count,
-            succeeded: current_node_status.container_repositories_synced_count,
-            total: current_node_status.container_repositories_count,
-            percentage: current_node_status.container_repositories_synced_in_percentage
           )
         end
       end
