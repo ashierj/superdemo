@@ -6,6 +6,7 @@ import { mockTracking } from 'helpers/tracking_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { Mousetrap } from '~/lib/mousetrap';
 import WorkItemRolledupDates from 'ee/work_items/components/work_item_rolledup_dates.vue';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
@@ -475,6 +476,38 @@ describe('WorkItemRolledupDates component', () => {
             ['Something went wrong while updating the epic. Please try again.'],
           ]);
         });
+      });
+    });
+
+    describe('when escape key is pressed', () => {
+      beforeEach(async () => {
+        createComponent({
+          canUpdate: true,
+          dueDate: '2022-12-31',
+          startDate: '2022-12-31',
+        });
+
+        findEditButton().vm.$emit('click');
+        await nextTick();
+
+        findStartDatePicker().vm.$emit('input', new Date('2022-01-01T00:00:00.000Z'));
+      });
+
+      it('widget is closed and dates are updated, when date picker is focused', async () => {
+        findStartDatePicker().trigger('keydown.esc');
+        await nextTick();
+
+        expect(updateWorkItemMutationHandler).toHaveBeenCalled();
+        expect(findStartDatePicker().exists()).toBe(false);
+      });
+
+      it('widget is closed and dates are updated, when date picker is not focused', async () => {
+        findStartDatePicker().trigger('blur');
+        Mousetrap.trigger('esc');
+        await nextTick();
+
+        expect(updateWorkItemMutationHandler).toHaveBeenCalled();
+        expect(findStartDatePicker().exists()).toBe(false);
       });
     });
   });
