@@ -11312,9 +11312,6 @@ msgstr ""
 msgid "Clientside traces sample rate"
 msgstr ""
 
-msgid "Clone"
-msgstr ""
-
 msgid "Clone repository"
 msgstr ""
 
