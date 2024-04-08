@@ -122,8 +122,8 @@ export default {
               :show="false"
             />
           </div>
-          <p v-if="option.subtitle" class="gl-text-gray-400">{{ option.subtitle }}</p>
-          <p>{{ option.description }}</p>
+          <p v-if="option.subtitle" class="gl-text-gray-400 gl-mb-0">{{ option.subtitle }}</p>
+          <p class="gl-mt-5">{{ option.description }}</p>
           <h5>{{ $options.i18n.examples }}</h5>
           <p class="gl-flex-grow-1">{{ option.example }}</p>
           <div>

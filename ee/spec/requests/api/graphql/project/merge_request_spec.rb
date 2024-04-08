@@ -88,60 +88,11 @@ RSpec.describe 'getting merge request information nested in a project', feature_
     end
   end
 
-  describe 'diffLlmSummaries' do
-    let(:mr_fields) { "diffLlmSummaries { nodes { mergeRequestDiffId content } }" }
-
-    context 'when there are MergeRequest::DiffLlmSummary records associated to MR' do
-      let!(:mr_diff_1) { create(:merge_request_diff, merge_request: merge_request) }
-      let!(:mr_diff_2) { create(:merge_request_diff, merge_request: merge_request) }
-      let!(:mr_diff_summary_1) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_1) }
-      let!(:mr_diff_summary_2) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_2) }
-
-      it 'returns the diff summaries' do
-        post_graphql(query, current_user: current_user)
-
-        expect(merge_request_graphql_data).to eq({
-          'diffLlmSummaries' => {
-            'nodes' => [
-              {
-                'mergeRequestDiffId' => mr_diff_2.id.to_s,
-                'content' => mr_diff_summary_2.content
-              },
-              {
-                'mergeRequestDiffId' => mr_diff_1.id.to_s,
-                'content' => mr_diff_summary_1.content
-              }
-            ]
-          }
-        })
-      end
-    end
-
-    context 'when there are no MergeRequest::DiffLlmSummary records associated to MR' do
-      it 'returns empty nodes' do
-        post_graphql(query, current_user: current_user)
-
-        expect(merge_request_graphql_data).to eq({
-          'diffLlmSummaries' => {
-            'nodes' => []
-          }
-        })
-      end
-    end
-  end
-
   describe 'mergeRequestDiffs' do
     let(:mr_fields) do
       <<-GQL
       mergeRequestDiffs {
         nodes {
-          diffLlmSummary {
-            mergeRequestDiffId
-            content
-            user {
-              id
-            }
-          }
           reviewLlmSummaries {
             nodes {
               mergeRequestDiffId
@@ -163,26 +114,17 @@ RSpec.describe 'getting merge request information nested in a project', feature_
     let_it_be(:mr_diff_1) { create(:merge_request_diff, merge_request: merge_request) }
     let_it_be(:mr_diff_2) { create(:merge_request_diff, merge_request: merge_request) }
 
-    context 'when there are diff and review summaries associated to MR diffs' do
-      let_it_be(:mr_diff_summary_1) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_1) }
-      let_it_be(:mr_diff_summary_2) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_2) }
+    context 'when there are review summaries associated to MR diffs' do
       let_it_be(:mr_review_summary_1) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_1) }
       let_it_be(:mr_review_summary_2) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_2) }
 
-      it 'returns the diff and review summaries' do
+      it 'returns the review summaries' do
         post_graphql(query, current_user: current_user)
 
         expect(merge_request_graphql_data).to eq({
           'mergeRequestDiffs' => {
             'nodes' => [
               {
-                'diffLlmSummary' => {
-                  'mergeRequestDiffId' => mr_diff_2.id.to_s,
-                  'content' => mr_diff_summary_2.content,
-                  'user' => {
-                    'id' => mr_diff_summary_2.user.to_gid.to_s
-                  }
-                },
                 'reviewLlmSummaries' => {
                   'nodes' => [
                     {
@@ -199,13 +141,6 @@ RSpec.describe 'getting merge request information nested in a project', feature_
                 }
               },
               {
-                'diffLlmSummary' => {
-                  'mergeRequestDiffId' => mr_diff_1.id.to_s,
-                  'content' => mr_diff_summary_1.content,
-                  'user' => {
-                    'id' => mr_diff_summary_1.user.to_gid.to_s
-                  }
-                },
                 'reviewLlmSummaries' => {
                   'nodes' => [
                     {
@@ -236,7 +171,6 @@ RSpec.describe 'getting merge request information nested in a project', feature_
         expect_graphql_errors_to_be_empty
 
         mr_diff_3 = create(:merge_request_diff, merge_request: merge_request)
-        create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_3)
         create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_3)
 
         expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
@@ -244,7 +178,7 @@ RSpec.describe 'getting merge request information nested in a project', feature_
       end
     end
 
-    context 'when there are no diff and review summaries associated to MR diffs' do
+    context 'when there are no review summaries associated to MR diffs' do
       it 'returns empty nodes' do
         post_graphql(query, current_user: current_user)
 
@@ -252,11 +186,9 @@ RSpec.describe 'getting merge request information nested in a project', feature_
           'mergeRequestDiffs' => {
             'nodes' => [
               {
-                'diffLlmSummary' => nil,
                 'reviewLlmSummaries' => { 'nodes' => [] }
               },
               {
-                'diffLlmSummary' => nil,
                 'reviewLlmSummaries' => { 'nodes' => [] }
               }
             ]

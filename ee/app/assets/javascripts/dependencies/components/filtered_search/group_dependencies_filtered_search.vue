@@ -5,8 +5,10 @@ import { mapActions, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import LicenseToken from './tokens/license_token.vue';
 import ProjectToken from './tokens/project_token.vue';
+import ComponentToken from './tokens/component_token.vue';
 
 export default {
   components: {
@@ -15,6 +17,7 @@ export default {
     GlLink,
     GlSprintf,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['belowGroupLimit'],
   data() {
     return {
@@ -42,6 +45,18 @@ export default {
           token: ProjectToken,
           operators: OPERATORS_IS,
         },
+        ...(this.glFeatures.groupLevelDependenciesFilteringByComponent
+          ? [
+              {
+                type: 'component_ids',
+                title: __('Component'),
+                multiSelect: true,
+                unique: true,
+                token: ComponentToken,
+                operators: OPERATORS_IS,
+              },
+            ]
+          : []),
       ];
     },
   },

@@ -14,6 +14,12 @@ RSpec.describe 'Duo Pro trial lead submission and creation with one eligible nam
   before_all do
     create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro)
   end
+
+  before do
+    # this is currently not compatible with usage_quotas_for_all_editions FF
+    # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148739
+    stub_feature_flags(usage_quotas_for_all_editions: false)
+  end
   # rubocop:enable Gitlab/RSpec/AvoidSetup
 
   context 'when creating lead and applying trial is successful' do

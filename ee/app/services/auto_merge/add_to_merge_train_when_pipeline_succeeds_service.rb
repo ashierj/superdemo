@@ -33,7 +33,7 @@ module AutoMerge
     def available_for?(merge_request)
       super do
         merge_request.project.merge_trains_enabled? &&
-          merge_request.diff_head_pipeline&.active?
+          merge_request.auto_merge_available_when_pipeline_succeeds?
       end
     end
   end

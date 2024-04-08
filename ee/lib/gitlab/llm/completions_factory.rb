@@ -59,11 +59,6 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::Templates::SummarizeSubmittedReview,
           feature_category: :code_review_workflow
         },
-        summarize_merge_request: {
-          service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest,
-          prompt_class: ::Gitlab::Llm::Templates::SummarizeMergeRequest,
-          feature_category: :code_review_workflow
-        },
         summarize_new_merge_request: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeNewMergeRequest,
           prompt_class: ::Gitlab::Llm::Templates::SummarizeNewMergeRequest,

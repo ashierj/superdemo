@@ -4,6 +4,10 @@ module Groups
   class DependenciesController < Groups::ApplicationController
     include GovernUsageGroupTracking
 
+    before_action only: :index do
+      push_frontend_feature_flag(:group_level_dependencies_filtering_by_component, group)
+    end
+
     before_action :authorize_read_dependency_list!
     before_action :validate_project_ids_limit!, only: :index
 

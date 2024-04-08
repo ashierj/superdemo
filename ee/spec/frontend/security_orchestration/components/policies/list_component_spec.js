@@ -3,6 +3,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import * as urlUtils from '~/lib/utils/url_utility';
 import ListComponent from 'ee/security_orchestration/components/policies/list_component.vue';
+import ListComponentScope from 'ee/security_orchestration/components/policies/list_component_scope.vue';
 import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
@@ -104,6 +105,7 @@ describe('List component', () => {
   const findPolicySourceFilter = () => wrapper.findByTestId('policy-source-filter');
   const findPolicyTypeFilter = () => wrapper.findByTestId('policy-type-filter');
   const findPoliciesTable = () => wrapper.findComponent(GlTable);
+  const findListComponentScope = () => wrapper.findComponent(ListComponentScope);
   const findPolicyStatusCells = () => wrapper.findAllByTestId('policy-status-cell');
   const findPolicySourceCells = () => wrapper.findAllByTestId('policy-source-cell');
   const findPolicyTypeCells = () => wrapper.findAllByTestId('policy-type-cell');
@@ -468,6 +470,7 @@ describe('List component', () => {
       await waitForPromises();
 
       expect(findPolicyScopeCells()).toHaveLength(4);
+      expect(findListComponentScope().exists()).toBe(true);
     });
 
     it.each`
@@ -489,6 +492,7 @@ describe('List component', () => {
         await waitForPromises();
 
         expect(findPolicyScopeCells()).toHaveLength(expectedLength);
+        expect(findListComponentScope().exists()).toBe(securityPoliciesPolicyScopeProject);
       },
     );
   });

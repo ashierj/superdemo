@@ -100,37 +100,6 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
     end
   end
 
-  describe '#summarize_llm_enabled?' do
-    let_it_be(:user) { build_stubbed(:user) }
-    let_it_be(:group) { build_stubbed(:group) }
-    let_it_be(:project) { build_stubbed(:project, namespace: group) }
-
-    it 'calls Llm::MergeRequests::SummarizeDiffService enabled? method' do
-      expect(Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).with(group: group)
-
-      summarize_llm_enabled?(project)
-    end
-  end
-
-  describe '#diff_llm_summary' do
-    let(:merge_request) { instance_double('MergeRequest') }
-    let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: 'summary') }
-
-    before do
-      allow(merge_request).to receive(:latest_merge_request_diff).and_return(summary)
-    end
-
-    context 'when merge request has summary' do
-      it { expect(helper.diff_llm_summary(merge_request)).to eq('summary') }
-    end
-
-    context 'when merge request has does not have summary' do
-      let(:summary) { nil }
-
-      it { expect(helper.diff_llm_summary(merge_request)).to eq(nil) }
-    end
-  end
-
   describe '#review_llm_summary_allowed?' do
     let(:user) { build_stubbed(:user) }
     let(:merge_request) { build_stubbed(:merge_request) }
