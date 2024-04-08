@@ -25,7 +25,7 @@ module Security
       private
 
       def validate_access!
-        return if current_user.can?(:modify_security_policy, container)
+        return if current_user.can?(:update_security_orchestration_policy_project, container)
 
         raise Gitlab::Access::AccessDeniedError
       end

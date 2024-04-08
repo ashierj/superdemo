@@ -2604,6 +2604,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     let(:member_role_abilities) { {} }
     let(:allowed_abilities) { [] }
+    let(:disallowed_abilities) { [] }
     let(:current_user) { guest }
     let(:licensed_features) { {} }
 
@@ -2618,11 +2619,11 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     shared_examples 'custom roles abilities' do
-      context 'without custom_roles license enabled' do
+      context 'with custom_roles license disabled' do
         before do
           create_member_role(group_member_guest)
 
-          stub_licensed_features(custom_roles: false)
+          stub_licensed_features(licensed_features.merge(custom_roles: false))
         end
 
         it { is_expected.to be_disallowed(*allowed_abilities) }
@@ -2640,6 +2641,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
             end
 
             it { is_expected.to be_allowed(*allowed_abilities) }
+            it { is_expected.to be_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
@@ -2654,6 +2656,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
             end
 
             it { is_expected.to be_allowed(*allowed_abilities) }
+            it { is_expected.to be_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
@@ -2761,6 +2764,21 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'for a member role with `remove_project` true' do
       let(:member_role_abilities) { { remove_project: true } }
       let(:allowed_abilities) { [:remove_project, :view_edit_page] }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
+    context 'for a member role with `manage_security_policy_link` true' do
+      let(:member_role_abilities) { { manage_security_policy_link: true } }
+      let(:licensed_features) { { security_orchestration_policies: true } }
+      let(:allowed_abilities) do
+        [:read_security_orchestration_policies, :update_security_orchestration_policy_project,
+         :access_security_and_compliance]
+      end
+
+      let(:disallowed_abilities) do
+        [:modify_security_policy]
+      end
 
       it_behaves_like 'custom roles abilities'
     end

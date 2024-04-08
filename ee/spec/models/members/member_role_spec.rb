@@ -407,17 +407,19 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     with_them do
       before do
         stub_member_access_level(object, role => user)
-        stub_licensed_features(security_dashboard: true)
+        stub_licensed_features(security_dashboard: true, security_orchestration_policies: true)
       end
 
       let(:policy) { policy_class.new(user, object) }
 
       it 'gives access from the specified access level' do
         abilities.each do |ability|
+          granted_permission = exceptions[ability[:name].to_sym] || ability[:name]
+
           if ability[:available_from_access_level] > level
-            expect(policy).to be_disallowed(ability[:name])
+            expect(policy).to be_disallowed(granted_permission)
           else
-            expect(policy).to be_allowed(ability[:name])
+            expect(policy).to be_allowed(granted_permission)
           end
         end
       end
@@ -426,6 +428,11 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
 
   describe 'available_from_access_level for abilities' do
     let_it_be(:user) { build_stubbed(:user) }
+    let_it_be(:exceptions) do
+      {
+        manage_security_policy_link: :update_security_orchestration_policy_project
+      }
+    end
 
     context 'for group abilities' do
       let_it_be(:object) { build_stubbed(:group) }
