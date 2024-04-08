@@ -27,8 +27,7 @@ module Types
 
       argument :current_file, ::Types::Ai::CurrentFileInputType,
         required: false,
-        description: 'Information about currently selected text which can be passed for additional context.',
-        alpha: { milestone: '16.6' }
+        description: 'Information about currently selected text which can be passed for additional context.'
     end
   end
 end
