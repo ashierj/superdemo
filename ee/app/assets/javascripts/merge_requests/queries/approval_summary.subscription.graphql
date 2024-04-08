@@ -1,0 +1,23 @@
+subscription approvalSummarySubscription($issuableId: IssuableID!) {
+  mergeRequestApprovalStateUpdated(issuableId: $issuableId) {
+    ... on MergeRequest {
+      id
+      approvalsLeft
+      approvalsRequired
+      approvedBy {
+        nodes {
+          id
+        }
+      }
+      approvalState {
+        rules {
+          id
+          approved
+          approvalsRequired
+          name
+          type
+        }
+      }
+    }
+  }
+}
