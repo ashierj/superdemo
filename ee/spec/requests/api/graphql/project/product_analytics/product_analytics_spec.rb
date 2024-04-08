@@ -5,6 +5,11 @@ require 'spec_helper'
 RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_data_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :with_product_analytics_dashboard, group: group) }
+  let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
+  let_it_be(:purchase) do
+    create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on)
+  end
+
   let_it_be(:user) { create(:user) }
   let_it_be(:settings) { build(:application_setting, product_analytics_enabled: true) }
 
@@ -108,6 +113,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       allow_next_instance_of(Resolvers::ProductAnalytics::StateResolver) do |instance|
         allow(instance).to receive(:initializing?).and_return(false)
       end
+
       project.reload
     end
 
@@ -152,6 +158,21 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       end
 
       expect(result.dig('errors', 0, 'message')).to eq('Error from Cube API: Connection Error')
+    end
+
+    context "when onboarded but there is no active addon subscription" do
+      before do
+        purchase.update!(expires_on: 1.day.ago)
+      end
+
+      it 'returns create_instance if connected to gitlab instance' do
+        expect(result.dig('data', 'project', 'productAnalyticsState')).to eq('CREATE_INSTANCE')
+      end
+
+      it 'returns waiting_for_events if connected to own cluster' do
+        allow(project).to receive(:self_managed_product_analytics_cluster?).and_return(true)
+        expect(result.dig('data', 'project', 'productAnalyticsState')).to eq('WAITING_FOR_EVENTS')
+      end
     end
   end
 end
