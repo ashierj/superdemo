@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import PipelineDetailsHeader from '~/ci/pipeline_details/header/pipeline_details_header.vue';
+import PipelineHeader from '~/ci/pipeline_details/header/pipeline_header.vue';
 import getPipelineDetailsQuery from '~/ci/pipeline_details/header/graphql/queries/get_pipeline_header_data.query.graphql';
 import {
   pipelineHeaderFinishedComputeMinutes,
@@ -13,7 +13,7 @@ import {
 
 Vue.use(VueApollo);
 
-describe('Pipeline details header', () => {
+describe('Pipeline header', () => {
   let wrapper;
 
   const minutesHandler = jest.fn().mockResolvedValue(pipelineHeaderFinishedComputeMinutes);
@@ -42,7 +42,7 @@ describe('Pipeline details header', () => {
   };
 
   const createComponent = (handlers = defaultHandlers, props = defaultProps) => {
-    wrapper = shallowMountExtended(PipelineDetailsHeader, {
+    wrapper = shallowMountExtended(PipelineHeader, {
       provide: {
         ...defaultProvideOptions,
       },
