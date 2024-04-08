@@ -41,13 +41,27 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
     subject(:execute) { described_class.new(pipeline).execute }
 
     context 'when pipeline_findings is empty' do
-      it_behaves_like 'does not update approvals'
+      it_behaves_like 'updates approvals'
     end
 
     context 'when pipeline is not complete' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :running, project: project) }
 
       it_behaves_like 'does not update approvals'
+    end
+
+    context 'when pipeline is in manual state' do
+      let_it_be_with_refind(:pipeline) { create(:ee_ci_pipeline, :manual, project: project) }
+
+      context 'when include_manual_to_pipeline_completion is disabled' do
+        before do
+          stub_feature_flags(include_manual_to_pipeline_completion: false)
+        end
+
+        it_behaves_like 'does not update approvals'
+      end
+
+      it_behaves_like 'updates approvals'
     end
 
     context 'when pipeline source is not one of ci_and_security_orchestration_sources' do
@@ -78,7 +92,8 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
 
       context 'when pipeline is not for diff_head_sha' do
         let_it_be(:pipeline) do
-          create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch)
+          create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch, sha: 'test',
+            source_sha: 'test')
         end
 
         it_behaves_like 'does not update approvals'
@@ -123,7 +138,7 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
         stub_feature_flags(approval_policy_parent_child_pipeline: false)
       end
 
-      it_behaves_like 'does not update approvals'
+      it_behaves_like 'updates approvals'
     end
 
     context 'when pipeline is a child pipeline' do
@@ -144,7 +159,7 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
       end
 
       context 'when both parent and child pipeline does not have security_findings that violate policy' do
-        it_behaves_like 'does not update approvals'
+        it_behaves_like 'updates approvals'
       end
 
       context 'when child_pipeline has security_findings that violate policy' do
