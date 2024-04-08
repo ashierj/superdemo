@@ -372,6 +372,22 @@ describe('PanelsBase', () => {
     });
   });
 
+  describe('when editing with a visualization error', () => {
+    beforeEach(() => {
+      createWrapper({ editing: true, visualization: invalidVisualization }, mountExtended);
+    });
+
+    it('shows the error popover when the dropdown is closed', () => {
+      expect(findPanelErrorPopover().exists()).toBe(true);
+    });
+
+    it('hides the error popover when the dropdown is shown', async () => {
+      await findPanelActionsDropdown().vm.$emit('shown');
+
+      expect(findPanelErrorPopover().exists()).toBe(false);
+    });
+  });
+
   describe('panel title tooltip', () => {
     const mockData = [{ name: 'foo' }];
 
