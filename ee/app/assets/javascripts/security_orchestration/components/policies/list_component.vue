@@ -206,9 +206,7 @@ export default {
       return Boolean(this.selectedPolicy);
     },
     showPolicyScope() {
-      return this.isGroup
-        ? this.glFeatures.securityPoliciesPolicyScope
-        : this.glFeatures.securityPoliciesPolicyScopeProject;
+      return this.isGroup || this.glFeatures.securityPoliciesPolicyScopeProject;
     },
     typeLabel() {
       if (this.isGroup) {
