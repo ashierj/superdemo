@@ -9,7 +9,6 @@ module Gitlab
         :summarize_my_mr_code_review,
         :explain_code,
         :generate_description,
-        :summarize_diff,
         :explain_vulnerability,
         :resolve_vulnerability,
         :generate_commit_message,

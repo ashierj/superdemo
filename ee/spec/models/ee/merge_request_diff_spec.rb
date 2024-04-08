@@ -70,66 +70,6 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
     end
   end
 
-  describe 'prepare_diff_summary' do
-    let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, target_project: project, source_project: project) }
-
-    let(:diff_with_commits) do
-      create(
-        :merge_request_diff,
-        merge_request: merge_request,
-        start_commit_sha: merge_request.target_branch_sha,
-        head_commit_sha: merge_request.source_branch_sha
-      )
-    end
-
-    before do
-      stub_licensed_features(summarize_mr_changes: true)
-    end
-
-    it 'executes Llm::SummarizeMergeRequestService' do
-      expect_next_instance_of(
-        ::Llm::SummarizeMergeRequestService,
-        merge_request.author,
-        merge_request,
-        diff_id: kind_of(Numeric)
-      ) do |svc|
-        expect(svc).to receive(:execute)
-      end
-
-      diff_with_commits
-    end
-
-    context 'when diff is empty' do
-      it 'does not execute Llm::SummarizeMergeRequestService' do
-        expect(Llm::SummarizeMergeRequestService).not_to receive(:new)
-
-        create(:merge_request_diff, merge_request: merge_request, state: :empty)
-      end
-    end
-
-    context 'when summarize_diff_automatically feature flag is off' do
-      before do
-        stub_feature_flags(summarize_diff_automatically: false)
-      end
-
-      it 'does not call Llm::SummarizeMergeRequestService' do
-        expect(::Llm::SummarizeMergeRequestService).not_to receive(:new)
-
-        diff_with_commits
-      end
-    end
-
-    context 'when the diff is not merge_head' do
-      let(:diff_with_commits) { create(:merge_request_diff, :merge_head) }
-
-      it 'does not call Llm::SummarizeMergeRequestService' do
-        expect(::Llm::SummarizeMergeRequestService).not_to receive(:new)
-
-        diff_with_commits
-      end
-    end
-  end
-
   describe '.search' do
     let_it_be(:merge_request_diff1) { create(:merge_request_diff) }
     let_it_be(:merge_request_diff2) { create(:merge_request_diff) }

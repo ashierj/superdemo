@@ -165,44 +165,6 @@ RSpec.describe ::TodosHelper do
 
       it { expect(helper.todo_target_path_anchor(todo)).to eq(nil) }
     end
-
-    describe 'with a review requested todo' do
-      let_it_be(:todo) do
-        create(:todo,
-          :review_requested,
-          user: user,
-          project: project,
-          target: merge_request,
-          author: author)
-      end
-
-      context 'when the summarize LLM feature is disabled' do
-        before do
-          allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(false)
-        end
-
-        it { expect(helper.todo_target_path_anchor(todo)).to eq(nil) }
-      end
-
-      context 'when the summarize LLM feature is enabled' do
-        let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: 'summary') }
-
-        before do
-          allow(merge_request).to receive(:latest_merge_request_diff).and_return(summary)
-          allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(true)
-        end
-
-        context 'without llm summary' do
-          let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: nil) }
-
-          it { expect(helper.todo_target_path_anchor(todo)).to eq(nil) }
-        end
-
-        context 'with llm summary' do
-          it { expect(helper.todo_target_path_anchor(todo)).to eq('diff-summary') }
-        end
-      end
-    end
   end
 
   describe '#todo_action_name' do

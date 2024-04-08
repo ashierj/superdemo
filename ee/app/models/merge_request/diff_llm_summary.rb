@@ -1,4 +1,4 @@
-# rubocop:disable Style/ClassAndModuleChildren
+# rubocop:disable Style/ClassAndModuleChildren -- Will be removed when removing the table
 # frozen_string_literal: true
 
 class MergeRequest::DiffLlmSummary < ApplicationRecord

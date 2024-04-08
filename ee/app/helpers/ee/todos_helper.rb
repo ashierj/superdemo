@@ -19,16 +19,6 @@ module EE
       super || (todo.target.is_a?(Epic) && todo.target.state == 'closed')
     end
 
-    override :todo_target_path_anchor
-    def todo_target_path_anchor(todo)
-      if todo.review_requested? && summarize_llm_enabled?(todo.target.project) &&
-          diff_llm_summary(todo.target).present?
-        return "diff-summary"
-      end
-
-      super
-    end
-
     override :todo_action_name
     def todo_action_name(todo)
       return s_('Todos|have been added as an approver') if todo.action == ::Todo::ADDED_APPROVER

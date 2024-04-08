@@ -477,13 +477,6 @@ module EE
       rebase_commit_sha != newrev
     end
 
-    def diff_llm_summaries
-      ::MergeRequest::DiffLlmSummary
-        .includes(:user, merge_request_diff: [:merge_request])
-        .where(merge_request_diff_id: merge_request_diffs.recent)
-        .order(created_at: :desc)
-    end
-
     def merge_train
       target_project.merge_train_for(target_branch)
     end

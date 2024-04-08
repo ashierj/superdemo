@@ -67,7 +67,6 @@ module Gitlab
 
           ::Feature.enable(:ai_global_switch)
           ::Feature.enable(:ai_duo_chat_switch)
-          ::Feature.enable(:summarize_diff_automatically)
           ::Feature.enable(:summarize_my_code_review)
           ::Feature.enable(:automatically_summarize_mr_review)
           ::Feature.enable(:fill_in_mr_template)
