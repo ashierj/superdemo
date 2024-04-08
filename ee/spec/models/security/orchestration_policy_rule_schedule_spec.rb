@@ -35,7 +35,7 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule, feature_category: :sec
 
     context 'when there are runnable schedules' do
       let!(:policy_rule_schedule) do
-        travel_to(1.day.ago) do
+        travel_to(Date.yesterday) do
           create(:security_orchestration_policy_rule_schedule)
         end
       end
