@@ -133,6 +133,20 @@ This field returns a [connection](#connections). It accepts the
 four standard [pagination arguments](#pagination-arguments):
 `before: String`, `after: String`, `first: Int`, and `last: Int`.
 
+### `Query.auditEventsInstanceStreamingDestinations`
+
+Instance-level external audit event streaming destinations.
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Returns [`InstanceAuditEventStreamingDestinationConnection`](#instanceauditeventstreamingdestinationconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
 ### `Query.boardList`
 
 Find an issue board list.
@@ -11967,6 +11981,29 @@ The edge type for [`InstanceAmazonS3ConfigurationType`](#instanceamazons3configu
 | ---- | ---- | ----------- |
 | <a id="instanceamazons3configurationtypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="instanceamazons3configurationtypeedgenode"></a>`node` | [`InstanceAmazonS3ConfigurationType`](#instanceamazons3configurationtype) | The item at the end of the edge. |
+
+#### `InstanceAuditEventStreamingDestinationConnection`
+
+The connection type for [`InstanceAuditEventStreamingDestination`](#instanceauditeventstreamingdestination).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="instanceauditeventstreamingdestinationconnectionedges"></a>`edges` | [`[InstanceAuditEventStreamingDestinationEdge]`](#instanceauditeventstreamingdestinationedge) | A list of edges. |
+| <a id="instanceauditeventstreamingdestinationconnectionnodes"></a>`nodes` | [`[InstanceAuditEventStreamingDestination]`](#instanceauditeventstreamingdestination) | A list of nodes. |
+| <a id="instanceauditeventstreamingdestinationconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `InstanceAuditEventStreamingDestinationEdge`
+
+The edge type for [`InstanceAuditEventStreamingDestination`](#instanceauditeventstreamingdestination).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="instanceauditeventstreamingdestinationedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="instanceauditeventstreamingdestinationedgenode"></a>`node` | [`InstanceAuditEventStreamingDestination`](#instanceauditeventstreamingdestination) | The item at the end of the edge. |
 
 #### `InstanceExternalAuditEventDestinationConnection`
 
