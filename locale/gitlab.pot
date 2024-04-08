@@ -46008,6 +46008,9 @@ msgstr ""
 msgid "SecurityOrchestration|Overwrite the current CI/CD code with the new file's content?"
 msgstr ""
 
+msgid "SecurityOrchestration|Pipeline execution"
+msgstr ""
+
 msgid "SecurityOrchestration|Please remove duplicated values"
 msgstr ""
 
