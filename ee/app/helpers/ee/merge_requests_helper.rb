@@ -39,21 +39,9 @@ module EE
       super.merge({ target_branch_finder_path: target_branch_finder_path })
     end
 
-    def summarize_llm_enabled?(project)
-      ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor)
-    end
-
     override :review_bar_data
     def review_bar_data(merge_request, user)
       super.merge({ can_summarize: Ability.allowed?(user, :summarize_draft_code_review, merge_request).to_s })
-    end
-
-    def diff_llm_summary(merge_request)
-      merge_request.latest_merge_request_diff&.merge_request_diff_llm_summary
-    end
-
-    def truncated_diff_llm_summary(merge_request)
-      diff_llm_summary(merge_request).content.truncate(250)
     end
 
     def review_llm_summary_allowed?(merge_request, user)

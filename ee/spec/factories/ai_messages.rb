@@ -69,10 +69,6 @@ FactoryBot.define do
       ai_action { :generate_commit_message }
     end
 
-    trait :summarize_merge_request do
-      ai_action { :summarize_merge_request }
-    end
-
     trait :summarize_review do
       ai_action { :summarize_review }
     end
