@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_category: :purchase do
-  let_it_be(:user, reload: true) { create(:user) }
+  let_it_be(:user, reload: true) { create(:user, preferred_language: 'en') }
   let(:step) { described_class::LEAD }
 
   describe '#execute', :saas do
@@ -48,7 +48,7 @@ RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_categor
       gitlab_com_trial: true,
       provider: 'gitlab',
       product_interaction: 'duo_pro_trial',
-      preferred_language: user.preferred_language,
+      preferred_language: 'English',
       opt_in: user.onboarding_status_email_opt_in
     }.merge(extra_lead_params)
   end

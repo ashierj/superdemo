@@ -9,6 +9,20 @@ module Gitlab
         LOG_MESSAGE = 'Starting GitGuardian scan...'
         SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
 
+        REMEDIATION_MESSAGE = <<~MESSAGE
+          How to remediate:
+
+          The violation was detected before the commit was pushed:
+
+          1. Fix the violation in the detected files.
+          2. Commit and try pushing again.
+
+          [To apply with caution] If you want to bypass the secrets check:
+
+          1. Add [skip secret detection] flag to the commit message.
+          2. Commit and try pushing again.
+        MESSAGE
+
         def initialize(integration_check)
           @changes_access = integration_check.changes_access
         end
@@ -56,7 +70,7 @@ module Gitlab
         def format_git_guardian_response(response)
           return unless response.present?
 
-          message = response.join(",\n")
+          message = response.join("\n") << REMEDIATION_MESSAGE
 
           raise ::Gitlab::GitAccess::ForbiddenError, message
         end
