@@ -9,7 +9,6 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
   describe '#settings_data' do
     before do
       allow(helper).to receive(:current_user).and_return(user)
-      instance_variable_set(:@project, project)
       allow(Ability).to receive(:allowed?).and_call_original
     end
 
@@ -49,7 +48,6 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
 
     before do
       allow(helper).to receive(:current_user).and_return(user)
-      instance_variable_set(:@project, project)
     end
 
     it { is_expected.to include(full_path: project.full_path) }
