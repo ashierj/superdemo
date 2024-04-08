@@ -6645,6 +6645,7 @@ CREATE TABLE ci_runner_machines (
     ip_address text,
     config jsonb DEFAULT '{}'::jsonb NOT NULL,
     system_xid text,
+    creation_state smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_1537c1f66f CHECK ((char_length(platform) <= 255)),
     CONSTRAINT check_5253913ae9 CHECK ((char_length(system_xid) <= 64)),
     CONSTRAINT check_6f45a91da7 CHECK ((char_length(version) <= 2048)),
@@ -6730,6 +6731,7 @@ CREATE TABLE ci_runners (
     allowed_plans text[] DEFAULT '{}'::text[] NOT NULL,
     registration_type smallint DEFAULT 0 NOT NULL,
     creator_id bigint,
+    creation_state smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_ce275cee06 CHECK ((char_length(maintainer_note) <= 1024))
 );
 
