@@ -1,3 +1,5 @@
+import initUsageQuotas from '~/usage_quotas';
+import { GROUP_VIEW_TYPE } from '~/usage_quotas/constants';
 import initSeatUsageApp from 'ee/usage_quotas/seats';
 import initCodeSuggestionsUsageApp from 'ee/usage_quotas/code_suggestions';
 import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
@@ -66,6 +68,8 @@ const legacyInitUsageQuotas = () => {
   }
 };
 
-if (!gon.features?.usageQuotasForAllEditions) {
+if (gon.features?.usageQuotasForAllEditions) {
+  initUsageQuotas(GROUP_VIEW_TYPE);
+} else {
   legacyInitUsageQuotas();
 }
