@@ -184,6 +184,13 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
       end
     end
 
+    describe '#policy_name' do
+      it 'trims trailing digit coming from multiple rules belonging to the same policy' do
+        subject.update!(name: 'Policy 1')
+        expect(subject.policy_name).to eq('Policy')
+      end
+    end
+
     describe 'validation' do
       context 'when value is too big' do
         it 'is invalid' do
