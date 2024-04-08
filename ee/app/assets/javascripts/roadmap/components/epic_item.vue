@@ -11,12 +11,15 @@ import CurrentDayIndicator from './current_day_indicator.vue';
 
 import EpicItemDetails from './epic_item_details.vue';
 import EpicItemTimeline from './epic_item_timeline.vue';
+import EpicItemContainer from './epic_item_container.vue';
 
 export default {
+  name: 'EpicItem',
   components: {
     CurrentDayIndicator,
     EpicItemDetails,
     EpicItemTimeline,
+    EpicItemContainer,
   },
   mixins: [CommonMixin, QuartersPresetMixin, MonthsPresetMixin, WeeksPresetMixin],
   props: {
@@ -30,10 +33,6 @@ export default {
     },
     timeframe: {
       type: Array,
-      required: true,
-    },
-    currentGroupId: {
-      type: Number,
       required: true,
     },
     clientWidth: {
@@ -132,7 +131,6 @@ export default {
     >
       <epic-item-details
         :epic="epic"
-        :current-group-id="currentGroupId"
         :timeframe-string="timeframeString(epic)"
         :child-level="childLevel"
         :children-flags="childrenFlags"
@@ -171,7 +169,6 @@ export default {
       v-if="hasChildrenToShow"
       :preset-type="presetType"
       :timeframe="timeframe"
-      :current-group-id="currentGroupId"
       :client-width="clientWidth"
       :children="
         childrenEpics[epic.id] ||

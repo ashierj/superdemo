@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicItemContainer from 'ee/roadmap/components/epic_item_container.vue';
@@ -31,10 +31,9 @@ const createComponent = ({
   childrenFlags = { 1: { itemExpanded: false } },
   hasFiltersApplied = false,
 } = {}) => {
-  return mount(EpicItemContainer, {
+  return shallowMount(EpicItemContainer, {
     store,
     stubs: {
-      EpicItemContainer,
       EpicItem,
     },
     propsData: {

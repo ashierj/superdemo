@@ -12,7 +12,6 @@ import CurrentDayIndicator from './current_day_indicator.vue';
 import EpicItem from './epic_item.vue';
 
 export default {
-  EpicItem,
   epicItemHeight: EPIC_ITEM_HEIGHT,
   components: {
     GlIntersectionObserver,
@@ -21,6 +20,11 @@ export default {
     CurrentDayIndicator,
   },
   mixins: [glFeatureFlagsMixin()],
+  inject: {
+    epicIid: {
+      default: null,
+    },
+  },
   props: {
     presetType: {
       type: String,
@@ -32,10 +36,6 @@ export default {
     },
     timeframe: {
       type: Array,
-      required: true,
-    },
-    currentGroupId: {
-      type: Number,
       required: true,
     },
     hasFiltersApplied: {
@@ -54,7 +54,6 @@ export default {
   computed: {
     ...mapState([
       'bufferSize',
-      'epicIid',
       'childrenEpics',
       'childrenFlags',
       'epicIds',
@@ -184,7 +183,6 @@ export default {
       :preset-type="presetType"
       :epic="epic"
       :timeframe="timeframe"
-      :current-group-id="currentGroupId"
       :client-width="clientWidth"
       :child-level="0"
       :children-epics="childrenEpics"

@@ -42,10 +42,6 @@ export default {
       type: Array,
       required: true,
     },
-    currentGroupId: {
-      type: Number,
-      required: true,
-    },
   },
   data() {
     return {
@@ -154,7 +150,6 @@ export default {
         :preset-type="presetType"
         :timeframe="timeframe"
         :milestones="milestones"
-        :current-group-id="currentGroupId"
         :milestones-expanded="milestonesExpanded"
       />
     </div>

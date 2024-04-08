@@ -1,6 +1,5 @@
 export default () => ({
   // API Calls
-  basePath: '',
   epicsState: '',
   progressTracking: '',
   isProgressTrackingActive: true,
@@ -17,7 +16,6 @@ export default () => ({
   childrenFlags: {},
   visibleEpics: [],
   epicIds: [],
-  currentGroupId: -1,
   fullPath: '',
   timeframe: [],
   presetType: '',
@@ -28,8 +26,6 @@ export default () => ({
   bufferSize: 0,
 
   // UI Flags
-  defaultInnerHeight: 0,
-  isChildEpics: false,
   hasFiltersApplied: false,
   epicsFetchInProgress: false,
   epicsFetchForTimeframeInProgress: false,
@@ -39,6 +35,4 @@ export default () => ({
   milestonesFetchInProgress: false,
   milestonesFetchFailure: false,
   milestonesFetchResultEmpty: false,
-  allowScopedLabels: false,
-  allowSubEpics: false,
 });

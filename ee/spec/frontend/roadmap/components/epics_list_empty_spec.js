@@ -26,7 +26,7 @@ const mockTimeframeWeeks = getTimeframeForRangeType({
   initialDate: mockTimeframeInitialDate,
 });
 
-describe('ee/roadmap/components/epics_list_empty.vue', () => {
+describe('EpicsListEmpty', () => {
   let wrapper;
 
   const createWrapper = ({
@@ -43,15 +43,15 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
           presetType,
           timeframeStart,
           timeframeEnd,
-          emptyStateIllustrationPath: mockSvgPath,
           hasFiltersApplied,
-          isChildEpics,
         },
         provide: {
           newEpicPath: TEST_NEW_EPIC_PATH,
           listEpicsPath: TEST_EPICS_PATH,
           epicsDocsPath: TEST_HOST,
           canCreateEpic,
+          emptyStateIllustrationPath: mockSvgPath,
+          isChildEpics,
         },
       }),
     );

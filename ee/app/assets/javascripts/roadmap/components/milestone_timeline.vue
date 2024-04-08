@@ -20,10 +20,6 @@ export default {
       type: Array,
       required: true,
     },
-    currentGroupId: {
-      type: Number,
-      required: true,
-    },
     milestonesExpanded: {
       type: Boolean,
       required: true,
@@ -48,7 +44,6 @@ export default {
           :milestone="milestone"
           :timeframe="timeframe"
           :timeframe-item="timeframeItem"
-          :current-group-id="currentGroupId"
         />
       </template>
     </span>

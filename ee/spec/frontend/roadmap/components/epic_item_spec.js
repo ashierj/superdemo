@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 
 import { delay } from 'lodash';
 
@@ -44,12 +44,8 @@ const createComponent = ({
   childrenFlags = { [mockEpic.id]: { itemExpanded: false } },
   hasFiltersApplied = false,
 }) => {
-  return mount(EpicItemComponent, {
+  return shallowMount(EpicItemComponent, {
     store,
-    stubs: {
-      'epic-item-container': EpicItemContainer,
-      'epic-item': EpicItemComponent,
-    },
     propsData: {
       presetType,
       epic,
@@ -162,16 +158,12 @@ describe('EpicItemComponent', () => {
       expect(wrapper.find('.epics-list-item').exists()).toBe(true);
     });
 
-    it('renders Epic item details element with class `epic-details-cell`', () => {
-      expect(wrapper.find('.epic-details-cell').exists()).toBe(true);
-    });
-
     it('renders Epic timeline element with class `epic-timeline-cell`', () => {
       expect(wrapper.find('.epic-timeline-cell').exists()).toBe(true);
     });
 
-    it('does not render Epic item container element with class `epic-list-item-container` if epic is not expanded', () => {
-      expect(wrapper.find('.epic-list-item-container').exists()).toBe(false);
+    it('does not render Epic item container if epic is not expanded', () => {
+      expect(wrapper.findComponent(EpicItemContainer).exists()).toBe(false);
     });
 
     it('renders Epic item container element with class `epic-list-item-container` if epic has children and is expanded', () => {
@@ -184,7 +176,7 @@ describe('EpicItemComponent', () => {
           50: { itemExpanded: false },
         },
       });
-      expect(wrapper.find('.epic-list-item-container').exists()).toBe(true);
+      expect(wrapper.findComponent(EpicItemContainer).exists()).toBe(true);
     });
 
     it('renders current day indicator element', () => {

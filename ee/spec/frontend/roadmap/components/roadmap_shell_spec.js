@@ -30,10 +30,9 @@ describe('RoadmapShell', () => {
   let store;
   let wrapper;
 
-  const storeFactory = ({ defaultInnerHeight = 0 }) => {
+  const storeFactory = () => {
     store = createStore();
     store.dispatch('setInitialData', {
-      defaultInnerHeight,
       childrenFlags: { 1: { itemExpanded: false } },
       timeframe: mockTimeframeMonths,
       presetType,

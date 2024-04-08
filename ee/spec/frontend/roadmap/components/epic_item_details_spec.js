@@ -1,8 +1,7 @@
 import { nextTick } from 'vue';
 import { GlButton, GlLabel } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { updateHistory } from '~/lib/utils/url_utility';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
 import eventHub from 'ee/roadmap/event_hub';
 import createStore from 'ee/roadmap/store';
@@ -23,22 +22,35 @@ describe('EpicItemDetails', () => {
     store = createStore();
   });
 
-  const createWrapper = (props = {}) => {
-    wrapper = extendedWrapper(
-      shallowMount(EpicItemDetails, {
-        store,
-        propsData: {
-          epic: mockFormattedEpic,
-          currentGroupId: mockGroupId,
-          timeframeString: 'Jul 10, 2017 – Jun 2, 2018',
-          childLevel: 0,
-          childrenFlags: { [mockFormattedEpic.id]: { itemExpanded: false } },
-          hasFiltersApplied: false,
-          isChildrenEmpty: false,
-          ...props,
-        },
-      }),
-    );
+  const createWrapper = ({
+    currentGroupId = mockGroupId,
+    epic = mockFormattedEpic,
+    childLevel = 0,
+    allowSubEpics = true,
+    allowScopedLabels = false,
+    childrenFlags = {
+      [mockFormattedEpic.id]: { itemExpanded: false },
+    },
+    hasFiltersApplied = false,
+    isChildrenEmpty = false,
+  } = {}) => {
+    wrapper = shallowMountExtended(EpicItemDetails, {
+      store,
+      propsData: {
+        epic,
+        currentGroupId,
+        timeframeString: 'Jul 10, 2017 – Jun 2, 2018',
+        childLevel,
+        childrenFlags,
+        hasFiltersApplied,
+        isChildrenEmpty,
+      },
+      provide: {
+        allowSubEpics,
+        allowScopedLabels,
+        currentGroupId,
+      },
+    });
   };
 
   const getTitle = () => wrapper.findByTestId('epic-title');
@@ -101,7 +113,7 @@ describe('EpicItemDetails', () => {
 
     describe('when the epic group ID is the same as the current group ID', () => {
       it('is hidden', () => {
-        createWrapper({ currentGroupId: mockGroupId });
+        createWrapper();
         expect(getGroupName().exists()).toBe(false);
       });
     });
@@ -264,8 +276,7 @@ describe('EpicItemDetails', () => {
           });
 
           it('does not render if the user license does not support child epics', () => {
-            store.state.allowSubEpics = false;
-            createWrapper({ epic });
+            createWrapper({ epic, allowSubEpics: false });
             expect(getChildEpicsCount().exists()).toBe(false);
           });
 
@@ -310,19 +321,16 @@ describe('EpicItemDetails', () => {
     const mockRegularLabel = mockLabels[0];
     const mockScopedLabel = mockLabels[1];
 
-    beforeEach(() => {
-      createWrapper();
-    });
-
     it('do not display by default', () => {
+      createWrapper();
       expect(findLabelsContainer().exists()).toBe(false);
     });
 
     it('display labels with correct props when isShowingLabels setting is set to true', async () => {
+      createWrapper({ allowScopedLabels: true });
       expect(findLabelsContainer().exists()).toBe(false);
 
       store.dispatch('toggleLabels');
-      store.state.allowScopedLabels = true;
 
       await nextTick();
 
@@ -350,6 +358,8 @@ describe('EpicItemDetails', () => {
     `(
       '$assertionName scoped labels when allowScopedLabels is $allowScopedLabels',
       async ({ allowScopedLabels, scopedLabel }) => {
+        createWrapper({ allowScopedLabels });
+
         store.dispatch('toggleLabels');
         store.state.allowScopedLabels = allowScopedLabels;
 
@@ -361,6 +371,7 @@ describe('EpicItemDetails', () => {
 
     describe('click on label', () => {
       beforeEach(() => {
+        createWrapper();
         store.dispatch('toggleLabels');
         jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
       });
