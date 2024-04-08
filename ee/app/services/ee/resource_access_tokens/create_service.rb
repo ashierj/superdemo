@@ -19,8 +19,8 @@ module EE
       end
 
       def success_message(token)
-        if resource_type == 'project'
-          "Created project access token with token_id: #{token.id} with scopes: #{token.scopes} and #{resource.member(token.user).human_access} access level."
+        if resource_type.in?(%w[project group])
+          "Created #{resource_type} access token with token_id: #{token.id} with scopes: #{token.scopes} and #{resource.member(token.user).human_access} access level."
         else
           "Created #{resource_type} token with token_id: #{token.id} with scopes: #{token.scopes}."
         end

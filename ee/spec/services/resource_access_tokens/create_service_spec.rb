@@ -75,108 +75,115 @@ RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_ac
       it_behaves_like 'token creation succeeds'
     end
 
-    context 'project access token audit events' do
-      let(:group) { create(:group) }
-      let!(:destination) { create(:external_audit_event_destination, group: group) }
-      let(:resource) { create(:project, group: group) }
+    context 'resource access token audit events' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
 
-      context 'when project access token is successfully created' do
-        before do
-          resource.add_maintainer(user)
-        end
+      %i[project group].each do |resource_type|
+        context "for #{resource_type} access token" do
+          let_it_be(:resource) { resource_type == :project ? create(:project, group: group) : group }
 
-        it_behaves_like 'audit event details'
-
-        it 'logs project access token details', :aggregate_failures do
-          response = service_execute
-
-          audit_event = AuditEvent.where(author_id: user.id).last
-          access_token = response.payload[:access_token]
-          custom_message = <<~MESSAGE.squish
-            Created project access token with token_id: #{access_token.id} with scopes: #{access_token.scopes} and Maintainer access level.
-          MESSAGE
-
-          expect(audit_event.details).to include(
-            custom_message: custom_message,
-            target_id: access_token.id,
-            target_type: access_token.class.name,
-            target_details: access_token.user.name
-          )
-        end
-
-        it_behaves_like 'sends correct event type in audit event stream' do
-          let_it_be(:event_type) { "project_access_token_created" }
-        end
-      end
-
-      context 'when project access token is unsuccessfully created' do
-        context 'with inadequate permissions' do
-          before do
-            resource.add_developer(user)
-          end
-
-          it_behaves_like 'audit event details'
-
-          it 'logs the permission error message' do
-            service_execute
-
-            audit_event = AuditEvent.where(author_id: user.id).last
-            custom_message = <<~MESSAGE.squish
-              Attempted to create project access token but failed with message:
-              User does not have permission to create project access token
-            MESSAGE
-
-            expect(audit_event.details).to include(
-              custom_message: custom_message,
-              target_id: nil,
-              target_type: nil,
-              target_details: nil
-            )
-          end
-
-          it_behaves_like 'sends correct event type in audit event stream' do
-            let_it_be(:event_type) { "project_access_token_creation_failed" }
-          end
-        end
-
-        context "when access provisioning fails" do
-          let_it_be(:user) { create(:user) }
-
-          let(:unpersisted_member) { build(:project_member, source: resource, user: user) }
-
-          before do
-            allow_next_instance_of(ResourceAccessTokens::CreateService) do |service|
-              allow(service).to receive(:create_user).and_return(user)
-              allow(service).to receive(:create_membership).and_return(unpersisted_member)
+          context "when #{resource_type} access token is successfully created" do
+            before_all do
+              resource_type == :project ? resource.add_maintainer(user) : resource.add_owner(user)
             end
 
-            allow(unpersisted_member).to receive_message_chain(:errors, :full_messages, :to_sentence)
-              .and_return('error message')
+            it_behaves_like 'audit event details'
 
-            resource.add_maintainer(user)
+            it 'logs the access token details', :aggregate_failures do
+              response = service_execute
+
+              audit_event = AuditEvent.where(author_id: user.id).last
+              access_token = response.payload[:access_token]
+              custom_message = <<~MESSAGE.squish
+              Created #{resource_type} access token with token_id: #{access_token.id} with scopes: #{access_token.scopes} and Maintainer access level.
+              MESSAGE
+
+              expect(audit_event.details).to include(
+                custom_message: custom_message,
+                target_id: access_token.id,
+                target_type: access_token.class.name,
+                target_details: access_token.user.name
+              )
+            end
+
+            it_behaves_like 'sends correct event type in audit event stream' do
+              let_it_be(:event_type) { "#{resource_type}_access_token_created" }
+            end
           end
 
-          it_behaves_like 'audit event details'
+          context "when #{resource_type} access token is unsuccessfully created" do
+            context 'with inadequate permissions' do
+              before_all do
+                resource.add_developer(user)
+              end
 
-          it 'logs the provisioning error message' do
-            service_execute
+              it_behaves_like 'audit event details'
 
-            audit_event = AuditEvent.where(author_id: user.id).last
-            custom_message = <<~MESSAGE.squish
-              Attempted to create project access token but failed with message:
-              Could not provision maintainer access to the access token. ERROR: error message
-            MESSAGE
+              it 'logs the permission error message' do
+                service_execute
 
-            expect(audit_event.details).to include(
-              custom_message: custom_message,
-              target_id: nil,
-              target_type: nil,
-              target_details: nil
-            )
-          end
+                audit_event = AuditEvent.where(author_id: user.id).last
+                custom_message = <<~MESSAGE.squish
+                Attempted to create #{resource_type} access token but failed with message:
+                User does not have permission to create #{resource_type} access token
+                MESSAGE
 
-          it_behaves_like 'sends correct event type in audit event stream' do
-            let_it_be(:event_type) { "project_access_token_creation_failed" }
+                expect(audit_event.details).to include(
+                  custom_message: custom_message,
+                  target_id: nil,
+                  target_type: nil,
+                  target_details: nil
+                )
+              end
+
+              it_behaves_like 'sends correct event type in audit event stream' do
+                let_it_be(:event_type) { "#{resource_type}_access_token_creation_failed" }
+              end
+            end
+
+            context 'when access provisioning fails' do
+              let_it_be(:user) { create(:user) }
+
+              let_it_be(:unpersisted_member) { build("#{resource_type}_member", source: resource, user: user) }
+
+              before do
+                allow_next_instance_of(ResourceAccessTokens::CreateService) do |service|
+                  allow(service).to receive(:create_user).and_return(user)
+                  allow(service).to receive(:create_membership).and_return(unpersisted_member)
+                end
+
+                allow(unpersisted_member).to receive_message_chain(:errors, :full_messages, :to_sentence)
+                                  .and_return('error message')
+              end
+
+              before_all do
+                resource_type == :project ? resource.add_maintainer(user) : resource.add_owner(user)
+              end
+
+              it_behaves_like 'audit event details'
+
+              it 'logs the provisioning error message' do
+                service_execute
+
+                audit_event = AuditEvent.where(author_id: user.id).last
+                custom_message = <<~MESSAGE.squish
+                Attempted to create #{resource_type} access token but failed with message:
+                Could not provision maintainer access to the access token. ERROR: error message
+                MESSAGE
+
+                expect(audit_event.details).to include(
+                  custom_message: custom_message,
+                  target_id: nil,
+                  target_type: nil,
+                  target_details: nil
+                )
+              end
+
+              it_behaves_like 'sends correct event type in audit event stream' do
+                let_it_be(:event_type) { "#{resource_type}_access_token_creation_failed" }
+              end
+            end
           end
         end
       end
