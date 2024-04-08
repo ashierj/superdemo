@@ -25,6 +25,12 @@ module Security
 
       applicable_rules = approval_rules.applicable_to_branch(merge_request.target_branch)
 
+      violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request, report_type)
+      applicable_rules.each do |rule|
+        violations.add_error(rule.scan_result_policy_id, :artifacts_missing)
+      end
+      violations.execute
+
       generate_policy_bot_comment(merge_request, applicable_rules, report_type)
     end
 

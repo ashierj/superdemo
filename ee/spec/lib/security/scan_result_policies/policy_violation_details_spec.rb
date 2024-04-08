@@ -90,7 +90,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         expect(violations.size).to eq 1
 
         violation = violations.first
-        expect(violation.name).to eq name
+        expect(violation.name).to eq 'Policy'
         expect(violation.report_type).to eq report_type
         expect(violation.data).to eq data
         expect(violation.scan_result_policy_id).to eq policy.id
@@ -316,7 +316,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         expect(violations.size).to eq 1
 
         violation = violations.first
-        expect(violation.name).to eq 'Policy 3'
+        expect(violation.name).to eq 'Policy'
         expect(violation.commits).to eq true
       end
     end
@@ -328,7 +328,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         expect(violations.size).to eq 1
 
         violation = violations.first
-        expect(violation.name).to eq 'Policy 3'
+        expect(violation.name).to eq 'Policy'
         expect(violation.commits).to match_array(['abcd1234'])
       end
     end
@@ -374,6 +374,49 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
             dependencies: %w[A]),
           Security::ScanResultPolicies::PolicyViolationDetails::LicenseScanningViolation.new(license: 'MIT License',
             dependencies: %w[A B C D])
+        )
+      end
+    end
+  end
+
+  describe '#errors' do
+    subject(:errors) { details.errors }
+
+    let_it_be_with_reload(:violation1) do
+      build_violation_details(policy1,
+        'errors' => [
+          { 'error' => Security::ScanResultPolicyViolation::ERRORS[:scan_removed], missing_scans: ['secret_detection'] }
+        ]
+      )
+    end
+
+    before_all do
+      build_violation_details(policy2,
+        'errors' => [
+          { 'error' => Security::ScanResultPolicyViolation::ERRORS[:artifacts_missing] }
+        ]
+      )
+    end
+
+    it 'returns associated error messages' do
+      expect(errors.size).to eq 2
+      expect(errors.pluck(:message)).to contain_exactly(
+        'There is a mismatch between the scans of the source and target pipelines. ' \
+        'The following scans are missing: Secret detection',
+        'Pipeline configuration error: Artifacts required by policy Policy could not be found (License scanning).'
+      )
+    end
+
+    context 'with unsupported error' do
+      before do
+        violation1.update!(violation_data: { 'errors' => [{ 'error' => 'unsupported' }] })
+      end
+
+      it 'results in unknown error message' do
+        expect(errors.size).to eq 2
+        expect(errors.pluck(:message)).to contain_exactly(
+          'Unknown error: unsupported',
+          'Pipeline configuration error: Artifacts required by policy Policy could not be found (License scanning).'
         )
       end
     end

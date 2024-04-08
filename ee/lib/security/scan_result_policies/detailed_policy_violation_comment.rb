@@ -15,7 +15,7 @@ module Security
         return super if ::Feature.disabled?(:save_policy_violation_data, project)
         return fixed_note_body if reports.empty?
 
-        <<~MARKDOWN
+        summary = <<~MARKDOWN
         #{reports_header}
         #{merge_request.author.name}, this merge request has policy violations and errors.
         #{only_optional_approvals? ? '' : "**To unblock this merge request, fix these items:**\n"}
@@ -36,11 +36,16 @@ module Security
             ''
           end
         }
-        #{newly_introduced_violations}
-        #{previously_existing_violations}
-        #{any_merge_request_commits}
-        #{license_scanning_violations}
         MARKDOWN
+
+        [
+          summary,
+          newly_introduced_violations,
+          previously_existing_violations,
+          any_merge_request_commits,
+          license_scanning_violations,
+          error_messages
+        ].compact.join("\n")
       end
 
       def details
@@ -52,6 +57,7 @@ module Security
         all_policies = details.unique_policy_names
         any_merge_request_policies = details.unique_policy_names(:any_merge_request)
         license_scanning_policies = details.unique_policy_names(:license_scanning)
+        errors = details.errors
         summary = ["Resolve all violations in the following merge request approval policies" \
                    "#{all_policies.present? ? ": #{all_policies.join(', ')}." : '.'}"]
 
@@ -60,10 +66,12 @@ module Security
                      "merge request approval policies: #{any_merge_request_policies.join(', ')}."
         end
 
-        if license_scanning_policies.present?
+        if license_scanning_policies.present? && license_scanning_violations.present?
           summary << ("Remove all denied licenses identified by the following merge request approval policies: " \
             "#{license_scanning_policies.join(', ')}")
         end
+
+        summary << 'Resolve the errors and re-run the pipeline.' if errors.present?
 
         summary.map { |list_item| "- #{list_item}" }.join("\n")
       end
@@ -82,10 +90,9 @@ module Security
         list = violations.map do |violation|
           build_scan_finding_violation_line(violation)
         end
-        return '' if list.empty?
+        return if list.empty?
 
         <<~MARKDOWN
-
         ---
 
         #{title}:
@@ -101,7 +108,7 @@ module Security
             "Used by #{dependencies.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS).join(', ')}" \
             "#{dependencies.size > Security::ScanResultPolicyViolation::MAX_VIOLATIONS ? ', …and more' : ''}"
         end
-        return '' if list.empty?
+        return if list.empty?
 
         <<~MARKDOWN
         :warning: **Out-of-policy licenses:**
@@ -131,10 +138,9 @@ module Security
 
           violation.commits.map { |commit| "1. `#{commit}`" }
         end.compact
-        return '' if list.empty?
+        return if list.empty?
 
         <<~MARKDOWN
-
         ---
 
         Unsigned commits:
@@ -145,9 +151,20 @@ module Security
       strong_memoize_attr :any_merge_request_commits
 
       def violations_list(list)
+        [
+          list.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS).join("\n"),
+          list.size > Security::ScanResultPolicyViolation::MAX_VIOLATIONS ? "\n#{MORE_VIOLATIONS_DETECTED}" : nil
+        ].compact.join("\n")
+      end
+
+      def error_messages
+        errors = details.errors
+        return if errors.blank?
+
         <<~MARKDOWN
-        #{list.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS).join("\n")}
-        #{list.size > Security::ScanResultPolicyViolation::MAX_VIOLATIONS ? "\n#{MORE_VIOLATIONS_DETECTED}" : ''}
+        :exclamation: **Errors**
+
+        #{errors.map { |error| "- #{error.message}" }.join("\n")}
         MARKDOWN
       end
     end

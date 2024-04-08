@@ -22,6 +22,7 @@
     "releases_events",
     "subgroup_events",
     "emoji_events",
+    "member_events",
     "alert_status",
     "disabled_until",
     "url_variables",
@@ -103,6 +104,9 @@
       "type": "boolean"
     },
     "resource_access_token_events": {
+      "type": "boolean"
+    },
+    "member_events": {
       "type": "boolean"
     },
     "alert_status": {

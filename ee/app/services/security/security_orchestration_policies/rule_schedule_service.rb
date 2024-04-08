@@ -14,7 +14,15 @@ module Security
 
         branches = branches_for(rule)
         actions = actions_for(schedule)
-        schedule_errors = schedule_scan(actions, branches).select { |service_result| service_result[:status] == :error }
+
+        if Feature.enabled?(:scan_execution_pipeline_worker, project)
+          schedule_scans_using_a_worker(branches, schedule) unless actions.blank?
+          schedule_errors = []
+        else
+          schedule_errors = schedule_scan(actions, branches).select do |service_result|
+            service_result[:status] == :error
+          end
+        end
 
         return ServiceResponse.success if schedule_errors.blank?
 
@@ -60,6 +68,15 @@ module Security
           ::Security::SecurityOrchestrationPolicies::CreatePipelineService
             .new(project: project, current_user: current_user, params: { actions: actions, branch: branch })
             .execute
+        end
+      end
+
+      def schedule_scans_using_a_worker(branches, schedule)
+        branches.map do |branch|
+          ::Security::ScanExecutionPolicies::CreatePipelineWorker.perform_async(project.id,
+            current_user.id,
+            schedule.id,
+            branch)
         end
       end
     end

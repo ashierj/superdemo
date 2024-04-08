@@ -6,9 +6,18 @@ module Security
       include Gitlab::Utils::StrongMemoize
 
       Violation = Struct.new(:report_type, :name, :scan_result_policy_id, :data, keyword_init: true)
+      ViolationError = Struct.new(:report_type, :error, :data, :message, keyword_init: true)
       ScanFindingViolation = Struct.new(:name, :report_type, :severity, :location, :path, keyword_init: true)
       AnyMergeRequestViolation = Struct.new(:name, :commits, keyword_init: true)
       LicenseScanningViolation = Struct.new(:license, :dependencies, :url, keyword_init: true)
+
+      ERROR_MESSAGES = {
+        'UNKNOWN' => 'Unknown error: %{error}',
+        'SCAN_REMOVED' => 'There is a mismatch between the scans of the source and target pipelines. ' \
+                          'The following scans are missing: %{scans}',
+        'ARTIFACTS_MISSING' =>
+          'Pipeline configuration error: Artifacts required by policy %{policy} could not be found (%{report_type}).'
+      }.freeze
 
       def initialize(merge_request)
         @merge_request = merge_request
@@ -19,7 +28,7 @@ module Security
           rule = scan_result_policy_rules[violation.scan_result_policy_id]
           Violation.new(
             report_type: rule.report_type,
-            name: rule.name,
+            name: rule.policy_name,
             scan_result_policy_id: rule.scan_result_policy_id,
             data: violation.violation_data
           )
@@ -27,7 +36,6 @@ module Security
       end
       strong_memoize_attr :violations
 
-      # rubocop:disable CodeReuse/ActiveRecord -- Pluck used on hashes
       def unique_policy_names(report_type = nil)
         filtered_violations = violations
 
@@ -35,10 +43,8 @@ module Security
           filtered_violations = filtered_violations.select { |violation| violation.report_type == report_type.to_s }
         end
 
-        # If multiple rules belong to the same policy, the names include numbers - Policy, Policy 2, Policy 3, etc.
-        filtered_violations.pluck(:name).compact.map { |name| name.gsub(/\s\d+\z/, '') }.uniq.sort
+        filtered_violations.pluck(:name).compact.uniq.sort # rubocop:disable CodeReuse/ActiveRecord -- Pluck used on hashes
       end
-      # rubocop:enable CodeReuse/ActiveRecord
 
       def new_scan_finding_violations
         new_uuids = violations.each_with_object(Set.new) do |violation, result|
@@ -88,6 +94,21 @@ module Security
         end
       end
       strong_memoize_attr :any_merge_request_violations
+
+      def errors
+        violations.flat_map do |violation|
+          errors = violation.data&.dig('errors') || []
+          errors.map do |error|
+            ViolationError.new(
+              report_type: violation.report_type,
+              error: error['error'],
+              data: error.except('error'),
+              message: error_message(violation, error)
+            )
+          end
+        end
+      end
+      strong_memoize_attr :errors
 
       private
 
@@ -145,6 +166,21 @@ module Security
         SoftwareLicense.spdx.by_name(licenses).select(:name, :spdx_identifier).to_h do |license|
           [license.name, license.spdx_identifier]
         end
+      end
+
+      def error_message(violation, error)
+        error_key = error['error']
+        error_key = 'UNKNOWN' unless ERROR_MESSAGES[error_key]
+
+        params = case error_key
+                 when 'SCAN_REMOVED'
+                   { scans: error['missing_scans']&.map(&:humanize)&.join(', ') }
+                 when 'ARTIFACTS_MISSING'
+                   { policy: violation.name, report_type: violation.report_type.humanize }
+                 else
+                   { error: error['error'] }
+                 end
+        format(ERROR_MESSAGES[error_key], **params)
       end
     end
   end
