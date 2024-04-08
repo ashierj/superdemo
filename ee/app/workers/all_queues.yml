@@ -2082,6 +2082,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_scan_execution_policies_create_pipeline
+  :worker_name: Security::ScanExecutionPolicies::CreatePipelineWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: security_scan_execution_policies_rule_schedule
   :worker_name: Security::ScanExecutionPolicies::RuleScheduleWorker
   :feature_category: :security_policy_management

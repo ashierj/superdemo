@@ -15,6 +15,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
     let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
     let(:other_schedule_rule) { { type: 'schedule', branches: ['main'], cadence: '0 10 * * *' } }
     let(:branches) { %w[master production non-existing-branch] }
+    let(:existing_branches) { %w[master production] }
 
     subject(:service) { described_class.new(project: project, current_user: current_user) }
 
@@ -25,6 +26,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
     end
 
     before do
+      stub_feature_flags(scan_execution_pipeline_worker: false)
       stub_licensed_features(security_on_demand_scans: true)
 
       project.repository.create_branch('production', project.default_branch)
@@ -39,6 +41,39 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
       expect(service_result).to be_kind_of(ServiceResponse)
       expect(service_result.success?).to be(true)
+    end
+
+    shared_examples 'with scan' do |scan_type|
+      context "when scan is #{scan_type}" do
+        context 'when the feature flag scan_execution_pipeline_worker is enabled' do
+          before do
+            stub_feature_flags(scan_execution_pipeline_worker: true)
+          end
+
+          it 'enqueues Security::SyncScanPoliciesWorker for each branch' do
+            existing_branches.each do |branch|
+              expect(::Security::ScanExecutionPolicies::CreatePipelineWorker).to(
+                receive(:perform_async)
+                  .with(project.id, current_user.id, schedule.id, branch)
+                  .and_call_original
+              )
+            end
+
+            service.execute(schedule)
+          end
+
+          it 'does not invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+            existing_branches.each do |branch|
+              expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).not_to(
+                receive(:new)
+                  .with(project: project, current_user: current_user,
+                    params: { actions: [{ scan: 'scan_type' }], branch: branch }))
+            end
+
+            service.execute(schedule)
+          end
+        end
+      end
     end
 
     context 'when scan type is dast' do
@@ -59,6 +94,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
         service.execute(schedule)
       end
+
+      it_behaves_like 'with scan', 'dast'
     end
 
     context 'when scan type is secret_detection' do
@@ -79,6 +116,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
         service.execute(schedule)
       end
+
+      it_behaves_like 'with scan', 'secret_detection'
     end
 
     context 'when scan type is container_scanning' do
@@ -100,6 +139,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
           service.execute(schedule)
         end
+
+        it_behaves_like 'with scan', 'container_scanning'
       end
 
       context 'when agents are defined in the rule' do
@@ -131,6 +172,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
         service.execute(schedule)
       end
+
+      it_behaves_like 'with scan', 'sast'
     end
 
     context 'when policy actions exists and there are multiple matching branches' do
