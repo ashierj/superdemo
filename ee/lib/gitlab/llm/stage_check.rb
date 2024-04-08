@@ -28,6 +28,8 @@ module Gitlab
         private
 
         def available_on_experimental_stage?(container, feature)
+          return false unless ::Gitlab::Saas.feature_available?(:gitlab_duo_saas_only)
+
           return false unless EXPERIMENTAL_FEATURES.include?(feature)
 
           root_ancestor = container&.root_ancestor

@@ -838,17 +838,5 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
         put :update, params: { id: group.to_param, group: { experiment_features_enabled: true } }
       end.to change { group.reload.experiment_features_enabled }.from(false).to(true)
     end
-
-    context 'when ai license features are not available for the group' do
-      before do
-        stub_licensed_features(ai_features: false)
-      end
-
-      it 'does not update attributes' do
-        expect do
-          put :update, params: { id: group.to_param, group: { experiment_features_enabled: true } }
-        end.to not_change { group.reload.experiment_features_enabled }
-      end
-    end
   end
 end

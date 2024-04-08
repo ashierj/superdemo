@@ -19,7 +19,7 @@ module QA
         Flow::Login.sign_in_as_admin
 
         Flow::Group.update_to_ultimate(sandbox_group)
-        Flow::Group.enable_product_analytics(sandbox_group)
+        Flow::Group.enable_experimental_and_beta_features(sandbox_group)
       end
 
       it 'can be onboarded', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/432598' do

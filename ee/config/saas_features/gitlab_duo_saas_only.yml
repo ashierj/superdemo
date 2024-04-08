@@ -1,0 +1,5 @@
+---
+name: gitlab_duo_saas_only
+introduced_by_url:
+milestone: '16.11'
+group: group::ai framework

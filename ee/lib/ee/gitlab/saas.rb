@@ -26,6 +26,7 @@ module EE
           advanced_search
           code_suggestions_x_ray
           identity_verification
+          gitlab_duo_saas_only
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'
