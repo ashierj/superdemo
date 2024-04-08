@@ -169,12 +169,20 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
               scan_result_policy_read: scan_result_policy_read_other_scan_finding)
           end
 
-          let_it_be(:other_violation) do
+          let_it_be_with_reload(:other_violation) do
             create(:scan_result_policy_violation, scan_result_policy_read: scan_result_policy_read_other_scan_finding,
               merge_request: merge_request)
           end
 
           it_behaves_like 'triggers policy bot comment', :scan_finding, true
+
+          context 'when other violation has not been evaluated yet and has no data' do
+            before do
+              other_violation.update!(violation_data: nil)
+            end
+
+            it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          end
         end
       end
     end

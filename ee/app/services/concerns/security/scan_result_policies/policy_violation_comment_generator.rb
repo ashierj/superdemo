@@ -15,7 +15,9 @@ module Security
       end
 
       def violations_exist?(merge_request, approval_rules)
-        merge_request.scan_result_policy_violations.for_approval_rules(approval_rules).exists?
+        scope = merge_request.scan_result_policy_violations.for_approval_rules(approval_rules)
+        scope = scope.with_violation_data if ::Feature.enabled?(:save_policy_violation_data, merge_request.project)
+        scope.exists?
       end
 
       def rules_requiring_approval?(approval_rules)
