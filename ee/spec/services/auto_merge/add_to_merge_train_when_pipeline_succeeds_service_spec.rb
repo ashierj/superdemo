@@ -137,7 +137,7 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
       it { is_expected.to eq(false) }
     end
 
-    context 'when the latest pipeline in the merge request is not active' do
+    context 'when the latest pipeline in the merge request is completed' do
       before do
         pipeline.succeed!
       end
