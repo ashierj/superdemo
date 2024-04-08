@@ -5,5 +5,6 @@ FactoryBot.define do
     project
     merge_request
     scan_result_policy_read
+    violation_data { { "violations" => { "any_merge_request" => { "commits" => ["f89a4ed7"] } } } }
   end
 end

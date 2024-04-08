@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_policy_management do
-  let_it_be(:violation) { create(:scan_result_policy_violation) }
-
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:scan_result_policy_read) }
@@ -12,6 +10,8 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
   end
 
   describe 'validations' do
+    let_it_be(:violation) { create(:scan_result_policy_violation) }
+
     subject { violation }
 
     it { is_expected.to(validate_uniqueness_of(:scan_result_policy_id).scoped_to(%i[merge_request_id])) }
@@ -70,6 +70,8 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
   end
 
   describe '.for_approval_rules' do
+    let_it_be(:violation) { create(:scan_result_policy_violation) }
+
     subject { described_class.for_approval_rules(approval_rules) }
 
     context 'when approval rules are empty' do
@@ -100,6 +102,26 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
 
       it { is_expected.to contain_exactly scan_finding_violation }
     end
+  end
+
+  describe '.with_violation_data' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+    let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:scan_result_policy_read_2) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:violation_with_data) do
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: scan_result_policy_read)
+    end
+
+    let_it_be(:violation_without_data) do
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: scan_result_policy_read_2, violation_data: nil)
+    end
+
+    subject { described_class.with_violation_data }
+
+    it { is_expected.to contain_exactly violation_with_data }
   end
 
   describe '.trim_violations' do

@@ -22,6 +22,8 @@ module Security
         where(scan_result_policy_id: approval_rules.pluck(:scan_result_policy_id))
       }
 
+    scope :with_violation_data, -> { where.not(violation_data: nil) }
+
     ERRORS = {
       scan_removed: 'SCAN_REMOVED',
       artifacts_missing: 'ARTIFACTS_MISSING'
