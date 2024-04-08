@@ -31,13 +31,10 @@ module Elastic
 
         delete_old_project(project, old_namespace_id)
       elsif should_invalidate_elasticsearch_indexes_cache && ::Gitlab::CurrentSettings.elasticsearch_indexing?
-        # If the new namespace isn't indexed, the project should no longer exist in the index
-        # and will be deleted asynchronously. If all projects are indexed, queue the project for indexing
+        # If the new namespace isn't indexed, the project's associated records should no longer exist in the index
+        # and will be deleted asynchronously. Queue the project for indexing
         # to update the namespace field and remove the old document from the index.
-
-        keep_project_in_index = ::Feature.enabled?(:search_index_all_projects, project.root_namespace)
-
-        ::Elastic::ProcessInitialBookkeepingService.track!(build_document_reference(project)) if keep_project_in_index
+        ::Elastic::ProcessInitialBookkeepingService.track!(build_document_reference(project))
 
         delete_old_project(project, old_namespace_id)
       end

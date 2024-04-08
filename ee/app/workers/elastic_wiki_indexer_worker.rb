@@ -88,7 +88,7 @@ class ElasticWikiIndexerWorker
     end
 
     if container_type == 'Project'
-      delete_project = container.nil? || ::Feature.disabled?(:search_index_all_projects, container.root_namespace)
+      delete_project = container.nil?
 
       ElasticDeleteProjectWorker.perform_async(
         container_id,

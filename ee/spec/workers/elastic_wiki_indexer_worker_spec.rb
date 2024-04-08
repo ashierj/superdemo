@@ -35,42 +35,17 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
 
       context 'when container is Project' do
         context 'when elasticsearch is disabled for Project' do
-          context 'when search_index_all_projects is true' do
-            before do
-              stub_feature_flags(search_index_all_projects: true)
+          it 'does not remove the project but removes all associated documents from the index' do
+            allow_next_found_instance_of(Project) do |project|
+              expect(project).to receive(:use_elasticsearch?).and_return(false)
             end
 
-            it 'does not remove the project but removes all associated documents from the index' do
-              allow_next_found_instance_of(Project) do |project|
-                expect(project).to receive(:use_elasticsearch?).and_return(false)
-              end
-
-              expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-                .with(project.id, project.es_id, delete_project: false)
-              expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-              expect(logger_double).not_to receive(:info)
-              expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-              expect(worker.perform(project.id, project.class.name)).to be true
-            end
-          end
-
-          context 'when search_index_all_projects is false' do
-            before do
-              stub_feature_flags(search_index_all_projects: false)
-            end
-
-            it 'removes the project and all associated documents from the index' do
-              allow_next_found_instance_of(Project) do |project|
-                expect(project).to receive(:use_elasticsearch?).and_return(false)
-              end
-
-              expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-                .with(project.id, project.es_id, delete_project: true)
-              expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-              expect(logger_double).not_to receive(:info)
-              expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-              expect(worker.perform(project.id, project.class.name)).to be true
-            end
+            expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+              .with(project.id, project.es_id, delete_project: false)
+            expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+            expect(logger_double).not_to receive(:info)
+            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+            expect(worker.perform(project.id, project.class.name)).to be true
           end
         end
 
@@ -153,36 +128,14 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
           Gitlab::Elastic::Helper.build_es_id(es_type: Project.es_type, target_id: non_existing_record_id)
         end
 
-        context 'when search_index_all_projects is false' do
-          before do
-            stub_feature_flags(search_index_all_projects: false)
-          end
-
-          it 'removes the project and all associated documents from the index' do
-            expect(logger_double).to receive(:warn).with(container_id: id, container_type: Project.name,
-              message: 'Container record not found')
-            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
-            expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-            expect(logger_double).not_to receive(:info)
-            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-            expect(worker.perform(id, Project.name)).to be true
-          end
-        end
-
-        context 'when search_index_all_projects is true' do
-          before do
-            stub_feature_flags(search_index_all_projects: true)
-          end
-
-          it 'removes the project and all associated documents from the index' do
-            expect(logger_double).to receive(:warn).with(container_id: id, container_type: Project.name,
-              message: 'Container record not found')
-            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
-            expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-            expect(logger_double).not_to receive(:info)
-            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-            expect(worker.perform(id, Project.name)).to be true
-          end
+        it 'removes the project and all associated documents from the index' do
+          expect(logger_double).to receive(:warn).with(container_id: id, container_type: Project.name,
+            message: 'Container record not found')
+          expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
+          expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+          expect(logger_double).not_to receive(:info)
+          expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+          expect(worker.perform(id, Project.name)).to be true
         end
       end
 

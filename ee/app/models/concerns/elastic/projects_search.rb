@@ -22,8 +22,6 @@ module Elastic
 
       override :maintaining_elasticsearch?
       def maintaining_elasticsearch?
-        return super if ::Feature.disabled?(:search_index_all_projects, root_namespace)
-
         ::Gitlab::CurrentSettings.elasticsearch_indexing?
       end
 
