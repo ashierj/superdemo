@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'thor'
 require "gitlab/backup/cli"
 require 'tmpdir'
 require 'fileutils'
 require 'factory_bot'
+require 'gitlab/rspec/next_instance_of'
 
 # Load spec support code
 Dir['spec/support/**/*.rb'].each { |f| load f }
