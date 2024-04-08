@@ -37,7 +37,7 @@ module Search
     end
 
     def set_index_type
-      self.index_type = index&.type if index&.present?
+      self.index_type = index&.type if index.present?
     end
 
     def only_root_namespaces_can_be_indexed

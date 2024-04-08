@@ -18,7 +18,7 @@ module EE
 
           result = relation.sum(:weight)
 
-          if relation.try(:group_values)&.present?
+          if relation.try(:group_values).present?
             result.values.sum
           else
             result
