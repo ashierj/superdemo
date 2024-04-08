@@ -8,12 +8,6 @@ module Vulnerabilities
     RESOLVED_MESSAGE = "resolved_at can only be set when state is resolved"
     DISMISSED_MESSAGE = "dismissed_at can only be set when state is dismissed"
 
-    def initialize(project, author, params:)
-      @project = project
-      @author = author
-      @params = params
-    end
-
     def execute
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
@@ -33,7 +27,7 @@ module Vulnerabilities
         solution: @params[:vulnerability][:solution]
       )
 
-      Vulnerability.transaction do
+      response = Vulnerability.transaction do
         finding.save!
         vulnerability.vulnerability_finding = finding
         vulnerability.save!
@@ -45,6 +39,10 @@ module Vulnerabilities
 
         ServiceResponse.success(payload: { vulnerability: vulnerability })
       end
+
+      process_archival_and_traversal_ids_changes if response.success?
+
+      response
     rescue ActiveRecord::RecordNotUnique => e
       Gitlab::AppLogger.error(e.message)
       ServiceResponse.error(message: "Vulnerability with those details already exists")

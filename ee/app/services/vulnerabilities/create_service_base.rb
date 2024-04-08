@@ -10,11 +10,13 @@ module Vulnerabilities
       @project = project
       @author = author
       @params = params
+      @original_archived_value = project.archived
+      @original_traversal_ids_value = project.namespace.traversal_ids
     end
 
     private
 
-    attr_reader :project
+    attr_reader :project, :original_archived_value, :original_traversal_ids_value
 
     def authorized?
       can?(@author, :admin_vulnerability, @project)
@@ -137,6 +139,27 @@ module Vulnerabilities
         description: description,
         solution: solution
       )
+    end
+
+    def process_archival_and_traversal_ids_changes
+      schedule_updating_archived_status_if_needed
+      schedule_updating_traversal_ids_if_needed
+    end
+
+    def schedule_updating_archived_status_if_needed
+      return if original_archived_value == reloaded_project.archived
+
+      Vulnerabilities::UpdateArchivedAttributeOfVulnerabilityReadsWorker.perform_async(project.id)
+    end
+
+    def schedule_updating_traversal_ids_if_needed
+      return if original_traversal_ids_value == reloaded_project.namespace.traversal_ids
+
+      Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_async(project.id)
+    end
+
+    def reloaded_project
+      @reloaded_project ||= project.reset
     end
   end
 end

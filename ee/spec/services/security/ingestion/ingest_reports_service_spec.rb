@@ -148,5 +148,34 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
         expect(Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
       end
     end
+
+    it_behaves_like 'rescheduling archival status and traversal_ids update jobs' do
+      let(:job_args) { project.id }
+      let(:scheduling_method) { :perform_async }
+      let(:ingest_vulnerabilities) { ingest_reports }
+      let(:update_archived_after_start) do
+        allow(service_object).to receive(:store_reports).and_wrap_original do |method|
+          project.update_column(:archived, true)
+
+          method.call
+        end
+      end
+
+      let(:update_traversal_ids_after_start) do
+        allow(service_object).to receive(:store_reports).and_wrap_original do |method|
+          project.namespace.update_column(:traversal_ids, [-1])
+
+          method.call
+        end
+      end
+
+      let(:update_namespace_after_start) do
+        allow(service_object).to receive(:store_reports).and_wrap_original do |method|
+          project.update_column(:namespace_id, new_namespace.id)
+
+          method.call
+        end
+      end
+    end
   end
 end

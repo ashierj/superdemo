@@ -11,6 +11,8 @@ module Security
 
       def initialize(pipeline)
         @pipeline = pipeline
+        @original_archived_value = project.archived
+        @original_traversal_ids_value = project.namespace.traversal_ids
       end
 
       def execute
@@ -21,11 +23,13 @@ module Security
         schedule_mark_dropped_vulnerabilities
         sync_findings_to_approval_rules
         schedule_sbom_records
+        schedule_updating_archived_status_if_needed
+        schedule_updating_traversal_ids_if_needed
       end
 
       private
 
-      attr_reader :pipeline
+      attr_reader :pipeline, :original_archived_value, :original_traversal_ids_value
 
       delegate :project, to: :pipeline, private: true
 
@@ -87,6 +91,30 @@ module Security
         return unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
 
         Sbom::IngestReportsWorker.perform_async(pipeline.id)
+      end
+
+      def schedule_updating_archived_status_if_needed
+        return unless archived_value_changed?
+
+        Vulnerabilities::UpdateArchivedAttributeOfVulnerabilityReadsWorker.perform_async(project.id)
+      end
+
+      def schedule_updating_traversal_ids_if_needed
+        return unless traversal_ids_value_changed?
+
+        Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_async(project.id)
+      end
+
+      def archived_value_changed?
+        reloaded_project.archived != original_archived_value
+      end
+
+      def traversal_ids_value_changed?
+        reloaded_project.namespace.traversal_ids != original_traversal_ids_value
+      end
+
+      def reloaded_project
+        @reloaded_project ||= project.reset
       end
     end
   end
