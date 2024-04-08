@@ -3,6 +3,7 @@ import { GlFilteredSearch, GlPopover, GlSprintf } from '@gitlab/ui';
 import GroupDependenciesFilteredSearch from 'ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue';
 import LicenseToken from 'ee/dependencies/components/filtered_search/tokens/license_token.vue';
 import ProjectToken from 'ee/dependencies/components/filtered_search/tokens/project_token.vue';
+import ComponentToken from 'ee/dependencies/components/filtered_search/tokens/component_token.vue';
 import createStore from 'ee/dependencies/store';
 
 describe('GroupDependenciesFilteredSearch', () => {
@@ -17,7 +18,10 @@ describe('GroupDependenciesFilteredSearch', () => {
   const createComponent = (mountOptions = {}) => {
     wrapper = shallowMount(GroupDependenciesFilteredSearch, {
       store,
-      provide: { belowGroupLimit: true },
+      provide: {
+        belowGroupLimit: true,
+        glFeatures: { groupLevelDependenciesFilteringByComponent: true },
+      },
       stubs: {
         GlSprintf,
       },
@@ -47,9 +51,10 @@ describe('GroupDependenciesFilteredSearch', () => {
       });
 
       it.each`
-        tokenTitle   | tokenConfig
-        ${'License'} | ${{ title: 'License', type: 'licenses', multiSelect: true, token: LicenseToken }}
-        ${'Project'} | ${{ title: 'Project', type: 'project_ids', multiSelect: true, token: ProjectToken }}
+        tokenTitle     | tokenConfig
+        ${'License'}   | ${{ title: 'License', type: 'licenses', multiSelect: true, token: LicenseToken }}
+        ${'Project'}   | ${{ title: 'Project', type: 'project_ids', multiSelect: true, token: ProjectToken }}
+        ${'Component'} | ${{ title: 'Component', type: 'component_ids', multiSelect: true, token: ComponentToken }}
       `('contains a "$tokenTitle" search token', ({ tokenConfig }) => {
         expect(findFilteredSearch().props('availableTokens')).toMatchObject(
           expect.arrayContaining([
@@ -99,6 +104,25 @@ describe('GroupDependenciesFilteredSearch', () => {
       expect(findPopover().props('title')).toBe('Filtering unavailable');
       expect(findPopover().text()).toContain(
         "This group exceeds the maximum number of 600 sub-groups. We cannot accurately filter or search the dependency list above this maximum. To view or filter a subset of this information, go to a subgroup's dependency list.",
+      );
+    });
+  });
+
+  describe('with "groupLevelDependenciesFilteringByComponent" feature flag disabled', () => {
+    beforeEach(() => {
+      createComponent({
+        provide: {
+          belowGroupLimit: true,
+          glFeatures: { groupLevelDependenciesFilteringByComponent: false },
+        },
+      });
+    });
+
+    it('does not show the Component token', () => {
+      expect(findFilteredSearch().props('availableTokens')).not.toContainEqual(
+        expect.objectContaining({
+          title: 'Component',
+        }),
       );
     });
   });
