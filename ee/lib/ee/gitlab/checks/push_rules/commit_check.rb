@@ -52,7 +52,7 @@ module EE
             # Historically, when a commit is created via Web UI, the committer and author emails are the same
             # It changes with https://gitlab.com/gitlab-org/gitaly/-/issues/5715 issue and now the committer email
             # of the commits created by Gitaly has an instance email like <noreply@gitlab.com>
-            if !skip_committer_email_check? && !push_rule.author_email_allowed?(commit.committer_email)
+            if !skip_committer_email_check?(commit) && !push_rule.author_email_allowed?(commit.committer_email)
               return "Committer's email '#{commit.committer_email}' does not follow the pattern '#{push_rule.author_email_regex}'"
             end
 
@@ -79,7 +79,7 @@ module EE
           end
 
           def check_member(commit)
-            return if skip_committer_email_check?
+            return if skip_committer_email_check?(commit)
             return unless push_rule.member_check
 
             unless ::User.find_by_any_email(commit.author_email).present?
@@ -97,7 +97,7 @@ module EE
             # Historically, when a commit is created via Web UI, the committer and author emails are the same
             # It changes with https://gitlab.com/gitlab-org/gitaly/-/issues/5715 issue and now the committer email
             # of the commits created by Gitaly has an instance email like <noreply@gitlab.com>
-            committer_email = skip_committer_email_check? ? commit.author_email : commit.committer_email
+            committer_email = skip_committer_email_check?(commit) ? commit.author_email : commit.committer_email
 
             unless push_rule.committer_allowed?(committer_email, user_access.user)
               # We can assume only one user holds an unconfirmed primary email address. Since we want
@@ -118,9 +118,19 @@ module EE
             end
           end
 
-          def skip_committer_email_check?
-            updated_from_web? && ::Feature.enabled?(:skip_committer_email_check, project)
+          # If a commit is created from Web and signed by GitLab, we can skip the committer check because it's equal to
+          # GitLab <noreply@gitlab.com>
+          def skip_committer_email_check?(commit)
+            return false unless ::Feature.enabled?(:skip_committer_email_check, project)
+            return false unless updated_from_web? && commit.has_signature?
+
+            commit_signatures[commit.id][:signer] == :SIGNER_SYSTEM
           end
+
+          def commit_signatures
+            ::Gitlab::Git::Commit.batch_signature_extraction(project.repository, commits.map(&:id))
+          end
+          strong_memoize_attr :commit_signatures
         end
       end
     end

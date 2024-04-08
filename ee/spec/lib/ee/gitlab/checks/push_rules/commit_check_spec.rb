@@ -5,6 +5,40 @@ require 'spec_helper'
 RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :source_code_management do
   include_context 'push rules checks context'
 
+  shared_examples 'check is skipped for commits signed by GitLab' do
+    context 'when a commit has a signature' do
+      before do
+        allow_any_instance_of(Commit).to receive(:has_signature?).and_return(true)
+      end
+
+      it 'raises an error' do
+        expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, error_message)
+      end
+
+      context 'when a commit is signed by GitLab' do
+        before do
+          allow(subject).to receive(:commit_signatures).and_return(
+            new_commits.to_h { |commit| [commit.id, { signer: :SIGNER_SYSTEM }] }
+          )
+        end
+
+        it 'does not raise an error' do
+          expect { subject.validate! }.not_to raise_error
+        end
+
+        context 'when skip_committer_email_check is disabled' do
+          before do
+            stub_feature_flags(skip_committer_email_check: false)
+          end
+
+          it 'raises an error' do
+            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, error_message)
+          end
+        end
+      end
+    end
+  end
+
   describe '#validate!' do
     context 'commit message rules' do
       let!(:push_rule) { create(:push_rule, :commit_message) }
@@ -94,27 +128,21 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
       context 'when a commit is created from web' do
         let(:protocol) { 'web' }
 
-        it 'does not raise an error if the rule fails for the committer' do
-          allow_any_instance_of(Commit).to receive(:committer_email).and_return('ana@invalid.com')
-
-          expect { subject.validate! }.not_to raise_error
-        end
-
         it 'returns an error if the rule fails for the author' do
           allow_any_instance_of(Commit).to receive(:author_email).and_return('joan@invalid.com')
 
           expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author's email 'joan@invalid.com' does not follow the pattern '.*@valid.com'")
         end
 
-        context 'when skip_committer_email_check is disabled' do
+        context 'when the rule fails for committer' do
           before do
-            stub_feature_flags(skip_committer_email_check: false)
+            allow_any_instance_of(Commit).to receive(:committer_email).and_return('ana@invalid.com')
           end
 
-          it 'returns an error if the rule fails for the committer' do
-            allow_any_instance_of(Commit).to receive(:committer_email).and_return('ana@invalid.com')
-
-            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Committer's email 'ana@invalid.com' does not follow the pattern '.*@valid.com'")
+          it_behaves_like 'check is skipped for commits signed by GitLab' do
+            let(:error_message) do
+              "Committer's email 'ana@invalid.com' does not follow the pattern '.*@valid.com'"
+            end
           end
         end
       end
@@ -163,18 +191,10 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
         context 'when a commit is created from web' do
           let(:protocol) { 'web' }
 
-          it 'does not raise an error' do
-            expect { subject.validate! }.not_to raise_error
-          end
-        end
-
-        context 'when skip_committer_email_check is disabled' do
-          before do
-            stub_feature_flags(skip_committer_email_check: false)
-          end
-
-          it 'returns an error if the commit author is not a GitLab member' do
-            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Author 'some@mail.com' is not a member of team")
+          it_behaves_like 'check is skipped for commits signed by GitLab' do
+            let(:error_message) do
+              "Author 'some@mail.com' is not a member of team"
+            end
           end
         end
       end
@@ -314,19 +334,9 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
               context 'when email of author is confirmed' do
                 let(:author_email) { create(:email, :confirmed, user: user).email }
 
-                it 'does not raise an error' do
-                  expect { subject.validate! }.not_to raise_error
-                end
-
-                context 'when skip_committer_email_check is disabled' do
-                  before do
-                    stub_feature_flags(skip_committer_email_check: false)
-                  end
-
-                  it 'raises an error' do
-                    expect { subject.validate! }
-                      .to raise_error(Gitlab::GitAccess::ForbiddenError,
-                                      "Committer email '#{user.email}' is not verified.")
+                it_behaves_like 'check is skipped for commits signed by GitLab' do
+                  let(:error_message) do
+                    "Committer email '#{user.email}' is not verified."
                   end
                 end
               end
@@ -373,19 +383,9 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck, feature_category: :so
               context 'when email of author is confirmed' do
                 let(:author_email) { create(:email, :confirmed, user: user).email }
 
-                it 'does not raise an error' do
-                  expect { subject.validate! }.not_to raise_error
-                end
-
-                context 'when skip_committer_email_check is disabled' do
-                  before do
-                    stub_feature_flags(skip_committer_email_check: false)
-                  end
-
-                  it 'raises an error' do
-                    expect { subject.validate! }
-                      .to raise_error(Gitlab::GitAccess::ForbiddenError,
-                                      "You cannot push commits for '#{email.email}'. You can only push commits if the committer email is one of your own verified emails.")
+                it_behaves_like 'check is skipped for commits signed by GitLab' do
+                  let(:error_message) do
+                    "You cannot push commits for '#{email.email}'. You can only push commits if the committer email is one of your own verified emails."
                   end
                 end
               end
