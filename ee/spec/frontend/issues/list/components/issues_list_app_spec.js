@@ -102,6 +102,7 @@ describe('EE IssuesListApp component', () => {
   const mountComponent = ({
     provide = {},
     okrsMvc = false,
+    workItemsMvc2 = false,
     issuesQueryResponse = jest.fn().mockResolvedValue(defaultQueryResponse),
     issuesCountsQueryResponse = jest.fn().mockResolvedValue(getIssuesCountsQueryResponse),
   } = {}) => {
@@ -113,6 +114,7 @@ describe('EE IssuesListApp component', () => {
       provide: {
         glFeatures: {
           okrsMvc,
+          workItemsMvc2,
         },
         ...defaultProvide,
         ...provide,
@@ -179,15 +181,16 @@ describe('EE IssuesListApp component', () => {
 
   describe('typeTokenOptions', () => {
     describe.each`
-      hasEpicsFeature | isProject | eeWorkItemTypeTokens        | message
-      ${false}        | ${true}   | ${[]}                       | ${'NOT include'}
-      ${true}         | ${true}   | ${[]}                       | ${'NOT include'}
-      ${true}         | ${false}  | ${[TYPE_TOKEN_EPIC_OPTION]} | ${'include'}
+      hasEpicsFeature | isProject | workItemsMvc2 | eeWorkItemTypeTokens        | message
+      ${false}        | ${true}   | ${false}      | ${[]}                       | ${'NOT include'}
+      ${true}         | ${true}   | ${false}      | ${[]}                       | ${'NOT include'}
+      ${true}         | ${false}  | ${false}      | ${[]}                       | ${'NOT include'}
+      ${true}         | ${false}  | ${true}       | ${[TYPE_TOKEN_EPIC_OPTION]} | ${'include'}
     `(
-      'when hasEpicsFeature is "$hasEpicsFeature" and isProject is "$isProject"',
-      ({ hasEpicsFeature, isProject, eeWorkItemTypeTokens, message }) => {
+      'when hasEpicsFeature is "$hasEpicsFeature" and isProject is "$isProject" and workItemsMvc2 is "$workItemsMvc2"',
+      ({ hasEpicsFeature, isProject, workItemsMvc2, eeWorkItemTypeTokens, message }) => {
         beforeEach(() => {
-          wrapper = mountComponent({ provide: { hasEpicsFeature, isProject } });
+          wrapper = mountComponent({ provide: { hasEpicsFeature, isProject }, workItemsMvc2 });
         });
 
         it(`should ${message} epic in type tokens`, () => {
