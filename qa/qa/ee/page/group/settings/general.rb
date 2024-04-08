@@ -48,10 +48,6 @@ module QA
                 view 'ee/app/views/groups/settings/_experimental_settings.haml' do
                   element 'use-experimental-features-checkbox'
                 end
-
-                view 'ee/app/views/groups/settings/_product_analytics_settings.html.haml' do
-                  element 'use-product-analytics-checkbox'
-                end
               end
             end
 
@@ -106,10 +102,10 @@ module QA
               click_element('save-permissions-changes-button')
             end
 
-            def set_use_product_analytics_enabled
+            def set_use_experimental_features_enabled
               expand_content('permissions-settings')
               check_element('use-experimental-features-checkbox', true)
-              check_element('use-product-analytics-checkbox', true)
+              check_element('use-product-analytics-checkbox', true) if has_element?('use-product-analytics-checkbox')
               click_element('save-permissions-changes-button')
             end
 

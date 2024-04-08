@@ -28,9 +28,6 @@ module EE
 
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
       validate :experiment_features_allowed
-      validate :product_analytics_allowed
-
-      before_validation :disable_product_analytics, if: :should_disable_product_analytics?
 
       before_save :set_prevent_sharing_groups_outside_hierarchy
       after_save :disable_project_sharing!, if: -> { user_cap_enabled? }
@@ -79,18 +76,8 @@ module EE
         self[:unique_project_download_limit_alertlist].presence || active_owner_ids
       end
 
-      # TODO: remove :ai_chat condition after Chat goes GA
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/441099
       def experiment_settings_allowed?
-        namespace.root? &&
-          ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          (namespace.feature_available?(:experimental_features) || namespace.feature_available?(:ai_chat))
-      end
-
-      def product_analytics_settings_allowed?
-        experiment_settings_allowed? &&
-          ::Feature.enabled?(:product_analytics_beta_optin, namespace) &&
-          ::Gitlab::CurrentSettings.product_analytics_enabled?
+        namespace.root?
       end
 
       def user_cap_enabled?
@@ -136,31 +123,6 @@ module EE
         return if experiment_settings_allowed?
 
         errors.add(:experiment_features_enabled, _("Experiment features' settings not allowed."))
-      end
-
-      def product_analytics_allowed
-        return unless experiment_features_enabled_changed? || product_analytics_enabled_changed?
-        return if experiment_features_enabled || !product_analytics_enabled
-
-        errors.add(:product_analytics_enabled,
-          _("Product analytics requires Experiment and Beta features to be enabled."))
-      end
-
-      def should_disable_product_analytics?
-        # Product analytics can only be enabled if experiment features are enabled as well.
-        # The checkbox to enable/disable product analytics is behind feature flag.
-        # If the feature flag was enabled for a namespace but for some reason we disable the feature flag later
-        # they will not be able to unselect product analytics checkbox as it would be hidden from them.
-        # This may prevent them updating experiment features group setting from true to false,
-        # because the product_analytics_allowed validation will fail.
-        # For this specific scenario we disable product analytics when disabling experiment features.
-        return false if ::Feature.enabled?(:product_analytics_beta_optin, namespace)
-
-        experiment_features_enabled_was && !experiment_features_enabled
-      end
-
-      def disable_product_analytics
-        self.product_analytics_enabled = false
       end
     end
 
