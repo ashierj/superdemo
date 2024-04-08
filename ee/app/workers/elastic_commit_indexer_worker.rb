@@ -32,7 +32,7 @@ class ElasticCommitIndexerWorker
     @project = Project.find_by_id(project_id)
     unless @project&.use_elasticsearch?
       es_id = ::Gitlab::Elastic::Helper.build_es_id(es_type: Project.es_type, target_id: project_id)
-      delete_project = @project.nil? || ::Feature.disabled?(:search_index_all_projects, @project.root_namespace)
+      delete_project = @project.nil?
       ElasticDeleteProjectWorker.perform_async(project_id, es_id, delete_project: delete_project)
       return true
     end

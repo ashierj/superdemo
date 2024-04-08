@@ -56,19 +56,6 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
         worker.perform(namespace.id, :delete)
       end
 
-      context 'when the search_index_all_projects feature flag is disabled' do
-        before do
-          stub_feature_flags(search_index_all_projects: false)
-        end
-
-        it 'deletes all projects belonging to the namespace' do
-          args = projects.map { |project| [project.id, project.es_id, { delete_project: true }] }
-          expect(ElasticDeleteProjectWorker).to receive(:bulk_perform_async).with(args)
-
-          worker.perform(namespace.id, :delete)
-        end
-      end
-
       it 'does not enqueue Search::ElasticGroupAssociationDeletionWorker' do
         expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_async)
 

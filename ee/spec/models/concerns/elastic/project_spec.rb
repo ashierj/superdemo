@@ -20,17 +20,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
       describe '#maintaining_elasticsearch?' do
         subject(:maintaining_elasticsearch) { project.maintaining_elasticsearch? }
 
-        context 'when the search_index_all_projects FF is false' do
-          before do
-            stub_feature_flags(search_index_all_projects: false)
-          end
-
-          it { is_expected.to be(false) }
-        end
-
-        context 'when the search_index_all_projects FF is true' do
-          it { is_expected.to be(true) }
-        end
+        it { is_expected.to be(true) }
       end
 
       describe '#use_elasticsearch?' do
@@ -48,17 +38,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
       describe '#maintaining_elasticsearch?' do
         subject(:maintaining_elasticsearch) { project.maintaining_elasticsearch? }
 
-        context 'when the search_index_all_projects FF is false' do
-          before do
-            stub_feature_flags(search_index_all_projects: false)
-          end
-
-          it { is_expected.to be(true) }
-        end
-
-        context 'when the search_index_all_projects FF is true' do
-          it { is_expected.to be(true) }
-        end
+        it { is_expected.to be(true) }
       end
 
       describe '#use_elasticsearch?' do
@@ -68,28 +48,12 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
       end
 
       describe 'indexing', :sidekiq_inline do
-        context 'when the search_index_all_projects FF is false' do
-          before do
-            stub_feature_flags(search_index_all_projects: false)
-          end
+        it 'indexes all projects' do
+          create(:project, :empty_repo, path: 'test_two', description: 'awesome project')
+          ensure_elasticsearch_index!
 
-          it 'only indexes enabled projects' do
-            create(:project, :empty_repo, path: 'test_two', description: 'awesome project')
-            ensure_elasticsearch_index!
-
-            expect(described_class.elastic_search('main_project', options: { project_ids: :any }).total_count).to eq(1)
-            expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(0)
-          end
-        end
-
-        context 'when the search_index_all_projects FF is true' do
-          it 'indexes all projects' do
-            create(:project, :empty_repo, path: 'test_two', description: 'awesome project')
-            ensure_elasticsearch_index!
-
-            expect(described_class.elastic_search('main_project', options: { project_ids: :any }).total_count).to eq(1)
-            expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(1)
-          end
+          expect(described_class.elastic_search('main_project', options: { project_ids: :any }).total_count).to eq(1)
+          expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(1)
         end
       end
     end
@@ -106,48 +70,19 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
 
         subject(:maintaining_elasticsearch) { project_in_group.maintaining_elasticsearch? }
 
-        context 'when the search_index_all_projects FF is false' do
-          before do
-            stub_feature_flags(search_index_all_projects: false)
-          end
-
-          it { is_expected.to be(true) }
-        end
-
-        context 'when the search_index_all_projects FF is true' do
-          it { is_expected.to be(true) }
-        end
+        it { is_expected.to be(true) }
       end
 
       describe 'indexing' do
-        context 'when the search_index_all_projects FF is false' do
-          before do
-            stub_feature_flags(search_index_all_projects: false)
-          end
+        it 'indexes all projects' do
+          create(:project, name: 'group_test1', group: create(:group, parent: group))
+          create(:project, name: 'group_test2', description: 'awesome project')
+          create(:project, name: 'group_test3', group: group)
+          ensure_elasticsearch_index!
 
-          it 'indexes only projects under the group' do
-            create(:project, name: 'group_test1', group: create(:group, parent: group))
-            create(:project, name: 'group_test2', description: 'awesome project')
-            create(:project, name: 'group_test3', group: group)
-            ensure_elasticsearch_index!
-
-            expect(described_class.elastic_search('group_test*', options: { project_ids: :any }).total_count).to eq(2)
-            expect(described_class.elastic_search('"group_test3"', options: { project_ids: :any }).total_count).to eq(1)
-            expect(described_class.elastic_search('"group_test2"', options: { project_ids: :any }).total_count).to eq(0)
-          end
-        end
-
-        context 'when the search_index_all_projects FF is true' do
-          it 'indexes all projects' do
-            create(:project, name: 'group_test1', group: create(:group, parent: group))
-            create(:project, name: 'group_test2', description: 'awesome project')
-            create(:project, name: 'group_test3', group: group)
-            ensure_elasticsearch_index!
-
-            expect(described_class.elastic_search('group_test*', options: { project_ids: :any }).total_count).to eq(3)
-            expect(described_class.elastic_search('"group_test3"', options: { project_ids: :any }).total_count).to eq(1)
-            expect(described_class.elastic_search('"group_test2"', options: { project_ids: :any }).total_count).to eq(1)
-          end
+          expect(described_class.elastic_search('group_test*', options: { project_ids: :any }).total_count).to eq(3)
+          expect(described_class.elastic_search('"group_test3"', options: { project_ids: :any }).total_count).to eq(1)
+          expect(described_class.elastic_search('"group_test2"', options: { project_ids: :any }).total_count).to eq(1)
         end
       end
 
@@ -177,7 +112,8 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
                                raise ArgumentError, 'Invalid operator'
                              end
 
-            expect(described_class.elastic_search('test foo', options: { project_ids: :any }).total_count).to eq(expected_count)
+            expect(described_class.elastic_search('test foo',
+              options: { project_ids: :any }).total_count).to eq(expected_count)
           end
         end
 
@@ -233,7 +169,8 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
     expect(described_class.elastic_search('"awesome"', options: { project_ids: project_ids }).total_count).to eq(1)
     expect(described_class.elastic_search('test*', options: { project_ids: project_ids }).total_count).to eq(2)
     expect(described_class.elastic_search('test*', options: { project_ids: :any }).total_count).to eq(3)
-    expect(described_class.elastic_search('"someone_elses_project"', options: { project_ids: project_ids }).total_count).to eq(0)
+    expect(described_class.elastic_search('"someone_elses_project"',
+      options: { project_ids: project_ids }).total_count).to eq(0)
   end
 
   it 'finds partial matches in project names', :sidekiq_inline do

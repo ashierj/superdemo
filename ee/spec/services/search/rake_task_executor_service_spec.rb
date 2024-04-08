@@ -316,18 +316,6 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
         stub_ee_application_setting(elasticsearch_limit_indexing: true)
       end
 
-      context 'when the search_index_all_projects feature flag is disabled' do
-        before do
-          stub_feature_flags(search_index_all_projects: false)
-        end
-
-        it 'does not queue jobs for projects that should not be indexed' do
-          expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project1, project3)
-
-          task
-        end
-      end
-
       context 'when elasticsearch_indexing is disabled' do
         before do
           stub_ee_application_setting(elasticsearch_indexing: false)
