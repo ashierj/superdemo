@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import EditorWrapper from 'ee/security_orchestration/components/policy_editor/editor_wrapper.vue';
+import PipelineExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/pipeline_execution/editor_component.vue';
 import ScanExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_execution/editor_component.vue';
 import ScanResultPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_result/editor_component.vue';
 import {
@@ -15,6 +16,8 @@ describe('EditorWrapper component', () => {
 
   const findGroupLevelNotification = () => wrapper.findByTestId('group-level-notification');
   const findErrorAlert = () => wrapper.findByTestId('error-alert');
+  const findPipelineExecutionPolicyEditor = () =>
+    wrapper.findComponent(PipelineExecutionPolicyEditor);
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
   const findScanResultPolicyEditor = () => wrapper.findComponent(ScanResultPolicyEditor);
 
@@ -69,9 +72,10 @@ describe('EditorWrapper component', () => {
       });
 
       it.each`
-        policyTypeId                                         | findComponent
-        ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${findScanExecutionPolicyEditor}
-        ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}      | ${findScanResultPolicyEditor}
+        policyTypeId                                             | findComponent
+        ${POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.value} | ${findPipelineExecutionPolicyEditor}
+        ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}     | ${findScanExecutionPolicyEditor}
+        ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}          | ${findScanResultPolicyEditor}
       `(
         'renders the policy editor of type $policyType when selected',
         async ({ findComponent, policyTypeId }) => {
