@@ -22,7 +22,14 @@ module Security
 
       def sync_scan_finding
         return unless Enums::Ci::Pipeline.ci_and_security_orchestration_sources.key?(pipeline.source.to_sym)
-        return unless pipeline.complete? && pipeline_has_security_findings?
+
+        pipeline_complete = if pipeline.include_manual_to_pipeline_completion_enabled?
+                              pipeline.complete_or_manual?
+                            else
+                              pipeline.complete?
+                            end
+
+        return if !pipeline_complete && !pipeline_has_security_findings?
 
         update_required_approvals_for_scan_finding
       end
