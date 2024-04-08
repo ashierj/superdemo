@@ -16,12 +16,7 @@ export default {
     RoadmapSettings,
     RoadmapShell,
   },
-  props: {
-    emptyStateIllustrationPath: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['epicIid'],
   data() {
     return {
       isSettingsSidebarOpen: false,
@@ -29,14 +24,11 @@ export default {
   },
   computed: {
     ...mapState([
-      'currentGroupId',
-      'epicIid',
       'epics',
       'timeframe',
       'epicsFetchInProgress',
       'epicsFetchResultEmpty',
       'epicsFetchFailure',
-      'isChildEpics',
       'hasFiltersApplied',
       'filterParams',
       'presetType',
@@ -89,8 +81,6 @@ export default {
         :timeframe-start="timeframeStart"
         :timeframe-end="timeframeEnd"
         :has-filters-applied="hasFiltersApplied"
-        :empty-state-illustration-path="emptyStateIllustrationPath"
-        :is-child-epics="isChildEpics"
         :filter-params="filterParams"
       />
       <roadmap-shell
@@ -98,7 +88,6 @@ export default {
         :preset-type="presetType"
         :epics="epics"
         :timeframe="timeframe"
-        :current-group-id="currentGroupId"
         :has-filters-applied="hasFiltersApplied"
         :is-settings-sidebar-open="isSettingsSidebarOpen"
       />

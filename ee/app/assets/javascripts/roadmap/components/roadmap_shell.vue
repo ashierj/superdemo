@@ -28,10 +28,6 @@ export default {
       type: Array,
       required: true,
     },
-    currentGroupId: {
-      type: Number,
-      required: true,
-    },
     hasFiltersApplied: {
       type: Boolean,
       required: true,
@@ -44,7 +40,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['defaultInnerHeight', 'isShowingMilestones', 'milestonesType', 'milestones']),
+    ...mapState(['isShowingMilestones', 'milestonesType', 'milestones']),
     ...mapGetters(['isScopedRoadmap']),
     displayMilestones() {
       return Boolean(this.milestones.length) && this.isShowingMilestones;
@@ -111,7 +107,6 @@ export default {
       :preset-type="presetType"
       :milestones="milestonesToShow"
       :timeframe="timeframe"
-      :current-group-id="currentGroupId"
       @milestonesMounted="toggleCanCalculateEpicsListHeight"
     />
     <epics-list-section
@@ -119,7 +114,6 @@ export default {
       :preset-type="presetType"
       :epics="epics"
       :timeframe="timeframe"
-      :current-group-id="currentGroupId"
       :has-filters-applied="hasFiltersApplied"
     />
   </div>

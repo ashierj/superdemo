@@ -2,6 +2,10 @@
 import { generateKey } from '../utils/epic_utils';
 
 export default {
+  name: 'EpicItemContainer',
+  components: {
+    EpicItem: () => import('./epic_item.vue'),
+  },
   props: {
     presetType: {
       type: String,
@@ -9,10 +13,6 @@ export default {
     },
     timeframe: {
       type: Array,
-      required: true,
-    },
-    currentGroupId: {
-      type: Number,
       required: true,
     },
     clientWidth: {
@@ -55,7 +55,6 @@ export default {
       :preset-type="presetType"
       :epic="child"
       :timeframe="timeframe"
-      :current-group-id="currentGroupId"
       :client-width="clientWidth"
       :child-level="childLevel"
       :children-epics="childrenEpics"

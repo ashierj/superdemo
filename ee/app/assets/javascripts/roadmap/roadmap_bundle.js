@@ -8,9 +8,6 @@ import createDefaultClient from '~/lib/graphql';
 import { queryToObject } from '~/lib/utils/url_utility';
 import Translate from '~/vue_shared/translate';
 
-import EpicItem from './components/epic_item.vue';
-import EpicItemContainer from './components/epic_item_container.vue';
-
 import RoadmapApp from './components/roadmap_app.vue';
 import {
   DATE_RANGES,
@@ -35,14 +32,13 @@ export default () => {
     return false;
   }
 
+  const { dataset } = el;
+
   Vue.use(VueApollo);
   const defaultClient = createDefaultClient();
   const apolloProvider = new VueApollo({
     defaultClient,
   });
-
-  Vue.component('EpicItem', EpicItem);
-  Vue.component('EpicItemContainer', EpicItemContainer);
 
   return new Vue({
     el,
@@ -53,8 +49,6 @@ export default () => {
       RoadmapApp,
     },
     provide() {
-      const { dataset } = this.$options.el;
-
       return {
         newEpicPath: dataset.newEpicPath,
         listEpicsPath: dataset.listEpicsPath,
@@ -63,11 +57,16 @@ export default () => {
         groupLabelsPath: dataset.groupLabelsEndpoint,
         groupMilestonesPath: dataset.groupMilestonesEndpoint,
         canCreateEpic: parseBoolean(dataset.canCreateEpic),
+        emptyStateIllustrationPath: dataset.emptyStateIllustration,
+        fullPath: this.fullPath,
+        epicIid: this.epicIid,
+        allowSubEpics: parseBoolean(dataset.allowSubEpics),
+        allowScopedLabels: dataset.allowScopedLabels,
+        isChildEpics: parseBoolean(dataset.childEpics),
+        currentGroupId: parseInt(dataset.groupId, 10),
       };
     },
     data() {
-      const { dataset } = this.$options.el;
-
       const timeframeRangeType =
         Object.keys(DATE_RANGES).indexOf(dataset.timeframeRangeType) > -1
           ? dataset.timeframeRangeType
@@ -97,13 +96,7 @@ export default () => {
       };
 
       return {
-        emptyStateIllustrationPath: dataset.emptyStateIllustration,
         hasFiltersApplied: parseBoolean(dataset.hasFiltersApplied),
-        allowSubEpics: parseBoolean(dataset.allowSubEpics),
-        defaultInnerHeight: Number(dataset.innerHeight),
-        isChildEpics: parseBoolean(dataset.childEpics),
-        currentGroupId: parseInt(dataset.groupId, 10),
-        basePath: dataset.epicsPath,
         fullPath: dataset.fullPath,
         epicIid: dataset.iid,
         epicsState: dataset.epicsState,
@@ -124,13 +117,11 @@ export default () => {
             ? true
             : parseBoolean(rawFilterParams.show_milestones),
         milestonesType: rawFilterParams.milestones_type || MILESTONES_ALL,
-        allowScopedLabels: dataset.allowScopedLabels,
         isShowingLabels: parseBoolean(rawFilterParams.show_labels),
       };
     },
     created() {
       this.setInitialData({
-        currentGroupId: this.currentGroupId,
         fullPath: this.fullPath,
         epicIid: this.epicIid,
         sortedBy: this.sortedBy,
@@ -138,17 +129,12 @@ export default () => {
         presetType: this.presetType,
         epicsState: this.epicsState,
         timeframe: this.timeframe,
-        basePath: this.basePath,
         filterParams: this.filterParams,
-        defaultInnerHeight: this.defaultInnerHeight,
-        isChildEpics: this.isChildEpics,
         hasFiltersApplied: this.hasFiltersApplied,
-        allowSubEpics: this.allowSubEpics,
         isProgressTrackingActive: this.isProgressTrackingActive,
         progressTracking: this.progressTracking,
         isShowingMilestones: this.isShowingMilestones,
         milestonesType: this.milestonesType,
-        allowScopedLabels: this.allowScopedLabels,
         isShowingLabels: this.isShowingLabels,
       });
     },
@@ -156,11 +142,7 @@ export default () => {
       ...mapActions(['setInitialData']),
     },
     render(createElement) {
-      return createElement('roadmap-app', {
-        props: {
-          emptyStateIllustrationPath: this.emptyStateIllustrationPath,
-        },
-      });
+      return createElement('roadmap-app');
     },
   });
 };

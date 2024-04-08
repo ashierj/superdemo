@@ -18,13 +18,10 @@ export default {
     GlTooltip,
     IssuableBlockedIcon,
   },
+  inject: ['allowSubEpics', 'allowScopedLabels', 'currentGroupId'],
   props: {
     epic: {
       type: Object,
-      required: true,
-    },
-    currentGroupId: {
-      type: Number,
       required: true,
     },
     timeframeString: {
@@ -50,7 +47,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['allowSubEpics', 'isShowingLabels', 'filterParams', 'allowScopedLabels']),
+    ...mapState(['isShowingLabels', 'filterParams']),
     itemId() {
       return this.epic.id;
     },

@@ -19,7 +19,14 @@ export default {
     SafeHtml,
   },
   mixins: [CommonMixin],
-  inject: ['newEpicPath', 'listEpicsPath', 'epicsDocsPath', 'canCreateEpic'],
+  inject: [
+    'newEpicPath',
+    'listEpicsPath',
+    'epicsDocsPath',
+    'canCreateEpic',
+    'emptyStateIllustrationPath',
+    'isChildEpics',
+  ],
   props: {
     presetType: {
       type: String,
@@ -36,15 +43,6 @@ export default {
     hasFiltersApplied: {
       type: Boolean,
       required: true,
-    },
-    emptyStateIllustrationPath: {
-      type: String,
-      required: true,
-    },
-    isChildEpics: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     filterParams: {
       type: Object,

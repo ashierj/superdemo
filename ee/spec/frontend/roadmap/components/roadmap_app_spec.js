@@ -38,8 +38,8 @@ describe('RoadmapApp', () => {
     initialDate: mockTimeframeInitialDate,
   });
 
-  const createComponent = () => {
-    return shallowMountExtended(RoadmapApp, {
+  const createComponent = ({ epicIid } = {}) => {
+    wrapper = shallowMountExtended(RoadmapApp, {
       propsData: {
         emptyStateIllustrationPath,
       },
@@ -47,6 +47,7 @@ describe('RoadmapApp', () => {
         groupFullPath: 'gitlab-org',
         groupMilestonesPath: '/groups/gitlab-org/-/milestones.json',
         listEpicsPath: '/groups/gitlab-org/-/epics',
+        epicIid,
       },
       store,
     });
@@ -81,7 +82,7 @@ describe('RoadmapApp', () => {
     `when epic list $testLabel`,
     ({ epicList, showLoading, showRoadmapShell, showEpicsListEmpty }) => {
       beforeEach(() => {
-        wrapper = createComponent();
+        createComponent();
         if (epicList) {
           store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: epicList });
         }
@@ -103,7 +104,7 @@ describe('RoadmapApp', () => {
 
   describe('empty state view', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
       store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: [] });
     });
 
@@ -111,42 +112,36 @@ describe('RoadmapApp', () => {
       const epicsListEmpty = findEpicsListEmpty();
       expect(epicsListEmpty.exists()).toBe(true);
       expect(epicsListEmpty.props()).toMatchObject({
-        emptyStateIllustrationPath,
         hasFiltersApplied,
         presetType,
         timeframeStart: timeframe[0],
         timeframeEnd: timeframe[timeframe.length - 1],
-        isChildEpics: false,
       });
     });
   });
 
   describe('roadmap view', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-      store.commit(types.RECEIVE_EPICS_SUCCESS, { epics });
-    });
-
-    it('does not show filters UI when epicIid is present', async () => {
-      store.dispatch('setInitialData', {
-        epicIid: mockFormattedEpic.iid,
-      });
-
-      await nextTick();
+    it('does not show filters UI when epicIid is present', () => {
+      createComponent({ epicIid: '1' });
 
       expect(findRoadmapFilters().exists()).toBe(false);
     });
 
     it('shows roadmap filters UI when epicIid is not present', () => {
-      // By default, `epicIid` is not set on store.
+      createComponent();
+
       expect(findRoadmapFilters().exists()).toBe(true);
     });
 
-    it('shows roadmap-shell component', () => {
+    it('shows roadmap-shell component', async () => {
+      createComponent();
+      store.commit(types.RECEIVE_EPICS_SUCCESS, { epics });
+
+      await nextTick();
+
       const roadmapShell = findRoadmapShell();
       expect(roadmapShell.exists()).toBe(true);
       expect(roadmapShell.props()).toMatchObject({
-        currentGroupId,
         epics,
         hasFiltersApplied,
         presetType,
@@ -155,6 +150,8 @@ describe('RoadmapApp', () => {
     });
 
     it('renders settings sidebar', () => {
+      createComponent();
+
       expect(findSettingsSidebar().exists()).toBe(true);
     });
   });
