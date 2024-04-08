@@ -86,6 +86,40 @@ RSpec.describe Projects::UpdateMirrorService do
       end
     end
 
+    context "when the URL local" do
+      before do
+        allow(project).to receive(:import_url).and_return('https://localhost:3000')
+
+        stub_fetch_mirror(project)
+      end
+
+      context "when local requests are allowed" do
+        before do
+          stub_application_setting(allow_local_requests_from_web_hooks_and_services: true)
+        end
+
+        it "succeeds" do
+          result = service.execute
+
+          expect(result[:status]).to eq(:success)
+          expect(result[:message]).to be_nil
+        end
+      end
+
+      context "when local requests are not allowed" do
+        before do
+          stub_application_setting(allow_local_requests_from_web_hooks_and_services: false)
+        end
+
+        it "fails and returns error status" do
+          result = service.execute
+
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq('The import URL is invalid.')
+        end
+      end
+    end
+
     context "when given URLs contain escaped elements" do
       it_behaves_like "URLs containing escaped elements return expected status" do
         let(:result) { service.execute }
