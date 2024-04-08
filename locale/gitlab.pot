@@ -54011,6 +54011,9 @@ msgstr ""
 msgid "Transfer group to another parent group."
 msgstr ""
 
+msgid "Transfer in progress"
+msgstr ""
+
 msgid "Transfer project"
 msgstr ""
 
@@ -54063,6 +54066,9 @@ msgid "TransferProject|Project with same name or path in target namespace alread
 msgstr ""
 
 msgid "TransferProject|Root namespace can't be updated if the project has NPM packages scoped to the current root level namespace."
+msgstr ""
+
+msgid "TransferProject|This project is being transferred. Do not make any changes to the project until the transfer is complete."
 msgstr ""
 
 msgid "TransferProject|You don't have permission to transfer projects into that namespace."
