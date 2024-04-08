@@ -24748,9 +24748,23 @@ A user with access to the organization.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="organizationuseraccesslevel"></a>`accessLevel` **{warning-solid}** | [`OrganizationUserAccess!`](#organizationuseraccess) | **Introduced** in GitLab 16.11. **Status**: Experiment. Access level of the user in the organization. |
 | <a id="organizationuserbadges"></a>`badges` **{warning-solid}** | [`[OrganizationUserBadge!]`](#organizationuserbadge) | **Introduced** in GitLab 16.4. **Status**: Experiment. Badges describing the user within the organization. |
 | <a id="organizationuserid"></a>`id` **{warning-solid}** | [`ID!`](#id) | **Introduced** in GitLab 16.4. **Status**: Experiment. ID of the organization user. |
+| <a id="organizationuserislastowner"></a>`isLastOwner` **{warning-solid}** | [`Boolean!`](#boolean) | **Introduced** in GitLab 16.11. **Status**: Experiment. Whether the user is the last owner of the organization. |
 | <a id="organizationuseruser"></a>`user` **{warning-solid}** | [`UserCore!`](#usercore) | **Introduced** in GitLab 16.4. **Status**: Experiment. User that is associated with the organization. |
+| <a id="organizationuseruserpermissions"></a>`userPermissions` | [`OrganizationUserPermissions!`](#organizationuserpermissions) | Permissions for the current user on the resource. |
+
+### `OrganizationUserAccess`
+
+Represents the access level of a relationship between a User and Organization that it is related to.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="organizationuseraccessintegervalue"></a>`integerValue` **{warning-solid}** | [`Int`](#int) | **Introduced** in GitLab 16.11. **Status**: Experiment. Integer representation of access level. |
+| <a id="organizationuseraccessstringvalue"></a>`stringValue` **{warning-solid}** | [`OrganizationUserAccessLevel`](#organizationuseraccesslevel) | **Introduced** in GitLab 16.11. **Status**: Experiment. String representation of access level. |
 
 ### `OrganizationUserBadge`
 
@@ -24762,6 +24776,14 @@ An organization user badge.
 | ---- | ---- | ----------- |
 | <a id="organizationuserbadgetext"></a>`text` | [`String!`](#string) | Badge text. |
 | <a id="organizationuserbadgevariant"></a>`variant` | [`String!`](#string) | Badge variant. |
+
+### `OrganizationUserPermissions`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="organizationuserpermissionsremoveuser"></a>`removeUser` | [`Boolean!`](#boolean) | If `true`, the user can perform `remove_user` on this resource. |
 
 ### `Package`
 
@@ -32723,6 +32745,15 @@ Values for sorting organizations.
 | <a id="organizationsortcreated_desc"></a>`created_desc` **{warning-solid}** | **Deprecated** in GitLab 13.5. This was renamed. Use: `CREATED_DESC`. |
 | <a id="organizationsortupdated_asc"></a>`updated_asc` **{warning-solid}** | **Deprecated** in GitLab 13.5. This was renamed. Use: `UPDATED_ASC`. |
 | <a id="organizationsortupdated_desc"></a>`updated_desc` **{warning-solid}** | **Deprecated** in GitLab 13.5. This was renamed. Use: `UPDATED_DESC`. |
+
+### `OrganizationUserAccessLevel`
+
+Access level of an organization user.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="organizationuseraccessleveldefault"></a>`DEFAULT` **{warning-solid}** | **Introduced** in GitLab 16.11. **Status**: Experiment. Guest access. |
+| <a id="organizationuseraccesslevelowner"></a>`OWNER` **{warning-solid}** | **Introduced** in GitLab 16.11. **Status**: Experiment. Owner access. |
 
 ### `PackageDependencyType`
 
