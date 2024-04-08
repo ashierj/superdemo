@@ -1396,16 +1396,27 @@ RSpec.describe Issue, feature_category: :team_planning do
 
     subject(:has_parent_link) { issue.has_parent_link? }
 
-    context 'when when there is no associated parent link' do
+    context 'when there is no associated parent link' do
       it { is_expected.to eq false }
     end
 
-    context 'when when there is an associated parent link' do
+    context 'when there is an associated parent link' do
       before do
         create(:parent_link, work_item: work_item_issue, work_item_parent: work_item_epic)
       end
 
       it { is_expected.to eq true }
+    end
+
+    context 'when issue has an epic synced to a work item' do
+      let_it_be(:legacy_epic) { create(:epic, :with_synced_work_item) }
+
+      before do
+        create(:parent_link, work_item: work_item_issue, work_item_parent: legacy_epic.work_item)
+        create(:epic_issue, epic: legacy_epic, issue: issue)
+      end
+
+      it { is_expected.to eq false }
     end
   end
 
