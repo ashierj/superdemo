@@ -55,8 +55,15 @@ module EE
         return unless root_namespace.block_seat_overages?
         return if root_namespace.seats_available_for?(invites)
 
-        raise ::Members::CreateService::SeatLimitExceededError,
+        messages = [
           s_('AddMember|There are not enough available seats to invite this many users.')
+        ]
+
+        unless current_user.can?(:owner_access, source.root_ancestor)
+          messages << s_('AddMember|Ask a user with the Owner role to purchase more seats.')
+        end
+
+        raise ::Members::CreateService::SeatLimitExceededError, messages.join(" ")
       end
 
       def invite_quota_exceeded?

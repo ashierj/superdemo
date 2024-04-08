@@ -3196,6 +3196,9 @@ msgstr ""
 msgid "AddContextCommits|Add/remove"
 msgstr ""
 
+msgid "AddMember|Ask a user with the Owner role to purchase more seats."
+msgstr ""
+
 msgid "AddMember|Invite email is invalid"
 msgstr ""
 

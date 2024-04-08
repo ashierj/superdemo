@@ -371,16 +371,61 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         expect(json_response).to eq({ 'status' => 'success' })
       end
 
-      it 'rejects the member when there are not enough seats in the subscription' do
-        group.gitlab_subscription.update!(seats: 1)
+      context 'when there are not enough seats in the subscription' do
+        before_all do
+          group.gitlab_subscription.update!(seats: 1)
+        end
 
-        post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
+        context 'when the current user is an owner' do
+          it 'rejects the member' do
+            post api(url, owner), params: { access_level: Member::DEVELOPER, user_id: user.id }
 
-        expect(project.members.map(&:user_id)).to be_empty
-        expect(json_response).to eq({
-          'status' => 'error',
-          'message' => 'There are not enough available seats to invite this many users.'
-        })
+            expect(project.members.map(&:user_id)).to be_empty
+            expect(json_response).to eq({
+              'status' => 'error',
+              'message' => 'There are not enough available seats to invite this many users.'
+            })
+          end
+        end
+
+        context 'when the current user is not an owner' do
+          let_it_be(:maintainer) { create(:user) }
+
+          before do
+            project.add_maintainer(maintainer)
+          end
+
+          it 'rejects with a relevant message' do
+            post api(url, maintainer), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+            expect(project.members.map(&:user_id)).to contain_exactly(maintainer.id)
+            expect(json_response).to eq({
+              'status' => 'error',
+              'message' => 'There are not enough available seats to invite this many users. Ask a user with the Owner role to purchase more seats.'
+            })
+          end
+
+          context 'when adding to a sub group project' do
+            let_it_be(:sub_group) { create(:group, parent: group) }
+            let_it_be(:sub_group_project) { create(:project, namespace: sub_group) }
+
+            let(:url) { "/projects/#{sub_group_project.id}/invitations" }
+
+            before do
+              group.add_maintainer(maintainer)
+            end
+
+            it 'rejects with a relevant message' do
+              post api(url, maintainer), params: { access_level: Member::DEVELOPER, user_id: user.id }
+
+              expect(project.members.map(&:user_id)).to contain_exactly(maintainer.id)
+              expect(json_response).to eq({
+                'status' => 'error',
+                'message' => 'There are not enough available seats to invite this many users. Ask a user with the Owner role to purchase more seats.'
+              })
+            end
+          end
+        end
       end
 
       it 'adds the member when the member is already in the group when all the seats are taken' do
