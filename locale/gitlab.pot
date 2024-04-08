@@ -44067,6 +44067,9 @@ msgstr ""
 msgid "Runners|Runner is locked and available for currently assigned projects only. Only administrators can change the assigned projects."
 msgstr ""
 
+msgid "Runners|Runner is offline; it has never contacted this instance"
+msgstr ""
+
 msgid "Runners|Runner is offline; last contact was %{runner_contact} ago"
 msgstr ""
 
