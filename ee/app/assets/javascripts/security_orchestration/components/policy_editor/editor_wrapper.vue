@@ -3,6 +3,7 @@ import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
+import PipelineExecutionPolicyEditor from './pipeline_execution/editor_component.vue';
 import ScanExecutionPolicyEditor from './scan_execution/editor_component.vue';
 import ScanResultPolicyEditor from './scan_result/editor_component.vue';
 
@@ -11,6 +12,7 @@ export default {
     GlAlert,
     GlFormGroup,
     GlFormSelect,
+    PipelineExecutionPolicyEditor,
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
   },

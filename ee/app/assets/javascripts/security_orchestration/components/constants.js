@@ -24,6 +24,13 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
     urlParameter: 'approval_policy',
     value: 'approval',
   },
+  pipelineExecution: {
+    component: 'pipeline-execution-policy-editor',
+    text: s__('SecurityOrchestration|Pipeline execution'),
+    typeName: 'PipelineExecutionPolicy',
+    urlParameter: 'pipeline_execution_policy',
+    value: 'pipeline',
+  },
 };
 
 export const POLICIES_LIST_CONTAINER_CLASS = '.js-security-policies-container-wrapper';
