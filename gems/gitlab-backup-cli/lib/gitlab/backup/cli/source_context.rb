@@ -71,6 +71,11 @@ module Gitlab
           # TODO: Use configuration solver
           File.join(Gitlab.config.uploads.storage_path, 'uploads')
         end
+
+        def env
+          @env ||= ActiveSupport::EnvironmentInquirer.new(
+            ENV["RAILS_ENV"].presence || ENV["RACK_ENV"].presence || "development")
+        end
       end
     end
   end

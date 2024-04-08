@@ -24,6 +24,9 @@ module Gitlab
           def backup!(backup_path, backup_id)
             backup_output = backup_path.join(destination_path)
 
+            # During test, we ensure storage exists so we can run against `RAILS_ENV=test` environment
+            FileUtils.mkdir_p(storage_path) if context.env.test? && respond_to?(:storage_path, true)
+
             target.dump(backup_output, backup_id)
           end
 
