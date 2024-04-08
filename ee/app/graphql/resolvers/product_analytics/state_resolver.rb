@@ -13,6 +13,7 @@ module Resolvers
         return unless Gitlab::CurrentSettings.product_analytics_enabled? && object.product_analytics_enabled?
         return 'create_instance' unless tracking_key?
         return 'loading_instance' if initializing?
+        return 'create_instance' unless object.connected_to_cluster?
         return 'waiting_for_events' if no_instance_data?
 
         'complete'

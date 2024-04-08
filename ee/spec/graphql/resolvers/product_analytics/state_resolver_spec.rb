@@ -9,7 +9,12 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
     subject { resolve(described_class, obj: project, ctx: { current_user: user }) }
 
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
+    let_it_be(:purchase) do
+      create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on)
+    end
 
     before do
       stub_licensed_features(product_analytics: true)
@@ -25,6 +30,28 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
           it "returns #{state}" do
             setup_for(state)
             expect(subject).to eq(state == 'disabled' ? nil : state)
+          end
+        end
+      end
+
+      context "when there is no active addon purchase but onboarding was completed" do
+        it "returns 'create_instance' to allow re-onboarding after purchase" do
+          purchase.update!(expires_on: 1.day.ago)
+          setup_for('complete')
+
+          expect(subject).to eq('create_instance')
+        end
+
+        context "when product_analytics_billing is disabled" do
+          before do
+            stub_feature_flags(product_analytics_billing: false)
+          end
+
+          it "returns 'complete'" do
+            purchase.update!(expires_on: 1.day.ago)
+            setup_for('complete')
+
+            expect(subject).to eq('complete')
           end
         end
       end
