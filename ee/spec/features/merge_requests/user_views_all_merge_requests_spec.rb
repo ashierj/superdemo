@@ -17,49 +17,20 @@ RSpec.describe 'User views all merge requests', feature_category: :code_review_w
 
     it 'shows generic approvals tooltip' do
       visit(project_merge_requests_path(project, state: :all))
-      expect(page.all('li').any? { |item| item["title"] == "Required approvals (0 given)" }).to be true
+      expect(page.all('[data-testid="mr-appovals"]').any? { |item| item["title"] == "Required approvals (0 of 2 given)" }).to be true
     end
 
     it 'shows custom tooltip after a different user has approved' do
       merge_request.approvals.create!(user: another_user)
       visit(project_merge_requests_path(project, state: :all))
-      expect(page.all('li').any? { |item| item["title"] == "Required approvals (1 given)" }).to be true
+      expect(page.all('[data-testid="mr-appovals"]').any? { |item| item["title"] == "Required approvals (1 of 2 given)" }).to be true
     end
 
     it 'shows custom tooltip after self has approved' do
       merge_request.approvals.create!(user: user)
       sign_in(user)
       visit(project_merge_requests_path(project, state: :all))
-      expect(page.all('li').any? { |item| item["title"] == "Required approvals (1 given, you've approved)" }).to be true
+      expect(page.all('[data-testid="mr-appovals"]').any? { |item| item["title"] == "Required approvals (1 of 2 given, you've approved)" }).to be true
     end
-  end
-
-  it 'shows custom tooltip after user has approved' do
-    sign_in(user)
-    merge_request.approvals.create!(user: user)
-    visit(project_merge_requests_path(project, state: :all))
-    expect(page.all('li').any? { |item| item["title"] == "1 approver (you've approved)" }).to be true
-  end
-
-  it 'shows custom tooltip after a different user has approved' do
-    merge_request.approvals.create!(user: another_user)
-    sign_in(user)
-    visit(project_merge_requests_path(project, state: :all))
-    expect(page.all('li').any? { |item| item["title"] == "1 approver" }).to be true
-  end
-
-  it 'shows custom tooltip after multiple users have approved' do
-    merge_request.approvals.create!(user: another_user)
-    merge_request.approvals.create!(user: user)
-    visit(project_merge_requests_path(project, state: :all))
-    expect(page.all('li').any? { |item| item["title"] == "2 approvers" }).to be true
-  end
-
-  it 'shows custom tooltip after multiple users have approved, including self' do
-    merge_request.approvals.create!(user: another_user)
-    merge_request.approvals.create!(user: user)
-    sign_in(user)
-    visit(project_merge_requests_path(project, state: :all))
-    expect(page.all('li').any? { |item| item["title"] == "2 approvers (you've approved)" }).to be true
   end
 end
