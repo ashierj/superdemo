@@ -21,6 +21,7 @@ FactoryBot.define do
       subgroup_events { true }
       emoji_events { true }
       resource_access_token_events { true }
+      member_events { true }
     end
   end
 end
