@@ -5,6 +5,7 @@ import { getSeatTabMetadata } from './seats/tab_metadata';
 import { getCodeSuggestionsTabMetadata } from './code_suggestions/tab_metadata';
 import { getPipelineTabMetadata } from './pipelines/tab_metadata';
 import { getTransferTabMetadata } from './transfer/tab_metadata';
+import { getProductAnalyticsTabMetadata } from './product_analytics/tab_metadata';
 
 export const usageQuotasTabsMetadata = [
   getSeatTabMetadata(),
@@ -12,4 +13,5 @@ export const usageQuotasTabsMetadata = [
   getPipelineTabMetadata(),
   getStorageTabMetadata({ viewType: GROUP_VIEW_TYPE, customApolloProvider }),
   getTransferTabMetadata({ viewType: GROUP_VIEW_TYPE }),
+  getProductAnalyticsTabMetadata(),
 ].filter(Boolean);
