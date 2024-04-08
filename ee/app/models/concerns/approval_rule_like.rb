@@ -130,6 +130,10 @@ module ApprovalRuleLike
     false
   end
 
+  def policy_name
+    name.gsub(/\s\d+\z/, '')
+  end
+
   private
 
   def relation_exists?(relation, column:, value:)

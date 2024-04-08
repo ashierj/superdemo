@@ -77,7 +77,8 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
             create(:scan_result_policy_violation, project: project, merge_request: merge_request,
               scan_result_policy_read: policy1)
             create(:scan_result_policy_violation, project: project, merge_request: merge_request,
-              scan_result_policy_read: policy2)
+              scan_result_policy_read: policy2,
+              violation_data: { 'violations' => { 'license_scanning' => { 'MIT' => ['A'] } } })
           end
 
           it 'includes violated policy names' do
@@ -103,6 +104,17 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
                                       'Any merge request, License, Scan')
               expect(body).to include('Acquire approvals from eligible approvers defined in the following ' \
                                       'merge request approval policies: Any merge request')
+            end
+          end
+
+          context 'with errors' do
+            before do
+              create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+                scan_result_policy_read: policy3, violation_data: { 'errors' => [{ 'error' => 'error' }] })
+            end
+
+            it 'includes information about errors' do
+              expect(body).to include 'Resolve the errors and re-run the pipeline'
             end
           end
         end
@@ -227,6 +239,17 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
           end
 
           it { is_expected.to include 'Out-of-policy licenses', 'MIT', 'Used by A, B' }
+        end
+
+        describe 'errors' do
+          before do
+            build_violation_details(:scan_finding,
+              {
+                errors: [{ error: Security::ScanResultPolicyViolation::ERRORS[:artifacts_missing] }]
+              })
+          end
+
+          it { is_expected.to include 'Errors', 'Pipeline configuration error' }
         end
       end
     end
