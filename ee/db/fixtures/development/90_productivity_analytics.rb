@@ -111,12 +111,16 @@ class Gitlab::Seeder::ProductivityAnalytics
 
   def create_maintainers!
     5.times do |i|
-      user = FactoryBot.create(
-        :user,
-        name: "P User#{i}",
-        username: "p-user-#{i}-#{suffix}",
-        email: "p-user-#{i}@#{suffix}.com"
-      )
+      user =
+        ::User.create!(
+          username: "p-user-#{i}-#{suffix}",
+          name: "P User#{i}",
+          email: "p-user-#{i}@#{suffix}.com",
+          confirmed_at: DateTime.now,
+          password: ::User.random_password
+        ) do |user|
+          user.assign_personal_namespace(Organizations::Organization.default_organization)
+        end
 
       project.group&.add_maintainer(user)
       project.add_maintainer(user)
