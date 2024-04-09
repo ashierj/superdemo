@@ -63,6 +63,12 @@ export default {
       required: false,
       default: 'top',
     },
+    // Render avatar using pseudo-elements so that they cannot be selected or copied
+    pseudo: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     // API response sends null when gravatar is disabled and
@@ -91,14 +97,17 @@ export default {
 <template>
   <span ref="userAvatar">
     <gl-avatar
+      class="gl-bg-size-cover"
       :class="{
         lazy: lazy,
         [cssClasses]: true,
       }"
-      :src="resultantSrcAttribute"
+      :src="pseudo ? undefined : resultantSrcAttribute"
+      :style="pseudo ? { backgroundImage: `url('${sanitizedSource}')` } : null"
       :data-src="sanitizedSource"
       :size="size"
       :alt="imgAlt"
+      data-testid="user-avatar-image"
     />
 
     <gl-tooltip
