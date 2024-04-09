@@ -95,6 +95,7 @@ export default {
       fullPanelError: hasValidationErrors,
       data: null,
       loading: false,
+      dropdownOpen: false,
       panelTitleTooltip: '',
       popoverId: uniqueId('panel-error-popover-'),
       dropdownItems: [
@@ -109,6 +110,9 @@ export default {
   computed: {
     showEmptyState() {
       return !this.showErrorState && isEmptyPanelData(this.visualization.type, this.data);
+    },
+    showErrorPopover() {
+      return this.showErrorState && !this.dropdownOpen;
     },
     showErrorState() {
       return this.errors.length > 0;
@@ -257,6 +261,8 @@ export default {
           toggle-class="gl-ml-1"
           category="tertiary"
           positioning-strategy="fixed"
+          @shown="dropdownOpen = true"
+          @hidden="dropdownOpen = false"
         >
           <template #list-item="{ item }">
             <span :data-testId="`panel-action-${item.testId}`">
@@ -291,7 +297,7 @@ export default {
       </div>
 
       <gl-popover
-        v-if="showErrorState"
+        v-if="showErrorPopover"
         triggers="hover focus"
         :title="errorPopoverTitle"
         :show-close-button="false"
