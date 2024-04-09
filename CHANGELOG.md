@@ -712,6 +712,14 @@ entry.
 - [Add sharding keys for system_access](gitlab-org/gitlab@62c2fd4788e62e46f1469e2f18d178840e8e3df2) ([merge request](gitlab-org/gitlab!142501))
 - [Add sharding keys for purchase](gitlab-org/gitlab@9c3843da74714c72483c17489d5d3d68ceffd2c8) ([merge request](gitlab-org/gitlab!142505))
 
+## 16.9.4 (2024-04-09)
+
+### Security (3 changes)
+
+- [Update Gitlab::Regex::Packages#slack_link_regex](gitlab-org/security/gitlab@af54b6789912e394423920674ac2f4f0e38f9ff7) ([merge request](gitlab-org/security/gitlab!3903))
+- [Fix XSS in autocomplete in rich text editor](gitlab-org/security/gitlab@bf84ed8c4d716d642ed36c1a804733a17dace11a) ([merge request](gitlab-org/security/gitlab!3947))
+- [Correctly parse attachments for junit result](gitlab-org/security/gitlab@ed457bf14d21566b98fa461dfac10dac06b054ac) ([merge request](gitlab-org/security/gitlab!3911))
+
 ## 16.9.3 (2024-03-27)
 
 ### Fixed (1 change)
