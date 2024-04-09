@@ -17600,6 +17600,7 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="containerrepositorydetailstagsname"></a>`name` | [`String`](#string) | Search by tag name. |
+| <a id="containerrepositorydetailstagsreferrertype"></a>`referrerType` | [`String`](#string) | Comma-separated list of artifact types used to filter referrers. Applies only when `referrers` is set to `true`. |
 | <a id="containerrepositorydetailstagsreferrers"></a>`referrers` | [`Boolean`](#boolean) | Include tag referrers. |
 | <a id="containerrepositorydetailstagssort"></a>`sort` | [`ContainerRepositoryTagSort`](#containerrepositorytagsort) | Sort tags by these criteria. |
 
