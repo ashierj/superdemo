@@ -9,6 +9,11 @@ module EE
 
       SCOPES_THAT_SUPPORT_BRANCHES = %w[wiki_blobs commits blobs].freeze
 
+      override :zoekt_filters
+      def zoekt_filters
+        super.merge(include_archived: true, include_forked: true)
+      end
+
       override :execute
       def execute
         return zoekt_search_results if use_zoekt? && use_default_branch?

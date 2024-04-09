@@ -42,7 +42,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
 
   context 'when searching with Zoekt' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project, :public) }
+    let_it_be_with_reload(:project) { create(:project, :public) }
 
     let(:service) do
       described_class.new(
@@ -101,6 +101,19 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
         expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when project is archived' do
+      it 'sets include_archived and include_filtered filters to true' do
+        project.update!(archived: true)
+
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.zoekt_searchable_scope).to eq(project)
+        result = service.execute
+        expect(result).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(result.filters[:include_archived]).to eq true
+        expect(result.filters[:include_forked]).to eq true
       end
     end
 
