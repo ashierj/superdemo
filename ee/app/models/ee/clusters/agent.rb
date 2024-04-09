@@ -18,6 +18,11 @@ module EE
           inverse_of: :agent,
           foreign_key: :cluster_agent_id
 
+        has_many :remote_development_namespace_cluster_agent_mappings,
+          class_name: 'RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping',
+          inverse_of: :agent,
+          foreign_key: 'cluster_agent_id'
+
         scope :for_projects, -> (projects) { where(project: projects) }
         scope :with_remote_development_agent_config, -> { joins(:remote_development_agent_config) }
         scope :without_remote_development_agent_config, -> do

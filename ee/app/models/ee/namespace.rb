@@ -62,6 +62,10 @@ module EE
 
       has_one :zoekt_enabled_namespace, class_name: '::Search::Zoekt::EnabledNamespace',
         foreign_key: :root_namespace_id, inverse_of: :namespace
+      has_many :remote_development_namespace_cluster_agent_mappings,
+        class_name: 'RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping',
+        foreign_key: 'namespace_id',
+        inverse_of: :namespace
 
       scope :include_gitlab_subscription, -> { includes(:gitlab_subscription) }
       scope :include_gitlab_subscription_with_hosted_plan, -> { includes(gitlab_subscription: :hosted_plan) }
