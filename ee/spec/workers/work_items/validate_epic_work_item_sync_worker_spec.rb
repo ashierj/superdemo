@@ -39,7 +39,7 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
   end
 
   context 'when epic has no associated work item' do
-    let_it_be_with_reload(:epic) { create(:epic, group: group) }
+    let_it_be_with_reload(:epic) { create(:epic, :without_synced_work_item, group: group) }
 
     it 'does not log anything or tries to create a diff' do
       expect(Gitlab::EpicWorkItemSync::Logger).not_to receive(:warn)

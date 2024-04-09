@@ -73,6 +73,7 @@ module Epics
       def sync_to_work_item!
         return unless epic.work_item
         return unless source.issue_id && target.issue_id
+        return unless WorkItems::RelatedWorkItemLink.for_source_and_target(source.work_item, target.work_item).present?
 
         item_ids = epic_is_link_source? ? [target.issue_id] : [source.issue_id]
 

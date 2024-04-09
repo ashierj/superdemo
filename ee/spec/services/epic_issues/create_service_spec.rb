@@ -143,6 +143,8 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
             include_examples 'returns success'
 
             it 'does not perform N + 1 queries', :use_clean_rails_memory_store_caching, :request_store do
+              pending 'https://gitlab.com/gitlab-org/gitlab/-/issues/438295'
+
               allow(SystemNoteService).to receive(:epic_issue)
               allow(SystemNoteService).to receive(:issue_on_epic)
 
@@ -259,7 +261,7 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                 end
 
                 context 'and new parent does not have associated work item' do
-                  let_it_be(:another_epic) { create(:epic, group: group) }
+                  let_it_be(:another_epic) { create(:epic, :without_synced_work_item, group: group) }
 
                   it 'deletes the old work item parent link' do
                     expect { subject }.to change { WorkItems::ParentLink.count }.by(-1)

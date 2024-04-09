@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicsFinder do
+RSpec.describe EpicsFinder, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:search_user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }

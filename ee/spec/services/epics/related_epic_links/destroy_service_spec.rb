@@ -23,8 +23,8 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
     it_behaves_like 'a destroyable issuable link'
 
     context 'with a synced work item' do
-      let_it_be_with_reload(:source) { create(:epic, :with_synced_work_item, group: group) }
-      let_it_be_with_reload(:target) { create(:epic, :with_synced_work_item, group: group) }
+      let_it_be_with_reload(:source) { create(:epic, group: group) }
+      let_it_be_with_reload(:target) { create(:epic, group: group) }
       let_it_be(:work_item_link) { create(:work_item_link, source: source.work_item, target: target.work_item) }
       let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
 
@@ -71,7 +71,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
         end
 
         context 'when the source has no synced work item' do
-          let_it_be_with_reload(:source) { create(:epic, group: group) }
+          let_it_be_with_reload(:source) { create(:epic, :without_synced_work_item, group: group) }
           let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
 
           it 'removes the epic but not the work item relation' do
@@ -81,7 +81,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
         end
 
         context 'when the target has no synced work item' do
-          let_it_be_with_reload(:target) { create(:epic, group: group) }
+          let_it_be_with_reload(:target) { create(:epic, :without_synced_work_item, group: group) }
           let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
 
           it 'removes the epic but not the work item relation' do

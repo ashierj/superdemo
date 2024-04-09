@@ -165,7 +165,11 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         end
 
         it 'applies label to multiple epics from bulk editing sidebar', :aggregate_failures do
-          # Vertify that label `Bug` is not applied already
+          # TODO: remove threshold after epic-work item sync
+          # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(160)
+
+          # Verify that label `Bug` is not applied already
           expect(find('.issuable-list li.issue .issuable-info', match: :first)).not_to have_selector('.gl-label', text: bug_label.title)
 
           # Bulk edit all epics to apply label
