@@ -4,11 +4,9 @@ module API
   class DependencyProxy
     module Packages
       class Maven < ::API::Base
-        include ::API::Helpers::Authentication
+        include ::API::Concerns::DependencyProxy::PackagesHelpers
         helpers ::API::Helpers::Packages::Maven
         helpers ::API::Helpers::Packages::Maven::BasicAuthHelpers
-        helpers ::API::Helpers::RelatedResourcesHelpers
-        include ::API::Concerns::DependencyProxy::PackagesHelpers
 
         content_type :md5, 'text/plain'
         content_type :sha1, 'text/plain'
@@ -39,6 +37,10 @@ module API
           def respond_digest(digest)
             track_file_pulled_event(from_cache: true)
             digest
+          end
+
+          def upload_method
+            'PUT'
           end
 
           def upload_url
@@ -75,6 +77,10 @@ module API
           def wrap_error_response
             unauthorized_or! { yield }
           end
+
+          def present_package_file!(package_file)
+            present_carrierwave_file_with_head_support!(package_file)
+          end
         end
 
         authenticate_with do |accept|
@@ -102,7 +108,7 @@ module API
               { code: 403, message: 'Forbidden' },
               { code: 404, message: 'Not Found' }
             ]
-            tags %w[maven_packages]
+            tags %w[dependency_proxy_maven_packages]
             produces %w[application/octet-stream]
           end
           params do
