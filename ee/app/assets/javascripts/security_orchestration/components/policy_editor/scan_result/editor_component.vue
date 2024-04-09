@@ -4,7 +4,6 @@ import { isEmpty } from 'lodash';
 import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { isGroup, isProject } from 'ee/security_orchestration/components/utils';
 import {
   ADD_ACTION_LABEL,
@@ -28,7 +27,6 @@ import RuleSection from './rule/rule_section.vue';
 
 import {
   ANY_MERGE_REQUEST,
-  BLOCK_BRANCH_MODIFICATION,
   buildSettingsList,
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
@@ -85,7 +83,6 @@ export default {
     RuleSection,
     SettingsSection,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
@@ -112,20 +109,11 @@ export default {
     },
   },
   data() {
-    const manifest = isGroup(this.namespaceType)
+    const newPolicyYaml = isGroup(this.namespaceType)
       ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE
       : DEFAULT_SCAN_RESULT_POLICY;
 
-    const defaultPolicyObject = fromYaml({ manifest });
-
-    if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
-      defaultPolicyObject.approval_settings = {
-        [BLOCK_BRANCH_MODIFICATION]: true,
-        ...defaultPolicyObject.approval_settings,
-      };
-    }
-
-    const yamlEditorValue = policyToYaml(this.existingPolicy || defaultPolicyObject);
+    const yamlEditorValue = this.existingPolicy ? policyToYaml(this.existingPolicy) : newPolicyYaml;
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 

@@ -6,33 +6,25 @@ import {
   pushingBranchesConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
-afterEach(() => {
-  window.gon = {};
-});
+const defaultSettings = {
+  ...protectedBranchesConfiguration,
+  ...pushingBranchesConfiguration,
+};
 
 describe('approval_settings', () => {
   describe('buildSettingsList', () => {
-    it('returns the pushing branches settings by default', () => {
-      expect(buildSettingsList()).toEqual(pushingBranchesConfiguration);
-    });
-
-    it('returns the protected branches settings when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled', () => {
-      window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
-      expect(buildSettingsList()).toEqual({
-        ...pushingBranchesConfiguration,
-        ...protectedBranchesConfiguration,
-      });
+    it('returns the default settings', () => {
+      expect(buildSettingsList()).toEqual(defaultSettings);
     });
 
     it('returns merge request settings for the merge request rule', () => {
       expect(buildSettingsList({ hasAnyMergeRequestRule: true })).toEqual({
-        ...pushingBranchesConfiguration,
+        ...defaultSettings,
         ...mergeRequestConfiguration,
       });
     });
 
     it('can update merge request settings', () => {
-      window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
       const settings = {
         ...pushingBranchesConfiguration,
         ...mergeRequestConfiguration,
@@ -50,7 +42,7 @@ describe('approval_settings', () => {
       };
 
       expect(buildSettingsList({ settings, hasAnyMergeRequestRule: true })).toEqual({
-        ...pushingBranchesConfiguration,
+        ...defaultSettings,
         ...mergeRequestConfiguration,
       });
     });

@@ -99,23 +99,11 @@ export const PERMITTED_INVALID_SETTINGS = {
  * @returns {Object} final settings
  */
 const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRule: false }) => {
-  let configuration = {};
-
-  const extendConfiguration = (predicate, extension) => {
-    if (predicate) {
-      configuration = {
-        ...configuration,
-        ...extension,
-      };
-    }
+  const configuration = {
+    ...protectedBranchesConfiguration,
+    ...pushingBranchesConfiguration,
+    ...(hasAnyMergeRequestRule ? mergeRequestConfiguration : {}),
   };
-
-  extendConfiguration(
-    gon.features?.scanResultPoliciesBlockUnprotectingBranches,
-    protectedBranchesConfiguration,
-  );
-  extendConfiguration(true, pushingBranchesConfiguration);
-  extendConfiguration(hasAnyMergeRequestRule, mergeRequestConfiguration);
 
   return configuration;
 };

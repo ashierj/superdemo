@@ -29,6 +29,7 @@ actions:
     role_approvers:
       - developer
 approval_settings:
+  block_branch_modification: true
   prevent_pushing_and_force_pushing: true
 `;
 
@@ -44,6 +45,7 @@ actions:
     user_approvers_ids:
       - ${USER.id}
 approval_settings:
+  block_branch_modification: true
   prevent_pushing_and_force_pushing: true
 `;
 
@@ -62,6 +64,7 @@ actions:
     group_approvers_ids:
       - ${GROUP.id}
 approval_settings:
+  block_branch_modification: true
   prevent_pushing_and_force_pushing: true
 `;
 
