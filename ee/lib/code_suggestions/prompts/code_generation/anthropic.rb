@@ -15,7 +15,7 @@ module CodeSuggestions
         def request_params
           {
             model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
-            prompt_version: GATEWAY_PROMPT_VERSION,
+            prompt_version: self.class::GATEWAY_PROMPT_VERSION,
             prompt: prompt
           }.tap do |opts|
             opts[:model_name] = params[:model_name] if params[:model_name].present?
@@ -26,7 +26,17 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT.strip
-            Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new #{language.name} code inside the
+            Human: #{system_prompt}
+
+            #{instructions}
+
+            Assistant: #{assistant_prompt}
+          PROMPT
+        end
+
+        def system_prompt
+          <<~PROMPT.strip
+            You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new #{language.name} code inside the
             file '#{file_path_info}' based on instructions from the user.
             #{examples_section}
             #{existing_code_block}
@@ -49,11 +59,11 @@ module CodeSuggestions
 
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-
-            #{instructions}
-
-            Assistant: <new_code>
           PROMPT
+        end
+
+        def assistant_prompt
+          "<new_code>"
         end
 
         def existing_code_instruction

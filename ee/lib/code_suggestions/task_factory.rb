@@ -36,6 +36,18 @@ module CodeSuggestions
       )
     end
 
+    def anthropic_model
+      if Feature.enabled?(:claude_3_code_generation_opus, @current_user)
+        'claude-3-opus-20240229'
+      elsif Feature.enabled?(:claude_3_code_generation_sonnet, @current_user)
+        'claude-3-sonnet-20240229'
+      elsif Feature.enabled?(:claude_3_code_generation_haiku, @current_user)
+        'claude-3-haiku-20240307'
+      else
+        'claude-2.1'
+      end
+    end
+
     private
 
     attr_reader :current_user, :params, :unsafe_passthrough_params, :prefix, :suffix, :intent
@@ -50,7 +62,7 @@ module CodeSuggestions
         prefix: prefix,
         instruction: instruction,
         project: project,
-        model_name: ANTHROPIC_MODEL,
+        model_name: anthropic_model,
         current_user: current_user
       )
     end

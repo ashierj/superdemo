@@ -31,6 +31,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     allow(Gitlab::InternalEvents).to receive(:track_event)
     allow(Gitlab::Tracking::AiTracking).to receive(:track_event)
+
+    stub_feature_flags(claude_3_code_generation_opus: false)
+    stub_feature_flags(claude_3_code_generation_sonnet: false)
+    stub_feature_flags(claude_3_code_generation_haiku: false)
   end
 
   shared_examples 'a response' do |case_name|
