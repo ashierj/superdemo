@@ -195,10 +195,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         # rubocop: disable Layout/LineLength -- keep table structure readable
         where(:input_template, :tools) do
           # evaluation of questions which involve processing of other resources is not reliable yet
-          # because both IssueIdentifier and JsonReader tools assume we work with single resource:
+          # because the IssueIdentifier tool assumes we work with single resource:
           # IssueIdentifier overrides context.resource
-          # JsonReader takes resource from context
-          # So JsonReader twice with different action input
           'Can you provide more details about that issue?' | %w[IssueReader]
           'Can you reword your answer?' | []
           'Can you simplify your answer?' | []
@@ -397,10 +395,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         # rubocop: disable Layout/LineLength -- keep table structure readable
         where(:input_template, :tools) do
           # evaluation of questions which involve processing of other resources is not reliable yet
-          # because both EpicIdentifier and JsonReader tools assume we work with single resource:
+          # because the EpicIdentifier tool assumes we work with single resource:
           # EpicIdentifier overrides context.resource
-          # JsonReader takes resource from context
-          # So JsonReader twice with different action input
           'Can you provide more details about that epic?' | %w[EpicReader]
           # Translation would have to be explicitly allowed in prompt rules first
           'Can you reword your answer?' | []
