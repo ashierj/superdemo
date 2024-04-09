@@ -25,6 +25,7 @@ module EE
         mount ::API::Epics
         mount ::API::EpicBoards
         mount ::API::DependencyProxy::Packages::Maven
+        mount ::API::DependencyProxy::Packages::Npm
         mount ::API::RelatedEpicLinks
         mount ::API::ElasticsearchIndexedNamespaces
         mount ::API::Experiments

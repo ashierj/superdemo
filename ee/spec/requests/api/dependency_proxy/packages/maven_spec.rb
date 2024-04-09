@@ -6,18 +6,11 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
   using RSpec::Parameterized::TableSyntax
   include HttpBasicAuthHelpers
   include WorkhorseHelpers
+  include_context 'for a dependency proxy for packages'
 
-  let_it_be(:user) { create(:user) }
-  let_it_be_with_reload(:project) { create(:project, :public) }
   let_it_be_with_refind(:dependency_proxy_setting) do
     create(:dependency_proxy_packages_setting, :maven, project: project)
   end
-
-  # all tokens that we're going to use
-  let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
-  let_it_be(:deploy_token) { create(:deploy_token, write_package_registry: true) }
-  let_it_be(:project_deploy_token) { create(:project_deploy_token, deploy_token: deploy_token, project: project) }
-  let_it_be(:job) { create(:ci_build, user: user, status: :running, project: project) }
 
   describe 'GET /api/v4/projects/:project_id/dependency_proxy/packages/maven/*path/:file_name' do
     let(:path) { 'foo/bar/1.2.3' }
@@ -25,11 +18,6 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
     let(:url) { "/projects/#{project.id}/dependency_proxy/packages/maven/#{path}/#{file_name}" }
 
     subject { get(api(url), headers: headers) }
-
-    before do
-      stub_licensed_features(dependency_proxy_for_packages: true)
-      stub_config(dependency_proxy: { enabled: true }) # not enabled by default
-    end
 
     context 'with valid parameters' do
       shared_examples 'handling different token types' do |personal_access_token_cases:|
@@ -146,49 +134,12 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         end
 
         shared_examples 'returning a workhorse sendurl response' do
-          it 'returns a workhorse sendurl response' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response.headers[Gitlab::Workhorse::SEND_DATA_HEADER]).to start_with('send-url:')
-            expect(response.headers['Content-Type']).to eq('application/octet-stream')
-            expect(response.headers['Content-Length'].to_i).to eq(0)
-            expect(response.body).to eq('')
-
-            send_data_type, send_data = workhorse_send_data
-
-            expect(send_data_type).to eq('send-url')
-            expect(send_data['URL']).to be_present
-            expect(send_data['AllowRedirects']).to be_truthy
-            expect(send_data['DialTimeout']).to eq('10s')
-            expect(send_data['ResponseHeaderTimeout']).to eq('10s')
-            expect(send_data['ErrorResponseStatus']).to eq(502)
-            expect(send_data['TimeoutResponseStatus']).to eq(504)
-          end
-
+          it_behaves_like 'returning a workhorse sendurl response with', headers: {}
           it_behaves_like 'tracking an internal event', from_cache: false
         end
 
         shared_examples 'returning a workhorse senddependency response' do
-          it 'returns a workhorse senddependency response' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response.headers[Gitlab::Workhorse::SEND_DATA_HEADER]).to start_with('send-dependency:')
-            expect(response.headers['Content-Type']).to eq('application/octet-stream')
-            expect(response.headers['Content-Length'].to_i).to eq(0)
-            expect(response.body).to eq('')
-
-            send_data_type, send_data = workhorse_send_data
-            headers, url, upload_config = send_data.values_at('Headers', 'Url', 'UploadConfig')
-
-            expect(send_data_type).to eq('send-dependency')
-            expect(url).to be_present
-            expect(headers).to be_blank
-            expect(upload_config['Method']).to eq('PUT')
-            expect(upload_config['Url']).to be_present
-          end
-
+          it_behaves_like 'returning a workhorse senddependency response with', headers: nil, upload_method: 'PUT'
           it_behaves_like 'tracking an internal event', from_cache: false
         end
 
