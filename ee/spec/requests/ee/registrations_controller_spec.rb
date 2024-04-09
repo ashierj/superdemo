@@ -150,10 +150,10 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         end
 
         describe 'redirection' do
-          it 'redirects to the `identity_verification_path`' do
+          it 'redirects to the `signup_identity_verification_path`' do
             create_user
 
-            expect(response).to redirect_to(identity_verification_path)
+            expect(response).to redirect_to(signup_identity_verification_path)
           end
         end
 

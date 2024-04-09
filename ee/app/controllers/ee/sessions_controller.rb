@@ -83,7 +83,7 @@ module EE
       # When identity verification is enabled, store the user id in the session and redirect to the
       # identity verification page instead of displaying a Devise flash alert on the sign in page.
       session[:verification_user_id] = user.id
-      redirect_to identity_verification_path
+      redirect_to signup_identity_verification_path
     end
   end
 end

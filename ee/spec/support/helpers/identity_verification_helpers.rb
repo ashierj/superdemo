@@ -86,7 +86,7 @@ module IdentityVerificationHelpers
 
     wait_for_requests
 
-    expect(page).to have_current_path(success_identity_verification_path)
+    expect(page).to have_current_path(success_signup_identity_verification_path)
     expect(page).to have_content(s_('IdentityVerification|Verification successful'))
   end
 end

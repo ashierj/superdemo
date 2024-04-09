@@ -468,7 +468,7 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
           post provider, params: { group_id: group }
 
           expect(request.session[:verification_user_id]).to be_nil
-          expect(response).not_to redirect_to(identity_verification_path)
+          expect(response).not_to redirect_to(signup_identity_verification_path)
         end
       end
 
