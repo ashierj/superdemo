@@ -209,7 +209,6 @@ export default {
                 :href="issue.web_url"
                 target="_blank"
                 data-testid="jira-issue-link"
-                :data-qa-issue-key="issue.references.relative"
                 class="gl-text-gray-900"
               >
                 {{ issue.title }}
