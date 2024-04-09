@@ -134,22 +134,71 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
   end
 
   describe "#process" do
-    context 'when the merge request is mergable' do
-      it 'calls the merge worker' do
-        expect(mr_merge_if_green_enabled)
-          .to receive(:merge_async)
-          .with(mr_merge_if_green_enabled.merge_user_id, mr_merge_if_green_enabled.merge_params)
+    context 'when the merge request does not have a ci config' do
+      before do
+        allow(mr_merge_if_green_enabled.project).to receive(:has_ci?).and_return(false)
+      end
 
-        service.process(mr_merge_if_green_enabled)
+      context 'when the merge request is mergable' do
+        it 'calls the merge worker' do
+          expect(mr_merge_if_green_enabled)
+            .to receive(:merge_async)
+            .with(mr_merge_if_green_enabled.merge_user_id, mr_merge_if_green_enabled.merge_params)
+
+          service.process(mr_merge_if_green_enabled)
+        end
+      end
+
+      context 'when the merge request is not mergeable' do
+        it 'does not call the merge worker' do
+          expect(mr_merge_if_green_enabled).to receive(:mergeable?).and_return(false)
+          expect(mr_merge_if_green_enabled).not_to receive(:merge_async)
+
+          service.process(mr_merge_if_green_enabled)
+        end
       end
     end
 
-    context 'when the merge request is not mergeable' do
-      it 'does not call the merge worker' do
-        expect(mr_merge_if_green_enabled).to receive(:mergeable?).and_return(false)
-        expect(mr_merge_if_green_enabled).not_to receive(:merge_async)
+    context 'when the merge request has a ci config' do
+      before do
+        allow(mr_merge_if_green_enabled.project).to receive(:has_ci?).and_return(true)
+      end
 
-        service.process(mr_merge_if_green_enabled)
+      context 'when the pipeline has not succeeded' do
+        before do
+          allow(mr_merge_if_green_enabled).to receive(:diff_head_pipeline_success?).and_return(false)
+        end
+
+        it 'does not call the merge worker' do
+          expect(mr_merge_if_green_enabled).not_to receive(:merge_async)
+
+          service.process(mr_merge_if_green_enabled)
+        end
+      end
+
+      context 'when the pipeline has succeeded' do
+        before do
+          allow(mr_merge_if_green_enabled).to receive(:diff_head_pipeline_success?).and_return(true)
+        end
+
+        context 'when the merge request is mergable' do
+          it 'calls the merge worker' do
+            expect(mr_merge_if_green_enabled)
+              .to receive(:merge_async)
+              .with(mr_merge_if_green_enabled.merge_user_id, mr_merge_if_green_enabled.merge_params)
+
+            service.process(mr_merge_if_green_enabled)
+          end
+        end
+
+        context 'when the merge request is not mergeable' do
+          it 'does not call the merge worker' do
+            expect(mr_merge_if_green_enabled).to receive(:mergeable?).and_return(false)
+            expect(mr_merge_if_green_enabled).not_to receive(:merge_async)
+
+            service.process(mr_merge_if_green_enabled)
+          end
+        end
       end
     end
   end
