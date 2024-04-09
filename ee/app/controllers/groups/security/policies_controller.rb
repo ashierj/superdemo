@@ -11,6 +11,7 @@ module Groups
 
       before_action do
         push_frontend_feature_flag(:compliance_pipeline_in_policies, group)
+        push_frontend_feature_flag(:pipeline_execution_policy_type, group)
         push_frontend_feature_flag(:security_policies_breaking_changes, group)
       end
 
