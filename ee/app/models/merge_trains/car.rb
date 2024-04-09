@@ -5,6 +5,9 @@ module MergeTrains
   class Car < ApplicationRecord
     include Gitlab::Utils::StrongMemoize
     include AfterCommitQueue
+    include IgnorableColumns
+
+    ignore_columns :pipeline_id_convert_to_bigint, remove_with: '17.1', remove_after: '2024-06-14'
 
     # For legacy reasons, each row is a merge train in the database
     self.table_name = 'merge_trains'
