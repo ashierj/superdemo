@@ -25,6 +25,9 @@ module RemoteDevelopment
     WorkspaceCreatePreFlattenDevfileValidationFailed = Class.new(Message)
     WorkspaceCreateDevfileFlattenFailed = Class.new(Message)
     WorkspaceCreatePostFlattenDevfileValidationFailed = Class.new(Message)
+    PersonalAccessTokenModelCreateFailed = Class.new(Message)
+    WorkspaceModelCreateFailed = Class.new(Message)
+    WorkspaceVariablesModelCreateFailed = Class.new(Message)
     WorkspaceCreateFailed = Class.new(Message)
 
     # Workspace update errors
@@ -37,6 +40,14 @@ module RemoteDevelopment
     SettingsEnvironmentVariableReadFailed = Class.new(Message)
     SettingsCurrentSettingsReadFailed = Class.new(Message)
     SettingsVscodeExtensionsGalleryValidationFailed = Class.new(Message)
+
+    # Namespace Cluster Agent Mapping create errors
+    NamespaceClusterAgentMappingAlreadyExists = Class.new(Message)
+    NamespaceClusterAgentMappingCreateFailed = Class.new(Message)
+    NamespaceClusterAgentMappingCreateValidationFailed = Class.new(Message)
+
+    # Namespace Cluster Agent Mapping delete errors
+    NamespaceClusterAgentMappingNotFound = Class.new(Message)
 
     #---------------------------------------------------------
     # Domain Events - message name should describe the outcome
@@ -54,9 +65,8 @@ module RemoteDevelopment
     # Settings domain events
     SettingsGetSuccessful = Class.new(Message)
 
-    # Workspace DB events
-    PersonalAccessTokenModelCreateFailed = Class.new(Message)
-    WorkspaceModelCreateFailed = Class.new(Message)
-    WorkspaceVariablesModelCreateFailed = Class.new(Message)
+    # Namespace Cluster Agent Mapping domain events
+    NamespaceClusterAgentMappingCreateSuccessful = Class.new(Message)
+    NamespaceClusterAgentMappingDeleteSuccessful = Class.new(Message)
   end
 end

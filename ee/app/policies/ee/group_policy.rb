@@ -7,6 +7,7 @@ module EE
 
     prepended do
       include CrudPolicyHelpers
+      include RemoteDevelopment::GroupPolicy
 
       condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
       condition(:saml_group_links_exists, scope: :subject) do

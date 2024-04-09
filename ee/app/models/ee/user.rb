@@ -118,6 +118,10 @@ module EE
 
       has_many :assigned_add_ons, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :user
 
+      has_many :created_remote_development_namespace_cluster_agent_mappings,
+        class_name: 'RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping',
+        inverse_of: :user
+
       scope :auditors, -> { where('auditor IS true') }
       scope :managed_by, ->(group) { where(managing_group: group) }
 
