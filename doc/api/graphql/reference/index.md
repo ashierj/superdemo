@@ -24204,9 +24204,11 @@ Represents a milestone.
 | <a id="milestonedescription"></a>`description` | [`String`](#string) | Description of the milestone. |
 | <a id="milestoneduedate"></a>`dueDate` | [`Time`](#time) | Timestamp of the milestone due date. |
 | <a id="milestoneexpired"></a>`expired` | [`Boolean!`](#boolean) | Expired state of the milestone (a milestone is expired when the due date is past the current date). Defaults to `false` when due date has not been set. |
+| <a id="milestonegroup"></a>`group` | [`Group`](#group) | Group of the milestone. |
 | <a id="milestonegroupmilestone"></a>`groupMilestone` | [`Boolean!`](#boolean) | Indicates if milestone is at group level. |
 | <a id="milestoneid"></a>`id` | [`ID!`](#id) | ID of the milestone. |
 | <a id="milestoneiid"></a>`iid` | [`ID!`](#id) | Internal ID of the milestone. |
+| <a id="milestoneproject"></a>`project` | [`Project`](#project) | Project of the milestone. |
 | <a id="milestoneprojectmilestone"></a>`projectMilestone` | [`Boolean!`](#boolean) | Indicates if milestone is at project level. |
 | <a id="milestonereleases"></a>`releases` | [`ReleaseConnection`](#releaseconnection) | Releases associated with this milestone. (see [Connections](#connections)) |
 | <a id="milestonestartdate"></a>`startDate` | [`Time`](#time) | Timestamp of the milestone start date. |
@@ -24214,6 +24216,7 @@ Represents a milestone.
 | <a id="milestonestats"></a>`stats` | [`MilestoneStats`](#milestonestats) | Milestone statistics. |
 | <a id="milestonesubgroupmilestone"></a>`subgroupMilestone` | [`Boolean!`](#boolean) | Indicates if milestone is at subgroup level. |
 | <a id="milestonetitle"></a>`title` | [`String!`](#string) | Title of the milestone. |
+| <a id="milestoneupcoming"></a>`upcoming` | [`Boolean!`](#boolean) | Upcoming state of the milestone (a milestone is upcoming when the start date is in the future). Defaults to `false` when start date has not been set. |
 | <a id="milestoneupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of last milestone update. |
 | <a id="milestonewebpath"></a>`webPath` | [`String!`](#string) | Web path of the milestone. |
 
