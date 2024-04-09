@@ -50,7 +50,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
 
     it 'triggers indexing for the project' do
-      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(project.id).and_return('the-job-id')
+      expect(::Search::Zoekt).to receive(:index_async).with(project.id).and_return('the-job-id')
 
       put api(path, admin, admin_mode: true)
 

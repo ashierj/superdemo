@@ -75,7 +75,7 @@ module EE
         end
 
         interval_for_indexer_worker = idx % ::Zoekt::IndexerWorker::MAX_JOBS_PER_HOUR
-        ::Zoekt::IndexerWorker.perform_in(interval_for_indexer_worker, project.id) if project.use_zoekt?
+        ::Search::Zoekt.index_in(interval_for_indexer_worker, project.id) if project.use_zoekt?
       end
 
       def process_elasticsearch_project(project, elasticsearch_limit_indexing_enabled)

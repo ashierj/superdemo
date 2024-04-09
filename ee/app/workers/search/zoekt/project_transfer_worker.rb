@@ -28,7 +28,7 @@ module Search
 
         return unless project.use_zoekt?
 
-        ::Zoekt::IndexerWorker.perform_async(project_id)
+        ::Search::Zoekt.index_async(project_id)
       end
     end
   end
