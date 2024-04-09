@@ -5,7 +5,6 @@ module API
     module DependencyProxy
       module PackagesHelpers
         extend ActiveSupport::Concern
-        include Gitlab::ClassAttributes
 
         TIMEOUTS = {
           open: 10,
@@ -20,7 +19,9 @@ module API
         CALLBACKS_CLASS = Struct.new(:skip_upload, :before_respond_with)
 
         included do
+          include ::API::Helpers::Authentication
           helpers ::API::Helpers::PackagesHelpers
+          helpers ::API::Helpers::RelatedResourcesHelpers
 
           feature_category :package_registry
           urgency :low
@@ -56,7 +57,7 @@ module API
 
               if result.success? || (result.error? && result.reason != :wrong_etag)
                 track_file_pulled_event(from_cache: true)
-                present_carrierwave_file_with_head_support!(package_file)
+                present_package_file!(package_file)
               elsif can?(current_user, :destroy_package, dependency_proxy_setting) &&
                   can?(current_user, :create_package, dependency_proxy_setting)
                 destroy_package_file(package_file) if package_file
@@ -80,6 +81,8 @@ module API
             end
 
             def track_file_pulled_event(from_cache: false)
+              return unless track_events?
+
               event_name = from_cache ? tracking_event_name(from: :cache) : tracking_event_name(from: :external)
 
               # we can't send deploy tokens to #track_event
@@ -94,7 +97,7 @@ module API
 
             def send_and_upload_remote_url
               upload_config = {
-                method: 'PUT',
+                method: upload_method,
                 url: upload_url,
                 headers: upload_headers
               }
@@ -112,6 +115,7 @@ module API
               track_file_pulled_event(from_cache: false)
               header(*headers)
               env['api.format'] = :binary
+              content_type 'application/octet-stream'
               status :ok
               body ''
             end
@@ -147,6 +151,10 @@ module API
               {}
             end
 
+            def upload_method
+              'POST'
+            end
+
             def remote_url_headers
               {}
             end
@@ -157,6 +165,10 @@ module API
 
             def wrap_error_response
               yield
+            end
+
+            def track_events?
+              true
             end
           end
 
