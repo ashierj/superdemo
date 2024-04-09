@@ -111,11 +111,8 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
         visit project_settings_analytics_path(project)
       end
 
-      it 'shows link to onboarding flow' do
-        expect(page).to have_content(
-          s_('You need to set up product analytics before your application can be instrumented.'))
-        expect(page).to have_link('set up product analytics',
-          href: project_analytics_dashboards_path(project, vueroute: 'product-analytics-onboarding'))
+      it 'does not show instrumentation instructions' do
+        expect(page).not_to have_content s_('View instrumentation instructions')
       end
     end
 

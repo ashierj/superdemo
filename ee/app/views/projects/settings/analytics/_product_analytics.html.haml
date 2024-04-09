@@ -7,8 +7,9 @@
   - link = link_to('', help_page_path('user/product_analytics/index'), target: '_blank', rel: 'noopener noreferrer')
   = safe_format(s_('ProjectSettings|Set up your project to receive events that are used for %{link_start}product analytics%{link_end}.'), tag_pair(link, :link_start, :link_end))
 
-.gl-mb-3
-  #js-product-analytics-instrumentation-settings{ data: data }
+- if data[:tracking_key].present?
+  .gl-mb-3
+    #js-product-analytics-instrumentation-settings{ data: data }
 
 %h4
   = s_('ProjectSettings|Configure your instance')
