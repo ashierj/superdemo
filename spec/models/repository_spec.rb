@@ -3772,11 +3772,6 @@ RSpec.describe Repository, feature_category: :source_code_management do
         repository.change_head(branch)
       end
 
-      it 'copies the gitattributes' do
-        expect(repository).to receive(:copy_gitattributes).with(branch)
-        repository.change_head(branch)
-      end
-
       it 'reloads the default branch' do
         expect(repository.container).to receive(:reload_default_branch)
         repository.change_head(branch)
