@@ -264,7 +264,7 @@ module Gitlab
         client.cluster.stats['nodes']['fs']['free_in_bytes']
       end
 
-      def reindex(from: target_index_name, to:, max_slice:, slice:, wait_for_completion: false)
+      def reindex(to:, max_slice:, slice:, from: target_index_name, wait_for_completion: false)
         response = ::Search::ReindexingService.execute(
           from: from, to: to, slice: slice, max_slices: max_slice, wait_for_completion: wait_for_completion
         )
@@ -288,11 +288,11 @@ module Gitlab
         mappings.dig(index, 'mappings', 'properties')
       end
 
-      def update_settings(index_name: nil, settings:)
+      def update_settings(settings:, index_name: nil)
         client.indices.put_settings(index: index_name || target_index_name, body: settings)
       end
 
-      def update_mapping(index_name: nil, mappings:)
+      def update_mapping(mappings:, index_name: nil)
         options = {
           index: index_name || target_index_name,
           body: mappings
@@ -306,7 +306,7 @@ module Gitlab
         mappings.dig(index, 'mappings', '_meta')
       end
 
-      def switch_alias(from: target_index_name, alias_name: target_name, to:)
+      def switch_alias(to:, from: target_index_name, alias_name: target_name)
         actions = [
           {
             remove: { index: from, alias: alias_name }

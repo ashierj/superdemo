@@ -4,7 +4,7 @@ module Gitlab
   module Insights
     module Executors
       class IssuableExecutor
-        def initialize(query_params:, current_user:, insights_entity:, projects: [], chart_type:)
+        def initialize(query_params:, current_user:, insights_entity:, chart_type:, projects: [])
           @query_params = query_params
           @current_user = current_user
           @insights_entity = insights_entity
