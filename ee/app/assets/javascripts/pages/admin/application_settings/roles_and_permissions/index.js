@@ -1,3 +1,3 @@
-import { initRolesAndPermissions } from 'ee/roles_and_permissions';
+import { initCustomRolesApp } from 'ee/roles_and_permissions';
 
-initRolesAndPermissions();
+initCustomRolesApp();
