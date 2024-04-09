@@ -28,7 +28,7 @@ describe('ExperimentFeaturesBanner', () => {
     expect(findLocalStorageSync().exists()).toBe(true);
     expect(findBanner().exists()).toBe(true);
     expect(findBanner().text()).toContain(
-      'Introducing Policy Scoping and Pipeline Execution Policy Action experimental features',
+      'Introducing Pipeline Execution Policy Action experimental feature',
     );
     expect(findPrimaryBannerButton().attributes('href')).toBe(
       'https://gitlab.com/gitlab-org/gitlab/-/issues/434425',

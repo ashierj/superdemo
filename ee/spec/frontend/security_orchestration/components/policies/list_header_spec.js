@@ -62,7 +62,7 @@ describe('List Header Component', () => {
       expect(findNewPolicyButton().exists()).toBe(true);
       expect(findNewPolicyButton().text()).toBe(NEW_POLICY_BUTTON_TEXT);
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
-      expect(findExperimentFeaturesBanner().exists()).toBe(true);
+      expect(findExperimentFeaturesBanner().exists()).toBe(false);
     });
 
     it.each`
@@ -197,5 +197,26 @@ describe('List Header Component', () => {
         expect(findFn().exists()).toBe(false);
       });
     });
+  });
+
+  describe('experiments promotion banner', () => {
+    it.each`
+      compliancePipelineInPolicies | expectedResult
+      ${true}                      | ${true}
+      ${false}                     | ${false}
+    `(
+      'renders experiments promotion banner',
+      ({ compliancePipelineInPolicies, expectedResult }) => {
+        createWrapper({
+          provide: {
+            glFeatures: {
+              compliancePipelineInPolicies,
+            },
+          },
+        });
+
+        expect(findExperimentFeaturesBanner().exists()).toBe(expectedResult);
+      },
+    );
   });
 });
