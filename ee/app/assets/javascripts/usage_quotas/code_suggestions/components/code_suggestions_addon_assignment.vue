@@ -8,6 +8,7 @@ import {
   CANNOT_UNASSIGN_ADDON_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
+import { isKnownErrorCode } from '~/lib/utils/error_utils';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
 import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
 
@@ -83,7 +84,7 @@ export default {
     },
     handleError(error) {
       let errorCode = error;
-      if (!this.isKnownErrorCode(error)) {
+      if (!isKnownErrorCode(error, ADD_ON_ERROR_DICTIONARY)) {
         errorCode = this.isAssigned
           ? CANNOT_UNASSIGN_ADDON_ERROR_CODE
           : CANNOT_ASSIGN_ADDON_ERROR_CODE;
@@ -107,13 +108,6 @@ export default {
         variables: this.addOnAssignmentQueryVariables,
       });
       return userAddOnAssignmentRemove;
-    },
-    isKnownErrorCode(errorCode) {
-      if (errorCode instanceof String || typeof errorCode === 'string') {
-        return Object.keys(ADD_ON_ERROR_DICTIONARY).includes(errorCode.toLowerCase());
-      }
-
-      return false;
     },
   },
 };

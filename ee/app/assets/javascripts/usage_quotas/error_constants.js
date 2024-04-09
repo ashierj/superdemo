@@ -46,9 +46,9 @@ const GENERAL_ADD_ON_BULK_ASSIGNMENT_ERROR = {
 };
 
 const GENERAL_ADD_ON_BULK_UNASSIGNMENT_ERROR = {
-  title: s__('Billing|Error unassigning GitLab Duo Pro add-on'),
+  title: s__('Billing|Error un-assigning GitLab Duo Pro add-on'),
   message: s__(
-    'Billing|Something went wrong when unassigning the add-on to the selected members. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+    'Billing|Something went wrong when un-assigning the add-on to the selected members. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
   links: { supportLink },
 };

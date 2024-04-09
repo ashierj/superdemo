@@ -29,6 +29,7 @@ import {
 } from 'ee/usage_quotas/code_suggestions/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
+import { isKnownErrorCode } from '~/lib/utils/error_utils';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
@@ -181,9 +182,6 @@ export default {
       this.addOnAssignmentError = errorCode;
       this.scrollToTop();
     },
-    clearAddOnAssignmentError() {
-      this.addOnAssignmentError = undefined;
-    },
     scrollToTop() {
       scrollToElement(this.$el);
     },
@@ -305,19 +303,12 @@ export default {
     },
     handleBulkActionError(error) {
       let bulkActionError = error;
-      if (!this.isKnownErrorCode(error)) {
+      if (!isKnownErrorCode(error, ADD_ON_ERROR_DICTIONARY)) {
         bulkActionError = this.isBulkActionToAssignSeats
           ? CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE
           : CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE;
       }
       this.bulkActionError = bulkActionError;
-    },
-    isKnownErrorCode(errorCode) {
-      if (errorCode instanceof String || typeof errorCode === 'string') {
-        return Object.keys(ADD_ON_ERROR_DICTIONARY).includes(errorCode.toLowerCase());
-      }
-
-      return false;
     },
     resetBulkAction() {
       this.bulkAction = undefined;
@@ -338,7 +329,7 @@ export default {
       :error="addOnAssignmentError"
       :error-dictionary="$options.addOnErrorDictionary"
       :dismissible="true"
-      @dismiss="clearAddOnAssignmentError"
+      @dismiss="addOnAssignmentError = undefined"
     />
     <gl-alert
       v-if="bulkActionSuccessMessage"
@@ -449,7 +440,7 @@ export default {
           :add-on-assignments="item.addOnAssignments"
           :add-on-purchase-id="addOnPurchaseId"
           @handleAddOnAssignmentError="handleAddOnAssignmentError"
-          @clearAddOnAssignmentError="clearAddOnAssignmentError"
+          @clearAddOnAssignmentError="clearAlerts"
         />
       </template>
       <template #cell(maxRole)="{ item }">
