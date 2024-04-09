@@ -54,8 +54,10 @@ export default {
     icon="ellipsis_v"
     placement="right"
     no-caret
+    text-sr-only
+    :toggle-text="$options.i18n.actionsText"
   >
-    <gl-disclosure-dropdown-item :item="editRoleItem" />
+    <gl-disclosure-dropdown-item :item="editRoleItem" hidden />
     <gl-disclosure-dropdown-item
       v-gl-tooltip.left.viewport.d0="deleteTooltip"
       :item="deleteRoleItem"

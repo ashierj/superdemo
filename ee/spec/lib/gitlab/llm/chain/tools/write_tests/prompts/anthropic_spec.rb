@@ -4,10 +4,15 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic, feature_category: :duo_chat do
   describe '.prompt' do
-    it 'returns prompt' do
-      prompt = described_class
-        .prompt({ input: 'question', language_info: 'language', selected_text: 'selected text',
-                  file_content: 'file content' })[:prompt]
+    it 'returns prompt', :aggregate_failures do
+      result = described_class.prompt(
+        input: 'question',
+        language_info: 'language',
+        selected_text: 'selected text',
+        file_content: 'file content'
+      )
+      prompt = result[:prompt]
+      model = result[:options][:model]
       expected_prompt = <<~PROMPT.chomp
 
 
@@ -28,6 +33,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic, featur
       PROMPT
 
       expect(prompt).to include(expected_prompt)
+      expect(model).to eq(described_class::MODEL)
     end
   end
 end

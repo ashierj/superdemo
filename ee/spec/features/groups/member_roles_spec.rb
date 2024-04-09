@@ -3,63 +3,105 @@
 require 'spec_helper'
 
 RSpec.describe 'Member Roles', :js, feature_category: :permissions do
-  let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:custom_role) { create(:member_role, namespace: group) }
+  let_it_be(:owner) { create(:user) }
 
   let(:name) { 'My custom role' }
   let(:description) { 'My role description' }
-  let(:permissions) { { read_vulnerability: { name: 'read_vulnerability' } } }
-  let(:permission) { :read_vulnerability }
-  let(:permission_name) { permission.to_s.humanize }
   let(:access_level) { 'Developer' }
+  let(:permissions) { ['Read vulnerability'] }
 
   before_all do
-    group.add_owner(user)
+    group.add_owner(owner)
   end
 
   before do
     stub_licensed_features(custom_roles: true)
+    sign_in(owner)
   end
 
   def create_role(access_level, name, description, permissions)
-    click_button 'New role'
-    select access_level, from: 'Base role'
+    click_link s_('MemberRole|New role')
+    wait_for_requests
+
     fill_in 'Name', with: name
     fill_in 'Description', with: description
+    select access_level, from: 'Base role'
+
     permissions.each do |permission|
-      page.check permission
+      page.check(permission)
     end
-    click_button 'Create role'
+
+    click_button s_('MemberRole|Create role')
   end
 
   def created_role(id, name, description, access_level, permissions)
     [id, name, description, access_level, *permissions].join(' ')
   end
 
-  describe 'adding a new custom role' do
-    before do
-      allow(Gitlab::CustomRoles::Definition).to receive(:all).and_return(permissions)
+  shared_examples 'creates a new custom role' do
+    it 'and displays it' do
+      create_role(access_level, name, description, permissions)
 
-      sign_in(user)
+      created_member_role = MemberRole.find_by(name: name)
+
+      expect(created_member_role).not_to be_nil
+
+      role = created_role(created_member_role.id, name, description, access_level, permissions)
+      expect(page).to have_content(role)
     end
+  end
 
-    shared_examples 'creates a new custom role' do
-      it 'and displays it' do
-        create_role(access_level, name, description, [permission_name])
+  shared_examples 'deletes a custom role' do
+    context 'when no user is assigned to the role' do
+      it 'deletes the custom role' do
+        click_button s_('MemberRole|Actions')
+        click_button s_('MemberRole|Delete role')
 
-        created_member_role = MemberRole.permissions_where(permission => true)
-          .find_by(name: name, base_access_level: Gitlab::Access.options[access_level])
+        wait_for_requests
 
-        expect(created_member_role).not_to be_nil
+        click_button s_('MemberRole|Delete role')
 
-        role = created_role(created_member_role.id, name, description, access_level, [permission_name])
-        expect(page).to have_content(role)
+        wait_for_requests
+
+        expect(page).to have_content(s_('MemberRole|Role successfully deleted.'))
       end
     end
 
-    context 'when on SaaS' do
+    context 'when a user is assigned to the role' do
       before do
-        stub_saas_features(gitlab_com_subscriptions: true)
+        create(:group_member, :developer, group: group, member_role: custom_role)
+
+        page.refresh
+      end
+
+      it 'disables the delete role button' do
+        click_button s_('MemberRole|Actions')
+        expect(page).to have_button s_('MemberRole|Delete role'), disabled: true
+      end
+    end
+  end
+
+  context 'when on SaaS' do
+    before do
+      stub_saas_features(gitlab_com_subscriptions: true)
+
+      visit group_settings_roles_and_permissions_path(group)
+    end
+
+    it_behaves_like 'creates a new custom role'
+    it_behaves_like 'deletes a custom role'
+  end
+
+  context 'when on self-managed' do
+    before do
+      stub_saas_features(gitlab_com_subscriptions: false)
+    end
+
+    context 'when restrict_member_roles feature-flag is disabled' do
+      before do
+        stub_feature_flags(restrict_member_roles: false)
 
         visit group_settings_roles_and_permissions_path(group)
       end
@@ -67,33 +109,17 @@ RSpec.describe 'Member Roles', :js, feature_category: :permissions do
       it_behaves_like 'creates a new custom role'
     end
 
-    context 'when on self-managed' do
+    context 'when restrict_member_roles feature-flag is enabled' do
       before do
-        stub_saas_features(gitlab_com_subscriptions: false)
+        stub_feature_flags(restrict_member_roles: true)
+
+        visit group_settings_roles_and_permissions_path(group)
       end
 
-      context 'when restrict_member_roles feature-flag is disabled' do
-        before do
-          stub_feature_flags(restrict_member_roles: false)
+      it 'shows an error message' do
+        create_role(access_level, name, description, permissions)
 
-          visit group_settings_roles_and_permissions_path(group)
-        end
-
-        it_behaves_like 'creates a new custom role'
-      end
-
-      context 'when restrict_member_roles feature-flag is enabled' do
-        before do
-          stub_feature_flags(restrict_member_roles: true)
-
-          visit group_settings_roles_and_permissions_path(group)
-        end
-
-        it 'shows an error message' do
-          create_role(access_level, name, description, [permission_name])
-
-          expect(page).to have_content('Failed to create role')
-        end
+        expect(page).to have_content('Failed to create role')
       end
     end
   end
