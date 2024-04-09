@@ -37,14 +37,24 @@ module EE
     end
 
     override :new_comment_template_paths
-    def new_comment_template_paths(group)
-      return super unless group
-      return super unless can?(current_user, :create_saved_replies, group)
+    def new_comment_template_paths(group, project = nil)
+      template_paths = super(group, project)
 
-      super(group) + [{
-        text: _('Manage group comment templates'),
-        path: group_comment_templates_path(group)
-      }]
+      if project && can?(current_user, :create_saved_replies, project)
+        template_paths << {
+          text: _('Manage project comment templates'),
+          path: project_comment_templates_path(project)
+        }
+      end
+
+      if group && can?(current_user, :create_saved_replies, group)
+        template_paths << {
+          text: _('Manage group comment templates'),
+          path: group_comment_templates_path(group)
+        }
+      end
+
+      template_paths
     end
 
     private
