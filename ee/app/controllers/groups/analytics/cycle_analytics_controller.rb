@@ -14,6 +14,8 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   before_action do
     push_licensed_feature(:group_level_analytics_dashboard) if group_feature?(:group_level_analytics_dashboard)
 
+    push_frontend_feature_flag(:vsa_standalone_settings_page, @group)
+
     render_403 unless can?(current_user, :read_cycle_analytics, @group)
   end
 

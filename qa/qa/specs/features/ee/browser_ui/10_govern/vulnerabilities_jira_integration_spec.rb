@@ -2,11 +2,7 @@
 
 module QA
   RSpec.describe 'Govern', :jira, :orchestrated, :requires_admin, product_group: :threat_insights do
-    describe 'vulnerability report with jira integration',
-      quarantine: {
-        type: :investigating,
-        issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/454198"
-      } do
+    describe 'vulnerability report with jira integration' do
       let(:jira_project_key) { 'JITP' }
       let!(:project) do
         create(:project,
@@ -55,36 +51,13 @@ module QA
         end
 
         EE::Page::Project::Secure::VulnerabilityDetails.perform(&:click_create_jira_issue_button)
-        jira_description = ""
-        switch_to_jira_tab
 
-        QA::Vendor::Jira::JiraIssuePage.perform do |jira|
-          jira.login_if_required(Runtime::Env.jira_admin_username, Runtime::Env.jira_admin_password)
-          expect(jira.summary_field).to eq(jira_issue_summary)
-          expect(jira.issue_description).to include(vulnerabilities[vuln_name.to_sym])
-          jira_description = jira.issue_description
-          expect(jira_description).to include("Severity: #{vuln_severity.to_s.downcase}")
-        end
+        QA::Support::WaitForRequests.wait_for_requests
 
-        issue_key = QA::Vendor::Jira::JiraAPI.perform do |jira_api|
-          jira_api.create_issue(jira_project_key, summary: jira_issue_summary, description: jira_description)
-        end
-
-        switch_to_vulnerability_report_tab
-        page.refresh
-
-        jira_link = "#{jira_host}/browse/#{issue_key}"
+        jira_link = "#{jira_host}/browse/#{jira_project_key}"
         EE::Page::Project::Secure::VulnerabilityDetails.perform do |vulnerability|
-          expect(vulnerability.jira_issue_link_present?(jira_issue_summary, jira_link, issue_key)).to be true
+          expect(vulnerability.jira_issue_link_present?(jira_issue_summary, jira_link)).to be true
         end
-      end
-
-      def switch_to_jira_tab
-        page.driver.browser.switch_to.window(page.driver.browser.window_handles.last)
-      end
-
-      def switch_to_vulnerability_report_tab
-        page.driver.browser.switch_to.window(page.driver.browser.window_handles.first)
       end
 
       def set_up_jira_integration

@@ -51,7 +51,23 @@ RSpec.describe 'admin/application_settings/security_and_compliance.html.haml', f
     end
   end
 
-  context 'when instance is not dedicated' do
+  context 'when instance is not dedicated but feature flag is enabled' do
+    before do
+      stub_feature_flags(pre_receive_secret_detection_beta_release: true)
+    end
+
+    let(:feature_available) { true }
+
+    describe 'feature available' do
+      it_behaves_like 'renders pre receive secret detection setting'
+    end
+  end
+
+  context 'when instance is not dedicated and feature flag is disabled' do
+    before do
+      stub_feature_flags(pre_receive_secret_detection_beta_release: false)
+    end
+
     let(:feature_available) { true }
 
     describe 'feature available' do

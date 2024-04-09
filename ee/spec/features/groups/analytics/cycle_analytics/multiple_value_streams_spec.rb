@@ -263,19 +263,51 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
     it_behaves_like 'delete a value stream', name
   end
 
+  shared_examples 'empty state' do
+    it 'renders the empty state' do
+      expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+    end
+  end
+
   context 'without a value stream' do
     before do
       select_group(group, empty_state_selector)
     end
 
-    it 'renders the empty state' do
-      expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
+    it_behaves_like 'empty state'
+
+    context 'when `New value stream...` button is selected' do
+      before do
+        find_by_testid('create-value-stream-button').click
+      end
+
+      it 'navigates to the `New value stream` settings page' do
+        expect(page).to have_current_path(new_group_analytics_cycle_analytics_value_stream_path(group))
+        expect(find_by_testid('value-stream-form-title')).to have_text('New value stream')
+      end
     end
 
-    it 'can navigate to the create value stream form' do
-      find_by_testid('create-value-stream-button').click
+    context 'when `vsa_standalone_settings_page` feature flag is disabled' do
+      before do
+        stub_feature_flags(vsa_standalone_settings_page: false)
+        select_group(group, empty_state_selector)
+      end
 
-      expect(page).to have_selector('[data-testid="value-stream-form-modal"]')
+      it_behaves_like 'empty state'
+
+      context '`New value stream...` button is selected' do
+        before do
+          find_by_testid('create-value-stream-button').click
+        end
+
+        it 'opens the create value stream form modal' do
+          expect(page).to have_selector('[data-testid="value-stream-form-modal"]')
+        end
+
+        it 'does not navigate to the new value stream settings page' do
+          expect(page).to have_current_path(group_analytics_cycle_analytics_path(group))
+        end
+      end
     end
   end
 
