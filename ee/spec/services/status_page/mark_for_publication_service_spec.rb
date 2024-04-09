@@ -55,10 +55,8 @@ RSpec.describe StatusPage::MarkForPublicationService, feature_category: :inciden
         specify { expect { subject }.to change { issue.notes.count }.by(1) }
         specify { expect(subject).to be_success }
 
-        it 'increments the publish counter' do
-          expect(Gitlab::StatusPage::UsageDataCounters::IncidentCounter).to receive(:count).with(:publishes).once
-
-          subject
+        it_behaves_like 'internal event tracking' do
+          let(:event) { 'status_page_incident_published' }
         end
       end
 

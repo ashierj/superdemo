@@ -11,7 +11,6 @@ module EE
         override :counters
         def counters
           super + [
-            ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
             ::Gitlab::UsageDataCounters::LicenseTestingCounter
           ]
         end
