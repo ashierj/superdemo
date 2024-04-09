@@ -73,7 +73,9 @@ export default {
       window.open(this.projectAnalyticsSettingsPath, '_blank');
     },
   },
-  docsPath: helpPagePath('user/product_analytics/index'),
+  docsPath: helpPagePath('user/product_analytics/index', {
+    anchor: 'onboard-a-gitLab-project',
+  }),
 };
 </script>
 

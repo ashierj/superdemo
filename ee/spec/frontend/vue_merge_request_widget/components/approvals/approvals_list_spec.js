@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { createMockSubscription as createMockApolloSubscription } from 'mock-apollo-client';
 import approvalRulesSecurityPoliciesResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules_with_scan_result_policies.json';
 import approvalRulesResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules.json';
 import approvalRulesCodeownersResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules_with_code_owner.json';
@@ -13,21 +14,31 @@ import { s__ } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/number_of_approvals.vue';
 import ApprovalsUsersList from 'ee/vue_merge_request_widget/components/approvals/approvals_users_list.vue';
+import mergeRequestApprovalStateUpdated from 'ee/vue_merge_request_widget/components/approvals/queries/approval_rules.subscription.graphql';
 
 Vue.use(VueApollo);
 
 describe('EE MRWidget approvals list', () => {
   let wrapper;
+  let mockedSubscription;
 
   const createComponent = (response = approvalRulesResponse) => {
+    mockedSubscription = createMockApolloSubscription();
+
+    const requestHandlers = [[approvalRulesQuery, jest.fn().mockResolvedValue(response)]];
+    const subscriptionHandlers = [[mergeRequestApprovalStateUpdated, () => mockedSubscription]];
+    const apolloProvider = createMockApollo(requestHandlers);
+
+    subscriptionHandlers.forEach(([query, stream]) => {
+      apolloProvider.defaultClient.setRequestHandler(query, stream);
+    });
+
     wrapper = shallowMountExtended(ApprovalsList, {
       propsData: {
         projectPath: 'gitlab-org/gitlab',
         iid: '1',
       },
-      apolloProvider: createMockApollo([
-        [approvalRulesQuery, jest.fn().mockResolvedValue(response)],
-      ]),
+      apolloProvider,
     });
   };
 
@@ -282,6 +293,34 @@ describe('EE MRWidget approvals list', () => {
       const row = findRows().at(5);
       const codeOwnerRow = findRowElement(row, 'name');
       expect(codeOwnerRow.find('[data-testid="approval-name"]').attributes('title')).toBe('');
+    });
+  });
+
+  describe('realtime approvals update', () => {
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
+    });
+
+    it('updates approvals when the subscription data is streamed to the Apollo client', async () => {
+      const newMergeRequestApprovalStateUpdated = JSON.parse(
+        JSON.stringify(approvalRulesResponse.data.project.mergeRequest),
+      );
+
+      newMergeRequestApprovalStateUpdated.approvalState.rules[0].approvalsRequired = 0;
+
+      mockedSubscription.next({
+        data: {
+          mergeRequestApprovalStateUpdated: newMergeRequestApprovalStateUpdated,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(wrapper.findAllComponents(NumberOfApprovals).at(0).props('rule')).toMatchObject({
+        approvalsRequired: 0,
+      });
     });
   });
 });

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlEmptyState, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -28,6 +28,7 @@ describe('ProviderSelectionView', () => {
 
   const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findHelpLink = () => wrapper.findComponent(GlLink);
   const findSelfManagedProviderCard = () => wrapper.findComponent(SelfManagedProviderCard);
   const findGitLabManagedProviderCard = () => wrapper.findComponent(GitLabManagedProviderCard);
 
@@ -69,6 +70,12 @@ describe('ProviderSelectionView', () => {
 
     it('does not render the loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('renders the help link', () => {
+      expect(findHelpLink().attributes('href')).toBe(
+        '/help/user/product_analytics/index#onboard-a-gitLab-project',
+      );
     });
   });
 

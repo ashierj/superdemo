@@ -1,6 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlSprintf } from '@gitlab/ui';
+import { createMockSubscription as createMockApolloSubscription } from 'mock-apollo-client';
 import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -14,6 +15,7 @@ import eventHub from '~/vue_merge_request_widget/event_hub';
 import approvedByQuery from 'ee/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
 import { createCanApproveResponse } from 'jest/approvals/mock_data';
 import { HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
+import mergeRequestApprovalStateUpdated from 'ee/vue_merge_request_widget/components/approvals/queries/approval_rules.subscription.graphql';
 
 Vue.use(VueApollo);
 
@@ -54,8 +56,14 @@ describe('MRWidget approvals', () => {
   let mr;
 
   const createComponent = (props = {}, response = approvedByCurrentUser) => {
+    const mockedSubscription = createMockApolloSubscription();
+    const subscriptionHandlers = [[mergeRequestApprovalStateUpdated, () => mockedSubscription]];
     const requestHandlers = [[approvedByQuery, jest.fn().mockResolvedValue(response)]];
     const apolloProvider = createMockApollo(requestHandlers);
+
+    subscriptionHandlers.forEach(([query, stream]) => {
+      apolloProvider.defaultClient.setRequestHandler(query, stream);
+    });
 
     wrapper = mountExtended(Approvals, {
       apolloProvider,

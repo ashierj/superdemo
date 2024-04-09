@@ -4,6 +4,7 @@ module Security
   module ScanResultPolicies
     class DetailedPolicyViolationComment < PolicyViolationComment
       include Gitlab::Utils::StrongMemoize
+      include Rails.application.routes.url_helpers
 
       MORE_VIOLATIONS_DETECTED = 'More violations have been detected in addition to the list above.'
       VIOLATIONS_BLOCKING_TITLE = ':warning: **Violations blocking this merge request**'
@@ -44,7 +45,8 @@ module Security
           previously_existing_violations,
           any_merge_request_commits,
           license_scanning_violations,
-          error_messages
+          error_messages,
+          comparison_pipelines
         ].compact.join("\n")
       end
 
@@ -166,6 +168,31 @@ module Security
 
         #{errors.map { |error| "- #{error.message}" }.join("\n")}
         MARKDOWN
+      end
+
+      def comparison_pipelines
+        pipelines = details.comparison_pipelines
+        return if pipelines.blank?
+
+        render_title = pipelines.many? # rubocop:disable CodeReuse/ActiveRecord -- pipelines is an array
+        <<~MARKDOWN
+        :information_source: **Comparison pipelines**
+
+        #{pipelines.map { |pipeline| build_comparison_pipelines_info(pipeline, render_title) }.join("\n")}
+        MARKDOWN
+      end
+
+      def build_comparison_pipelines_info(pipeline, render_title)
+        pipeline_to_link = ->(id) { "[##{id}](#{project_pipeline_url(project, id)})" }
+        source_pipeline_links = pipeline.source.map(&pipeline_to_link)
+        target_pipeline_links = pipeline.target.map(&pipeline_to_link)
+
+        info = <<~MARKDOWN
+        - Target branch (`#{merge_request.target_branch}`): #{target_pipeline_links.join(', ').presence || 'None'}
+        - Source branch (`#{merge_request.source_branch}`): #{source_pipeline_links.join(', ').presence || 'None'}
+        MARKDOWN
+
+        [(pipeline.report_type.humanize if render_title), info].compact.join("\n")
       end
     end
   end

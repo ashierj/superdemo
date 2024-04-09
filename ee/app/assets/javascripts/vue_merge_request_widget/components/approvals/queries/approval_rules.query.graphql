@@ -1,43 +1,10 @@
-#import "~/graphql_shared/fragments/user.fragment.graphql"
+#import "ee/graphql_shared/fragments/merge_request.approval_rule.fragment.graphql"
 
 query approvalRules($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     id
     mergeRequest(iid: $iid) {
-      id
-      approvalState {
-        invalidApproversRules {
-          id
-        }
-        rules {
-          id
-          type
-          approved
-          approvalsRequired
-          invalid
-          allowMergeWhenInvalid
-          name
-          section
-          approvedBy {
-            nodes {
-              ...User
-            }
-          }
-          commentedBy {
-            nodes {
-              ...User
-            }
-          }
-          eligibleApprovers {
-            ...User
-          }
-          scanResultPolicies {
-            approvalsRequired
-            name
-            reportType
-          }
-        }
-      }
+      ...MergeRequestApprovalRule
     }
   }
 }

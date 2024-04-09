@@ -10,13 +10,14 @@ module Security
       ScanFindingViolation = Struct.new(:name, :report_type, :severity, :location, :path, keyword_init: true)
       AnyMergeRequestViolation = Struct.new(:name, :commits, keyword_init: true)
       LicenseScanningViolation = Struct.new(:license, :dependencies, :url, keyword_init: true)
+      ComparisonPipelines = Struct.new(:report_type, :source, :target, keyword_init: true)
 
       ERROR_MESSAGES = {
         'UNKNOWN' => 'Unknown error: %{error}',
         'SCAN_REMOVED' => 'There is a mismatch between the scans of the source and target pipelines. ' \
                           'The following scans are missing: %{scans}',
         'ARTIFACTS_MISSING' =>
-          'Pipeline configuration error: Artifacts required by policy %{policy} could not be found (%{report_type}).'
+          'Pipeline configuration error: Artifacts required by policy `%{policy}` could not be found (%{report_type}).'
       }.freeze
 
       def initialize(merge_request)
@@ -47,21 +48,13 @@ module Security
       end
 
       def new_scan_finding_violations
-        new_uuids = violations.each_with_object(Set.new) do |violation, result|
-          result.merge(violation.data&.dig('violations', 'scan_finding', 'uuids', 'newly_detected') || [])
-        end
-        pipeline_ids = violations.each_with_object(Set.new) do |violation, result|
-          result.merge(violation.data&.dig('context', 'pipeline_ids') || [])
-        end
-
-        newly_detected_violations(new_uuids, pipeline_ids)
+        uuids = extract_from_violation_data(%w[violations scan_finding uuids newly_detected])
+        newly_detected_violations(uuids, extract_from_violation_data(%w[context pipeline_ids]))
       end
       strong_memoize_attr :new_scan_finding_violations
 
       def previous_scan_finding_violations
-        uuids = violations.each_with_object(Set.new) do |violation, result|
-          result.merge(violation.data&.dig('violations', 'scan_finding', 'uuids', 'previously_existing') || [])
-        end
+        uuids = extract_from_violation_data(%w[violations scan_finding uuids previously_existing])
         previously_existing_violations(uuids)
       end
       strong_memoize_attr :previous_scan_finding_violations
@@ -109,6 +102,21 @@ module Security
         end
       end
       strong_memoize_attr :errors
+
+      def comparison_pipelines
+        violations.group_by(&:report_type).filter_map do |report_type, report_violations|
+          source_pipelines = extract_from_violation_data(%w[context pipeline_ids], report_violations)
+          target_pipelines = extract_from_violation_data(%w[context target_pipeline_ids], report_violations)
+          next if source_pipelines.blank? && target_pipelines.blank?
+
+          ComparisonPipelines.new(
+            report_type: report_type,
+            source: source_pipelines,
+            target: target_pipelines
+          )
+        end
+      end
+      strong_memoize_attr :comparison_pipelines
 
       private
 
@@ -181,6 +189,16 @@ module Security
                    { error: error['error'] }
                  end
         format(ERROR_MESSAGES[error_key], **params)
+      end
+
+      # Extract data for given keys from violations
+      #
+      # @param [Array<String>] keys path to the data
+      # @return [Set] extracted data
+      def extract_from_violation_data(keys, violations_list = violations)
+        violations_list.each_with_object(Set.new) do |violation, result|
+          result.merge(violation.data&.dig(*keys) || [])
+        end
       end
     end
   end
