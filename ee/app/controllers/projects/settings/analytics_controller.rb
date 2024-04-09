@@ -11,9 +11,10 @@ module Projects
 
       def update
         params_to_update = update_params.to_h
-        if update_params[:project_setting_attributes].present? &&
-            update_params[:project_setting_attributes][:product_analytics_configurator_connection_string].present?
+        if update_params[:project_setting_attributes].present?
           # clear instrumentation key since old one is not valid anymore
+          # clear instrumentation key even if product_analytics_configurator_connection_string isn't provided
+          # an empty product_analytics_configurator_connection_string can mean user is deleting BYOC product analytics.
           # a new instrumentation key will be set during stack initialization
           params_to_update.deep_merge!({ project_setting_attributes: { product_analytics_instrumentation_key: nil } })
         end
