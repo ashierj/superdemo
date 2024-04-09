@@ -26,17 +26,17 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
       security_orchestration_policy_configuration: security_orchestration_policy_configuration)
   end
 
-  let_it_be(:scan_finding_rule_policy1) do
+  let_it_be(:approver_rule_policy1) do
     create(:report_approver_rule, :scan_finding, merge_request: merge_request,
       scan_result_policy_read: policy1, name: 'Policy 1')
   end
 
-  let_it_be(:license_scanning_rule_policy2) do
+  let_it_be(:approver_rule_policy2) do
     create(:report_approver_rule, :license_scanning, merge_request: merge_request,
       scan_result_policy_read: policy2, name: 'Policy 2')
   end
 
-  let_it_be(:any_merge_request_rule_policy3) do
+  let_it_be_with_reload(:approver_rule_policy3) do
     create(:report_approver_rule, :any_merge_request, merge_request: merge_request,
       scan_result_policy_read: policy3, name: 'Policy 3')
   end
@@ -403,7 +403,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
       expect(errors.pluck(:message)).to contain_exactly(
         'There is a mismatch between the scans of the source and target pipelines. ' \
         'The following scans are missing: Secret detection',
-        'Pipeline configuration error: Artifacts required by policy Policy could not be found (License scanning).'
+        'Pipeline configuration error: Artifacts required by policy `Policy` could not be found (License scanning).'
       )
     end
 
@@ -416,9 +416,33 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         expect(errors.size).to eq 2
         expect(errors.pluck(:message)).to contain_exactly(
           'Unknown error: unsupported',
-          'Pipeline configuration error: Artifacts required by policy Policy could not be found (License scanning).'
+          'Pipeline configuration error: Artifacts required by policy `Policy` could not be found (License scanning).'
         )
       end
+    end
+  end
+
+  describe '#comparison_pipelines' do
+    subject(:comparison_pipelines) { details.comparison_pipelines }
+
+    before do
+      approver_rule_policy3.update!(report_type: :scan_finding)
+      # scan_finding
+      build_violation_details(policy1, 'context' => { 'pipeline_ids' => [2, 3], 'target_pipeline_ids' => [1] })
+      build_violation_details(policy3, 'context' => { 'pipeline_ids' => [3, 4], 'target_pipeline_ids' => [1, 3] })
+      # license_scanning
+      build_violation_details(policy2, 'context' => { 'pipeline_ids' => [3, 4], 'target_pipeline_ids' => [1, 2] })
+    end
+
+    it 'returns associated, deduplicated pipeline ids grouped by report_type', :aggregate_failures do
+      expect(comparison_pipelines).to contain_exactly(
+        Security::ScanResultPolicies::PolicyViolationDetails::ComparisonPipelines.new(
+          report_type: 'scan_finding', source: [2, 3, 4].to_set, target: [1, 3].to_set
+        ),
+        Security::ScanResultPolicies::PolicyViolationDetails::ComparisonPipelines.new(
+          report_type: 'license_scanning', source: [3, 4].to_set, target: [1, 2].to_set
+        )
+      )
     end
   end
 end

@@ -148,12 +148,12 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
             name: 'AWS API key')
         end
 
-        def build_violation_details(report_type, data)
-          project_rule = create(:approval_project_rule, project: project, scan_result_policy_read: policy)
+        def build_violation_details(report_type, data, policy_read: policy, name: 'Policy')
+          project_rule = create(:approval_project_rule, project: project, scan_result_policy_read: policy_read)
           create(:report_approver_rule, report_type, merge_request: merge_request, approval_project_rule: project_rule,
-            scan_result_policy_read: policy)
+            scan_result_policy_read: policy_read, name: name)
           create(:scan_result_policy_violation, project: project, merge_request: merge_request,
-            scan_result_policy_read: policy, violation_data: data)
+            scan_result_policy_read: policy_read, violation_data: data)
         end
 
         it { is_expected.not_to include described_class::VIOLATIONS_BLOCKING_TITLE }
@@ -250,6 +250,98 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
           end
 
           it { is_expected.to include 'Errors', 'Pipeline configuration error' }
+        end
+
+        describe 'comparison pipelines' do
+          let_it_be(:target_pipeline) do
+            create(:ee_ci_pipeline, :success, :with_dependency_scanning_report, project: project,
+              ref: merge_request.target_branch, sha: merge_request.diff_head_sha)
+          end
+
+          def pipeline_id_with_link(id)
+            "[##{id}](#{Gitlab::Routing.url_helpers.project_pipeline_url(project, id)})"
+          end
+
+          context 'when pipeline ids of one report_type are present' do
+            before do
+              build_violation_details(:scan_finding,
+                { 'context' => { 'pipeline_ids' => [pipeline.id], 'target_pipeline_ids' => [target_pipeline.id] } }
+              )
+            end
+
+            it 'includes linked pipelines in the body' do
+              expect(body).to include 'Comparison pipelines',
+                pipeline_id_with_link(pipeline.id),
+                pipeline_id_with_link(target_pipeline.id)
+            end
+
+            it 'does not render the report_type title' do
+              expect(body).not_to include 'Scan finding'
+            end
+          end
+
+          context 'when pipeline ids from multiple reports are present' do
+            let_it_be(:policy2) do
+              create(:scan_result_policy_read, project: project,
+                security_orchestration_policy_configuration: security_orchestration_policy_configuration)
+            end
+
+            before do
+              build_violation_details(:scan_finding,
+                { 'context' => { 'pipeline_ids' => [pipeline.id], 'target_pipeline_ids' => [target_pipeline.id] } }
+              )
+              build_violation_details(:license_scanning,
+                { 'context' => { 'pipeline_ids' => [123], 'target_pipeline_ids' => [456] } },
+                policy_read: policy2,
+                name: 'Policy 2'
+              )
+            end
+
+            it 'displays them grouped by report_type, showing the titles' do
+              expect(body).to include 'Comparison pipelines', 'Scan finding', 'License scanning',
+                pipeline_id_with_link(pipeline.id),
+                pipeline_id_with_link(target_pipeline.id),
+                pipeline_id_with_link(123),
+                pipeline_id_with_link(456)
+            end
+          end
+
+          context 'when multiple pipeline ids are present' do
+            before do
+              build_violation_details(:scan_finding,
+                { 'context' => {
+                  'pipeline_ids' => [pipeline.id, 123456],
+                  'target_pipeline_ids' => [target_pipeline.id, 456789]
+                } }
+              )
+            end
+
+            it 'displays them as comma-separated list in the body' do
+              expect(body).to include 'Comparison pipelines',
+                "#{pipeline_id_with_link(pipeline.id)}, #{pipeline_id_with_link(123456)}",
+                "#{pipeline_id_with_link(target_pipeline.id)}, #{pipeline_id_with_link(456789)}"
+            end
+          end
+
+          context 'when some pipeline ids are missing' do
+            before do
+              build_violation_details(:scan_finding,
+                { 'context' => { 'target_pipeline_ids' => [target_pipeline.id] } }
+              )
+            end
+
+            it 'shows fallback message' do
+              expect(body).to include 'Comparison pipelines',
+                pipeline_id_with_link(target_pipeline.id),
+                "Source branch (`#{merge_request.source_branch}`): None"
+            end
+          end
+
+          context 'when no pipeline ids are present' do
+            it 'does not show comparison pipelines block' do
+              expect(body).not_to include 'Comparison pipelines'
+            end
+          end
         end
       end
     end
