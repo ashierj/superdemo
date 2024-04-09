@@ -128,9 +128,7 @@ To set up your self-managed instance for the GitLab for Jira Cloud app in GitLab
 To link your self-managed instance to the GitLab for Jira Cloud app:
 
 1. Install the [GitLab for Jira Cloud app](https://marketplace.atlassian.com/apps/1221011/gitlab-com-for-jira-cloud?tab=overview&hosting=cloud).
-1. Select **GitLab (self-managed)**.
-1. Enter your GitLab instance URL.
-1. Select **Save**.
+1. [Configure the GitLab for Jira Cloud app](../../integration/jira/connect-app.md#configure-the-gitlab-for-jira-cloud-app).
 1. Optional. [Check if Jira Cloud is now linked](#check-if-jira-cloud-is-linked).
 
 #### Check if Jira Cloud is linked
@@ -206,8 +204,8 @@ To configure your Jira instance so you can install apps from outside the marketp
 1. [Disable development mode](https://developer.atlassian.com/cloud/jira/platform/getting-started-with-connect/#step-3--enable-development-mode-in-your-site)
    on your Jira instance.
 
-In **Apps > Manage Apps**, **GitLab for Jira Cloud** now appears.
-You can also select **Get started** to open the configuration page from your GitLab instance.
+In **Apps > Manage Apps**, **GitLab for Jira Cloud** is now visible.
+You can also select **Get started** to [configure the GitLab for Jira Cloud app](../../integration/jira/connect-app.md#configure-the-gitlab-for-jira-cloud-app).
 
 If a GitLab upgrade makes changes to the app descriptor, you must reinstall the app.
 
