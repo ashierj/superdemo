@@ -318,7 +318,7 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                   context 'when relative_position is before' do
                     let(:relative_position) { 'before' }
 
-                    it 'updates the work item parent and sets it after the adjecent item', :aggregate_failures do
+                    it 'updates the work item parent and sets it after the adjacent item', :aggregate_failures do
                       parent_link1 = create(:parent_link, work_item_parent: new_parent.work_item,
                         work_item: work_item_1)
                       parent_link2 = create(:parent_link, work_item_parent: old_parent.work_item,
@@ -604,11 +604,6 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                     create(:parent_link, work_item_parent: old_parent.work_item, work_item: new_parent.work_item)
                   end
 
-                  let_it_be_with_reload(:moving_object_parent_link) do
-                    create(:parent_link, work_item_parent: old_parent.work_item, work_item: moving_epic.work_item,
-                      relative_position: 20)
-                  end
-
                   let(:params) do
                     {
                       base_epic_id: GitlabSchema.id_from_object(old_parent),
@@ -618,23 +613,25 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                     }
                   end
 
-                  context 'when new parent has no children' do
+                  shared_examples 'moves to a parent without children' do
                     it 'sets a new work item parent' do
-                      expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
-                        .and change {
-                               moving_object_parent_link.reload.work_item_parent
-                             }.from(old_parent.work_item).to(new_parent.work_item)
+                      expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent).and(
+                        change { moving_epic.work_item.reload.work_item_parent }
+                          .from(moving_object_parent_link&.work_item_parent).to(new_parent.work_item)
+                      )
 
-                      expect(moving_epic.relative_position).to eq(moving_object_parent_link.relative_position)
+                      expect(moving_epic.relative_position).to eq(
+                        moving_epic.work_item.reload.parent_link.relative_position
+                      )
                       expect(subject[:status]).to eq(:success)
                     end
 
                     context 'when the new parent has no synced work item' do
-                      let_it_be_with_reload(:new_parent) { create(:epic, group: group) }
+                      let_it_be_with_reload(:new_parent) { create(:epic, :without_synced_work_item, group: group) }
 
                       it 'only sets the new parent for the epic' do
                         expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
-                          .and not_change { moving_object_parent_link.reload.work_item_parent }
+                          .and not_change { moving_epic.work_item.reload.work_item_parent }
                         expect(subject[:status]).to eq(:success)
                       end
                     end
@@ -648,9 +645,26 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
                       it 'does not set new epic or work item parent' do
                         expect { subject }.to not_change { moving_epic.reload.parent }
-                          .and not_change { moving_object_parent_link.reload.work_item_parent }
+                          .and not_change { moving_epic.work_item.reload.work_item_parent }
                         expect(subject[:status]).to eq(:error)
                       end
+                    end
+                  end
+
+                  context 'when new parent has no children' do
+                    context 'when moving object does not have parent link relationship' do
+                      let_it_be_with_reload(:moving_object_parent_link) { nil }
+
+                      it_behaves_like 'moves to a parent without children'
+                    end
+
+                    context 'when moving object has parent link relationship' do
+                      let_it_be_with_reload(:moving_object_parent_link) do
+                        create(:parent_link, work_item_parent: old_parent.work_item, work_item: moving_epic.work_item,
+                          relative_position: 20)
+                      end
+
+                      it_behaves_like 'moves to a parent without children'
                     end
                   end
 
@@ -659,48 +673,67 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                       create(:epic, :with_synced_work_item, parent: new_parent, group: group, relative_position: 10)
                     end
 
-                    let_it_be(:adjacent_parent_link) do
-                      create(:parent_link, work_item_parent: new_parent.work_item, work_item: adjacent_epic.work_item)
+                    let_it_be_with_reload(:moving_object_parent_link) do
+                      create(:parent_link, work_item_parent: old_parent.work_item, work_item: moving_epic.work_item,
+                        relative_position: 20)
                     end
 
-                    let(:adjacent_reference_id) { GitlabSchema.id_from_object(adjacent_epic) }
+                    shared_examples 'moves epic to a parent with children' do
+                      let(:adjacent_reference_id) { GitlabSchema.id_from_object(adjacent_epic) }
 
-                    context 'when relative_position is before' do
-                      let(:relative_position) { 'before' }
+                      context 'when relative_position is before' do
+                        let(:relative_position) { 'before' }
 
-                      it 'updates the work item parent and sets it after the adjecent item', :aggregate_failures do
-                        expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
-                          .and change { moving_epic.work_item.reload.work_item_parent }
-                          .from(old_parent.work_item).to(new_parent.work_item)
+                        it 'updates the work item parent and sets it after the adjacent item', :aggregate_failures do
+                          expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
+                            .and change { moving_epic.work_item.reload.work_item_parent }
+                            .from(old_parent.work_item).to(new_parent.work_item)
 
-                        expect(adjacent_epic.reload.relative_position).to be < moving_epic.reload.relative_position
-                        expect(adjacent_parent_link.reload.relative_position)
-                          .to be < moving_object_parent_link.reload.relative_position
+                          expect(adjacent_epic.reload.relative_position).to be < moving_epic.reload.relative_position
+                          expect(adjacent_epic.work_item.reload.parent_link.relative_position)
+                            .to be < moving_object_parent_link.reload.relative_position
 
-                        expect(moving_object_parent_link.reload.relative_position)
-                          .to eq(moving_epic.reload.relative_position)
+                          expect(moving_object_parent_link.reload.relative_position)
+                            .to eq(moving_epic.reload.relative_position)
 
-                        expect(subject[:status]).to eq(:success)
+                          expect(subject[:status]).to eq(:success)
+                        end
+                      end
+
+                      context 'when relative_position is after' do
+                        let(:relative_position) { 'after' }
+
+                        it 'updates the work item parent and sets it before the adjacent item', :aggregate_failures do
+                          expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
+                            .and change { moving_epic.work_item.reload.work_item_parent }
+                            .from(old_parent.work_item).to(new_parent.work_item)
+
+                          expect(adjacent_epic.reload.relative_position).to be > moving_epic.reload.relative_position
+                          expect(adjacent_epic.work_item.reload.parent_link.relative_position)
+                            .to be > moving_object_parent_link.reload.relative_position
+
+                          expect(moving_object_parent_link.reload.relative_position)
+                            .to eq(moving_epic.reload.relative_position)
+
+                          expect(subject[:status]).to eq(:success)
+                        end
                       end
                     end
 
-                    context 'when relative_position is after' do
-                      let(:relative_position) { 'after' }
+                    context 'when adjacent epic work item does not have a parent link relationship' do
+                      it_behaves_like 'moves epic to a parent with children'
+                    end
 
-                      it 'updates the work item parent and sets it before the adjecent item', :aggregate_failures do
-                        expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
-                          .and change { moving_epic.work_item.reload.work_item_parent }
-                          .from(old_parent.work_item).to(new_parent.work_item)
-
-                        expect(adjacent_epic.reload.relative_position).to be > moving_epic.reload.relative_position
-                        expect(adjacent_parent_link.reload.relative_position)
-                          .to be > moving_object_parent_link.reload.relative_position
-
-                        expect(moving_object_parent_link.reload.relative_position)
-                          .to eq(moving_epic.reload.relative_position)
-
-                        expect(subject[:status]).to eq(:success)
+                    context 'when adjacent epic work item has a parent link relationship' do
+                      let_it_be(:adjacent_parent_link) do
+                        create(:parent_link,
+                          work_item_parent: new_parent.work_item,
+                          work_item: adjacent_epic.work_item,
+                          relative_position: adjacent_epic.relative_position
+                        )
                       end
+
+                      it_behaves_like 'moves epic to a parent with children'
                     end
                   end
                 end
@@ -800,7 +833,7 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
                   context 'when the adjacent epic has no correlating work item' do
                     let_it_be_with_reload(:adjacent_epic) do
-                      create(:epic, group: group, parent: parent, relative_position: 20)
+                      create(:epic, :without_synced_work_item, group: group, parent: parent, relative_position: 20)
                     end
 
                     let_it_be_with_reload(:adjacent_parent_link) { nil }

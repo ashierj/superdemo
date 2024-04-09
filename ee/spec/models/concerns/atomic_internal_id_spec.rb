@@ -20,11 +20,11 @@ RSpec.describe AtomicInternalId, feature_category: :team_planning do
       # saving an epic updates the same internal_ids record as for the group level issue
       expect { epic.save! }.to change {
         InternalId.find_by(namespace: group, usage: :issues)&.last_value
-      }.from(1).to(2)
+      }.from(1).to(3)
 
       expect { work_item.save! }.to change {
         InternalId.find_by(namespace: group, usage: :issues)&.last_value
-      }.from(2).to(3)
+      }.from(3).to(4)
     end
   end
 end

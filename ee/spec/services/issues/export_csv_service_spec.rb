@@ -9,7 +9,7 @@ RSpec.describe Issues::ExportCsvService, feature_category: :importers do
   let(:project) { create(:project, :public, group: group) }
   let!(:issue) { create(:issue, project: project, author: user) }
   let!(:issue2) { create(:issue, project: project, author: user) }
-  let(:subject) { described_class.new(Issue.all, project, user) }
+  let(:subject) { described_class.new(Issue.where.not(project_id: nil).all, project, user) }
 
   def csv
     CSV.parse(subject.csv_data, headers: true)

@@ -104,6 +104,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
       it 'triggers GraphQL description updated subscription' do
         expect(GraphqlTriggers).to receive(:issuable_description_updated).with(epic).and_call_original
+        expect(GraphqlTriggers).to receive(:issuable_description_updated).with(epic.work_item).and_call_original
 
         update_epic(description: 'updated description')
       end
@@ -959,7 +960,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
       end
 
       context 'when epic has no synced work item' do
-        let_it_be_with_reload(:epic) { create(:epic, group: group) }
+        let_it_be_with_reload(:epic) { create(:epic, :without_synced_work_item, group: group) }
 
         it 'does not call WorkItems::UpdateService' do
           expect(WorkItems::UpdateService).not_to receive(:new)

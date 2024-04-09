@@ -3,6 +3,20 @@
 module Analytics
   module AiAnalytics
     class LastCodeSuggestionUsageService
+      QUERY = <<~SQL
+        SELECT
+          max(timestamp) AS last_used_at, user_id
+        FROM code_suggestion_daily_usages
+          WHERE user_id IN ({user_ids:Array(UInt64)})
+          AND timestamp >= {from:Date}
+          AND timestamp <= {to:Date}
+        GROUP BY user_id
+      SQL
+      private_constant :QUERY
+
+      MAX_USER_IDS_SIZE = 10_000
+      private_constant :MAX_USER_IDS_SIZE
+
       def initialize(current_user, user_ids:, from:, to:)
         @current_user = current_user
         @user_ids = user_ids
@@ -18,18 +32,6 @@ module Analytics
       end
 
       private
-
-      QUERY = <<~SQL
-        SELECT
-          max(timestamp) AS last_used_at, user_id
-        FROM code_suggestion_daily_usages
-          WHERE user_id IN ({user_ids:Array(UInt64)})
-          AND timestamp >= {from:Date}
-          AND timestamp <= {to:Date}
-        GROUP BY user_id
-      SQL
-
-      MAX_USER_IDS_SIZE = 10_000
 
       attr_reader :current_user, :user_ids, :from, :to
 

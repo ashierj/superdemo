@@ -117,10 +117,12 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
         it 'sets issue weight and epic' do
           perform :post, :create, issue: new_issue.attributes.merge(epic_id: epic.id)
 
-          expect(response).to have_gitlab_http_status(:found)
-          expect(Issue.count).to eq(1)
+          project_issues = Issue.where.not(project: nil)
+          issue = project_issues.first
 
-          issue = Issue.first
+          expect(response).to have_gitlab_http_status(:found)
+          expect(project_issues.count).to eq(1)
+
           expect(issue.weight).to eq(new_issue.weight)
           expect(issue.epic).to eq(epic)
         end

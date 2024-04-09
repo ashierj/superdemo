@@ -97,8 +97,8 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
     context 'for synced epic work items' do
       let(:current_user) { user }
       let(:params) { { issuable_references: [epic_b.to_reference(full: true)] } }
-      let_it_be_with_reload(:epic_a) { create(:epic, group: group) }
-      let_it_be_with_reload(:epic_b) { create(:epic, group: group) }
+      let_it_be_with_reload(:epic_a) { create(:epic, :without_synced_work_item, group: group) }
+      let_it_be_with_reload(:epic_b) { create(:epic, :without_synced_work_item, group: group) }
 
       subject(:execute) { described_class.new(epic_a, current_user, params).execute }
 
@@ -192,7 +192,7 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
             end
 
             context 'when epic does not have a synced work item' do
-              let_it_be(:epic_c) { create(:epic, group: group) }
+              let_it_be(:epic_c) { create(:epic, :without_synced_work_item, group: group) }
 
               it 'does create related work item links for the rest' do
                 expect { execute }.to change { Epic::RelatedEpicLink.count }.by(2)

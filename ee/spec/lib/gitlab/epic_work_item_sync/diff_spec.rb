@@ -181,7 +181,7 @@ RSpec.describe Gitlab::EpicWorkItemSync::Diff, feature_category: :team_planning 
       end
 
       context 'when epic has links without a synced work item and work items has no links' do
-        let_it_be_with_reload(:target) { create(:epic, group: group) }
+        let_it_be_with_reload(:target) { create(:epic, :without_synced_work_item, group: group) }
 
         before do
           create(:related_epic_link, source: source, target: target)
