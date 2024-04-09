@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :epic, traits: [:has_internal_id] do
+  factory :epic, traits: [:has_internal_id, :with_synced_work_item] do
     title { generate(:title) }
     group
     author
@@ -38,10 +38,15 @@ FactoryBot.define do
       end
     end
 
+    trait :without_synced_work_item do
+      work_item { nil }
+    end
+
     trait :with_synced_work_item do
       work_item do
         association(:work_item,
           :epic,
+          project: nil,
           namespace: group,
           title: title,
           description: description,
@@ -54,14 +59,19 @@ FactoryBot.define do
           confidential: confidential
         )
       end
+    end
 
-      after(:create) do |epic, _|
-        epic.work_item.update!(
-          iid: epic.iid,
+    after(:create) do |epic, _|
+      if epic.work_item
+        epic.work_item.update_columns(
           created_at: epic.created_at,
           updated_at: epic.updated_at,
           relative_position: epic.id
         )
+        # work_item association is saved first so it gets the lower iid, so we want to use that.
+        # we also want to avoid altering the updated_at value, while setting the IID,
+        # so we use `update_columns` instead of `update!`
+        epic.update_columns(iid: epic.work_item.iid)
       end
     end
   end

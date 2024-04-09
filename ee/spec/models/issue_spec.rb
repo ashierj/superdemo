@@ -171,29 +171,33 @@ RSpec.describe Issue, feature_category: :team_planning do
 
       describe '.no_epic' do
         it 'returns only issues without an epic assigned' do
-          expect(described_class.count).to eq 3
-          expect(described_class.no_epic).to eq [issue_no_epic]
+          expect(described_class.count).to eq 5
+          expect(described_class.no_epic.map(&:id)).to match_array(
+            [issue_no_epic, epic1.work_item, epic2.work_item].map(&:id)
+          )
         end
       end
 
       describe '.any_epic' do
         it 'returns only issues with an epic assigned' do
-          expect(described_class.count).to eq 3
+          expect(described_class.count).to eq 5
           expect(described_class.any_epic).to contain_exactly(epic_issue1.issue, epic_issue2.issue)
         end
       end
 
       describe '.in_epics' do
         it 'returns only issues in selected epics' do
-          expect(described_class.count).to eq 3
+          expect(described_class.count).to eq 5
           expect(described_class.in_epics([epic1])).to eq [epic_issue1.issue]
         end
       end
 
       describe '.not_in_epics' do
         it 'returns only issues not in selected epics' do
-          expect(described_class.count).to eq 3
-          expect(described_class.not_in_epics([epic1])).to match_array([epic_issue2.issue, issue_no_epic])
+          expect(described_class.count).to eq 5
+          expect(described_class.not_in_epics([epic1]).map(&:id)).to match_array(
+            [epic_issue2.issue, issue_no_epic, epic1.work_item, epic2.work_item].map(&:id)
+          )
         end
       end
 

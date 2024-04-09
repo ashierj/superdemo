@@ -140,10 +140,10 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
     describe '.has_work_item' do
       let_it_be(:epic_with_work_item) { create(:epic, :with_synced_work_item) }
-      let_it_be(:epic_without_work_item) { create(:epic) }
+      let_it_be(:epic_without_work_item) { create(:epic, :without_synced_work_item) }
 
       it 'returns only epics with a work item' do
-        expect(described_class.has_work_item).to match_array([epic_with_work_item])
+        expect(described_class.has_work_item).to match_array(described_class.all.to_a - [epic_without_work_item])
       end
     end
   end
@@ -321,8 +321,10 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     subject { described_class }
 
     it_behaves_like 'AtomicInternalId' do
+      let(:group) { create(:group) }
       let(:internal_id_attribute) { :iid }
-      let(:instance) { build(:epic) }
+      let(:work_item) { create(:work_item, :group_level, namespace: group) }
+      let(:instance) { build(:epic, group: group, work_item: work_item) }
       let(:scope) { :group }
       let(:scope_attrs) { { namespace: instance.group } }
       let(:usage) { :issues }
