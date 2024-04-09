@@ -19,9 +19,9 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
       let(:default_delay) { described_class::INDEXING_DELAY_PER_PROJECT }
 
       it 'indexes all projects belonging to the namespace' do
-        expect(Zoekt::IndexerWorker).to receive(:perform_in).with(0, projects[0].id)
-        expect(Zoekt::IndexerWorker).to receive(:perform_in).with(default_delay, projects[1].id)
-        expect(Zoekt::IndexerWorker).to receive(:perform_in).with(default_delay * 2, projects[2].id)
+        expect(Search::Zoekt).to receive(:index_in).with(0, projects[0].id)
+        expect(Search::Zoekt).to receive(:index_in).with(default_delay, projects[1].id)
+        expect(Search::Zoekt).to receive(:index_in).with(default_delay * 2, projects[2].id)
 
         perform
       end
@@ -32,7 +32,7 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         end
 
         it 'does nothing' do
-          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(::Search::Zoekt).not_to receive(:index_in)
 
           perform
         end
@@ -42,7 +42,7 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         subject(:perform) { described_class.new.perform(unindexed_namespace.id, 'index') }
 
         it 'does nothing' do
-          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(::Search::Zoekt).not_to receive(:index_in)
 
           perform
         end

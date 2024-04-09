@@ -34,6 +34,14 @@ module Search
         user.enabled_zoekt?
       end
 
+      def index_async(project_id, options = {})
+        ::Zoekt::IndexerWorker.perform_async(project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
+      end
+
+      def index_in(delay, project_id, options = {})
+        ::Zoekt::IndexerWorker.perform_in(delay, project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
+      end
+
       private
 
       def fetch_root_namespace_id(container)

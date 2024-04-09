@@ -181,4 +181,52 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       it { is_expected.to eq(expected_result) }
     end
   end
+
+  describe '#index_async' do
+    subject(:index_async) { described_class.index_async(*args) }
+
+    let(:args) { [project.id, { foo: :bar }] }
+
+    it 'calls perform_async on the worker' do
+      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(*args)
+
+      index_async
+    end
+
+    context 'when FF is disabled' do
+      before do
+        stub_feature_flags(zoekt_legacy_indexer_worker: false)
+      end
+
+      it 'does not call perform_async on the worker' do
+        expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+
+        index_async
+      end
+    end
+  end
+
+  describe '#index_in' do
+    subject(:index_in) { described_class.index_in(*args) }
+
+    let(:args) { [1.minute, project.id, { foo: :bar }] }
+
+    it 'calls perform_async on the worker' do
+      expect(::Zoekt::IndexerWorker).to receive(:perform_in).with(*args)
+
+      index_in
+    end
+
+    context 'when FF is disabled' do
+      before do
+        stub_feature_flags(zoekt_legacy_indexer_worker: false)
+      end
+
+      it 'does not call perform_async on the worker' do
+        expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+
+        index_in
+      end
+    end
+  end
 end

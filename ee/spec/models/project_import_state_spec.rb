@@ -104,7 +104,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         end
 
         it 'schedules a full index of the repository' do
-          expect(Zoekt::IndexerWorker).to receive(:perform_async).with(import_state.project_id)
+          expect(Search::Zoekt).to receive(:index_async).with(import_state.project_id)
 
           import_state.finish
         end
@@ -116,7 +116,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         end
 
         it 'does not index the repository' do
-          expect(Zoekt::IndexerWorker).not_to receive(:perform_async)
+          expect(Search::Zoekt).not_to receive(:index_async)
 
           import_state.finish
         end
