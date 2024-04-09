@@ -38,8 +38,6 @@ module API
           detail 'Returns vulnerabilities related to an occurrence.'
         end
         get 'vulnerabilities' do
-          forbidden! unless Feature.enabled?(:sbom_occurrences_vulnerabilities, project)
-
           options = { occurrence_id: params[:id], project: project }
 
           present EE::API::Entities::DependenciesVulnerabilities.represent(vulnerabilities, options)

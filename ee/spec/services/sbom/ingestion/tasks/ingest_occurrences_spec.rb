@@ -72,19 +72,6 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
         )
       end
 
-      context 'when sbom_occurrences_vulnerabilities is disabled' do
-        before do
-          stub_feature_flags(sbom_occurrences_vulnerabilities: false)
-        end
-
-        it 'does not populate vulnerability_count and highest_severity' do
-          ingest_occurrences
-
-          expect(ingested_occurrence.vulnerability_count).to be 0
-          expect(ingested_occurrence.highest_severity).to be_nil
-        end
-      end
-
       context 'when sbom occurrence was found by trivy' do
         let(:report_source) do
           build_stubbed(:ci_reports_sbom_source, data: {
