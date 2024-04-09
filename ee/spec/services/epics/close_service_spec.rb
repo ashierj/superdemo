@@ -65,10 +65,8 @@ RSpec.describe Epics::CloseService, feature_category: :portfolio_management do
             end
 
             context 'when epic and work item was already closed' do
-              before do
-                epic.update!(state: :closed)
-                work_item.update!(state: :closed)
-              end
+              let_it_be(:epic) { create(:epic, :closed, :with_synced_work_item, group: group) }
+              let(:work_item) { epic.work_item }
 
               it 'does not change the state' do
                 expect { subject }.to not_change { epic.reload.state }
