@@ -23,12 +23,15 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
     }.with_indifferent_access
   end
 
+  let(:model_name) { 'claude-2.1' }
+
   let(:params) do
     {
       code_generation_model_family: model_family,
       prefix: prefix,
       instruction: instruction,
-      current_file: current_file
+      current_file: current_file,
+      model_name: model_name
     }
   end
 
@@ -40,6 +43,11 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
 
   let(:anthropic_prompt) do
     instance_double(CodeSuggestions::Prompts::CodeGeneration::Anthropic, request_params: anthropic_request_params)
+  end
+
+  let(:anthropic_messages_prompt) do
+    instance_double(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages,
+      request_params: anthropic_request_params)
   end
 
   subject(:task) { described_class.new(params: params, unsafe_passthrough_params: unsafe_params) }
@@ -60,6 +68,30 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
         task.body
 
         expect(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to have_received(:new).with(params)
+      end
+    end
+  end
+
+  describe '#prompt' do
+    before do
+      allow(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to receive(:new).and_return(anthropic_prompt)
+      allow(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages).to receive(:new).and_return(anthropic_prompt)
+      stub_const('CodeSuggestions::Tasks::Base::AI_GATEWAY_CONTENT_SIZE', 3)
+    end
+
+    it 'uses old anthropic prompt format' do
+      task.body
+
+      expect(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to have_received(:new).with(params)
+    end
+
+    context 'with claude 3' do
+      let(:model_name) { 'claude-3-opus-20240229' }
+
+      it 'returns message based prompt' do
+        task.body
+
+        expect(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages).to have_received(:new).with(params)
       end
     end
   end
