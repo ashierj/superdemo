@@ -53,7 +53,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
           create(:work_items_dates_source, work_item: work_item)
         end
 
-        it "does not update due date" do
+        it "updates start date and due date" do
           expect { described_class.new(work_item).execute }
             .to not_change { WorkItems::DatesSource.count }
             .and change { work_item.reload.dates_source&.due_date }.from(nil).to(due_date)
@@ -66,7 +66,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
           create(:work_items_dates_source, work_item: work_item, due_date_is_fixed: true)
         end
 
-        it "does not update due date" do
+        it "updates start date and does not update due date" do
           expect { described_class.new(work_item).execute }
             .to not_change { WorkItems::DatesSource.count }
             .and not_change { work_item.reload.dates_source&.due_date }
@@ -79,7 +79,7 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
           create(:work_items_dates_source, work_item: work_item, start_date_is_fixed: true)
         end
 
-        it "does not update start date" do
+        it "updates due date and does not update start date" do
           expect { described_class.new(work_item).execute }
             .to not_change { WorkItems::DatesSource.count }
             .and not_change { work_item.reload.dates_source&.start_date }
