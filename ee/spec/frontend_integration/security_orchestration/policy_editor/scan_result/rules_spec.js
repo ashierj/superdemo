@@ -38,6 +38,7 @@ describe('Scan result policy rules', () => {
       },
       stubs: {
         SourceEditor: true,
+        SettingPopover: true,
       },
     });
   };

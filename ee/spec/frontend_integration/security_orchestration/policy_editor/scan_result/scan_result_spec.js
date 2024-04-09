@@ -21,6 +21,9 @@ describe('Policy Editor', () => {
         glFeatures,
         ...provide,
       },
+      stubs: {
+        SettingPopover: true,
+      },
     });
   };
 

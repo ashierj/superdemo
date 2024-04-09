@@ -11,33 +11,6 @@
 import { POLICY_SCOPE_MOCK } from 'ee_jest/security_orchestration/mocks/mock_apollo';
 import { actionId, ruleId } from './mock_data';
 
-export const mockForcePushSettingsManifest = `type: approval_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: ''
-actions:
-  - type: require_approval
-    approvals_required: 1
-approval_settings:
-  prevent_pushing_and_force_pushing: true
-`;
-
-export const mockBlockAndForceSettingsManifest = `type: approval_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: ''
-actions:
-  - type: require_approval
-    approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
-
 export const mockDefaultBranchesScanResultManifest = `type: approval_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals

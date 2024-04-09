@@ -96,17 +96,14 @@ export default {
     },
   },
   data() {
-    let yamlEditorValue;
+    const newPolicyYaml = isGroup(this.namespaceType)
+      ? DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE
+      : DEFAULT_SCAN_EXECUTION_POLICY;
 
-    if (this.existingPolicy) {
-      yamlEditorValue = policyToYaml(this.existingPolicy);
-    } else {
-      yamlEditorValue = isGroup(this.namespaceType)
-        ? DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE
-        : DEFAULT_SCAN_EXECUTION_POLICY;
-    }
+    const yamlEditorValue = this.existingPolicy ? policyToYaml(this.existingPolicy) : newPolicyYaml;
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
+
     const parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
 
     return {
