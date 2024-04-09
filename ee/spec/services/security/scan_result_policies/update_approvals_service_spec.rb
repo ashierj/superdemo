@@ -245,7 +245,15 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             other_violation.update!(violation_data: nil)
           end
 
-          it_behaves_like 'triggers policy bot comment', :scan_finding, false
+          it_behaves_like 'does not trigger policy bot comment'
+
+          context 'when feature flag "save_policy_violation_data" is disabled' do
+            before do
+              stub_feature_flags(save_policy_violation_data: false)
+            end
+
+            it_behaves_like 'triggers policy bot comment', :scan_finding, true
+          end
         end
       end
     end
