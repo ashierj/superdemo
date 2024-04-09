@@ -4,6 +4,7 @@ module EE
   module SessionsController
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include ::Gitlab::Utils::StrongMemoize
 
     prepended do
       include GoogleAnalyticsCSP
@@ -85,5 +86,15 @@ module EE
       session[:verification_user_id] = user.id
       redirect_to signup_identity_verification_path
     end
+
+    override :onboarding_status_tracking_label
+    def onboarding_status_tracking_label
+      onboarding_status.preregistration_tracking_label
+    end
+
+    def onboarding_status
+      ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, resource)
+    end
+    strong_memoize_attr :onboarding_status
   end
 end

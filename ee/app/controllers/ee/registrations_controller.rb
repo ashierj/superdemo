@@ -114,14 +114,14 @@ module EE
       ::Gitlab::Tracking.event(
         self.class.name,
         'successfully_submitted_form',
-        label: registration_tracking_label,
+        label: onboarding_status.tracking_label,
         user: user
       )
 
       return unless params[:signup_intent].present?
 
       experiment(:signup_intent_step_one, actor: user)
-        .track(params[:signup_intent], label: registration_tracking_label)
+        .track(params[:signup_intent], label: onboarding_status.tracking_label)
     end
 
     override :set_resource_fields
@@ -196,7 +196,7 @@ module EE
 
     override :registration_tracking_label
     def registration_tracking_label
-      onboarding_status.tracking_label
+      onboarding_status.preregistration_tracking_label
     end
 
     def allow_account_deletion?

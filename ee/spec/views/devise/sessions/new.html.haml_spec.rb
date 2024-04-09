@@ -59,6 +59,7 @@ RSpec.describe 'devise/sessions/new' do
     allow(view).to receive(:devise_mapping).and_return(Devise.mappings[:user])
     allow(view).to receive(:resource).and_return(spy)
     allow(view).to receive(:resource_name).and_return(:user)
+    allow(view).to receive(:onboarding_status_tracking_label).and_return('free_registration')
   end
 
   def disable_captcha
