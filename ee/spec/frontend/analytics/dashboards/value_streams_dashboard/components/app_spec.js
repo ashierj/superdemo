@@ -17,16 +17,12 @@ describe('Executive dashboard app', () => {
   const fullPath = 'groupFullPath';
   const testPaths = ['group', 'group/a', 'group/b', 'group/c', 'group/d', 'group/e'];
   const testPanels = testPaths.map((namespace) => ({ data: { namespace } }));
-  const defaultGlFeatures = { doraPerformersScorePanel: true };
 
-  const createWrapper = async ({ props = {}, glFeatures = defaultGlFeatures } = {}) => {
+  const createWrapper = async ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(Component, {
       propsData: {
         fullPath,
         ...props,
-      },
-      provide: {
-        glFeatures,
       },
     });
 
@@ -78,12 +74,6 @@ describe('Executive dashboard app', () => {
 
       const [card] = cards.wrappers;
       expect(card.props()).toMatchObject({ data: { namespace: fullPath } });
-    });
-
-    it('does not render dora performers card when the feature is disabled', async () => {
-      await createWrapper({ glFeatures: { doraPerformersScorePanel: false } });
-      const cards = findDoraPerformersScoreCards();
-      expect(cards.length).toBe(0);
     });
 
     it('queryPaths are shown in addition to the group visualization', async () => {
