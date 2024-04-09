@@ -9,14 +9,14 @@ module Users
     def identity_verification_data(user)
       {
         data: {
-          verification_state_path: verification_state_identity_verification_path,
+          verification_state_path: verification_state_signup_identity_verification_path,
           offer_phone_number_exemption: user.offer_phone_number_exemption?,
-          phone_exemption_path: toggle_phone_exemption_identity_verification_path,
+          phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
           credit_card: credit_card_verification_data(user),
           phone_number: phone_number_verification_data(user),
           email: email_verification_data(user),
           arkose: arkose_labs_data,
-          successful_verification_path: success_identity_verification_path
+          successful_verification_path: success_signup_identity_verification_path
         }.to_json
       }
     end
@@ -74,15 +74,15 @@ module Users
     def email_verification_data(user)
       {
         obfuscated: obfuscated_email(user.email),
-        verify_path: verify_email_code_identity_verification_path,
-        resend_path: resend_email_code_identity_verification_path
+        verify_path: verify_email_code_signup_identity_verification_path,
+        resend_path: resend_email_code_signup_identity_verification_path
       }
     end
 
     def phone_number_verification_data(user)
       data = {
-        send_code_path: send_phone_verification_code_identity_verification_path,
-        verify_code_path: verify_phone_verification_code_identity_verification_path,
+        send_code_path: send_phone_verification_code_signup_identity_verification_path,
+        verify_code_path: verify_phone_verification_code_signup_identity_verification_path,
         enable_arkose_challenge: enable_arkose_challenge?(:phone).to_s,
         show_arkose_challenge: show_arkose_challenge?(user, :phone).to_s,
         show_recaptcha_challenge: show_recaptcha_challenge?.to_s
@@ -105,8 +105,8 @@ module Users
       {
         user_id: user.id,
         form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
-        verify_credit_card_path: verify_credit_card_identity_verification_path,
-        verify_captcha_path: verify_credit_card_captcha_identity_verification_path,
+        verify_credit_card_path: verify_credit_card_signup_identity_verification_path,
+        verify_captcha_path: verify_credit_card_captcha_signup_identity_verification_path,
         show_recaptcha_challenge: show_recaptcha_challenge?.to_s
       }
     end

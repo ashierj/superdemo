@@ -126,7 +126,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     context 'when session contains a `verification_user_id` from a confirmed user' do
       let_it_be(:user) { confirmed_user }
 
-      it { is_expected.to redirect_to(success_identity_verification_path) }
+      it { is_expected.to redirect_to(success_signup_identity_verification_path) }
     end
 
     context 'when session contains a `verification_user_id` from an unconfirmed user' do
@@ -172,18 +172,18 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     subject { response }
 
-    it { is_expected.to redirect_to(arkose_labs_challenge_identity_verification_path) }
+    it { is_expected.to redirect_to(arkose_labs_challenge_signup_identity_verification_path) }
 
     context 'when user has an arkose_risk_band' do
       let(:user) { create(:omniauth_user, :unconfirmed, :low_risk) }
 
-      it { is_expected.not_to redirect_to(arkose_labs_challenge_identity_verification_path) }
+      it { is_expected.not_to redirect_to(arkose_labs_challenge_signup_identity_verification_path) }
     end
 
     context 'when arkose is disabled' do
       let(:is_arkose_enabled) { false }
 
-      it { is_expected.not_to redirect_to(arkose_labs_challenge_identity_verification_path) }
+      it { is_expected.not_to redirect_to(arkose_labs_challenge_signup_identity_verification_path) }
     end
   end
 
@@ -442,7 +442,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   end
 
   describe 'GET show' do
-    subject(:do_request) { get identity_verification_path }
+    subject(:do_request) { get signup_identity_verification_path }
 
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
@@ -508,7 +508,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   end
 
   describe 'GET restricted' do
-    subject(:do_request) { get restricted_identity_verification_path }
+    subject(:do_request) { get restricted_signup_identity_verification_path }
 
     it 'returns 404' do
       do_request
@@ -518,7 +518,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   end
 
   describe 'GET verification_state' do
-    subject(:do_request) { get verification_state_identity_verification_path }
+    subject(:do_request) { get verification_state_signup_identity_verification_path }
 
     it_behaves_like 'it requires a valid verification_user_id'
 
@@ -570,7 +570,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let_it_be(:params) { { registrations_identity_verification: { code: '123456' } } }
     let_it_be(:service_response) { { status: :success } }
 
-    subject(:do_request) { post verify_email_code_identity_verification_path(params) }
+    subject(:do_request) { post verify_email_code_signup_identity_verification_path(params) }
 
     before do
       allow_next_instance_of(::Users::EmailVerification::ValidateTokenService) do |service|
@@ -614,7 +614,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   describe 'POST resend_email_code' do
     let_it_be(:user) { unconfirmed_user }
 
-    subject(:do_request) { post resend_email_code_identity_verification_path }
+    subject(:do_request) { post resend_email_code_signup_identity_verification_path }
 
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
@@ -686,7 +686,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       { registrations_identity_verification: { country: 'US', international_dial_code: '1', phone_number: '555' } }
     end
 
-    subject(:do_request) { post send_phone_verification_code_identity_verification_path(params) }
+    subject(:do_request) { post send_phone_verification_code_signup_identity_verification_path(params) }
 
     before do
       allow_next_instance_of(::PhoneVerification::Users::SendVerificationCodeService) do |service|
@@ -745,7 +745,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       { registrations_identity_verification: { verification_code: '999' } }
     end
 
-    subject(:do_request) { post verify_phone_verification_code_identity_verification_path(params) }
+    subject(:do_request) { post verify_phone_verification_code_signup_identity_verification_path(params) }
 
     before do
       allow_next_instance_of(::PhoneVerification::Users::VerifyCodeService) do |service|
@@ -819,7 +819,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let_it_be(:user) { create(:user, :unconfirmed) }
 
     let(:params) { { arkose_labs_token: 'fake-token' } }
-    let(:do_request) { post verify_arkose_labs_session_identity_verification_path, params: params }
+    let(:do_request) { post verify_arkose_labs_session_signup_identity_verification_path, params: params }
     let(:service_response) { successful_verification_response }
 
     before do
@@ -857,7 +857,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
           it 'marks the user as Arkose-verified' do
             expect { do_request }.to change { user.arkose_verified? }.from(false).to(true)
 
-            expect(response).to redirect_to(identity_verification_path)
+            expect(response).to redirect_to(signup_identity_verification_path)
           end
         end
       end
@@ -866,7 +866,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         it 'redirects to show action' do
           do_request
 
-          expect(response).to redirect_to(identity_verification_path)
+          expect(response).to redirect_to(signup_identity_verification_path)
         end
 
         describe 'phone verification service daily transaction limit check' do
@@ -884,7 +884,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   describe 'GET arkose_labs_challenge' do
     let_it_be(:user) { create(:user, :unconfirmed) }
 
-    let(:do_request) { get arkose_labs_challenge_identity_verification_path }
+    let(:do_request) { get arkose_labs_challenge_signup_identity_verification_path }
 
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
@@ -910,14 +910,14 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       let!(:member_invite) { create(:project_member, :invited, invite_email: user.email) }
 
       before do
-        get success_identity_verification_path
+        get success_signup_identity_verification_path
       end
 
       context 'when not yet verified' do
         let(:user) { unconfirmed_user }
 
-        it 'redirects back to identity_verification_path' do
-          expect(response).to redirect_to(identity_verification_path)
+        it 'redirects back to signup_identity_verification_path' do
+          expect(response).to redirect_to(signup_identity_verification_path)
         end
       end
 
@@ -944,7 +944,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         expect(experiment(:phone_verification_for_low_risk_users))
           .to track(:registration_completed).on_next_instance.with_context(user: user)
 
-        get success_identity_verification_path
+        get success_signup_identity_verification_path
       end
     end
 
@@ -952,7 +952,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       before do
         stub_saas_features(onboarding: true)
 
-        get success_identity_verification_path
+        get success_signup_identity_verification_path
       end
 
       context 'when it is an sso registration' do
@@ -982,7 +982,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       stub_session(verification_user_id: user.id)
     end
 
-    subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
+    subject(:do_request) { get verify_credit_card_signup_identity_verification_path(params) }
 
     context 'when request format is html' do
       let(:params) { { format: :html } }
@@ -1109,7 +1109,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       stub_session(verification_user_id: user.id)
     end
 
-    subject(:do_request) { post verify_credit_card_captcha_identity_verification_path }
+    subject(:do_request) { post verify_credit_card_captcha_signup_identity_verification_path }
 
     it_behaves_like 'it verifies reCAPTCHA response'
   end
@@ -1118,7 +1118,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let_it_be(:unconfirmed_user) { create(:user, :unconfirmed, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
 
-    subject(:do_request) { patch toggle_phone_exemption_identity_verification_path(format: :json) }
+    subject(:do_request) { patch toggle_phone_exemption_signup_identity_verification_path(format: :json) }
 
     before do
       stub_session(verification_user_id: user.id)

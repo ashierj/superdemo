@@ -73,7 +73,7 @@ module EE
       session[:verification_user_id] = user.id
       load_balancer_stick_request(::User, :user, user.id)
 
-      redirect_to identity_verification_path
+      redirect_to signup_identity_verification_path
     end
 
     override :set_session_active_since

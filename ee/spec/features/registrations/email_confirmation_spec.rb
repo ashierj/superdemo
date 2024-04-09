@@ -169,7 +169,7 @@ RSpec.describe 'Email Confirmation', feature_category: :instance_resiliency do
   end
 
   def expect_successful_custom_confirmation
-    expect(page).to have_current_path(identity_verification_path)
+    expect(page).to have_current_path(signup_identity_verification_path)
     expect(page).to have_content(format(s_("IdentityVerification|For added security, you'll need to verify your "\
       "identity. We've sent a verification code to %{email}"), email: obfuscated_email(user.email)))
 

@@ -46,7 +46,7 @@ module EE
       return if allow_invited_user?
 
       member&.destroy
-      redirect_to restricted_identity_verification_path
+      redirect_to restricted_signup_identity_verification_path
     end
 
     def allow_invited_user?
@@ -103,7 +103,7 @@ module EE
 
     override :identity_verification_redirect_path
     def identity_verification_redirect_path
-      identity_verification_path
+      signup_identity_verification_path
     end
 
     def send_custom_confirmation_instructions

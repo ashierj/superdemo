@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-scope :users, module: :users do
+scope :users, module: :users, as: 'signup' do
   resource :identity_verification, controller: :registrations_identity_verification, only: :show do
     get :verification_state
     post :verify_email_code

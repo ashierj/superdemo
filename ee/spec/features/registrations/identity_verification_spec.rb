@@ -60,7 +60,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       session.post user_session_path, params: { user: { login: new_user.username, password: new_user.password } }
 
       # visit identity verification page
-      session.get identity_verification_path
+      session.get signup_identity_verification_path
 
       # extract CSRF token
       body = session.response.body
@@ -69,9 +69,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       headers = { 'X-CSRF-Token' => csrf_token }
 
-      phone_send_code_path = send_phone_verification_code_identity_verification_path
-      phone_verify_code_path = verify_phone_verification_code_identity_verification_path
-      credit_card_verify_path = verify_credit_card_identity_verification_path
+      phone_send_code_path = send_phone_verification_code_signup_identity_verification_path
+      phone_verify_code_path = verify_phone_verification_code_signup_identity_verification_path
+      credit_card_verify_path = verify_credit_card_signup_identity_verification_path
 
       verification_endpoint_requests = {
         phone: [

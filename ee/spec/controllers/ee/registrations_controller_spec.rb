@@ -9,7 +9,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     it 'does not redirect to the restricted identity verification path' do
       subject
 
-      expect(response).not_to redirect_to restricted_identity_verification_path
+      expect(response).not_to redirect_to restricted_signup_identity_verification_path
     end
   end
 
@@ -17,7 +17,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     it 'redirects to the restricted identity verification path' do
       subject
 
-      expect(response).to redirect_to restricted_identity_verification_path
+      expect(response).to redirect_to restricted_signup_identity_verification_path
     end
   end
 
