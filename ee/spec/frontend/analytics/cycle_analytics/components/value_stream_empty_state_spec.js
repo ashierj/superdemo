@@ -1,5 +1,6 @@
-import { shallowMount } from '@vue/test-utils';
 import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import ValueStreamEmptyState from 'ee/analytics/cycle_analytics/components/value_stream_empty_state.vue';
 import {
   EMPTY_STATE_ACTION_TEXT,
@@ -9,13 +10,15 @@ import {
   EMPTY_STATE_FILTER_ERROR_DESCRIPTION,
   EMPTY_STATE_DESCRIPTION,
 } from 'ee/analytics/cycle_analytics/constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { newValueStreamPath } from 'ee_jest/analytics/cycle_analytics/mock_data';
 
 const emptyStateSvgPath = '/path/to/svg';
 
-const createComponent = (props = {}) =>
-  extendedWrapper(
-    shallowMount(ValueStreamEmptyState, {
+describe('ValueStreamEmptyState', () => {
+  let wrapper;
+
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
+    wrapper = shallowMountExtended(ValueStreamEmptyState, {
       propsData: {
         emptyStateSvgPath,
         isLoading: false,
@@ -23,12 +26,19 @@ const createComponent = (props = {}) =>
         canEdit: true,
         ...props,
       },
+      provide: {
+        newValueStreamPath,
+        glFeatures: {
+          vsaStandaloneSettingsPage: true,
+        },
+        ...provide,
+      },
       stubs: { GlEmptyState },
-    }),
-  );
-
-describe('ValueStreamEmptyState', () => {
-  let wrapper = null;
+      directives: {
+        GlModalDirective: createMockDirective('gl-modal-directive'),
+      },
+    });
+  };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findTitle = () => findEmptyState().props('title');
@@ -38,7 +48,7 @@ describe('ValueStreamEmptyState', () => {
 
   describe('default state', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
     });
 
     it('does not render the loading icon', () => {
@@ -53,9 +63,16 @@ describe('ValueStreamEmptyState', () => {
       expect(findDescription()).toBe(EMPTY_STATE_DESCRIPTION);
     });
 
-    it('renders the create value stream button', () => {
+    it('renders the new value stream button', () => {
       expect(findPrimaryAction().exists()).toBe(true);
       expect(findPrimaryAction().text()).toContain(EMPTY_STATE_ACTION_TEXT);
+      expect(findPrimaryAction().attributes('href')).toBe(newValueStreamPath);
+    });
+
+    it('does not bind modal directive to new value stream button', () => {
+      const binding = getBinding(findPrimaryAction().element, 'gl-modal-directive');
+
+      expect(binding.value).toBe(false);
     });
 
     it('renders the learn more button', () => {
@@ -69,10 +86,14 @@ describe('ValueStreamEmptyState', () => {
 
   describe('canEdit = false', () => {
     beforeEach(() => {
-      wrapper = createComponent({ canEdit: false });
+      createComponent({
+        props: {
+          canEdit: false,
+        },
+      });
     });
 
-    it('does not render the create value stream button', () => {
+    it('does not render the new value stream button', () => {
       expect(findPrimaryAction().exists()).toBe(false);
     });
 
@@ -83,7 +104,11 @@ describe('ValueStreamEmptyState', () => {
 
   describe('isLoading = true', () => {
     beforeEach(() => {
-      wrapper = createComponent({ isLoading: true });
+      createComponent({
+        props: {
+          isLoading: true,
+        },
+      });
     });
 
     it('renders the loading icon', () => {
@@ -93,7 +118,11 @@ describe('ValueStreamEmptyState', () => {
 
   describe('hasDateRangeError = true', () => {
     beforeEach(() => {
-      wrapper = createComponent({ hasDateRangeError: true });
+      createComponent({
+        props: {
+          hasDateRangeError: true,
+        },
+      });
     });
 
     it('renders the error title message', () => {
@@ -104,12 +133,28 @@ describe('ValueStreamEmptyState', () => {
       expect(findDescription()).toBe(EMPTY_STATE_FILTER_ERROR_DESCRIPTION);
     });
 
-    it('does not render the create value stream button', () => {
+    it('does not render the new value stream button', () => {
       expect(findPrimaryAction().exists()).toBe(false);
     });
 
     it('does not render the learn more button', () => {
       expect(findSecondaryAction().exists()).toBe(false);
+    });
+  });
+
+  describe('vsaStandaloneSettingsPage = false', () => {
+    beforeEach(() => {
+      createComponent({ provide: { glFeatures: { vsaStandaloneSettingsPage: false } } });
+    });
+
+    it('renders new value stream button without a link', () => {
+      expect(findPrimaryAction().attributes('href')).toBe(undefined);
+    });
+
+    it('binds modal directive to new value stream button', () => {
+      const binding = getBinding(findPrimaryAction().element, 'gl-modal-directive');
+
+      expect(binding.value).toBe('value-stream-form-modal');
     });
   });
 });

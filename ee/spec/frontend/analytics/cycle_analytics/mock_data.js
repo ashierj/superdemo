@@ -71,6 +71,7 @@ export const valueStreams = [
 
 export const vsaPath = '/analytics/value_stream_analytics';
 export const valueStreamPath = `${vsaPath}?value_stream_id=${valueStreams[0].id}`;
+export const newValueStreamPath = `${vsaPath}/value_streams/new`;
 
 export const groupLabels = apiGroupLabels.map((l) =>
   convertObjectPropsToCamelCase({ ...l, title: l.name }),

@@ -24,11 +24,11 @@ describe('ValueStreamFormContentHeader', () => {
     });
 
     it('renders the correct form title', () => {
-      expect(findFormTitle().text()).toBe('Create value stream');
+      expect(findFormTitle().text()).toBe('New value stream');
     });
 
-    it('renders create button', () => {
-      expect(findPrimaryActionBtn().text()).toBe('Create value stream');
+    it('renders new value stream button', () => {
+      expect(findPrimaryActionBtn().text()).toBe('New value stream');
     });
 
     it('emits `clickedPrimaryAction` event when create button is clicked', () => {
@@ -41,7 +41,7 @@ describe('ValueStreamFormContentHeader', () => {
       expect(findViewValueStreamBtn().exists()).toBe(false);
     });
 
-    it('does not set create button to a loading state', () => {
+    it('does not set new value stream to a loading state', () => {
       expect(findPrimaryActionBtn().props('loading')).toBe(false);
     });
 
