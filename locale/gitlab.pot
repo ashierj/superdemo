@@ -15253,6 +15253,9 @@ msgstr ""
 msgid "CreateValueStreamForm|New stage"
 msgstr ""
 
+msgid "CreateValueStreamForm|New value stream"
+msgstr ""
+
 msgid "CreateValueStreamForm|Plan stage start"
 msgstr ""
 

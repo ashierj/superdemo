@@ -2,6 +2,7 @@
 import { GlButton, GlEmptyState, GlLoadingIcon, GlModalDirective } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import Tracking from '~/tracking';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   EMPTY_STATE_TITLE,
   EMPTY_STATE_DESCRIPTION,
@@ -23,7 +24,8 @@ export default {
   directives: {
     GlModalDirective,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [Tracking.mixin(), glFeatureFlagsMixin()],
+  inject: ['newValueStreamPath'],
   props: {
     isLoading: {
       type: Boolean,
@@ -56,6 +58,15 @@ export default {
         ? this.$options.i18n.EMPTY_STATE_FILTER_ERROR_DESCRIPTION
         : this.$options.i18n.EMPTY_STATE_DESCRIPTION;
     },
+    isVSAStandaloneSettingsPageEnabled() {
+      return this.glFeatures?.vsaStandaloneSettingsPage;
+    },
+    createValueStreamHref() {
+      return this.isVSAStandaloneSettingsPageEnabled ? this.newValueStreamPath : null;
+    },
+    valueStreamFormModalId() {
+      return !this.isVSAStandaloneSettingsPageEnabled && 'value-stream-form-modal';
+    },
   },
   i18n: {
     EMPTY_STATE_TITLE,
@@ -84,7 +95,8 @@ export default {
     >
       <template v-if="!hasDateRangeError && canEdit" #actions>
         <gl-button
-          v-gl-modal-directive="'value-stream-form-modal'"
+          v-gl-modal-directive="valueStreamFormModalId"
+          :href="createValueStreamHref"
           class="gl-mx-2 gl-mb-3"
           variant="confirm"
           data-testid="create-value-stream-button"
