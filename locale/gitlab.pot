@@ -1957,6 +1957,9 @@ msgstr ""
 msgid "A ready-to-go template for use with iOS Swift apps"
 msgstr ""
 
+msgid "A relation import is already in progress for this project"
+msgstr ""
+
 msgid "A release with a date in the future is labeled as an %{linkStart}Upcoming Release%{linkEnd}."
 msgstr ""
 
@@ -26355,6 +26358,9 @@ msgstr ""
 msgid "ImportProjects|Update of imported projects with realtime changes failed"
 msgstr ""
 
+msgid "Imported relation must be one of %{relations}"
+msgstr ""
+
 msgid "Imported requirements"
 msgstr ""
 
@@ -39523,6 +39529,9 @@ msgid "Project name"
 msgstr ""
 
 msgid "Project navigation"
+msgstr ""
+
+msgid "Project not found"
 msgstr ""
 
 msgid "Project or Group"
