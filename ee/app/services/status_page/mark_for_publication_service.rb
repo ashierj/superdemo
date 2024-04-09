@@ -44,8 +44,11 @@ module StatusPage
     end
 
     def track_incident
-      ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter.count(:publishes)
-
+      Gitlab::InternalEvents.track_event(
+        'status_page_incident_published',
+        project: project,
+        user: user
+      )
       PublishedIncident.track(issue)
     end
 

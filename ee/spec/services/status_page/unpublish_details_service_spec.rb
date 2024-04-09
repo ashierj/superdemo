@@ -53,9 +53,11 @@ RSpec.describe StatusPage::UnpublishDetailsService, feature_category: :incident_
 
       it 'untracks the issue' do
         expect(StatusPage::PublishedIncident).to receive(:untrack).with(issue)
-        expect(Gitlab::StatusPage::UsageDataCounters::IncidentCounter).to receive(:count).with(:unpublishes).once
-
         result
+      end
+
+      it_behaves_like 'internal event tracking' do
+        let(:event) { 'status_page_incident_unpublished' }
       end
     end
 
