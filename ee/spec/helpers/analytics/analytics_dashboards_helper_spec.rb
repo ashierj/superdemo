@@ -277,21 +277,27 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
     end
 
     describe 'can_select_gitlab_managed_provider' do
-      where(:is_project, :gitlab_com, :product_analytics_billing, :expected_value) do
-        true  | true  | true  | 'true'
-        true  | true  | false | 'false'
-        true  | false | true  | 'false'
-        true  | false | false | 'false'
-        false | true  | true  | 'false'
-        false | true  | false | 'false'
-        false | false | true  | 'false'
-        false | false | false | 'false'
+      where(:is_project,
+        :gitlab_com,
+        :product_analytics_billing,
+        :product_analytics_billing_override,
+        :expected_value) do
+        true  | true  | true  | false | 'true'
+        true  | true  | true  | true  | 'false'
+        true  | true  | false | false | 'false'
+        true  | false | true  | false | 'false'
+        true  | false | false | false | 'false'
+        false | true  | true  | false | 'false'
+        false | true  | false | false | 'false'
+        false | false | true  | false | 'false'
+        false | false | false | false | 'false'
       end
 
       with_them do
         before do
           allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(gitlab_com)
           stub_feature_flags(product_analytics_billing: product_analytics_billing)
+          stub_feature_flags(product_analytics_billing_override: product_analytics_billing_override)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
@@ -303,15 +309,17 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
     end
 
     describe '#managed_cluster_purchased' do
-      where(:is_project, :purchased_product_analytics_add_on, :product_analytics_billing, :expected_value) do
-        true  | true  | true  | 'true'
-        true  | true  | false | 'false'
-        true  | false | true  | 'false'
-        true  | false | false | 'false'
-        false | true  | true  | 'false'
-        false | true  | false | 'false'
-        false | false | true  | 'false'
-        false | false | false | 'false'
+      where(:is_project, :purchased_product_analytics_add_on, :product_analytics_billing,
+        :product_analytics_billing_override, :expected_value) do
+        true  | true  | true | false | 'true'
+        true  | true  | true | true | 'false'
+        true  | true  | false | false | 'false'
+        true  | false | true  | false | 'false'
+        true  | false | false | false | 'false'
+        false | true  | true | false  | 'false'
+        false | true  | false | false | 'false'
+        false | false | true | false  | 'false'
+        false | false | false | false | 'false'
       end
 
       with_them do
@@ -321,6 +329,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           end
 
           stub_feature_flags(product_analytics_billing: product_analytics_billing)
+          stub_feature_flags(product_analytics_billing_override: product_analytics_billing_override)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }

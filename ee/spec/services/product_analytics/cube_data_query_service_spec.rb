@@ -25,7 +25,7 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
       experiment_features_enabled: true,
       product_analytics_enabled: true
     )
-    stub_feature_flags(product_analytics_billing: false)
+    stub_feature_flags(product_analytics_billing: false, product_analytics_billing_override: false)
   end
 
   shared_examples 'a not found error' do

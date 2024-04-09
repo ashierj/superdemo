@@ -10,6 +10,10 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   let_it_be(:user) { create(:user) }
   let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) }
 
+  before do
+    stub_feature_flags(product_analytics_billing_override: false)
+  end
+
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
 
