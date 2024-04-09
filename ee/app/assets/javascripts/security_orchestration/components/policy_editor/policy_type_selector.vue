@@ -1,6 +1,7 @@
 <script>
 import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
 import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
+import pipelineIllustrationUrl from '@gitlab/svgs/dist/illustrations/milestone-sm.svg';
 import { GlButton, GlCard, GlIcon, GlPopover, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
@@ -33,6 +34,11 @@ const i18n = {
   maximumReachedWarning: s__(
     'SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} policies.',
   ),
+  pipelineExecutionPolicyTitle: s__('SecurityOrchestration|Pipeline execution policy'),
+  pipelineExecutionPolicyDesc: s__('SecurityOrchestration|Run a customized CI Yaml file.'),
+  pipelineExecutionPolicyExample: s__(
+    'SecurityOrchestration|Run a CI Yaml file from project: demo-project with ref: 123 File path: group-name/project-name/file-name',
+  ),
 };
 
 export default {
@@ -48,6 +54,7 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   inject: [
+    'customCiToggleEnabled',
     'maxActiveScanExecutionPoliciesReached',
     'maxActiveScanResultPoliciesReached',
     'maxScanExecutionPoliciesAllowed',
@@ -55,8 +62,11 @@ export default {
     'policiesPath',
   ],
   computed: {
+    showPipelineExecutionPolicyType() {
+      return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
+    },
     policies() {
-      return [
+      const policies = [
         {
           text: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.text.toLowerCase(),
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
@@ -81,6 +91,24 @@ export default {
           maxPoliciesAllowed: this.maxScanExecutionPoliciesAllowed,
         },
       ];
+
+      if (this.showPipelineExecutionPolicyType) {
+        policies.push({
+          text: POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.text.toLowerCase(),
+          urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.urlParameter,
+          title: i18n.pipelineExecutionPolicyTitle,
+          description: i18n.pipelineExecutionPolicyDesc,
+          example: i18n.pipelineExecutionPolicyExample,
+          imageSrc: pipelineIllustrationUrl,
+          /**
+           * TODO
+           * Add hasMax and maxPoliciesAllowed when new policy type
+           * added on backend
+           */
+        });
+      }
+
+      return policies;
     },
   },
   i18n,

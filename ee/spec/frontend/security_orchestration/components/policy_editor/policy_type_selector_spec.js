@@ -15,6 +15,7 @@ describe('PolicyTypeSelector component', () => {
         maxScanResultPoliciesAllowed: 5,
         maxActiveScanExecutionPoliciesReached: true,
         maxActiveScanResultPoliciesReached: false,
+        customCiToggleEnabled: true,
         ...provide,
       },
     });
@@ -40,6 +41,28 @@ describe('PolicyTypeSelector component', () => {
 
       it(`displays the description`, () => {
         expect(wrapper.findByText(description).exists()).toBe(true);
+      });
+    });
+
+    describe('pipeline execution policy type', () => {
+      beforeEach(() => {
+        factory({
+          glFeatures: {
+            pipelineExecutionPolicyType: true,
+          },
+        });
+      });
+
+      it(`displays the title`, () => {
+        expect(
+          wrapper.findByText(PolicyTypeSelector.i18n.pipelineExecutionPolicyTitle).exists(),
+        ).toBe(true);
+      });
+
+      it(`displays the description`, () => {
+        expect(
+          wrapper.findByText(PolicyTypeSelector.i18n.pipelineExecutionPolicyDesc).exists(),
+        ).toBe(true);
       });
     });
 
@@ -81,10 +104,14 @@ describe('PolicyTypeSelector component', () => {
   it.each([
     POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
     POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+    POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.urlParameter,
   ])('should emit selected policy type', (parameter) => {
     factory({
       maxActiveScanExecutionPoliciesReached: false,
       maxActiveScanResultPoliciesReached: false,
+      glFeatures: {
+        pipelineExecutionPolicyType: true,
+      },
     });
 
     findPolicyButton(parameter).vm.$emit('click');

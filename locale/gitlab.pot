@@ -46119,6 +46119,9 @@ msgstr ""
 msgid "SecurityOrchestration|Pipeline execution"
 msgstr ""
 
+msgid "SecurityOrchestration|Pipeline execution policy"
+msgstr ""
+
 msgid "SecurityOrchestration|Please remove duplicated values"
 msgstr ""
 
@@ -46179,7 +46182,13 @@ msgstr ""
 msgid "SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} with the following options:"
 msgstr ""
 
+msgid "SecurityOrchestration|Run a CI Yaml file from project: demo-project with ref: 123 File path: group-name/project-name/file-name"
+msgstr ""
+
 msgid "SecurityOrchestration|Run a DAST scan with Scan Profile A and Site Profile A when a pipeline run against the main branch."
+msgstr ""
+
+msgid "SecurityOrchestration|Run a customized CI Yaml file."
 msgstr ""
 
 msgid "SecurityOrchestration|Save changes"
