@@ -23,8 +23,6 @@ module EE
 
         return false unless protected_branch
 
-        return false unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
-
         return false unless project.licensed_feature_available?(:security_orchestration_policies)
 
         service = ::Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletionCheckService.new(project: project)

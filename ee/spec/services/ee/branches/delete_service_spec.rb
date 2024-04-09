@@ -39,16 +39,6 @@ RSpec.describe Branches::DeleteService, feature_category: :source_code_managemen
         expect(result.reason).to eq :forbidden
       end
 
-      context 'when the scan_result_policies_block_unprotecting_branches feature is not available' do
-        before do
-          stub_feature_flags(scan_result_policies_block_unprotecting_branches: false)
-        end
-
-        it 'deletes the branch' do
-          expect(execute_service.status).to eq :success
-        end
-      end
-
       context 'when the security_orchestration_policies feature is not available' do
         before do
           stub_licensed_features(security_orchestration_policies: false)

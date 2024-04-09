@@ -10,7 +10,6 @@ module Groups
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:scan_result_policies_block_unprotecting_branches, group)
         push_frontend_feature_flag(:compliance_pipeline_in_policies, group)
         push_frontend_feature_flag(:security_policies_breaking_changes, group)
       end
