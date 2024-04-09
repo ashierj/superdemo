@@ -14,8 +14,10 @@ module StatusPage
 
     def process(issue)
       PublishedIncident.untrack(issue)
-      ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter.count(:unpublishes)
-
+      Gitlab::InternalEvents.track_event(
+        'status_page_incident_unpublished',
+        project: project
+      )
       # Delete the incident prior to deleting images to avoid broken links
       json_key = json_object_key(issue)
       delete_object(json_key)
