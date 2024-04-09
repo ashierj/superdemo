@@ -168,7 +168,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   describe '#prompt' do
     let(:tools) do
       [
-        Gitlab::Llm::Chain::Tools::JsonReader,
         Gitlab::Llm::Chain::Tools::IssueIdentifier,
         Gitlab::Llm::Chain::Tools::EpicIdentifier
       ]
