@@ -299,3 +299,57 @@ You can use a reverse proxy, but keep the following in mind:
   For more information, see [issue 434085](https://gitlab.com/gitlab-org/gitlab/-/issues/434085).
 - To secure the reverse proxy on the public internet, allow inbound traffic from
   [Atlassian IP addresses](https://support.atlassian.com/organization-administration/docs/ip-addresses-and-domains-for-atlassian-cloud-products/#Outgoing-Connections) only.
+
+### External NGINX
+
+This server block is an example of how to configure a reverse proxy for GitLab that works with Jira Cloud:
+
+```json
+server {
+  listen *:80;
+  server_name gitlab.mycompany.com;
+  server_tokens off;
+  location /.well-known/acme-challenge/ {
+    root /var/www/;
+  }
+  location / {
+    return 301 https://gitlab.mycompany.com:443$request_uri;
+  }
+}
+server {
+  listen *:443 ssl;
+  server_tokens off;
+  server_name gitlab.mycompany.com;
+  ssl_certificate /etc/letsencrypt/live/gitlab.mycompany.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/gitlab.mycompany.com/privkey.pem;
+  ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384';
+  ssl_protocols  TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  ssl_session_cache  shared:SSL:10m;
+  ssl_session_tickets off;
+  ssl_session_timeout  1d;
+  access_log "/var/log/nginx/proxy_access.log";
+  error_log "/var/log/nginx/proxy_error.log";
+  location / {
+    proxy_pass https://gitlab.internal;
+    proxy_hide_header upgrade;
+    proxy_set_header Host             gitlab.mycompany.com:443;
+    proxy_set_header X-Real-IP        $remote_addr;
+    proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;
+  }
+}
+```
+
+In this example:
+
+- Replace `gitlab.mycompany.com` with the reverse proxy FQDN
+  and `gitlab.internal` with the internal GitLab FQDN.
+- Set `ssl_certificate` and `ssl_certificate_key` to a valid certificate
+  (the example uses [Certbot](https://certbot.eff.org/)).
+- Set the `Host` proxy header to the reverse proxy FQDN
+  to ensure GitLab and Jira Cloud can connect successfully.
+
+You must use the reverse proxy FQDN only to connect Jira Cloud to GitLab.
+You must continue to access GitLab from the internal GitLab FQDN.
+If you access GitLab from the reverse proxy FQDN, GitLab might not work as expected.
+For more information, see [issue 21319](https://gitlab.com/gitlab-org/gitlab/-/issues/21319).
