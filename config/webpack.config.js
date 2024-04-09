@@ -347,6 +347,18 @@ module.exports = {
         },
       },
       {
+        test: /@swagger-api\/apidom-.*\.(js|cjs)$/,
+        include: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          plugins: [
+            '@babel/plugin-transform-class-properties',
+            '@babel/plugin-transform-logical-assignment-operators',
+          ],
+          ...defaultJsOptions,
+        },
+      },
+      {
         test: /\.(js|cjs)$/,
         exclude: shouldExcludeFromCompliling,
         use: [
