@@ -23,7 +23,6 @@ module EE
 
       def blocking_branch_modification?(project)
         return false unless project&.licensed_feature_available?(:security_orchestration_policies)
-        return false unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
 
         project.scan_result_policy_reads.blocking_branch_modification.exists?
       end

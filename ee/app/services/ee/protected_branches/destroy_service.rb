@@ -35,7 +35,6 @@ module EE
         project = protected_branch.project
 
         return false unless project&.licensed_feature_available?(:security_orchestration_policies)
-        return false unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
 
         service = ::Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletionCheckService.new(project: project)
         protected_from_deletion = service.execute([protected_branch])

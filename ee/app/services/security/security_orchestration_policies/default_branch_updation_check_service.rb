@@ -5,7 +5,6 @@ module Security
     class DefaultBranchUpdationCheckService < BaseProjectService
       def execute
         return false unless project.licensed_feature_available?(:security_orchestration_policies)
-        return false unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
 
         applicable_branches = PolicyBranchesService.new(project: project).scan_result_branches(rules)
 

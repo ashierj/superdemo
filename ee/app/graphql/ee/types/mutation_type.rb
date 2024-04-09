@@ -117,6 +117,8 @@ module EE
         mount_mutation ::Mutations::Ci::Runners::ExportUsage, alpha: { milestone: '16.7' }
         mount_mutation ::Mutations::RemoteDevelopment::Workspaces::Create
         mount_mutation ::Mutations::RemoteDevelopment::Workspaces::Update
+        mount_mutation ::Mutations::RemoteDevelopment::NamespaceClusterAgentMappings::Create
+        mount_mutation ::Mutations::RemoteDevelopment::NamespaceClusterAgentMappings::Delete
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Destroy
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Update

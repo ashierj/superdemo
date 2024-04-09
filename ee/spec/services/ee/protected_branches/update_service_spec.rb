@@ -57,18 +57,6 @@ RSpec.describe ProtectedBranches::UpdateService, feature_category: :compliance_m
       it 'raises' do
         expect { service.execute(protected_branch) }.to raise_error(::Gitlab::Access::AccessDeniedError)
       end
-
-      context 'with feature disabled' do
-        before do
-          stub_feature_flags(scan_result_policies_block_unprotecting_branches: false)
-        end
-
-        it 'renames' do
-          expect { service.execute(protected_branch) }.to change {
-            protected_branch.reload.name
-          }.to(branch_name.reverse)
-        end
-      end
     end
 
     context 'with group-level protected branch' do

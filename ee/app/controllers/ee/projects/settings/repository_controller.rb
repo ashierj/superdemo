@@ -64,8 +64,6 @@ module EE
           super
           @branches_protected_from_push = fetch_branches_protected_from_push(@project)
 
-          return unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
-
           protected_branches_protected_from_deletion =
             ::Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletionCheckService
               .new(project: project)

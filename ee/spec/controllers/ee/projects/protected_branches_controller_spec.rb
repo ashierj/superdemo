@@ -111,22 +111,6 @@ RSpec.describe Projects::ProtectedBranchesController, feature_category: :source_
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
-
-      context 'with feature disabled' do
-        before do
-          stub_feature_flags(scan_result_policies_block_unprotecting_branches: false)
-        end
-
-        it 'renames' do
-          expect { update_protected_branch }.to change { protected_branch.reload.name }.to(new_name)
-        end
-
-        it 'responds with 200' do
-          update_protected_branch
-
-          expect(response).to have_gitlab_http_status(:success)
-        end
-      end
     end
   end
 end
