@@ -18,8 +18,6 @@ import {
   USER_TYPE,
 } from 'ee/security_orchestration/constants';
 import {
-  mockForcePushSettingsManifest,
-  mockBlockAndForceSettingsManifest,
   mockDefaultBranchesScanResultManifest,
   mockDefaultBranchesScanResultObject,
   mockDeprecatedScanResultManifest,
@@ -36,6 +34,7 @@ import {
   BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
   PREVENT_APPROVAL_BY_AUTHOR,
+  protectedBranchesConfiguration,
   pushingBranchesConfiguration,
   mergeRequestConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
@@ -161,10 +160,6 @@ describe('EditorComponent', () => {
     uniqueId.mockImplementation(jest.fn((prefix) => `${prefix}0`));
   });
 
-  afterEach(() => {
-    window.gon = {};
-  });
-
   describe('rendering', () => {
     it.each`
       namespaceType              | manifest
@@ -177,22 +172,7 @@ describe('EditorComponent', () => {
 
     it('passes the default yamlEditorValue prop to the PolicyEditorLayout component', () => {
       factory();
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(mockForcePushSettingsManifest);
-    });
-
-    describe('feature flags', () => {
-      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled', () => {
-        it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
-          factory({
-            glFeatures: {
-              scanResultPoliciesBlockUnprotectingBranches: true,
-            },
-          });
-          expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
-            mockBlockAndForceSettingsManifest,
-          );
-        });
-      });
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_RESULT_POLICY);
     });
 
     it.each`
@@ -332,11 +312,11 @@ describe('EditorComponent', () => {
 
       describe('settings', () => {
         const defaultProjectApprovalConfiguration = {
-          [BLOCK_BRANCH_MODIFICATION]: true,
           [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
+          [BLOCK_BRANCH_MODIFICATION]: true,
         };
 
-        it('does update the settings containing permitted invalid settings', () => {
+        it('updates the settings containing permitted invalid settings', () => {
           factoryWithExistingPolicy({
             policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
           });
@@ -346,18 +326,17 @@ describe('EditorComponent', () => {
           findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: pushingBranchesConfiguration,
+              approval_settings: {
+                ...protectedBranchesConfiguration,
+                ...pushingBranchesConfiguration,
+              },
             }),
           );
         });
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled', () => {
-          const features = {
-            scanResultPoliciesBlockUnprotectingBranches: true,
-          };
-          window.gon = { features };
+        it('updates the settings', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
-          factory({ glFeatures: features });
+          factory();
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: defaultProjectApprovalConfiguration,
@@ -374,15 +353,8 @@ describe('EditorComponent', () => {
           );
         });
 
-        it('does update the settings containing permitted invalid values with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled', () => {
-          const features = {
-            scanResultPoliciesBlockUnprotectingBranches: true,
-          };
-          window.gon = { features };
-          factoryWithExistingPolicy({
-            policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
-            glFeatures: features,
-          });
+        it('updates the settings containing permitted invalid values', () => {
+          factoryWithExistingPolicy({ policy: { approval_settings: PERMITTED_INVALID_SETTINGS } });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: PERMITTED_INVALID_SETTINGS,
@@ -392,8 +364,8 @@ describe('EditorComponent', () => {
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: {
+                ...protectedBranchesConfiguration,
                 ...pushingBranchesConfiguration,
-                [BLOCK_BRANCH_MODIFICATION]: false,
               },
             }),
           );
@@ -404,14 +376,14 @@ describe('EditorComponent', () => {
           factory();
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: { [PREVENT_PUSHING_AND_FORCE_PUSHING]: true },
+              approval_settings: defaultProjectApprovalConfiguration,
             }),
           );
           findAllRuleSections().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: {
-                [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
+                ...defaultProjectApprovalConfiguration,
                 ...mergeRequestConfiguration,
               },
             }),
@@ -739,91 +711,75 @@ describe('EditorComponent', () => {
 
   describe('settings section', () => {
     describe('settings', () => {
-      describe('without default flags', () => {
-        beforeEach(() => {
-          factory();
-        });
+      const defaultProjectApprovalConfiguration = {
+        [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
+        [BLOCK_BRANCH_MODIFICATION]: true,
+      };
 
-        it('displays setting section', () => {
-          expect(findSettingsSection().exists()).toBe(true);
-        });
+      beforeEach(() => {
+        factory();
+      });
 
-        it('shows default settings for non-merge request rules', async () => {
-          await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
-          expect(findSettingsSection().exists()).toBe(true);
-          expect(findSettingsSection().props('settings')).toEqual({
-            [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
-          });
-        });
+      it('displays setting section', () => {
+        expect(findSettingsSection().exists()).toBe(true);
+        expect(findSettingsSection().props('settings')).toEqual(
+          defaultProjectApprovalConfiguration,
+        );
+      });
 
-        it('does show the policy for merge request rule in addition to the default settings', async () => {
-          await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
-          expect(findSettingsSection().props('settings')).toEqual({
-            [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
-            ...mergeRequestConfiguration,
-          });
-        });
+      it('shows default settings for non-merge request rules', async () => {
+        await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
+        expect(findSettingsSection().exists()).toBe(true);
+        expect(findSettingsSection().props('settings')).toEqual(
+          defaultProjectApprovalConfiguration,
+        );
+      });
 
-        it('updates the policy for merge request rule', async () => {
-          findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
-          await findSettingsSection().vm.$emit('changed', {
-            [PREVENT_APPROVAL_BY_AUTHOR]: false,
-          });
-          expect(findSettingsSection().props('settings')).toEqual({
-            ...pushingBranchesConfiguration,
-            ...mergeRequestConfiguration,
-            [PREVENT_APPROVAL_BY_AUTHOR]: false,
-          });
-        });
-
-        it('updates the policy when a change is emitted for pushingBranchesConfiguration', async () => {
-          await findSettingsSection().vm.$emit('changed', {
-            [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
-          });
-          expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-            `${PREVENT_PUSHING_AND_FORCE_PUSHING}: false`,
-          );
+      it('shows the policy for merge request rule in addition to the default settings', async () => {
+        await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+        expect(findSettingsSection().props('settings')).toEqual({
+          ...defaultProjectApprovalConfiguration,
+          ...mergeRequestConfiguration,
         });
       });
 
-      describe('with feature flags', () => {
-        describe('with "scanResultPoliciesBlockUnprotectingBranches" feature flag enabled', () => {
-          beforeEach(() => {
-            const features = { scanResultPoliciesBlockUnprotectingBranches: true };
-            window.gon = { features };
-            factory({ glFeatures: features });
-          });
-
-          it('displays setting section', () => {
-            expect(findSettingsSection().exists()).toBe(true);
-            expect(findSettingsSection().props('settings')).toEqual({
-              [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
-              [BLOCK_BRANCH_MODIFICATION]: true,
-            });
-          });
-
-          it('updates the policy when a change is emitted', async () => {
-            await findSettingsSection().vm.$emit('changed', {
-              [BLOCK_BRANCH_MODIFICATION]: false,
-            });
-            expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-              `${BLOCK_BRANCH_MODIFICATION}: false`,
-            );
-          });
+      it('updates the policy for merge request rule', async () => {
+        findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+        await findSettingsSection().vm.$emit('changed', {
+          [PREVENT_APPROVAL_BY_AUTHOR]: false,
         });
+        expect(findSettingsSection().props('settings')).toEqual({
+          ...protectedBranchesConfiguration,
+          ...pushingBranchesConfiguration,
+          ...mergeRequestConfiguration,
+          [PREVENT_APPROVAL_BY_AUTHOR]: false,
+        });
+      });
+
+      it('updates the policy when a change is emitted for pushingBranchesConfiguration', async () => {
+        await findSettingsSection().vm.$emit('changed', {
+          [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
+        });
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
+          `${PREVENT_PUSHING_AND_FORCE_PUSHING}: false`,
+        );
+      });
+
+      it('updates the policy when a change is emitted for blockBranchModification', async () => {
+        await findSettingsSection().vm.$emit('changed', {
+          [BLOCK_BRANCH_MODIFICATION]: false,
+        });
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
+          `${BLOCK_BRANCH_MODIFICATION}: false`,
+        );
       });
     });
 
     describe('empty policy alert', () => {
-      const features = { scanResultPoliciesBlockUnprotectingBranches: true };
       const policy = { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true } };
       describe('when there are actions and settings', () => {
         beforeEach(() => {
-          window.gon = { features };
-          factoryWithExistingPolicy({
-            glFeatures: features,
-            policy,
-          });
+          factoryWithExistingPolicy({ policy });
         });
 
         it('does not display the alert', () => {
@@ -851,12 +807,7 @@ describe('EditorComponent', () => {
 
       describe('when there are settings and no actions', () => {
         beforeEach(() => {
-          window.gon = { features };
-          factoryWithExistingPolicy({
-            glFeatures: features,
-            hasActions: false,
-            policy,
-          });
+          factoryWithExistingPolicy({ hasActions: false, policy });
         });
 
         it('displays the alert', () => {
@@ -871,9 +822,7 @@ describe('EditorComponent', () => {
 
       describe('displays the danger alert when there are no actions and no settings', () => {
         beforeEach(() => {
-          window.gon = { features };
           factoryWithExistingPolicy({
-            glFeatures: features,
             hasActions: false,
             policy: { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false } },
           });

@@ -8,7 +8,6 @@ import {
   BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SettingsItem from './settings_item.vue';
 
 export default {
@@ -27,7 +26,6 @@ export default {
     GlAccordion,
     SettingsItem,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['namespacePath'],
   props: {
     rules: {
@@ -43,12 +41,7 @@ export default {
   },
   computed: {
     protectedBranchSettings() {
-      const settings = [PREVENT_PUSHING_AND_FORCE_PUSHING];
-
-      if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
-        settings.push(BLOCK_BRANCH_MODIFICATION);
-      }
-
+      const settings = [PREVENT_PUSHING_AND_FORCE_PUSHING, BLOCK_BRANCH_MODIFICATION];
       return this.groupSettingsBy(settings);
     },
     mergeRequestSettings() {
