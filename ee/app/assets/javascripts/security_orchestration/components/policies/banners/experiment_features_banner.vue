@@ -26,10 +26,10 @@ export default {
   i18n: {
     buttonBannerText: s__('SecurityOrchestration|Share feedback'),
     bannerTitle: s__(
-      'SecurityOrchestration|Introducing Policy Scoping and Pipeline Execution Policy Action experimental features',
+      'SecurityOrchestration|Introducing Pipeline Execution Policy Action experimental feature',
     ),
     bannerDescription: s__(
-      'SecurityOrchestration|Granularly scope your policies to selected projects. Enforce custom CI with pipeline execution action for scan execution policies. %{linkStart}How do I implement these features?%{linkEnd}',
+      'SecurityOrchestration|Enforce custom CI with pipeline execution action for scan execution policies. %{linkStart}How do I implement this feature?%{linkEnd}',
     ),
   },
   data() {
