@@ -7,6 +7,7 @@ module Ai
         @project = project
         @name = name
         @prompt = prompt
+        @version = nil
       end
 
       def execute
@@ -15,9 +16,9 @@ module Ai
           name: @name
         )
 
-        @agent.save
+        @agent.versions = [Ai::Agents::CreateAgentVersionService.new(@agent, @prompt).build]
 
-        Ai::Agents::CreateAgentVersionService.new(@agent, @prompt).execute if @agent.persisted?
+        @agent.save
 
         @agent
       end

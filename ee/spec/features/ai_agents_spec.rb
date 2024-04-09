@@ -51,14 +51,14 @@ RSpec.describe 'AI Agents', :js, feature_category: :mlops do
       click_on('Create agent')
 
       expect(page).to have_content('Agent name')
-      expect(page).to have_content('Prompt (optional)')
+      expect(page).to have_content('Prompt')
     end
 
     it 'creates an AI agent when the data is supplied and the button clicked' do
       visit new_project_ml_agent_path(project)
       expect(page).to have_content('New agent')
       expect(page).to have_content('Agent name')
-      expect(page).to have_content('Prompt (optional)')
+      expect(page).to have_content('Prompt')
 
       find('input[data-testid="agent-name"]').set('my-agent-name')
       find('textarea[data-testid="agent-prompt"]').set('my-agent-prompt')
@@ -66,9 +66,10 @@ RSpec.describe 'AI Agents', :js, feature_category: :mlops do
       click_on('Create agent')
 
       expect(page).to have_content("my-agent-name")
+      expect(page).to have_content("Try out your agent")
       expect(page).not_to have_content('New agent')
       expect(page).not_to have_content('Agent name')
-      expect(page).not_to have_content('Prompt (optional)')
+      expect(page).not_to have_content('Prompt')
     end
   end
 end

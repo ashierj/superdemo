@@ -10,13 +10,17 @@ module Ai
         @prompt = prompt
       end
 
-      def execute
-        @agent_version = Ai::AgentVersion.new(
+      def build
+        Ai::AgentVersion.new(
           project: @agent.project,
           agent: @agent,
           prompt: @prompt,
           model: DEFAULT_MODEL # todo model will be set later
         )
+      end
+
+      def execute
+        @agent_version = build
 
         @agent_version.save
 
