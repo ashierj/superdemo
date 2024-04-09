@@ -42,5 +42,17 @@ RSpec.describe ::Ai::Agents::CreateAgentService, feature_category: :mlops do
         expect(create_agent.errors.full_messages).to eq(["Name has already been taken"])
       end
     end
+
+    context 'when a prompt is not supplied' do
+      let(:name) { 'new_agent' }
+      let(:project) { existing_agent.project }
+      let(:prompt) { nil }
+
+      it 'returns a model with errors', :aggregate_failures do
+        expect(create_agent).not_to be_persisted
+        expect(create_agent.errors.full_messages).to eq(["Versions is invalid"])
+        expect(create_agent.versions.first.errors.full_messages).to eq(["Prompt can't be blank"])
+      end
+    end
   end
 end

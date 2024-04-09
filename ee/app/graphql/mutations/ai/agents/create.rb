@@ -23,7 +23,7 @@ module Mutations
 
           {
             agent: agent.persisted? ? agent : nil,
-            errors: errors_on_object(agent)
+            errors: errors_on_object(agent) + errors_on_object(agent.versions.first)
           }
         end
       end
