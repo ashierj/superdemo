@@ -659,6 +659,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_2428b5519042() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."pipeline_id_convert_to_bigint" := NEW."pipeline_id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_b2d852e1e2cb() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -17313,7 +17322,8 @@ CREATE TABLE vulnerability_feedback (
     comment_timestamp timestamp with time zone,
     finding_uuid uuid,
     dismissal_reason smallint,
-    migrated_to_state_transition boolean DEFAULT false
+    migrated_to_state_transition boolean DEFAULT false,
+    pipeline_id_convert_to_bigint bigint
 );
 
 CREATE SEQUENCE vulnerability_feedback_id_seq
@@ -29578,6 +29588,8 @@ CREATE TRIGGER table_sync_trigger_57c8465cd7 AFTER INSERT OR DELETE OR UPDATE ON
 CREATE TRIGGER tags_loose_fk_trigger AFTER DELETE ON tags REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER trigger_10ee1357e825 BEFORE INSERT OR UPDATE ON p_ci_builds FOR EACH ROW EXECUTE FUNCTION trigger_10ee1357e825();
+
+CREATE TRIGGER trigger_2428b5519042 BEFORE INSERT OR UPDATE ON vulnerability_feedback FOR EACH ROW EXECUTE FUNCTION trigger_2428b5519042();
 
 CREATE TRIGGER trigger_b2d852e1e2cb BEFORE INSERT OR UPDATE ON ci_pipelines FOR EACH ROW EXECUTE FUNCTION trigger_b2d852e1e2cb();
 

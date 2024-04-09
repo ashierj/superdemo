@@ -3,6 +3,10 @@
 module Vulnerabilities
   class Feedback < ApplicationRecord
     include EachBatch
+    include IgnorableColumns
+
+    ignore_columns :pipeline_id_convert_to_bigint, remove_with: '17.1', remove_after: '2024-06-14'
+
     self.table_name = 'vulnerability_feedback'
 
     paginates_per 50
