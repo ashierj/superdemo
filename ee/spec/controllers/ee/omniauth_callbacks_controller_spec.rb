@@ -202,7 +202,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
         oauth_request
 
         expect(request.session[:verification_user_id]).not_to be_nil
-        expect(response).to redirect_to(identity_verification_path)
+        expect(response).to redirect_to(signup_identity_verification_path)
 
         stick_object = request.env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT].first
         expect(stick_object[0]).to eq(User.sticking)
@@ -222,7 +222,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
         oauth_request
 
         expect(request.session[:verification_user_id]).to be_nil
-        expect(response).not_to redirect_to(identity_verification_path)
+        expect(response).not_to redirect_to(signup_identity_verification_path)
       end
     end
 

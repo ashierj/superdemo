@@ -121,7 +121,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
         it 'schedules the project to be indexed and does not delete the project' do
           expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
-          expect(::Zoekt::IndexerWorker).to receive(:perform_in).with(interval, project.id).once
+          expect(::Search::Zoekt).to receive(:index_in).with(interval, project.id).once
           transfer_service.execute(new_group)
         end
       end
@@ -133,7 +133,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
         it 'does not schedule the project to be deleted and does not index anything' do
           expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in).with(interval, group.id,
             project.id)
-          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(::Search::Zoekt).not_to receive(:index_in)
           transfer_service.execute(new_group)
         end
       end
@@ -145,7 +145,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
         it 'schedules the project to be deleted and index again' do
           expect(Search::Zoekt::DeleteProjectWorker).to receive(:perform_in).with(interval, group.id,
             project.id).once
-          expect(::Zoekt::IndexerWorker).to receive(:perform_in).once
+          expect(::Search::Zoekt).to receive(:index_in).once
           transfer_service.execute(new_group)
         end
       end
@@ -157,7 +157,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
         it 'schedules the project to be deleted and does not index anything' do
           expect(Search::Zoekt::DeleteProjectWorker).to receive(:perform_in).with(interval, group.id,
             project.id).once
-          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(::Search::Zoekt).not_to receive(:index_in)
           transfer_service.execute(new_group)
         end
       end
@@ -176,7 +176,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
         it 'does nothing' do
           expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
-          expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+          expect(::Search::Zoekt).not_to receive(:index_in)
           expect(transfer_service).not_to receive(:process_zoekt_project)
           transfer_service.execute(new_group)
         end

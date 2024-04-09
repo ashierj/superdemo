@@ -214,33 +214,33 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
 
     def expected_data
       {
-        verification_state_path: verification_state_identity_verification_path,
+        verification_state_path: verification_state_signup_identity_verification_path,
         offer_phone_number_exemption: mock_offer_phone_number_exemption,
-        phone_exemption_path: toggle_phone_exemption_identity_verification_path,
+        phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
         credit_card: {
           user_id: user.id,
           form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
-          verify_credit_card_path: verify_credit_card_identity_verification_path,
-          verify_captcha_path: verify_credit_card_captcha_identity_verification_path,
+          verify_credit_card_path: verify_credit_card_signup_identity_verification_path,
+          verify_captcha_path: verify_credit_card_captcha_signup_identity_verification_path,
           show_recaptcha_challenge: 'false'
         },
         phone_number: {
-          send_code_path: send_phone_verification_code_identity_verification_path,
-          verify_code_path: verify_phone_verification_code_identity_verification_path,
+          send_code_path: send_phone_verification_code_signup_identity_verification_path,
+          verify_code_path: verify_phone_verification_code_signup_identity_verification_path,
           enable_arkose_challenge: 'false',
           show_arkose_challenge: 'false',
           show_recaptcha_challenge: 'false'
         },
         email: {
           obfuscated: helper.obfuscated_email(user.email),
-          verify_path: verify_email_code_identity_verification_path,
-          resend_path: resend_email_code_identity_verification_path
+          verify_path: verify_email_code_signup_identity_verification_path,
+          resend_path: resend_email_code_signup_identity_verification_path
         },
         arkose: {
           api_key: 'api-key',
           domain: 'domain'
         },
-        successful_verification_path: success_identity_verification_path
+        successful_verification_path: success_signup_identity_verification_path
       }
     end
   end

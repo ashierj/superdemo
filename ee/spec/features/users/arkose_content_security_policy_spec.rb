@@ -33,7 +33,7 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :system_a
   end
 
   context 'when in identity verification page' do
-    let(:page_path) { arkose_labs_challenge_identity_verification_path }
+    let(:page_path) { arkose_labs_challenge_signup_identity_verification_path }
 
     before do
       Warden.on_next_request do |proxy|

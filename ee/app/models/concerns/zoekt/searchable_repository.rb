@@ -15,7 +15,7 @@ module Zoekt
       end
 
       def async_update_zoekt_index
-        ::Zoekt::IndexerWorker.perform_async(project.id)
+        ::Search::Zoekt.index_async(project.id)
       end
     end
   end

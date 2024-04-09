@@ -8,7 +8,7 @@ module Analytics
 
         delegate :authorize!, to: :create_service
 
-        def initialize(params: {}, current_user:)
+        def initialize(current_user:, params: {})
           @params = params
           @current_user = current_user
         end

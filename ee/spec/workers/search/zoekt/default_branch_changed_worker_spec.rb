@@ -14,7 +14,7 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
   let(:data) { { container_id: container.id, container_type: container.class.name } }
 
   before do
-    allow(::Zoekt::IndexerWorker).to receive(:perform_async).and_return(true)
+    allow(::Search::Zoekt).to receive(:index_async).and_return(true)
   end
 
   it_behaves_like 'subscribes to event' do
@@ -22,8 +22,8 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
   end
 
   context 'when project uses zoekt' do
-    it 'schedules ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(project.id)
+    it 'schedules indexing operation' do
+      expect(::Search::Zoekt).to receive(:index_async).with(project.id)
 
       consume_event(subscriber: described_class, event: default_branch_changed_event)
     end
@@ -32,8 +32,8 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
   context 'when project does not exist' do
     let(:data) { { container_id: non_existing_record_id, container_type: container.class.name } }
 
-    it 'does not schedule ::Zoekt::IndexerWorker and does not raise an exception' do
-      expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+    it 'does not schedule indexing and does not raise an exception' do
+      expect(::Search::Zoekt).not_to receive(:index_async)
 
       expect { consume_event(subscriber: described_class, event: default_branch_changed_event) }
         .not_to raise_exception
@@ -47,8 +47,8 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
       allow(Project).to receive(:find_by_id).and_return(project_double)
     end
 
-    it 'does not schedule ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+    it 'does not schedule indexing' do
+      expect(::Search::Zoekt).not_to receive(:index_async)
 
       consume_event(subscriber: described_class, event: default_branch_changed_event)
     end
@@ -59,8 +59,8 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
       stub_feature_flags(index_code_with_zoekt: false)
     end
 
-    it 'does not schedule ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+    it 'does not schedule indexing' do
+      expect(::Search::Zoekt).not_to receive(:index_async)
 
       consume_event(subscriber: described_class, event: default_branch_changed_event)
     end
@@ -71,8 +71,8 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
       stub_licensed_features(zoekt_code_search: false)
     end
 
-    it 'does not schedule ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+    it 'does not schedule indexing' do
+      expect(::Search::Zoekt).not_to receive(:index_async)
 
       consume_event(subscriber: described_class, event: default_branch_changed_event)
     end
@@ -81,8 +81,8 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
   context 'when passed a non-Project class' do
     let(:container) { instance_double(Group, id: 1) }
 
-    it 'does not schedule ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+    it 'does not schedule indexing' do
+      expect(::Search::Zoekt).not_to receive(:index_async)
 
       consume_event(subscriber: described_class, event: default_branch_changed_event)
     end

@@ -14,7 +14,11 @@ module CodeSuggestions
       private
 
       def prompt
-        CodeSuggestions::Prompts::CodeGeneration::Anthropic.new(params)
+        if params[:model_name].start_with?('claude-3')
+          CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages.new(params)
+        else
+          CodeSuggestions::Prompts::CodeGeneration::Anthropic.new(params)
+        end
       end
       strong_memoize_attr :prompt
     end

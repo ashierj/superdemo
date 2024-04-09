@@ -71,8 +71,8 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
   end
 
   describe '#async_update_zoekt_index' do
-    it 'makes updates available via ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(project.id)
+    it 'makes updates available via ::Search::Zoekt' do
+      expect(::Search::Zoekt).to receive(:index_async).with(project.id)
 
       repository.async_update_zoekt_index
     end

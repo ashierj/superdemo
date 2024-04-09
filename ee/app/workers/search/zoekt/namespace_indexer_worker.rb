@@ -36,7 +36,7 @@ module Search
 
         delay = 0
         namespace.all_projects.find_each do |project|
-          ::Zoekt::IndexerWorker.perform_in(delay, project.id)
+          ::Search::Zoekt.index_in(delay, project.id)
 
           delay += INDEXING_DELAY_PER_PROJECT
         end

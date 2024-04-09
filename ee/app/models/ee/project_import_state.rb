@@ -79,7 +79,7 @@ module EE
 
           if state.project.use_zoekt?
             state.run_after_commit do
-              Zoekt::IndexerWorker.perform_async(state.project_id)
+              ::Search::Zoekt.index_async(state.project_id)
             end
           end
         end

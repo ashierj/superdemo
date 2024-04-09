@@ -6,7 +6,7 @@ module Analytics
       class CreateService
         include CommonMethods
 
-        def initialize(enabled_namespace: Analytics::DevopsAdoption::EnabledNamespace.new, params: {}, current_user:)
+        def initialize(current_user:, enabled_namespace: Analytics::DevopsAdoption::EnabledNamespace.new, params: {})
           @enabled_namespace = enabled_namespace
           @params = params
           @current_user = current_user

@@ -52,7 +52,7 @@ module Users
     end
 
     def success
-      return redirect_to identity_verification_path unless @user.identity_verified?
+      return redirect_to signup_identity_verification_path unless @user.identity_verified?
 
       accept_pending_invitations(user: @user)
       sign_in(@user)
@@ -68,7 +68,7 @@ module Users
     private
 
     def require_unverified_user!
-      redirect_to success_identity_verification_path if @user.identity_verified?
+      redirect_to success_signup_identity_verification_path if @user.identity_verified?
     end
 
     def require_arkose_verification!

@@ -33,7 +33,7 @@ RSpec.describe SessionsController, feature_category: :system_access do
         end
       end
 
-      it { is_expected.to redirect_to(identity_verification_path) }
+      it { is_expected.to redirect_to(signup_identity_verification_path) }
 
       it 'sets the `verification_user_id` session variable' do
         sign_in
@@ -64,7 +64,7 @@ RSpec.describe SessionsController, feature_category: :system_access do
           allow(Gitlab::Qa).to receive(:request?).and_return(true)
         end
 
-        it { is_expected.not_to redirect_to(identity_verification_path) }
+        it { is_expected.not_to redirect_to(signup_identity_verification_path) }
       end
     end
   end
