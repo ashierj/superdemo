@@ -572,8 +572,19 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if timezone is valid'
-      it_behaves_like 'checks if cadence is valid'
       it_behaves_like 'checks if vulnerability_age is valid'
+
+      context 'when cadence is valid' do
+        let(:cadence) { '0 0 * * *' }
+
+        it { expect(result[:status]).to eq(:success) }
+      end
+
+      context 'when cadence is invalid' do
+        let(:cadence) { '* * * * *' }
+
+        it { expect(result[:status]).to eq(:success) }
+      end
     end
 
     context 'when project is provided' do
