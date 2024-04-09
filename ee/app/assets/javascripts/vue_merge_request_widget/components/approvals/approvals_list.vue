@@ -7,10 +7,13 @@ import { RULE_TYPE_CODE_OWNER, RULE_TYPE_ANY_APPROVER } from 'ee/approvals/const
 import { sprintf, __, s__ } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { TYPENAME_MERGE_REQUEST } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import ApprovedIcon from './approved_icon.vue';
 import NumberOfApprovals from './number_of_approvals.vue';
 import ApprovalsUsersList from './approvals_users_list.vue';
 import approvalRulesQuery from './queries/approval_rules.query.graphql';
+import mergeRequestApprovalStateUpdated from './queries/approval_rules.subscription.graphql';
 import { createSecurityPolicyRuleHelpText } from './utils';
 
 const INCLUDE_APPROVERS = 1;
@@ -27,6 +30,29 @@ export default {
         };
       },
       update: (data) => data.project.mergeRequest,
+      subscribeToMore: {
+        document: mergeRequestApprovalStateUpdated,
+        variables() {
+          return {
+            issuableId: convertToGraphQLId(TYPENAME_MERGE_REQUEST, this.mergeRequest.id),
+          };
+        },
+        skip() {
+          return !this.mergeRequest?.id;
+        },
+        updateQuery(
+          _,
+          {
+            subscriptionData: {
+              data: { mergeRequestApprovalStateUpdated: queryResult },
+            },
+          },
+        ) {
+          if (queryResult) {
+            this.mergeRequest = queryResult;
+          }
+        },
+      },
     },
   },
   components: {
@@ -186,7 +212,7 @@ export default {
           </td>
         </tr>
         <tr v-for="rule in rules" :key="rule.id" data-testid="approval-rules-row">
-          <td class="w-0 gl-pr-4!">
+          <td class="gl-min-w-9 gl-pr-4!">
             <approved-icon class="gl-pl-2" :is-approved="rule.approved" />
           </td>
           <td :colspan="numberOfColumns(rule)" class="gl-pl-0!">
