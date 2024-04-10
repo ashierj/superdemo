@@ -24,7 +24,7 @@ RSpec.describe OmniauthCallbacksController, feature_category: :system_access do
       let(:path) { '/user/return/to/path' }
 
       before do
-        stub_session(user_return_to: path)
+        stub_session(session_data: { user_return_to: path })
       end
 
       context 'when onboarding is enabled', :saas do

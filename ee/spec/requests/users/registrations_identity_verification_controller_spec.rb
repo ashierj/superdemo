@@ -53,7 +53,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     context 'when session contains an invalid `verification_user_id`' do
       before do
-        stub_session(verification_user_id: invalid_verification_user_id)
+        stub_session(session_data: { verification_user_id: invalid_verification_user_id })
       end
 
       it 'handles sticking' do
@@ -81,7 +81,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     context 'when session contains a valid `verification_user_id`' do
       before do
-        stub_session(verification_user_id: unconfirmed_user.id)
+        stub_session(session_data: { verification_user_id: unconfirmed_user.id })
 
         do_request
       end
@@ -97,7 +97,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     context 'when session is empty but a confirmed user is logged in' do
       before do
-        stub_session(verification_user_id: nil)
+        stub_session(session_data: { verification_user_id: nil })
         sign_in confirmed_user
 
         do_request
@@ -119,7 +119,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let(:response_code) { expected_response_code || :ok }
 
     before do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
 
       do_request
     end
@@ -166,7 +166,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let(:user) { create(:omniauth_user, :unconfirmed) }
 
     before do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
 
       do_request
     end
@@ -301,7 +301,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   shared_examples 'it loads reCAPTCHA' do
     before do
       stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-      stub_session(verification_user_id: unconfirmed_user.id)
+      stub_session(session_data: { verification_user_id: unconfirmed_user.id })
     end
 
     context 'when reCAPTCHA is disabled' do
@@ -451,7 +451,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     it_behaves_like 'it loads reCAPTCHA'
 
     it 'renders template show with layout minimal' do
-      stub_session(verification_user_id: unconfirmed_user.id)
+      stub_session(session_data: { verification_user_id: unconfirmed_user.id })
 
       do_request
 
@@ -462,7 +462,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       let(:experiment) { instance_double(ApplicationExperiment) }
 
       it 'tracks signup_intent_step_one experiment events' do
-        stub_session(verification_user_id: unconfirmed_user.id)
+        stub_session(session_data: { verification_user_id: unconfirmed_user.id })
 
         allow_next_instance_of(described_class) do |controller|
           allow(controller)
@@ -489,7 +489,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       with_them do
         before do
           allow(Gitlab).to receive(:com?).and_return(dot_com)
-          stub_session(verification_user_id: user.id)
+          stub_session(session_data: { verification_user_id: user.id })
           user.ban
 
           do_request
@@ -527,7 +527,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       let_it_be(:user) { unconfirmed_user }
 
       before do
-        stub_session(verification_user_id: user.id)
+        stub_session(session_data: { verification_user_id: user.id })
       end
 
       it 'returns verification methods and state' do
@@ -578,7 +578,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         allow(service).to receive(:execute).and_return(service_response)
       end
 
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
     end
 
     it_behaves_like 'it requires a valid verification_user_id'
@@ -629,7 +629,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
           .with(:email_verification_code_send, scope: user).and_return(true)
 
-        stub_session(verification_user_id: user.id)
+        stub_session(session_data: { verification_user_id: user.id })
 
         do_request
       end
@@ -651,7 +651,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         allow_next_instance_of(::Users::EmailVerification::GenerateTokenService) do |service|
           allow(service).to receive(:generate_token).and_return(new_token)
         end
-        stub_session(verification_user_id: user.id)
+        stub_session(session_data: { verification_user_id: user.id })
       end
 
       it 'sets the confirmation_sent_at time', :freeze_time do
@@ -693,7 +693,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       allow_next_instance_of(::PhoneVerification::Users::SendVerificationCodeService) do |service|
         allow(service).to receive(:execute).and_return(service_response)
       end
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
     end
 
     it_behaves_like 'it requires a valid verification_user_id'
@@ -752,7 +752,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       allow_next_instance_of(::PhoneVerification::Users::VerifyCodeService) do |service|
         allow(service).to receive(:execute).and_return(service_response)
       end
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
     end
 
     it_behaves_like 'it requires a valid verification_user_id'
@@ -791,7 +791,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let_it_be(:user_with_risk_band) { create(:user) }
 
     before do
-      stub_session(verification_user_id: user&.id)
+      stub_session(session_data: { verification_user_id: user&.id })
       request
     end
 
@@ -824,7 +824,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let(:service_response) { successful_verification_response }
 
     before do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
 
       allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
         allow(instance).to receive(:execute).and_return(service_response)
@@ -891,7 +891,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     it_behaves_like 'it requires an unconfirmed user'
 
     it 'renders arkose_labs_challenge template' do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
       do_request
 
       expect(response).to render_template('arkose_labs_challenge', layout: 'minimal')
@@ -904,7 +904,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let(:user) { confirmed_user }
 
     before do
-      stub_session(**{ verification_user_id: user.id }.merge(return_to_entries))
+      stub_session(session_data: { verification_user_id: user.id }.merge(return_to_entries))
     end
 
     context 'for an invite' do
@@ -980,7 +980,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let_it_be(:user) { unconfirmed_user }
 
     before do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
     end
 
     subject(:do_request) { get verify_credit_card_signup_identity_verification_path(params) }
@@ -1107,7 +1107,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let_it_be(:user) { unconfirmed_user }
 
     before do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
     end
 
     subject(:do_request) { post verify_credit_card_captcha_signup_identity_verification_path }
@@ -1122,7 +1122,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     subject(:do_request) { patch toggle_phone_exemption_signup_identity_verification_path(format: :json) }
 
     before do
-      stub_session(verification_user_id: user.id)
+      stub_session(session_data: { verification_user_id: user.id })
     end
 
     it_behaves_like 'it requires an unconfirmed user'
