@@ -471,7 +471,7 @@ module EE
       def permanent_deletion_date
         return unless project.adjourned_deletion?
 
-        project.permanent_deletion_date(Time.now.utc)
+        project.permanent_deletion_date(Time.now.utc).strftime('%F')
       end
     end
   end

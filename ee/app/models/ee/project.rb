@@ -1021,6 +1021,10 @@ module EE
         .joins(:deletion_schedule).first
     end
 
+    def permanent_deletion_date(date)
+      date + ::Gitlab::CurrentSettings.deletion_adjourned_period.days
+    end
+
     def disable_overriding_approvers_per_merge_request
       strong_memoize(:disable_overriding_approvers_per_merge_request) do
         super unless feature_available?(:admin_merge_request_approvers_rules)

@@ -489,7 +489,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       let(:enabled) { true }
 
       specify do
-        deletion_date = helper.permanent_deletion_date(Time.now.utc)
+        deletion_date = helper.permanent_deletion_date_formatted(project, Time.now.utc)
 
         expect(subject).to eq "Deleting a project places it into a read-only state until #{deletion_date}, at which point the project will be permanently deleted. Are you ABSOLUTELY sure?"
       end
@@ -515,7 +515,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       let(:feature_available) { true }
 
       specify do
-        deletion_date = helper.permanent_deletion_date(Time.now.utc)
+        deletion_date = helper.permanent_deletion_date_formatted(project, Time.now.utc)
         expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains."
       end
     end
@@ -524,7 +524,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       let(:feature_available) { false }
 
       specify do
-        deletion_date = helper.permanent_deletion_date(Time.now.utc)
+        deletion_date = helper.permanent_deletion_date_formatted(project, Time.now.utc)
         expect(subject).to eq "This action deletes <code>#{project.path_with_namespace}</code> on #{deletion_date} and everything this project contains. <strong>There is no going back.</strong>"
       end
     end

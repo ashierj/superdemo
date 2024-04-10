@@ -629,6 +629,10 @@ module EE
         ::Gitlab::CurrentSettings.deletion_adjourned_period > 0
     end
 
+    def permanent_deletion_date(date)
+      date + ::Gitlab::CurrentSettings.deletion_adjourned_period.days
+    end
+
     def vulnerabilities
       ::Vulnerability.where(
         project: ::Project.for_group_and_its_subgroups(self).without_deleted
