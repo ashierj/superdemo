@@ -2096,6 +2096,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   describe '#capacity_left_for_user?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
 
     where(:user_cap_available, :user_cap_reached, :existing_membership, :result) do
       false           | false              | false               | true
@@ -2107,17 +2108,27 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       true            | true               | false               | false
     end
 
-    subject { group.capacity_left_for_user?(user) }
+    subject { group.capacity_left_for_user?(current_user) }
 
     with_them do
       before do
-        create(:group_member, source: group, user: user) if existing_membership
+        create(:group_member, source: group, user: current_user) if existing_membership
 
         allow(group).to receive(:user_cap_available?).and_return(user_cap_available)
         allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
       end
 
-      it { is_expected.to eq(result) }
+      context 'when user is human' do
+        let(:current_user) { user }
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when user is a security policy bot user' do
+        let(:current_user) { security_policy_bot }
+
+        it { is_expected.to be true }
+      end
     end
   end
 
