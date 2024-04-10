@@ -71,7 +71,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
         visit project_cycle_analytics_path(project)
         click_button('New value stream')
         fill_in('Value Stream name', with: 'foo stream')
-        click_button('Create value stream')
+        click_button('New value stream')
         # otherwise we get the "Data is collecting and loading"
         create_value_stream_aggregation(project_namespace)
         refresh

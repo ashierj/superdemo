@@ -3,7 +3,7 @@ import { GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { i18n } from 'ee/analytics/cycle_analytics/components/create_value_stream_form/constants';
 
-const { EDIT_FORM_TITLE, EDIT_FORM_ACTION } = i18n;
+const { FORM_TITLE, EDIT_FORM_TITLE, EDIT_FORM_ACTION } = i18n;
 
 export default {
   name: 'ValueStreamFormContentHeader',
@@ -28,7 +28,7 @@ export default {
     },
   },
   i18n: {
-    newValueStream: s__('CreateValueStreamForm|New value stream'),
+    newValueStream: FORM_TITLE,
     editValueStreamTitle: EDIT_FORM_TITLE,
     saveValueStreamAction: EDIT_FORM_ACTION,
     viewValueStreamAction: s__('ValueStreamAnalytics|View value stream'),
@@ -56,7 +56,7 @@ export default {
       {{ formTitle }}
     </h1>
     <div
-      class="gl-display-flex gl-w-full gl-sm-w-auto gl-sm-flex-direction-row gl-flex-direction-column gl-gap-5"
+      class="gl-display-flex gl-w-full gl-sm-w-auto gl-sm-flex-direction-row gl-flex-direction-column gl-gap-3"
     >
       <gl-button
         v-if="isEditing"
