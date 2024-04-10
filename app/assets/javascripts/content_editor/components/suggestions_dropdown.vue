@@ -296,13 +296,8 @@ export default {
                     :size="24"
                     :shape="item.type === 'Group' ? 'rect' : 'circle'"
                   />
-<<<<<<< HEAD
-                  <span>
-                    <span v-safe-html:safeHtmlConfig="highlight(item.username)"></span>
-=======
                   <span class="gl-vertical-align-middle">
                     <span v-safe-html:[$options.safeHtmlConfig]="highlight(item.username)"></span>
->>>>>>> source-project/master
                     <small
                       v-safe-html:[$options.safeHtmlConfig]="highlight(avatarSubLabel(item))"
                       class="gl-text-gray-500"
