@@ -2,7 +2,8 @@
 import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
 import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
 import pipelineIllustrationUrl from '@gitlab/svgs/dist/illustrations/milestone-sm.svg';
-import { GlButton, GlCard, GlIcon, GlPopover, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlCard, GlIcon, GlLink, GlPopover, GlSprintf } from '@gitlab/ui';
+import { PROMO_URL } from '~/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
@@ -15,7 +16,7 @@ const i18n = {
   scanResultPolicyTitle: s__('SecurityOrchestration|Merge request approval policy'),
   scanResultPolicyTitlePopoverTitle: s__('SecurityOrchestration|Updated policy name'),
   scanResultPolicyTitlePopoverDesc: s__(
-    'SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose.',
+    'SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose. For more details, see %{linkStart}the release notes%{linkEnd}.',
   ),
   scanResultPolicySubTitle: s__('SecurityOrchestraation|(Formerly Scan result policy)'),
   scanResultPolicyDesc: s__(
@@ -46,6 +47,7 @@ export default {
     GlButton,
     GlCard,
     GlIcon,
+    GlLink,
     GlPopover,
     GlSprintf,
   },
@@ -73,6 +75,7 @@ export default {
           title: i18n.scanResultPolicyTitle,
           titlePopover: i18n.scanResultPolicyTitlePopoverTitle,
           titlePopoverDesc: i18n.scanResultPolicyTitlePopoverDesc,
+          titlePopoverLink: `${PROMO_URL}/releases/2024/03/21/gitlab-16-10-released/#scan-result-policies-are-now-merge-request-approval-policies`,
           description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,
           imageSrc: shieldCheckIllustrationUrl,
@@ -148,7 +151,20 @@ export default {
               target="change-icon"
               :content="option.titlePopoverDesc"
               :show="false"
-            />
+            >
+              <slot>
+                <gl-sprintf :message="option.titlePopoverDesc">
+                  <template #link="{ content }">
+                    <gl-link
+                      v-if="option.titlePopoverLink"
+                      :href="option.titlePopoverLink"
+                      target="_blank"
+                      >{{ content }}</gl-link
+                    >
+                  </template>
+                </gl-sprintf>
+              </slot>
+            </gl-popover>
           </div>
           <p v-if="option.subtitle" class="gl-text-gray-400 gl-mb-0">{{ option.subtitle }}</p>
           <p class="gl-mt-5">{{ option.description }}</p>
