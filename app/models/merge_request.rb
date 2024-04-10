@@ -675,11 +675,7 @@ class MergeRequest < ApplicationRecord
 
   def committers(with_merge_commits: false, lazy: false)
     strong_memoize_with(:committers, with_merge_commits, lazy) do
-      if Feature.enabled?(:lazy_merge_request_committers, project)
-        commits.committers(with_merge_commits: with_merge_commits, lazy: lazy)
-      else
-        commits.committers(with_merge_commits: with_merge_commits)
-      end
+      commits.committers(with_merge_commits: with_merge_commits, lazy: lazy)
     end
   end
 
