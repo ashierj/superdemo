@@ -101,8 +101,8 @@ module Integrations
         []
       end
 
-      def self.wlif_issuer_url(project)
-        "#{::GoogleCloudPlatform.glgo_base_url}/oidc/#{project.root_namespace.path}"
+      def self.wlif_issuer_url(group_or_project)
+        "#{::GoogleCloudPlatform.glgo_base_url}/oidc/#{group_or_project.root_ancestor.path}"
       end
 
       # used when setting up WLIF pools
