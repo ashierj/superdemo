@@ -34,26 +34,26 @@ RSpec.describe API::ProjectImport, feature_category: :importers do
 
     let(:override_params) { { 'external_authorization_classification_label' => 'Hello world' } }
 
-    subject do
+    subject(:perform_archive_upload) do
       Sidekiq::Testing.inline! do
-        upload_archive(file_upload, workhorse_headers, params)
+        upload_archive(workhorse_headers, params)
       end
     end
 
     it 'overrides the classification label' do
-      subject
+      perform_archive_upload
 
       import_project = Project.find(json_response['id'])
       expect(import_project.external_authorization_classification_label).to eq('Hello world')
     end
 
-    context 'feature is disabled' do
+    context 'when feature is disabled' do
       before do
         stub_licensed_features(external_authorization_service_api_management: false)
       end
 
       it 'uses the default the classification label and ignores override param' do
-        subject
+        perform_archive_upload
 
         import_project = Project.find(json_response['id'])
         expect(import_project.external_authorization_classification_label).to eq('default_label')
@@ -61,7 +61,7 @@ RSpec.describe API::ProjectImport, feature_category: :importers do
     end
   end
 
-  def upload_archive(file, headers = {}, params = {})
+  def upload_archive(headers = {}, params = {})
     workhorse_finalize(
       api("/projects/import", user),
       method: :post,

@@ -44,4 +44,32 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::LicenseMetric do
   it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'add_ons' } } do
     let(:expected_value) { current_license.add_ons }
   end
+
+  context 'when no license present' do
+    let(:expected_value) { nil }
+
+    before do
+      allow(::License).to receive(:current).and_return(nil)
+    end
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'trial?' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'license_id' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'expires_at' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'trial_ends_on' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'plan' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'subscription_id' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'starts_at' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'user_count' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'all', options: { attribute: 'daily_billable_users_count' } }
+
+    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'add_ons' } }
+  end
 end

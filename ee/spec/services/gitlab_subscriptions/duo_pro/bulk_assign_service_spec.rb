@@ -56,7 +56,7 @@ RSpec.describe GitlabSubscriptions::DuoPro::BulkAssignService, feature_category:
             {
               add_on_purchase_id: add_on_purchase.id,
               message: 'Duo Pro Bulk User Assignment',
-              response_type: 'not_eligible_users',
+              response_type: 'error',
               payload: { errors: 'INVALID_USER_ID_PRESENT', user_ids: Set[100_0000] }
             }
           end
@@ -81,7 +81,7 @@ RSpec.describe GitlabSubscriptions::DuoPro::BulkAssignService, feature_category:
             {
               add_on_purchase_id: add_on_purchase.id,
               message: 'Duo Pro Bulk User Assignment',
-              response_type: 'not_eligible_users',
+              response_type: 'error',
               payload: { errors: 'INVALID_USER_ID_PRESENT', user_ids: Set[non_existing_record_id] }
             }
           end
