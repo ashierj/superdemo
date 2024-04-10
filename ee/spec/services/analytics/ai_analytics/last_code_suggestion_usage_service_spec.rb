@@ -42,24 +42,15 @@ RSpec.describe Analytics::AiAnalytics::LastCodeSuggestionUsageService, feature_c
     let(:from) { 14.days.ago }
     let(:to) { 1.day.ago }
 
-    def format(date)
-      date.to_time.utc.to_f
-    end
-
     before do
-      insert_query = <<~SQL
-        INSERT INTO code_suggestion_usages
-        (user_id, event, timestamp)
-        VALUES
-        (#{user1.id}, 1, #{format(to - 3.days)}),
-        (#{user1.id}, 1, #{format(to - 4.days)}),
-        (#{user1.id}, 1, #{format(to + 1.day)}),
-        (#{user1.id}, 1, #{format(from - 1.day)}),
-        (#{user2.id}, 1, #{format(to - 2.days)}),
-        (#{unmatched_user.id}, 1, #{format(to - 2.days)})
-      SQL
-
-      ClickHouse::Client.execute(insert_query, :main)
+      clickhouse_fixture(:code_suggestion_usages, [
+        { user_id: user1.id, event: 1, timestamp: to - 3.days },
+        { user_id: user1.id, event: 1, timestamp: to - 4.days },
+        { user_id: user1.id, event: 1, timestamp: to + 1.day },
+        { user_id: user1.id, event: 1, timestamp: from - 1.day },
+        { user_id: user2.id, event: 1, timestamp: to - 2.days },
+        { user_id: unmatched_user.id, event: 1, timestamp: to - 2.days }
+      ])
     end
 
     it 'returns last code suggestion day matched to filters grouped by user' do

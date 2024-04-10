@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_inline, :freeze_time,
   feature_category: :fleet_visibility do
   include GraphqlHelpers
-  include ClickHouseHelpers
 
   let_it_be(:current_user) { create(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance) }

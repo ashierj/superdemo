@@ -94,8 +94,6 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
   end
 
   context 'when clickhouse is the data source', :click_house do
-    include ClickHouseHelpers
-
     before do
       allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(false)
 

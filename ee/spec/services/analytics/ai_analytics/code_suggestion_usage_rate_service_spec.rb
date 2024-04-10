@@ -4,12 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_category: :value_stream_management do
   subject(:service_response) do
-    described_class.new(
-      current_user,
-      namespace: container,
-      from: from,
-      to: to
-    ).execute
+    described_class.new(current_user, namespace: container, from: from, to: to).execute
   end
 
   let_it_be(:user1) { create(:user) }
@@ -18,10 +13,11 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
   let_it_be(:unmatched_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
+  let_it_be(:project) { create(:project, group: subgroup) }
 
   let(:current_user) { user1 }
-  let(:from) { Time.zone.now }
-  let(:to) { Time.zone.now }
+  let(:from) { Time.current }
+  let(:to) { Time.current }
 
   before_all do
     group.add_developer(user1)
@@ -50,7 +46,6 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
     context 'when the feature is available', :click_house, :freeze_time do
       let(:from) { 14.days.ago }
       let(:to) { 1.day.ago }
-      let(:traversal_path) { "#{contributions_target.traversal_ids.join('/')}/" }
 
       context 'without data' do
         it 'returns 0' do
@@ -60,36 +55,20 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
       end
 
       context 'with data' do
-        def format(date)
-          date.to_time.utc.to_f
-        end
-
         before do
-          usages_query = <<~SQL
-          INSERT INTO code_suggestion_usages
-          (user_id, event, timestamp)
-          VALUES
-          (#{user1.id}, 1, #{format(to - 3.days)}),
-          (#{user1.id}, 1, #{format(to - 4.days)}),
-          (#{user1.id}, 1, #{format(to + 1.day)}),
-          (#{user1.id}, 1, #{format(from - 1.day)}),
-          (#{user2.id}, 1, #{format(to - 2.days)}),
-          (#{unmatched_user.id}, 1, #{format(to - 2.days)})
-          SQL
+          clickhouse_fixture(:code_suggestion_usages, [
+            { user_id: user1.id, event: 1, timestamp: to - 3.days },
+            { user_id: user1.id, event: 1, timestamp: to - 4.days },
+            { user_id: user2.id, event: 1, timestamp: to - 2.days },
+            { user_id: unmatched_user.id, event: 1, timestamp: to - 2.days }
+          ])
 
-          ClickHouse::Client.execute(usages_query, :main)
-
-          code_contributions_query = <<~SQL
-          INSERT INTO events
-          (id, path, author_id, target_id, target_type, action, created_at, updated_at)
-          VALUES
-          (1,'#{traversal_path}',#{user1.id},0,'',5,#{format(to - 1.day)},#{format(to - 1.day)}),
-          (2,'#{traversal_path}',#{user1.id},0,'',5,#{format(to - 2.days)},#{format(to - 2.days)}),
-          (3,'#{traversal_path}',#{user2.id},0,'',5,#{format(to - 1.day)},#{format(to - 1.day)}),
-          (4,'#{traversal_path}',#{user_without_ai_usage.id},0,'',5,#{format(to - 1.day)},#{format(to - 1.day)}),
-          SQL
-
-          ClickHouse::Client.execute(code_contributions_query, :main)
+          insert_events_into_click_house([
+            build_stubbed(:event, :pushed, project: project, author: user1, created_at: to - 1.day),
+            build_stubbed(:event, :pushed, project: project, author: user1, created_at: to - 2.days),
+            build_stubbed(:event, :pushed, project: project, author: user2, created_at: to - 1.day),
+            build_stubbed(:event, :pushed, project: project, author: user_without_ai_usage, created_at: to - 1.day)
+          ])
         end
 
         it 'returns percentage of matched code contributors who used AI' do
@@ -102,14 +81,12 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
 
   context 'for group' do
     let_it_be(:container) { group }
-    let_it_be(:contributions_target) { subgroup }
 
     it_behaves_like 'common ai usage rate service'
   end
 
   context 'for project' do
-    let_it_be(:container) { create(:project, group: subgroup).project_namespace }
-    let_it_be(:contributions_target) { container.reload }
+    let_it_be(:container) { project.project_namespace.reload }
 
     it_behaves_like 'common ai usage rate service'
   end
