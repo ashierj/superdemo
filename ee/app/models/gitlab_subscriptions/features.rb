@@ -255,7 +255,6 @@ module GitlabSubscriptions
       subepics
       tracing
       unique_project_download_limit
-      vulnerability_auto_fix
       vulnerability_finding_signatures
     ].freeze
 

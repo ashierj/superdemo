@@ -847,50 +847,18 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       ]
     end
 
-    context 'when auto_fix feature is enabled' do
-      context 'when licensed feature is enabled' do
-        before do
-          stub_licensed_features(vulnerability_auto_fix: true)
-        end
-
-        it { is_expected.to be_allowed(*permissions) }
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(security_auto_fix: false)
-          end
-
-          it { is_expected.to be_disallowed(*permissions) }
-        end
-      end
-
-      context 'when licensed feature is disabled' do
-        before do
-          stub_licensed_features(vulnerability_auto_fix: false)
-        end
-
-        it { is_expected.to be_disallowed(*permissions) }
-      end
-    end
-
-    context 'when auto_fix feature is disabled' do
-      before do
-        stub_licensed_features(vulnerability_auto_fix: true)
-        project.security_setting.update!(auto_fix_dependency_scanning: false, auto_fix_container_scanning: false)
-      end
-
-      it { is_expected.to be_disallowed(*permissions) }
-    end
-
     context 'when project does not have a security_setting' do
       before do
-        stub_licensed_features(vulnerability_auto_fix: true)
         project.security_setting.delete
         project.reload
       end
 
-      it do
-        is_expected.to be_disallowed(*permissions)
+      it { is_expected.to be_allowed(*permissions) }
+
+      context 'with user other than security bot' do
+        let_it_be(:current_user) { create(:user) }
+
+        it { is_expected.to be_disallowed(*permissions) }
       end
     end
   end
