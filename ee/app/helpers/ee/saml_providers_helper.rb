@@ -54,6 +54,13 @@ module EE
       data
     end
 
+    def saml_reload_data(provider)
+      {
+        saml_provider_id: provider.id,
+        saml_sessions_url: saml_user_settings_active_sessions_path(format: :json)
+      }
+    end
+
     private
 
     def saml_url(group_path, redirect = nil)

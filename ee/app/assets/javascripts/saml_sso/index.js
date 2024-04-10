@@ -3,6 +3,7 @@ import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import ScimToken from './components/scim_token.vue';
 import SamlAuthorize from './components/saml_authorize.vue';
+import SamlReloadModal from './components/saml_reload_modal.vue';
 import { AUTO_REDIRECT_TO_PROVIDER_BUTTON_SELECTOR, SAML_AUTHORIZE_SELECTOR } from './constants';
 
 export const redirectUserWithSSOIdentity = () => {
@@ -54,5 +55,22 @@ export const initScimTokenApp = () => {
     render(createElement) {
       return createElement(ScimToken);
     },
+  });
+};
+
+export const initSamlReloadModal = () => {
+  const el = document.getElementById('js-saml-reload');
+
+  if (!el) return null;
+
+  const { samlProviderId, samlSessionsUrl } = el.dataset;
+
+  return new Vue({
+    el,
+    name: 'SamlReloadRoot',
+    render: (createElement) =>
+      createElement(SamlReloadModal, {
+        props: { samlProviderId: parseInt(samlProviderId, 10), samlSessionsUrl },
+      }),
   });
 };

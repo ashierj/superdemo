@@ -81,4 +81,17 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
       end
     end
   end
+
+  describe '#saml_reload_data' do
+    let_it_be(:saml_provider) { create_default(:saml_provider) }
+
+    subject(:data) { helper.saml_reload_data(saml_provider) }
+
+    it 'returns a hash with the expected data' do
+      expect(data).to eq({
+        saml_provider_id: saml_provider.id,
+        saml_sessions_url: saml_user_settings_active_sessions_path(format: :json)
+      })
+    end
+  end
 end
