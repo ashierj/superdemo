@@ -3143,6 +3143,8 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     let(:member_role_abilities) { {} }
     let(:allowed_abilities) { [] }
+    let(:disallowed_abilities) { [] }
+    let(:licensed_features) { {} }
     let(:current_user) { guest }
 
     def create_member_role(member, abilities = member_role_abilities)
@@ -3160,7 +3162,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         before do
           create_member_role(group_member_guest)
 
-          stub_licensed_features(custom_roles: false)
+          stub_licensed_features(licensed_features.merge(custom_roles: false))
         end
 
         it { is_expected.to be_disallowed(*allowed_abilities) }
@@ -3168,7 +3170,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       context 'with custom_roles license enabled' do
         before do
-          stub_licensed_features(custom_roles: true)
+          stub_licensed_features(licensed_features.merge(custom_roles: true))
         end
 
         context 'custom role for parent group membership' do
@@ -3178,6 +3180,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             end
 
             it { is_expected.to be_allowed(*allowed_abilities) }
+            it { is_expected.to be_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
@@ -3192,6 +3195,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             end
 
             it { is_expected.to be_allowed(*allowed_abilities) }
+            it { is_expected.to be_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
@@ -3330,6 +3334,22 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     context 'for a custom role with the `admin_push_rules` ability' do
       let(:member_role_abilities) { { admin_push_rules: true } }
       let(:allowed_abilities) { [:admin_push_rules] }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
+    context 'for a custom role with the `manage_security_policy_link` ability' do
+      let(:member_role_abilities) { { manage_security_policy_link: true } }
+      let(:licensed_features) { { security_orchestration_policies: true } }
+
+      let(:allowed_abilities) do
+        [:read_security_orchestration_policies, :read_security_orchestration_policy_project,
+         :update_security_orchestration_policy_project]
+      end
+
+      let(:disallowed_abilities) do
+        [:modify_security_policy]
+      end
 
       it_behaves_like 'custom roles abilities'
     end

@@ -213,7 +213,7 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
                 root_ancestor: instance_double(Group, delete_redundant_policy_projects?: true)
               )
 
-            allow(current_user).to receive(:can?).with(:modify_security_policy, dbl).and_return(true)
+            allow(current_user).to receive(:can?).with(:update_security_orchestration_policy_project, dbl).and_return(true)
             allow(dbl_error).to receive(:security_policy_management_project).and_return(policy_project)
             allow(dbl_error).to receive(:transaction).and_yield
             allow(dbl_error).to receive(:delete_scan_finding_rules).and_return(nil)

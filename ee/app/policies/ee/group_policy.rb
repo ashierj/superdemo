@@ -275,6 +275,15 @@ module EE
         ).has_ability?
       end
 
+      desc "Custom role on group that enables managing security policy links"
+      condition(:custom_roles_enables_manage_security_policy_link) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :manage_security_policy_link
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -535,6 +544,12 @@ module EE
 
       rule { security_orchestration_policies_enabled & security_policy_project_available & can_commit_to_security_policy_project }.policy do
         enable :modify_security_policy
+      end
+
+      rule { custom_roles_allowed & security_orchestration_policies_enabled & custom_roles_enables_manage_security_policy_link }.policy do
+        enable :read_security_orchestration_policies
+        enable :read_security_orchestration_policy_project
+        enable :update_security_orchestration_policy_project
       end
 
       rule { security_dashboard_enabled & developer }.policy do
