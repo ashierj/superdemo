@@ -262,6 +262,18 @@ module EE
       end
     end
 
+    def static_avatar_path?
+      security_policy_bot?
+    end
+
+    def static_avatar_path(size = nil)
+      if Avatarable::USER_AVATAR_SIZES.include?(size)
+        return ::Gitlab::Utils.append_path(Settings.gitlab.base_url, "assets/bot_avatars/security-bot_#{size}.png")
+      end
+
+      ::Gitlab::Utils.append_path(Settings.gitlab.base_url, 'assets/bot_avatars/security-bot.png')
+    end
+
     override :toggle_star
     def toggle_star(project)
       super

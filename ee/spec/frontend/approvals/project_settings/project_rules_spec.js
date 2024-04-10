@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import RuleInput from 'ee/approvals/components/rules/rule_input.vue';
 import ProjectRules from 'ee/approvals/project_settings/project_rules.vue';
 import RuleName from 'ee/approvals/components/rules/rule_name.vue';
@@ -35,7 +35,7 @@ describe('Approvals ProjectRules', () => {
   let store;
 
   const factory = (props = {}, options = {}) => {
-    wrapper = mount(ProjectRules, {
+    wrapper = mountExtended(ProjectRules, {
       propsData: props,
       store: new Vuex.Store(store),
       ...options,
@@ -45,6 +45,26 @@ describe('Approvals ProjectRules', () => {
   beforeEach(() => {
     store = createStoreOptions({ approvals: projectSettingsModule() });
     store.modules.approvals.state.rules = TEST_RULES;
+  });
+
+  describe('isBranchRulesEdit', () => {
+    const findBranches = () => wrapper.findByTestId('approvals-table-branches');
+
+    beforeEach(() => {
+      store.state.settings.allowMultiRule = true;
+    });
+
+    it('does not render branches when `true`', () => {
+      factory({ isBranchRulesEdit: true });
+
+      expect(findBranches().exists()).toBe(false);
+    });
+
+    it('renders branches when `false`', () => {
+      factory({ isBranchRulesEdit: false });
+
+      expect(findBranches().exists()).toBe(true);
+    });
   });
 
   describe('when allow multiple rules', () => {
