@@ -433,7 +433,7 @@ module SaasRegistrationHelpers
       last_name: 'User',
       phone_number: '+1234567890',
       country: 'US',
-      state: 'FL',
+      state: 'Florida',
       website_url: 'https://gitlab.com',
       trial_onboarding_flow: true,
       # these are the passed through params

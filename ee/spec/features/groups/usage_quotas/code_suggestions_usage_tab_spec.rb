@@ -146,7 +146,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
       "company_size" => form_data[:company_size].delete(' '),
       "phone_number" => form_data[:phone_number],
       "country" => form_data.dig(:country, :id),
-      "state" => form_data.dig(:state, :id),
+      "state" => form_data.dig(:state, :name),
       "namespace_id" => group.id,
       "comment" => '',
       "glm_content" => 'code-suggestions',
