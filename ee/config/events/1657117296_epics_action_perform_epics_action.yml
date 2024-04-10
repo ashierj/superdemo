@@ -2,13 +2,13 @@
 description: Epic usage event
 category: epics_action
 action: perform_epics_action
-label_description:
-property_description: the name of the performed action
-value_description:
 extra_properties:
 identifiers:
 - user
 - namespace
+additional_properties:
+  label:
+    description: the name of the performed action
 product_section: dev
 product_stage: plan
 product_group: product_planning
