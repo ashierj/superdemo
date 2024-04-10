@@ -28030,7 +28030,7 @@ msgstr ""
 msgid "IssueTracker|Use Phorge as this project's issue tracker."
 msgstr ""
 
-msgid "IssueTracker|Use Phorge as this project's issue tracker. %{docs_link}"
+msgid "IssueTracker|Use Phorge as this project's issue tracker. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
 msgid "IssueTracker|Use Redmine as the issue tracker. %{docs_link}"
