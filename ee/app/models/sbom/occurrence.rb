@@ -79,6 +79,7 @@ module Sbom
     end
 
     scope :by_project_ids, ->(project_ids) { where(project_id: project_ids) }
+    scope :by_uuids, ->(uuids) { where(uuid: uuids) }
 
     scope :filter_by_package_managers, ->(package_managers) do
       where(package_manager: package_managers)

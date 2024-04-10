@@ -315,6 +315,12 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.by_uuids' do
+    let_it_be(:occurrences) { create_list(:sbom_occurrence, 2) }
+
+    specify { expect(described_class.by_uuids(occurrences.first.uuid)).to eq([occurrences.first]) }
+  end
+
   describe '.filter_by_package_managers' do
     let_it_be(:occurrence_nuget) { create(:sbom_occurrence, packager_name: 'nuget') }
     let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }
