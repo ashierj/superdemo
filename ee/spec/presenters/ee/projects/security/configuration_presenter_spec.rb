@@ -9,18 +9,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter, feature_category: :so
   let_it_be(:current_user) { create(:user) }
 
   describe '#to_h' do
-    subject(:result) { described_class.new(project, auto_fix_permission: true, current_user: current_user).to_h }
-
-    it 'includes settings for auto_fix feature' do
-      auto_fix = result[:auto_fix_enabled]
-
-      expect(auto_fix[:dependency_scanning]).to be_truthy
-      expect(auto_fix[:container_scanning]).to be_truthy
-    end
-
-    it 'reports auto_fix permissions' do
-      expect(result[:can_toggle_auto_fix_settings]).to be_truthy
-    end
+    subject(:result) { described_class.new(project, current_user: current_user).to_h }
 
     it 'reports security_training_enabled' do
       allow(project).to receive(:security_training_available?).and_return(true)
@@ -42,7 +31,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter, feature_category: :so
   end
 
   describe '#to_html_data_attribute' do
-    subject(:result) { described_class.new(project, auto_fix_permission: true, current_user: current_user).to_h }
+    subject(:result) { described_class.new(project, current_user: current_user).to_h }
 
     before do
       stub_licensed_features(security_on_demand_scans: true, security_configuration_in_ui: true)

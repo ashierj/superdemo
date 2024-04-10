@@ -55602,9 +55602,6 @@ msgstr ""
 msgid "UserProfile|Blocked user"
 msgstr ""
 
-msgid "UserProfile|Bot activity"
-msgstr ""
-
 msgid "UserProfile|Busy"
 msgstr ""
 
