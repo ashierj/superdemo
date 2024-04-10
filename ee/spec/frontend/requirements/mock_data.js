@@ -20,6 +20,7 @@ export const mockAuthor = {
   username: 'root',
   avatarUrl: 'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
   webUrl: 'http://0.0.0.0:3000/root',
+  webPath: '/root',
 };
 
 export const mockTestReport = {
