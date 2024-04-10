@@ -4,6 +4,8 @@ module Mutations
   module Vulnerabilities
     class RemoveAllFromProject < BaseMutation
       graphql_name 'VulnerabilitiesRemoveAllFromProject'
+      description 'Remove all Vulnerabilities and related information from a given project. ' \
+                  '[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/412602) in GitLab 16.7'
 
       argument :project_ids,
         [::Types::GlobalIDType[::Project]],

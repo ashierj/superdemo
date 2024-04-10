@@ -8834,6 +8834,8 @@ Input type: `VulnerabilitiesDismissInput`
 
 ### `Mutation.vulnerabilitiesRemoveAllFromProject`
 
+Remove all Vulnerabilities and related information from a given project. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/412602) in GitLab 16.7.
+
 Input type: `VulnerabilitiesRemoveAllFromProjectInput`
 
 #### Arguments
