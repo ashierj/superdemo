@@ -15,7 +15,7 @@ Vue.use(VueApollo);
 describe('CountryOrRegionSelector', () => {
   let wrapper;
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, provides = {}) => {
     const mockResolvers = {
       Query: {
         countries() {
@@ -29,6 +29,9 @@ describe('CountryOrRegionSelector', () => {
 
     return shallowMountExtended(CountryOrRegionSelector, {
       apolloProvider: createMockApollo([], mockResolvers),
+      provide: {
+        ...provides,
+      },
       propsData: {
         country: COUNTRY_WITH_STATES,
         state: STATE,
@@ -121,6 +124,18 @@ describe('CountryOrRegionSelector', () => {
       expect(wrapper.emitted('change')[0]).toStrictEqual([
         { country: 'US', state: 'CA', stateRequired: true },
       ]);
+    });
+
+    it('has the default value field populated when not set', () => {
+      wrapper = createComponent();
+
+      expect(findFormInput('state').attributes('value-field')).toBe('id');
+    });
+
+    it('has the proper value field populated when set', () => {
+      wrapper = createComponent({}, { stateValueField: 'name' });
+
+      expect(findFormInput('state').attributes('value-field')).toBe('name');
     });
   });
 });

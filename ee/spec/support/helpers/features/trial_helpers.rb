@@ -103,7 +103,7 @@ module Features
         skip_email_confirmation: true,
         gitlab_com_trial: true,
         provider: 'gitlab',
-        state: form_data.dig(:state, :id)
+        state: trial_type == DUO_PRO_TRIAL ? form_data.dig(:state, :name) : form_data.dig(:state, :id)
       }.merge(extra_params)
 
       if trial_type == DUO_PRO_TRIAL
