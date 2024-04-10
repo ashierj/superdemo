@@ -15214,9 +15214,6 @@ msgstr ""
 msgid "CreateValueStreamForm|Create from no template"
 msgstr ""
 
-msgid "CreateValueStreamForm|Create value stream"
-msgstr ""
-
 msgid "CreateValueStreamForm|Default stages"
 msgstr ""
 

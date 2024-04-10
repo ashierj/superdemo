@@ -12,6 +12,7 @@ import { mapState, mapActions } from 'vuex';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import { sprintf, __, s__ } from '~/locale';
 import Tracking from '~/tracking';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ValueStreamForm from './value_stream_form.vue';
 
 const i18n = {
@@ -38,7 +39,8 @@ export default {
   directives: {
     GlModalDirective,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [Tracking.mixin(), glFeatureFlagsMixin()],
+  inject: ['newValueStreamPath', 'editValueStreamPath'],
   props: {
     canEdit: {
       type: Boolean,
@@ -81,6 +83,20 @@ export default {
         name: this.selectedValueStreamName,
       });
     },
+    isVSAStandaloneSettingsPageEnabled() {
+      return this.glFeatures?.vsaStandaloneSettingsPage;
+    },
+    createValueStreamButtonHref() {
+      return this.isVSAStandaloneSettingsPageEnabled ? this.newValueStreamPath : null;
+    },
+    editValueStreamButtonHref() {
+      if (!this.isVSAStandaloneSettingsPageEnabled || !this.selectedValueStreamId) return null;
+
+      return this.editValueStreamPath.replace(':id', this.selectedValueStreamId);
+    },
+    valueStreamFormModalId() {
+      return !this.isVSAStandaloneSettingsPageEnabled && 'value-stream-form-modal';
+    },
   },
   methods: {
     ...mapActions(['setSelectedValueStream', 'deleteValueStream']),
@@ -105,11 +121,17 @@ export default {
       });
     },
     onCreate() {
-      this.showForm = true;
+      if (!this.isVSAStandaloneSettingsPageEnabled) {
+        this.showForm = true;
+      }
+
       this.isEditing = false;
     },
     onEdit() {
-      this.showForm = true;
+      if (!this.isVSAStandaloneSettingsPageEnabled) {
+        this.showForm = true;
+      }
+
       this.isEditing = true;
     },
     slugify(valueStreamTitle) {
@@ -133,10 +155,11 @@ export default {
       <template v-if="canEdit" #footer>
         <div class="gl-border-t gl-p-2">
           <gl-button
-            v-gl-modal-directive="'value-stream-form-modal'"
+            v-gl-modal-directive="valueStreamFormModalId"
             class="gl-w-full gl-justify-content-start!"
             category="tertiary"
-            data-testid="create-value-stream"
+            :href="createValueStreamButtonHref"
+            data-testid="create-value-stream-option"
             data-track-action="click_dropdown"
             data-track-label="create_value_stream_form_open"
             @click="onCreate"
@@ -161,7 +184,8 @@ export default {
     </gl-collapsible-listbox>
     <gl-button
       v-if="isCustomValueStream && canEdit"
-      v-gl-modal-directive="'value-stream-form-modal'"
+      v-gl-modal-directive="valueStreamFormModalId"
+      :href="editValueStreamButtonHref"
       data-testid="edit-value-stream"
       data-track-action="click_button"
       data-track-label="edit_value_stream_form_open"
@@ -170,7 +194,8 @@ export default {
     >
     <gl-button
       v-if="!hasValueStreams"
-      v-gl-modal-directive="'value-stream-form-modal'"
+      v-gl-modal-directive="valueStreamFormModalId"
+      :href="createValueStreamButtonHref"
       data-testid="create-value-stream-button"
       data-track-action="click_button"
       data-track-label="create_value_stream_form_open"

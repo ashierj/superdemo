@@ -4,7 +4,7 @@ export const NAME_MAX_LENGTH = 100;
 export const NAME_MIN_LENGTH = 3;
 
 export const i18n = {
-  FORM_TITLE: s__('CreateValueStreamForm|Create value stream'),
+  FORM_TITLE: s__('CreateValueStreamForm|New value stream'),
   EDIT_FORM_TITLE: s__('CreateValueStreamForm|Edit value stream'),
   EDIT_FORM_ACTION: s__('CreateValueStreamForm|Save value stream'),
   FORM_CREATED: s__("CreateValueStreamForm|'%{name}' Value Stream created"),

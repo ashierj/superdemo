@@ -41,7 +41,11 @@ module EE
             paths.merge({
               milestones_path: url_helpers.group_milestones_path(group, format: :json),
               labels_path: url_helpers.group_labels_path(group, format: :json),
-              new_value_stream_path: url_helpers.new_group_analytics_cycle_analytics_value_stream_path(group)
+              new_value_stream_path: url_helpers.new_group_analytics_cycle_analytics_value_stream_path(group),
+              edit_value_stream_path: url_helpers.edit_group_analytics_cycle_analytics_value_stream_path(
+                group,
+                ':id'
+              )
             })
           end
 

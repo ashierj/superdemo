@@ -146,7 +146,7 @@ module QA
         def create_value_stream
           within_element('value-stream-form-modal') do
             # footer buttons are generic UI components from gitlab/ui
-            find_button("Create value stream").click
+            find_button("New value stream").click
           end
         end
 
