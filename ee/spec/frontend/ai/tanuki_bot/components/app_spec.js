@@ -71,7 +71,6 @@ describe('GitLab Duo Chat', () => {
   const createComponent = ({
     initialState = {},
     propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
-    glFeatures = { duoChatCallout: true },
   } = {}) => {
     const store = new Vuex.Store({
       actions: actionSpies,
@@ -91,9 +90,6 @@ describe('GitLab Duo Chat', () => {
       store,
       apolloProvider,
       propsData,
-      provide: {
-        glFeatures,
-      },
     });
   };
 

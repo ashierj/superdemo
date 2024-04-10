@@ -13,7 +13,6 @@ import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import duoUserFeedbackMutation from 'ee/ai/graphql/duo_user_feedback.mutation.graphql';
 import Tracking from '~/tracking';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   i18n,
   GENIE_CHAT_RESET_MESSAGE,
@@ -45,7 +44,7 @@ export default {
     GlDuoChat,
     DuoChatCallout,
   },
-  mixins: [Tracking.mixin(), glFeatureFlagsMixin()],
+  mixins: [Tracking.mixin()],
   provide() {
     return {
       renderGFM,
@@ -120,9 +119,6 @@ export default {
   },
   computed: {
     ...mapState(['loading', 'messages']),
-    shouldRenderCallout() {
-      return this.glFeatures.duoChatCallout;
-    },
   },
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
@@ -232,6 +228,6 @@ export default {
       @chat-hidden="onChatClose"
       @track-feedback="onTrackFeedback"
     />
-    <duo-chat-callout v-if="shouldRenderCallout" @callout-dismissed="onCalloutDismissed" />
+    <duo-chat-callout @callout-dismissed="onCalloutDismissed" />
   </div>
 </template>

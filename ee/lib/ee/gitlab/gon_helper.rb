@@ -29,7 +29,6 @@ module EE
           gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
         end
 
-        push_frontend_feature_flag(:duo_chat_callout)
         push_frontend_feature_flag(:key_contacts_management_v2, current_user, type: :gitlab_com_derisk)
       end
 
