@@ -197,8 +197,8 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
       end
 
       context 'when namespace_level_work_items is enabled' do
-        let_it_be(:epic_work_item_1) { create(:work_item, :epic, namespace: group) }
-        let_it_be(:epic_work_item_2) { create(:work_item, :epic, namespace: group) }
+        let_it_be(:epic_work_item_1) { create(:work_item, :epic, namespace: group, title: "WorkItem Epic 1") }
+        let_it_be(:epic_work_item_2) { create(:work_item, :epic, namespace: group, title: "WorkItem Epic 2") }
 
         before do
           stub_feature_flags(namespace_level_work_items: true)
@@ -210,7 +210,9 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
           page.within('.issuable-list-container') do
             expect(page).to have_selector('.gl-tabs')
             expect(page).to have_selector('.vue-filtered-search-bar-container')
-            expect(page.find('.issuable-list')).to have_selector('li.issue', count: 2)
+            # We create a synced epic work item for each epic. We therefore expect 6 epics
+            # (4 legacy epics and their synced work item + 2 work item epics)
+            expect(page.find('.issuable-list')).to have_selector('li.issue', count: 6)
             expect(page.find('.issuable-list')).to have_content(epic_work_item_1.title)
             expect(page.find('.issuable-list')).to have_content(epic_work_item_2.title)
           end
