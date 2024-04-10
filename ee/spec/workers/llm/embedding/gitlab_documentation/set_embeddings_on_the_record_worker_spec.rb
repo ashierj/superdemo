@@ -192,7 +192,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
         let(:success) { false }
 
         it 'raises an error' do
-          expect { perform }.to raise_error(StandardError, /something went wrong/)
+          expect { perform }.to raise_error(StandardError)
         end
       end
     end

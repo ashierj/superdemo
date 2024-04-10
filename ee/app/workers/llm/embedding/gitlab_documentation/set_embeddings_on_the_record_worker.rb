@@ -35,14 +35,10 @@ module Llm
           record = MODEL.find_by_id(id)
           return unless record
 
-          client = ::Gitlab::Llm::VertexAi::Client.new(nil, tracking_context: TRACKING_CONTEXT)
-          result = client.text_embeddings(content: record.content)
+          embedding = Gitlab::Llm::VertexAi::Embeddings::Text
+                        .new(record.content, user: nil, tracking_context: TRACKING_CONTEXT)
+                        .execute
 
-          unless result.success? && result.has_key?('predictions')
-            raise StandardError, result.dig('error', 'message') || "Could not generate embedding: '#{result}'"
-          end
-
-          embedding = result['predictions'].first['embeddings']['values']
           record.update!(embedding: embedding)
 
           replace_old_embeddings(record)
