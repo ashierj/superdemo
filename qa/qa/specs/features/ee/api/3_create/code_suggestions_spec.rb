@@ -69,7 +69,7 @@ module QA
           }.compact
         end
 
-        context 'on SaaS', only: { pipeline: %w[staging-canary staging canary production] } do
+        context 'on SaaS', :external_ai_provider, only: { pipeline: %w[staging-canary staging canary production] } do
           let(:project_path) { 'gitlab-org/gitlab' }
           let(:project_id) { 278964 }
           let(:expected_language) { 'ruby' }
@@ -119,7 +119,7 @@ module QA
           }.compact
         end
 
-        context 'on SaaS', only: { pipeline: %w[staging-canary staging canary production] } do
+        context 'on SaaS', :external_ai_provider, only: { pipeline: %w[staging-canary staging canary production] } do
           let(:project_path) { 'gitlab-org/gitlab' }
           let(:project_id) { 278964 }
           let(:expected_language) { 'python' }
@@ -144,7 +144,7 @@ module QA
           }.compact
         end
 
-        context 'on SaaS', only: { pipeline: %w[staging-canary staging canary production] } do
+        context 'on SaaS', :external_ai_provider, only: { pipeline: %w[staging-canary staging canary production] } do
           let(:project_path) { 'gitlab-org/gitlab' }
           let(:project_id) { 278964 }
 
