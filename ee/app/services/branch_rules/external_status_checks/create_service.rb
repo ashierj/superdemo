@@ -3,8 +3,6 @@
 module BranchRules
   module ExternalStatusChecks
     class CreateService < BaseService
-      PERMITTED_PARAMS = %i[name external_url].freeze
-
       def execute(skip_authorization: false)
         super
       rescue Gitlab::Access::AccessDeniedError
@@ -35,6 +33,10 @@ module BranchRules
 
       def execute_on_all_protected_branches_rule
         ServiceResponse.error(message: 'All protected branch rules cannot configure external status checks')
+      end
+
+      def permitted_params
+        %i[name external_url]
       end
     end
   end
