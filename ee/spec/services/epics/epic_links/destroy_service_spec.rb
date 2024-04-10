@@ -189,9 +189,9 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
             end
           end
 
-          context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+          context 'when sync_epic_to_work_item feature flag is disabled' do
             before do
-              stub_feature_flags(epic_creation_with_synced_work_item: false)
+              stub_feature_flags(sync_epic_to_work_item: false)
             end
 
             it 'removes epic relationship and destroy work item parent link' do

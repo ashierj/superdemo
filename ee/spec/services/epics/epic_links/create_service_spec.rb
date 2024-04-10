@@ -626,9 +626,9 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
           it_behaves_like 'rollback changes when creation fails'
         end
 
-        context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+        context 'when sync_epic_to_work_item feature flag is disabled' do
           before do
-            stub_feature_flags(epic_creation_with_synced_work_item: false)
+            stub_feature_flags(sync_epic_to_work_item: false)
           end
 
           it 'create relationship only for the epic' do

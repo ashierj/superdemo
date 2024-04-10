@@ -54,7 +54,7 @@ module Epics
     def update_new_entity_description
       super
 
-      return unless ::Feature.enabled?(:epic_creation_with_synced_work_item, parent_group, type: :wip)
+      return unless parent_group.epic_sync_to_work_item_enabled?
       return unless new_entity.work_item
 
       new_entity.work_item.update!(description: new_entity.description, description_html: new_entity.description_html)

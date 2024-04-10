@@ -12,7 +12,7 @@ module Epics
     ].freeze
 
     def create_work_item_for!
-      return unless work_item_sync_enabled?
+      return unless group.epic_sync_to_work_item_enabled?
 
       service_response = ::WorkItems::CreateService.new(
         container: group,
@@ -27,7 +27,7 @@ module Epics
     end
 
     def update_work_item_for!(epic)
-      return true unless work_item_sync_enabled?
+      return true unless group.epic_sync_to_work_item_enabled?
       return true unless epic.work_item
 
       service_response = ::WorkItems::UpdateService.new(
@@ -81,10 +81,6 @@ module Epics
       )
 
       raise SyncAsWorkItemError, error_message.join(", ")
-    end
-
-    def work_item_sync_enabled?
-      ::Feature.enabled?(:epic_creation_with_synced_work_item, group, type: :wip)
     end
 
     def extract_widget_params

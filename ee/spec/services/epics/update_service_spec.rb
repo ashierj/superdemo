@@ -966,7 +966,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
                 context 'when feature flag is disabled' do
                   before do
-                    stub_feature_flags(epic_creation_with_synced_work_item: false)
+                    stub_feature_flags(sync_epic_to_work_item: false)
                   end
 
                   it 'does not propagate changes' do
@@ -1003,7 +1003,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
             context 'when feature flag is disabled' do
               before do
-                stub_feature_flags(epic_creation_with_synced_work_item: false)
+                stub_feature_flags(sync_epic_to_work_item: false)
               end
 
               it 'does not propagate changes' do
