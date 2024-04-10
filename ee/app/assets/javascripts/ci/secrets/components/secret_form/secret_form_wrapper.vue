@@ -1,5 +1,13 @@
 <script>
+import { createAlert } from '~/alert';
 import { sprintf, s__ } from '~/locale';
+import {
+  getGroupEnvironments,
+  getProjectEnvironments,
+  ENVIRONMENT_FETCH_ERROR,
+  ENVIRONMENT_QUERY_LIMIT,
+  mapEnvironmentNames,
+} from '~/ci/common/private/ci_environments_dropdown';
 import { DETAILS_ROUTE_NAME, ENTITY_PROJECT, INDEX_ROUTE_NAME } from '../../constants';
 import SecretForm from './secret_form.vue';
 
@@ -44,10 +52,33 @@ export default {
       environments: [],
     };
   },
+  apollo: {
+    environments: {
+      query() {
+        return this.entity === ENTITY_PROJECT ? getProjectEnvironments : getGroupEnvironments;
+      },
+      variables() {
+        return {
+          first: ENVIRONMENT_QUERY_LIMIT,
+          fullPath: this.fullPath,
+          search: '',
+        };
+      },
+      update(data) {
+        if (this.entity === ENTITY_PROJECT) {
+          return mapEnvironmentNames(data.project?.environments?.nodes || []);
+        }
+
+        return mapEnvironmentNames(data.group?.environmentScopes?.nodes || []);
+      },
+      error() {
+        createAlert({ message: ENVIRONMENT_FETCH_ERROR });
+      },
+    },
+  },
   computed: {
     areEnvironmentsLoading() {
-      // TODO: set value from environments query
-      return true;
+      return this.$apollo.queries.environments.loading;
     },
     pageDescription() {
       if (this.entity === ENTITY_PROJECT) {
@@ -64,6 +95,11 @@ export default {
       return this.$options.i18n.titleNew;
     },
   },
+  methods: {
+    searchEnvironment(searchTerm) {
+      this.$apollo.queries.environments.refetch({ search: searchTerm });
+    },
+  },
   INDEX_ROUTE_NAME,
   DETAILS_ROUTE_NAME,
   i18n,
@@ -78,6 +114,7 @@ export default {
       :environments="environments"
       :is-editing="isEditing"
       :redirect-to-route-name="isEditing ? $options.DETAILS_ROUTE_NAME : $options.INDEX_ROUTE_NAME"
+      @search-environment="searchEnvironment"
     />
   </div>
 </template>
