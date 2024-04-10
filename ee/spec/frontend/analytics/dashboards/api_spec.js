@@ -202,6 +202,15 @@ describe('Analytics Dashboards api', () => {
       ).toEqual(response);
     });
 
+    it('returns an empty object when the data is blank', () => {
+      expect(
+        extractQueryResponseFromNamespace({
+          resultKey,
+          result: { data: { group: { [resultKey]: null } } },
+        }),
+      ).toEqual({});
+    });
+
     it('returns an empty object when there is no data present', () => {
       expect(
         extractQueryResponseFromNamespace({

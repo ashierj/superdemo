@@ -1,6 +1,6 @@
 export const mockDoraTimePeriods = [
   {
-    key: '6-months-ago',
+    key: '5-months-ago',
     label: 'Oct',
     start: new Date('2023-10-01T00:00:00.000Z'),
     end: new Date('2023-10-31T23:59:59.000Z'),
@@ -15,7 +15,7 @@ export const mockDoraTimePeriods = [
     },
   },
   {
-    key: '5-months-ago',
+    key: '4-months-ago',
     label: 'Nov',
     start: new Date('2023-11-01T00:00:00.000Z'),
     end: new Date('2023-11-30T23:59:59.000Z'),
@@ -30,7 +30,7 @@ export const mockDoraTimePeriods = [
     },
   },
   {
-    key: '4-months-ago',
+    key: '3-months-ago',
     label: 'Dec',
     start: new Date('2023-12-01T00:00:00.000Z'),
     end: new Date('2024-12-31T23:59:59.000Z'),
@@ -45,7 +45,7 @@ export const mockDoraTimePeriods = [
     },
   },
   {
-    key: '3-months-ago',
+    key: '2-months-ago',
     label: 'Jan',
     start: new Date('2024-01-01T00:00:00.000Z'),
     end: new Date('2024-01-31T23:59:59.000Z'),
@@ -60,7 +60,7 @@ export const mockDoraTimePeriods = [
     },
   },
   {
-    key: '2-months-ago',
+    key: '1-months-ago',
     label: 'Feb',
     start: new Date('2024-02-01T00:00:00.000Z'),
     end: new Date('2024-02-29T23:59:59.000Z'),
@@ -75,10 +75,10 @@ export const mockDoraTimePeriods = [
     },
   },
   {
-    key: '1-months-ago',
+    key: 'this-month',
     label: 'Mar',
     start: new Date('2024-03-01T00:00:00.000Z'),
-    end: new Date('2024-03-31T23:59:59.000Z'),
+    end: new Date('2024-03-15T13:00:00.000Z'),
     thClass: 'gl-w-10p',
     deployment_frequency: {
       identifier: 'deployment_frequency',
@@ -88,5 +88,56 @@ export const mockDoraTimePeriods = [
       identifier: 'change_failure_rate',
       value: '4.0',
     },
+  },
+];
+
+export const mockTableValues = [
+  {
+    deploymentFrequency: 10,
+    changeFailureRate: 0.1,
+    cycleTime: 4,
+    leadTime: 0,
+    criticalVulnerabilities: 40,
+    codeSuggestionsUsageRate: 5,
+  },
+  {
+    deploymentFrequency: 20,
+    changeFailureRate: 0.2,
+    cycleTime: 2,
+    leadTime: 2,
+    criticalVulnerabilities: 20,
+    codeSuggestionsUsageRate: 10,
+  },
+  {
+    deploymentFrequency: 40,
+    changeFailureRate: 0.4,
+    cycleTime: 1,
+    leadTime: 4,
+    criticalVulnerabilities: 10,
+    codeSuggestionsUsageRate: 25,
+  },
+  {
+    deploymentFrequency: 10,
+    changeFailureRate: 0.1,
+    cycleTime: 4,
+    leadTime: 1,
+    criticalVulnerabilities: 40,
+    codeSuggestionsUsageRate: 5,
+  },
+  {
+    deploymentFrequency: 20,
+    changeFailureRate: 0.2,
+    cycleTime: 2,
+    leadTime: 2,
+    criticalVulnerabilities: 20,
+    codeSuggestionsUsageRate: 10,
+  },
+  {
+    deploymentFrequency: 40,
+    changeFailureRate: 0.4,
+    cycleTime: 1,
+    leadTime: 4,
+    criticalVulnerabilities: 10,
+    codeSuggestionsUsageRate: 25,
   },
 ];
