@@ -111,7 +111,7 @@ module Subscriptions
             "The subscription may take a minute to sync, so refresh the page if it's not visible yet."
           ),
           exp_date: 30.days.from_now.strftime('%Y-%m-%d'),
-          new_line: '<br>'.html_safe
+          new_line: helpers.tag.br
         )
       end
     end
