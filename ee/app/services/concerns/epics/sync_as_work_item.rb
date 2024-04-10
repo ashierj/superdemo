@@ -27,8 +27,8 @@ module Epics
     end
 
     def update_work_item_for!(epic)
-      return unless work_item_sync_enabled?
-      return unless epic.work_item
+      return true unless work_item_sync_enabled?
+      return true unless epic.work_item
 
       service_response = ::WorkItems::UpdateService.new(
         container: epic.group,
