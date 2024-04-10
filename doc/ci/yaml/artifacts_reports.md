@@ -197,6 +197,10 @@ GitLab can display the results of one or more reports in:
 
 ## `artifacts:reports:cyclonedx`
 
+DETAILS:
+**Tier:** Ultimate
+**Offering:** GitLab.com, Self-managed, GitLab Dedicated
+
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/360766) in GitLab 15.3
 
 This report is a Software Bill of Materials describing the components of a project
