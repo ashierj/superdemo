@@ -4,9 +4,12 @@ require 'spec_helper'
 
 RSpec.describe 'Duo Pro Trial alert', :saas, :js, feature_category: :code_suggestions do
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-  let_it_be(:user_in_group) { create(:group_member, :owner, user: create(:user), group: group).user }
+  let_it_be(:user_in_group) do
+    create(:group_member, :owner, user: create(:user, namespace: create(:user_namespace)), group: group).user
+  end
+
   let_it_be(:subgroup) { create(:group, parent: group) }
-  let_it_be(:project) { create(:project, :public, namespace: group) }
+  let_it_be(:project) { create(:project, :repository, namespace: group) }
   let_it_be(:duo_pro_addon) { create(:gitlab_subscription_add_on, :gitlab_duo_pro) }
 
   before do
