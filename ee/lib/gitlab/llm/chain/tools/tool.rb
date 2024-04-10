@@ -16,12 +16,12 @@ module Gitlab
 
           delegate :resource, :resource=, to: :context
 
-          def self.full_definition
+          def self.full_definition(claude_3_enabled: false)
             [
               "<tool>",
               "<tool_name>#{self::NAME}</tool_name>",
               "<description>",
-              self::DESCRIPTION,
+              description(claude_3_enabled),
               "</description>",
               "<example>",
               self::EXAMPLE,
@@ -84,6 +84,14 @@ module Gitlab
           private
 
           attr_reader :logger, :stream_response_handler
+
+          def self.description(claude_3_enabled)
+            if const_defined?(:CLAUDE_3_DESCRIPTION) && claude_3_enabled
+              self::CLAUDE_3_DESCRIPTION
+            else
+              self::DESCRIPTION
+            end
+          end
 
           def not_found
             content = "I am sorry, I am unable to find what you are looking for."
