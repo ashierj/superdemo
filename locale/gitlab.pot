@@ -13805,6 +13805,12 @@ msgstr ""
 msgid "ContainerRegistry|-- tags"
 msgstr ""
 
+msgid "ContainerRegistry|Add protection rule"
+msgstr ""
+
+msgid "ContainerRegistry|Add rule"
+msgstr ""
+
 msgid "ContainerRegistry|Build an image"
 msgstr ""
 
@@ -13952,6 +13958,12 @@ msgstr ""
 msgid "ContainerRegistry|Manifest digest: %{digest}"
 msgstr ""
 
+msgid "ContainerRegistry|Maximum access level prevented from deleting"
+msgstr ""
+
+msgid "ContainerRegistry|Maximum access level prevented from pushing"
+msgstr ""
+
 msgid "ContainerRegistry|Missing or insufficient permission, delete button disabled"
 msgstr ""
 
@@ -14045,6 +14057,9 @@ msgid "ContainerRegistry|Something went wrong while marking the tag for deletion
 msgstr ""
 
 msgid "ContainerRegistry|Something went wrong while marking the tags for deletion."
+msgstr ""
+
+msgid "ContainerRegistry|Something went wrong while saving the protection rule."
 msgstr ""
 
 msgid "ContainerRegistry|Something went wrong while scheduling %{title} for deletion. Please try again."
