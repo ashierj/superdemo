@@ -4,13 +4,14 @@
   - given = merge_request.approvals_given
   - total = merge_request.total_approvals_count
   - required = merge_request.approvals_required
+  - total_given = total > 0 ? given : total
 
-  - approved_text = _("Required approvals (%{approvals_given} of %{required} given, you've approved)") % { approvals_given: given, required: required }
-  - unapproved_text = _("Required approvals (%{approvals_given} of %{required} given)") % { approvals_given: given, required: required }
+  - approved_text = _("Required approvals (%{approvals_given} of %{required} given, you've approved)") % { approvals_given: total_given, required: required }
+  - unapproved_text = _("Required approvals (%{approvals_given} of %{required} given)") % { approvals_given: total_given, required: required }
   - approval_tooltip = self_approved ? approved_text : unapproved_text
   - approval_icon = approved ? 'check' : 'approval'
   - badge_variant = approved ? :success : :muted
-  - badge_label = approved ? _("Approved") : _("%{approvals_given} of %{required} Approvals") % { approvals_given: total, required: required }
+  - badge_label = approved ? _("Approved") : _("%{approvals_given} of %{required} Approvals") % { approvals_given: total_given, required: required }
 
   %li.gl-display-flex= render Pajamas::BadgeComponent.new(badge_label, size: 'sm', variant: badge_variant, icon: approval_icon, title: approval_tooltip, class: 'has-tooltip', data: { 'testid': 'mr-appovals' })
 - else
