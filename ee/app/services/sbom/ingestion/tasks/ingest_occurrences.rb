@@ -46,11 +46,7 @@ module Sbom
               traversal_ids: project.namespace.traversal_ids,
               archived: project.archived,
               ancestors: occurrence_map.ancestors
-            }.tap do |attrs|
-              if Feature.disabled?(:sbom_occurrences_vulnerabilities, project)
-                attrs.except!(:vulnerability_count, :highest_severity)
-              end
-            end
+            }
 
             existing_occurrence = existing_occurrences_by_uuid[uuid]
             existing_attributes = existing_occurrence&.attributes&.symbolize_keys&.slice(*new_attributes.keys)

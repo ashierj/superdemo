@@ -56,18 +56,6 @@ RSpec.describe API::Sbom::Occurrences, :aggregate_failures, :api, feature_catego
           expect(response).to have_gitlab_http_status(:not_found)
         end
       end
-
-      context 'with feature flag disabled' do
-        before do
-          stub_feature_flags(sbom_occurrences_vulnerabilities: false)
-        end
-
-        it 'returns forbidden' do
-          get_occurrences_vulnerabilities
-
-          expect(response).to have_gitlab_http_status(:forbidden)
-        end
-      end
     end
   end
 end

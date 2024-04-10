@@ -8,7 +8,8 @@ module Sbom
         ::Sbom::Ingestion::Tasks::IngestComponentVersions,
         ::Sbom::Ingestion::Tasks::IngestSources,
         ::Sbom::Ingestion::Tasks::IngestSourcePackages,
-        ::Sbom::Ingestion::Tasks::IngestOccurrences
+        ::Sbom::Ingestion::Tasks::IngestOccurrences,
+        ::Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities
       ].freeze
 
       def self.execute(pipeline, occurrence_maps)
@@ -31,11 +32,7 @@ module Sbom
       attr_reader :pipeline, :occurrence_maps
 
       def tasks
-        if Feature.enabled?(:sbom_occurrences_vulnerabilities, pipeline.project)
-          TASKS + [::Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities]
-        else
-          TASKS
-        end
+        TASKS
       end
     end
   end
