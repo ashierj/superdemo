@@ -96,8 +96,6 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
     end
 
     context 'when clickhouse is the data source', :click_house do
-      include ClickHouseHelpers
-
       before do
         allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
 

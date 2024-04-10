@@ -39,19 +39,17 @@ RSpec.describe Resolvers::Analytics::ValueStreamDashboard::CountResolver, featur
 
           arguments[:identifier] = 'contributors'
 
-          insert_query = <<~SQL
-          INSERT INTO events
-          (id, path, author_id, target_id, target_type, action, created_at, updated_at)
-          VALUES
-          -- push event
-          -- push event, different user
-          -- outside of the date range
-          (1,'#{group.id}/',100,0,'',5,'2023-05-10','2023-05-10'),
-          (2,'#{group.id}/',200,0,'',5,'2023-05-15','2023-05-15'),
-          (3,'#{group.id}/',300,0,'',5,'2023-06-15','2023-06-15')
-          SQL
-
-          ClickHouse::Client.execute(insert_query, :main)
+          clickhouse_fixture(:events, [
+            # push event
+            { id: 1, path: "#{group.id}/", author_id: 100, target_id: 0, target_type: '', action: 5,
+              created_at: '2023-05-10', updated_at: '2023-05-10' },
+            # push event, different user
+            { id: 2, path: "#{group.id}/", author_id: 200, target_id: 0, target_type: '', action: 5,
+              created_at: '2023-05-15', updated_at: '2023-05-15' },
+            # otside of the date range
+            { id: 3, path: "#{group.id}/", author_id: 300, target_id: 0, target_type: '', action: 5,
+              created_at: '2023-06-15', updated_at: '2023-06-15' }
+          ])
         end
 
         it 'returns the correct count' do

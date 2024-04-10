@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'Query.group(fullPath).ciQueueingHistory', :click_house, feature_category: :fleet_visibility do
   include GraphqlHelpers
-  include ClickHouseHelpers
   include RunnerReleasesHelper
 
   let_it_be(:group) { create(:group) }

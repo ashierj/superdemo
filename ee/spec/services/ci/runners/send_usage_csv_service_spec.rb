@@ -4,8 +4,6 @@ require 'spec_helper'
 
 RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_house, :freeze_time,
   feature_category: :fleet_visibility do
-  include ClickHouseHelpers
-
   let_it_be(:current_user) { build_stubbed(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
 

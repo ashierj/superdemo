@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature_category: :value_stream_management do
+RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, :freeze_time, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:other_user) { create(:user) }
   let_it_be(:group) { create(:group).tap { |g| g.add_developer(user) } }
@@ -73,10 +73,6 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
       stub_licensed_features(group_level_analytics_dashboard: true)
     end
 
-    def format(date)
-      date.to_time.utc.to_f
-    end
-
     context 'when no data present' do
       it 'returns 0' do
         expect(service_response).to be_success
@@ -86,23 +82,23 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
 
     context 'when data present' do
       before do
-        insert_query = <<~SQL
-        INSERT INTO events
-        (id, path, author_id, target_id, target_type, action, created_at, updated_at)
-        VALUES
-        -- push event
-        -- push event same user
-        -- issue creation event, different user
-        -- issue creation event, outside of the date range
-        -- issue creation event, for a different group
-        (1,'#{group.id}/',100,0,'',5,#{format(from + 5.days)},#{format(from + 5.days)}),
-        (2,'#{group.id}/',100,0,'',5,#{format(from + 8.days)},#{format(from + 8.days)}),
-        (3,'#{group.id}/',200,0,'Issue',1,#{format(from + 9.days)},#{format(from + 9.days)}),
-        (4,'#{group.id}/',200,0,'Issue',1,#{format(from + 5.years)},#{format(from + 5.years)}),
-        (5,'0/',200,0,'Issue',1,#{format(from + 2.days)},#{format(from + 2.days)})
-        SQL
-
-        ClickHouse::Client.execute(insert_query, :main)
+        clickhouse_fixture(:events, [
+          # push event
+          { id: 1, path: "#{group.id}/", author_id: 100, target_id: 0, target_type: '', action: 5,
+            created_at: from + 5.days, updated_at: from + 5.days },
+          # push event same user
+          { id: 2, path: "#{group.id}/", author_id: 100, target_id: 0, target_type: '', action: 5,
+            created_at: from + 8.days, updated_at: from + 8.days },
+          # issue creation event, different user
+          { id: 3, path: "#{group.id}/", author_id: 200, target_id: 0, target_type: 'Issue', action: 1,
+            created_at: from + 9.days, updated_at: from + 9.days },
+          # issue creation event, outside of the date range
+          { id: 4, path: "#{group.id}/", author_id: 200, target_id: 0, target_type: 'Issue', action: 1,
+            created_at: from + 5.years, updated_at: from + 5.years },
+          # issue creation event, for a different group
+          { id: 5, path: "0/", author_id: 200, target_id: 0, target_type: 'Issue', action: 1, created_at: from + 2.days,
+            updated_at: from + 2.days }
+        ])
       end
 
       it 'returns distinct contributor count from ClickHouse' do

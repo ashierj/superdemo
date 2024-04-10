@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_mode, feature_category: :fleet_visibility do
-  include ClickHouseHelpers
-
   let_it_be(:project) { create(:project) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
   let_it_be(:project_runner) { create(:ci_runner, :project, :with_runner_manager) }

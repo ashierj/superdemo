@@ -4,8 +4,6 @@ require 'spec_helper'
 
 RSpec.describe Ci::Runners::GetUsageByProjectService, :click_house, :enable_admin_mode,
   feature_category: :fleet_visibility do
-  include ClickHouseHelpers
-
   let_it_be(:user) { create(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
   let_it_be(:group) { create(:group) }

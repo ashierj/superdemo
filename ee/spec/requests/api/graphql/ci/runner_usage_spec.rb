@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :fleet_visibility do
   include GraphqlHelpers
-  include ClickHouseHelpers
 
   let_it_be(:project) { create(:project) }
   let_it_be(:instance_runners) { create_list(:ci_runner, 7, :instance, :with_runner_manager) }

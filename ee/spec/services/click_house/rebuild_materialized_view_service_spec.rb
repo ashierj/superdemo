@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe ClickHouse::RebuildMaterializedViewService, :click_house, feature_category: :database do
-  include ClickHouseHelpers
-
   let_it_be(:event1) { create(:event, :pushed) }
   let_it_be(:event2) { create(:event, :pushed) }
   let_it_be(:event3) { create(:closed_issue_event) }
