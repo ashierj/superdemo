@@ -85,7 +85,6 @@ export default {
   >
     <template v-if="parsedYaml" #summary>
       <info-row data-testid="policy-summary" :label="$options.i18n.summary">
-        <settings :settings="settings" />
         <approvals :action="requireApproval" :approvers="approvers" />
         <div
           v-for="(
@@ -108,6 +107,7 @@ export default {
               {{ criteria }}
             </li>
           </ul>
+          <settings :settings="settings" />
         </div>
       </info-row>
     </template>
