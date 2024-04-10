@@ -155,9 +155,9 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     let(:group) { build(:group) }
 
     it 'returns a list of subgroups, active projects, and archived projects when all exist' do
-      allow(group).to receive(:subgroup_count).and_return(2)
-      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(5)
-      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(3)
+      allow(group).to receive_message_chain(:children, :page, :total_count_with_limit).and_return(2)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(5)
+      allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(3)
 
       group_children = '<span> This action will also remove:</span><ul>' \
                        '<li>2 subgroups</li>' \
@@ -168,10 +168,24 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       expect(helper.additional_removed_items(group)).to eq(group_children)
     end
 
+    it 'returns a 100+ count of subgroups, active projects, and archived projects when many exists' do
+      allow(group).to receive_message_chain(:children, :page, :total_count_with_limit).and_return(101)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(101)
+      allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(101)
+
+      group_children = '<span> This action will also remove:</span><ul>' \
+                       '<li>100+ subgroups</li>' \
+                       '<li>100+ active projects</li>' \
+                       '<li>100+ archived projects</li>' \
+                       '</ul>'
+
+      expect(helper.additional_removed_items(group)).to eq(group_children)
+    end
+
     it 'returns a list of only subgroups' do
-      allow(group).to receive(:subgroup_count).and_return(2)
-      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(0)
-      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(0)
+      allow(group).to receive_message_chain(:children, :page, :total_count_with_limit).and_return(2)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(0)
 
       group_children = '<span> This action will also remove:</span><ul>' \
                        '<li>2 subgroups</li>' \
@@ -181,9 +195,9 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
 
     it 'returns a list of only active projects' do
-      allow(group).to receive(:subgroup_count).and_return(0)
-      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(5)
-      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(0)
+      allow(group).to receive_message_chain(:children, :page, :total_count_with_limit).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(5)
+      allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(0)
 
       group_children = '<span> This action will also remove:</span><ul>' \
                        '<li>5 active projects</li>' \
@@ -193,9 +207,9 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
 
     it 'returns a list of only archived projects' do
-      allow(group).to receive(:subgroup_count).and_return(0)
-      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(0)
-      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(3)
+      allow(group).to receive_message_chain(:children, :page, :total_count_with_limit).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(3)
 
       group_children = '<span> This action will also remove:</span><ul>' \
                        '<li>3 archived projects</li>' \
@@ -205,9 +219,9 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
 
     it 'does not return a list when there are no subgroups or projects' do
-      allow(group).to receive(:subgroup_count).and_return(0)
-      allow(group).to receive_message_chain(:all_projects, :non_archived, :count).and_return(0)
-      allow(group).to receive_message_chain(:all_projects, :archived, :count).and_return(0)
+      allow(group).to receive_message_chain(:children, :page, :total_count_with_limit).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(0)
+      allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(0)
 
       group_children = ''
 
