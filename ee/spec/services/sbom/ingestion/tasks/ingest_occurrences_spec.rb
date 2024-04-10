@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dependency_management do
   describe '#execute' do
-    let_it_be(:pipeline) { build(:ci_pipeline) }
+    let_it_be(:pipeline) { create(:ci_pipeline) }
 
     let(:project) { pipeline.project }
     let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion) }
@@ -145,18 +145,54 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
 
     context 'when there is an existing occurrence' do
       let!(:existing_occurrence) do
-        attributes = occurrence_maps.first.to_h.slice(
-          :component_id,
-          :component_version_id,
-          :source_id
-        )
+        occurrence_map = occurrence_maps.first
+        attributes = {
+          project_id: project.id,
+          pipeline_id: pipeline.id,
+          component_id: occurrence_map.component_id,
+          component_version_id: occurrence_map.component_version_id,
+          source_id: occurrence_map.source_id,
+          source_package_id: occurrence_map.source_package_id,
+          commit_sha: pipeline.sha,
+          licenses: [],
+          component_name: occurrence_map.name,
+          input_file_path: occurrence_map.input_file_path,
+          highest_severity: occurrence_map.highest_severity,
+          vulnerability_count: occurrence_map.vulnerability_count,
+          traversal_ids: project.namespace.traversal_ids,
+          archived: project.archived,
+          ancestors: occurrence_map.ancestors
+        }
 
-        create(:sbom_occurrence, pipeline: pipeline, **attributes)
+        create(:sbom_occurrence, **attributes)
       end
 
       it 'does not create a new record for the existing version' do
         expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(3)
-        expect(occurrence_maps).to all(have_attributes(occurrence_id: Integer))
+        expect(occurrence_maps.map(&:occurrence_id)).to match_array([Integer, Integer, Integer, existing_occurrence.id])
+      end
+
+      it 'does not perform database writes for existing records' do
+        recorder = ActiveRecord::QueryRecorder.new { ingest_occurrences }
+
+        inserts = recorder.occurrences_starting_with("INSERT INTO")
+        expect(inserts.size).to eq(1)
+        sql = inserts.first.first
+        expect(sql).not_to include(existing_occurrence.uuid)
+      end
+
+      context 'when an attribute has been changed' do
+        let_it_be(:other_project) { create(:project) }
+
+        before do
+          existing_occurrence.update!(project: other_project, traversal_ids: other_project.namespace.traversal_ids)
+        end
+
+        it 'updates the record' do
+          expect { ingest_occurrences }.to change { existing_occurrence.reload.project }.from(other_project).to(project)
+            .and change { existing_occurrence.reload.traversal_ids }
+            .from(other_project.namespace.traversal_ids).to(project.namespace.traversal_ids)
+        end
       end
     end
 

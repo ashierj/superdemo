@@ -6,7 +6,7 @@ module Sbom
       include Gitlab::Utils::StrongMemoize
 
       attr_reader :report_component, :report_source, :vulnerabilities
-      attr_accessor :component_id, :component_version_id, :source_id, :occurrence_id, :source_package_id
+      attr_accessor :component_id, :component_version_id, :source_id, :occurrence_id, :source_package_id, :uuid
 
       def initialize(report_component, report_source, vulnerabilities)
         @report_component = report_component
@@ -25,6 +25,7 @@ module Sbom
           source: report_source&.data,
           source_package_id: source_package_id,
           source_package_name: report_component.source_package_name,
+          uuid: uuid,
           version: version
         }
       end

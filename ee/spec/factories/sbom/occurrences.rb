@@ -8,6 +8,7 @@ FactoryBot.define do
     component_version { association :sbom_component_version }
     component { component_version&.component || association(:sbom_component) }
     source { association :sbom_source, packager_name: packager_name }
+    source_package { association :sbom_source_package }
 
     trait :os_occurrence do
       source do
@@ -78,9 +79,9 @@ FactoryBot.define do
         source_id: occurrence.source&.id
       )
 
-      occurrence.package_manager = occurrence.source&.source&.dig('package_manager', 'name')
-      occurrence.input_file_path = occurrence.source&.source&.dig('input_file', 'path')
-      occurrence.component_name = occurrence.component&.name
+      occurrence.package_manager ||= occurrence.source&.source&.dig('package_manager', 'name')
+      occurrence.input_file_path ||= occurrence.source&.source&.dig('input_file', 'path')
+      occurrence.component_name ||= occurrence.component&.name
     end
   end
 end

@@ -16,12 +16,19 @@ module Sbom
           each_pair do |occurrence_map, row|
             occurrence_map.occurrence_id = row.first
           end
+
+          existing_occurrences_by_uuid.each_pair do |uuid, occurrence|
+            indexed_occurrence_maps[[uuid]].each { |map| map.occurrence_id = occurrence.id }
+          end
         end
 
         def attributes
-          occurrence_maps.uniq! { |occurrence_map| uuid(occurrence_map) }
-          occurrence_maps.map do |occurrence_map|
-            {
+          ensure_uuids
+          occurrence_maps.uniq!(&:uuid)
+          occurrence_maps.filter_map do |occurrence_map|
+            uuid = occurrence_map.uuid
+
+            new_attributes = {
               project_id: project.id,
               pipeline_id: pipeline.id,
               component_id: occurrence_map.component_id,
@@ -29,7 +36,7 @@ module Sbom
               source_id: occurrence_map.source_id,
               source_package_id: occurrence_map.source_package_id,
               commit_sha: pipeline.sha,
-              uuid: uuid(occurrence_map),
+              uuid: uuid,
               package_manager: occurrence_map.packager,
               input_file_path: occurrence_map.input_file_path,
               licenses: licenses.fetch(occurrence_map.report_component, []),
@@ -44,8 +51,35 @@ module Sbom
                 attrs.except!(:vulnerability_count, :highest_severity)
               end
             end
+
+            existing_occurrence = existing_occurrences_by_uuid[uuid]
+            existing_attributes = existing_occurrence&.attributes&.symbolize_keys&.slice(*new_attributes.keys)
+
+            if new_attributes != existing_attributes
+              # Remove updated items from the list so that we don't have to iterate over them
+              # twice when setting the ids in `after_ingest`.
+              existing_occurrences_by_uuid.delete(uuid)
+
+              new_attributes
+            end
           end
         end
+
+        def uuids
+          occurrence_maps.map do |map|
+            map.uuid = uuid(map)
+          end
+        end
+        strong_memoize_attr :uuids
+
+        alias_method :ensure_uuids, :uuids
+
+        def existing_occurrences_by_uuid
+          return {} unless uuids.present?
+
+          Sbom::Occurrence.by_uuids(uuids).index_by(&:uuid)
+        end
+        strong_memoize_attr :existing_occurrences_by_uuid
 
         def uuid(occurrence_map)
           uuid_attributes = occurrence_map.to_h.slice(
@@ -55,10 +89,6 @@ module Sbom
           ).merge(project_id: project.id)
 
           ::Sbom::OccurrenceUUID.generate(**uuid_attributes)
-        end
-
-        def grouping_key_for_map(map)
-          [uuid(map)]
         end
 
         def licenses
