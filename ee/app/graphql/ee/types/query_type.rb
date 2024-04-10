@@ -163,6 +163,12 @@ module EE
           description: 'Details about an artifact in the Google Artifact Registry.',
           resolver: ::Resolvers::GoogleCloud::ArtifactRegistry::ArtifactResolver,
           alpha: { milestone: '16.10' }
+        field :audit_events_instance_streaming_destinations,
+          ::Types::AuditEvents::Instance::StreamingDestinationType.connection_type,
+          null: true,
+          description: 'Instance-level external audit event streaming destinations.',
+          resolver: ::Resolvers::AuditEvents::Instance::StreamingDestinationsResolver,
+          alpha: { milestone: '16.11' }
       end
 
       def vulnerability(id:)
