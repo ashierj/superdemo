@@ -248,8 +248,8 @@ module EE
         provisioned_users.service_account
       end
 
-      def epic_synced_with_work_item_enabled?
-        ::Feature.enabled?(:epic_creation_with_synced_work_item, self, type: :wip)
+      def epic_sync_to_work_item_enabled?
+        ::Feature.enabled?(:sync_epic_to_work_item, self, type: :wip)
       end
     end
 

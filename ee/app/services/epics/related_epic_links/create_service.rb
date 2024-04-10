@@ -76,7 +76,7 @@ module Epics
       end
 
       def sync_to_work_item?
-        issuable.group.epic_synced_with_work_item_enabled? &&
+        issuable.group.epic_sync_to_work_item_enabled? &&
           issuable.work_item && referenced_issuables.any?(&:issue_id)
       end
 

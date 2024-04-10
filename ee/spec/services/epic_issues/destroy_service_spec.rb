@@ -117,7 +117,7 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
 
           context 'when feature flag is disabled' do
             before do
-              stub_feature_flags(epic_creation_with_synced_work_item: false)
+              stub_feature_flags(sync_epic_to_work_item: false)
             end
 
             it 'removes the epic and work item link' do

@@ -34,7 +34,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
 
       context 'when feature flag is disabled' do
         before do
-          stub_feature_flags(epic_creation_with_synced_work_item: false)
+          stub_feature_flags(sync_epic_to_work_item: false)
         end
 
         it 'removes the epic and the work item relation' do
@@ -45,7 +45,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
 
       context 'when feature flag is enabled' do
         before do
-          stub_feature_flags(epic_creation_with_synced_work_item: group)
+          stub_feature_flags(sync_epic_to_work_item: group)
         end
 
         context 'when epic is the source' do

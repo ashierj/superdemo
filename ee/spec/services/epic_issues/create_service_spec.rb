@@ -250,9 +250,9 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                     expect(WorkItem.find(issue.id).work_item_parent).to eq(another_epic.work_item)
                   end
 
-                  context 'when :epic_creation_with_synced_work_item FF is disabled' do
+                  context 'when :sync_epic_to_work_item FF is disabled' do
                     it 'deletes old parent link' do
-                      stub_feature_flags(epic_creation_with_synced_work_item: false)
+                      stub_feature_flags(sync_epic_to_work_item: false)
 
                       expect { subject }.to change { WorkItems::ParentLink.count }.by(-1)
                       expect(WorkItems::ParentLink.where(work_item_id: issue.id)).to be_empty
@@ -328,9 +328,9 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                 end
               end
 
-              context 'when epic_creation_with_synced_work_item feature flag is disabled' do
+              context 'when sync_epic_to_work_item feature flag is disabled' do
                 before do
-                  stub_feature_flags(epic_creation_with_synced_work_item: false)
+                  stub_feature_flags(sync_epic_to_work_item: false)
                 end
 
                 it 'create relationship only for the epic' do
