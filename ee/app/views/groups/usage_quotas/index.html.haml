@@ -19,72 +19,26 @@
         { group_name: @group.name },
         tag_pair(tag.strong, :strong_start, :strong_end))
 
-- if Feature.enabled?(:usage_quotas_for_all_editions, @group)
-  = render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
-    user: current_user,
-    content_class: 'gl-my-3')
+= render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
+  user: current_user,
+  content_class: 'gl-my-3')
 
-  = render Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent.new(namespace: @group.root_ancestor,
-    user: current_user,
-    content_class: 'gl-my-3')
+= render Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent.new(namespace: @group.root_ancestor,
+  user: current_user,
+  content_class: 'gl-my-3')
 
-  #js-usage-quotas-view
-    .gl-font-lg.gl--flex-center
-      %span.gl-mr-1= s_('UsageQuota|Loading Usage Quotas tabs')
-      = render Pajamas::SpinnerComponent.new(inline: true, size: :md)
-    - if show_usage_quotas_tab?(@group, :seats)
-      #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
-    - if show_usage_quotas_tab?(@group, :code_suggestions)
-      #js-code-suggestions-usage-app{ data: code_suggestions_usage_app_data(@group) }
-    - if show_usage_quotas_tab?(@group, :pipelines)
-      #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
-    #js-storage-usage-app{ data: storage_usage_app_data(@group) }
-    - if show_usage_quotas_tab?(@group, :transfer)
-      #js-transfer-usage-app{ data: group_transfer_app_data(@group) }
-    - if show_usage_quotas_tab?(@group, :product_analytics)
-      #js-product-analytics-usage-quota-app{ data: product_analytics_usage_quota_app_data(@group) }
-- else
-  = gl_tabs_nav({ class: 'js-storage-tabs' }) do
-    - if show_usage_quotas_tab?(@group, :seats)
-      = gl_tab_link_to '#seats-quota-tab', data: { testid: 'seats-tab' },
-      item_active: show_usage_quotas_tab?(@group, :seats) do
-        = s_('UsageQuota|Seats')
-    - if show_usage_quotas_tab?(@group, :code_suggestions)
-      = gl_tab_link_to '#code-suggestions-usage-tab', data: { testid: 'code-suggestions-tab' } do
-        = s_('UsageQuota|GitLab Duo Pro')
-    - if show_usage_quotas_tab?(@group, :pipelines)
-      = gl_tab_link_to '#pipelines-quota-tab', data: { testid: 'pipelines-tab' } do
-        =  s_('UsageQuota|Pipelines')
-    = gl_tab_link_to '#storage-quota-tab', data: { testid: 'storage-tab' },
-      item_active: !show_usage_quotas_tab?(@group, :seats) do
-      = s_('UsageQuota|Storage')
-    - if show_usage_quotas_tab?(@group, :transfer)
-      = gl_tab_link_to '#transfer-quota-tab' do
-        = s_('UsageQuota|Transfer')
-    - if show_usage_quotas_tab?(@group, :product_analytics)
-      = gl_tab_link_to '#product-analytics-usage-quota-tab' do
-        = s_('UsageQuota|Product analytics')
-
-  .tab-content
-    .tab-pane.active#seats-quota-tab
-      = render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
-        user: current_user,
-        content_class: 'gl-my-3')
-
-      = render Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent.new(namespace: @group.root_ancestor,
-        user: current_user,
-        content_class: 'gl-my-3')
-
-      #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
-    - if show_usage_quotas_tab?(@group, :code_suggestions)
-      .tab-pane#code-suggestions-usage-tab
-        #js-code-suggestions-usage-app{ data: code_suggestions_usage_app_data(@group) }
-    .tab-pane#pipelines-quota-tab
-      #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
-    .tab-pane#storage-quota-tab
-      #js-storage-usage-app{ data: storage_usage_app_data(@group) }
-    - if show_usage_quotas_tab?(@group, :transfer)
-      .tab-pane#transfer-quota-tab
-        #js-transfer-usage-app{ data: group_transfer_app_data(@group) }
-    .tab-pane#product-analytics-usage-quota-tab
-      #js-product-analytics-usage-quota-app{ data: product_analytics_usage_quota_app_data(@group) }
+#js-usage-quotas-view
+  .gl-font-lg.gl--flex-center
+    %span.gl-mr-1= s_('UsageQuota|Loading Usage Quotas tabs')
+    = render Pajamas::SpinnerComponent.new(inline: true, size: :md)
+  - if show_usage_quotas_tab?(@group, :seats)
+    #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
+  - if show_usage_quotas_tab?(@group, :code_suggestions)
+    #js-code-suggestions-usage-app{ data: code_suggestions_usage_app_data(@group) }
+  - if show_usage_quotas_tab?(@group, :pipelines)
+    #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
+  #js-storage-usage-app{ data: storage_usage_app_data(@group) }
+  - if show_usage_quotas_tab?(@group, :transfer)
+    #js-transfer-usage-app{ data: group_transfer_app_data(@group) }
+  - if show_usage_quotas_tab?(@group, :product_analytics)
+    #js-product-analytics-usage-quota-app{ data: product_analytics_usage_quota_app_data(@group) }

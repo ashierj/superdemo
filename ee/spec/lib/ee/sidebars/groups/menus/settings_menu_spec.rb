@@ -191,10 +191,6 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
       describe 'Usage quotas menu' do
         let(:item_id) { :usage_quotas }
 
-        before do
-          stub_feature_flags(usage_quotas_for_all_editions: false)
-        end
-
         it { is_expected.to be_present }
 
         context 'when subgroup' do

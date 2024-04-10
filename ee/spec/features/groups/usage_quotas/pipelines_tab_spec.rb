@@ -18,7 +18,6 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   shared_context 'when user is allowed to see usage quotas' do
     before do
       stub_signing_key
-      stub_feature_flags(usage_quotas_for_all_editions: false)
       stub_feature_flags(limited_access_modal: false)
       stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
       stub_subscription_permissions_data(group.id)
@@ -36,7 +35,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
 
     it 'shows correct group quota info' do
-      page.within('#pipelines-quota-tab') do
+      within_testid('pipelines-tab-app') do
         expect(page).to have_content("400 / Unlimited units")
       end
     end
@@ -49,7 +48,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     let!(:project) { create(:project, namespace: group, shared_runners_enabled: false) }
 
     it 'shows correct group quota info' do
-      page.within('#pipelines-quota-tab') do
+      within_testid('pipelines-tab-app') do
         expect(page).to have_content("Unlimited")
       end
 
@@ -65,7 +64,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
     it 'shows correct group quota info' do
-      page.within('#pipelines-quota-tab') do
+      within_testid('pipelines-tab-app') do
         expect(page).to have_content("300 / 500 units")
         expect(page).to have_content("60% used")
       end
@@ -90,7 +89,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
 
     it 'has correct tracking setup and shows correct group quota and projects info' do
-      page.within('#pipelines-quota-tab') do
+      within_testid('pipelines-tab-app') do
         expect(page).to have_content("1000 / 500 units")
         expect(page).to have_content("200% used")
       end
@@ -244,7 +243,6 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
 
   context 'when not the group owner' do
     before do
-      stub_feature_flags(usage_quotas_for_all_editions: false)
       stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
 
       sign_in(user)
@@ -253,7 +251,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
 
     it 'shows no compute quota info' do
-      expect(page).not_to have_selector('#pipelines-quota-tab')
+      expect(page).not_to have_selector('[data-testid="pipelines-tab-app"]')
     end
   end
 
@@ -261,7 +259,6 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     before do
       stub_signing_key
       stub_feature_flags(limited_access_modal: true)
-      stub_feature_flags(usage_quotas_for_all_editions: false)
       stub_subscription_permissions_data(group.id, can_add_seats: false)
       stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
 

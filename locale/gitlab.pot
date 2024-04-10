@@ -55252,9 +55252,6 @@ msgstr ""
 msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
 msgstr ""
 
-msgid "UsageQuota|Pipelines"
-msgstr ""
-
 msgid "UsageQuota|Precise calculation of Container Registry storage size is delayed because it is too large for synchronous estimation. Precise evaluation will be scheduled within 24 hours."
 msgstr ""
 
@@ -55273,9 +55270,6 @@ msgstr ""
 msgid "UsageQuota|Registry"
 msgstr ""
 
-msgid "UsageQuota|Seats"
-msgstr ""
-
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
@@ -55286,9 +55280,6 @@ msgid "UsageQuota|Something went wrong while fetching project storage statistics
 msgstr ""
 
 msgid "UsageQuota|Something went wrong while loading Usage Quotas Tabs."
-msgstr ""
-
-msgid "UsageQuota|Storage"
 msgstr ""
 
 msgid "UsageQuota|Storage per project included in %{planName} subscription"
@@ -55337,9 +55328,6 @@ msgid "UsageQuota|Total purchased storage"
 msgstr ""
 
 msgid "UsageQuota|Total storage"
-msgstr ""
-
-msgid "UsageQuota|Transfer"
 msgstr ""
 
 msgid "UsageQuota|Transfer data used"
