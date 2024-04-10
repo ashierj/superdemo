@@ -5,10 +5,12 @@ require 'spec_helper'
 RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestions do
   describe 'POST /internal/jobs/:id/x_ray/scan' do
     let_it_be(:namespace) { create(:group) }
-    let_it_be(:job) { create(:ci_build, :running, namespace: namespace) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:job) { create(:ci_build, :running, namespace: namespace, user: user) }
 
     let(:ai_gateway_token) { 'ai gateway token' }
     let(:instance_uuid) { "uuid-not-set" }
+    let(:global_user_id) { "user-id" }
     let(:hostname) { "localhost" }
     let(:api_url) { "/internal/jobs/#{job.id}/x_ray/scan" }
     let(:headers) { {} }
@@ -28,12 +30,21 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         "User-Agent" => [],
         "X-Gitlab-Host-Name" => [hostname],
         "X-Gitlab-Instance-Id" => [instance_uuid],
-        "X-Gitlab-Realm" => [gitlab_realm]
+        "X-Gitlab-Realm" => [gitlab_realm],
+        "X-Gitlab-Global-User-Id" => [global_user_id]
       }
     end
 
     subject(:post_api) do
       post api(api_url), params: params, headers: headers
+    end
+
+    before do
+      allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
+        allow(generator).to receive(:generate)
+                              .with(job.user)
+                              .and_return([instance_uuid, global_user_id])
+      end
     end
 
     context 'when job token is missing' do

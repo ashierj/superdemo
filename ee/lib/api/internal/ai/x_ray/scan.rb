@@ -51,7 +51,7 @@ module API
                 'Authorization' => "Bearer #{gateway_token}",
                 'Content-Type' => 'application/json',
                 'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-              }.merge(saas_headers).merge(cloud_connector_headers(nil)).transform_values { |v| Array(v) }
+              }.merge(saas_headers).merge(cloud_connector_headers(current_job.user)).transform_values { |v| Array(v) }
             end
 
             def saas_headers
