@@ -16997,9 +16997,6 @@ msgid_plural "Delete %d rows"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Delete rule"
-msgstr ""
-
 msgid "Delete selected"
 msgstr ""
 
@@ -36092,6 +36089,9 @@ msgid "PackageRegistry|Delete package version"
 msgstr ""
 
 msgid "PackageRegistry|Delete packages"
+msgstr ""
+
+msgid "PackageRegistry|Delete rule"
 msgstr ""
 
 msgid "PackageRegistry|Delete selected"
