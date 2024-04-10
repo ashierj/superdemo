@@ -296,7 +296,7 @@ export default {
                     :size="24"
                     :shape="item.type === 'Group' ? 'rect' : 'circle'"
                   />
-                  <span class="gl-vertical-align-middle">
+                  <span>
                     <span v-safe-html:[$options.safeHtmlConfig]="highlight(item.username)"></span>
                     <small
                       v-safe-html:[$options.safeHtmlConfig]="highlight(avatarSubLabel(item))"
