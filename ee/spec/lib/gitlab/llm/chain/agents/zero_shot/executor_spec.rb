@@ -231,6 +231,32 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       agent.prompt
     end
 
+    context 'when Claude 3 feature flag is enabled' do
+      let(:prompt_options) { { zero_shot_prompt: described_class::CLAUDE_3_ZERO_SHOT_PROMPT } }
+
+      it 'includes specific prompt for Claude 3 in the options' do
+        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+          .to receive(:prompt).once.with(a_hash_including(prompt_options))
+
+        agent.prompt
+      end
+    end
+
+    context 'when Claude 3 feature flag is disabled' do
+      let(:prompt_options) { { zero_shot_prompt: described_class::ZERO_SHOT_PROMPT } }
+
+      before do
+        stub_feature_flags(ai_claude_3_sonnet: false)
+      end
+
+      it 'includes general prompt in the options' do
+        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+          .to receive(:prompt).once.with(a_hash_including(prompt_options))
+
+        agent.prompt
+      end
+    end
+
     context 'when agent_version is passed' do
       let(:agent_version) { existing_agent_version }
 

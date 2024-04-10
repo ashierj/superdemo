@@ -17,6 +17,11 @@ module Gitlab
                 Useful tool when you need to provide suggestions regarding anything related to ".gitlab-ci.yml" file.
                 It helps with questions related to deploying code, configuring CI/CD pipelines, defining CI jobs, or environments.
               DESC
+            CLAUDE_3_DESCRIPTION = <<~DESC
+                Useful tool when you need to provide suggestions regarding anything related to ".gitlab-ci.yml" file.
+                It helps with questions related to deployments, configuring CI/CD pipelines, defining CI jobs, or environments.
+                It can not help with writing code in general or questions about software development.
+            DESC
             EXAMPLE =
               <<~PROMPT
                 Question: Please create a deployment configuration for a node.js application.

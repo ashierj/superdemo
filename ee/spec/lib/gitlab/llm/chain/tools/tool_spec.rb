@@ -127,7 +127,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
        <tool>
        <tool_name>TEST_TOOL</tool_name>
        <description>
-       TEST
+       #{expected_description}
        </description>
        <example>
        EXAMPLE
@@ -136,14 +136,42 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       XML
     end
 
+    let(:expected_description) { 'TEST' }
+
     before do
       stub_const("#{described_class.name}::NAME", 'TEST_TOOL')
-      stub_const("#{described_class.name}::DESCRIPTION", 'TEST')
+      stub_const("#{described_class.name}::DESCRIPTION", expected_description)
       stub_const("#{described_class.name}::EXAMPLE", 'EXAMPLE')
     end
 
-    it 'returns definition of the tool' do
-      expect(described_class.full_definition).to eq(definition)
+    context 'when Claude 3 description is not defined' do
+      it 'returns generic description of the tool when Claude 3 is enabled' do
+        expect(described_class.full_definition(claude_3_enabled: true)).to eq(definition)
+      end
+
+      it 'returns generic description of the tool when Claude 3 is disabled' do
+        expect(described_class.full_definition(claude_3_enabled: false)).to eq(definition)
+      end
+    end
+
+    context 'when Claude 3 description is defined' do
+      let(:expected_description) { 'CLAUDE_TEST' }
+
+      before do
+        stub_const("#{described_class.name}::CLAUDE_3_DESCRIPTION", expected_description)
+      end
+
+      context 'when Claude 3 is disabled' do
+        it 'returns generic description of the tool' do
+          expect(described_class.full_definition(claude_3_enabled: false)).to eq(definition)
+        end
+      end
+
+      context 'when Claude 3 is enabled' do
+        it 'returns Claude 3-specific description of the tool' do
+          expect(described_class.full_definition(claude_3_enabled: true)).to eq(definition)
+        end
+      end
     end
   end
 end
