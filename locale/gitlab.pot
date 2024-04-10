@@ -20879,9 +20879,6 @@ msgstr ""
 msgid "Example: ssh\\:\\/\\/"
 msgstr ""
 
-msgid "Examples"
-msgstr ""
-
 msgid "Except policy:"
 msgstr ""
 
@@ -46227,13 +46224,10 @@ msgstr ""
 msgid "SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} with the following options:"
 msgstr ""
 
-msgid "SecurityOrchestration|Run a CI Yaml file from project: demo-project with ref: 123 File path: group-name/project-name/file-name"
-msgstr ""
-
 msgid "SecurityOrchestration|Run a DAST scan with Scan Profile A and Site Profile A when a pipeline run against the main branch."
 msgstr ""
 
-msgid "SecurityOrchestration|Run a customized CI Yaml file."
+msgid "SecurityOrchestration|Run customized Gitlab security templates across my projects."
 msgstr ""
 
 msgid "SecurityOrchestration|Save changes"
@@ -46414,6 +46408,9 @@ msgid "SecurityOrchestration|Updated policy name"
 msgstr ""
 
 msgid "SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
+msgstr ""
+
+msgid "SecurityOrchestration|Use a pipeline execution policy to enforce a custom CI/CD configuration to run in project pipelines."
 msgstr ""
 
 msgid "SecurityOrchestration|Use a scan execution policy to create rules which enforce security scans for particular branches at a certain time. Supported types are SAST, SAST IaC, DAST, Secret detection, Container scanning, and Dependency scanning."
