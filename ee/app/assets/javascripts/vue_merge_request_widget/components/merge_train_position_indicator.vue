@@ -31,7 +31,7 @@ export default {
 
 <template>
   <div class="pt-2 pb-2 pl-3 plr-3 merge-train-position-indicator">
-    <div class="media-body">
+    <div class="media-body gl-text-secondary">
       {{ message }}
     </div>
   </div>
