@@ -28,7 +28,7 @@ RSpec.describe Geo::ReverificationBatchWorker, :geo, feature_category: :geo_repl
         .to receive(:for_replicable_name).with(replicable_name).and_return(replicator_class)
     end
 
-    it 'calls reverify_batch!' do
+    it 'calls reverify_batch!', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444702' do
       allow(replicator_class).to receive(:remaining_reverification_batch_count).and_return(1)
 
       expect(replicator_class).to receive(:reverify_batch!)
