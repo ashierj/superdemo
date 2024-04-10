@@ -44569,6 +44569,12 @@ msgstr ""
 msgid "SAML|To allow %{strongOpen}%{group_name}%{strongClose} to manage your GitLab account %{strongOpen}%{username}%{strongClose} (%{email}) after you sign in successfully using single sign-on, select %{strongOpen}Authorize%{strongClose}."
 msgstr ""
 
+msgid "SAML|Your SAML session has expired"
+msgstr ""
+
+msgid "SAML|Your SAML session has expired. Please, reload the page and sign in again, if necessary."
+msgstr ""
+
 msgid "SAML|Your organization's SSO has been connected to your GitLab account"
 msgstr ""
 
