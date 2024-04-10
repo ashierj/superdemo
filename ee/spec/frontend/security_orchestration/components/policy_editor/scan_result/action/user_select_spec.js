@@ -55,7 +55,7 @@ const GROUP_MEMBER_RESPONSE = {
         nodes: [
           {
             id: 'gid://gitlab/GroupMember/1',
-            user: { ...user, webUrl: 'path/to/user', status: null },
+            user: { ...user, webUrl: 'path/to/user', webPath: 'path/to/user', status: null },
             __typename: 'GroupMember',
           },
         ],

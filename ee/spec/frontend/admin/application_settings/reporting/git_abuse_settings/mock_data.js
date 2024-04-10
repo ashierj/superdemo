@@ -5,6 +5,7 @@ export const mockUser1 = {
   name: 'Administrator',
   username: 'root',
   webUrl: '/root',
+  webPath: '/root',
 };
 
 export const mockUser2 = {
@@ -14,6 +15,7 @@ export const mockUser2 = {
   name: 'Rookie',
   username: 'rookie',
   webUrl: '/rookie',
+  webPath: '/rookie',
 };
 
 export const getUsersResponse = {

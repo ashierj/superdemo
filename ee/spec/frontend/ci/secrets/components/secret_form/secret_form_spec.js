@@ -64,6 +64,34 @@ describe('SecretForm component', () => {
     });
   });
 
+  describe('environment dropdown', () => {
+    beforeEach(() => {
+      createComponent({ stubs: { CiEnvironmentsDropdown } });
+    });
+
+    it('sets the environment', async () => {
+      expect(findEnvironmentsDropdown().props('selectedEnvironmentScope')).toBe('*');
+
+      await findEnvironmentsDropdown().vm.$emit('select-environment', 'staging');
+
+      expect(findEnvironmentsDropdown().props('selectedEnvironmentScope')).toBe('staging');
+    });
+
+    it('does not require environment (shows Not Applicable option)', () => {
+      expect(findEnvironmentsDropdown().props('isEnvironmentRequired')).toBe(false);
+    });
+
+    it('does not allow wild card creation', () => {
+      expect(findEnvironmentsDropdown().props('canCreateWildcard')).toBe(false);
+    });
+
+    it('bubbles up the search event', async () => {
+      await findEnvironmentsDropdown().vm.$emit('search-environment-scope', 'dev');
+
+      expect(wrapper.emitted('search-environment')).toEqual([['dev']]);
+    });
+  });
+
   describe('rotation period field', () => {
     beforeEach(() => {
       createComponent();
