@@ -27,6 +27,13 @@ export default {
   },
   // TODO: Remove feature flag in https://gitlab.com/gitlab-org/gitlab/-/issues/235114
   mixins: [glFeatureFlagsMixin()],
+  props: {
+    isBranchRulesEdit: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+  },
   computed: {
     ...mapState(['settings']),
     ...mapState({
@@ -117,7 +124,7 @@ export default {
           <th v-if="hasNamedRule" class="gl-w-half d-none d-sm-table-cell">
             <span>{{ members }}</span>
           </th>
-          <th v-if="settings.allowMultiRule">{{ branches }}</th>
+          <th v-if="settings.allowMultiRule && !isBranchRulesEdit">{{ branches }}</th>
           <th>{{ approvalsRequired }}</th>
           <th>{{ actions }}</th>
         </tr>
@@ -131,6 +138,7 @@ export default {
             :allow-multi-rule="settings.allowMultiRule"
             :is-mr-edit="false"
             :eligible-approvers-docs-path="settings.eligibleApproversDocsPath"
+            :is-branch-rules-edit="isBranchRulesEdit"
             :can-edit="canEdit(rule)"
           />
           <tr v-else :key="index">
@@ -146,7 +154,7 @@ export default {
               />
             </td>
             <td
-              v-if="settings.allowMultiRule"
+              v-if="settings.allowMultiRule && !isBranchRulesEdit"
               data-testid="approvals-table-branches"
               :data-label="branches"
             >
