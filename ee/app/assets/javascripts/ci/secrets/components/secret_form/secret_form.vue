@@ -148,8 +148,11 @@ export default {
       >
         <ci-environments-dropdown
           :are-environments-loading="areEnvironmentsLoading"
+          :can-create-wildcard="false"
           :environments="environments"
+          :is-environment-required="false"
           :selected-environment-scope="secret.environment"
+          @select-environment="setEnvironment"
           @search-environment-scope="$emit('search-environment', $event)"
         />
       </gl-form-group>
