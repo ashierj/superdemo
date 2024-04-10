@@ -775,6 +775,8 @@ module EE
       rule { (admin | reporter) & project_merge_request_analytics_available }
         .enable :read_project_merge_request_analytics
 
+      rule { admin | reporter }.enable :read_ai_analytics
+
       rule { combined_project_analytics_dashboards_enabled }.enable :read_combined_project_analytics_dashboards
 
       rule { can?(:read_project) & requirements_available }.enable :read_requirement
