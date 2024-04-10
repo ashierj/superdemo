@@ -28,6 +28,6 @@ export const TABLE_METRICS = {
   ]),
   [AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE]: {
     label: s__('DORA4Metrics|Code Suggestions usage'),
-    units: UNITS.COUNT,
+    units: UNITS.PERCENT,
   },
 };

@@ -284,7 +284,7 @@ export const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
   const { group = null, project = null } = result.data;
   if (group || project) {
     const namespace = group ?? project;
-    return namespace[resultKey];
+    return namespace[resultKey] || {};
   }
   return {};
 };

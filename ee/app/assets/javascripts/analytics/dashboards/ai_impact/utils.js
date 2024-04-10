@@ -1,4 +1,4 @@
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 import {
   getStartOfDay,
   dateAtFirstDayOfMonth,
@@ -13,24 +13,38 @@ const getStartOfMonth = (now) => dateAtFirstDayOfMonth(getStartOfDay(now));
 const getColumnKeyForMonth = (monthsAgo) => `${monthsAgo}-months-ago`;
 
 /**
- * Generates the time period columns, from 1 month ago -> 6 months ago.
+ * Generates the time period columns, from This month -> 5 months ago.
  *
  * @param {Date} now Current date
  * @returns {Array} Tuple of time periods
  */
 export const generateDateRanges = (now) =>
-  [6, 5, 4, 3, 2, 1].map((nMonth) => {
-    const thisMonthStart = getStartOfMonth(now);
-    const start = nMonthsBefore(thisMonthStart, nMonth);
-    const end = nSecondsBefore(nMonthsBefore(thisMonthStart, nMonth - 1), 1);
-    return {
-      key: getColumnKeyForMonth(nMonth),
-      label: monthInWords(start, true),
-      start,
-      end,
-      thClass: 'gl-w-10p',
-    };
-  });
+  [1, 2, 3, 4, 5].reduce(
+    (acc, nMonth) => {
+      const thisMonthStart = getStartOfMonth(now);
+      const start = nMonthsBefore(thisMonthStart, nMonth);
+      const end = nSecondsBefore(nMonthsBefore(thisMonthStart, nMonth - 1), 1);
+      return [
+        {
+          key: getColumnKeyForMonth(nMonth),
+          label: monthInWords(start, true),
+          start,
+          end,
+          thClass: 'gl-w-10p',
+        },
+        ...acc,
+      ];
+    },
+    [
+      {
+        key: 'this-month',
+        label: monthInWords(now, true),
+        start: getStartOfMonth(now),
+        end: now,
+        thClass: 'gl-w-10p',
+      },
+    ],
+  );
 
 /**
  * Generates all the table columns based on the given date.
@@ -47,7 +61,7 @@ export const generateTableColumns = (now) => [
   ...generateDateRanges(now),
   {
     key: 'change',
-    label: __('Change (%%)'),
+    label: sprintf(__('Change (%%)')),
     description: __('Past 6 Months'),
     start: nMonthsBefore(getStartOfMonth(now), 6),
     end: nSecondsBefore(getStartOfMonth(now), 1),
@@ -86,7 +100,7 @@ const buildTableRow = ({ identifier, units, timePeriods }) => {
   }, {});
 
   const firstMonth = timePeriods.find((timePeriod) => timePeriod.key === getColumnKeyForMonth(1));
-  const lastMonth = timePeriods.find((timePeriod) => timePeriod.key === getColumnKeyForMonth(6));
+  const lastMonth = timePeriods.find((timePeriod) => timePeriod.key === getColumnKeyForMonth(5));
   row.change = {
     value: percentChange({
       current: firstMonth[identifier]?.value !== '-' ? firstMonth[identifier].value : 0,
