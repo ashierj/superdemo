@@ -79,7 +79,7 @@ module Gitlab
         end
 
         def group_ids_in_hierarchy
-          group.self_and_descendants.select(:id)
+          group.self_and_descendant_ids
         end
         # rubocop:enable CodeReuse/ActiveRecord
 
