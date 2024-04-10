@@ -31,7 +31,7 @@ module MergeTrains
           source_sha: merge_request.diff_head_sha,
           first_parent_ref: previous_ref
         ).execute.to_h.transform_keys do |key|
-          # TODO: Remove this transformation with FF merge_trains_create_ref_service
+          # TODO: Remove this transformation with https://gitlab.com/gitlab-org/gitlab/-/issues/455421
           case key
           when :commit_sha then :commit_id
           when :source_sha then :source_id
@@ -40,6 +40,7 @@ module MergeTrains
           end
         end
       else
+        # TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/455421
         ::MergeRequests::MergeToRefService.new(
           project: merge_request.target_project,
           current_user: merge_request.merge_user,

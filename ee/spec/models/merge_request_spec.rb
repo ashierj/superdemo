@@ -2144,18 +2144,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
         it_behaves_like 'ff car on train'
       end
-
-      context 'when the ff merge train feature is disabled' do
-        before do
-          stub_feature_flags(fast_forward_merge_trains_support: false)
-        end
-
-        it { is_expected.to eq true }
-
-        it 'will not run ff related code' do
-          expect(MergeTrains::Train).not_to receive(:project_using_ff?)
-        end
-      end
     end
 
     def stub_foss_conditions_met

@@ -539,14 +539,6 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
         end
 
         it { is_expected.to eq(true) }
-
-        context 'when the feature flag is disabled' do
-          before do
-            stub_feature_flags(fast_forward_merge_trains_support: false)
-          end
-
-          it { is_expected.to eq(false) }
-        end
       end
     end
 
