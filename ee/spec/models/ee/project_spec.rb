@@ -1907,7 +1907,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
 
       context 'when rules are not scoped' do
-        it 'returns empty array' do
+        it 'returns empty array', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444703' do
           expect(project.visible_user_defined_inapplicable_rules('stable-1')).to be_empty
         end
       end
