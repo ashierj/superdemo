@@ -103,6 +103,7 @@ module EE
       end
 
       # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def visible_application_setting_attributes
         attrs = super
 
@@ -138,8 +139,13 @@ module EE
           attrs << :git_two_factor_session_expiry
         end
 
-        if License.feature_available?(:pre_receive_secret_detection) &&
-            ::Gitlab::CurrentSettings.gitlab_dedicated_instance?
+        # Remove the inline rubocop disablement of Metrics/PerceivedComplexity when we can move
+        # pre_receive_secret_detection_enabled to the simple License feature => attribute name
+        # hash above.
+        if (::Gitlab::CurrentSettings.gitlab_dedicated_instance? ||
+            ::Feature.enabled?(:pre_receive_secret_detection_beta_release)) &&
+            License.feature_available?(:pre_receive_secret_detection)
+
           attrs << :pre_receive_secret_detection_enabled
         end
 
@@ -172,6 +178,7 @@ module EE
 
         attrs
       end
+      # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
 
       def seat_link_payload
