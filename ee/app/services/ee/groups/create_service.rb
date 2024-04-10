@@ -23,8 +23,6 @@ module EE
       def after_successful_creation_hook
         super
 
-        create_event && ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
-
         log_audit_event
       end
 
