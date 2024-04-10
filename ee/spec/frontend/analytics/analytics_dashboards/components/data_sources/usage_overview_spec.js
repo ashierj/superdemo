@@ -11,12 +11,15 @@ import {
   fetch,
   prepareQuery,
   extractUsageMetrics,
+  extractUsageNamespaceData,
 } from 'ee/analytics/analytics_dashboards/data_sources/usage_overview';
 import { defaultClient } from 'ee/analytics/analytics_dashboards/graphql/client';
 import {
   mockUsageMetricsQueryResponse,
+  mockUsageNamespaceData,
   mockUsageMetrics,
   mockUsageMetricsNoData,
+  mockUsageOverviewData,
 } from '../../mock_data';
 
 describe('Usage overview Data Source', () => {
@@ -49,6 +52,14 @@ describe('Usage overview Data Source', () => {
         expect(metric.value).toBe(mockGroupUsageMetricsQueryResponse[identifier].count);
         expect(options).toBe(USAGE_OVERVIEW_METADATA[identifier].options);
       });
+    });
+  });
+
+  describe('extractUsageNamespaceData', () => {
+    it('returns the namespace data as expected', () => {
+      expect(extractUsageNamespaceData(mockGroupUsageMetricsQueryResponse)).toEqual(
+        mockUsageNamespaceData,
+      );
     });
   });
 
@@ -148,7 +159,7 @@ describe('Usage overview Data Source', () => {
 
       obj = await fetch(params);
 
-      expect(obj).toMatchObject(mockUsageMetricsNoData);
+      expect(obj).toMatchObject({ metrics: mockUsageMetricsNoData });
     });
 
     describe('with an error', () => {
@@ -172,8 +183,8 @@ describe('Usage overview Data Source', () => {
         obj = await fetch({ rootNamespace, queryOverrides: mockQuery });
       });
 
-      it('will fetch the usage metrics', () => {
-        expect(obj).toMatchObject(mockUsageMetrics);
+      it('will fetch the usage overview data', () => {
+        expect(obj).toMatchObject(mockUsageOverviewData);
       });
     });
   });

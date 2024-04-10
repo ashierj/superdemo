@@ -11,6 +11,9 @@ query getUsageOverview(
 ) {
   group(fullPath: $fullPath) {
     id
+    avatarUrl
+    fullName
+    visibility
     groups: valueStreamDashboardUsageOverview(
       identifier: GROUPS
       timeframe: { start: $startDate, end: $endDate }

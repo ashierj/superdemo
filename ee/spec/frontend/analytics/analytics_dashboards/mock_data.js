@@ -591,6 +591,10 @@ export const mockMetaData = {
 
 export const mockUsageMetricsQueryResponse = {
   group: {
+    id: 'gid://gitlab/Group/225',
+    fullName: 'GitLab Org',
+    avatarUrl: '/avatar.png',
+    visibility: 'public',
     __typename: 'Group',
     groups: {
       __typename: 'ValueStreamDashboardCount',
@@ -629,6 +633,16 @@ export const mockUsageMetricsQueryResponse = {
       recordedAt: '2022-11-27T23:59:59Z',
     },
   },
+};
+
+export const mockUsageNamespaceData = {
+  id: 225,
+  avatarUrl: '/avatar.png',
+  fullName: 'GitLab Org',
+  namespaceType: 'Group',
+  visibilityLevelIcon: 'earth',
+  visibilityLevelTooltip:
+    'Public - The group and any public projects can be viewed without any authentication.',
 };
 
 export const mockUsageMetrics = [
@@ -726,3 +740,8 @@ export const mockUsageMetricsNoData = [
     options: { title: 'Pipelines', titleIcon: 'pipeline' },
   },
 ];
+
+export const mockUsageOverviewData = {
+  namespace: mockUsageNamespaceData,
+  metrics: mockUsageMetrics,
+};

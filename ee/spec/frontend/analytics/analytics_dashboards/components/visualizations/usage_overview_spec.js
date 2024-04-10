@@ -1,11 +1,17 @@
+import { GlAvatar, GlIcon } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import UsageOverview from 'ee/analytics/analytics_dashboards/components/visualizations/usage_overview.vue';
-import { mockUsageMetrics, mockUsageMetricsNoData } from '../../mock_data';
+import { mockUsageOverviewData, mockUsageMetrics, mockUsageMetricsNoData } from '../../mock_data';
 
-describe('Single Stat Visualization', () => {
+describe('Usage Overview Visualization', () => {
   let wrapper;
-  const defaultProps = { data: mockUsageMetrics, options: {} };
+  const defaultProps = { data: mockUsageOverviewData, options: {} };
+
+  const findNamespaceTile = () => wrapper.findByTestId('usage-overview-namespace');
+  const findNamespaceAvatar = () => findNamespaceTile().findComponent(GlAvatar);
+  const findNamespaceVisibilityIcon = () => findNamespaceTile().findComponent(GlIcon);
 
   const findMetrics = () => wrapper.findAllComponents(GlSingleStat);
 
@@ -16,6 +22,9 @@ describe('Single Stat Visualization', () => {
 
   const createWrapper = (props = defaultProps) => {
     wrapper = mountExtended(UsageOverview, {
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       propsData: {
         data: props.data,
         options: props.options,
@@ -28,29 +37,67 @@ describe('Single Stat Visualization', () => {
       createWrapper();
     });
 
-    it('should render each metric', () => {
-      expect(findMetrics()).toHaveLength(mockUsageMetrics.length);
-    });
+    describe('namespace', () => {
+      it("should render namespace's full name", () => {
+        expect(wrapper.findByText('GitLab Org').exists()).toBe(true);
+      });
 
-    it('should render each metric as a single stat', () => {
-      mockUsageMetrics.forEach(({ value, options }, idx) => {
-        expect(findMetricTitle(idx).text()).toBe(options.title);
-        expect(findMetricIcon(idx).props('name')).toBe(options.titleIcon);
-        expect(findMetricValue(idx).text()).toBe(String(value));
+      it('should render namespace type', () => {
+        expect(wrapper.findByText('Group').exists()).toBe(true);
+      });
+
+      it('should render avatar', () => {
+        expect(findNamespaceAvatar().props()).toMatchObject({
+          entityName: 'GitLab Org',
+          entityId: 225,
+          src: '/avatar.png',
+          shape: 'rect',
+          fallbackOnError: true,
+          size: 48,
+        });
+      });
+
+      it('should render visibility level icon', () => {
+        const tooltip = getBinding(findNamespaceVisibilityIcon().element, 'gl-tooltip');
+
+        expect(findNamespaceVisibilityIcon().exists()).toBe(true);
+        expect(tooltip).toBeDefined();
+        expect(findNamespaceVisibilityIcon().props('name')).toBe('earth');
+        expect(findNamespaceVisibilityIcon().attributes('title')).toBe(
+          'Public - The group and any public projects can be viewed without any authentication.',
+        );
       });
     });
 
-    it('emits `showTooltip` with the latest metric.recordedAt as the last updated time', () => {
-      expect(wrapper.emitted('showTooltip')).toHaveLength(1);
-      expect(wrapper.emitted('showTooltip')[0][0]).toEqual(
-        'Statistics on top-level namespace usage. Usage data is a cumulative count, and updated monthly. Last updated: 2023-11-27 11:59 PM',
-      );
+    describe('metrics', () => {
+      it('should render each metric', () => {
+        expect(findMetrics()).toHaveLength(mockUsageMetrics.length);
+      });
+
+      it('should render each metric as a single stat', () => {
+        mockUsageMetrics.forEach(({ value, options }, idx) => {
+          expect(findMetricTitle(idx).text()).toBe(options.title);
+          expect(findMetricIcon(idx).props('name')).toBe(options.titleIcon);
+          expect(findMetricValue(idx).text()).toBe(String(value));
+        });
+      });
+
+      it('emits `showTooltip` with the latest metric.recordedAt as the last updated time', () => {
+        expect(wrapper.emitted('showTooltip')).toHaveLength(1);
+        expect(wrapper.emitted('showTooltip')[0][0]).toEqual(
+          'Statistics on top-level namespace usage. Usage data is a cumulative count, and updated monthly. Last updated: 2023-11-27 11:59 PM',
+        );
+      });
     });
   });
 
   describe('with no data', () => {
     beforeEach(() => {
-      createWrapper({ data: mockUsageMetricsNoData });
+      createWrapper({ data: { metrics: mockUsageMetricsNoData } });
+    });
+
+    it('should not render namespace tile', () => {
+      expect(findNamespaceTile().exists()).toBe(false);
     });
 
     it('should render each metric', () => {

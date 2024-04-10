@@ -11,6 +11,9 @@ import {
   USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
 } from '~/analytics/shared/constants';
 import { toYmd } from '~/analytics/shared/utils';
+import { GROUP_VISIBILITY_TYPE, VISIBILITY_TYPE_ICON } from '~/visibility_level/constants';
+import { TYPENAME_GROUP } from '~/graphql_shared/constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { defaultClient } from '../graphql/client';
 import getUsageOverviewQuery from '../graphql/queries/get_usage_overview.query.graphql';
 
@@ -22,6 +25,19 @@ const USAGE_OVERVIEW_IDENTIFIERS = [
   USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
   USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
 ];
+
+/**
+ * Takes the usage overview query response, extracts information
+ * about the top-level namespace and formats it for rendering.
+ */
+export const extractUsageNamespaceData = (data) => ({
+  id: getIdFromGraphQLId(data?.id),
+  avatarUrl: data?.avatarUrl,
+  fullName: data?.fullName,
+  namespaceType: TYPENAME_GROUP,
+  visibilityLevelIcon: VISIBILITY_TYPE_ICON[data.visibility] ?? null,
+  visibilityLevelTooltip: GROUP_VISIBILITY_TYPE[data.visibility] ?? null,
+});
 
 /**
  * Takes a usage metrics query response, extracts the values and
@@ -106,10 +122,13 @@ export const fetch = async ({
     });
 
     if (!data.group) {
-      return usageOverviewNoData;
+      return { metrics: usageOverviewNoData };
     }
 
-    return extractUsageMetrics(data.group);
+    return {
+      namespace: extractUsageNamespaceData(data.group),
+      metrics: extractUsageMetrics(data.group),
+    };
   } catch {
     throw new Error(USAGE_OVERVIEW_NO_DATA_ERROR);
   }
