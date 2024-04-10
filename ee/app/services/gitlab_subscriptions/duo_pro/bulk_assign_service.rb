@@ -44,7 +44,7 @@ module GitlabSubscriptions
       attr_reader :add_on_purchase, :user_ids
 
       def invalid_user_id_present
-        Gitlab::AppLogger.error(log_events(type: 'not_eligible_users',
+        Gitlab::AppLogger.error(log_events(type: 'error',
           payload: { errors: ERROR_INVALID_USER_ID_PRESENT, user_ids: user_ids }))
         ServiceResponse.error(message: ERROR_INVALID_USER_ID_PRESENT)
       end
