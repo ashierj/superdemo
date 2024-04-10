@@ -483,8 +483,6 @@ module EE
 
     override :should_be_rebased?
     def should_be_rebased?
-      return super if ::Feature.disabled?(:fast_forward_merge_trains_support)
-
       return false if MergeTrains::Train.project_using_ff?(target_project)
       return false if merge_train_car&.on_ff_train?
 

@@ -180,16 +180,6 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
           end
         end
       end
-
-      context 'when FF merge_trains_create_ref_service is disabled' do
-        let(:expected_create_mergeable_ref) { false }
-
-        before do
-          stub_feature_flags(merge_trains_create_ref_service: false)
-        end
-
-        it_behaves_like 'creates a pipeline for merge train'
-      end
     end
 
     context 'when pipeline for merge train is running' do
@@ -310,20 +300,6 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
               expect(subject[:status]).to eq(:success)
               expect(subject[:message]).to eq(nil)
               expect(merge_request.state).to eq("merged")
-            end
-          end
-
-          context 'with feature flag fast_forward_merge_trains_support disabled' do
-            before do
-              stub_feature_flags(fast_forward_merge_trains_support: false)
-            end
-
-            it 'uses the default merge strategy' do
-              expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
-                expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true, check_mergeability_retry_lease: true)
-              end
-
-              subject
             end
           end
         end
