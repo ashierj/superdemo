@@ -4,7 +4,7 @@
       = _("Marked For Deletion At - %{deletion_time}") % { deletion_time: project.marked_for_deletion_at.strftime(Date::DATE_FORMATS[:medium]) }
   .gl-display-flex.gl-align-items-center.gl-flex-wrap.project-title
     %p.small
-      = _("Scheduled Deletion At - %{permanent_deletion_time}") % { permanent_deletion_time: DateTime.parse(permanent_deletion_date(project.marked_for_deletion_at)).strftime(Date::DATE_FORMATS[:medium]) }
+      = _("Scheduled Deletion At - %{permanent_deletion_time}") % { permanent_deletion_time: DateTime.parse(permanent_deletion_date_formatted(project, project.marked_for_deletion_at)).strftime(Date::DATE_FORMATS[:medium]) }
   .gl-display-flex.gl-align-items-center.gl-flex-wrap.project-title
     %span.small
       = link_to project_restore_path(project),

@@ -68,10 +68,11 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
-  describe '#permanent_deletion_date' do
+  describe '#permanent_deletion_date_formatted' do
+    let_it_be(:group) { create(:group) }
     let(:date) { 2.days.from_now }
 
-    subject { helper.permanent_deletion_date(date) }
+    subject { helper.permanent_deletion_date_formatted(group, date) }
 
     before do
       stub_application_setting(deletion_adjourned_period: 5)

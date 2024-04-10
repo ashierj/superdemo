@@ -565,7 +565,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       end
 
       it 'permanent_deletion_date returns correct date' do
-        expect(project_data[:permanent_deletion_date]).to eq(pending_delete_project.permanent_deletion_date(Time.now.utc))
+        expect(project_data[:permanent_deletion_date]).to eq(pending_delete_project.permanent_deletion_date(Time.now.utc).strftime('%F'))
       end
     end
   end

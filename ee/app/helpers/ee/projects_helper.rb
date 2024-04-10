@@ -51,7 +51,7 @@ module EE
     def remove_project_message(project)
       return super unless project.adjourned_deletion?
 
-      date = permanent_deletion_date(Time.now.utc)
+      date = permanent_deletion_date_formatted(project, Time.now.utc)
       _("Deleting a project places it into a read-only state until %{date}, at which point the project will be permanently deleted. Are you ABSOLUTELY sure?") %
         { date: date }
     end
@@ -110,7 +110,7 @@ module EE
     end
 
     def marked_for_removal_message(project)
-      date = permanent_deletion_date(Time.now.utc)
+      date = permanent_deletion_date_formatted(project, Time.now.utc)
 
       message = if project.feature_available?(:adjourned_deletion_for_projects_and_groups)
                   _("This action deletes %{codeOpen}%{project_path_with_namespace}%{codeClose} on %{date} and everything this project contains.")
@@ -121,8 +121,8 @@ module EE
       ERB::Util.html_escape(message) % remove_message_data(project).merge(date: date)
     end
 
-    def permanent_deletion_date(date)
-      (date + ::Gitlab::CurrentSettings.deletion_adjourned_period.days).strftime('%F')
+    def permanent_deletion_date_formatted(project, date)
+      project.permanent_deletion_date(date).strftime('%F')
     end
 
     # Given the current GitLab configuration, check whether the GitLab URL for Kerberos is going to be different than the HTTP URL
