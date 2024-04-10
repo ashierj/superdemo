@@ -18,6 +18,7 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
 
     before do
       stub_licensed_features(product_analytics: true)
+      stub_feature_flags(product_analytics_billing_override: false)
     end
 
     context 'when user has developer access' do

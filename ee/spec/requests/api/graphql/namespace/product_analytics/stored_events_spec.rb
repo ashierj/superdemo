@@ -18,6 +18,10 @@ RSpec.describe 'getting a limit of stored events a namespace is permitted',
     )
   end
 
+  before do
+    stub_feature_flags(product_analytics_billing_override: false)
+  end
+
   context 'when product_analytics_billing flag is disabled' do
     before do
       stub_feature_flags(product_analytics_billing: false)

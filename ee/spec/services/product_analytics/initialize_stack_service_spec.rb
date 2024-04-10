@@ -11,6 +11,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
 
   before do
     project.add_maintainer(user)
+    stub_feature_flags(product_analytics_billing_override: false)
   end
 
   shared_examples 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued' do

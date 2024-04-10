@@ -99,7 +99,9 @@ module ProductAnalyticsHelpers
   end
 
   def product_analytics_billing_enabled?
-    root_ancestor.present? && ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :wip)
+    root_ancestor.present? &&
+      ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :wip) &&
+      ::Feature.disabled?(:product_analytics_billing_override, root_ancestor, type: :wip)
   end
 
   def connected_to_cluster?

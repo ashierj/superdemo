@@ -105,7 +105,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
         product_analytics_enabled: true)
       stub_application_setting(product_analytics_enabled: true)
-      stub_feature_flags(product_analytics_dashboards: true)
+      stub_feature_flags(product_analytics_dashboards: true, product_analytics_billing_override: false)
       allow_next_instance_of(ProjectSetting) do |instance|
         allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')
       end
