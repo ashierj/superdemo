@@ -26780,6 +26780,9 @@ msgstr ""
 msgid "Incidents|Must start with http or https"
 msgstr ""
 
+msgid "Incidents|Must start with http:// or https://"
+msgstr ""
+
 msgid "Incident|Add new timeline event"
 msgstr ""
 
