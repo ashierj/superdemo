@@ -939,6 +939,18 @@ module EE
       rule { can?(:read_project) & chat_allowed_for_parent_group & chat_available_for_user }.enable :access_duo_chat
 
       rule { can?(:read_project) & duo_features_enabled }.enable :access_duo_features
+
+      desc "Group has saved replies support"
+      condition(:supports_saved_replies) do
+        @subject.supports_saved_replies?
+      end
+
+      rule { supports_saved_replies & developer }.policy do
+        enable :read_saved_replies
+        enable :create_saved_replies
+        enable :destroy_saved_replies
+        enable :update_saved_replies
+      end
     end
 
     override :lookup_access_level!

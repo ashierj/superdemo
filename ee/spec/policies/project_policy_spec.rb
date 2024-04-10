@@ -3693,4 +3693,44 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to match_expected_result }
     end
   end
+
+  context 'saved replies permissions' do
+    let(:current_user) { owner }
+
+    context 'when project_saved_replies_flag feature flag is disabled' do
+      before do
+        stub_feature_flags(project_saved_replies_flag: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_saved_replies, :create_saved_replies, :update_saved_replies, :destroy_saved_replies) }
+    end
+
+    context 'when no license is present' do
+      before do
+        stub_licensed_features(project_saved_replies: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_saved_replies, :create_saved_replies, :update_saved_replies, :destroy_saved_replies) }
+    end
+
+    context 'with correct license' do
+      before do
+        stub_licensed_features(project_saved_replies: true)
+      end
+
+      it { is_expected.to be_allowed(:read_saved_replies, :create_saved_replies, :update_saved_replies, :destroy_saved_replies) }
+
+      context 'when the user is a developer' do
+        let(:current_user) { developer }
+
+        it { is_expected.to be_allowed(:read_saved_replies, :create_saved_replies, :update_saved_replies, :destroy_saved_replies) }
+      end
+
+      context 'when the user is a guest member of the project' do
+        let(:current_user) { guest }
+
+        it { is_expected.to be_disallowed(:read_saved_replies, :create_saved_replies, :update_saved_replies, :destroy_saved_replies) }
+      end
+    end
+  end
 end

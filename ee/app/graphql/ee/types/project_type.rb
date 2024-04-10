@@ -404,6 +404,19 @@ module EE
           null: true,
           description: 'Date when project will be deleted if delayed project deletion is enabled.',
           alpha: { milestone: '16.11' }
+
+        field :saved_replies,
+          ::Types::Projects::SavedReplyType.connection_type,
+          null: true,
+          description: 'Saved replies available to the project. Available only when feature flag ' \
+                       '`project_saved_replies_flag` is enabled.',
+          alpha: { milestone: '16.11' }
+
+        field :saved_reply,
+          resolver: ::Resolvers::Projects::SavedReplyResolver,
+          description: 'Saved reply in the project. Available only when feature flag ' \
+                       '`group_saved_replies_flag` is enabled.',
+          alpha: { milestone: '16.11' }
       end
 
       def tracking_key

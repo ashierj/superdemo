@@ -1252,6 +1252,11 @@ module EE
       ::Gitlab::FIPS.enabled? ? ::Feature.enabled?(:dast_ods_browser_based_scanner, self) : true
     end
 
+    override :supports_saved_replies?
+    def supports_saved_replies?
+      ::Feature.enabled?(:project_saved_replies_flag, self, type: :wip) && licensed_feature_available?(:project_saved_replies)
+    end
+
     def google_cloud_support_enabled?
       ::Feature.enabled?(:google_cloud_support_feature_flag, self.root_ancestor) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
