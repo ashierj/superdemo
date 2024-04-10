@@ -908,6 +908,99 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
               end
             end
 
+            context 'description tasks' do
+              context 'when marking a task as done' do
+                let_it_be(:description) { '- [ ] Task' }
+                let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group, description: description) }
+
+                let(:opts) do
+                  {
+                    description: '- [x] Task',
+                    update_task: {
+                      index: 1,
+                      checked: true,
+                      line_source: '- [ ] Task',
+                      line_number: 1
+                    }
+                  }
+                end
+
+                it_behaves_like 'syncs all data from an epic to a work item'
+
+                it 'updates the task on the epic and the work item' do
+                  subject
+
+                  expect(epic.reload.description).to eq('- [x] Task')
+                  expect(work_item.reload.description).to eq('- [x] Task')
+                end
+
+                context 'when saving to the work item fails' do
+                  let(:error_message) { ['errors'] }
+
+                  before do
+                    allow_next_instance_of(WorkItems::UpdateService) do |instance|
+                      allow(instance).to receive(:execute).and_return(
+                        {
+                          status: :error,
+                          message: error_message
+                        }
+                      )
+                    end
+                  end
+
+                  it 'does not update the epic or the work item' do
+                    expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+                      .with({
+                        message: "Not able to update epic work item",
+                        error_message: error_message,
+                        group_id: group.id,
+                        epic_id: epic.id
+                      })
+
+                    expect { subject }.to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
+
+                    expect(epic.reload.description).to eq('- [ ] Task')
+                    expect(work_item.reload.description).to eq('- [ ] Task')
+                  end
+                end
+
+                context 'when feature flag is disabled' do
+                  before do
+                    stub_feature_flags(epic_creation_with_synced_work_item: false)
+                  end
+
+                  it 'does not propagate changes' do
+                    expect { subject }.to change { epic.reload.description }.and not_change { work_item.reload.description }
+                  end
+                end
+              end
+
+              context 'when unchecking a task' do
+                let_it_be(:description) { '- [x] Task' }
+                let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group, description: description) }
+                let(:opts) do
+                  {
+                    description: '- [ ] Task',
+                    update_task: {
+                      index: 1,
+                      checked: false,
+                      line_source: '- [x] Task',
+                      line_number: 1
+                    }
+                  }
+                end
+
+                it_behaves_like 'syncs all data from an epic to a work item'
+
+                it 'updates the task on the epic and the work item' do
+                  subject
+
+                  expect(epic.reload.description).to eq('- [ ] Task')
+                  expect(work_item.reload.description).to eq('- [ ] Task')
+                end
+              end
+            end
+
             context 'when feature flag is disabled' do
               before do
                 stub_feature_flags(epic_creation_with_synced_work_item: false)

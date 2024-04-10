@@ -108,6 +108,15 @@ module Epics
       end
     end
 
+    override :transaction_update_task
+    def transaction_update_task(epic)
+      super.tap do |save_result|
+        break save_result unless save_result
+
+        update_work_item_for!(epic)
+      end
+    end
+
     def track_fixed_dates_updated_events(epic)
       fixed_start_date_updated = epic.saved_change_to_attribute?(:start_date_fixed)
       fixed_due_date_updated = epic.saved_change_to_attribute?(:due_date_fixed)
