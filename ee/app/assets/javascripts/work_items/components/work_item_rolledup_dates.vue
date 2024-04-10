@@ -10,6 +10,8 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { getDateWithUTC, newDateAsLocaleTime } from '~/lib/utils/datetime/date_calculation_utility';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
+import { Mousetrap } from '~/lib/mousetrap';
+import { keysFor, SIDEBAR_CLOSE_WIDGET } from '~/behaviors/shortcuts/keybindings';
 import { formatDate, pikadayToString } from '~/lib/utils/datetime_utility';
 import {
   I18N_WORK_ITEM_ERROR_UPDATING,
@@ -196,7 +198,11 @@ export default {
     },
   },
   mounted() {
+    Mousetrap.bind(keysFor(SIDEBAR_CLOSE_WIDGET), this.collapseWidget);
     this.rollupType = this.isFixed ? ROLLUP_TYPE_FIXED : ROLLUP_TYPE_INHERITED;
+  },
+  beforeDestroy() {
+    Mousetrap.unbind(keysFor(SIDEBAR_CLOSE_WIDGET));
   },
   methods: {
     clearDueDatePicker() {
@@ -364,6 +370,7 @@ export default {
             class="work-item-date-picker"
             @clear="clearStartDatePicker"
             @close="handleStartDateInput"
+            @keydown.esc.native="collapseWidget"
           />
         </gl-form-group>
         <gl-form-group
@@ -383,6 +390,7 @@ export default {
             class="work-item-date-picker"
             data-testid="due-date-picker"
             @clear="clearDueDatePicker"
+            @keydown.esc.native="collapseWidget"
           />
         </gl-form-group>
       </div>
