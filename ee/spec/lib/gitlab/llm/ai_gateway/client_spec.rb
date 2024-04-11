@@ -173,6 +173,18 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         expect(complete.parsed_response).to eq(expected_response)
       end
     end
+
+    context 'with specified url' do
+      let(:request_url) { "#{Gitlab::AiGateway.url}/dynamic_url" }
+      let(:options) { { endpoint_url: '/dynamic_url' } }
+
+      it 'returns response' do
+        expect(Gitlab::HTTP).to receive(:post)
+                                  .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+                                  .and_call_original
+        expect(complete.parsed_response).to eq(expected_response)
+      end
+    end
   end
 
   describe '#stream' do
