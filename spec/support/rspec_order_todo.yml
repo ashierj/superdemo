@@ -4817,7 +4817,7 @@
 - './spec/initializers/google_api_client_spec.rb'
 - './spec/initializers/lograge_spec.rb'
 - './spec/initializers/mail_encoding_patch_spec.rb'
-- './spec/initializers/mailer_retries_spec.rb'
+- './spec/initializers/mailer_options_spec.rb'
 - './spec/initializers/memory_watchdog_spec.rb'
 - './spec/initializers/net_http_patch_spec.rb'
 - './spec/initializers/net_http_response_patch_spec.rb'
