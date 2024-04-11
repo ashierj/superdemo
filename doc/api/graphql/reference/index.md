@@ -5039,6 +5039,28 @@ Input type: `InstanceAuditEventStreamingDestinationsCreateInput`
 | <a id="mutationinstanceauditeventstreamingdestinationscreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationinstanceauditeventstreamingdestinationscreateexternalauditeventdestination"></a>`externalAuditEventDestination` | [`InstanceAuditEventStreamingDestination`](#instanceauditeventstreamingdestination) | Destination created. |
 
+### `Mutation.instanceAuditEventStreamingDestinationsDelete`
+
+DETAILS:
+**Introduced** in GitLab 16.11.
+**Status**: Experiment.
+
+Input type: `InstanceAuditEventStreamingDestinationsDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstanceauditeventstreamingdestinationsdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstanceauditeventstreamingdestinationsdeleteid"></a>`id` | [`AuditEventsInstanceExternalStreamingDestinationID!`](#auditeventsinstanceexternalstreamingdestinationid) | ID of the audit events external streaming destination to delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstanceauditeventstreamingdestinationsdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstanceauditeventstreamingdestinationsdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.instanceExternalAuditEventDestinationCreate`
 
 Input type: `InstanceExternalAuditEventDestinationCreateInput`
@@ -34266,6 +34288,12 @@ An example `AuditEventsInstanceAmazonS3ConfigurationID` is: `"gid://gitlab/Audit
 A `AuditEventsInstanceExternalAuditEventDestinationID` is a global ID. It is encoded as a string.
 
 An example `AuditEventsInstanceExternalAuditEventDestinationID` is: `"gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/1"`.
+
+### `AuditEventsInstanceExternalStreamingDestinationID`
+
+A `AuditEventsInstanceExternalStreamingDestinationID` is a global ID. It is encoded as a string.
+
+An example `AuditEventsInstanceExternalStreamingDestinationID` is: `"gid://gitlab/AuditEvents::Instance::ExternalStreamingDestination/1"`.
 
 ### `AuditEventsInstanceGoogleCloudLoggingConfigurationID`
 

@@ -34,7 +34,7 @@ module Mutations
               category: category
             )
 
-            audit(destination, action: :create) if destination.save
+            audit(destination, action: :created) if destination.save
 
             {
               external_audit_event_destination: (destination if destination.persisted?),
