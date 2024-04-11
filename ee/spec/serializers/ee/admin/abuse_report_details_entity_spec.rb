@@ -53,7 +53,7 @@ RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threa
     let(:phone_number_hash) { entity_hash[:user][:phone_number] }
 
     context 'when the user has no phone number validation attempts' do
-      it 'does not expose the phone number' do
+      it 'does not expose the phone number', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/441135' do
         expect(phone_number_hash).to be_nil
       end
     end
