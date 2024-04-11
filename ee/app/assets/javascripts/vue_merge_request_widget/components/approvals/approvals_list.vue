@@ -279,7 +279,7 @@ export default {
               :items="rule.eligibleApprovers"
               :img-size="24"
               empty-text=""
-              class="gl-display-flex gl-flex-wrap"
+              class="gl-display-flex gl-flex-wrap gl-row-gap-2"
             />
           </td>
           <td class="d-md-table-cell w-0 d-none gl-white-space-nowrap js-pending">
@@ -290,7 +290,7 @@ export default {
               :items="rule.commentedBy.nodes"
               :img-size="24"
               empty-text=""
-              class="gl-display-flex gl-flex-wrap"
+              class="gl-display-flex gl-flex-wrap gl-row-gap-2"
             />
           </td>
           <td class="d-none d-md-table-cell js-approved-by">
@@ -298,7 +298,7 @@ export default {
               :items="rule.approvedBy.nodes"
               :img-size="24"
               empty-text=""
-              class="gl-display-flex gl-flex-wrap"
+              class="gl-display-flex gl-flex-wrap gl-row-gap-2"
             />
           </td>
         </tr>
