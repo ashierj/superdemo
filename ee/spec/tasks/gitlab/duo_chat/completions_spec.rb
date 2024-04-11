@@ -94,6 +94,58 @@ RSpec.describe 'gitlab:duo_chat:completions', feature_category: :duo_chat do
           run_rake_task('gitlab:duo_chat:completions', ['duochat', 1])
         end
 
+        it 'retries in case of error' do
+          expect(::Gitlab::Duo::Chat::Request).to receive(:new).with({ root_group_path: 'duochat', user_id: '1' })
+                                                               .and_return(request)
+          expect(::Gitlab::Duo::Chat::DatasetReader).to receive(:new).with('path_in')
+                                                                     .and_return(dataset_reader)
+          expect(::Gitlab::Duo::Chat::DatasetWriter).to receive(:new).with('path_out')
+                                                                     .and_return(dataset_writer)
+          expect(dataset_reader).to receive(:total_rows).and_return(1)
+          expect(ProgressBar).to receive(:create).with(title: 'Getting completions', total: 1, format: '%t: |%B| %c/%C')
+                                                 .and_return(progress_bar)
+
+          expect(dataset_reader).to receive(:read).and_yield('something')
+          expect(request).to receive(:completion).with('something').and_raise(StandardError).once
+          expect(request).to receive(:completion).with('something').and_return({ 'completion' => 'completion' }).once
+          expect(dataset_writer).to receive(:write).with({ 'completion' => 'completion' })
+          expect(progress_bar).to receive(:increment)
+
+          expect(dataset_writer).to receive(:close)
+          expect(progress_bar).to receive(:finish)
+
+          run_rake_task('gitlab:duo_chat:completions', ['duochat', 1])
+        end
+
+        context 'when error limit set' do
+          before do
+            stub_env('ERROR_LIMIT' => 0)
+          end
+
+          it 'does not retry in case of error' do
+            expect(::Gitlab::Duo::Chat::Request).to receive(:new).with({ root_group_path: 'duochat', user_id: '1' })
+                                                                 .and_return(request)
+            expect(::Gitlab::Duo::Chat::DatasetReader).to receive(:new).with('path_in')
+                                                                       .and_return(dataset_reader)
+            expect(::Gitlab::Duo::Chat::DatasetWriter).to receive(:new).with('path_out')
+                                                                       .and_return(dataset_writer)
+            expect(dataset_reader).to receive(:total_rows).and_return(1)
+            expect(ProgressBar).to receive(:create)
+              .with(title: 'Getting completions', total: 1, format: '%t: |%B| %c/%C')
+              .and_return(progress_bar)
+            expect(dataset_reader).to receive(:read).and_yield('something')
+            expect(request).to receive(:completion).with('something').and_raise(StandardError).once
+
+            expect(progress_bar).not_to receive(:increment)
+            expect(dataset_writer).not_to receive(:write)
+
+            expect(dataset_writer).to receive(:close)
+            expect(progress_bar).to receive(:finish)
+
+            run_rake_task('gitlab:duo_chat:completions', ['duochat', 1])
+          end
+        end
+
         context 'with real file' do
           let(:output_path) { '/tmp/dataset' }
 
