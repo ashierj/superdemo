@@ -30,7 +30,7 @@ module Search
       end
 
       scope :for_root_namespace_id, ->(root_namespace_id) do
-        where(namespace_id: root_namespace_id)
+        where(namespace_id: root_namespace_id).where.not(zoekt_enabled_namespace_id: nil)
       end
 
       scope :searchable, -> do
