@@ -43,9 +43,13 @@ describe('FrameworksTable component', () => {
     routerPushMock = jest.fn();
     return mountExtended(FrameworksTable, {
       propsData: {
+        groupPath: 'foo',
         frameworks: [],
         isLoading: true,
         ...props,
+      },
+      provide: {
+        groupSecurityPoliciesPath: '/example-group-security-policies-path',
       },
       mocks: {
         $router: { push: routerPushMock },
@@ -80,7 +84,7 @@ describe('FrameworksTable component', () => {
       wrapper = createComponent({ isLoading: false });
       const headerTexts = findTableHeaders().wrappers.map((h) => h.text());
 
-      expect(headerTexts).toStrictEqual(['Frameworks', 'Associated projects']);
+      expect(headerTexts).toStrictEqual(['Frameworks', 'Associated projects', 'Policies']);
     });
 
     it('navigates to add framework page when requested', () => {
@@ -103,6 +107,29 @@ describe('FrameworksTable component', () => {
 
       findSearchBox().vm.$emit('clear');
       expect(wrapper.emitted('search').at(-1)).toStrictEqual(['']);
+    });
+  });
+
+  describe('when there are policies', () => {
+    beforeEach(() => {
+      wrapper = createComponent({
+        frameworks,
+        isLoading: false,
+      });
+    });
+
+    it.each(Object.keys(frameworks))('has the correct data for row %s', (idx) => {
+      const frameworkPolicies = findTableRowData(idx)
+        .wrappers.map((d) => d.text())
+        .at(2);
+      expect(frameworkPolicies).toMatch(
+        [
+          ...frameworks[idx].scanExecutionPolicies.nodes,
+          ...frameworks[idx].scanResultPolicies.nodes,
+        ]
+          .map((x) => x.name)
+          .join(','),
+      );
     });
   });
 

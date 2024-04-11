@@ -24,6 +24,7 @@ export default () => {
     featurePipelineMaintenanceModeEnabled,
     pipelineExecutionPolicyPath,
     migratePipelineToPolicyPath,
+    groupSecurityPoliciesPath,
     disableScanPolicyUpdate,
   } = el.dataset;
 
@@ -59,6 +60,7 @@ export default () => {
       adherencesCsvExportPath,
       pipelineExecutionPolicyPath,
       migratePipelineToPolicyPath,
+      groupSecurityPoliciesPath,
     },
     render: (createElement) => createElement('router-view'),
   });

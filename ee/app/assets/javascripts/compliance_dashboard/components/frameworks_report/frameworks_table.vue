@@ -20,6 +20,10 @@ export default {
     FrameworkBadge,
   },
   props: {
+    groupPath: {
+      type: String,
+      required: true,
+    },
     frameworks: {
       type: Array,
       required: true,
@@ -62,6 +66,12 @@ export default {
     newFramework() {
       this.$router.push({ name: ROUTE_NEW_FRAMEWORK });
     },
+    getPoliciesList(item) {
+      const { scanExecutionPolicies, scanResultPolicies } = item;
+      return [...scanExecutionPolicies.nodes, ...scanResultPolicies.nodes]
+        .map((x) => x.name)
+        .join(',');
+    },
   },
   fields: [
     {
@@ -74,6 +84,13 @@ export default {
     {
       key: 'associatedProjects',
       label: __('Associated projects'),
+      thClass: 'gl-md-max-w-26 gl-white-space-nowrap gl-vertical-align-middle!',
+      tdClass: 'gl-md-max-w-26 gl-vertical-align-middle! gl-cursor-pointer',
+      sortable: false,
+    },
+    {
+      key: 'policies',
+      label: __('Policies'),
       thClass: 'gl-md-max-w-26 gl-white-space-nowrap gl-vertical-align-middle!',
       tdClass: 'gl-md-max-w-26 gl-vertical-align-middle! gl-cursor-pointer',
       sortable: false,
@@ -127,6 +144,9 @@ export default {
           ><span v-if="!isLastItem(index, associatedProjects)">,&nbsp;</span>
         </div>
       </template>
+      <template #cell(policies)="{ item }">
+        {{ getPoliciesList(item) }}
+      </template>
       <template #table-busy>
         <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
       </template>
@@ -137,6 +157,7 @@ export default {
       </template>
     </gl-table>
     <framework-info-drawer
+      :group-path="groupPath"
       :show-drawer="showDrawer"
       :framework="selectedFramework"
       @close="closeDrawer"

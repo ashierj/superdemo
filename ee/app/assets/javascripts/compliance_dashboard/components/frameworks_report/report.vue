@@ -4,7 +4,7 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 
-import complianceFrameworks from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
+import complianceFrameworks from './graphql/compliance_frameworks_list.query.graphql';
 import FrameworksTable from './frameworks_table.vue';
 
 const FRAMEWORK_LIMIT = 20;
@@ -160,7 +160,13 @@ export default {
     </gl-alert>
 
     <template v-else>
-      <frameworks-table :is-loading="isLoading" :frameworks="frameworks.nodes" @search="onSearch" />
+      <frameworks-table
+        :group-path="groupPath"
+        :is-loading="isLoading"
+        :frameworks="frameworks.nodes"
+        @search="onSearch"
+      />
+
       <gl-keyset-pagination
         v-bind="frameworks.pageInfo"
         class="gl-align-self-center gl-mt-6"

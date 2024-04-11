@@ -246,11 +246,34 @@ export const createFramework = ({ id, isDefault = false, projects = 0 } = {}) =>
       .map((_, pid) => createProject({ id: pid })),
   },
   scanResultPolicies: {
+    nodes: [
+      {
+        __typename: 'ScanResultPolicy',
+        name: 'scan1',
+        source: {
+          namespace: {
+            id: `gid://gitlab/Group/${id}`,
+            name: 'foo',
+          },
+        },
+      },
+      {
+        __typename: 'ScanResultPolicy',
+        name: 'scan2',
+        source: {
+          namespace: {
+            id: `gid://gitlab/Group/${id}`,
+            name: 'bar',
+          },
+        },
+      },
+    ],
     pageInfo: {
       startCursor: null,
     },
   },
   scanExecutionPolicies: {
+    nodes: [],
     pageInfo: {
       startCursor: null,
     },
