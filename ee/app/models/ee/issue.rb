@@ -110,7 +110,10 @@ module EE
       has_many :related_vulnerabilities, through: :vulnerability_links, source: :vulnerability
 
       has_many :feature_flag_issues
-      has_many :feature_flags, through: :feature_flag_issues, class_name: '::Operations::FeatureFlag'
+      has_many :feature_flags,
+        through: :feature_flag_issues,
+        class_name: '::Operations::FeatureFlag',
+        inverse_of: :issues
 
       has_many :pending_escalations, class_name: 'IncidentManagement::PendingEscalations::Issue', foreign_key: :issue_id, inverse_of: :issue
 

@@ -248,5 +248,57 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
           .not_to exceed_query_limit(control)
       end
     end
+
+    context 'with development widget' do
+      let_it_be(:work_item) { create(:work_item, project: project) }
+
+      context 'for the feature flags field' do
+        before_all do
+          2.times do
+            create_feature_flag_for(work_item)
+          end
+        end
+
+        let(:fields) do
+          <<~GRAPHQL
+            nodes {
+              id
+              widgets {
+                type
+                ... on WorkItemWidgetDevelopment {
+                  featureFlags {
+                    nodes {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          GRAPHQL
+        end
+
+        it 'avoids N+1 queries' do
+          post_graphql(query, current_user: current_user) # warmup
+
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+            post_graphql(query, current_user: current_user)
+          end
+
+          2.times do
+            new_work_item = create(:work_item, project: project)
+            create_feature_flag_for(new_work_item)
+          end
+
+          expect { post_graphql(query, current_user: current_user) }
+            .to issue_same_number_of_queries_as(control)
+        end
+      end
+    end
+  end
+
+  def create_feature_flag_for(work_item)
+    feature_flag = create(:operations_feature_flag, project: project)
+    create(:feature_flag_issue, issue_id: work_item.id, feature_flag: feature_flag)
   end
 end

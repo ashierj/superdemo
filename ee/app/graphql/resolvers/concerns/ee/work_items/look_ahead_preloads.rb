@@ -13,7 +13,8 @@ module EE
         super.merge(
           status: { requirement: :recent_test_reports },
           progress: :progress,
-          test_reports: :test_reports
+          test_reports: :test_reports,
+          feature_flags: { feature_flags: :project }
         )
       end
     end
