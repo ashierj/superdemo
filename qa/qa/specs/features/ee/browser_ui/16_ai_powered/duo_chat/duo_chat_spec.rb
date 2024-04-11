@@ -2,7 +2,7 @@
 
 module QA
   # https://docs.gitlab.com/ee/development/ai_features/duo_chat.html
-  RSpec.describe('Ai-powered', product_group: :duo_chat) do
+  RSpec.describe 'Ai-powered', :external_ai_provider, product_group: :duo_chat do
     describe 'Duo Chat' do
       before do
         Flow::Login.sign_in
