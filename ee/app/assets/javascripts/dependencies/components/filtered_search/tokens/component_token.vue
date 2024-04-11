@@ -77,13 +77,13 @@ export default {
     async fetchComponents() {
       try {
         this.isLoadingComponents = true;
-        // Note: This is just a placeholder. Adding the actual fetch logic will be addressed in a seperate issue:
+        // Note: This is just a placeholder. Adding the actual fetch logic will be addressed in a separate issue:
         // https://gitlab.com/gitlab-org/gitlab/-/issues/442407
         this.components = await new Promise((resolve) => {
           resolve([
-            { id: 'gid://gitlab/Component/1', name: 'ComponentOne' },
-            { id: 'gid://gitlab/Component/2', name: 'ComponentTwo' },
-            { id: 'gid://gitlab/Component/3', name: 'ComponentThree' },
+            { id: 'gid://gitlab/Component/1', name: 'activerecord' },
+            { id: 'gid://gitlab/Component/2', name: 'rails' },
+            { id: 'gid://gitlab/Component/3', name: 'rack' },
           ]);
         });
       } catch {
@@ -105,8 +105,8 @@ export default {
       }
     },
     handleInput(token) {
-      // the dropdown shows a list of component names but we need to emit the project ids for filtering
-      this.$emit('input', { ...token, data: this.selectedComponentIds });
+      // the dropdown shows a list of component names but we need to emit the components' names for filtering
+      this.$emit('input', { ...token, data: this.selectedComponentNames });
     },
     setSearchTerm(token) {
       // the data can be either a string or an array, in which case we don't want to perform the search
