@@ -16,14 +16,16 @@ module WorkItems
       parent = work_item&.work_item_parent
       return unless parent && parent.has_widget?(:progress)
 
+      automation_bot = Users::Internal.automation_bot
+
       ApplicationRecord.transaction do
-        update_parent_progress(parent)
+        update_parent_progress(parent, automation_bot)
       end
     end
 
     private
 
-    def update_parent_progress(parent)
+    def update_parent_progress(parent, user)
       parent_progress = parent.progress || parent.build_progress
       parent_progress.lock!
       new_progress = parent.average_progress_of_children
@@ -32,11 +34,7 @@ module WorkItems
       return unless parent_progress.progress_changed?
 
       parent_progress.save!
-      # TODO: creating automation_bot obtains an exclusive lease within the transaction in  `.perform`
-      # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/441527
-      Gitlab::ExclusiveLease.skipping_transaction_check do
-        ::SystemNoteService.change_progress_note(parent, Users::Internal.automation_bot)
-      end
+      ::SystemNoteService.change_progress_note(parent, user)
       ::GraphqlTriggers.work_item_updated(parent)
     end
   end
