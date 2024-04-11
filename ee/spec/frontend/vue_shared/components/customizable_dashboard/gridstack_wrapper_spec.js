@@ -82,12 +82,13 @@ describe('GridstackWrapper', () => {
       expect(GridStack.init).toHaveBeenCalledWith({
         alwaysShowResizeHandle: true,
         staticGrid: true,
-        animate: false,
+        animate: true,
         margin: GRIDSTACK_MARGIN,
         handle: GRIDSTACK_CSS_HANDLE,
         cellHeight: GRIDSTACK_CELL_HEIGHT,
         minRow: GRIDSTACK_MIN_ROW,
         columnOpts: { breakpoints: [{ w: breakpoints.md, c: 1 }] },
+        float: true,
       });
     });
 
