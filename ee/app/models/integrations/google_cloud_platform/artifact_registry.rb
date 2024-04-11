@@ -5,7 +5,7 @@ module Integrations
     class ArtifactRegistry < Integration
       include HasAvatar
 
-      SECTION_TYPE_GOOGLE_CLOUD_ARTIFACT_REGISTRY = 'google_cloud_artifact_registry'
+      SECTION_TYPE_GOOGLE_ARTIFACT_MANAGEMENT = 'google_artifact_management'
 
       attribute :alert_events, default: false
       attribute :commit_events, default: false
@@ -48,7 +48,7 @@ module Integrations
       alias_method :artifact_registry_repository, :artifact_registry_repositories
 
       def self.title
-        s_('GoogleCloudPlatformService|Google Artifact Registry')
+        s_('GoogleCloud|Google Artifact Management')
       end
 
       def self.description
@@ -62,7 +62,7 @@ module Integrations
       def sections
         [
           {
-            type: SECTION_TYPE_GOOGLE_CLOUD_ARTIFACT_REGISTRY
+            type: SECTION_TYPE_GOOGLE_ARTIFACT_MANAGEMENT
           }
         ]
       end

@@ -1,15 +1,15 @@
 import { nextTick } from 'vue';
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import IntegrationSectionGoogleCloudArtifactRegistry from 'ee/integrations/edit/components/sections/google_cloud_artifact_registry.vue';
+import IntegrationSectionGoogleArtifactManagement from 'ee/integrations/edit/components/sections/google_artifact_management.vue';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
 import Connection from '~/integrations/edit/components/sections/connection.vue';
-import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
-import EmptyState from 'ee/integrations/edit/components/google_cloud_artifact_registry/empty_state.vue';
+import ConfigurationInstructions from 'ee/integrations/edit/components/google_artifact_management/configuration_instructions.vue';
+import EmptyState from 'ee/integrations/edit/components/google_artifact_management/empty_state.vue';
 import { createStore } from '~/integrations/edit/store';
 import { mockIntegrationProps } from '../../mock_data';
 
-describe('IntegrationSectionGoogleCloudArtifactRegistry', () => {
+describe('IntegrationSectionGoogleArtifactManagement', () => {
   let wrapper;
 
   const findEmptyState = () => wrapper.findComponent(EmptyState);
@@ -27,7 +27,7 @@ describe('IntegrationSectionGoogleCloudArtifactRegistry', () => {
       },
     });
 
-    wrapper = shallowMount(IntegrationSectionGoogleCloudArtifactRegistry, {
+    wrapper = shallowMount(IntegrationSectionGoogleArtifactManagement, {
       propsData: {
         isValidated: false,
       },
@@ -38,8 +38,8 @@ describe('IntegrationSectionGoogleCloudArtifactRegistry', () => {
   it('renders EmptyState when editable is false & workloadIdentityFederationPath is defined', () => {
     createComponent({
       editable: false,
-      googleCloudArtifactRegistryProps: {
-        ...mockIntegrationProps.googleCloudArtifactRegistryProps,
+      googleArtifactManagementProps: {
+        ...mockIntegrationProps.googleArtifactManagementProps,
         workloadIdentityFederationPath: '/path/to/wlif',
       },
     });

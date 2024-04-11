@@ -44,7 +44,7 @@ export default {
         }}</gl-button>
         <invite-members-trigger
           :display-text="s__('GoogleArtifactRegistry|Invite member to set up')"
-          trigger-source="google_cloud_artifact_registry_setup"
+          trigger-source="google_artifact_management_setup"
         />
       </div>
     </template>
