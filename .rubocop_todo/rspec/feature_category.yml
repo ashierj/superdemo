@@ -2465,7 +2465,6 @@ RSpec/FeatureCategory:
     - 'spec/initializers/hashie_mash_permitted_patch_spec.rb'
     - 'spec/initializers/lograge_spec.rb'
     - 'spec/initializers/mail_encoding_patch_spec.rb'
-    - 'spec/initializers/mailer_retries_spec.rb'
     - 'spec/initializers/microsoft_graph_mailer_spec.rb'
     - 'spec/initializers/net_http_patch_spec.rb'
     - 'spec/initializers/omniauth_spec.rb'
