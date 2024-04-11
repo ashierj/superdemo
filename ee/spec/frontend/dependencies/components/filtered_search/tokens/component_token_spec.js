@@ -12,9 +12,9 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 
 const TEST_COMPONENTS = [
-  { id: 'gid://gitlab/Component/1', name: 'ComponentOne' },
-  { id: 'gid://gitlab/Component/2', name: 'ComponentTwo' },
-  { id: 'gid://gitlab/Component/3', name: 'ComponentThree' },
+  { id: 'gid://gitlab/Component/1', name: 'activerecord' },
+  { id: 'gid://gitlab/Component/2', name: 'rails' },
+  { id: 'gid://gitlab/Component/3', name: 'rack' },
 ];
 
 jest.mock('~/alert');
@@ -95,7 +95,7 @@ describe('ee/dependencies/components/filtered_search/tokens/component_token.vue'
       expect(isLoadingSuggestions()).toBe(false);
     });
 
-    it('shows a list of project suggestions', () => {
+    it('shows a list of suggested components', () => {
       const suggestions = findSuggestions();
 
       expect(suggestions).toHaveLength(TEST_COMPONENTS.length);
@@ -105,8 +105,8 @@ describe('ee/dependencies/components/filtered_search/tokens/component_token.vue'
       expect(suggestions.at(2).text()).toBe(TEST_COMPONENTS[2].name);
     });
 
-    describe('when a user selects projects to be filtered', () => {
-      it('displays a check-icon next to the selected project', async () => {
+    describe('when a user selects components to be filtered', () => {
+      it('displays a check-icon next to the selected component', async () => {
         expect(findFirstSearchSuggestionIcon().classes()).toContain('gl-visibility-hidden');
 
         await selectComponent(TEST_COMPONENTS[0]);
@@ -114,7 +114,7 @@ describe('ee/dependencies/components/filtered_search/tokens/component_token.vue'
         expect(findFirstSearchSuggestionIcon().classes()).not.toContain('gl-visibility-hidden');
       });
 
-      it('shows a comma seperated list of selected projects', async () => {
+      it('shows a comma seperated list of selected component', async () => {
         await selectComponent(TEST_COMPONENTS[0]);
         await selectComponent(TEST_COMPONENTS[1]);
 
@@ -123,16 +123,14 @@ describe('ee/dependencies/components/filtered_search/tokens/component_token.vue'
         );
       });
 
-      it(`emits the selected project's IDs without the GraphQL prefix`, async () => {
+      it(`emits the selected components' names`, async () => {
         const tokenData = {
-          id: 'component_id',
+          id: 'component_names',
           type: 'component',
           operator: '=',
         };
 
-        const expectedIds = TEST_COMPONENTS.map((component) =>
-          Number(component.id.replace('gid://gitlab/Component/', '')),
-        );
+        const expectedNames = TEST_COMPONENTS.map((component) => component.name);
 
         await selectComponent(TEST_COMPONENTS[0]);
         await selectComponent(TEST_COMPONENTS[1]);
@@ -144,7 +142,7 @@ describe('ee/dependencies/components/filtered_search/tokens/component_token.vue'
           [
             {
               ...tokenData,
-              data: expectedIds,
+              data: expectedNames,
             },
           ],
         ]);
