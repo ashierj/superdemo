@@ -12,15 +12,5 @@ RSpec.shared_examples 'allowlisted /admin/geo requests' do
 
   context 'allowlisted requests' do
     it_behaves_like 'allowlisted request', :patch, '/admin/geo/sites/1'
-
-    it_behaves_like 'allowlisted request', :delete, '/admin/geo/replication/projects/1'
-
-    it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/1/resync'
-
-    it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/1/reverify'
-
-    it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/reverify_all'
-
-    it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/resync_all'
   end
 end

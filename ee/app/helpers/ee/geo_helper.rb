@@ -67,22 +67,33 @@ module EE
         {
           value: '',
           text: sprintf(s_('Geo|All %{replicable_name}'), { replicable_name: replicable_name }),
-          href: url_for(controller: replicable_controller)
+          href: url_for(
+            controller: replicable_controller,
+            replicable_name_plural: replicable_name)
         },
         {
           value: 'pending',
           text: s_('Geo|In progress'),
-          href: url_for(controller: replicable_controller, sync_status: 'pending')
+          href: url_for(
+            controller: replicable_controller,
+            replicable_name_plural: replicable_name,
+            sync_status: 'pending')
         },
         {
           value: 'failed',
           text: s_('Geo|Failed'),
-          href: url_for(controller: replicable_controller, sync_status: 'failed')
+          href: url_for(
+            controller: replicable_controller,
+            replicable_name_plural: replicable_name,
+            sync_status: 'failed')
         },
         {
           value: 'synced',
           text: s_('Geo|Synced'),
-          href: url_for(controller: replicable_controller, sync_status: 'synced')
+          href: url_for(
+            controller: replicable_controller,
+            replicable_name_plural: replicable_name,
+            sync_status: 'synced')
         }
       ]
     end

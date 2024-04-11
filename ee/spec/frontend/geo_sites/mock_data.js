@@ -268,7 +268,6 @@ export const MOCK_SECONDARY_SITE = {
   version: '10.4.0-pre',
   revision: 'b93c51849b',
   storageShardsMatch: true,
-  webGeoProjectsUrl: 'http://127.0.0.1:3002/replication/projects',
   webGeoReplicationDetailsUrl: 'http://127.0.0.1:3002/admin/geo/sites/2/replication/lfs_objects',
 };
 
@@ -338,7 +337,6 @@ export const MOCK_SECONDARY_SITE_STATUSES_RES = {
   version: '10.4.0-pre',
   revision: 'b93c51849b',
   storage_shards_match: true,
-  web_geo_projects_url: 'http://127.0.0.1:3002/replication/projects',
   web_geo_replication_details_url:
     'http://127.0.0.1:3002/admin/geo/sites/2/replication/lfs_objects',
 };

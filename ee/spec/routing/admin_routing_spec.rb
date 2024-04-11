@@ -2,18 +2,6 @@
 require 'spec_helper'
 
 RSpec.describe 'EE-specific admin routing' do
-  describe Admin::Geo::ProjectsController, 'routing' do
-    it 'routes / to #index' do
-      expect(get('/admin/geo/replication/projects')).to route_to('admin/geo/projects#index')
-    end
-  end
-
-  describe Admin::Geo::DesignsController, 'routing' do
-    it 'routes / to #index' do
-      expect(get('/admin/geo/replication/designs')).to route_to('admin/geo/designs#index')
-    end
-  end
-
   describe Admin::Geo::ReplicablesController, 'routing' do
     Gitlab::Geo.enabled_replicator_classes.map(&:replicable_name_plural).each do |replicable_name_plural|
       it "routes /admin/geo/replication/#{replicable_name_plural} to replicables#index" do

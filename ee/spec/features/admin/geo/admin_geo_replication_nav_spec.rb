@@ -37,7 +37,7 @@ RSpec.describe 'admin Geo Replication Nav', :js, :geo, feature_category: :geo_re
     end
 
     it 'displays enabled replicator replication details nav links' do
-      visit admin_geo_replicables_path(replicable_name_plural: 'projects')
+      visit admin_geo_replicables_path(replicable_name_plural: 'project_repositories')
 
       Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
         navbar = page.find(".gl-tabs-nav")
