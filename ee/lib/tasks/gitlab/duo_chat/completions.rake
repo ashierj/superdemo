@@ -13,6 +13,7 @@ namespace :gitlab do
     task :completions, [:root_group_path, :user_id] => :environment do |_, args|
       dataset_dir = require_env_var('AIEF_DATASET')
       output_dir = require_env_var('AIEF_OUTPUT')
+      error_limit = require_env_var('ERROR_LIMIT', 5).to_i
 
       unless ::Gitlab.dev_or_test_env?
         raise <<~ERROR_MESSAGE.strip
@@ -41,12 +42,19 @@ namespace :gitlab do
         total: reader.total_rows,
         format: '%t: |%B| %c/%C'
       )
+      error_counter = 0
 
       reader.read do |data_row|
         completion = duo_chat.completion(data_row)
         writer.write(completion)
 
         progressbar.increment
+      rescue StandardError => error
+        puts "Error: #{error}"
+
+        sleep(2)
+        error_counter += 1
+        retry if error_counter < error_limit
       end
 
       writer.close
