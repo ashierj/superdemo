@@ -10,36 +10,42 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
   let_it_be(:user) { create(:user) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let_it_be(:workspace) { create(:workspace, user: user, personal_access_token: personal_access_token) }
-  let(:invalid_workspace_variables) do
+  let(:settings) { { some_setting: "value" } }
+  let(:returned_workspace_variables) do
     [
       {
-        key: "does-not-matter",
-        value: "does-not-matter",
-        variable_type: 9999999,
+        key: "key1",
+        value: "value1",
+        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_FILE,
+        workspace_id: workspace.id
+      },
+      {
+        key: "key2",
+        value: "value2",
+        variable_type: variable_type,
         workspace_id: workspace.id
       }
     ]
   end
 
-  let(:expected_workspace_variables_params) do
-    variables = RemoteDevelopment::Workspaces::Create::WorkspaceVariables.variables(
+  let(:workspace_variables_params) do
+    {
       name: workspace.name,
       dns_zone: workspace.dns_zone,
       personal_access_token_value: personal_access_token.token,
       user_name: user.name,
       user_email: user.email,
-      workspace_id: workspace.id
-    )
-    variables.each do |variable|
-      variable[:workspace_id] = workspace.id
-    end
+      workspace_id: workspace.id,
+      settings: settings
+    }
   end
 
   let(:value) do
     {
       workspace: workspace,
+      personal_access_token: personal_access_token,
       current_user: user,
-      personal_access_token: personal_access_token
+      settings: settings
     }
   end
 
@@ -47,26 +53,36 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
     described_class.create(value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
   end
 
-  context 'when workspace variables create is successful' do
-    it 'creates the workspace variables and returns ok result containing successful message with created variables' do
-      expect { result }.to change { workspace.workspace_variables.count }
+  before do
+    allow(RemoteDevelopment::Workspaces::Create::WorkspaceVariables)
+      .to receive(:variables).with(workspace_variables_params) { returned_workspace_variables }
+  end
 
-      expect(result).to be_ok_result do |message|
-        message => { workspace_variables_params: Array => workspace_variables_params }
-        expect(workspace_variables_params).to eq(expected_workspace_variables_params)
-      end
+  context 'when workspace variables create is successful' do
+    let(:valid_variable_type) { RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR }
+    let(:variable_type) { valid_variable_type }
+
+    it 'creates the workspace variable records and returns ok result containing original value' do
+      expect { result }.to change { workspace.workspace_variables.count }.by(2)
+
+      expect(RemoteDevelopment::WorkspaceVariable.find_by_key('key1').value).to eq('value1')
+      expect(RemoteDevelopment::WorkspaceVariable.find_by_key('key2').value).to eq('value2')
+
+      expect(result).to be_ok_result(value)
     end
   end
 
   context 'when workspace create fails' do
-    before do
-      allow(RemoteDevelopment::Workspaces::Create::WorkspaceVariables)
-        .to receive(:variables)
-              .and_return(invalid_workspace_variables)
-    end
+    let(:invalid_variable_type) { 9999999 }
+    let(:variable_type) { invalid_variable_type }
 
-    it 'does not create the workspace and returns an error result containing a failed message with model errors' do
-      expect { result }.not_to change { workspace.workspace_variables.count }
+    it 'does not create the invalid workspace variable records and returns an error result with model errors' do
+      # NOTE: Any valid records will be saved if they are first in the array before the invalid record, but that's OK,
+      #       because if we return an err_result, the entire transaction will be rolled back at a higher level.
+      expect { result }.to change { workspace.workspace_variables.count }.by(1)
+
+      expect(RemoteDevelopment::WorkspaceVariable.find_by_key('key1').value).to eq('value1')
+      expect(RemoteDevelopment::WorkspaceVariable.find_by_key('key2')).to be_nil
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceVariablesModelCreateFailed)

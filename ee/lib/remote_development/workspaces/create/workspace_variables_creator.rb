@@ -13,6 +13,7 @@ module RemoteDevelopment
             workspace: RemoteDevelopment::Workspace => workspace,
             personal_access_token: PersonalAccessToken => personal_access_token,
             current_user: User => user,
+            settings: Hash => settings
           }
           workspace_variables_params = WorkspaceVariables.variables(
             name: workspace.name,
@@ -20,7 +21,8 @@ module RemoteDevelopment
             personal_access_token_value: personal_access_token.token,
             user_name: user.name,
             user_email: user.email,
-            workspace_id: workspace.id
+            workspace_id: workspace.id,
+            settings: settings
           )
 
           workspace_variables_params.each do |workspace_variable_params|
@@ -34,11 +36,7 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(
-            value.merge({
-              workspace_variables_params: workspace_variables_params
-            })
-          )
+          Result.ok(value)
         end
       end
     end

@@ -33,8 +33,18 @@ module RemoteDevelopment
         # @param [String] user_name
         # @param [String] user_email
         # @param [Integer] workspace_id
+        # @param [Hash] settings
         # @return [Array<Hash>]
-        def self.variables(name:, dns_zone:, personal_access_token_value:, user_name:, user_email:, workspace_id:)
+        def self.variables(
+          name:, dns_zone:, personal_access_token_value:, user_name:, user_email:, workspace_id:, settings:
+        )
+          settings => { vscode_extensions_gallery: Hash => vscode_extensions_gallery }
+          vscode_extensions_gallery => {
+            service_url: String => vscode_extensions_gallery_service_url,
+            item_url: String => vscode_extensions_gallery_item_url,
+            resource_url_template: String => vscode_extensions_gallery_resource_url_template,
+          }
+
           [
             {
               key: File.basename(RemoteDevelopment::Workspaces::FileMounts::GITLAB_TOKEN_FILE),
@@ -105,6 +115,24 @@ module RemoteDevelopment
             {
               key: 'GL_WORKSPACE_DOMAIN_TEMPLATE',
               value: "${PORT}-#{name}.#{dns_zone}",
+              variable_type: VARIABLE_TYPE_ENV_VAR,
+              workspace_id: workspace_id
+            },
+            {
+              key: 'GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL',
+              value: vscode_extensions_gallery_service_url,
+              variable_type: VARIABLE_TYPE_ENV_VAR,
+              workspace_id: workspace_id
+            },
+            {
+              key: 'GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL',
+              value: vscode_extensions_gallery_item_url,
+              variable_type: VARIABLE_TYPE_ENV_VAR,
+              workspace_id: workspace_id
+            },
+            {
+              key: 'GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE',
+              value: vscode_extensions_gallery_resource_url_template,
               variable_type: VARIABLE_TYPE_ENV_VAR,
               workspace_id: workspace_id
             }

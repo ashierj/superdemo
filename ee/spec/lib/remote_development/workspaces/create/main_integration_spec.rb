@@ -51,7 +51,12 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
   let(:settings) do
     {
       project_cloner_image: 'alpine/git:2.36.3',
-      tools_injector_image: tools_injector_image_from_settings
+      tools_injector_image: tools_injector_image_from_settings,
+      vscode_extensions_gallery: {
+        service_url: "https://open-vsx.org/vscode/gallery",
+        item_url: "https://open-vsx.org/vscode/item",
+        resource_url_template: "https://open-vsx.org/api/{publisher}/{name}/{version}/file/{path}"
+      }
     }
   end
 

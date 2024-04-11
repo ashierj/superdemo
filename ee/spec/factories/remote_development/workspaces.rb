@@ -82,7 +82,14 @@ FactoryBot.define do
             personal_access_token_value: workspace.personal_access_token.token,
             user_name: workspace.user.name,
             user_email: workspace.user.email,
-            workspace_id: workspace.id
+            workspace_id: workspace.id,
+            settings: {
+              vscode_extensions_gallery: {
+                service_url: "https://open-vsx.org/vscode/gallery",
+                item_url: "https://open-vsx.org/vscode/item",
+                resource_url_template: "https://open-vsx.org/api/{publisher}/{name}/{version}/file/{path}"
+              }
+            }
           )
 
           workspace_variables.each do |workspace_variable|

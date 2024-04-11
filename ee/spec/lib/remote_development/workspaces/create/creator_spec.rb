@@ -3,126 +3,147 @@
 require 'spec_helper'
 
 RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_category: :remote_development do
+  include RemoteDevelopment::RailwayOrientedProgrammingHelpers
   include ResultMatchers
 
   include_context 'with remote development shared fixtures'
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project, reload: true) { create(:project, :in_group, :repository) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:random_string) { 'abcdef' }
-  let(:devfile_path) { '.devfile.yaml' }
-  let(:devfile_yaml) { example_devfile }
-  let(:processed_devfile) { YAML.safe_load(example_flattened_devfile) }
-  let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
-  let(:processed_devfile_yaml) { YAML.safe_load(example_processed_devfile) }
-  let(:max_hours_before_termination) { 24 }
 
-  let(:editor) { 'webide' }
-  let(:workspace_root) { '/projects' }
   let(:params) do
     {
-      agent: agent,
-      user: user,
-      project: project,
-      editor: editor,
-      max_hours_before_termination: max_hours_before_termination,
-      desired_state: desired_state,
-      devfile_ref: 'main',
-      devfile_path: devfile_path
+      agent: agent
     }
   end
 
   let(:value) do
     {
       params: params,
-      current_user: user,
-      devfile_yaml: devfile_yaml,
-      processed_devfile: processed_devfile,
-      volume_mounts: {
-        data_volume: {
-          name: "gl-workspace-data",
-          path: workspace_root
-        }
-      }
+      current_user: user
     }
   end
+
+  let(:updated_value) do
+    value.merge(
+      {
+        workspace_name: "workspace-#{agent.id}-#{user.id}-#{random_string}",
+        workspace_namespace: "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}"
+      }
+    )
+  end
+
+  # Classes
+
+  let(:personal_access_token_creator_class) { RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreator }
+  let(:workspace_creator_class) { RemoteDevelopment::Workspaces::Create::WorkspaceCreator }
+  let(:workspace_variables_creator_class) { RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreator }
+
+  # Methods
+
+  let(:personal_access_token_creator_method) { personal_access_token_creator_class.singleton_method(:create) }
+  let(:workspace_creator_method) { workspace_creator_class.singleton_method(:create) }
+  let(:workspace_variables_creator_method) { workspace_variables_creator_class.singleton_method(:create) }
 
   subject(:result) do
     described_class.create(value) # rubocop:disable Rails/SaveBang -- we are testing validation, we don't want an exception
   end
 
-  context 'when all db records are created successfully' do
-    before do
-      allow(SecureRandom).to receive(:alphanumeric) { random_string }
+  before do
+    allow(personal_access_token_creator_class).to receive(:method).with(:create) do
+      personal_access_token_creator_method
     end
 
-    it 'returns ok result containing successful message with created workspace' do
-      expect { result }.to change {
-        [
-          project.workspaces.count,
-          user.personal_access_tokens.reload.count,
-          project.workspaces.last ? project.workspaces.last.workspace_variables.count : 0
-        ]
-      }
+    allow(workspace_creator_class).to receive(:method).with(:create) do
+      workspace_creator_method
+    end
 
+    allow(workspace_variables_creator_class).to receive(:method).with(:create) do
+      create(:workspace_variable)
+      workspace_variables_creator_method
+    end
+  end
+
+  context 'when workspace create is successful' do
+    before do
+      allow(SecureRandom).to receive(:alphanumeric) { random_string }
+
+      stub_methods_to_return_ok_result(
+        personal_access_token_creator_method,
+        workspace_creator_method,
+        workspace_variables_creator_method
+      )
+    end
+
+    it 'returns ok result containing successful message with updated value' do
       expect(result).to be_ok_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateSuccessful)
-        message.context => { workspace: RemoteDevelopment::Workspace => workspace }
-        expect(workspace).to eq(project.workspaces.last)
+        expect(message.context).to eq(updated_value)
       end
     end
   end
 
-  context 'when workspace fails on creation' do
-    shared_examples 'err result' do |expected_error_details:|
-      it 'does not create the db records and returns an error result containing a failed message with model errors' do
-        expect { result }.not_to change {
-          [
-            project.workspaces.count,
-            user.personal_access_tokens.reload.count,
-            project.workspaces.last ? project.workspaces.last.workspace_variables.count : 0
-          ]
-        }
+  context "when workspace create fails" do
+    let(:creation_errors) { 'some creation errors' }
+    let(:err_message_context) { { errors: creation_errors } }
+
+    context 'when the PersonalAccessTokenCreator returns an err Result' do
+      before do
+        stub_methods_to_return_err_result(
+          method: personal_access_token_creator_method,
+          message_class: RemoteDevelopment::Messages::PersonalAccessTokenModelCreateFailed
+        )
+      end
+
+      it 'returns an error result containing creation errors' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateFailed)
-          message.context => { errors: ActiveModel::Errors => errors }
-          expect(errors.full_messages).to match([/#{expected_error_details}/i])
+          message.context => { errors: errors }
+          expect(errors).to eq(creation_errors)
         end
       end
     end
 
-    context 'when workspace db record fails on creation' do
-      let(:desired_state) { 'InvalidDesiredState' }
-
-      it_behaves_like 'err result', expected_error_details: %(desired state)
-    end
-
-    context 'when personal access token db record fails on creation' do
-      let(:max_hours_before_termination) { 999999999999 }
-
-      it_behaves_like 'err result', expected_error_details: %(expiration date)
-    end
-
-    context 'when workspace variable db record fails on creation' do
-      let(:invalid_workspace_variables) do
-        [
-          {
-            key: "does-not-matter",
-            value: "does-not-matter",
-            variable_type: 9999999,
-            workspace_id: 0 # workspace id does not matter in this case
-          }
-        ]
-      end
-
+    context 'when the WorkspaceCreator returns an err Result' do
       before do
-        allow(RemoteDevelopment::Workspaces::Create::WorkspaceVariables)
-          .to receive(:variables)
-                .and_return(invalid_workspace_variables)
+        stub_methods_to_return_ok_result(personal_access_token_creator_method)
+
+        stub_methods_to_return_err_result(
+          method: workspace_creator_method,
+          message_class: RemoteDevelopment::Messages::WorkspaceModelCreateFailed
+        )
       end
 
-      it_behaves_like 'err result', expected_error_details: %(variable type)
+      it 'returns an error result containing creation errors' do
+        expect(result).to be_err_result do |message|
+          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateFailed)
+          message.context => { errors: errors }
+          expect(errors).to eq(creation_errors)
+        end
+      end
+    end
+
+    context 'when the WorkspaceVariablesCreator returns an err Result' do
+      before do
+        stub_methods_to_return_ok_result(
+          personal_access_token_creator_method,
+          workspace_creator_method
+        )
+
+        stub_methods_to_return_err_result(
+          method: workspace_variables_creator_method,
+          message_class: RemoteDevelopment::Messages::WorkspaceVariablesModelCreateFailed
+        )
+      end
+
+      it 'returns an error response containing creation errors' do
+        expect(result).to be_err_result do |message|
+          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateFailed)
+          message.context => { errors: errors }
+          expect(errors).to eq(creation_errors)
+        end
+      end
     end
   end
 end
