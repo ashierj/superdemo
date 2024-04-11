@@ -349,6 +349,7 @@ module EE
         enable :admin_wiki
         enable :modify_product_analytics_settings
         enable :read_jobs_statistics
+        enable :admin_push_rules
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
@@ -666,39 +667,33 @@ module EE
         prevent(:download_wiki_code)
       end
 
-      rule { admin | maintainer }.enable :change_commit_committer_check
+      rule { can?(:admin_push_rules) }.policy do
+        enable :change_push_rules
+        enable :change_commit_committer_check
+        enable :change_commit_committer_name_check
+        enable :change_reject_unsigned_commits
+        enable :change_reject_non_dco_commits
+      end
 
-      rule { admin | maintainer }.enable :change_commit_committer_name_check
-
-      rule { commit_committer_check_available }.policy do
-        enable :read_commit_committer_check
+      rule { ~push_rules_available }.policy do
+        prevent :change_push_rules
       end
 
       rule { ~commit_committer_check_available }.policy do
         prevent :change_commit_committer_check
       end
 
-      rule { commit_committer_name_check_available }.policy do
-        enable :read_commit_committer_name_check
-      end
-
       rule { ~commit_committer_name_check_available }.policy do
         prevent :change_commit_committer_name_check
       end
 
-      rule { admin | maintainer }.enable :change_reject_unsigned_commits
+      rule { ~reject_unsigned_commits_available }.policy do
+        prevent :change_reject_unsigned_commits
+      end
 
-      rule { reject_unsigned_commits_available }.enable :read_reject_unsigned_commits
-
-      rule { ~reject_unsigned_commits_available }.prevent :change_reject_unsigned_commits
-
-      rule { admin | maintainer }.enable :change_reject_non_dco_commits
-
-      rule { reject_non_dco_commits_available }.enable :read_reject_non_dco_commits
-
-      rule { ~reject_non_dco_commits_available }.prevent :change_reject_non_dco_commits
-
-      rule { can?(:maintainer_access) & push_rules_available }.enable :change_push_rules
+      rule { ~reject_non_dco_commits_available }.policy do
+        prevent :change_reject_non_dco_commits
+      end
 
       rule { admin & is_gitlab_com }.enable :update_subscription_limit
 

@@ -1764,7 +1764,43 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
-  context 'commit_committer_check is not enabled by the current license' do
+  context 'when push_rules is not enabled by the current license' do
+    before do
+      stub_licensed_features(push_rules: false)
+    end
+
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:change_push_rules) }
+  end
+
+  context 'when push_rules is enabled by the current license' do
+    before do
+      stub_licensed_features(push_rules: true)
+    end
+
+    let(:current_user) { maintainer }
+
+    context 'when the user is an admin', :enable_admin_mode do
+      let(:current_user) { admin }
+
+      it { is_expected.to be_allowed(:change_push_rules) }
+    end
+
+    context 'when the user is a maintainer' do
+      let(:current_user) { maintainer }
+
+      it { is_expected.to be_allowed(:change_push_rules) }
+    end
+
+    context 'when the user is a developer' do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_disallowed(:change_push_rules) }
+    end
+  end
+
+  context 'when commit_committer_check is not enabled by the current license' do
     before do
       stub_licensed_features(commit_committer_check: false)
     end
@@ -1772,10 +1808,9 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     let(:current_user) { maintainer }
 
     it { is_expected.not_to be_allowed(:change_commit_committer_check) }
-    it { is_expected.not_to be_allowed(:read_commit_committer_check) }
   end
 
-  context 'commit_committer_check is enabled by the current license' do
+  context 'when commit_committer_check is enabled by the current license' do
     before do
       stub_licensed_features(commit_committer_check: true)
     end
@@ -1784,25 +1819,56 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:current_user) { admin }
 
       it { is_expected.to be_allowed(:change_commit_committer_check) }
-      it { is_expected.to be_allowed(:read_commit_committer_check) }
     end
 
-    context 'the user is a maintainer' do
+    context 'when the user is a maintainer' do
       let(:current_user) { maintainer }
 
       it { is_expected.to be_allowed(:change_commit_committer_check) }
-      it { is_expected.to be_allowed(:read_commit_committer_check) }
+    end
+
+    context 'when the user is a developer' do
+      let(:current_user) { developer }
+
+      it { is_expected.not_to be_allowed(:change_commit_committer_check) }
+    end
+  end
+
+  context 'when commit_committer_name_check is not enabled by the current license' do
+    before do
+      stub_licensed_features(commit_committer_name_check: false)
+    end
+
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:change_commit_committer_name_check) }
+  end
+
+  context 'when commit_committer_name_check is enabled by the current license' do
+    before do
+      stub_licensed_features(commit_committer_name_check: true)
+    end
+
+    context 'when the user is an admin', :enable_admin_mode do
+      let(:current_user) { admin }
+
+      it { is_expected.to be_allowed(:change_commit_committer_name_check) }
+    end
+
+    context 'when the user is a maintainer' do
+      let(:current_user) { maintainer }
+
+      it { is_expected.to be_allowed(:change_commit_committer_name_check) }
     end
 
     context 'the user is a developer' do
       let(:current_user) { developer }
 
-      it { is_expected.not_to be_allowed(:change_commit_committer_check) }
-      it { is_expected.to be_allowed(:read_commit_committer_check) }
+      it { is_expected.to be_disallowed(:change_commit_committer_name_check) }
     end
   end
 
-  context 'reject_unsigned_commits is not enabled by the current license' do
+  context 'when reject_unsigned_commits is not enabled by the current license' do
     before do
       stub_licensed_features(reject_unsigned_commits: false)
     end
@@ -1810,10 +1876,9 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     let(:current_user) { maintainer }
 
     it { is_expected.not_to be_allowed(:change_reject_unsigned_commits) }
-    it { is_expected.not_to be_allowed(:read_reject_unsigned_commits) }
   end
 
-  context 'reject_unsigned_commits is enabled by the current license' do
+  context 'when reject_unsigned_commits is enabled by the current license' do
     before do
       stub_licensed_features(reject_unsigned_commits: true)
     end
@@ -1822,21 +1887,52 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:current_user) { admin }
 
       it { is_expected.to be_allowed(:change_reject_unsigned_commits) }
-      it { is_expected.to be_allowed(:read_reject_unsigned_commits) }
     end
 
-    context 'the user is a maintainer' do
+    context 'when the user is a maintainer' do
       let(:current_user) { maintainer }
 
       it { is_expected.to be_allowed(:change_reject_unsigned_commits) }
-      it { is_expected.to be_allowed(:read_reject_unsigned_commits) }
     end
 
-    context 'the user is a developer' do
+    context 'when the user is a developer' do
       let(:current_user) { developer }
 
       it { is_expected.not_to be_allowed(:change_reject_unsigned_commits) }
-      it { is_expected.to be_allowed(:read_reject_unsigned_commits) }
+    end
+  end
+
+  context 'when reject_non_dco_commits is not enabled by the current license' do
+    before do
+      stub_licensed_features(reject_non_dco_commits: false)
+    end
+
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:change_reject_non_dco_commits) }
+  end
+
+  context 'when reject_non_dco_commits is enabled by the current license' do
+    before do
+      stub_licensed_features(reject_non_dco_commits: true)
+    end
+
+    context 'when the user is an admin', :enable_admin_mode do
+      let(:current_user) { admin }
+
+      it { is_expected.to be_allowed(:change_reject_non_dco_commits) }
+    end
+
+    context 'when the user is a maintainer' do
+      let(:current_user) { maintainer }
+
+      it { is_expected.to be_allowed(:change_reject_non_dco_commits) }
+    end
+
+    context 'when the user is a developer' do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_disallowed(:change_reject_non_dco_commits) }
     end
   end
 
@@ -3336,6 +3432,31 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:allowed_abilities) { [:admin_push_rules] }
 
       it_behaves_like 'custom roles abilities'
+
+      context 'when push rules feature is enabled' do
+        before do
+          stub_licensed_features(
+            custom_roles: true,
+            push_rules: true,
+            commit_committer_check: true,
+            commit_committer_name_check: true,
+            reject_unsigned_commits: true,
+            reject_non_dco_commits: true
+          )
+
+          create_member_role(group_member_guest)
+        end
+
+        it do
+          is_expected.to be_allowed(
+            :change_push_rules,
+            :change_commit_committer_check,
+            :change_commit_committer_name_check,
+            :change_reject_unsigned_commits,
+            :change_reject_non_dco_commits
+          )
+        end
+      end
     end
 
     context 'for a custom role with the `manage_security_policy_link` ability' do
@@ -3419,7 +3540,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         stub_saas_features(google_cloud_support: true)
       end
 
-      context 'the user is a maintainer' do
+      context 'when the user is a maintainer' do
         let(:current_user) { maintainer }
 
         it { is_expected.to be_allowed(:read_runner_cloud_provisioning_info) }
