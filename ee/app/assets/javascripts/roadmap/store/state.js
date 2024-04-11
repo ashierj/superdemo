@@ -12,8 +12,6 @@ export default () => ({
   epicIid: '',
   epics: [],
   pageInfo: null,
-  childrenEpics: {},
-  childrenFlags: {},
   visibleEpics: [],
   epicIds: [],
   fullPath: '',

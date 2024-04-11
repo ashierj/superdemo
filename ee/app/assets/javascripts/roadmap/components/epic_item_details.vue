@@ -8,7 +8,6 @@ import { queryToObject, updateHistory } from '~/lib/utils/url_utility';
 import { __, n__ } from '~/locale';
 import IssuableBlockedIcon from '~/vue_shared/components/issuable_blocked_icon/issuable_blocked_icon.vue';
 import { EPIC_LEVEL_MARGIN, UNSUPPORTED_ROADMAP_PARAMS } from '../constants';
-import eventHub from '../event_hub';
 
 export default {
   components: {
@@ -32,10 +31,6 @@ export default {
       type: Number,
       required: true,
     },
-    childrenFlags: {
-      type: Object,
-      required: true,
-    },
     hasFiltersApplied: {
       type: Boolean,
       required: true,
@@ -44,6 +39,14 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    isExpanded: {
+      type: Boolean,
+      required: true,
+    },
+    isFetchingChildren: {
+      type: Boolean,
+      required: true,
     },
   },
   computed: {
@@ -61,17 +64,13 @@ export default {
       return !this.epic.hasChildren;
     },
     isEmptyChildrenWithFilter() {
-      return (
-        this.childrenFlags[this.itemId].itemExpanded &&
-        this.hasFiltersApplied &&
-        this.isChildrenEmpty
-      );
+      return this.isExpanded && this.hasFiltersApplied && this.isChildrenEmpty;
     },
     expandIconName() {
       if (this.isEmptyChildrenWithFilter) {
         return 'information-o';
       }
-      return this.childrenFlags[this.itemId].itemExpanded ? 'chevron-down' : 'chevron-right';
+      return this.isExpanded ? 'chevron-down' : 'chevron-right';
     },
     infoSearchLabel() {
       return __('No child epics match applied filters');
@@ -80,10 +79,10 @@ export default {
       if (this.isEmptyChildrenWithFilter) {
         return this.infoSearchLabel;
       }
-      return this.childrenFlags[this.itemId].itemExpanded ? __('Collapse') : __('Expand');
+      return this.isExpanded ? __('Collapse') : __('Expand');
     },
     childrenFetchInProgress() {
-      return this.epic.hasChildren && this.childrenFlags[this.itemId].itemChildrenFetchInProgress;
+      return this.epic.hasChildren && this.isFetchingChildren;
     },
     childEpicsCount() {
       const { openedEpics = 0, closedEpics = 0 } = this.epic.descendantCounts;
@@ -109,9 +108,9 @@ export default {
   },
   methods: {
     ...mapActions(['setFilterParams', 'fetchEpics']),
-    toggleIsEpicExpanded() {
+    toggleEpic() {
       if (!this.isEmptyChildrenWithFilter) {
-        eventHub.$emit('toggleIsEpicExpanded', this.epic);
+        this.$emit('toggleEpic');
       }
     },
     filterByLabelUrl(label) {
@@ -154,14 +153,13 @@ export default {
     >
       <span ref="expandCollapseInfo">
         <gl-button
-          v-if="!childrenFetchInProgress"
           :class="{ invisible: isExpandIconHidden }"
           :aria-label="expandIconLabel"
           category="tertiary"
           size="small"
           :icon="expandIconName"
-          :loading="childrenFetchInProgress"
-          @click="toggleIsEpicExpanded"
+          :loading="isFetchingChildren"
+          @click="toggleEpic"
         />
       </span>
       <gl-tooltip

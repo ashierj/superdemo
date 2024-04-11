@@ -62,42 +62,18 @@ const fetchGroupEpics = (
       variables,
     })
     .then(({ data }) => {
-      const edges = epicIid
-        ? data?.group?.epic?.children?.edges || []
-        : data?.group?.epics?.edges || [];
+      const nodes = epicIid ? data?.group?.epic?.children?.nodes : data?.group?.epics?.nodes;
 
       return {
-        rawEpics: edges.map((e) => e.node),
+        rawEpics: nodes || [],
         pageInfo: data?.group?.epics?.pageInfo,
       };
     });
 };
 
-const fetchChildrenEpics = (state, { parentItem }) => {
-  const { iid, group } = parentItem;
-  const { filterParams, epicsState, sortedBy } = state;
-
-  return epicUtils.gqClient
-    .query({
-      query: epicChildEpics,
-      variables: {
-        iid,
-        fullPath: group?.fullPath,
-        state: epicsState,
-        sort: sortedBy,
-        withColor: Boolean(gon?.features?.epicColorHighlight),
-        ...filterParams,
-      },
-    })
-    .then(({ data }) => {
-      const edges = data?.group?.epic?.children?.edges || [];
-      return edges.map((e) => e.node);
-    });
-};
-
 export const receiveEpicsSuccess = (
-  { commit, dispatch, state },
-  { rawEpics, pageInfo, newEpic, timeframeExtended, appendToList },
+  { commit, state },
+  { rawEpics, pageInfo, timeframeExtended, appendToList },
 ) => {
   const epicIds = [];
   const epics = rawEpics.reduce((filteredEpics, epic) => {
@@ -116,9 +92,6 @@ export const receiveEpicsSuccess = (
       formattedEpic.startDate.getTime() <= formattedEpic.endDate.getTime() &&
       state.epicIds.indexOf(formattedEpic.id) < 0
     ) {
-      Object.assign(formattedEpic, {
-        newEpic,
-      });
       filteredEpics.push(formattedEpic);
       epicIds.push(formattedEpic.id);
     }
@@ -126,7 +99,6 @@ export const receiveEpicsSuccess = (
   }, []);
 
   commit(types.UPDATE_EPIC_IDS, epicIds);
-  dispatch('initItemChildrenFlags', { epics });
 
   if (timeframeExtended) {
     const updatedEpics = state.epics.concat(epics);
@@ -146,36 +118,6 @@ export const receiveEpicsFailure = ({ commit }) => {
   });
 };
 
-export const requestChildrenEpics = ({ commit }, { parentItemId }) => {
-  commit(types.REQUEST_CHILDREN_EPICS, { parentItemId });
-};
-export const receiveChildrenSuccess = (
-  { commit, dispatch, state },
-  { parentItemId, rawChildren },
-) => {
-  const children = rawChildren.reduce((filteredChildren, epic) => {
-    const { presetType, timeframe } = state;
-    const formattedChild = roadmapItemUtils.formatRoadmapItemDetails(
-      epic,
-      roadmapItemUtils.timeframeStartDate(presetType, timeframe),
-      roadmapItemUtils.timeframeEndDate(presetType, timeframe),
-    );
-
-    formattedChild.isChildEpic = true;
-
-    // Exclude any Epic that has invalid dates
-    if (formattedChild.startDate.getTime() <= formattedChild.endDate.getTime()) {
-      filteredChildren.push(formattedChild);
-    }
-    return filteredChildren;
-  }, []);
-  dispatch('expandEpic', {
-    parentItemId,
-  });
-  dispatch('initItemChildrenFlags', { epics: children });
-  commit(types.RECEIVE_CHILDREN_SUCCESS, { parentItemId, children });
-};
-
 export const fetchEpics = ({ state, commit, dispatch }, { endCursor } = {}) => {
   if (endCursor) {
     commit(types.REQUEST_EPICS_FOR_NEXT_PAGE);
@@ -192,39 +134,6 @@ export const fetchEpics = ({ state, commit, dispatch }, { endCursor } = {}) => {
       });
     })
     .catch(() => dispatch('receiveEpicsFailure'));
-};
-
-export const initItemChildrenFlags = ({ commit }, data) =>
-  commit(types.INIT_EPIC_CHILDREN_FLAGS, data);
-
-export const expandEpic = ({ commit }, { parentItemId }) =>
-  commit(types.EXPAND_EPIC, { parentItemId });
-export const collapseEpic = ({ commit }, { parentItemId }) =>
-  commit(types.COLLAPSE_EPIC, { parentItemId });
-
-export const toggleEpic = ({ state, dispatch }, { parentItem }) => {
-  const parentItemId = parentItem.id;
-  if (!state.childrenFlags[parentItemId].itemExpanded) {
-    if (!state.childrenEpics[parentItemId]) {
-      dispatch('requestChildrenEpics', { parentItemId });
-      fetchChildrenEpics(state, { parentItem })
-        .then((rawChildren) => {
-          dispatch('receiveChildrenSuccess', {
-            parentItemId,
-            rawChildren,
-          });
-        })
-        .catch(() => dispatch('receiveEpicsFailure'));
-    } else {
-      dispatch('expandEpic', {
-        parentItemId,
-      });
-    }
-  } else {
-    dispatch('collapseEpic', {
-      parentItemId,
-    });
-  }
 };
 
 export const fetchGroupMilestones = (
@@ -306,20 +215,6 @@ export const receiveMilestonesFailure = ({ commit }) => {
   createAlert({
     message: s__('GroupRoadmap|Something went wrong while fetching milestones'),
   });
-};
-
-export const refreshMilestoneDates = ({ commit, state }) => {
-  const { presetType, timeframe } = state;
-
-  const milestones = state.milestones.map((milestone) =>
-    roadmapItemUtils.processRoadmapItemDates(
-      milestone,
-      roadmapItemUtils.timeframeStartDate(presetType, timeframe),
-      roadmapItemUtils.timeframeEndDate(presetType, timeframe),
-    ),
-  );
-
-  commit(types.SET_MILESTONES, milestones);
 };
 
 export const setBufferSize = ({ commit }, bufferSize) => commit(types.SET_BUFFER_SIZE, bufferSize);

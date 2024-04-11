@@ -6,7 +6,6 @@ import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
 import defaultState from 'ee/roadmap/store/state';
 import * as epicUtils from 'ee/roadmap/utils/epic_utils';
-import * as roadmapItemUtils from 'ee/roadmap/utils/roadmap_item_utils';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/alert';
@@ -15,7 +14,6 @@ import {
   mockGroupId,
   basePath,
   mockTimeframeInitialDate,
-  mockTimeframeMonthsAppend,
   mockRawEpic,
   mockRawEpic2,
   mockFormattedEpic,
@@ -23,8 +21,6 @@ import {
   mockSortedBy,
   mockGroupEpicsQueryResponse,
   mockGroupEpics,
-  mockEpicChildEpicsQueryResponse,
-  mockChildEpicNode1,
   mockGroupMilestonesQueryResponse,
   mockGroupMilestones,
   mockMilestone,
@@ -98,14 +94,6 @@ describe('Roadmap Vuex Actions', () => {
             payload: { epics: [mockFormattedEpic2], pageInfo: mockPageInfo },
           },
         ],
-        [
-          {
-            type: 'initItemChildrenFlags',
-            payload: {
-              epics: [mockFormattedEpic2],
-            },
-          },
-        ],
       );
     });
 
@@ -114,7 +102,6 @@ describe('Roadmap Vuex Actions', () => {
         actions.receiveEpicsSuccess,
         {
           rawEpics: [mockRawEpic],
-          newEpic: true,
           timeframeExtended: true,
         },
         state,
@@ -122,22 +109,7 @@ describe('Roadmap Vuex Actions', () => {
           { type: types.UPDATE_EPIC_IDS, payload: [mockRawEpic.id] },
           {
             type: types.RECEIVE_EPICS_FOR_TIMEFRAME_SUCCESS,
-            payload: [{ ...mockFormattedEpic, newEpic: true }],
-          },
-        ],
-        [
-          {
-            type: 'initItemChildrenFlags',
-            payload: {
-              epics: [
-                {
-                  ...mockFormattedEpic,
-                  newEpic: true,
-                  startDateOutOfRange: true,
-                  endDateOutOfRange: false,
-                },
-              ],
-            },
+            payload: [{ ...mockFormattedEpic }],
           },
         ],
       );
@@ -254,255 +226,6 @@ describe('Roadmap Vuex Actions', () => {
           ],
         );
       });
-    });
-  });
-
-  describe('requestChildrenEpics', () => {
-    const parentItemId = '41';
-    it('should set `itemChildrenFetchInProgress` in childrenFlags for parentItem to true', () => {
-      return testAction(
-        actions.requestChildrenEpics,
-        { parentItemId },
-        state,
-        [{ type: 'REQUEST_CHILDREN_EPICS', payload: { parentItemId } }],
-        [],
-      );
-    });
-  });
-
-  describe('receiveChildrenSuccess', () => {
-    it('should set formatted epic children array in state based on provided epic children list', () => {
-      return testAction(
-        actions.receiveChildrenSuccess,
-        {
-          parentItemId: '41',
-          rawChildren: [mockRawEpic2],
-        },
-        state,
-        [
-          {
-            type: types.RECEIVE_CHILDREN_SUCCESS,
-            payload: {
-              parentItemId: '41',
-              children: [
-                {
-                  ...mockFormattedEpic2,
-                  isChildEpic: true,
-                },
-              ],
-            },
-          },
-        ],
-        [
-          {
-            type: 'expandEpic',
-            payload: { parentItemId: '41' },
-          },
-          {
-            type: 'initItemChildrenFlags',
-            payload: {
-              epics: [
-                {
-                  ...mockFormattedEpic2,
-                  isChildEpic: true,
-                },
-              ],
-            },
-          },
-        ],
-      );
-    });
-  });
-
-  describe('initItemChildrenFlags', () => {
-    it('should set `state.childrenFlags` for every item in provided children param', () => {
-      return testAction(
-        actions.initItemChildrenFlags,
-        { children: [{ id: '1' }] },
-        {},
-        [{ type: types.INIT_EPIC_CHILDREN_FLAGS, payload: { children: [{ id: '1' }] } }],
-        [],
-      );
-    });
-  });
-
-  describe('expandEpic', () => {
-    const parentItemId = '41';
-    it('should set `itemExpanded` to true on state.childrenFlags', () => {
-      return testAction(
-        actions.expandEpic,
-        { parentItemId },
-        {},
-        [{ type: types.EXPAND_EPIC, payload: { parentItemId } }],
-        [],
-      );
-    });
-  });
-
-  describe('collapseEpic', () => {
-    const parentItemId = '41';
-    it('should set `itemExpanded` to false on state.childrenFlags', () => {
-      return testAction(
-        actions.collapseEpic,
-        { parentItemId },
-        {},
-        [{ type: types.COLLAPSE_EPIC, payload: { parentItemId } }],
-        [],
-      );
-    });
-  });
-
-  describe('toggleEpic', () => {
-    const parentItem = mockFormattedEpic;
-
-    it('should dispatch `requestChildrenEpics` action when parent is not expanded and does not have children in state', async () => {
-      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-        Promise.resolve({
-          data: mockEpicChildEpicsQueryResponse.data,
-        }),
-      );
-
-      state.childrenFlags[parentItem.id] = {
-        itemExpanded: false,
-      };
-
-      await actions.toggleEpic({ state, dispatch: jest.fn() }, { parentItem });
-
-      expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
-        query: epicChildEpics,
-        variables: {
-          fullPath: '/groups/gitlab-org/',
-          iid: parentItem.iid,
-          sort: state.sortedBy,
-          state: state.epicsState,
-          withColor: false,
-          milestoneTitle: '',
-        },
-      });
-    });
-
-    describe('with successful child epics query response', () => {
-      beforeEach(() => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-          Promise.resolve({
-            data: mockEpicChildEpicsQueryResponse.data,
-          }),
-        );
-
-        state.childrenFlags[parentItem.id] = {
-          itemExpanded: false,
-        };
-      });
-
-      describe.each([true, false])(
-        'when the epicColorHighlight feature flag enabled is %s',
-        (withColorEnabled) => {
-          beforeEach(() => {
-            window.gon = { features: { epicColorHighlight: withColorEnabled } };
-          });
-
-          it('should query children epics', async () => {
-            await actions.toggleEpic({ state, dispatch: jest.fn() }, { parentItem });
-
-            expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
-              query: epicChildEpics,
-              variables: {
-                fullPath: '/groups/gitlab-org/',
-                iid: parentItem.iid,
-                sort: state.sortedBy,
-                state: state.epicsState,
-                withColor: withColorEnabled,
-                milestoneTitle: '',
-              },
-            });
-          });
-        },
-      );
-
-      it('should dispatch `receiveChildrenSuccess`', async () => {
-        await testAction(
-          actions.toggleEpic,
-          { parentItem },
-          state,
-          [],
-          [
-            {
-              type: 'requestChildrenEpics',
-              payload: { parentItemId: parentItem.id },
-            },
-            {
-              type: 'receiveChildrenSuccess',
-              payload: {
-                parentItemId: parentItem.id,
-                rawChildren: [mockChildEpicNode1],
-              },
-            },
-          ],
-        );
-      });
-    });
-
-    it('should dispatch `receiveEpicsFailure` on request failure', () => {
-      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(Promise.reject());
-
-      state.childrenFlags[parentItem.id] = {
-        itemExpanded: false,
-      };
-
-      return testAction(
-        actions.toggleEpic,
-        { parentItem },
-        state,
-        [],
-        [
-          {
-            type: 'requestChildrenEpics',
-            payload: { parentItemId: parentItem.id },
-          },
-          {
-            type: 'receiveEpicsFailure',
-          },
-        ],
-      );
-    });
-
-    it('should dispatch `expandEpic` when a parent item is not expanded but does have children present in state', () => {
-      state.childrenFlags[parentItem.id] = {
-        itemExpanded: false,
-      };
-      state.childrenEpics[parentItem.id] = ['foo'];
-
-      return testAction(
-        actions.toggleEpic,
-        { parentItem },
-        state,
-        [],
-        [
-          {
-            type: 'expandEpic',
-            payload: { parentItemId: parentItem.id },
-          },
-        ],
-      );
-    });
-
-    it('should dispatch `collapseEpic` when a parent item is expanded', () => {
-      state.childrenFlags[parentItem.id] = {
-        itemExpanded: true,
-      };
-
-      return testAction(
-        actions.toggleEpic,
-        { parentItem },
-        state,
-        [],
-        [
-          {
-            type: 'collapseEpic',
-            payload: { parentItemId: parentItem.id },
-          },
-        ],
-      );
     });
   });
 
@@ -684,26 +407,6 @@ describe('Roadmap Vuex Actions', () => {
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while fetching milestones',
       });
-    });
-  });
-
-  describe('refreshMilestoneDates', () => {
-    it('should update milestones after refreshing milestone dates to match with updated timeframe', () => {
-      const milestones = mockGroupMilestones.map((milestone) =>
-        roadmapItemUtils.formatRoadmapItemDetails(
-          milestone,
-          state.timeframeStartDate,
-          state.timeframeEndDate,
-        ),
-      );
-
-      return testAction(
-        actions.refreshMilestoneDates,
-        {},
-        { ...state, timeframe: mockTimeframeMonths.concat(mockTimeframeMonthsAppend), milestones },
-        [{ type: types.SET_MILESTONES, payload: milestones }],
-        [],
-      );
     });
   });
 

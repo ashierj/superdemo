@@ -28,14 +28,6 @@ export default {
       type: Number,
       required: true,
     },
-    childrenEpics: {
-      type: Object,
-      required: true,
-    },
-    childrenFlags: {
-      type: Object,
-      required: true,
-    },
     hasFiltersApplied: {
       type: Boolean,
       required: true,
@@ -57,8 +49,6 @@ export default {
       :timeframe="timeframe"
       :client-width="clientWidth"
       :child-level="childLevel"
-      :children-epics="childrenEpics"
-      :children-flags="childrenFlags"
       :has-filters-applied="hasFiltersApplied"
     />
   </div>

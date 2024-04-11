@@ -27,14 +27,15 @@ const createComponent = ({
   currentGroupId = mockGroupId,
   children = [],
   childLevel = 0,
-  childrenEpics = {},
-  childrenFlags = { 1: { itemExpanded: false } },
   hasFiltersApplied = false,
 } = {}) => {
   return shallowMount(EpicItemContainer, {
     store,
     stubs: {
-      EpicItem,
+      EpicItem: true,
+    },
+    provide: {
+      currentGroupId,
     },
     propsData: {
       presetType,
@@ -42,8 +43,6 @@ const createComponent = ({
       currentGroupId,
       children,
       childLevel,
-      childrenEpics,
-      childrenFlags,
       hasFiltersApplied,
     },
   });
@@ -65,13 +64,10 @@ describe('EpicItemContainer', () => {
     it('renders one Epic item element per child', () => {
       wrapper = createComponent({
         children: [mockFormattedChildEpic1],
-        childrenFlags: {
-          1: { itemExpanded: true },
-          50: { itemExpanded: false },
-        },
       });
+
       expect(wrapper.findComponent(EpicItem).exists()).toBe(true);
-      expect(wrapper.findAllComponents(EpicItem).length).toBe(wrapper.vm.children.length);
+      expect(wrapper.findAllComponents(EpicItem).length).toBe(1);
     });
   });
 });

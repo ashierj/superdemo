@@ -28,12 +28,10 @@ query epicChildEpics(
         search: $search
         timeframe: $timeframe
       ) {
-        edges {
-          node {
-            ...BaseEpic
-            color @include(if: $withColor)
-            textColor @include(if: $withColor)
-          }
+        nodes {
+          ...BaseEpic
+          color @include(if: $withColor)
+          textColor @include(if: $withColor)
         }
       }
     }

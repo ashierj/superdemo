@@ -13,8 +13,6 @@ import createStore from 'ee/roadmap/store';
 import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
-  mockFormattedChildEpic1,
-  mockFormattedChildEpic2,
   mockTimeframeInitialDate,
   mockGroupId,
   rawEpics,
@@ -51,8 +49,6 @@ store.dispatch('receiveEpicsSuccess', {
 });
 
 const mockEpics = store.state.epics;
-
-store.state.childrenEpics[mockEpics[0].id] = [mockFormattedChildEpic1, mockFormattedChildEpic2];
 
 describe('EpicsListSectionComponent', () => {
   let wrapper;
@@ -256,15 +252,5 @@ describe('EpicsListSectionComponent', () => {
 
       expect(findBottomShadow().exists()).toBe(true);
     });
-  });
-
-  it('expands to show child epics when epic is toggled', () => {
-    const epic = mockEpics[0];
-
-    expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(false);
-
-    eventHub.$emit('toggleIsEpicExpanded', epic);
-
-    expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(true);
   });
 });
