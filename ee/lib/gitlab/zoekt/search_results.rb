@@ -261,7 +261,7 @@ module Gitlab
       end
 
       def default_search_mode
-        Feature.enabled?(:zoekt_exact_search, type: :wip) ? :exact : :regex
+        Feature.enabled?(:zoekt_exact_search, current_user) ? :exact : :regex
       end
 
       def filtered_projects(projects)
