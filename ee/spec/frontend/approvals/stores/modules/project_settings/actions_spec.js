@@ -1,5 +1,9 @@
 import MockAdapter from 'axios-mock-adapter';
-import { mapApprovalRuleRequest, mapApprovalSettingsResponse } from 'ee/approvals/mappers';
+import {
+  mapApprovalRuleRequest,
+  mapApprovalSettingsResponse,
+  mapApprovalRuleResponse,
+} from 'ee/approvals/mappers';
 import * as types from 'ee/approvals/stores/modules/base/mutation_types';
 import * as actions from 'ee/approvals/stores/modules/project_settings/actions';
 import testAction from 'helpers/vuex_action_helper';
@@ -11,6 +15,13 @@ jest.mock('~/alert');
 
 const TEST_PROJECT_ID = 9;
 const TEST_RULE_ID = 7;
+const TEST_RULE = {
+  id: 1,
+  name: 'Doros',
+  approvalsRequired: 3,
+  groups: [{ id: 1 }],
+  users: [{ id: 1 }, { id: 1 }],
+};
 const TEST_RULE_REQUEST = {
   name: 'Lorem',
   approvalsRequired: 1,
@@ -26,6 +37,11 @@ const TEST_RULE_RESPONSE = {
   users: [{ id: 7 }, { id: 8 }],
 };
 const TEST_RULES_PATH = 'projects/9/approval_rules';
+
+const mockHeaders = {
+  'X-Next-Page': 2,
+  'X-Total': 20,
+};
 
 describe('EE approvals project settings module actions', () => {
   let state;
@@ -88,14 +104,16 @@ describe('EE approvals project settings module actions', () => {
 
   describe('receiveRulesSuccess', () => {
     it('sets rules', () => {
-      const settings = [{ id: 1 }];
+      const settings = [TEST_RULE];
+      const pagination = { total: 1 };
 
       return testAction(
         actions.receiveRulesSuccess,
-        settings,
+        { approvalSettings: settings, pagination },
         {},
         [
-          { type: types.SET_APPROVAL_SETTINGS, payload: settings },
+          { type: types.SET_APPROVAL_SETTINGS, payload: { ...settings, isPagination: true } },
+          { type: types.SET_RULES_PAGINATION, payload: pagination },
           { type: types.SET_LOADING, payload: false },
         ],
         [],
@@ -130,10 +148,98 @@ describe('EE approvals project settings module actions', () => {
     });
   });
 
+  describe('setRules', () => {
+    it('replaces rules and sets pagination', () => {
+      const rules = [TEST_RULE];
+
+      return testAction(
+        actions.setRules,
+        { rules, totalRules: 1 },
+        {},
+        [
+          { type: types.SET_RULES, payload: rules },
+          { type: types.SET_RULES_PAGINATION, payload: { total: 1 } },
+        ],
+        [],
+      );
+    });
+  });
+
+  describe('updateRules', () => {
+    beforeEach(() => {
+      state = {
+        ...state,
+        approvals: {
+          rules: [TEST_RULE_RESPONSE],
+          rulesPagination: {
+            nextPage: 1,
+            total: 20,
+          },
+        },
+      };
+    });
+
+    describe('when rule exists', () => {
+      it('updates rule', () => {
+        const updatedRule = { ...TEST_RULE_RESPONSE, name: 'Updated name' };
+
+        return testAction(
+          actions.updateRules,
+          updatedRule,
+          state,
+          [],
+          [
+            {
+              type: 'setRules',
+              payload: {
+                rules: [mapApprovalRuleResponse(updatedRule)],
+                totalRules: 20,
+              },
+            },
+          ],
+        );
+      });
+    });
+
+    describe('when new rule added', () => {
+      it('adds new rule in the rules list and increase pagination `total` property', () => {
+        return testAction(
+          actions.updateRules,
+          TEST_RULE,
+          state,
+          [],
+          [
+            {
+              type: 'setRules',
+              payload: {
+                rules: [TEST_RULE_RESPONSE, mapApprovalRuleResponse(TEST_RULE)],
+                totalRules: 21,
+              },
+            },
+          ],
+        );
+      });
+    });
+  });
+
   describe('fetchRules', () => {
+    beforeEach(() => {
+      state = {
+        ...state,
+        approvals: {
+          rules: [TEST_RULE],
+          rulesPagination: {
+            nextPage: 1,
+            total: 20,
+          },
+        },
+      };
+    });
+
     it('dispatches request/receive', async () => {
       const data = [TEST_RULE_RESPONSE];
-      mock.onGet(TEST_RULES_PATH).replyOnce(HTTP_STATUS_OK, data);
+
+      mock.onGet(TEST_RULES_PATH).replyOnce(HTTP_STATUS_OK, data, mockHeaders);
 
       await testAction(
         actions.fetchRules,
@@ -142,7 +248,16 @@ describe('EE approvals project settings module actions', () => {
         [],
         [
           { type: 'requestRules' },
-          { type: 'receiveRulesSuccess', payload: mapApprovalSettingsResponse(data) },
+          {
+            type: 'receiveRulesSuccess',
+            payload: {
+              approvalSettings: mapApprovalSettingsResponse(data),
+              pagination: {
+                nextPage: mockHeaders['X-Next-Page'],
+                total: mockHeaders['X-Total'],
+              },
+            },
+          },
         ],
       );
       expect(mock.history.get.map((x) => x.url)).toEqual([TEST_RULES_PATH]);
@@ -168,7 +283,7 @@ describe('EE approvals project settings module actions', () => {
         null,
         {},
         [],
-        [{ type: 'createModal/close' }, { type: 'fetchRules' }],
+        [{ type: 'createModal/close' }, { type: 'updateRules', payload: null }],
       );
     });
   });
@@ -217,10 +332,13 @@ describe('EE approvals project settings module actions', () => {
     it('closes modal and fetches', () => {
       return testAction(
         actions.deleteRuleSuccess,
-        null,
+        { newRules: TEST_RULE_RESPONSE, totalRules: 20 },
         {},
         [],
-        [{ type: 'deleteModal/close' }, { type: 'fetchRules' }],
+        [
+          { type: 'deleteModal/close' },
+          { type: 'setRules', payload: { rules: TEST_RULE_RESPONSE, totalRules: 20 } },
+        ],
       );
     });
   });
@@ -238,6 +356,19 @@ describe('EE approvals project settings module actions', () => {
   });
 
   describe('deleteRule', () => {
+    beforeEach(() => {
+      state = {
+        ...state,
+        approvals: {
+          rules: [TEST_RULE],
+          rulesPagination: {
+            nextPage: 1,
+            total: 20,
+          },
+        },
+      };
+    });
+
     it('dispatches success on success', async () => {
       mock.onDelete(`${TEST_RULES_PATH}/${TEST_RULE_ID}`).replyOnce(HTTP_STATUS_OK);
 
@@ -246,7 +377,12 @@ describe('EE approvals project settings module actions', () => {
         TEST_RULE_ID,
         state,
         [],
-        [{ type: 'deleteRuleSuccess' }],
+        [
+          {
+            type: 'deleteRuleSuccess',
+            payload: { newRules: [TEST_RULE], totalRules: 19 },
+          },
+        ],
       );
       expect(mock.history.delete).toEqual([
         expect.objectContaining({

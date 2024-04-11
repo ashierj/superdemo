@@ -69,21 +69,17 @@ export default {
 </script>
 
 <template>
-  <table class="table m-0">
-    <tbody>
-      <tr v-if="isRulesLoading">
-        <td colspan="3">
-          <gl-skeleton-loader :lines="3" />
-        </td>
-      </tr>
+  <tr>
+    <td v-if="isRulesLoading" colspan="3">
+      <gl-skeleton-loader :lines="3" />
+    </td>
 
-      <unconfigured-security-rule
-        v-for="rule in unconfiguredRules"
-        v-else
-        :key="rule.name"
-        :rule="rule"
-        @enable="handleAddRule(rule.name)"
-      />
-    </tbody>
-  </table>
+    <unconfigured-security-rule
+      v-for="rule in unconfiguredRules"
+      v-else
+      :key="rule.name"
+      :rule="rule"
+      @enable="handleAddRule(rule.name)"
+    />
+  </tr>
 </template>

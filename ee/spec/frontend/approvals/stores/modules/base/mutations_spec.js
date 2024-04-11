@@ -33,17 +33,34 @@ describe('EE approvals base module mutations', () => {
   describe(types.SET_APPROVAL_SETTINGS, () => {
     it('sets rules', () => {
       const settings = {
-        rules: [{ id: 1 }, { id: 2 }],
+        rules: [{ id: 3 }, { id: 4 }],
         fallbackApprovalsRequired: 7,
         minFallbackApprovalsRequired: 1,
       };
 
-      state.hasLoaded = false;
-      state.rules = [];
+      state.rules = [{ id: 1 }, { id: 2 }];
 
       mutations[types.SET_APPROVAL_SETTINGS](state, settings);
 
       expect(state).toEqual(expect.objectContaining(settings));
+    });
+
+    it('merges newly fetched rules with existing ones in the case of pagination', () => {
+      const settings = {
+        rules: [{ id: 3 }, { id: 4 }],
+        fallbackApprovalsRequired: 7,
+        minFallbackApprovalsRequired: 1,
+      };
+      const initialStateRules = [{ id: 1 }, { id: 2 }];
+
+      state.hasLoaded = false;
+      state.rules = initialStateRules;
+
+      mutations[types.SET_APPROVAL_SETTINGS](state, { ...settings, isPagination: true });
+
+      expect(state).toEqual(
+        expect.objectContaining({ ...settings, rules: [...initialStateRules, ...settings.rules] }),
+      );
     });
   });
 
@@ -86,6 +103,26 @@ describe('EE approvals base module mutations', () => {
       mutations[types.SET_EDIT_RULE](state, editRule);
 
       expect(state.editRule).toEqual(editRule);
+    });
+  });
+
+  describe(types.SET_RULES, () => {
+    it('replaces data in the `rules` property', () => {
+      state.rules = [{ id: 1 }, { id: 2 }];
+
+      const newRules = [{ id: 3 }, { id: 4 }];
+      mutations[types.SET_RULES](state, newRules);
+
+      expect(state.rules).toEqual(newRules);
+    });
+  });
+
+  describe(types.SET_RULES_PAGINATION, () => {
+    it('sets pagination data', () => {
+      const pagination = { total: 25, nextPage: 2 };
+      mutations[types.SET_RULES_PAGINATION](state, pagination);
+
+      expect(state.rulesPagination).toEqual(pagination);
     });
   });
 });

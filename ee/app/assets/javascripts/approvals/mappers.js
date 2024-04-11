@@ -126,3 +126,10 @@ export const mergeRequestApprovalSettingsMappers = {
     allow_committer_approval: !settings.preventCommittersApproval.value,
   }),
 };
+
+export function excludeDuplicatesInResponse(newRules, rulesInState) {
+  return newRules.reduce((acc, rule) => {
+    const isRuleInState = rulesInState.some(({ id }) => id === rule.id);
+    return isRuleInState ? acc : [...acc, rule];
+  }, []);
+}

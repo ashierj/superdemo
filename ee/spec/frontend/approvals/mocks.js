@@ -16,6 +16,24 @@ export const createProjectRules = () => [
   { id: 3, name: 'Dolarsit', approvalsRequired: 3, eligibleApprovers: [], ruleType: 'regular' },
 ];
 
+export const createNextPageProjectRules = () => [
+  { id: 3, name: 'Dolarsit', approvalsRequired: 3, eligibleApprovers: [], ruleType: 'regular' },
+  {
+    id: 4,
+    name: 'Sit',
+    approvalsRequired: 1,
+    eligibleApprovers: [{ id: 10 }],
+    ruleType: 'regular',
+  },
+  {
+    id: 5,
+    name: 'Amet',
+    approvalsRequired: 2,
+    eligibleApprovers: [{ id: 11 }, { id: 12 }],
+    ruleType: 'regular',
+  },
+];
+
 export const createMRRule = () => ({
   id: 7,
   name: 'Amit',

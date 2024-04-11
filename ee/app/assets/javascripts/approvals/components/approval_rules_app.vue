@@ -37,6 +37,7 @@ export default {
     ...mapState({
       settings: 'settings',
       rules: (state) => state.approvals.rules,
+      pagination: (state) => state.approvals.rulesPagination,
       isLoading: (state) => state.approvals.isLoading,
       drawerOpen: (state) => state.approvals.drawerOpen,
       hasLoaded: (state) => state.approvals.hasLoaded,
@@ -52,7 +53,7 @@ export default {
       return this.targetBranch && this.settings.canEdit && this.settings.allowMultiRule;
     },
     rulesLength() {
-      return this.rules?.length || 0;
+      return this.isMrEdit ? this.rules.length : this.pagination.total;
     },
   },
   mounted() {

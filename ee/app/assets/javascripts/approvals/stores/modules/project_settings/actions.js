@@ -1,10 +1,13 @@
 import {
   mapApprovalRuleRequest,
+  mapApprovalRuleResponse,
   mapApprovalSettingsResponse,
   mapApprovalFallbackRuleRequest,
+  excludeDuplicatesInResponse,
 } from 'ee/approvals/mappers';
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
+import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import * as types from '../base/mutation_types';
 
@@ -16,8 +19,9 @@ export const setRulesFilter = ({ commit }, rules) => {
   commit(types.SET_RULES_FILTER, rules);
 };
 
-export const receiveRulesSuccess = ({ commit }, approvalSettings) => {
-  commit(types.SET_APPROVAL_SETTINGS, approvalSettings);
+export const receiveRulesSuccess = ({ commit }, { approvalSettings, pagination }) => {
+  commit(types.SET_APPROVAL_SETTINGS, { ...approvalSettings, isPagination: true });
+  commit(types.SET_RULES_PAGINATION, pagination);
   commit(types.SET_LOADING, false);
 };
 
@@ -41,21 +45,46 @@ export const fetchRules = ({ rootState, dispatch }) => {
   dispatch('requestRules');
 
   const { rulesPath } = rootState.settings;
+  const { rulesPagination: p, rules: rulesInState, rulesFilter: filter } = rootState.approvals;
+  const params = { page: p.nextPage };
 
   return axios
-    .get(rulesPath)
-    .then(({ data }) => {
-      const filter = rootState.approvals?.rulesFilter;
-      const rules = filter ? data.filter(({ name }) => filter.includes(name)) : data;
+    .get(rulesPath, { params })
+    .then(({ data, headers }) => {
+      const { nextPage, total } = parseIntPagination(normalizeHeaders(headers));
 
-      dispatch('receiveRulesSuccess', mapApprovalSettingsResponse(rules));
+      const newRules = excludeDuplicatesInResponse(data, rulesInState);
+      const rules = filter ? newRules.filter(({ name }) => filter.includes(name)) : newRules;
+
+      dispatch('receiveRulesSuccess', {
+        approvalSettings: mapApprovalSettingsResponse(rules),
+        pagination: { nextPage, total },
+      });
     })
     .catch(() => dispatch('receiveRulesError'));
 };
 
-export const postRuleSuccess = ({ dispatch }) => {
+export const setRules = ({ commit }, { rules, totalRules }) => {
+  commit(types.SET_RULES, rules);
+  commit(types.SET_RULES_PAGINATION, { total: totalRules });
+};
+
+export const updateRules = ({ rootState, dispatch }, updatedRule) => {
+  const { rules, rulesPagination } = rootState.approvals;
+  const isRuleExist = rules.some(({ id }) => id === updatedRule.id);
+  const normalizedRule = mapApprovalRuleResponse(updatedRule);
+
+  const newRules = isRuleExist
+    ? rules.map((r) => (r.id === updatedRule.id ? normalizedRule : r))
+    : [...rules, mapApprovalRuleResponse(updatedRule)];
+  const totalRules = isRuleExist ? rulesPagination.total : rulesPagination.total + 1;
+
+  dispatch('setRules', { rules: newRules, totalRules });
+};
+
+export const postRuleSuccess = ({ dispatch }, updatedRule) => {
   dispatch('createModal/close');
-  dispatch('fetchRules');
+  dispatch('updateRules', updatedRule);
 };
 
 export const postRule = ({ rootState, dispatch }, rule) => {
@@ -63,7 +92,7 @@ export const postRule = ({ rootState, dispatch }, rule) => {
 
   return axios
     .post(rulesPath, mapApprovalRuleRequest(rule))
-    .then(() => dispatch('postRuleSuccess'));
+    .then(({ data }) => dispatch('postRuleSuccess', data));
 };
 
 export const putRule = ({ rootState, dispatch }, { id, ...newRule }) => {
@@ -71,12 +100,12 @@ export const putRule = ({ rootState, dispatch }, { id, ...newRule }) => {
 
   return axios
     .put(`${rulesPath}/${id}`, mapApprovalRuleRequest(newRule))
-    .then(() => dispatch('postRuleSuccess'));
+    .then(({ data }) => dispatch('postRuleSuccess', data));
 };
 
-export const deleteRuleSuccess = ({ dispatch }) => {
+export const deleteRuleSuccess = ({ dispatch }, { newRules, totalRules }) => {
   dispatch('deleteModal/close');
-  dispatch('fetchRules');
+  dispatch('setRules', { rules: newRules, totalRules });
 };
 
 export const deleteRuleError = () => {
@@ -90,7 +119,13 @@ export const deleteRule = ({ rootState, dispatch }, id) => {
 
   return axios
     .delete(`${rulesPath}/${id}`)
-    .then(() => dispatch('deleteRuleSuccess'))
+    .then(() => {
+      const { rules, rulesPagination } = rootState.approvals;
+      const newRules = rules.filter((rule) => rule.id !== id);
+      const totalRules = rulesPagination.total - 1;
+
+      dispatch('deleteRuleSuccess', { newRules, totalRules });
+    })
     .catch(() => dispatch('deleteRuleError'));
 };
 

@@ -189,10 +189,20 @@ describe('EE Approvals App', () => {
         store.modules.approvals.state.rules = [{ id: 1 }];
       });
 
-      it('shows the correct rules count', () => {
-        factory();
+      describe('shows the correct rules count', () => {
+        it('when renders on the merge request edit page', () => {
+          factory();
 
-        expect(findRulesCount().text()).toBe('1');
+          expect(findRulesCount().text()).toBe('1');
+        });
+
+        it('when renders on the `Merge requests` project settings page', () => {
+          store.modules.approvals.state.rulesPagination.total = 25;
+
+          factory(false, { isMrEdit: false });
+
+          expect(findRulesCount().text()).toBe('25');
+        });
       });
 
       it('shows rules', () => {
