@@ -6,7 +6,7 @@ RSpec.describe 'Loading usage overvierw for a group', feature_category: :value_s
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be(:metric) do
     create(:value_stream_dashboard_count, metric: :projects, count: 5, namespace: group, recorded_at: '2023-01-20')
   end

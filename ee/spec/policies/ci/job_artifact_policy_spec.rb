@@ -132,7 +132,7 @@ RSpec.describe Ci::JobArtifactPolicy, :models do
     end
 
     describe 'for guest user' do
-      let_it_be(:guest) { create(:user).tap { |user| project.add_guest(user) } }
+      let_it_be(:guest) { create(:user, guest_of: project) }
       let(:current_user) { guest }
 
       context 'when job artifact is private' do

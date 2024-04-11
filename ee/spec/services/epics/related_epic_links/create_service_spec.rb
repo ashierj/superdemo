@@ -58,13 +58,13 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
       end
 
       context 'when user is not a guest in source group' do
-        let_it_be(:current_user) { create(:user).tap { |user| another_group.add_guest(user) } }
+        let_it_be(:current_user) { create(:user, guest_of: another_group) }
 
         it_behaves_like 'fails to create link'
       end
 
       context 'when user is not a guest in target group' do
-        let_it_be(:current_user) { create(:user).tap { |user| group.add_guest(user) } }
+        let_it_be(:current_user) { create(:user, guest_of: group) }
 
         it_behaves_like 'creates link'
       end

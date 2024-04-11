@@ -4,7 +4,7 @@ require 'spec_helper'
 RSpec.describe Mutations::Vulnerabilities::Create, feature_category: :vulnerability_management do
   include GraphqlHelpers
   let_it_be_with_reload(:project) { create(:project) }
-  let_it_be(:user) { create(:user).tap { |user| project.add_maintainer(user) } }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
 
   let(:mutated_vulnerability) { subject[:vulnerability] }
 
@@ -130,7 +130,7 @@ RSpec.describe Mutations::Vulnerabilities::Create, feature_category: :vulnerabil
         end
 
         context 'when user is not authorized to create vulnerabilities' do
-          let_it_be(:user) { create(:user).tap { |user| project.add_reporter(user) } }
+          let_it_be(:user) { create(:user, reporter_of: project) }
 
           it 'raises an error' do
             expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do

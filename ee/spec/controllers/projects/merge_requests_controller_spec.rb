@@ -30,7 +30,7 @@ RSpec.shared_examples 'a security resource' do
   context 'public project with public builds' do
     let_it_be(:project) { create(:project, :public, :builds_enabled) }
     let_it_be(:non_member) { create(:user) }
-    let_it_be(:guest) { create(:user).tap { |user| project.add_guest(user) } }
+    let_it_be(:guest) { create(:user, guest_of: project) }
 
     let(:comparison_status) { {} }
 

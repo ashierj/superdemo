@@ -7,13 +7,13 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_refind(:group) { create(:group) }
-  let_it_be(:group_owner) { create(:user).tap { |user| group.add_owner(user) } }
+  let_it_be(:group_owner) { create(:user, owner_of: group) }
   let_it_be_with_refind(:group_wlif_integration) do
     create(:google_cloud_platform_workload_identity_federation_integration, project: nil, group: group)
   end
 
   let_it_be_with_refind(:project) { create(:project, group: group) }
-  let_it_be(:project_maintainer) { create(:user).tap { |user| group.add_maintainer(user) } }
+  let_it_be(:project_maintainer) { create(:user, maintainer_of: group) }
   let_it_be_with_refind(:project_wlif_integration) do
     create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
@@ -176,7 +176,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
     end
 
     context 'when user is not a maintainer or higher' do
-      let(:current_user) { create(:user).tap { |user| container.add_developer(user) } }
+      let(:current_user) { create(:user, developer_of: container) }
 
       it { is_expected.to be nil }
     end

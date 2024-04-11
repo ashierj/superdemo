@@ -171,7 +171,7 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
   end
 
   context 'when an user does not have required permissions' do
-    let(:user) { create(:user).tap { |user| project.add_guest(user) } }
+    let(:user) { create(:user, guest_of: project) }
 
     it { is_expected.to be_nil }
   end

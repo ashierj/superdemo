@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Noteable::NotesChannel, feature_category: :team_planning do
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:developer) { create(:user, developer_of: group) }
 
   describe '#subscribed' do
     let(:subscribe_params) do

@@ -7,7 +7,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:current_user) { create(:user).tap { |user| project.add_developer(user) } }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
   let_it_be(:variables) { { full_path: project.full_path } }
   let_it_be(:fields) do
     <<~FIELDS
@@ -129,7 +129,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
   end
 
   context 'with an unauthorized user' do
-    let_it_be(:current_user) { create(:user).tap { |user| project.add_guest(user) } }
+    let_it_be(:current_user) { create(:user, guest_of: project) }
 
     it 'does not return dependency data' do
       subject

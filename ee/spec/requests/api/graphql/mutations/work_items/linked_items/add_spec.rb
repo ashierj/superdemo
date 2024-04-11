@@ -7,7 +7,7 @@ RSpec.describe "Add linked items to a work item", feature_category: :portfolio_m
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:project) { create(:project, :private) }
-  let_it_be(:reporter) { create(:user).tap { |user| project.add_reporter(user) } }
+  let_it_be(:reporter) { create(:user, reporter_of: project) }
   let_it_be(:work_item) { create(:work_item, :issue, project: project) }
   let_it_be(:work_item2) { create(:work_item, project: project) }
 

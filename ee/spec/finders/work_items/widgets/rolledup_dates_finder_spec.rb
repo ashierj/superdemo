@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe WorkItems::Widgets::RolledupDatesFinder, :aggregate_failures, feature_category: :portfolio_management do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user).tap { |user| group.add_developer(user) } }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be_with_reload(:epic_work_item) { create(:work_item, :epic, namespace: group) }
 
   let_it_be(:child_work_item) do

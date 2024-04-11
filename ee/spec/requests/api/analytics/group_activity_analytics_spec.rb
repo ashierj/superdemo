@@ -6,7 +6,7 @@ RSpec.describe API::Analytics::GroupActivityAnalytics, feature_category: :value_
   let_it_be(:group) { create(:group, :private) }
 
   let_it_be(:reporter) do
-    create(:user).tap { |u| group.add_reporter(u) }
+    create(:user, reporter_of: group)
   end
 
   let_it_be(:anonymous_user) { create(:user) }
@@ -55,7 +55,7 @@ RSpec.describe API::Analytics::GroupActivityAnalytics, feature_category: :value_
       let_it_be(:group) { create(:group, :private, name: '756125') }
 
       let_it_be(:reporter) do
-        create(:user).tap { |u| group.add_reporter(u) }
+        create(:user, reporter_of: group)
       end
 
       it 'is successful' do

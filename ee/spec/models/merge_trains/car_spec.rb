@@ -111,7 +111,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '.insert_skip_merged_car_for', :aggregate_failures do
-    let(:maintainer)    { create(:user).tap { |u| merge_request.project.add_maintainer(u) } }
+    let(:maintainer)    { create(:user, maintainer_of: merge_request.project) }
     let(:merge_train)   { MergeTrains::Train.new(merge_request.project_id, merge_request.target_branch) }
     let(:merge_request) { create(:merge_request, :locked) }
 

@@ -8,8 +8,8 @@ RSpec.describe Analytics::Forecasting::ForecastPolicy, feature_category: :devops
   let(:forecast) { Analytics::Forecasting::Forecast.for(type).new(type: type, context: project) }
   let_it_be(:project) { create(:project) }
 
-  let_it_be(:reporter) { create(:user).tap { |u| project.add_reporter(u) } }
-  let_it_be(:guest) { create(:user).tap { |u| project.add_guest(u) } }
+  let_it_be(:reporter) { create(:user, reporter_of: project) }
+  let_it_be(:guest) { create(:user, guest_of: project) }
   let(:current_user) { reporter }
 
   before do

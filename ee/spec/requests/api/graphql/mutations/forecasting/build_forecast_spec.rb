@@ -7,7 +7,7 @@ RSpec.describe 'buildForecast', feature_category: :devops_reports do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:production) { create(:environment, :production, project: project) }
-  let_it_be(:current_user) { create(:user).tap { |u| project.add_developer(u) } }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
 
   let(:horizon) { 7 }
   let(:type) { 'deployment_frequency' }

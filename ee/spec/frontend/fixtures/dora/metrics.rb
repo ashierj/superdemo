@@ -7,7 +7,7 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
   include JavaScriptFixturesHelpers
 
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:reporter) { create(:user).tap { |u| project.add_reporter(u) } }
+  let_it_be(:reporter) { create(:user, reporter_of: project) }
   let_it_be(:environment) { create(:environment, project: project, name: 'production') }
   let_it_be(:seconds_in_1_day) { 60 * 60 * 24 }
 

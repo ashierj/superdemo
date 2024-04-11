@@ -80,7 +80,7 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialService, feature_category:
 
       context 'when namespace is already on a trial', :saas do
         let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_trial_plan, trial_ends_on: 1.year.from_now) }
-        let_it_be(:user) { create(:user).tap { |user| namespace.add_owner(user) } }
+        let_it_be(:user) { create(:user, owner_of: namespace) }
 
         it 'returns success: false with errors' do
           expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
@@ -110,7 +110,7 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialService, feature_category:
 
     context 'when namespace is already on a trial', :saas do
       let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_trial_plan, trial_ends_on: 1.year.from_now) }
-      let_it_be(:user) { create(:user).tap { |user| namespace.add_owner(user) } }
+      let_it_be(:user) { create(:user, owner_of: namespace) }
 
       it { is_expected.to be false }
     end

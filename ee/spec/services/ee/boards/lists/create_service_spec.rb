@@ -32,7 +32,7 @@ RSpec.describe Boards::Lists::CreateService, feature_category: :team_planning do
 
       it 'allows invited group members as assignee list' do
         invited_group = create(:group)
-        invited_group_user = create(:user).tap { |u| invited_group.add_guest(u) }
+        invited_group_user = create(:user, guest_of: invited_group)
 
         create(:project_group_link, group: invited_group, project: project)
 

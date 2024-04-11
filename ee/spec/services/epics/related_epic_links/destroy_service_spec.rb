@@ -7,7 +7,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
     let_it_be(:public_group) { create(:group, :public) }
     let_it_be(:public_epic) { create(:epic, group: public_group) }
     let_it_be(:group) { create(:group, :private) }
-    let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
+    let_it_be(:guest) { create(:user, guest_of: group) }
     let_it_be_with_reload(:source) { create(:epic, group: group) }
     let_it_be_with_reload(:target) { create(:epic, group: group) }
     let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }

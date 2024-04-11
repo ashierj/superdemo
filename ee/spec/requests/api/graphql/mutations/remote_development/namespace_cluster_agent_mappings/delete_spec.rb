@@ -70,7 +70,7 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
   context 'when a user does not have sufficient permissions' do
     # User is added as a maintainer as all users with roles
     # Maintainer and below are denied the use of this API
-    let_it_be(:current_user) { create(:user).tap { |user| namespace.add_maintainer(user) } }
+    let_it_be(:current_user) { create(:user, maintainer_of: namespace) }
 
     it_behaves_like 'a mutation on an unauthorized resource'
   end

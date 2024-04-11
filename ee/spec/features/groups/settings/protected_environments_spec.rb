@@ -7,8 +7,8 @@ RSpec.describe 'Protected Environments', :js, feature_category: :environment_man
   let_it_be(:developer_group) { create(:group, :private, name: 'developer-group', parent: organization) }
   let_it_be(:operator_group) { create(:group, :private, name: 'operator-group', parent: organization) }
   let_it_be(:unrelated_group) { create(:group) }
-  let_it_be(:organization_owner) { create(:user).tap { |u| organization.add_owner(u) } }
-  let_it_be(:organization_maintainer) { create(:user).tap { |u| organization.add_maintainer(u) } }
+  let_it_be(:organization_owner) { create(:user, owner_of: organization) }
+  let_it_be(:organization_maintainer) { create(:user, maintainer_of: organization) }
 
   let(:current_user) { organization_owner }
 

@@ -138,7 +138,7 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
   it_behaves_like 'returning the expected response'
 
   context 'when an user does not have required permissions' do
-    let(:user) { create(:user).tap { |user| project.add_guest(user) } }
+    let(:user) { create(:user, guest_of: project) }
 
     it_behaves_like 'returning a blank response'
   end

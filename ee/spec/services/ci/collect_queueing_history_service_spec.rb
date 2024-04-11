@@ -277,7 +277,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
   context 'when owner_namespace_id is specified' do
     let_it_be(:owner_namespace) { group_runner.owner_runner_namespace&.namespace }
-    let_it_be(:current_user) { create(:user).tap { |user| owner_namespace.add_owner(user) } }
+    let_it_be(:current_user) { create(:user, owner_of: owner_namespace) }
 
     include_examples 'calculates percentiles' do
       let(:runner) { group_runner }
@@ -316,7 +316,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
     end
 
     context 'when user is a developer' do
-      let_it_be(:current_user) { create(:user).tap { |user| owner_namespace.add_developer(user) } }
+      let_it_be(:current_user) { create(:user, developer_of: owner_namespace) }
 
       include_examples 'returns Not allowed error'
     end

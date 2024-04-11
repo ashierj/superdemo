@@ -16,7 +16,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
     end
 
     context 'with not enough permissions' do
-      let_it_be(:user) { create(:user).tap { |user| project.add_developer(user) } }
+      let_it_be(:user) { create(:user, developer_of: project) }
 
       it_behaves_like 'returning an error service response', message: 'Access denied'
     end

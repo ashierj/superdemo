@@ -8,8 +8,8 @@ RSpec.describe Auth::ProvisionedUsersFinder do
     let_it_be(:regular_user) { create(:user) }
     let_it_be(:saml_provider) { create(:saml_provider, group: group) }
     let_it_be(:scim_identity) { create(:scim_identity, group: group) }
-    let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
-    let_it_be(:maintainer) { create(:user).tap { |u| group.add_maintainer(u) } }
+    let_it_be(:developer) { create(:user, developer_of: group) }
+    let_it_be(:maintainer) { create(:user, maintainer_of: group) }
 
     let_it_be(:provisioned_user) { create(:user, provisioned_by_group_id: group.id, created_at: 2.years.ago) }
     let_it_be(:blocked_provisioned_user) { create(:user, :blocked, provisioned_by_group_id: group.id) }

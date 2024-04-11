@@ -147,7 +147,7 @@ RSpec.shared_examples 'execute epic hierarchy commands' do
           end
 
           context "and user is a guest of the parent epic's group" do
-            let(:current_user) { create(:user).tap { |u| public_group.add_guest(u) } }
+            let(:current_user) { create(:user, guest_of: public_group) }
 
             it_behaves_like 'quick action is available', :child_epic
           end

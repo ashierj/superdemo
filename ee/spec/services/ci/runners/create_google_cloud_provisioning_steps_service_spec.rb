@@ -8,9 +8,9 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
   let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
-  let_it_be(:group_maintainer) { create(:user).tap { |user| group.add_maintainer(user) } }
-  let_it_be(:project_maintainer) { create(:user).tap { |user| project.add_maintainer(user) } }
-  let_it_be(:group_owner) { create(:user).tap { |user| group.add_owner(user) } }
+  let_it_be(:group_maintainer) { create(:user, maintainer_of: group) }
+  let_it_be(:project_maintainer) { create(:user, maintainer_of: project) }
+  let_it_be(:group_owner) { create(:user, owner_of: group) }
   let_it_be(:project_owner) { project.owner }
 
   where(:type, :container, :current_user, :container_owner) do
@@ -179,7 +179,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
       end
 
       context 'when user is not authorized' do
-        let(:current_user) { create(:user).tap { |user| container.add_developer(user) } }
+        let(:current_user) { create(:user, developer_of: container) }
 
         it 'returns an error' do
           allow(Ability).to receive(:allowed?).and_call_original

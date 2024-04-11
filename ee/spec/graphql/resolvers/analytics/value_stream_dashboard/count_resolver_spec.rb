@@ -6,7 +6,7 @@ RSpec.describe Resolvers::Analytics::ValueStreamDashboard::CountResolver, featur
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:developer) { create(:user, developer_of: group) }
   let_it_be(:other_user) { create(:user) }
 
   let_it_be(:subgroup) { create(:group, parent: group) }

@@ -8,7 +8,7 @@ RSpec.describe API::Analytics::ProjectDeploymentFrequency, feature_category: :va
   let_it_be(:prod) { create(:environment, project: project, name: "prod") }
   let_it_be(:dev) { create(:environment, project: project, name: "dev") }
   let_it_be(:anonymous_user) { create(:user) }
-  let_it_be(:reporter) { create(:user).tap { |u| project.add_reporter(u) } }
+  let_it_be(:reporter) { create(:user, reporter_of: project) }
 
   def make_deployment(finished_at, env)
     create(:deployment,

@@ -6,8 +6,8 @@ require 'spec_helper'
 RSpec.describe Groups::IssuesController, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
-  let_it_be(:reporter) { create(:user).tap { |u| group.add_reporter(u) } }
+  let_it_be(:developer) { create(:user, developer_of: group) }
+  let_it_be(:reporter) { create(:user, reporter_of: group) }
   let_it_be(:milestone1) { create(:milestone, group: group) }
   let_it_be(:milestone2) { create(:milestone, group: group) }
   let_it_be(:iteration1) { create(:iteration, group: group) }

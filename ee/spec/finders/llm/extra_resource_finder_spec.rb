@@ -8,9 +8,9 @@ RSpec.describe Llm::ExtraResourceFinder, :saas, feature_category: :duo_chat do
   let(:blob_url) { Gitlab::Routing.url_helpers.project_blob_url(project, project.default_branch) }
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:other_project) { create(:project, :repository) }
-  let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
-  let_it_be(:other_developer) { create(:user).tap { |u| other_project.add_developer(u) } }
-  let_it_be(:guest) { create(:user).tap { |u| project.add_guest(u) } }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:other_developer) { create(:user, developer_of: other_project) }
+  let_it_be(:guest) { create(:user, guest_of: project) }
   let_it_be(:issue) { create(:issue, project: project) }
 
   include_context 'with ai chat enabled for group on SaaS'

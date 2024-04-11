@@ -44,7 +44,7 @@ RSpec.describe Analytics::DevopsAdoption::EnabledNamespaces::BulkFindOrCreateSer
   end
 
   context 'when the user cannot manage enabled_namespaces at least for one namespace' do
-    let(:current_user) { create(:user).tap { |u| group.add_reporter(u) } }
+    let(:current_user) { create(:user, reporter_of: group) }
 
     it 'returns forbidden error' do
       expect { response }.to raise_error(Analytics::DevopsAdoption::EnabledNamespaces::AuthorizationError)

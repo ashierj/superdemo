@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Insights::Executors::IssuableExecutor do
   let_it_be(:group) { create(:group) }
   let_it_be(:label) { create(:group_label, group: group) }
-  let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:issue) { create(:issue, labels: [label], project: project, created_at: 2.days.ago) }
 
