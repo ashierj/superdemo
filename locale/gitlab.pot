@@ -35656,6 +35656,9 @@ msgstr ""
 msgid "Organization|Switch organizations"
 msgstr ""
 
+msgid "Organization|Switching between organizations is not currently supported."
+msgstr ""
+
 msgid "Organization|Unable to fetch organizations. Reload the page to try again."
 msgstr ""
 
