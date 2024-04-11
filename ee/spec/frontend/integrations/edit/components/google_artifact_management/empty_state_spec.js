@@ -1,7 +1,7 @@
 import { GlButton, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import EmptyAdminAppsSvg from '@gitlab/svgs/dist/illustrations/empty-state/empty-admin-apps-md.svg';
-import EmptyState from 'ee/integrations/edit/components/google_cloud_artifact_registry/empty_state.vue';
+import EmptyState from 'ee/integrations/edit/components/google_artifact_management/empty_state.vue';
 import InviteMembersTrigger from '~/invite_members/components/invite_members_trigger.vue';
 
 describe('EmptyState', () => {
@@ -50,6 +50,9 @@ describe('EmptyState', () => {
   });
 
   it('renders invite-members-trigger in actions slot', () => {
-    expect(findInviteMembersTrigger().props('displayText')).toBe('Invite member to set up');
+    expect(findInviteMembersTrigger().props()).toMatchObject({
+      displayText: 'Invite member to set up',
+      triggerSource: 'google_artifact_management_setup',
+    });
   });
 });

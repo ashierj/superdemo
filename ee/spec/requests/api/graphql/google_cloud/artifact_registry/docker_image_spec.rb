@@ -196,9 +196,9 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
 
     # rubocop:disable Layout/LineLength -- The table rows are more readable without line breaks
     where(:argument, :error_message) do
-      :location | "`location` doesn't match Repository location of Google Artifact Registry"
-      :repository | "`repository` doesn't match Repository name of Google Artifact Registry"
-      :google_cloud_project_id | "`googleCloudProjectId` doesn't match Google Cloud project ID of Google Artifact Registry"
+      :location | "`location` doesn't match Repository location of Google Artifact Management integration"
+      :repository | "`repository` doesn't match Repository name of Google Artifact Management integration"
+      :google_cloud_project_id | "`googleCloudProjectId` doesn't match Google Cloud project ID of Google Artifact Management integration"
     end
     # rubocop:enable Layout/LineLength
 

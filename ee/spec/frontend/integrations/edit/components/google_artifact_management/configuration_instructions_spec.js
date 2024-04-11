@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlAccordion, GlAccordionItem, GlLink, GlSprintf } from '@gitlab/ui';
-import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
+import ConfigurationInstructions from 'ee/integrations/edit/components/google_artifact_management/configuration_instructions.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { createStore } from '~/integrations/edit/store';

@@ -4,13 +4,13 @@ import { mapGetters } from 'vuex';
 import { GlButton } from '@gitlab/ui';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
 import Connection from '~/integrations/edit/components/sections/connection.vue';
-import ConfigurationInstructions from 'ee/integrations/edit/components/google_cloud_artifact_registry/configuration_instructions.vue';
-import EmptyState from 'ee/integrations/edit/components/google_cloud_artifact_registry/empty_state.vue';
+import ConfigurationInstructions from 'ee/integrations/edit/components/google_artifact_management/configuration_instructions.vue';
+import EmptyState from 'ee/integrations/edit/components/google_artifact_management/empty_state.vue';
 
 const PROJECT_ID_FIELD_NAME = 'artifact_registry_project_id';
 
 export default {
-  name: 'IntegrationSectionGoogleCloudArtifactRegistry',
+  name: 'IntegrationSectionGoogleArtifactManagement',
   components: {
     Configuration,
     ConfigurationInstructions,
@@ -35,7 +35,7 @@ export default {
       return this.propsSource.fields;
     },
     artifactRegistryPath() {
-      return this.propsSource.googleCloudArtifactRegistryProps?.artifactRegistryPath;
+      return this.propsSource.googleArtifactManagementProps?.artifactRegistryPath;
     },
     operating() {
       return this.propsSource.operating;
@@ -44,9 +44,7 @@ export default {
       return this.propsSource.editable;
     },
     workloadIdentityFederationPath() {
-      return (
-        this.propsSource.googleCloudArtifactRegistryProps?.workloadIdentityFederationPath ?? '#'
-      );
+      return this.propsSource.googleArtifactManagementProps?.workloadIdentityFederationPath ?? '#';
     },
     propsSourceGoogleCloudProjectId() {
       return (

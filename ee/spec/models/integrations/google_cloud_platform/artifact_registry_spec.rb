@@ -44,7 +44,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
   describe '.title' do
     subject { described_class.title }
 
-    it { is_expected.to eq(s_('GoogleCloudPlatformService|Google Artifact Registry')) }
+    it { is_expected.to eq(s_('GoogleCloud|Google Artifact Management')) }
   end
 
   describe '.description' do
@@ -159,7 +159,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
   describe '#sections' do
     subject { integration.sections }
 
-    it { is_expected.to eq([{ type: 'google_cloud_artifact_registry' }]) }
+    it { is_expected.to eq([{ type: 'google_artifact_management' }]) }
   end
 
   describe '#test' do

@@ -24062,9 +24062,6 @@ msgstr ""
 msgid "GoogleCloudPlatformService|Example: %{code_open}my-sample-project-191923%{code_close}"
 msgstr ""
 
-msgid "GoogleCloudPlatformService|Google Artifact Registry"
-msgstr ""
-
 msgid "GoogleCloudPlatformService|Google Cloud IAM"
 msgstr ""
 
@@ -24183,6 +24180,9 @@ msgid "GoogleCloud|Create service account"
 msgstr ""
 
 msgid "GoogleCloud|Generated service account is linked to the selected branch or tag"
+msgstr ""
+
+msgid "GoogleCloud|Google Artifact Management"
 msgstr ""
 
 msgid "GoogleCloud|Google Cloud project"

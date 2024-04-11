@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature_category: :container_registry do
+RSpec.describe 'User activates Artifact Management', :js, :sidekiq_inline, feature_category: :container_registry do
   include_context 'project integration activation'
 
   let_it_be(:parent_group) { create(:group) }
@@ -26,7 +26,7 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
       .and_return(dummy_repository_response)
   end
 
-  subject(:visit_page) { visit_project_integration('Google Artifact Registry') }
+  subject(:visit_page) { visit_project_integration('Google Artifact Management') }
 
   shared_examples 'activates integration' do
     it 'activates integration' do
@@ -43,7 +43,7 @@ RSpec.describe 'User activates Artifact Registry', :js, :sidekiq_inline, feature
 
       click_test_then_save_integration(expect_test_to_fail: false)
 
-      expect(page).to have_content('Google Artifact Registry settings saved and active.')
+      expect(page).to have_content('Google Artifact Management settings saved and active.')
 
       expect(page).to have_link('View artifacts',
         href: project_google_cloud_artifact_registry_index_path(project))
