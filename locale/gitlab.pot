@@ -24956,7 +24956,7 @@ msgstr ""
 msgid "GroupSettings|What is Insights?"
 msgstr ""
 
-msgid "GroupSettings|When disabled, members will not be able to register runners using runner registration tokens. They can instead use runner authentication tokens as a more secure runner registration method."
+msgid "GroupSettings|When disabled, members cannot use runner registration tokens to register runners. Members can use runner authentication tokens instead as the more secure registration method."
 msgstr ""
 
 msgid "GroupSettings|When you enable any of these features, you accept the %{link_start}GitLab Testing Agreement%{link_end}."
