@@ -8,7 +8,7 @@ RSpec.describe Ci::PlayBuildService, '#execute', feature_category: :continuous_i
   end
 
   it_behaves_like 'prevents playing job when credit card is required' do
-    let(:user) { create(:user, maintainer_projects: [project]) }
+    let(:user) { create(:user, maintainer_of: project) }
     let(:project) { create(:project) }
     let(:pipeline) { create(:ci_pipeline, project: project) }
     let(:job) { create(:ci_build, :manual, pipeline: pipeline) }

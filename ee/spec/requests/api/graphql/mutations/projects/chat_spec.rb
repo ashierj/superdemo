@@ -7,7 +7,7 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
 
   let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:current_user) { create(:user, developer_projects: [project]) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
   let_it_be(:resource) { create(:issue, project: project) }
   let(:params) { { chat: { resource_id: resource&.to_gid, content: "summarize" } } }
 

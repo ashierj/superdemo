@@ -7,7 +7,7 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations, feature_category: :
   include Ci::JobTokenScopeHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:developer) { create(:user, developer_projects: [project]) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:site_validation) { create(:dast_site_validation, dast_site_token: create(:dast_site_token, project: project)) }
   let_it_be(:job) { create(:ci_build, :running, project: project, user: developer) }
 

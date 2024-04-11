@@ -7,7 +7,7 @@ RSpec.describe GitlabSchema.types['DastProfileSchedule'] do
 
   let_it_be(:fields) { %i[id active startsAt timezone nextRunAt cadence ownerValid] }
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:object) { create(:dast_profile_schedule, project: project, owner: user) }
 
   specify { expect(described_class.graphql_name).to eq('DastProfileSchedule') }

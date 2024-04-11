@@ -17,7 +17,7 @@ RSpec.describe BranchesHelper do
       let!(:project) { create(:project) }
       let!(:protected_branch) { create(:protected_branch, :developers_can_merge, :maintainers_can_push, project: project) }
       let!(:deploy_key) { create(:deploy_key, deploy_keys_projects: [create(:deploy_keys_project, :write_access, project: project)]) }
-      let(:user) { create(:user, maintainer_projects: [project]) }
+      let(:user) { create(:user, maintainer_of: project) }
 
       let(:merge_level) { protected_branch.merge_access_levels.first }
       let(:push_level) { protected_branch.push_access_levels.first }

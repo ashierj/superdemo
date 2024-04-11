@@ -8,7 +8,7 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
 
   let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:current_user) { create(:user, developer_projects: [project]) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
 
   let(:mutation) do
     params = {

@@ -7,7 +7,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'], feature_category: :dynamic
   include RepoHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:object, reload: true) { create(:dast_site_profile, project: project) }
   let_it_be(:fields) { %i[id profileName targetUrl targetType editPath excludedUrls requestHeaders validationStatus userPermissions normalizedTargetUrl auth referencedInSecurityPolicies scanMethod scanFilePath validationStartedAt] }
 

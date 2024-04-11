@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'User uploads metrics to incident', :js, feature_category: :incident_management do
   let_it_be(:incident) { create(:incident) }
   let_it_be(:project) { incident.project }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
 
   context 'when feature is available' do
     before do

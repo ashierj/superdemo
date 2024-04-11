@@ -18,7 +18,7 @@ FactoryBot.define do
 
     trait :with_user do
       oncall_schedule {}
-      user { association :user, developer_projects: [policy.project] }
+      user { association :user, developer_of: policy.project }
     end
   end
 end

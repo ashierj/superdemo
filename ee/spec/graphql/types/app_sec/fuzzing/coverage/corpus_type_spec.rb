@@ -7,7 +7,7 @@ RSpec.describe GitlabSchema.types['CoverageFuzzingCorpus'] do
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:object) { create(:corpus, project: project) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:fields) { %i[id package] }
 
   specify { expect(described_class.graphql_name).to eq('CoverageFuzzingCorpus') }

@@ -10,7 +10,7 @@ RSpec.describe Resolvers::AppSec::Dast::ProfileResolver do
   end
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:developer) { create(:user, developer_projects: [project]) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:dast_profile1) { create(:dast_profile, project: project) }
   let_it_be(:dast_profile2) { create(:dast_profile, project: project) }
 

@@ -17,7 +17,7 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
     let_it_be(:project) { create(:project) }
     let(:ctx) { { current_user: current_user } }
     let(:params) { {} }
-    let_it_be(:maintainer) { create(:user, developer_projects: [project]) }
+    let_it_be(:maintainer) { create(:user, developer_of: project) }
     let_it_be(:reporter) { create(:user) }
 
     before do

@@ -6,7 +6,7 @@ RSpec.describe 'getting list of branch rules for a project', feature_category: :
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository, :public) }
-  let_it_be(:current_user) { create(:user, maintainer_projects: [project]) }
+  let_it_be(:current_user) { create(:user, maintainer_of: project) }
 
   let(:branch_rules_data) { graphql_data_at('project', 'branchRules', 'nodes') }
   let(:variables) { { path: project.full_path } }

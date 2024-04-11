@@ -22,7 +22,7 @@ RSpec.shared_examples 'AccessLevel type objects contains user and group' do |acc
         create(
           "protected_branch_#{access_level_kind}_access_level",
           protected_branch: protected_branch,
-          user: create(:user, developer_projects: [project])
+          user: create(:user, developer_of: project)
         )
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
@@ -37,7 +37,7 @@ RSpec.shared_examples 'AccessLevel type objects contains user and group' do |acc
         create(
           "protected_branch_#{access_level_kind}_access_level",
           protected_branch: protected_branch,
-          user: create(:user, developer_projects: [project])
+          user: create(:user, developer_of: project)
         )
 
         expect do
@@ -56,7 +56,7 @@ RSpec.shared_examples 'AccessLevel type objects contains user and group' do |acc
         create(
           "protected_branch_#{access_level_kind}_access_level",
           protected_branch: protected_branch,
-          user: create(:user, developer_projects: [project])
+          user: create(:user, developer_of: project)
         )
         post_graphql(query, current_user: current_user, variables: variables)
       end

@@ -8,7 +8,7 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
 
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:current_user) { create(:user, developer_projects: [project]) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
 
   let(:uuid) { 'uuid' }
   let(:messages) do

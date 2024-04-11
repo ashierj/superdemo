@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::ProtectedTags, feature_category: :source_code_management do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:user) { create(:user, maintainer_projects: [project]) }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
 
   let(:invited_group) { create(:project_group_link, project: project).group }
   let(:project_member) { create(:project_member, project: project).user }

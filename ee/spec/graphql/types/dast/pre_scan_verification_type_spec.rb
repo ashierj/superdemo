@@ -9,7 +9,7 @@ RSpec.describe GitlabSchema.types['DastPreScanVerification'], :dynamic_analysis,
   let_it_be(:project) { create(:project) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project) }
   let_it_be(:object) { create(:dast_pre_scan_verification, dast_profile: dast_profile) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:dast_pre_scan_verification_step_1) do
     create(
       :dast_pre_scan_verification_step,
