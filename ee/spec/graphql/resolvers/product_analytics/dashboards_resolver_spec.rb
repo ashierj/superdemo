@@ -20,7 +20,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
       stub_feature_flags(ai_impact_analytics_dashboard: false)
-      project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true)
       project.project_setting.update!(product_analytics_instrumentation_key: "key")
       allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
         allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
@@ -75,16 +74,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
         end
       end
 
-      context 'when experiment features toggle is disabled' do
-        before do
-          project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: false)
-        end
-
-        it 'contains only user defined dashboards' do
-          expect(result.size).to eq(1)
-        end
-      end
-
       context 'when slug matches existing dashboard' do
         context 'when it\'s a custom dashboard' do
           let(:slug) { 'dashboard_example_1' }
@@ -128,16 +117,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
           context 'when feature flag is disabled' do
             before do
               stub_feature_flags(product_analytics_dashboards: false)
-            end
-
-            it 'is empty' do
-              expect(result.size).to eq(0)
-            end
-          end
-
-          context 'when experiment features toggle is disabled' do
-            before do
-              project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: false)
             end
 
             it 'is empty' do

@@ -62,7 +62,6 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
       allow(resource_parent.group.root_ancestor.namespace_settings)
         .to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
-      resource_parent.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true)
       resource_parent.project_setting.update!(product_analytics_instrumentation_key: "key")
       allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
         allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
@@ -103,19 +102,6 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
       context 'when feature flag is disabled' do
         before do
           stub_feature_flags(product_analytics_dashboards: false)
-        end
-
-        it 'returns value stream and custom dashboards' do
-          post_graphql(query, current_user: user)
-
-          expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
-            .to match_array(["Value Streams Dashboard", "Dashboard Example 1"])
-        end
-      end
-
-      context 'when experiment features is disabled' do
-        before do
-          resource_parent.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: false)
         end
 
         it 'returns value stream and custom dashboards' do

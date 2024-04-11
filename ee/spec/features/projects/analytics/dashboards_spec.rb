@@ -13,10 +13,6 @@ RSpec.describe 'Analytics Dashboard - Product Analytics', :js, feature_category:
     stub_feature_flags(ai_impact_analytics_dashboard: false)
     sign_in(user)
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-    project.group.root_ancestor.namespace_settings.update!(
-      experiment_features_enabled: true,
-      product_analytics_enabled: true
-    )
     project.reload
   end
 
