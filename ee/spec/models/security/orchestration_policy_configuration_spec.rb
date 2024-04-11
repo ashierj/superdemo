@@ -1241,6 +1241,30 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           end
         end
 
+        describe "vulnerabilities_allowed" do
+          context "when value is below the minimum" do
+            before do
+              rule[:vulnerabilities_allowed] = -1
+            end
+
+            specify do
+              expect(errors).to contain_exactly(
+                "property '/#{type}/0/rules/0/vulnerabilities_allowed' is invalid: error_type=minimum")
+            end
+          end
+
+          context "when value is above the maximum" do
+            before do
+              rule[:vulnerabilities_allowed] = 32768
+            end
+
+            specify do
+              expect(errors).to contain_exactly(
+                "property '/#{type}/0/rules/0/vulnerabilities_allowed' is invalid: error_type=maximum")
+            end
+          end
+        end
+
         describe "vulnerability_age" do
           before do
             rule[:vulnerability_age] = vulnerability_age
