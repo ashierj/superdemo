@@ -903,7 +903,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     let(:user) { confirmed_user }
 
     before do
-      stub_session({ verification_user_id: user.id }.merge(return_to_entries))
+      stub_session(**{ verification_user_id: user.id }.merge(return_to_entries))
     end
 
     context 'for an invite' do

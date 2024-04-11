@@ -6,8 +6,9 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
   include EE::GeoHelpers
   include AdminModeHelper
   include NamespaceStorageHelpers
+  include SessionHelpers
 
-  let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:user) { create(:user) }
 
   let(:actor) { user }
   let(:project) { create(:project, :repository) }
@@ -1344,89 +1345,112 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
     end
   end
 
-  describe '#check_sso_session!' do
+  describe '#check_sso_session!', :clean_gitlab_redis_sessions do
+    let_it_be_with_reload(:root_group) { create(:group) }
+    let_it_be_with_reload(:subgroup) { create(:group, parent: root_group) }
+
+    let_it_be_with_reload(:saml_provider) { create(:saml_provider, enforced_sso: true, group: root_group) }
+    let_it_be(:identity) { create(:group_saml_identity, saml_provider: saml_provider, user: user) }
+
+    def sso_session_data
+      { 'active_group_sso_sign_ins' => { saml_provider.id => 5.minutes.ago } }
+    end
+
     before do
+      stub_licensed_features(group_saml: true)
       project.add_developer(user)
     end
 
-    context 'with project without group' do
-      it 'allows pull and push changes' do
-        expect(Gitlab::Auth::GroupSaml::SessionEnforcer).to receive(:new).with(user, nil).and_return(double(access_restricted?: false))
-        pull_changes
-      end
-    end
-
-    context 'with project with group' do
-      let_it_be(:group) { create(:group) }
-
-      before do
-        project.update!(namespace: group)
-      end
-
-      context 'user with a sso session' do
-        let(:access_restricted?) { false }
-
-        it 'allows pull and push changes' do
-          expect(Gitlab::Auth::GroupSaml::SessionEnforcer).to receive(:new).with(user, group).twice.and_return(double(access_restricted?: access_restricted?))
-
+    shared_examples 'Git access allowed' do
+      it 'allows push and pull changes' do
+        aggregate_failures do
           expect { pull_changes }.not_to raise_error
           expect { push_changes }.not_to raise_error
         end
       end
+    end
 
-      context 'user without a sso session' do
-        let(:access_restricted?) { true }
+    shared_examples 'Git access not allowed' do
+      it 'does not allow push and pull changes' do
+        aggregate_failures do
+          address = "http://localhost/groups/#{root_group.name}/-/saml/sso?token="
 
-        context 'when the request is made directly by the user' do
-          before do
-            expect(Gitlab::Auth::GroupSaml::SessionEnforcer).to receive(:new).with(user, group).twice.and_return(double(access_restricted?: access_restricted?))
-          end
+          expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
+          expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
+        end
+      end
+    end
 
-          it 'does not allow pull or push changes with proper url in the message' do
-            aggregate_failures do
-              address = "http://localhost/groups/#{group.name}/-/saml/sso?token=#{group.saml_discovery_token}"
+    context 'when Git is accessed by a user' do
+      using RSpec::Parameterized::TableSyntax
 
-              expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
-              expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
-            end
-          end
+      where(:project_namespace, :git_check_enforced?, :owner_of_project_namespace?, :owner_of_root_group?, :active_session?, :user_is_admin?, :enable_admin_mode?, :user_is_auditor?, :shared_examples) do
+        # Project without a namespace
+        nil              | nil   | nil   | nil   | nil   | nil   | nil   | nil   | 'Git access allowed'
 
-          context 'with a subgroup' do
-            let_it_be(:root_group) { create(:group) }
-            let_it_be(:group) { create(:group, parent: root_group) }
+        # Project with a namespace
+        ref(:root_group) | false | nil   | nil   | nil   | nil   | nil   | nil   | 'Git access allowed'
+        ref(:root_group) | true  | false | nil   | false | nil   | nil   | nil   | 'Git access not allowed'
+        ref(:root_group) | true  | true  | nil   | false | nil   | nil   | nil   | 'Git access allowed' # bug
+        ref(:root_group) | true  | false | nil   | true  | nil   | nil   | nil   | 'Git access allowed'
 
-            it 'does not allow pull or push changes with proper url in the message' do
-              aggregate_failures do
-                address = "http://localhost/groups/#{root_group.name}/-/saml/sso?token=#{root_group.saml_discovery_token}"
+        ref(:subgroup)   | false | nil   | nil   | nil   | nil   | nil   | nil   | 'Git access allowed'
+        ref(:subgroup)   | true  | false | false | false | nil   | nil   | nil   | 'Git access not allowed'
+        ref(:subgroup)   | true  | true  | false | false | nil   | nil   | nil   | 'Git access allowed' # bug
+        ref(:subgroup)   | true  | true  | false | true  | nil   | nil   | nil   | 'Git access allowed'
+        ref(:subgroup)   | true  | false | true  | false | nil   | nil   | nil   | 'Git access not allowed'
+        ref(:subgroup)   | true  | false | true  | true  | nil   | nil   | nil   | 'Git access allowed'
 
-                expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
-                expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError, /#{Regexp.quote(address)}/)
-              end
-            end
+        # Auditor user
+        ref(:root_group) | true  | false | nil   | false | nil   | nil   | true  | 'Git access allowed'
+        ref(:subgroup)   | true  | false | false | false | nil   | nil   | true  | 'Git access allowed'
+
+        # Admin user
+        ref(:root_group) | true  | false | nil   | false | true  | false | nil   | 'Git access not allowed'
+        ref(:root_group) | true  | false | nil   | true  | true  | false | nil   | 'Git access allowed'
+        ref(:root_group) | true  | false | nil   | false | true  | true  | nil   | 'Git access allowed'
+        ref(:subgroup)   | true  | false | false | false | true  | false | nil   | 'Git access not allowed'
+        ref(:subgroup)   | true  | false | false | true  | true  | false | nil   | 'Git access allowed'
+        ref(:subgroup)   | true  | false | false | false | true  | true  | nil   | 'Git access allowed'
+      end
+
+      with_them do
+        before do
+          stub_session(user_id: user.id, **sso_session_data) if active_session?
+          user.update!(admin: true) if user_is_admin?
+          user.update!(auditor: true) if user_is_auditor?
+
+          if project_namespace
+            project.update!(namespace: project_namespace)
+            saml_provider.update!(git_check_enforced: git_check_enforced?)
+
+            project_namespace.add_owner(user) if owner_of_project_namespace?
+            root_group.add_owner(user) if owner_of_root_group?
           end
         end
 
-        context 'when the request is made from CI builds' do
-          let(:protocol) { 'http' }
-          let(:auth_result_type) { :build }
+        context 'for user', enable_admin_mode: params[:enable_admin_mode?] do
+          it_behaves_like params[:shared_examples]
+        end
+      end
+    end
 
-          it 'allows pull and push changes' do
-            aggregate_failures do
-              expect { pull_changes }.not_to raise_error
-              expect { push_changes }.not_to raise_error
-            end
-          end
+    context 'when SSO is enforced and Git is accessed by another actor' do
+      before do
+        project.update!(namespace: root_group)
+        saml_provider.update!(git_check_enforced: true)
+      end
 
-          context 'when legacy CI credentials are used' do
-            let(:auth_result_type) { :ci }
+      context 'when the request is made from CI builds' do
+        let(:protocol) { 'http' }
+        let(:auth_result_type) { :build }
 
-            it 'allows pull and push changes' do
-              aggregate_failures do
-                expect { pull_changes }.not_to raise_error
-                expect { push_changes }.not_to raise_error
-              end
-            end
-          end
+        it_behaves_like 'Git access allowed'
+
+        context 'when legacy CI credentials are used' do
+          let(:auth_result_type) { :ci }
+
+          it_behaves_like 'Git access allowed'
         end
       end
     end
