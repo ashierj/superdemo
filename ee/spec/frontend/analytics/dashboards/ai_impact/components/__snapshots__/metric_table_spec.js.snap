@@ -23,7 +23,7 @@ exports[`Metric table for the change_failure_rate table row when the data is loa
 
 exports[`Metric table for the code_suggestions_usage_rate table row when the data is loaded renders the metric values 1`] = `
 "Code Suggestions usage  
-    Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique contributors.
+    Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique code contributors.
     
       Go to docs
       
