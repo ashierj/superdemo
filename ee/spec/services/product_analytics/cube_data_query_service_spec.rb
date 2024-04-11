@@ -21,10 +21,6 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
   before do
     project.add_owner(current_user)
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-    project.group.root_ancestor.namespace_settings.update!(
-      experiment_features_enabled: true,
-      product_analytics_enabled: true
-    )
     stub_feature_flags(product_analytics_billing: false, product_analytics_billing_override: false)
   end
 

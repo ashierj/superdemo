@@ -35,8 +35,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_feature_flags(product_analytics_dashboards: dashboards_flag, product_analytics_beta_optin: beta_optin_flag)
         stub_licensed_features(product_analytics: licensed)
-        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
-          product_analytics_enabled: toggle)
       end
 
       it { is_expected.to eq(outcome) }
@@ -142,23 +140,12 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       expect(project.product_analytics_dashboards(user)).to be_empty
     end
 
-    it 'returns nothing if product analytics toggle is disabled' do
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-      stub_licensed_features(product_analytics: false)
-      project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
-        product_analytics_enabled: false)
-
-      expect(project.product_analytics_dashboards(user)).to be_empty
-    end
-
     context 'with configuration project' do
       let_it_be(:config_project) { create(:project, :with_product_analytics_dashboard, group: group) }
 
       before do
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
-        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
-          product_analytics_enabled: true)
         project.update!(analytics_dashboards_configuration_project: config_project)
       end
 
@@ -172,8 +159,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
         allow(::Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return true
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
-        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
-          product_analytics_enabled: true)
         project.project_setting.update!(product_analytics_instrumentation_key: "key")
         allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
           allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
@@ -204,8 +189,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
 
     before do
       allow(group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-      group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
-        product_analytics_enabled: false)
     end
 
     context 'when the feature is not available' do

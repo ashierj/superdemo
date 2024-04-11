@@ -60,11 +60,6 @@ RSpec.describe Gitlab::ProductAnalytics::Developments::Setup, :saas, feature_cat
       expect(group.plans.first.name).to eq('ultimate')
     end
 
-    it 'enables the group settings' do
-      expect(group.reload.experiment_features_enabled).to eq(true)
-      expect(group.reload.product_analytics_enabled).to eq(true)
-    end
-
     it 'enables feature flags for product analytics' do
       expect(Feature.enabled?(:combined_analytics_dashboards)).to eq(true)
       expect(Feature.enabled?(:product_analytics_admin_settings)).to eq(true)

@@ -19,7 +19,6 @@ module Gitlab
           ensure_feature_flags
           ensure_application_settings
           ensure_license_activated(group)
-          ensure_group_settings(group)
 
           print_output(group)
         end
@@ -84,13 +83,6 @@ module Gitlab
         end
 
         # rubocop:enable CodeReuse/ActiveRecord
-        def ensure_group_settings(group)
-          puts "Enabling the group settings...."
-
-          group = Group.find(group.id) # Hard Reload for refreshing the cache
-          group.update!(experiment_features_enabled: true, product_analytics_enabled: true)
-        end
-
         def application_configured?
           Gitlab::CurrentSettings.product_analytics_data_collector_host.present?
         end

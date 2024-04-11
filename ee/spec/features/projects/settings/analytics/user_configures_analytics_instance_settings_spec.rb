@@ -16,10 +16,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
   context 'without correct license' do
     before do
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-      project.group.root_ancestor.namespace_settings.update!(
-        experiment_features_enabled: true,
-        product_analytics_enabled: true
-      )
       stub_licensed_features(product_analytics: false)
       stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
 
@@ -57,10 +53,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
     with_them do
       before do
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-        project.group.root_ancestor.namespace_settings.update!(
-          experiment_features_enabled: true,
-          product_analytics_enabled: true
-        )
         stub_licensed_features(product_analytics: true)
         stub_feature_flags(product_analytics_admin_settings: product_analytics_admin_settings,
           product_analytics_dashboards: product_analytics_dashboards)
@@ -78,10 +70,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-      project.group.root_ancestor.namespace_settings.update!(
-        experiment_features_enabled: true,
-        product_analytics_enabled: true
-      )
       stub_licensed_features(product_analytics: true)
       visit project_settings_analytics_path(project)
       project.reload
@@ -96,10 +84,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-      project.group.root_ancestor.namespace_settings.update!(
-        experiment_features_enabled: true,
-        product_analytics_enabled: true
-      )
       stub_licensed_features(product_analytics: true)
       stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
       visit project_settings_analytics_path(project)
