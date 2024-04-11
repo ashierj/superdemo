@@ -394,6 +394,18 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
           expect(json_response['unprotect_access_levels'][0]['group_id']).to eq(unprotect_group.id)
         end
 
+        context 'when array types have a wrong format' do
+          it 'returns a bad request error' do
+            post post_endpoint,
+              params: { name: branch_name, allowed_to_merge: [''], allowed_to_unprotect: [''], allowed_to_push: [''] }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['error']).to eq(
+              'allowed_to_push is invalid, allowed_to_merge is invalid, allowed_to_unprotect is invalid'
+            )
+          end
+        end
+
         it "fails if users don't all have access to the project" do
           push_user = create(:user)
 
