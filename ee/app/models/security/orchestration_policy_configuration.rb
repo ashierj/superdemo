@@ -134,24 +134,6 @@ module Security
       end.compact
     end
 
-    def deprecated_properties
-      deprecated_properties = Set.new
-      scan_result_policies = policy_yaml&.[](:scan_result_policy) || policy_yaml&.[](:approval_policy)
-
-      return deprecated_properties.to_a unless scan_result_policies.present?
-
-      scan_result_policies.each do |policy|
-        rules = policy[:rules] || []
-
-        rules.each do |rule|
-          deprecated_properties.add('match_on_inclusion') if rule.key?(:match_on_inclusion)
-          deprecated_properties.add('newly_detected') if rule[:vulnerability_states]&.include?('newly_detected')
-        end
-      end
-
-      deprecated_properties.to_a
-    end
-
     private
 
     def policy_cache_key
