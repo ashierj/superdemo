@@ -4,6 +4,8 @@ module Resolvers
   module MemberRoles
     class RolesResolver < BaseResolver
       include LooksAhead
+      include ::GitlabSubscriptions::SubscriptionHelper
+
       type Types::MemberRoles::MemberRoleType, null: true
 
       argument :id, ::Types::GlobalIDType[::MemberRole],
@@ -24,7 +26,7 @@ module Resolvers
         params[:id] = id.model_id if id.present?
         params[:order_by] = order_by.presence || :name
         params[:sort] = sort.present? ? sort.to_sym : :asc
-        params[:instance_roles] = true if instance_roles?(params)
+        params[:instance_roles] = instance_roles?(params)
 
         member_roles = ::MemberRoles::RolesFinder.new(current_user, params).execute
         member_roles = member_roles.with_members_count if selects_field?(:members_count)
@@ -44,9 +46,8 @@ module Resolvers
 
       def instance_roles?(params)
         return false if params[:id]
-        return false if object
 
-        true
+        !gitlab_com_subscription?
       end
     end
   end

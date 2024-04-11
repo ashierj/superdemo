@@ -2,11 +2,13 @@
 
 module Types
   module MemberRoles
+    # Anyone who can update group/project members can also read member roles
+    # But it is too complex to be included on a simple MemberRole type
+    #
+    # rubocop: disable Graphql/AuthorizeTypes -- authorization too complex
     class MemberRoleType < BaseObject
       graphql_name 'MemberRole'
       description 'Represents a member role'
-
-      authorize :admin_member_role
 
       field :id,
         ::Types::GlobalIDType[::MemberRole],
@@ -47,5 +49,6 @@ module Types
         object.members.count
       end
     end
+    # rubocop: enable Graphql/AuthorizeTypes
   end
 end

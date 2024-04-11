@@ -28,7 +28,6 @@ describe('EEInviteMembersModal', () => {
         newProjectPath,
         name: propsData.name,
         overageMembersModalAvailable: true,
-        hasGitlabSubscription: false,
       },
       propsData: {
         usersLimitDataset: {},

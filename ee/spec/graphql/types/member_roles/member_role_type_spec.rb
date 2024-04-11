@@ -8,6 +8,4 @@ RSpec.describe GitlabSchema.types['MemberRole'], feature_category: :system_acces
   specify { expect(described_class.graphql_name).to eq('MemberRole') }
 
   specify { expect(described_class).to have_graphql_fields(fields) }
-
-  specify { expect(described_class).to require_graphql_authorizations(:admin_member_role) }
 end

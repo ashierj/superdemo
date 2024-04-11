@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
   let_it_be_with_reload(:user) { create(:user) }
 
+  let(:permissions) { [:admin_member_role, :read_member_role] }
+
   subject(:policy) { described_class.new(user, member_role) }
 
   describe 'rules' do
@@ -21,7 +23,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
           group.add_owner(user)
         end
 
-        it { is_expected.to be_disallowed(:admin_member_role) }
+        it { is_expected.to be_disallowed(*permissions) }
       end
 
       context 'with the custom roles feature' do
@@ -30,7 +32,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
         end
 
         context 'when non member' do
-          it { is_expected.to be_disallowed(:admin_member_role) }
+          it { is_expected.to be_disallowed(*permissions) }
         end
 
         context 'when maintainer' do
@@ -38,7 +40,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
             group.add_maintainer(user)
           end
 
-          it { is_expected.to be_disallowed(:admin_member_role) }
+          it { is_expected.to be_disallowed(*permissions) }
         end
 
         context 'when owner' do
@@ -46,7 +48,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
             group.add_owner(user)
           end
 
-          it { is_expected.to be_allowed(:admin_member_role) }
+          it { is_expected.to be_allowed(*permissions) }
         end
 
         context 'when admin' do
@@ -59,7 +61,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
               user.update!(admin: true)
             end
 
-            it { is_expected.to be_allowed(:admin_member_role) }
+            it { is_expected.to be_allowed(*permissions) }
           end
         end
       end
@@ -77,7 +79,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
           user.update!(admin: true)
         end
 
-        it { is_expected.to be_disallowed(:admin_member_role) }
+        it { is_expected.to be_disallowed(*permissions) }
       end
 
       context 'with the custom roles feature' do
@@ -86,7 +88,7 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
         end
 
         context 'when non admin', :enable_admin_mode do
-          it { is_expected.to be_disallowed(:admin_member_role) }
+          it { is_expected.to be_disallowed(*permissions) }
         end
 
         context 'when admin' do
@@ -95,11 +97,11 @@ RSpec.describe Members::MemberRolePolicy, feature_category: :system_access do
           end
 
           context 'when admin mode is enabled', :enable_admin_mode do
-            it { is_expected.to be_allowed(:admin_member_role) }
+            it { is_expected.to be_allowed(*permissions) }
           end
 
           context 'when admin mode is disabled' do
-            it { is_expected.to be_disallowed(:admin_member_role) }
+            it { is_expected.to be_disallowed(*permissions) }
           end
         end
       end

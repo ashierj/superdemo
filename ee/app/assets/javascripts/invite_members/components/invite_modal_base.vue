@@ -6,7 +6,6 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import CeInviteModalBase from '~/invite_members/components/invite_modal_base.vue';
-import getInstanceMemberRoles from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
 import apolloProvider from '../provider';
 import {
   OVERAGE_MODAL_LINK,
@@ -40,7 +39,7 @@ export default {
   },
   apolloProvider,
   mixins: [glFeatureFlagsMixin()],
-  inject: ['overageMembersModalAvailable', 'hasGitlabSubscription'],
+  inject: ['overageMembersModalAvailable'],
   inheritAttrs: false,
   props: {
     accessLevels: {
@@ -101,28 +100,6 @@ export default {
     },
   },
   apollo: {
-    instanceMemberRoles: {
-      client: 'gitlabClient',
-      query() {
-        return getInstanceMemberRoles;
-      },
-      update(data) {
-        const memberRoles = data?.memberRoles?.nodes || [];
-
-        return memberRoles.map(({ id, name, description, baseAccessLevel }) => ({
-          baseAccessLevel: baseAccessLevel.integerValue,
-          name,
-          description,
-          memberRoleId: getIdFromGraphQLId(id),
-        }));
-      },
-      error(error) {
-        Sentry.captureException(error);
-      },
-      skip() {
-        return this.hasGitlabSubscription || this.isGroupInvite || !this.isVisible;
-      },
-    },
     memberRoles: {
       client: 'gitlabClient',
       query() {
@@ -162,14 +139,11 @@ export default {
       actualFeedbackMessage: this.invalidFeedbackMessage,
       billableUsersDetails: null,
       memberRoles: [],
-      instanceMemberRoles: [],
     };
   },
   computed: {
     isLoadingRoles() {
-      return (
-        this.$apollo.queries.instanceMemberRoles.loading || this.$apollo.queries.memberRoles.loading
-      );
+      return this.$apollo.queries.memberRoles.loading;
     },
     currentSlot() {
       if (this.showOverageModal) {
@@ -222,7 +196,7 @@ export default {
     upgradedRoles() {
       return {
         ...this.accessLevels,
-        customRoles: [...this.memberRoles, ...this.instanceMemberRoles],
+        customRoles: this.memberRoles,
       };
     },
   },
@@ -387,9 +361,9 @@ export default {
   >
     <template #[$options.OVERAGE_CONTENT_SLOT]>
       {{ modalInfo }}
-      <gl-link :href="$options.i18n.OVERAGE_MODAL_LINK" target="_blank">{{
-        $options.i18n.OVERAGE_MODAL_LINK_TEXT
-      }}</gl-link>
+      <gl-link :href="$options.i18n.OVERAGE_MODAL_LINK" target="_blank"
+        >{{ $options.i18n.OVERAGE_MODAL_LINK_TEXT }}
+      </gl-link>
     </template>
     <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>

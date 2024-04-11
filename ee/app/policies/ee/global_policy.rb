@@ -124,6 +124,7 @@ module EE
 
       rule { admin & custom_roles_allowed }.policy do
         enable :admin_member_role
+        enable :read_member_role
       end
 
       rule { admin & pages_size_limit_available }.enable :update_max_pages_size
@@ -136,10 +137,6 @@ module EE
       rule { ~clickhouse_main_database_available }.prevent :read_runner_usage
 
       rule { admin & service_accounts_available }.enable :admin_service_accounts
-
-      rule { admin & custom_roles_allowed }.policy do
-        enable :admin_member_role
-      end
 
       rule { ~anonymous }.policy do
         enable :view_productivity_analytics

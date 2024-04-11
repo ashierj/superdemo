@@ -10,6 +10,7 @@ module Members
 
     rule { admin & custom_roles_allowed }.policy do
       enable :admin_member_role
+      enable :read_member_role
     end
   end
 end

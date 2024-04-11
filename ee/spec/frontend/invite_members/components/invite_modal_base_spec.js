@@ -16,15 +16,10 @@ import {
 import { propsData as propsDataCE } from 'jest/invite_members/mock_data/modal_base';
 import getReconciliationStatus from 'ee/invite_members/graphql/queries/subscription_eligible.customer.query.graphql';
 import getBillableUserCountChanges from 'ee/invite_members/graphql/queries/billable_users_count.query.graphql';
-import getInstanceMemberRoles from 'ee/roles_and_permissions/graphql/instance_member_roles.query.graphql';
 import getGroupMemberRoles from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
 import getProjectMemberRoles from 'ee/invite_members/graphql/queries/project_member_roles.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
-import {
-  mockGroupMemberRoles,
-  mockProjectMemberRoles,
-  mockInstanceMemberRoles,
-} from '../mock_data';
+import { mockGroupMemberRoles, mockProjectMemberRoles } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -55,7 +50,6 @@ describe('EEInviteModalBase', () => {
 
   const groupMemberRolesResponse = jest.fn().mockResolvedValue(mockGroupMemberRoles);
   const projectMemberRolesResponse = jest.fn().mockResolvedValue(mockProjectMemberRoles);
-  const instanceMemberRolesResponse = jest.fn().mockResolvedValue(mockInstanceMemberRoles);
 
   const createComponent = ({
     props = {},
@@ -63,14 +57,12 @@ describe('EEInviteModalBase', () => {
     overageMembersModalAvailable = true,
     queryHandler = defaultReconciliationMock,
     showModal = true,
-    hasGitlabSubscription = false,
   } = {}) => {
     const mockCustomersDotClient = createMockClient([[getReconciliationStatus, queryHandler]]);
     const mockGitlabClient = createMockClient([
       [getBillableUserCountChanges, defaultBillableMock],
       [getGroupMemberRoles, groupMemberRolesResponse],
       [getProjectMemberRoles, projectMemberRolesResponse],
-      [getInstanceMemberRoles, instanceMemberRolesResponse],
     ]);
     mockApollo = new VueApollo({
       defaultClient: mockCustomersDotClient,
@@ -88,7 +80,6 @@ describe('EEInviteModalBase', () => {
       provide: {
         glFeatures,
         overageMembersModalAvailable,
-        hasGitlabSubscription,
       },
       stubs: {
         GlSprintf,
@@ -135,21 +126,11 @@ describe('EEInviteModalBase', () => {
       await nextTick();
 
       expect(groupMemberRolesResponse).not.toHaveBeenCalled();
-      expect(instanceMemberRolesResponse).not.toHaveBeenCalled();
 
       findCEBase().vm.$emit('shown');
       await nextTick();
 
       expect(groupMemberRolesResponse).toHaveBeenCalledTimes(1);
-      expect(instanceMemberRolesResponse).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not fetch instance-level roles when hasGitlabSubscription is true', async () => {
-      createComponent({ hasGitlabSubscription: true });
-      await nextTick();
-
-      expect(groupMemberRolesResponse).toHaveBeenCalledTimes(1);
-      expect(instanceMemberRolesResponse).not.toHaveBeenCalled();
     });
 
     it('sets the `isLoadingRoles` while fetching', async () => {
@@ -177,12 +158,6 @@ describe('EEInviteModalBase', () => {
               name: 'My role project 1',
               description: 'My role project 1 description',
             },
-            {
-              baseAccessLevel: 10,
-              memberRoleId: 104,
-              name: 'My role instance 1',
-              description: 'My role instance 1 description',
-            },
           ],
         });
       });
@@ -207,12 +182,6 @@ describe('EEInviteModalBase', () => {
               name: 'My role group 2',
               description: 'My role group 2 description',
             },
-            {
-              baseAccessLevel: 10,
-              memberRoleId: 104,
-              name: 'My role instance 1',
-              description: 'My role instance 1 description',
-            },
           ],
         });
       });
@@ -225,7 +194,6 @@ describe('EEInviteModalBase', () => {
 
         expect(groupMemberRolesResponse).toHaveBeenCalledTimes(0);
         expect(projectMemberRolesResponse).toHaveBeenCalledTimes(0);
-        expect(instanceMemberRolesResponse).toHaveBeenCalledTimes(0);
       });
     });
   });

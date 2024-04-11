@@ -278,26 +278,28 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
-  describe 'admin_member_role' do
+  describe 'custom roles administration' do
+    let(:permissions) { [:read_member_role, :admin_member_role] }
+
     context 'when custom_roles feature is enabled' do
       before do
         stub_licensed_features(custom_roles: true)
       end
 
-      it { is_expected.to be_disallowed(:admin_member_role) }
+      it { is_expected.to be_disallowed(*permissions) }
 
       context 'when admin mode enabled', :enable_admin_mode do
-        it { expect(described_class.new(admin, [user])).to be_allowed(:admin_member_role) }
+        it { expect(described_class.new(admin, [user])).to be_allowed(*permissions) }
       end
 
       context 'when admin mode disabled' do
-        it { expect(described_class.new(admin, [user])).to be_disallowed(:admin_member_role) }
+        it { expect(described_class.new(admin, [user])).to be_disallowed(*permissions) }
       end
     end
 
     context 'when custom_roles feature is disabled' do
       context 'when admin mode enabled', :enable_admin_mode do
-        it { expect(described_class.new(admin, [user])).to be_disallowed(:admin_member_role) }
+        it { expect(described_class.new(admin, [user])).to be_disallowed(*permissions) }
       end
     end
   end
