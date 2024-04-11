@@ -291,6 +291,17 @@ module EE
           description: 'Date when group was scheduled to be deleted.',
           alpha: { milestone: '16.11' }
 
+        field :is_adjourned_deletion_enabled, GraphQL::Types::Boolean,
+          null: false,
+          description: 'Indicates if delayed group deletion is enabled.',
+          method: :adjourned_deletion?,
+          alpha: { milestone: '16.11' }
+
+        field :permanent_deletion_date, GraphQL::Types::String,
+          null: true,
+          description: 'Date when group will be deleted if delayed group deletion is enabled.',
+          alpha: { milestone: '16.11' }
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end
@@ -306,9 +317,15 @@ module EE
         end
 
         def marked_for_deletion_on
-          return unless group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+          return unless group.adjourned_deletion?
 
           group.marked_for_deletion_on
+        end
+
+        def permanent_deletion_date
+          return unless group.adjourned_deletion?
+
+          group.permanent_deletion_date(Time.now.utc).strftime('%F')
         end
       end
     end

@@ -3,4 +3,6 @@
 fragment Group on Group {
   ...BaseGroup
   markedForDeletionOn
+  isAdjournedDeletionEnabled
+  permanentDeletionDate
 }

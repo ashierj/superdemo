@@ -8,5 +8,7 @@ export const organizationGroups = organizationGroupsCE.map((group, index, array)
   return {
     ...group,
     markedForDeletionOn: index === array.length - 1 ? '2024-01-01' : null,
+    isAdjournedDeletionEnabled: true,
+    permanentDeletionDate: index === array.length - 1 ? '2024-01-01' : null,
   };
 });

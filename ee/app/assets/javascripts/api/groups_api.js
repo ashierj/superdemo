@@ -2,6 +2,7 @@ import { DEFAULT_PER_PAGE } from '~/api';
 import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
 
+const GROUP_PATH = '/api/:version/groups/:id';
 const GROUPS_BILLABLE_MEMBERS_SINGLE_PATH = '/api/:version/groups/:group_id/billable_members/:id';
 const GROUPS_BILLABLE_MEMBERS_PATH = '/api/:version/groups/:id/billable_members';
 const GROUPS_BILLABLE_MEMBERS_SINGLE_MEMBERSHIPS_PATH =
@@ -75,10 +76,14 @@ export const approveAllPendingGroupMembers = (namespaceId) => {
   return axios.post(url);
 };
 
-const GROUP_PATH = '/api/:version/groups/:id';
-
 export const updateGroupSettings = (id, settings) => {
   const url = buildApiUrl(GROUP_PATH).replace(':id', id);
 
   return axios.put(url, settings);
 };
+
+export function deleteGroup(groupId, params) {
+  const url = buildApiUrl(GROUP_PATH).replace(':id', groupId);
+
+  return axios.delete(url, { params });
+}
