@@ -11,7 +11,7 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 
 const i18n = {
   cancel: __('Cancel'),
-  examples: __('Examples'),
+  examples: __('Example'),
   selectPolicy: s__('SecurityOrchestration|Select policy'),
   scanResultPolicyTitle: s__('SecurityOrchestration|Merge request approval policy'),
   scanResultPolicyTitlePopoverTitle: s__('SecurityOrchestration|Updated policy name'),
@@ -36,9 +36,11 @@ const i18n = {
     'SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} policies.',
   ),
   pipelineExecutionPolicyTitle: s__('SecurityOrchestration|Pipeline execution policy'),
-  pipelineExecutionPolicyDesc: s__('SecurityOrchestration|Run a customized CI Yaml file.'),
+  pipelineExecutionPolicyDesc: s__(
+    'SecurityOrchestration|Use a pipeline execution policy to enforce a custom CI/CD configuration to run in project pipelines.',
+  ),
   pipelineExecutionPolicyExample: s__(
-    'SecurityOrchestration|Run a CI Yaml file from project: demo-project with ref: 123 File path: group-name/project-name/file-name',
+    'SecurityOrchestration|Run customized Gitlab security templates across my projects.',
   ),
 };
 
