@@ -2,6 +2,7 @@
 import { GlLineChart, GlColumnChart } from '@gitlab/ui/dist/charts';
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
+import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { durationNanoToMs } from '../trace_utils';
 
 const intervalToTimestamp = (interval) => new Date(interval * 1000);
@@ -165,6 +166,15 @@ export default {
       };
     },
   },
+  methods: {
+    tooltipTitle(params) {
+      const seriesData = params?.seriesData || [];
+      const dataPoints = seriesData[0]?.data || [];
+      const timestamp = dataPoints[0];
+      return timestamp ? formatDate(timestamp) : '';
+    },
+  },
+
   SKELETON_CLASS: 'analytics-chart gl-mx-7 gl-my-4',
   CONTAINER_CLASS: 'gl-display-flex gl-flex-direction-row gl-mb-6',
 };
@@ -186,7 +196,9 @@ export default {
         :x-axis-title="$options.i18n.volumeLabel"
         x-axis-type="time"
         y-axis-title=""
-      />
+      >
+        <template #tooltip-title="{ params }">{{ tooltipTitle(params) }}</template>
+      </gl-column-chart>
     </div>
     <div class="analytics-chart">
       <gl-line-chart
@@ -196,7 +208,9 @@ export default {
         :option="errorChartOption"
         :show-legend="false"
         responsive
-      />
+      >
+        <template #tooltip-title="{ params }">{{ tooltipTitle(params) }}</template>
+      </gl-line-chart>
     </div>
     <div class="analytics-chart">
       <gl-line-chart
@@ -205,7 +219,9 @@ export default {
         :include-legend-avg-max="false"
         :option="durationChartOption"
         responsive
-      />
+      >
+        <template #tooltip-title="{ params }">{{ tooltipTitle(params) }}</template>
+      </gl-line-chart>
     </div>
   </div>
 </template>
