@@ -166,8 +166,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
         using RSpec::Parameterized::TableSyntax
 
         where(:rule_name, :report_type) do
-          'License-Check'       | :license_scanning
-          'Coverage-Check'      | :code_coverage
+          'Coverage-Check' | :code_coverage
         end
 
         with_them do
@@ -178,6 +177,16 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
 
             expect(response).to have_gitlab_http_status(:created)
           end
+        end
+      end
+
+      context 'when `report_type` is not supported' do
+        it 'returns a bad request error' do
+          expect do
+            post api(url, current_user), params: params.merge(report_type: :wrong)
+          end.not_to change { ApprovalProjectRule.report_approver.count }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
         end
       end
     end
