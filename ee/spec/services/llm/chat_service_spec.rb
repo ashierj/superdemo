@@ -11,6 +11,15 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
   let(:default_options) { { content: content } }
   let(:options) { default_options }
 
+  shared_examples_for 'track internal event for Duo Chat' do
+    it_behaves_like 'internal event tracking' do
+      let(:event) { 'request_duo_chat_response' }
+      let(:category) { described_class.name }
+
+      subject(:track_event) { described_class.new(user, resource, options).execute }
+    end
+  end
+
   context 'for self-managed' do
     let_it_be_with_reload(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
@@ -40,6 +49,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
           it_behaves_like 'schedules completion worker'
           it_behaves_like 'llm service caches user request'
           it_behaves_like 'service emitting message for user prompt'
+          it_behaves_like 'track internal event for Duo Chat'
         end
 
         context 'when resource is a user' do
@@ -50,6 +60,9 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
           it_behaves_like 'schedules completion worker'
           it_behaves_like 'llm service caches user request'
           it_behaves_like 'service emitting message for user prompt'
+          it_behaves_like 'track internal event for Duo Chat' do
+            let(:project) { nil }
+          end
         end
       end
 
@@ -146,6 +159,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
             it_behaves_like 'schedules completion worker'
             it_behaves_like 'llm service caches user request'
             it_behaves_like 'service emitting message for user prompt'
+            it_behaves_like 'track internal event for Duo Chat'
           end
 
           context 'when resource is a user' do
@@ -156,6 +170,9 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
             it_behaves_like 'schedules completion worker'
             it_behaves_like 'llm service caches user request'
             it_behaves_like 'service emitting message for user prompt'
+            it_behaves_like 'track internal event for Duo Chat' do
+              let(:project) { nil }
+            end
           end
         end
 

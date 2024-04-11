@@ -2,6 +2,8 @@
 
 module Llm
   class ChatService < BaseService
+    include Gitlab::InternalEventsTracking
+
     private
 
     def ai_action
@@ -18,6 +20,8 @@ module Llm
 
         @options = options.merge(agent_version_id: agent_version.id)
       end
+
+      track_internal_event('request_duo_chat_response', user: user, project: project, namespace: namespace)
 
       prompt_message.save!
       GraphqlTriggers.ai_completion_response(prompt_message)
