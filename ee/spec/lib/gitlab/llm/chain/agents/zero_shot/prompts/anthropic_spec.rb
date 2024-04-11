@@ -45,7 +45,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
       it 'returns prompt' do
         expect(subject).to include('Human:')
         expect(subject).to include('Assistant:')
-        expect(subject).to include('foo?')
+        expect(subject).to include(user_input)
         expect(subject).to include('tool definitions')
         expect(subject).to include('tool names')
         expect(subject).to include(prompt_text)
@@ -113,10 +113,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
         expect(user_prompts[0][:content]).to eq("question 1")
         expect(user_prompts[1][:content]).to eq("question 2")
-        user_prompts[2][:content] do |content|
-          expect(content).to start_with("Answer the question as accurate as you can")
-          expect(content).to include(user_input)
-        end
+        expect(user_prompts[2][:content]).to eq(user_input)
+
+        expect(prompts_by_role[:system][0][:content]).to include(prompt_text)
 
         expect(assistant_prompts[0][:content]).to eq("response 1")
         expect(assistant_prompts[1][:content]).to eq("response 2")
