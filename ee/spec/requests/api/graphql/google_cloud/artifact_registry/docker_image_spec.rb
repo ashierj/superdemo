@@ -27,7 +27,7 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
   let(:repository) { artifact_registry_integration.artifact_registry_repository }
   let(:image) { 'ruby' }
   let(:digest) { 'sha256:4ca5c21b' }
-  let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+  let(:client_double) { instance_double('::GoogleCloud::ArtifactRegistry::Client') }
 
   let(:uri) do
     "#{location}-docker.pkg.dev/#{google_cloud_project_id}/" \
@@ -85,7 +85,7 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
   before do
     stub_saas_features(google_cloud_support: true)
 
-    allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+    allow(::GoogleCloud::ArtifactRegistry::Client).to receive(:new)
       .with(wlif_integration: wlif_integration, user: user)
       .and_return(client_double)
 

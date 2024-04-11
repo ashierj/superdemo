@@ -27,13 +27,13 @@ export default {
 <template>
   <gl-empty-state
     :svg-path="$options.EmptyAdminAppsSvg"
-    :title="s__('GoogleCloudPlatformService|Connect to Google Cloud')"
+    :title="s__('GoogleCloud|Connect to Google Cloud')"
   >
     <template #description>
       <gl-sprintf
         :message="
           s__(
-            'GoogleCloudPlatformService|Connect to Google Cloud with workload identity federation. Select %{strongStart}Guided setup%{strongEnd} if you can manage workload identity federation in Google Cloud. %{linkStart}What are the required permissions?%{linkEnd}',
+            'GoogleCloud|Connect to Google Cloud with workload identity federation. Select %{strongStart}Guided setup%{strongEnd} if you can manage workload identity federation in Google Cloud. %{linkStart}What are the required permissions?%{linkEnd}',
           )
         "
       >
@@ -54,13 +54,13 @@ export default {
     <template #actions>
       <div class="gl-display-flex gl-gap-3">
         <gl-button variant="confirm" @click="show($options.STATE_GUIDED)">{{
-          s__('GoogleCloudPlatformService|Guided setup')
+          s__('GoogleCloud|Guided setup')
         }}</gl-button>
         <gl-button @click="show($options.STATE_MANUAL)">{{
-          s__('GoogleCloudPlatformService|Manual setup')
+          s__('GoogleCloud|Manual setup')
         }}</gl-button>
         <invite-members-trigger
-          :display-text="s__('GoogleCloudPlatformService|Invite member to set up')"
+          :display-text="s__('GoogleCloud|Invite member to set up')"
           trigger-source="google_cloud_artifact_registry_setup"
         />
       </div>

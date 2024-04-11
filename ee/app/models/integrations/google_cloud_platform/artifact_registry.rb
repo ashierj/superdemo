@@ -30,20 +30,20 @@ module Integrations
       field :artifact_registry_project_id,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Google Cloud project ID') },
-        label_description: -> { s_('GoogleCloudPlatformService|Project with the Artifact Registry repository.') },
+        title: -> { s_('GoogleCloud|Google Cloud project ID') },
+        label_description: -> { s_('GoogleCloud|Project with the Artifact Registry repository.') },
         help: -> { artifact_registry_project_id_help }
 
       field :artifact_registry_repositories,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Repository name') },
-        help: -> { s_('GoogleCloudPlatformService|Repository must be Docker format and Standard mode.') }
+        title: -> { s_('GoogleCloud|Repository name') },
+        help: -> { s_('GoogleCloud|Repository must be Docker format and Standard mode.') }
 
       field :artifact_registry_location,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Repository location') }
+        title: -> { s_('GoogleCloud|Repository location') }
 
       alias_method :artifact_registry_repository, :artifact_registry_repositories
 
@@ -52,7 +52,7 @@ module Integrations
       end
 
       def self.description
-        s_('GoogleCloudPlatformService|Manage your artifacts in Google Artifact Registry.')
+        s_('GoogleCloud|Manage your artifacts in Google Artifact Registry.')
       end
 
       def self.to_param
@@ -105,7 +105,7 @@ module Integrations
         url = 'https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects'
 
         format(
-          s_('GoogleCloudPlatformService|To improve security, use a dedicated project for resources, separate from ' \
+          s_('GoogleCloud|To improve security, use a dedicated project for resources, separate from ' \
              'CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}'),
           link_start: format('<a target="_blank" rel="noopener noreferrer" href="%{url}">', url: url).html_safe, # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
           link_end: '</a>'.html_safe,
@@ -114,7 +114,7 @@ module Integrations
       end
 
       def test(data)
-        response = ::GoogleCloudPlatform::ArtifactRegistry::GetRepositoryService # rubocop:disable CodeReuse/ServiceClass -- the implementation is tied to existing strategy of testing an integration
+        response = ::GoogleCloud::ArtifactRegistry::GetRepositoryService # rubocop:disable CodeReuse/ServiceClass -- the implementation is tied to existing strategy of testing an integration
           .new(project: project, current_user: data[:current_user]).execute
 
         { success: response.success?, result: response.message }

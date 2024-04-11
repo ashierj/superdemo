@@ -19,10 +19,10 @@ RSpec.shared_context 'for an artifact registry service' do
   let(:user) { project.owner }
   let(:params) { {} }
   let(:service) { described_class.new(project: project, current_user: user, params: params) }
-  let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+  let(:client_double) { instance_double('::GoogleCloud::ArtifactRegistry::Client') }
 
   before do
-    allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+    allow(::GoogleCloud::ArtifactRegistry::Client).to receive(:new)
       .with(wlif_integration: wlif_integration, user: user)
       .and_return(client_double)
   end

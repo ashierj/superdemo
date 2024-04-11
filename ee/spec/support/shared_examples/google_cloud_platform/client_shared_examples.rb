@@ -12,12 +12,12 @@ RSpec.shared_examples 'handling google cloud client common errors' do |client_me
   it_behaves_like 'transforming the error',
     message: "test #{described_class::GOOGLE_CLOUD_SUBJECT_TOKEN_ERROR_MESSAGE} test",
     from_klass: RuntimeError,
-    to_klass: ::GoogleCloudPlatform::AuthenticationError
+    to_klass: ::GoogleCloud::AuthenticationError
 
   it_behaves_like 'transforming the error',
     message: "test #{described_class::GOOGLE_CLOUD_TOKEN_EXCHANGE_ERROR_MESSAGE} test",
     from_klass: RuntimeError,
-    to_klass: ::GoogleCloudPlatform::AuthenticationError
+    to_klass: ::GoogleCloud::AuthenticationError
 
   it_behaves_like 'transforming the error',
     message: "test",
@@ -27,7 +27,7 @@ RSpec.shared_examples 'handling google cloud client common errors' do |client_me
   it_behaves_like 'transforming the error',
     message: "test",
     from_klass: ::Google::Cloud::Error,
-    to_klass: ::GoogleCloudPlatform::ApiError
+    to_klass: ::GoogleCloud::ApiError
 end
 
 RSpec.shared_examples 'handling google cloud client common validations' do

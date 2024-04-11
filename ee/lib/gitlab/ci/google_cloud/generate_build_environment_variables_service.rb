@@ -13,7 +13,7 @@ module Gitlab
         def execute
           return [] unless @integration&.active
 
-          config_json = ::GoogleCloudPlatform.credentials(
+          config_json = ::GoogleCloud.credentials(
             identity_provider_resource_name: @integration.identity_provider_resource_name,
             encoded_jwt: encoded_jwt
           ).to_json
@@ -30,7 +30,7 @@ module Gitlab
         def encoded_jwt
           JwtV2.for_build(
             @build,
-            aud: ::GoogleCloudPlatform::GLGO_BASE_URL,
+            aud: ::GoogleCloud::GLGO_BASE_URL,
             target_audience: @integration.identity_provider_resource_name
           )
         end

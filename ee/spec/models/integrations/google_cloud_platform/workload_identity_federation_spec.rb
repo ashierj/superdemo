@@ -47,7 +47,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
   describe '.title' do
     subject { described_class.title }
 
-    it { is_expected.to eq(s_('GoogleCloudPlatformService|Google Cloud IAM')) }
+    it { is_expected.to eq(s_('GoogleCloud|Google Cloud IAM')) }
   end
 
   describe '.description' do
@@ -55,8 +55,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::WorkloadIdentityFederation, fe
 
     it do
       is_expected.to eq(s_(
-        'GoogleCloudPlatformService|' \
-        'Manage permissions for Google Cloud resources with Identity and Access Management (IAM).'
+        'GoogleCloud|Manage permissions for Google Cloud resources with Identity and Access Management (IAM).'
       ))
     end
   end

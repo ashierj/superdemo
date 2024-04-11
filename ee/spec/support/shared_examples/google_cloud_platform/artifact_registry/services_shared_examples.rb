@@ -81,7 +81,7 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
     context 'when client raises AuthenticationError' do
       before do
         allow(client_double).to receive(client_method)
-          .and_raise(::GoogleCloudPlatform::AuthenticationError, 'boom')
+          .and_raise(::GoogleCloud::AuthenticationError, 'boom')
       end
 
       it_behaves_like 'returning an error service response',
@@ -92,7 +92,7 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
     context 'when client raises ApiError' do
       before do
         allow(client_double).to receive(client_method)
-          .and_raise(::GoogleCloudPlatform::ApiError, 'boom')
+          .and_raise(::GoogleCloud::ApiError, 'boom')
       end
 
       it_behaves_like 'returning an error service response',

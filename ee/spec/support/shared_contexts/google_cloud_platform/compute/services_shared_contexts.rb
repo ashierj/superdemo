@@ -7,7 +7,7 @@ RSpec.shared_context 'for a compute service' do
   end
 
   let(:user) { create(:user).tap { |user| project.add_owner(user) } }
-  let(:client_double) { instance_double('::GoogleCloudPlatform::Compute::Client') }
+  let(:client_double) { instance_double('::GoogleCloud::Compute::Client') }
   let(:service) { described_class.new(container: project, current_user: user, params: params) }
 
   let(:google_cloud_project_id) { nil }
@@ -16,7 +16,7 @@ RSpec.shared_context 'for a compute service' do
   before do
     stub_saas_features(google_cloud_support: google_cloud_support)
 
-    allow(::GoogleCloudPlatform::Compute::Client).to receive(:new)
+    allow(::GoogleCloud::Compute::Client).to receive(:new)
       .with(
         wlif_integration: wlif_integration,
         user: user,

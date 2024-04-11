@@ -49,7 +49,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
 
     context 'when client raises AuthenticationError' do
       before do
-        allow(client_double).to receive(client_method).and_raise(::GoogleCloudPlatform::AuthenticationError, 'boom')
+        allow(client_double).to receive(client_method).and_raise(::GoogleCloud::AuthenticationError, 'boom')
       end
 
       it_behaves_like 'returning an error service response', message: 'Unable to authenticate against Google Cloud'
@@ -58,7 +58,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
 
     context 'when client raises ApiError' do
       before do
-        allow(client_double).to receive(client_method).and_raise(::GoogleCloudPlatform::ApiError, 'invalid arg')
+        allow(client_double).to receive(client_method).and_raise(::GoogleCloud::ApiError, 'invalid arg')
       end
 
       it_behaves_like 'returning an error service response',
@@ -73,7 +73,7 @@ RSpec.shared_examples 'overriding the google cloud project id' do
   let(:extra_params) { { google_cloud_project_id: google_cloud_project_id } }
 
   it 'returns results by calling the specified project id' do
-    expect(::GoogleCloudPlatform::Compute::Client).to receive(:new)
+    expect(::GoogleCloud::Compute::Client).to receive(:new)
       .with(wlif_integration: wlif_integration, user: user, params: extra_params) do |**args|
         expect(args.dig(:params, :google_cloud_project_id)).to eq(google_cloud_project_id)
 

@@ -366,7 +366,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
 
       it 'returns error' do
         expect(result.errors).to include(a_string_including(
-          s_("GoogleCloudPlatformService|The google_cloud_support feature is not available")))
+          s_("GoogleCloud|The google_cloud_support feature is not available")))
       end
     end
 
@@ -388,7 +388,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
 
       it 'returns error' do
         expect(result.errors).to include(a_string_including(
-          s_('GoogleCloudPlatformService|The Google Cloud Identity and Access Management integration is not ' \
+          s_('GoogleCloud|The Google Cloud Identity and Access Management integration is not ' \
              'configured for this project')))
       end
     end
@@ -400,7 +400,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
 
       it 'returns error' do
         expect(result.errors).to include(a_string_including(
-          s_('GoogleCloudPlatformService|The Google Cloud Identity and Access Management integration is not enabled ' \
+          s_('GoogleCloud|The Google Cloud Identity and Access Management integration is not enabled ' \
              'for this project')))
       end
     end
