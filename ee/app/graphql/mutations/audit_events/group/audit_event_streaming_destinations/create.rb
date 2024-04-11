@@ -7,8 +7,6 @@ module Mutations
         class Create < Base
           graphql_name 'GroupAuditEventStreamingDestinationsCreate'
 
-          authorize :admin_external_audit_events
-
           argument :config, GraphQL::Types::JSON, # rubocop:disable Graphql/JSONType -- Different type of destinations will have different configs
             required: true,
             description: 'Destination config.'
@@ -42,7 +40,7 @@ module Mutations
               category: category
             )
 
-            audit(destination, action: :create) if destination.save
+            audit(destination, action: :created) if destination.save
 
             {
               external_audit_event_destination: (destination if destination.persisted?),
