@@ -889,14 +889,15 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
 
   describe '.elevated_guests scope' do
     let(:group) { create(:group) }
-    let(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
-    let(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+    let(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+    let(:member_role_basic) { create(:member_role, :guest, :read_code, namespace: group) }
+
     let!(:member1) { create(:group_member, :developer, source: group) }
     let!(:member2) { create(:group_member, :guest, source: group, member_role: member_role_elevating) }
     let!(:member3) { create(:group_member, :guest, source: group, member_role: member_role_basic) }
 
     it 'returns only guests with elevated role' do
-      expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+      expect(MemberRole).to receive(:occupies_seat).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
 
       expect(described_class.elevated_guests).to contain_exactly(member2)
     end
@@ -904,8 +905,9 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
 
   describe '.with_elevated_guests scope' do
     let(:group) { create(:group) }
-    let(:member_role_elevating) { create(:member_role, :guest, namespace: group, read_vulnerability: true) }
-    let(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+    let(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+    let(:member_role_basic) { create(:member_role, :guest, :read_code, namespace: group) }
+
     let!(:member1) { create(:group_member, :developer, source: group) }
     let!(:member2) { create(:group_member, :guest, source: group, member_role: member_role_elevating) }
     let!(:member3) { create(:group_member, :guest, source: group, member_role: member_role_basic) }

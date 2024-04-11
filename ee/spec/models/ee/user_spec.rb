@@ -225,8 +225,8 @@ RSpec.describe User, feature_category: :system_access do
 
     describe '.guests_with_elevating_role' do
       let(:group) { create(:group) }
-      let(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
-      let(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+      let(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+      let(:member_role_basic) { create(:member_role, :guest, :read_code, namespace: group) }
       let(:expected_user) { create(:group_member, :guest, source: group, member_role: member_role_elevating).user }
 
       before do
@@ -243,7 +243,7 @@ RSpec.describe User, feature_category: :system_access do
       end
 
       it 'returns only guests with elevated role' do
-        expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+        expect(MemberRole).to receive(:occupies_seat).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
 
         expect(described_class.guests_with_elevating_role).to contain_exactly(expected_user)
       end
@@ -1185,8 +1185,8 @@ RSpec.describe User, feature_category: :system_access do
     let_it_be(:project_reporter_user) { create(:project_member, :reporter).user }
     let_it_be(:project_guest_user) { create(:project_member, :guest).user }
     let_it_be(:group) { create(:group) }
-    let_it_be(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
-    let_it_be(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+    let_it_be(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+    let_it_be(:member_role_basic) { create(:member_role, :guest, :read_code, namespace: group) }
     let_it_be(:guest_with_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_elevating).user }
     let_it_be(:guest_without_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_basic).user }
     let_it_be(:users_select) { 'SELECT "users".* FROM "users"' }
@@ -1227,12 +1227,6 @@ RSpec.describe User, feature_category: :system_access do
     end
 
     context 'without guests' do
-      let(:elevating_permissions) do
-        MemberRole.elevating_permissions.map do |permission|
-          /member_roles.permissions @> \('\{"#{permission}":true\}'\)::jsonb/.source
-        end.join(' OR ')
-      end
-
       let(:expected_where) do
         'WHERE \("users"."state" IN \(\'active\'\)\)
         AND
@@ -1245,7 +1239,7 @@ RSpec.describe User, feature_category: :system_access do
            WHERE "members"."user_id" = "users"."id"
              AND \(members.access_level > 10
              OR "members"."access_level" = 10
-             AND \('.squish + elevating_permissions + '\)\)\)\)'.squish # allow_cross_joins_across_databases
+             AND "member_roles"."occupies_seat" = TRUE\)\)\)'.squish # allow_cross_joins_across_databases
       end
 
       before do
@@ -1260,7 +1254,7 @@ RSpec.describe User, feature_category: :system_access do
 
       context 'with elevating role' do
         it 'returns users with elevated roles' do
-          expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+          expect(MemberRole).to receive(:occupies_seat).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
 
           expect(users).to include(guest_with_elevated_role)
           expect(users).not_to include(guest_without_elevated_role)
