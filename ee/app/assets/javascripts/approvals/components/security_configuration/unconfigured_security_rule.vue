@@ -19,23 +19,26 @@ export default {
 </script>
 
 <template>
-  <tr>
-    <!-- Suggested approval rule creation row -->
-    <td class="js-name" colspan="4">
-      <rule-name :name="rule.name" />
+  <!-- Suggested approval rule creation row -->
+  <td class="js-name" colspan="5">
+    <div class="gl-display-flex gl-gap-5">
+      <div class="gl-w-full">
+        <rule-name class="gl-text-left!" :name="rule.name" />
 
-      <div class="gl-text-gray-500">
-        <gl-sprintf :message="rule.description">
-          <template #link="{ content }">
-            <gl-link :href="rule.docsPath" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
+        <div class="gl-text-gray-500 gl-text-left!">
+          <gl-sprintf :message="rule.description">
+            <template #link="{ content }">
+              <gl-link :href="rule.docsPath" target="_blank">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </div>
       </div>
-    </td>
-    <td class="gl-text-right">
-      <gl-button class="gl-mt-2" @click="$emit('enable')">
-        {{ __('Enable') }}
-      </gl-button>
-    </td>
-  </tr>
+
+      <div>
+        <gl-button @click="$emit('enable')">
+          {{ __('Enable') }}
+        </gl-button>
+      </div>
+    </div>
+  </td>
 </template>

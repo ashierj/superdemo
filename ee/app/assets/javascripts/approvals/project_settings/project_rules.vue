@@ -1,4 +1,5 @@
 <script>
+import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import RuleName from 'ee/approvals/components/rules/rule_name.vue';
@@ -16,6 +17,7 @@ import UnconfiguredSecurityRules from 'ee/approvals/components/security_configur
 
 export default {
   components: {
+    GlButton,
     RuleControls,
     Rules,
     UserAvatarList,
@@ -38,6 +40,8 @@ export default {
     ...mapState(['settings']),
     ...mapState({
       rules: (state) => state.approvals.rules,
+      pagination: (state) => state.approvals.rulesPagination,
+      isLoading: (state) => state.approvals.isLoading,
     }),
     hasNamedRule() {
       return this.rules.some((rule) => rule.ruleType === RULE_TYPE_REGULAR);
@@ -69,7 +73,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addEmptyRule']),
+    ...mapActions(['addEmptyRule', 'fetchRules']),
     summaryText(rule) {
       return this.settings.allowMultiRule
         ? this.summaryMultipleRulesText(rule)
@@ -130,6 +134,8 @@ export default {
         </tr>
       </template>
       <template #tbody="{ rules, name, members, approvalsRequired, branches, actions }">
+        <unconfigured-security-rules />
+
         <template v-for="(rule, index) in rules">
           <empty-rule
             v-if="rule.ruleType === 'any_approver'"
@@ -179,6 +185,11 @@ export default {
       </template>
     </rules>
 
-    <unconfigured-security-rules />
+    <div
+      v-if="pagination.nextPage"
+      class="gl-display-flex gl-justify-content-center gl-mb-4 gl-mt-6"
+    >
+      <gl-button :loading="isLoading" @click="fetchRules">{{ __('Show more') }}</gl-button>
+    </div>
   </div>
 </template>

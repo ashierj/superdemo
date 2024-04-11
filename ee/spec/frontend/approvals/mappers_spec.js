@@ -3,8 +3,17 @@ import {
   REPORT_TYPE_CODE_COVERAGE,
   RULE_TYPE_REPORT_APPROVER,
 } from 'ee/approvals/constants';
-import { mergeRequestApprovalSettingsMappers, mapApprovalRuleRequest } from 'ee/approvals/mappers';
-import { createGroupApprovalsPayload, createGroupApprovalsState } from './mocks';
+import {
+  mergeRequestApprovalSettingsMappers,
+  mapApprovalRuleRequest,
+  excludeDuplicatesInResponse,
+} from 'ee/approvals/mappers';
+import {
+  createGroupApprovalsPayload,
+  createGroupApprovalsState,
+  createProjectRules,
+  createNextPageProjectRules,
+} from './mocks';
 
 describe('approvals mappers', () => {
   describe('mergeRequestApprovalSettingsMappers', () => {
@@ -44,6 +53,17 @@ describe('approvals mappers', () => {
       it(`it returns ${expectedReportType} report_type for ${ruleName}`, () => {
         expect(mapApprovalRuleRequest({ name: ruleName }).report_type).toBe(expectedReportType);
       });
+    });
+  });
+
+  describe('excludeDuplicatesInResponse', () => {
+    it('returns the next page rules excluding the duplicates based on existing state', () => {
+      const rulesInState = createProjectRules();
+      const nextPageProjectRules = createNextPageProjectRules();
+
+      expect(excludeDuplicatesInResponse(nextPageProjectRules, rulesInState)).toStrictEqual(
+        nextPageProjectRules.slice(1),
+      );
     });
   });
 });

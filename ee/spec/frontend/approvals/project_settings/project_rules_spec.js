@@ -30,6 +30,8 @@ const getRowData = (tr) => {
   };
 };
 
+const findShowMoreButton = (wrapper) => wrapper.findByText('Show more');
+
 describe('Approvals ProjectRules', () => {
   let wrapper;
   let store;
@@ -75,21 +77,23 @@ describe('Approvals ProjectRules', () => {
     it('renders row for each rule', () => {
       factory();
 
-      const rows = wrapper
+      const userAddedRules = wrapper
         .findComponent(Rules)
         .findAll('tbody tr')
-        .filter((tr, index) => index !== 0);
-      const data = rows.wrappers.map(getRowData);
+        .filter((_, index) => index > 1)
+        .wrappers.map(getRowData);
 
-      expect(data).toEqual(
-        TEST_RULES.filter((rule, index) => index !== 0).map((rule) => ({
+      expect(userAddedRules).toEqual(
+        TEST_RULES.filter((_, index) => index !== 0).map((rule) => ({
           name: rule.name,
           approvers: rule.eligibleApprovers,
           approvalsRequired: rule.approvalsRequired,
         })),
       );
 
-      expect(wrapper.findComponent(Rules).findAllComponents(RuleName).length).toBe(rows.length);
+      expect(wrapper.findComponent(Rules).findAllComponents(RuleName).length).toBe(
+        TEST_RULES.length,
+      );
     });
 
     it('should always have any_approver rule', () => {
@@ -117,11 +121,11 @@ describe('Approvals ProjectRules', () => {
 
     it('does not render name', () => {
       expect(findCell(row, 'name').exists()).toBe(false);
-      expect(wrapper.findComponent(Rules).findComponent(RuleName).exists()).toBe(false);
     });
 
     it('should only display 1 rule', () => {
       expect(store.modules.approvals.state.rules.length).toBe(1);
+      expect(wrapper.findComponent(Rules).findAllComponents(RuleName).length).toBe(1);
     });
   });
 
@@ -137,6 +141,78 @@ describe('Approvals ProjectRules', () => {
 
     it(`should render the unconfigured-security-rules component`, () => {
       expect(wrapper.findComponent(UnconfiguredSecurityRules).exists()).toBe(true);
+    });
+  });
+
+  describe('"Show More" button', () => {
+    describe('when there are more than 20 rules to show', () => {
+      const fetchRules = jest.fn();
+
+      beforeEach(() => {
+        const module = projectSettingsModule();
+
+        store = createStoreOptions({
+          approvals: {
+            ...module,
+            actions: {
+              ...module.actions,
+              fetchRules,
+            },
+            state: {
+              ...module.state,
+              rulesPagination: {
+                nextPage: 2,
+              },
+            },
+          },
+        });
+      });
+
+      it('should be visible', () => {
+        factory();
+
+        expect(findShowMoreButton(wrapper).exists()).toBe(true);
+      });
+
+      it('on click should initiate loading the next page of the rules', async () => {
+        factory();
+
+        const button = findShowMoreButton(wrapper);
+        await button.trigger('click');
+
+        expect(fetchRules).toHaveBeenCalled();
+      });
+    });
+
+    describe('when there are less than 20 rules to show', () => {
+      it('should be hidden', () => {
+        factory();
+
+        expect(findShowMoreButton(wrapper).exists()).toBe(false);
+      });
+    });
+
+    describe('when there are no more rules to show', () => {
+      beforeEach(() => {
+        const module = projectSettingsModule();
+
+        store = createStoreOptions({
+          approvals: {
+            ...module,
+            state: {
+              ...module.state,
+              rulesPagination: {
+                nextPage: null,
+              },
+            },
+          },
+        });
+      });
+
+      it('should be hidden', () => {
+        factory();
+        expect(findShowMoreButton(wrapper).exists()).toBe(false);
+      });
     });
   });
 });

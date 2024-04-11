@@ -10,10 +10,13 @@ export default {
   },
   [types.SET_APPROVAL_SETTINGS](state, settings) {
     state.hasLoaded = true;
-    state.rules = settings.rules;
+    state.rules = settings.isPagination ? [...state.rules, ...settings.rules] : settings.rules;
     state.initialRules = [...settings.rules];
     state.fallbackApprovalsRequired = settings.fallbackApprovalsRequired;
     state.minFallbackApprovalsRequired = settings.minFallbackApprovalsRequired;
+  },
+  [types.SET_RULES](state, rules) {
+    state.rules = [...rules];
   },
   [types.ADD_EMPTY_RULE](state) {
     state.rules.unshift({
@@ -42,5 +45,8 @@ export default {
   },
   [types.SET_EDIT_RULE](state, rule) {
     state.editRule = rule;
+  },
+  [types.SET_RULES_PAGINATION](state, pagination) {
+    state.rulesPagination = { ...state.rulesPagination, ...pagination };
   },
 };
