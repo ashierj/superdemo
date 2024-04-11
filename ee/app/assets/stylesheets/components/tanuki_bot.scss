@@ -1,0 +1,5 @@
+.duo-chat-container {
+  @include media-breakpoint-up(md) {
+    width: $gl-drawer-width;
+  }
+}

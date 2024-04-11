@@ -226,7 +226,7 @@ export default {
       :predefined-prompts="$options.i18n.predefinedPrompts"
       :badge-type="null"
       :tool-name="toolName"
-      class="gl-drawer-default"
+      class="duo-chat-container"
       @send-chat-prompt="onSendChatPrompt"
       @chat-hidden="onChatClose"
       @track-feedback="onTrackFeedback"
