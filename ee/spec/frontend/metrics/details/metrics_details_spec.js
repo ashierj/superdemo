@@ -5,7 +5,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import * as urlUtility from '~/lib/utils/url_utility';
-import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
+import MetricsLineChart from 'ee/metrics/details/metrics_line_chart.vue';
+import MetricsHeatmap from 'ee/metrics/details/metrics_heatmap.vue';
 import FilteredSearch from 'ee/metrics/details/filter_bar/metrics_filtered_search.vue';
 import { ingestedAtTimeAgo } from 'ee/metrics/utils';
 import { prepareTokens } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
@@ -34,7 +35,7 @@ describe('MetricsDetails', () => {
   const findHeaderDescription = () => findHeader().find(`[data-testid="metric-description"]`);
   const findHeaderLastIngested = () => findHeader().find(`[data-testid="metric-last-ingested"]`);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
-  const findChart = () => findMetricDetails().findComponent(MetricsChart);
+  const findChart = () => wrapper.find(`[data-testid="metric-chart"]`);
   const findEmptyState = () => findMetricDetails().findComponent(GlEmptyState);
   const findFilteredSearch = () => findMetricDetails().findComponent(FilteredSearch);
 
@@ -150,6 +151,27 @@ describe('MetricsDetails', () => {
         METRIC_ID,
         METRIC_TYPE,
       );
+    });
+
+    describe('when metric type is an histogram', () => {
+      beforeEach(async () => {
+        observabilityClientMock.fetchMetric.mockClear();
+
+        await mountComponent({ metricType: 'histogram' });
+      });
+
+      it('fetches data with heatmap visual', () => {
+        expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, 'histogram', {
+          abortController: expect.any(AbortController),
+          filters: expect.any(Object),
+          visual: 'heatmap',
+        });
+      });
+
+      it('renders the heatmap chart', () => {
+        expect(findMetricDetails().findComponent(MetricsLineChart).exists()).toBe(false);
+        expect(findMetricDetails().findComponent(MetricsHeatmap).exists()).toBe(true);
+      });
     });
 
     it('renders the metrics details', () => {
@@ -363,6 +385,17 @@ describe('MetricsDetails', () => {
         });
       });
 
+      it('renders the loading indicator while fetching new data with currently empty data', async () => {
+        observabilityClientMock.fetchMetric.mockResolvedValue([]);
+        await mountComponent();
+
+        await findFilteredSearch().vm.$emit('submit', {
+          attributes: [],
+        });
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
       describe('on search submit', () => {
         const updatedMetricData = [
           {
@@ -458,6 +491,11 @@ describe('MetricsDetails', () => {
       expect(chart.props('metricData')).toEqual(mockMetricData);
       expect(chart.props('cancelled')).toBe(false);
       expect(chart.props('loading')).toBe(false);
+    });
+
+    it('renders a line chart by default', () => {
+      expect(findMetricDetails().findComponent(MetricsLineChart).exists()).toBe(true);
+      expect(findMetricDetails().findComponent(MetricsHeatmap).exists()).toBe(false);
     });
 
     it('renders the details header', () => {

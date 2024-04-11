@@ -1,9 +1,9 @@
 import { GlLineChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
-import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
+import MetricsLineChart from 'ee/metrics/details/metrics_line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-describe('MetricsChart', () => {
+describe('MetricsLineChart', () => {
   const mockData = [
     {
       name: 'container_cpu_usage_seconds_total',
@@ -32,7 +32,7 @@ describe('MetricsChart', () => {
   let wrapper;
 
   const mountComponent = ({ data = mockData, loading = false, cancelled = false } = {}) => {
-    wrapper = shallowMountExtended(MetricsChart, {
+    wrapper = shallowMountExtended(MetricsLineChart, {
       propsData: {
         metricData: data,
         loading,
@@ -184,50 +184,49 @@ describe('MetricsChart', () => {
         });
       });
     });
+  });
+  describe('loading', () => {
+    it('changes the opacity when loading', () => {
+      mountComponent({ loading: true });
 
-    describe('loading', () => {
-      it('changes the opacity when loading', () => {
-        mountComponent({ loading: true });
+      expect(findChart().classes()).toContain('gl-opacity-3');
+    });
 
+    it('does not change the opacity when not loading', () => {
+      mountComponent({ loading: false });
+
+      expect(findChart().classes()).not.toContain('gl-opacity-3');
+    });
+  });
+
+  describe('cancelled', () => {
+    const cancelledText = 'Metrics search has been cancelled.';
+
+    describe('when cancelled=true', () => {
+      beforeEach(() => {
+        mountComponent({ cancelled: true });
+      });
+
+      it('overrides the opacity', () => {
         expect(findChart().classes()).toContain('gl-opacity-3');
       });
 
-      it('does not change the opacity when not loading', () => {
-        mountComponent({ loading: false });
-
-        expect(findChart().classes()).not.toContain('gl-opacity-3');
+      it('shows the cancelled messaged', () => {
+        expect(wrapper.text()).toContain(cancelledText);
       });
     });
 
-    describe('cancelled', () => {
-      const cancelledText = 'Metrics search has been cancelled.';
-
-      describe('when cancelled=true', () => {
-        beforeEach(() => {
-          mountComponent({ cancelled: true });
-        });
-
-        it('overrides the opacity', () => {
-          expect(findChart().classes()).toContain('gl-opacity-3');
-        });
-
-        it('shows the cancelled messaged', () => {
-          expect(wrapper.text()).toContain(cancelledText);
-        });
+    describe('when cancelled=false', () => {
+      beforeEach(() => {
+        mountComponent({ cancelled: false });
       });
 
-      describe('when cancelled=false', () => {
-        beforeEach(() => {
-          mountComponent({ cancelled: false });
-        });
+      it('overrides the opacity', () => {
+        expect(findChart().classes()).not.toContain('gl-opacity-3');
+      });
 
-        it('overrides the opacity', () => {
-          expect(findChart().classes()).not.toContain('gl-opacity-3');
-        });
-
-        it('shows the cancelled messaged', () => {
-          expect(wrapper.text()).not.toContain(cancelledText);
-        });
+      it('shows the cancelled messaged', () => {
+        expect(wrapper.text()).not.toContain(cancelledText);
       });
     });
   });

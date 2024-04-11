@@ -2,6 +2,7 @@
 import { GlTable, GlLabel, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { ingestedAtTimeAgo } from '../utils';
+import { METRIC_TYPE } from '../constants';
 
 const MAX_NUM_OF_ATTRIBUTES_SHOWN = 5;
 
@@ -71,13 +72,13 @@ export default {
     labelColor(type) {
       // Colors are taken from the label's colors map: gitlab/app/helpers/labels_helper.rb
       switch (type.toLowerCase()) {
-        case 'sum':
+        case METRIC_TYPE.Sum:
           return '#6699cc'; // blue-gray
-        case 'gauge':
+        case METRIC_TYPE.Guage:
           return '#cd5b45'; // dark-coral
-        case 'histogram':
+        case METRIC_TYPE.Histogram:
           return '#009966'; // green-cyan
-        case 'exponentialhistogram':
+        case METRIC_TYPE.ExponentialHistogram:
           return '#ed9121'; // carrot-orange
         default:
           return '#808080'; // gray
