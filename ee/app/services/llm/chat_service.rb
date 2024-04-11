@@ -21,7 +21,13 @@ module Llm
         @options = options.merge(agent_version_id: agent_version.id)
       end
 
-      track_internal_event('request_duo_chat_response', user: user, project: project, namespace: namespace)
+      track_internal_event(
+        'request_duo_chat_response',
+        user: user,
+        project: project,
+        namespace: namespace,
+        feature_enabled_by_namespace_ids: user.ai_chat_enabled_namespace_ids
+      )
 
       prompt_message.save!
       GraphqlTriggers.ai_completion_response(prompt_message)
