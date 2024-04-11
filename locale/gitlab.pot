@@ -56083,7 +56083,7 @@ msgstr ""
 msgid "ValueStreamAnalytics|Merge request analytics"
 msgstr ""
 
-msgid "ValueStreamAnalytics|Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique contributors."
+msgid "ValueStreamAnalytics|Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique code contributors."
 msgstr ""
 
 msgid "ValueStreamAnalytics|New Value Stream"
