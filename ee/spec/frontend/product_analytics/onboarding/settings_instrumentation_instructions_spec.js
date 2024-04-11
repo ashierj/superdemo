@@ -16,7 +16,6 @@ describe('ProductAnalyticsSettingsInstrumentationInstructions', () => {
   const dashboardsPath = '/foo/bar/dashboards';
   const onboardingPath = '/foo/bar/dashboards/onboarding';
 
-  const findOnboardingLink = () => wrapper.findByTestId('onboarding-link');
   const findModal = () => wrapper.findComponent(GlModal);
   const findInstrumentationInstructionsButton = () =>
     wrapper.findByRole('button', {
@@ -32,6 +31,7 @@ describe('ProductAnalyticsSettingsInstrumentationInstructions', () => {
       propsData: {
         dashboardsPath,
         onboardingPath,
+        trackingKey: TEST_TRACKING_KEY,
         ...props,
       },
       stubs: {
@@ -40,16 +40,8 @@ describe('ProductAnalyticsSettingsInstrumentationInstructions', () => {
     });
   };
 
-  describe('when project is not yet onboarded', () => {
-    beforeEach(() => createWrapper({ trackingKey: null }));
-
-    it('has link to onboarding flow', () => {
-      expect(findOnboardingLink().exists()).toBe(true);
-    });
-  });
-
-  describe('when a project is onboarded', () => {
-    beforeEach(() => createWrapper({ trackingKey: TEST_TRACKING_KEY }));
+  describe('default behaviour', () => {
+    beforeEach(() => createWrapper());
 
     it('has button to show instrumentation instructions', () => {
       expect(findInstrumentationInstructionsButton().exists()).toBe(true);
