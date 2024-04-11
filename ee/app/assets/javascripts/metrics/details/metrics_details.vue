@@ -12,9 +12,13 @@ import axios from '~/lib/utils/axios_utils';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { TIME_RANGE_OPTIONS } from '~/observability/constants';
 import { ingestedAtTimeAgo } from '../utils';
-import MetricsChart from './metrics_chart.vue';
+import { METRIC_TYPE } from '../constants';
+import MetricsLineChart from './metrics_line_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
 import { filterObjToQuery, queryToFilterObj } from './filters';
+import MetricsHeatMap from './metrics_heatmap.vue';
+
+const VISUAL_HEATMAP = 'heatmap';
 
 export default {
   i18n: {
@@ -28,10 +32,11 @@ export default {
   components: {
     GlSprintf,
     GlLoadingIcon,
-    MetricsChart,
+    MetricsLineChart,
     GlEmptyState,
     FilteredSearch,
     UrlSync,
+    MetricsHeatMap,
   },
   props: {
     observabilityClient: {
@@ -88,6 +93,19 @@ export default {
       }
       return '';
     },
+    shouldShowLoadingIcon() {
+      // only show the spinner on the first load or when there is no metric
+      return this.loading && this.noMetric;
+    },
+    isHistogram() {
+      return (
+        this.metricType.toLowerCase() === METRIC_TYPE.ExponentialHistogram ||
+        this.metricType.toLowerCase() === METRIC_TYPE.Histogram
+      );
+    },
+    noMetric() {
+      return !this.metricData || !this.metricData.length;
+    },
   },
   created() {
     this.validateAndFetch();
@@ -136,7 +154,11 @@ export default {
         const metricData = await this.observabilityClient.fetchMetric(
           this.metricId,
           this.metricType,
-          { filters: this.filters, abortController: this.apiAbortController },
+          {
+            filters: this.filters,
+            abortController: this.apiAbortController,
+            ...(this.isHistogram && { visual: VISUAL_HEATMAP }),
+          },
         );
         // gl-chart is merging data by default. As I workaround we can
         // set the data to [] first, as explained in https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2577
@@ -178,14 +200,16 @@ export default {
       });
       this.queryCancelled = true;
     },
+    getChartComponent() {
+      return this.isHistogram ? MetricsHeatMap : MetricsLineChart;
+    },
   },
   EMPTY_CHART_SVG,
 };
 </script>
 
 <template>
-  <!-- only show the spinner ont the first load -->
-  <div v-if="loading && !metricData" class="gl-py-5">
+  <div v-if="shouldShowLoadingIcon" class="gl-py-5">
     <gl-loading-icon size="lg" />
   </div>
 
@@ -215,11 +239,13 @@ export default {
         @cancel="onCancel"
       />
 
-      <metrics-chart
+      <component
+        :is="getChartComponent()"
         v-if="metricData && metricData.length"
         :metric-data="metricData"
         :loading="loading"
         :cancelled="queryCancelled"
+        data-testid="metric-chart"
       />
       <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
         <template #title>
