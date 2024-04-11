@@ -11,7 +11,7 @@ query complianceFrameworkPolicies(
 ) {
   namespace(fullPath: $fullPath) {
     id
-    approvalPolicies(after: $approvalPoliciesGlobalAfter) {
+    approvalPolicies(after: $approvalPoliciesGlobalAfter, relationship: DESCENDANT) {
       nodes {
         name
         yaml
@@ -38,7 +38,7 @@ query complianceFrameworkPolicies(
         ...PageInfo
       }
     }
-    scanExecutionPolicies(after: $scanExecutionPoliciesGlobalAfter) {
+    scanExecutionPolicies(after: $scanExecutionPoliciesGlobalAfter, relationship: DESCENDANT) {
       nodes {
         name
         yaml
