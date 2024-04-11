@@ -37,7 +37,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     let(:additional_maintainer_permissions) do
-      %i[push_code_to_protected_branches modify_auto_fix_setting]
+      %i[push_code_to_protected_branches]
     end
 
     let(:auditor_permissions) do

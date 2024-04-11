@@ -590,7 +590,6 @@ module EE
         enable :read_approvers
         enable :update_approvers
         enable :modify_approvers_rules
-        enable :modify_auto_fix_setting
         enable :modify_merge_request_author_setting
         enable :modify_merge_request_committer_setting
         enable :modify_product_analytics_settings
