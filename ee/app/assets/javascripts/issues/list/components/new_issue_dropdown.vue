@@ -38,17 +38,13 @@ export default {
 </script>
 
 <template>
-  <!--TODO: Replace button-group workaround once `split` option for new dropdowns is implemented.-->
-  <!-- See issue at https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2263-->
-  <gl-button-group class="gl-display-flex! gl-flex-grow-1 gl-w-full">
+  <gl-button-group class="gl-w-full">
     <gl-button variant="confirm" :href="newIssuePath">
       {{ $options.i18n.newIssueLabel }}
     </gl-button>
     <gl-disclosure-dropdown
       :toggle-text="$options.i18n.toggleSrText"
       placement="right"
-      class="split"
-      toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-2!"
       text-sr-only
       variant="confirm"
       :items="items"
