@@ -353,7 +353,7 @@ Prerequisites:
 
 - You must have [administrator access](../../../administration/index.md) to your GitLab instance.
 
-Learn how to change the default [issue closing pattern](../../../administration/issue_closing_pattern.md).
+Learn how to change the default [issue closing pattern](../../../administration/issue_closing_pattern.md)
 of your installation.
 
 ## Change the issue type
