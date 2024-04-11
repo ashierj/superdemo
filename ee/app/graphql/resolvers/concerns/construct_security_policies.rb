@@ -2,6 +2,7 @@
 
 module ConstructSecurityPolicies
   extend ActiveSupport::Concern
+  include Security::ScanResultPolicies::DeprecatedPropertiesChecker
 
   POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules approval_settings policy_scope].freeze
 
@@ -47,7 +48,7 @@ module ConstructSecurityPolicies
       }
 
       if Feature.enabled?(:security_policies_breaking_changes, object)
-        scan_result_policy[:deprecated_properties] = policy[:config].deprecated_properties
+        scan_result_policy[:deprecated_properties] = deprecated_properties(policy)
       end
 
       scan_result_policy
