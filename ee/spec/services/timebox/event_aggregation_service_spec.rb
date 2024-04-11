@@ -40,6 +40,8 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
           created_at: timebox_start_date)
       end
 
+      let_it_be(:event4) { create(:resource_link_event, issue: issues[0], created_at: timebox_start_date) }
+
       subject { described_class.new(timebox, scoped_projects) }
 
       it 'fetches events ordered by created_at and id' do
@@ -47,7 +49,7 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
         result = subject.send(:resource_events)
 
         expect(query).to include("ORDER BY created_at, id")
-        expect(result.pluck("id")).to eq([event1.id, event2.id, event3.id])
+        expect(result.pluck("id")).to eq([event1.id, event2.id, event3.id, event4.id].sort)
       end
     end
   end

@@ -50,7 +50,8 @@ module Timebox
       union = Gitlab::SQL::Union.new([ # rubocop: disable Gitlab/Union
         resource_timebox_events,
         state_events,
-        weight_events
+        weight_events,
+        resource_link_events
       ])
 
       Arel::SelectManager.new
@@ -78,23 +79,28 @@ module Timebox
 
       ctes.map(&:to_arel)
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     def resource_timebox_events
       resource_timebox_event_class.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-        .select("'timebox' AS event_type", "id", "created_at", "#{timebox_fk} AS value", "action", "issue_id")
+        .aliased_for_timebox_report
         .limit(SINGLE_EVENT_COUNT_LIMIT)
     end
 
     def state_events
       ResourceStateEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-        .select("'state' AS event_type", "id", "created_at", "state AS value", "NULL AS action", "issue_id")
+        .aliased_for_timebox_report
         .limit(SINGLE_EVENT_COUNT_LIMIT)
     end
 
     def weight_events
       ResourceWeightEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-        .select("'weight' AS event_type", "id", "created_at", "weight AS value", "NULL AS action", "issue_id")
+        .aliased_for_timebox_report
+        .limit(SINGLE_EVENT_COUNT_LIMIT)
+    end
+
+    def resource_link_events
+      WorkItems::ResourceLinkEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
+        .aliased_for_timebox_report
         .limit(SINGLE_EVENT_COUNT_LIMIT)
     end
 
@@ -102,7 +108,6 @@ module Timebox
       Arel.sql('SELECT * FROM "scoped_issue_ids"')
     end
 
-    # rubocop: disable CodeReuse/ActiveRecord
     def issue_ids
       # We find all issues that have this milestone added before this milestone's due date.
       # We cannot just filter by `issues.milestone_id` because there might be issues that have
