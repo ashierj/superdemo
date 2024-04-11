@@ -18,7 +18,7 @@ RSpec.describe GitlabSchema.types['DastPreScanVerificationStep'], :dynamic_analy
     )
   end
 
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:fields) { %i[name check_type errors success] }
 
   before do

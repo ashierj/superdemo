@@ -8,7 +8,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
 
   let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:current_user) { create(:user, developer_projects: [project]) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
 
   let(:mutation) do

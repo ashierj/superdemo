@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Ci::CreatePipelineService, feature_category: :dynamic_application_security_testing do
   let_it_be_with_refind(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
   let_it_be(:another_dast_site_profile) { create(:dast_site_profile, project: project) }

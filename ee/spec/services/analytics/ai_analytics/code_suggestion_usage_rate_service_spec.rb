@@ -7,23 +7,17 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
     described_class.new(current_user, namespace: container, from: from, to: to).execute
   end
 
-  let_it_be(:user1) { create(:user) }
-  let_it_be(:user2) { create(:user) }
-  let_it_be(:user_without_ai_usage) { create(:user) }
-  let_it_be(:unmatched_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, group: subgroup) }
+  let_it_be(:user1) { create(:user, developer_of: group) }
+  let_it_be(:user2) { create(:user, developer_of: subgroup) }
+  let_it_be(:user_without_ai_usage) { create(:user, developer_of: group) }
+  let_it_be(:unmatched_user) { create(:user) }
 
   let(:current_user) { user1 }
   let(:from) { Time.current }
   let(:to) { Time.current }
-
-  before_all do
-    group.add_developer(user1)
-    subgroup.add_developer(user2)
-    group.add_developer(user_without_ai_usage)
-  end
 
   before do
     allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)

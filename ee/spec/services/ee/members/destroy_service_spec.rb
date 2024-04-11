@@ -180,7 +180,7 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
       end
 
       context 'group member is removed' do
-        let(:other_user) { create(:user, developer_projects: [group]) }
+        let(:other_user) { create(:user, developer_of: group) }
         let!(:other_user_rule) { create(:incident_management_escalation_rule, :with_user, user: other_user, policy: project_1_policy) }
         let!(:other_namespace_rule) { create(:incident_management_escalation_rule, :with_user, user: member_user) }
 

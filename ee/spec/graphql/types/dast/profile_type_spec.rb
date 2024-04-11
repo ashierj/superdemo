@@ -9,7 +9,7 @@ RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:object) { create(:dast_profile, project: project) }
   let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: object) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:tag_list) { %w[ruby postgres] }
 
   let_it_be(:fields) do

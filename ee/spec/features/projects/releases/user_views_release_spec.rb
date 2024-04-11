@@ -11,7 +11,7 @@ RSpec.describe 'User views Release', :js, feature_category: :release_orchestrati
     group_milestone = create(:milestone, group: group, title: 'group_milestone_1')
     release = create(:release, project: project, milestones: [group_milestone])
 
-    user = create(:user, developer_projects: [project])
+    user = create(:user, developer_of: project)
     sign_in(user)
     visit project_release_path(project, release)
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Releases::CreateService, feature_category: :release_orchestration do
   let(:group) { create :group }
   let(:project) { create(:project, :repository, group: group) }
-  let(:user) { create(:user, maintainer_projects: [project]) }
+  let(:user) { create(:user, maintainer_of: project) }
   let(:tag_name) { 'v1.1.0' }
   let(:name) { 'Bionic Beaver' }
   let(:description) { 'Awesome release!' }

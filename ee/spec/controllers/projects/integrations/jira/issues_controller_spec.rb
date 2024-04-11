@@ -6,7 +6,7 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:jira) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'TEST', project_keys: ['TEST']) }
 
   before do

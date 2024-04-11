@@ -542,7 +542,7 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
     end
 
     describe '#secret_ci_variables' do
-      let_it_be(:user) { create(:user, developer_projects: [project]) }
+      let_it_be(:user) { create(:user, developer_of: project) }
 
       context 'when user can read secrets' do
         before do

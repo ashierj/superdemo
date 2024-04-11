@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AppSec::Dast::Profiles::CreateAssociationsService do
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user, developer_projects: [project]) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:outsider) { create(:user) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }

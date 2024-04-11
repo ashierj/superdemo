@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe AppSec::Dast::PreScanVerificationSteps::FindOrCreateService, :dynamic_analysis,
   feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:developer) { create(:user, developer_projects: [project]) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project) }
   let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: dast_profile) }
   let_it_be(:step) { 'connection' }

@@ -6,10 +6,10 @@ RSpec.describe 'Setting assignees of a merge request', feature_category: :code_r
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:current_user) { create(:user, developer_projects: [project]) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
-  let_it_be(:assignees) { create_list(:user, 3, developer_projects: [project]) }
-  let_it_be(:extra_assignees) { create_list(:user, 2, developer_projects: [project]) }
+  let_it_be(:assignees) { create_list(:user, 3, developer_of: project) }
+  let_it_be(:extra_assignees) { create_list(:user, 2, developer_of: project) }
 
   let(:input) { { assignee_usernames: assignees.map(&:username) } }
   let(:expected_result) do

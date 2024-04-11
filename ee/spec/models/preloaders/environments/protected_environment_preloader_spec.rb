@@ -20,8 +20,8 @@ RSpec.describe Preloaders::Environments::ProtectedEnvironmentPreloader, :aggrega
     let_it_be(:project, reload: true) { create(:project, :repository, group: subgroup) }
     let_it_be(:production, refind: true) { create(:environment, name: 'production', project: project) }
     let_it_be(:staging, refind: true) { create(:environment, name: 'staging', project: project) }
-    let_it_be(:production_operator) { create(:user, developer_projects: [project]) }
-    let_it_be(:staging_operator) { create(:user, developer_projects: [project]) }
+    let_it_be(:production_operator) { create(:user, developer_of: project) }
+    let_it_be(:staging_operator) { create(:user, developer_of: project) }
 
     subject { described_class.new([production, staging]).execute(association_attributes) }
 

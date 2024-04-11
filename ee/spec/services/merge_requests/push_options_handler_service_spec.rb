@@ -6,9 +6,9 @@ RSpec.describe MergeRequests::PushOptionsHandlerService, feature_category: :sour
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project, :public, :repository) }
-  let_it_be(:user1) { create(:user, developer_projects: [project]) }
-  let_it_be(:user2) { create(:user, developer_projects: [project]) }
-  let_it_be(:user3) { create(:user, developer_projects: [project]) }
+  let_it_be(:user1) { create(:user, developer_of: project) }
+  let_it_be(:user2) { create(:user, developer_of: project) }
+  let_it_be(:user3) { create(:user, developer_of: project) }
   let_it_be(:forked_project) { fork_project(project, user1, repository: true) }
 
   let(:service) { described_class.new(project: project, current_user: user1, changes: changes, push_options: push_options) }

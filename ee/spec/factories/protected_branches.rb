@@ -14,7 +14,7 @@ FactoryBot.modify do
 
     trait :user_can_merge do
       authorize_user_to_merge do
-        association(:user, maintainer_projects: [project])
+        association(:user, maintainer_of: project)
       end
     end
 
@@ -26,7 +26,7 @@ FactoryBot.modify do
 
     trait :user_can_push do
       authorize_user_to_push do
-        association(:user, maintainer_projects: [project])
+        association(:user, maintainer_of: project)
       end
     end
 
@@ -50,7 +50,7 @@ FactoryBot.modify do
 
     trait :user_can_unprotect do
       authorize_user_to_unprotect do
-        association(:user, maintainer_projects: [project])
+        association(:user, maintainer_of: project)
       end
     end
 
