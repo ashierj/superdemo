@@ -121,13 +121,7 @@ To onboard a project:
 
 ## Instrument your application
 
-To instrument code to collect data, use one or more of the existing SDKs:
-
-- [Browser SDK](instrumentation/browser_sdk.md)
-- [Ruby SDK](https://gitlab.com/gitlab-org/analytics-section/product-analytics/gl-application-sdk-rb)
-- [Python SDK](https://gitlab.com/gitlab-org/analytics-section/product-analytics/gl-application-sdk-python)
-- [Node SDK](https://gitlab.com/gitlab-org/analytics-section/product-analytics/gl-application-sdk-node)
-- [.NET SDK](https://gitlab.com/gitlab-org/analytics-section/product-analytics/gl-application-sdk-dotnet)
+You can instrument code to collect data by using [tracking SDKs](instrumentation/index.md).
 
 ## Product analytics dashboards
 
