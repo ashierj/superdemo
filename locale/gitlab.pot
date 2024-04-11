@@ -22923,9 +22923,6 @@ msgstr ""
 msgid "Git LFS is not enabled on this GitLab server, contact your admin."
 msgstr ""
 
-msgid "Git LFS objects will be synced if LFS is %{docs_link_start}enabled for the project%{docs_link_end}. Push mirrors will %{strong_open}not%{strong_close} sync LFS objects over SSH."
-msgstr ""
-
 msgid "Git LFS rate limits"
 msgstr ""
 
@@ -41496,6 +41493,9 @@ msgstr ""
 msgid "Pull mirroring updated %{time}."
 msgstr ""
 
+msgid "Pull mirrors will only create LFS objects if LFS is %{docs_link_start}enabled for the project%{docs_link_end}."
+msgstr ""
+
 msgid "Pull requests from fork are not supported"
 msgstr ""
 
@@ -41563,6 +41563,12 @@ msgid "Push commits to the source branch or add previously merged commits to rev
 msgstr ""
 
 msgid "Push events"
+msgstr ""
+
+msgid "Push mirrors will %{strong_open}not%{strong_close} sync LFS objects over SSH."
+msgstr ""
+
+msgid "Push mirrors will only sync LFS objects if LFS is %{docs_link_start}enabled for the project%{docs_link_end}."
 msgstr ""
 
 msgid "Push project from command line"
