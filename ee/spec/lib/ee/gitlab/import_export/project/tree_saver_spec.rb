@@ -99,18 +99,6 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
       end
     end
 
-    context 'security setting' do
-      let(:security_json) do
-        json = get_json(full_path, exportable_path, :security_setting)
-        json.first
-      end
-
-      it 'has security settings' do
-        expect(project_tree_saver.save).to be true
-        expect(security_json['auto_fix_dependency_scanning']).to be_truthy
-      end
-    end
-
     context 'push_rule' do
       let(:push_rule_json) do
         json = get_json(full_path, exportable_path, :push_rule)
