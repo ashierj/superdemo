@@ -66,8 +66,6 @@ export default {
 </script>
 
 <template>
-  <!--TODO: Replace button-group workaround once `split` option for new dropdowns is implemented.-->
-  <!-- See issue at https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2263-->
   <gl-button-group v-if="selectedButton">
     <!-- Must set a unique "key" to force re-rendering. -->
     <!-- This ensures the tooltip is reset correctly when selectedButton changes. -->
@@ -90,8 +88,6 @@ export default {
     </gl-button>
     <gl-collapsible-listbox
       v-model="selectedButtonIndex"
-      class="split"
-      toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-1!"
       variant="confirm"
       text-sr-only
       :toggle-text="$options.i18n.changeAction"
