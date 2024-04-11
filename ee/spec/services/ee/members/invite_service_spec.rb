@@ -89,7 +89,8 @@ RSpec.describe Members::InviteService, :aggregate_failures, :saas, feature_categ
           expect { result }.not_to change(ProjectMember, :count)
           expect(result).to eq({
             status: :error,
-            message: 'There are not enough available seats to invite this many users.'
+            message: 'There are not enough available seats to invite this many users. ' \
+                     'Ask a user with the Owner role to purchase more seats.'
           })
         end
       end
