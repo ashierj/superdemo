@@ -250,9 +250,9 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
 
   describe 'scopes' do
     let_it_be(:group) { create(:group) }
-    let_it_be(:member_role_1) { create(:member_role, name: 'Tester', namespace: group) }
-    let_it_be(:member_role_2) { create(:member_role, name: 'Manager', namespace: group) }
-    let_it_be(:group_2_member_role) { create(:member_role, name: 'Actor') }
+    let_it_be(:member_role_1) { create(:member_role, :guest, name: 'Tester', namespace: group) }
+    let_it_be(:member_role_2) { create(:member_role, :guest, name: 'Manager', namespace: group) }
+    let_it_be(:group_2_member_role) { create(:member_role, :guest, name: 'Actor') }
 
     describe '.elevating' do
       it 'creates proper query' do
@@ -281,6 +281,15 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         create(:member_role)
 
         expect(described_class.elevating).to be_empty
+      end
+    end
+
+    describe 'occupies_seat' do
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability) }
+      let_it_be(:member_role_guest) { create(:member_role, :guest, :read_code) }
+
+      it 'returns member roles for a group' do
+        expect(described_class.occupies_seat).to contain_exactly(member_role_elevating)
       end
     end
 

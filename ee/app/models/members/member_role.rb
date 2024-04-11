@@ -44,6 +44,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     scope
   end
 
+  scope :occupies_seat, -> { where(occupies_seat: true) }
+
   scope :by_namespace, ->(group_ids) { where(namespace_id: group_ids) }
   scope :for_instance, -> { where(namespace_id: nil) }
 

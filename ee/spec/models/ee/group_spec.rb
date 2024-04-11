@@ -1348,11 +1348,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
 
     context 'with member roles' do
-      let_it_be(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
-      let_it_be(:guest_with_role) { (create :group_member, :guest, source: group, member_role: member_role_elevating).user }
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+      let_it_be(:guest_with_role) { create(:group_member, :guest, source: group, member_role: member_role_elevating).user }
 
       it 'includes guests with elevating role assigned' do
-        expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
         expect(group.billed_group_users(exclude_guests: true)).to match_array([developer, sub_developer, guest_with_role])
       end
     end
@@ -1413,10 +1412,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
 
     context 'with member roles' do
-      let_it_be(:guest_with_role) do
-        member_role = create(:member_role, :guest, namespace: group, read_dependency: true)
-        create(:group_member, :guest, source: group, member_role: member_role)
-      end
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+      let_it_be(:guest_with_role) { create(:group_member, :guest, source: group, member_role: member_role_elevating) }
 
       it 'includes guests with elevating role assigned' do
         expect(group.billed_group_members(exclude_guests: true))
@@ -1489,11 +1486,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
 
     context 'with member roles' do
-      let_it_be(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
-      let_it_be(:guest_with_role) { (create :project_member, :guest, source: project, member_role: member_role_elevating).user }
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+      let_it_be(:guest_with_role) { create(:project_member, :guest, source: project, member_role: member_role_elevating).user }
 
       it 'includes guests with elevating role assigned' do
-        expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
         expect(group.billed_project_users(exclude_guests: true)).to match_array([developer, sub_developer, guest_with_role])
       end
     end
@@ -1537,10 +1533,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
 
     context 'with member roles' do
-      let_it_be(:guest_with_role) do
-        member_role = create(:member_role, :guest, namespace: group, read_dependency: true)
-        create(:project_member, :guest, source: project, member_role: member_role)
-      end
+      let_it_be(:member_role_elevating) { create(:member_role, :guest, :admin_vulnerability, namespace: group) }
+      let_it_be(:guest_with_role) { create(:project_member, :guest, source: project, member_role: member_role_elevating) }
 
       it 'includes guests with elevating role assigned' do
         expect(group.billed_project_members(exclude_guests: true))
