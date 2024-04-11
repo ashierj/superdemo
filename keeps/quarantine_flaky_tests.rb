@@ -5,8 +5,9 @@ require 'gitlab-http'
 require_relative 'helpers/groups'
 
 module Keeps
-  # This is an implementation of a ::Gitlab::Housekeeper::Keep. This keep will fetch any `failure::flaky-test` issues
-  # with more than MINIMUM_FLAKINESS_OCCURENCES reports and quarantine these tests.
+  # This is an implementation of a ::Gitlab::Housekeeper::Keep.
+  # This keep will fetch any `test` + `failure::flaky-test` + `flakiness::1` issues,
+  # without the `QA` nor `quarantine` labels and open quarantine merge requests for them.
   #
   # You can run it individually with:
   #
@@ -15,10 +16,8 @@ module Keeps
   #   -k Keeps::QuarantineFlakyTests
   # ```
   class QuarantineFlakyTests < ::Gitlab::Housekeeper::Keep
-    MINIMUM_RATE_LIMIT = 25
-    MINIMUM_FLAKINESS_OCCURENCES = 1000
-    FLAKY_TEST_ISSUES_URL = "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/issues/?order_by=updated_at&state=opened&labels%5B%5D=test&labels%5B%5D=failure%3A%3Aflaky-test&not%5Blabels%5D%5B%5D=QA&not%5Blabels%5D%5B%5D=quarantine&per_page=20"
-    FLAKY_TEST_ISSUE_NOTES_URL = "https://gitlab.com/api/v4/projects/gitlab-org%%2Fgitlab/issues/%<issue_iid>s/notes"
+    MINIMUM_REMAINING_RATE = 25
+    FLAKINESS_1_TEST_ISSUES_URL = "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/issues/?order_by=updated_at&state=opened&labels%5B%5D=test&labels%5B%5D=failure%3A%3Aflaky-test&labels%5B%5D=flakiness%3A%3A1&not%5Blabels%5D%5B%5D=QA&not%5Blabels%5D%5B%5D=quarantine&per_page=20"
     EXAMPLE_LINE_REGEX = /([\w'",])? do$/
 
     def each_change
@@ -68,45 +67,36 @@ module Keeps
     end
 
     def each_very_flaky_issue
-      query_api(FLAKY_TEST_ISSUES_URL) do |flaky_test_issue|
-        query_api(format(FLAKY_TEST_ISSUE_NOTES_URL, { issue_iid: flaky_test_issue['iid'] })) do |note|
-          match = note['body'].match(/### Flakiness reports \((?<reports_count>\d+)\)/)
-          next unless match
-
-          yield(flaky_test_issue) if match[:reports_count].to_i >= MINIMUM_FLAKINESS_OCCURENCES
-        end
+      query_api(FLAKINESS_1_TEST_ISSUES_URL) do |flaky_test_issue|
+        yield(flaky_test_issue)
       end
     end
 
     def query_api(url)
-      response = {}
+      get_result = {}
 
       begin
         print '.'
-        url = response.fetch(:next_page_url) { url }
+        url = get_result.fetch(:next_page_url) { url }
 
-        response = begin
-          puts "query_api: #{url}"
+        puts "query_api: #{url}"
+        get_result = get(url)
 
-          get(url)
-        end
-
-        results = response.delete(:results)
+        results = get_result.delete(:results)
 
         case results
         when Array
           results.each { |result| yield(result) }
         else
-          raise_unexpected_response(results)
+          raise "Unexpected response: #{results.inspect}"
         end
 
-        rate_limit_debug(response)
-        rate_limit_wait(response)
-      end while response.delete(:more_pages)
+        rate_limit_wait(get_result)
+      end while get_result.delete(:more_pages)
     end
 
     def get(url)
-      response = Gitlab::HTTP.get(
+      http_response = Gitlab::HTTP.get(
         url,
         headers: {
           'User-Agent' => "GitLab-Housekeeper/#{self.class.name}",
@@ -116,18 +106,18 @@ module Keeps
       )
 
       {
-        more_pages: (response.headers["x-next-page"].to_s != ""),
-        next_page_url: next_page_url(url, response),
-        results: response.parsed_response,
-        ratelimit_remaining: response.headers["ratelimit-remaining"].to_i,
-        ratelimit_reset_at: Time.at(response.headers["ratelimit-reset"].to_i)
+        more_pages: (http_response.headers['x-next-page'].to_s != ""),
+        next_page_url: next_page_url(url, http_response),
+        results: http_response.parsed_response,
+        ratelimit_remaining: http_response.headers['ratelimit-remaining'],
+        ratelimit_reset_at: http_response.headers['ratelimit-reset']
       }
     end
 
-    def next_page_url(url, response)
-      return unless response.headers['x-next-page'].present?
+    def next_page_url(url, http_response)
+      return unless http_response.headers['x-next-page'].present?
 
-      next_page = "&page=#{response.headers['x-next-page']}"
+      next_page = "&page=#{http_response.headers['x-next-page']}"
 
       if url.include?('&page')
         url.gsub(/&page=\d+/, next_page)
@@ -136,20 +126,17 @@ module Keeps
       end
     end
 
-    def rate_limit_debug(response)
-      puts "rate_limit_infos: Rate limit remaining: #{response[:ratelimit_remaining]} " \
-           "(reset at #{response[:ratelimit_reset_at]})"
-    end
+    def rate_limit_wait(get_result)
+      ratelimit_remaining = get_result.fetch(:ratelimit_remaining)
+      ratelimit_reset_at = get_result.fetch(:ratelimit_reset_at)
 
-    def rate_limit_wait(response)
-      return unless response.delete(:ratelimit_remaining) < MINIMUM_RATE_LIMIT
+      return if ratelimit_remaining.nil? || ratelimit_reset_at.nil?
+      return if ratelimit_remaining.to_i >= MINIMUM_REMAINING_RATE
 
-      puts "Rate limit almost exceeded, sleeping for #{response[:ratelimit_reset_at] - Time.now} seconds"
-      sleep(1) until Time.now >= response[:ratelimit_reset_at]
-    end
+      ratelimit_reset_at = Time.at(ratelimit_reset_at.to_i)
 
-    def raise_unexpected_response(results)
-      raise "Unexpected response: #{results.inspect}"
+      puts "Rate limit almost exceeded, sleeping for #{ratelimit_reset_at - Time.now} seconds"
+      sleep(1) until Time.now >= ratelimit_reset_at
     end
 
     def construct_change(filename, line_number, description, flaky_issue)
@@ -158,7 +145,7 @@ module Keeps
         change.identifiers = [self.class.name.demodulize, filename, line_number.to_s]
         change.changed_files = [filename]
         change.description = <<~MARKDOWN
-        The #{description} test has been reported as flaky more then #{MINIMUM_FLAKINESS_OCCURENCES} times.
+        The #{description} test has the `flakiness::1` label set, which means it has more than 1000 flakiness reports.
 
         This MR quarantines the test. This is a discussion starting point to let the responsible group know about the flakiness
         so that they can take action:
