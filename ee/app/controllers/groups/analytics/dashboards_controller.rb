@@ -13,7 +13,6 @@ module Groups
 
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
       before_action do
-        push_frontend_feature_flag(:dora_performers_score_panel, @group)
         push_frontend_feature_flag(:group_analytics_dashboard_dynamic_vsd, @group)
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, @group)
 

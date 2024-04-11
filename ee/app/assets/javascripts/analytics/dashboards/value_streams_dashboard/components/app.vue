@@ -2,7 +2,6 @@
 import { isEmpty } from 'lodash';
 import { GlLink, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
@@ -27,7 +26,6 @@ export default {
     DoraPerformersScoreCard,
     FeedbackBanner,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     fullPath: {
       type: String,
@@ -61,9 +59,6 @@ export default {
     },
     isDefaultDescription() {
       return this.dashboardDescription === DASHBOARD_DESCRIPTION;
-    },
-    showDoraPerformersScoreCard() {
-      return this.glFeatures?.doraPerformersScorePanel;
     },
     defaultPanels() {
       return pathsToPanels([{ namespace: this.fullPath }]);
@@ -133,15 +128,13 @@ export default {
         data-testid="panel-dora-chart"
       />
 
-      <template v-if="showDoraPerformersScoreCard">
-        <dora-performers-score-card
-          v-for="({ data }, index) in groupPanels"
-          :key="`dora-performers-score-card-${index}`"
-          :data="data"
-          class="gl-mt-5"
-          data-testid="panel-dora-performers-score"
-        />
-      </template>
+      <dora-performers-score-card
+        v-for="({ data }, index) in groupPanels"
+        :key="`dora-performers-score-card-${index}`"
+        :data="data"
+        class="gl-mt-5"
+        data-testid="panel-dora-performers-score"
+      />
     </div>
   </div>
 </template>
