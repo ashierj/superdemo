@@ -35887,6 +35887,9 @@ msgstr ""
 msgid "PackageRegistry|%{name} version %{version} was first created %{datetime}"
 msgstr ""
 
+msgid "PackageRegistry|A protection rule exists for this package."
+msgstr ""
+
 msgid "PackageRegistry|Add Conan Remote"
 msgstr ""
 
