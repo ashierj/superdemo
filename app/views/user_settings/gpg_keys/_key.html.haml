@@ -24,6 +24,6 @@
     = html_escape(s_('Created %{time_ago}')) % { time_ago: time_ago_with_tooltip(key.created_at) }
 
   %td{ class: 'gl-py-3!', data: { label: _('Actions') } }
-    = link_button_to nil, profile_gpg_key_path(key), data: { confirm: _('Are you sure? Removing this GPG key does not affect already signed commits.'), confirm_btn_variant: 'danger' }, method: :delete, class: 'has-tooltip', icon: 'remove', category: :secondary, 'title': _('Remove'), 'aria-label': _('Remove')
-    = link_button_to revoke_profile_gpg_key_path(key), data: { confirm: _('Are you sure? All commits that were signed with this GPG key will be unverified.'), confirm_btn_variant: 'danger' }, method: :put, class: 'gl-ml-3', category: :secondary, variant: :danger, 'aria-label': _('Revoke') do
+    = link_button_to nil, user_settings_gpg_key_path(key), data: { confirm: _('Are you sure? Removing this GPG key does not affect already signed commits.'), confirm_btn_variant: 'danger' }, method: :delete, class: 'has-tooltip', icon: 'remove', category: :secondary, 'title': _('Remove'), 'aria-label': _('Remove')
+    = link_button_to revoke_user_settings_gpg_key_path(key), data: { confirm: _('Are you sure? All commits that were signed with this GPG key will be unverified.'), confirm_btn_variant: 'danger' }, method: :put, class: 'gl-ml-3', category: :secondary, variant: :danger, 'aria-label': _('Revoke') do
       = _('Revoke')

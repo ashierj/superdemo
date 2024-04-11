@@ -50,12 +50,6 @@ resource :profile, only: [] do
       end
     end
 
-    resources :gpg_keys, only: [:index, :create, :destroy] do
-      member do
-        put :revoke
-      end
-    end
-
     resources :emails, only: [:index, :create, :destroy] do
       member do
         put :resend_confirmation_instructions

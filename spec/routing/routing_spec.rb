@@ -187,17 +187,17 @@ end
 #  key POST   /-/profile/gpg_keys      gpg_keys#create
 #      PUT    /-/profile/gpg_keys/:id  gpg_keys#revoke
 #      DELETE /-/profile/gpg_keys/:id  gpg_keys#desroy
-RSpec.describe Profiles::GpgKeysController, "routing" do
+RSpec.describe UserSettings::GpgKeysController, "routing", feature_category: :system_access do
   it "to #index" do
-    expect(get("/-/profile/gpg_keys")).to route_to('profiles/gpg_keys#index')
+    expect(get("/-/user_settings/gpg_keys")).to route_to('user_settings/gpg_keys#index')
   end
 
   it "to #create" do
-    expect(post("/-/profile/gpg_keys")).to route_to('profiles/gpg_keys#create')
+    expect(post("/-/user_settings/gpg_keys")).to route_to('user_settings/gpg_keys#create')
   end
 
   it "to #destroy" do
-    expect(delete("/-/profile/gpg_keys/1")).to route_to('profiles/gpg_keys#destroy', id: '1')
+    expect(delete("/-/user_settings/gpg_keys/1")).to route_to('user_settings/gpg_keys#destroy', id: '1')
   end
 end
 
