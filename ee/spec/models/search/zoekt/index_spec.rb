@@ -81,6 +81,14 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
       subject { described_class.for_root_namespace_id(namespace_2) }
 
       it { is_expected.to contain_exactly(zoekt_index_2) }
+
+      context 'when there are orphaned indices' do
+        before do
+          zoekt_index_2.update!(zoekt_enabled_namespace: nil)
+        end
+
+        it { is_expected.to be_empty }
+      end
     end
 
     describe '#for_root_namespace_id_with_search_enabled' do
