@@ -1,7 +1,7 @@
 <script>
 import { GlTableLite, GlSkeletonLoader } from '@gitlab/ui';
 import { toYmd } from '~/analytics/shared/utils';
-import { AI_METRICS } from '~/analytics/shared/constants';
+import { dasherize } from '~/lib/utils/text_utility';
 import { BUCKETING_INTERVAL_ALL } from '../../graphql/constants';
 import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
 import FlowMetricsQuery from '../graphql/flow_metrics.query.graphql';
@@ -31,6 +31,7 @@ import {
   extractGraphqlFlowData,
   extractQueryResponseFromNamespace,
 } from '../../api';
+import { extractGraphqlAiData } from '../api';
 
 const NOW = generateValueStreamDashboardStartDate();
 const DASHBOARD_TIME_PERIODS = generateDateRanges(NOW);
@@ -87,7 +88,7 @@ export default {
   methods: {
     rowAttributes({ metric: { identifier } }) {
       return {
-        'data-testid': `ai-impact-metric-${identifier.replaceAll('_', '-')}`,
+        'data-testid': `ai-impact-metric-${dasherize(identifier)}`,
       };
     },
 
@@ -184,16 +185,13 @@ export default {
         },
       });
 
-      const { codeSuggestionsUsageRate = '-' } = extractQueryResponseFromNamespace({
+      const responseData = extractQueryResponseFromNamespace({
         result,
         resultKey: 'aiMetrics',
       });
       return {
         ...timePeriod,
-        [AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE]: {
-          identifier: AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE,
-          value: codeSuggestionsUsageRate,
-        },
+        ...extractGraphqlAiData(responseData),
       };
     },
   },
