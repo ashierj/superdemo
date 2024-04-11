@@ -6,7 +6,7 @@ panels:
     visualization: dora_chart
     title: Metrics comparison for %{namespaceName} group
     gridAttributes:
-      yPos: 2
+      yPos: 1
       xPos: 0
       width: 12
       height: 6
@@ -15,7 +15,7 @@ panels:
     visualization: usage_overview
     title: Usage overview for %{namespaceName} group
     gridAttributes:
-      yPos: 1
+      yPos: 0
       xPos: 0
       width: 12
       height: 1
@@ -24,7 +24,7 @@ panels:
     visualization: dora_performers_score
     title: DORA performers score for %{namespaceName} group
     gridAttributes:
-      yPos: 8
+      yPos: 7
       xPos: 0
       width: 12
       height: 4

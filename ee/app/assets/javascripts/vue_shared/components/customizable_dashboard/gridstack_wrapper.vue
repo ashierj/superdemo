@@ -112,7 +112,8 @@ export default {
         minRow: GRIDSTACK_MIN_ROW,
         columnOpts: { breakpoints: [{ w: breakpoints.md, c: 1 }] },
         alwaysShowResizeHandle: true,
-        animate: false,
+        animate: true,
+        float: true,
       }).load(this.gridConfig);
 
       // Sync Vue components array with gridstack items
