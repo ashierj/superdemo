@@ -15,8 +15,9 @@ module Keeps
   #   -k Keeps::QuarantineFlakyTests
   # ```
   class QuarantineFlakyTests < ::Gitlab::Housekeeper::Keep
+    MINIMUM_RATE_LIMIT = 25
     MINIMUM_FLAKINESS_OCCURENCES = 1000
-    FLAKY_TEST_ISSUES_URL = "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/issues/?order_by=updated_at&state=opened&labels%5B%5D=test&labels%5B%5D=failure%3A%3Aflaky-test&not%5Blabels%5D%5B%5D=QA&not%5Blabel_name%5D%5B%5D=quarantine&per_page=100"
+    FLAKY_TEST_ISSUES_URL = "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/issues/?order_by=updated_at&state=opened&labels%5B%5D=test&labels%5B%5D=failure%3A%3Aflaky-test&not%5Blabels%5D%5B%5D=QA&not%5Blabels%5D%5B%5D=quarantine&per_page=20"
     FLAKY_TEST_ISSUE_NOTES_URL = "https://gitlab.com/api/v4/projects/gitlab-org%%2Fgitlab/issues/%<issue_iid>s/notes"
     EXAMPLE_LINE_REGEX = /([\w'",])? do$/
 
@@ -67,21 +68,88 @@ module Keeps
     end
 
     def each_very_flaky_issue
-      flaky_test_issues = Gitlab::HTTP.get(FLAKY_TEST_ISSUES_URL)
-
-      flaky_test_issues_above_threshold = flaky_test_issues.select do |flaky_test_issue|
-        Gitlab::HTTP.get(format(FLAKY_TEST_ISSUE_NOTES_URL, { issue_iid: flaky_test_issue['iid'] }),
-          headers: { 'PRIVATE-TOKEN': ENV['HOUSEKEEPER_GITLAB_API_TOKEN'] }).find do |note|
+      query_api(FLAKY_TEST_ISSUES_URL) do |flaky_test_issue|
+        query_api(format(FLAKY_TEST_ISSUE_NOTES_URL, { issue_iid: flaky_test_issue['iid'] })) do |note|
           match = note['body'].match(/### Flakiness reports \((?<reports_count>\d+)\)/)
           next unless match
 
-          match[:reports_count].to_i >= MINIMUM_FLAKINESS_OCCURENCES
+          yield(flaky_test_issue) if match[:reports_count].to_i >= MINIMUM_FLAKINESS_OCCURENCES
         end
       end
+    end
 
-      flaky_test_issues_above_threshold.map do |issue|
-        yield(issue)
+    def query_api(url)
+      response = {}
+
+      begin
+        print '.'
+        url = response.fetch(:next_page_url) { url }
+
+        response = begin
+          puts "query_api: #{url}"
+
+          get(url)
+        end
+
+        results = response.delete(:results)
+
+        case results
+        when Array
+          results.each { |result| yield(result) }
+        else
+          raise_unexpected_response(results)
+        end
+
+        rate_limit_debug(response)
+        rate_limit_wait(response)
+      end while response.delete(:more_pages)
+    end
+
+    def get(url)
+      response = Gitlab::HTTP.get(
+        url,
+        headers: {
+          'User-Agent' => "GitLab-Housekeeper/#{self.class.name}",
+          'Content-type' => 'application/json',
+          'PRIVATE-TOKEN': ENV['HOUSEKEEPER_GITLAB_API_TOKEN']
+        }
+      )
+
+      {
+        more_pages: (response.headers["x-next-page"].to_s != ""),
+        next_page_url: next_page_url(url, response),
+        results: response.parsed_response,
+        ratelimit_remaining: response.headers["ratelimit-remaining"].to_i,
+        ratelimit_reset_at: Time.at(response.headers["ratelimit-reset"].to_i)
+      }
+    end
+
+    def next_page_url(url, response)
+      return unless response.headers['x-next-page'].present?
+
+      next_page = "&page=#{response.headers['x-next-page']}"
+
+      if url.include?('&page')
+        url.gsub(/&page=\d+/, next_page)
+      else
+        url + next_page
       end
+    end
+
+    def rate_limit_debug(response)
+      puts "rate_limit_infos: Rate limit remaining: #{response[:ratelimit_remaining]} " \
+           "(reset at #{response[:ratelimit_reset_at]})"
+    end
+
+    def rate_limit_wait(response)
+      return unless response.delete(:ratelimit_remaining) < MINIMUM_RATE_LIMIT
+
+      puts "Rate limit almost exceeded, sleeping for #{response[:ratelimit_reset_at] - Time.now} seconds"
+      sleep(1) until Time.now >= response[:ratelimit_reset_at]
+    end
+
+    def raise_unexpected_response(results)
+      raise "Unexpected response: #{results.inspect}"
     end
 
     def construct_change(filename, line_number, description, flaky_issue)
