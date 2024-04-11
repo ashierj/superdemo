@@ -1,10 +1,4 @@
-import {
-  GlFormInput,
-  GlFormSelect,
-  GlFormCheckbox,
-  GlFormCheckboxGroup,
-  GlSkeletonLoader,
-} from '@gitlab/ui';
+import { GlFormInput, GlFormSelect } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert } from '~/alert';
@@ -14,9 +8,8 @@ import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
-import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { mockPermissions, mockDefaultPermissions } from '../mock_data';
+import PermissionsSelector from 'ee/roles_and_permissions/components/permissions_selector.vue';
 
 Vue.use(VueApollo);
 
@@ -39,22 +32,16 @@ describe('CreateMemberRole', () => {
     .fn()
     .mockResolvedValue({ data: { memberRoleCreate: { errors: [] } } });
 
-  const defaultAvailablePermissionsHandler = jest.fn().mockResolvedValue(mockPermissions);
-
   const createComponent = ({
     stubs,
     mutationMock = mutationSuccessHandler,
-    availablePermissionsHandler = defaultAvailablePermissionsHandler,
     groupFullPath = 'test-group',
     embedded = false,
   } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
       propsData: { groupFullPath, embedded, listPagePath: 'http://list/page/path' },
-      stubs,
-      apolloProvider: createMockApollo([
-        [memberRolePermissionsQuery, availablePermissionsHandler],
-        [createMemberRoleMutation, mutationMock],
-      ]),
+      stubs: { PermissionsSelector: true, ...stubs },
+      apolloProvider: createMockApollo([[createMemberRoleMutation, mutationMock]]),
     });
 
     return waitForPromises();
@@ -63,16 +50,15 @@ describe('CreateMemberRole', () => {
   const findButtonSubmit = () => wrapper.findByTestId('submit-button');
   const findButtonCancel = () => wrapper.findByTestId('cancel-button');
   const findNameField = () => wrapper.findAllComponents(GlFormInput).at(0);
-  const findCheckboxes = () => wrapper.findAllComponents(GlFormCheckbox);
   const findSelect = () => wrapper.findComponent(GlFormSelect);
   const findDescriptionField = () => wrapper.findAllComponents(GlFormInput).at(1);
-  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findPermissionsSelector = () => wrapper.findComponent(PermissionsSelector);
 
   const fillForm = () => {
     findSelect().setValue('GUEST');
     findNameField().setValue('My role name');
     findDescriptionField().setValue('My description');
-    findCheckboxes().at(0).find('input').setChecked();
+    findPermissionsSelector().vm.$emit('update:permissions', ['A']);
 
     return nextTick();
   };
@@ -117,44 +103,6 @@ describe('CreateMemberRole', () => {
     });
   });
 
-  describe('available permissions', () => {
-    it('loads the available permissions', () => {
-      createComponent();
-
-      expect(defaultAvailablePermissionsHandler).toHaveBeenCalledTimes(1);
-    });
-
-    it('shows the GlSkeletonLoader when the query is loading', () => {
-      createComponent();
-
-      expect(findSkeletonLoader().exists()).toBe(true);
-      expect(findCheckboxes()).toHaveLength(0);
-    });
-
-    it('shows the expected permissions when loaded', async () => {
-      await createComponent();
-
-      expect(findSkeletonLoader().exists()).toBe(false);
-      expect(findCheckboxes()).toHaveLength(mockDefaultPermissions.length);
-
-      mockDefaultPermissions.forEach((permission, index) => {
-        const checkboxText = findCheckboxes().at(index).text();
-
-        expect(checkboxText).toContain(permission.name);
-        expect(checkboxText).toContain(permission.description);
-      });
-    });
-
-    it('shows an error if the query fails', async () => {
-      const availablePermissionsHandler = jest.fn().mockRejectedValue(new Error('failed'));
-      await createComponent({ availablePermissionsHandler });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Could not fetch available permissions.',
-      });
-    });
-  });
-
   describe('field validation', () => {
     beforeEach(createComponent);
 
@@ -174,12 +122,13 @@ describe('CreateMemberRole', () => {
       expect(findNameField().classes()).toContain('is-invalid');
     });
 
-    it('shows a warning if permissions are unchecked', async () => {
-      expect(findCheckboxes().at(0).find('input').classes()).not.toContain('is-invalid');
+    it('shows a warning if no permissions are selected', async () => {
+      expect(findPermissionsSelector().props('state')).toBe(true);
 
+      findPermissionsSelector().vm.$emit('update:permissions', []);
       await submitForm();
 
-      expect(findCheckboxes().at(0).find('input').classes()).toContain('is-invalid');
+      expect(findPermissionsSelector().props('state')).toBe(false);
     });
   });
 
@@ -280,63 +229,5 @@ describe('CreateMemberRole', () => {
     it('does not emit the success event', () => {
       expect(wrapper.emitted('success')).toBeUndefined();
     });
-  });
-
-  describe('dependent permissions', () => {
-    const checkPermissions = (permissions) => {
-      wrapper.findComponent(GlFormCheckboxGroup).vm.$emit('input', permissions);
-    };
-
-    const expectCheckedPermissions = (expected) => {
-      const selectedValues = wrapper
-        .findComponent(GlFormCheckboxGroup)
-        .attributes('checked')
-        .split(',')
-        .sort();
-
-      expect(selectedValues).toEqual(expected.sort());
-    };
-
-    beforeEach(() => {
-      return createComponent({ stubs: { GlFormCheckboxGroup: true } });
-    });
-
-    it.each`
-      permission | expected
-      ${'A'}     | ${['A']}
-      ${'B'}     | ${['A', 'B']}
-      ${'C'}     | ${['A', 'B', 'C']}
-      ${'D'}     | ${['A', 'B', 'C', 'D']}
-      ${'E'}     | ${['E', 'F']}
-      ${'F'}     | ${['E', 'F']}
-      ${'G'}     | ${['A', 'B', 'C', 'G']}
-    `('selects $expected when $permission is selected', async ({ permission, expected }) => {
-      await checkPermissions([permission]);
-
-      expectCheckedPermissions(expected);
-    });
-
-    it.each`
-      permission | expected
-      ${'A'}     | ${['E', 'F']}
-      ${'B'}     | ${['A', 'E', 'F']}
-      ${'C'}     | ${['A', 'B', 'E', 'F']}
-      ${'D'}     | ${['A', 'B', 'C', 'E', 'F', 'G']}
-      ${'E'}     | ${['A', 'B', 'C', 'D', 'G']}
-      ${'F'}     | ${['A', 'B', 'C', 'D', 'G']}
-      ${'G'}     | ${['A', 'B', 'C', 'D', 'E', 'F']}
-    `(
-      'selects $expected when all permissions are selected and $permission is unselected',
-      async ({ permission, expected }) => {
-        const allPermissions = mockDefaultPermissions.map((p) => p.value);
-        const selectedPermissions = allPermissions.filter((v) => v !== permission);
-        // Start by checking all the permissions.
-        await checkPermissions(allPermissions);
-        // Uncheck the permission by removing it from all permissions.
-        await checkPermissions(selectedPermissions);
-
-        expectCheckedPermissions(expected);
-      },
-    );
   });
 });

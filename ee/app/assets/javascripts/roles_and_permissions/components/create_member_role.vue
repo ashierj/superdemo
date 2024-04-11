@@ -2,29 +2,24 @@
 import {
   GlButton,
   GlForm,
-  GlFormCheckbox,
-  GlFormCheckboxGroup,
   GlFormGroup,
   GlFormInput,
   GlFormSelect,
-  GlSkeletonLoader,
   GlSprintf,
   GlLink,
 } from '@gitlab/ui';
-import { difference, pull } from 'lodash';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
 import { BASE_ROLES_INC_MINIMAL_ACCESS } from '~/access_level/constants';
-import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import createMemberRoleMutation from '../graphql/create_member_role.mutation.graphql';
+import PermissionsSelector from './permissions_selector.vue';
 
 export default {
   i18n: {
     createError: s__('MemberRole|Failed to create role.'),
     createErrorWithReason: s__('MemberRole|Failed to create role: %{error}'),
-    permissionsFetchError: s__('MemberRole|Could not fetch available permissions.'),
     createRole: s__('MemberRole|Create role'),
     cancel: __('Cancel'),
     baseRoleLabel: s__('MemberRole|Base role'),
@@ -36,25 +31,18 @@ export default {
     descriptionDescription: s__(
       'MemberRole|Example: "Developer with admin and read access to vulnerability"',
     ),
-    permissionsLabel: s__('MemberRole|Permissions'),
-    customPermissionsLabel: s__('MemberRole|Custom permissions'),
-    customPermissionsDescription: s__(
-      'MemberRole|Add at least one custom permission to the base role.',
-    ),
     invalidFeedback: __('This field is required.'),
     validationError: s__('MemberRole|You must fill out all required fields.'),
   },
   components: {
     GlButton,
     GlForm,
-    GlFormCheckboxGroup,
-    GlFormCheckbox,
     GlFormGroup,
     GlFormInput,
     GlFormSelect,
-    GlSkeletonLoader,
     GlSprintf,
     GlLink,
+    PermissionsSelector,
   },
   props: {
     groupFullPath: {
@@ -85,83 +73,14 @@ export default {
       permissions: [],
       permissionsValid: true,
       isSubmitting: false,
-      availablePermissions: [],
     };
   },
-  apollo: {
-    availablePermissions: {
-      query: memberRolePermissionsQuery,
-      update(data) {
-        return data.memberRolePermissions?.nodes || [];
-      },
-      error() {
-        this.alert = createAlert({ message: this.$options.i18n.permissionsFetchError });
-      },
-    },
-  },
   computed: {
-    isLoadingPermissions() {
-      return this.$apollo.queries.availablePermissions.loading;
-    },
-    permissionsState() {
-      return this.permissionsValid ? null : false;
-    },
-    parentPermissionsLookup() {
-      return this.availablePermissions.reduce((acc, { value, requirements }) => {
-        if (requirements) {
-          acc[value] = requirements;
-        }
-
-        return acc;
-      }, {});
-    },
-    childPermissionsLookup() {
-      return this.availablePermissions.reduce((acc, { value, requirements }) => {
-        requirements?.forEach((requirement) => {
-          // Create the array if it doesn't exist, then add the requirement to it.
-          acc[requirement] = acc[requirement] || [];
-          acc[requirement].push(value);
-        });
-
-        return acc;
-      }, {});
-    },
     staticRolesHelpPagePath() {
       return helpPagePath('user/permissions', { anchor: 'roles' });
     },
   },
-  watch: {
-    permissions(newPermissions, oldPermissions) {
-      const added = difference(newPermissions, oldPermissions);
-      const removed = difference(oldPermissions, newPermissions);
-
-      added.forEach((permission) => this.selectParentPermissions(permission));
-      removed.forEach((permission) => this.deselectChildPermissions(permission));
-    },
-  },
   methods: {
-    selectParentPermissions(permission) {
-      const parentPermissions = this.parentPermissionsLookup[permission];
-
-      parentPermissions?.forEach((parentPermission) => {
-        // Only select the parent permission if it's not already selected.
-        if (!this.permissions.includes(parentPermission)) {
-          this.permissions.push(parentPermission);
-          this.selectParentPermissions(parentPermission);
-        }
-      });
-    },
-    deselectChildPermissions(permission) {
-      const childPermissions = this.childPermissionsLookup[permission];
-
-      childPermissions?.forEach((childPermission) => {
-        // Only remove the child permission if it's selected.
-        if (this.permissions.includes(childPermission)) {
-          pull(this.permissions, childPermission);
-          this.deselectChildPermissions(childPermission);
-        }
-      });
-    },
     validateFields() {
       this.nameValid = this.name.length > 0;
       this.descriptionValid = this.description.length > 0;
@@ -283,31 +202,7 @@ export default {
       />
     </gl-form-group>
 
-    <gl-form-group :label="$options.i18n.customPermissionsLabel" label-class="gl-pb-1!">
-      <template #label-description>
-        <div v-if="!isLoadingPermissions" class="gl-mb-6">
-          {{ $options.i18n.customPermissionsDescription }}
-        </div>
-      </template>
-
-      <div v-if="isLoadingPermissions" class="gl-mt-5">
-        <gl-skeleton-loader />
-      </div>
-
-      <gl-form-checkbox-group v-else v-model="permissions" :state="permissionsState">
-        <gl-form-checkbox
-          v-for="permission in availablePermissions"
-          :key="permission.value"
-          :value="permission.value"
-          :data-testid="permission.value"
-        >
-          {{ permission.name }}
-          <template v-if="permission.description" #help>
-            {{ permission.description }}
-          </template>
-        </gl-form-checkbox>
-      </gl-form-checkbox-group>
-    </gl-form-group>
+    <permissions-selector :permissions.sync="permissions" :state="permissionsValid" />
 
     <div class="gl-display-flex gl-flex-wrap gl-gap-3">
       <gl-button
