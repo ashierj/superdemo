@@ -9,6 +9,7 @@ describe('GroupsApi', () => {
   const dummyUrlRoot = '/gitlab';
   const namespaceId = 1000;
   const memberId = 2;
+  const groupId = 10;
 
   let mock;
 
@@ -128,6 +129,36 @@ describe('GroupsApi', () => {
 
       expect(data).toEqual({});
       expect(axios.put).toHaveBeenCalledWith(expectedUrl, setting);
+    });
+  });
+
+  describe('deleteGroup', () => {
+    beforeEach(() => {
+      jest.spyOn(axios, 'delete');
+    });
+
+    describe('without params', () => {
+      it('deletes to the correct URL', () => {
+        const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}`;
+
+        mock.onDelete(expectedUrl).replyOnce(HTTP_STATUS_OK);
+
+        return GroupsApi.deleteGroup(groupId).then(() => {
+          expect(axios.delete).toHaveBeenCalledWith(expectedUrl, { params: undefined });
+        });
+      });
+    });
+
+    describe('with params', () => {
+      it('deletes to the correct URL', () => {
+        const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}`;
+
+        mock.onDelete(expectedUrl).replyOnce(HTTP_STATUS_OK);
+
+        return GroupsApi.deleteGroup(groupId, { testParam: true }).then(() => {
+          expect(axios.delete).toHaveBeenCalledWith(expectedUrl, { params: { testParam: true } });
+        });
+      });
     });
   });
 });
