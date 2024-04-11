@@ -10,6 +10,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
   let(:user_name) { "example.user.name" }
   let(:user_email) { "example@user.email" }
   let(:workspace_id) { 1 }
+  let(:vscode_extensions_gallery_service_url) { "https://open-vsx.org/vscode/gallery" }
+  let(:vscode_extensions_gallery_item_url) { "https://open-vsx.org/vscode/item" }
+  let(:vscode_extensions_gallery_resource_url_template) { "https://open-vsx.org/api/{publisher}/{name}/{version}/file/{path}" }
   let(:git_credential_store_script) do
     <<~SH.chomp
       #!/bin/sh
@@ -106,6 +109,24 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
         value: "${PORT}-name.example.dns.zone",
         variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
         workspace_id: workspace_id
+      },
+      {
+        key: "GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL",
+        value: vscode_extensions_gallery_service_url,
+        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        workspace_id: workspace_id
+      },
+      {
+        key: "GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL",
+        value: vscode_extensions_gallery_item_url,
+        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        workspace_id: workspace_id
+      },
+      {
+        key: "GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE",
+        value: vscode_extensions_gallery_resource_url_template,
+        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        workspace_id: workspace_id
       }
     ]
   end
@@ -117,7 +138,14 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
       personal_access_token_value: personal_access_token_value,
       user_name: user_name,
       user_email: user_email,
-      workspace_id: workspace_id
+      workspace_id: workspace_id,
+      settings: {
+        vscode_extensions_gallery: {
+          service_url: vscode_extensions_gallery_service_url,
+          item_url: vscode_extensions_gallery_item_url,
+          resource_url_template: vscode_extensions_gallery_resource_url_template
+        }
+      }
     )
   end
 

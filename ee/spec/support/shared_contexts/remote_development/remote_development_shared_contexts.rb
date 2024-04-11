@@ -1052,7 +1052,14 @@ RSpec.shared_context 'with remote development shared fixtures' do
     gl_git_credential_store_file_path = workspace_variables_env_var.fetch('GL_GIT_CREDENTIAL_STORE_FILE_PATH', '')
     gl_token_file_path = workspace_variables_env_var.fetch('GL_TOKEN_FILE_PATH', '')
     gl_workspace_domain_template = workspace_variables_env_var.fetch('GL_WORKSPACE_DOMAIN_TEMPLATE', '')
-    # TODO: figure out why there is flakiness in the order of the environment variables?
+    gl_editor_extensions_gallery_service_url =
+      workspace_variables_env_var.fetch('GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL', '')
+    gl_editor_extensions_gallery_item_url =
+      workspace_variables_env_var.fetch('GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL', '')
+    gl_editor_extensions_gallery_resource_url_template =
+      workspace_variables_env_var.fetch('GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE', '')
+
+    # TODO: figure out why there is flakiness in the order of the environment variables -- https://gitlab.com/gitlab-org/gitlab/-/issues/451934
     {
       kind: "Secret",
       apiVersion: "v1",
@@ -1072,7 +1079,11 @@ RSpec.shared_context 'with remote development shared fixtures' do
         GIT_CONFIG_VALUE_2: Base64.strict_encode64(git_config_value_2).to_s,
         GL_GIT_CREDENTIAL_STORE_FILE_PATH: Base64.strict_encode64(gl_git_credential_store_file_path).to_s,
         GL_TOKEN_FILE_PATH: Base64.strict_encode64(gl_token_file_path).to_s,
-        GL_WORKSPACE_DOMAIN_TEMPLATE: Base64.strict_encode64(gl_workspace_domain_template).to_s
+        GL_WORKSPACE_DOMAIN_TEMPLATE: Base64.strict_encode64(gl_workspace_domain_template).to_s,
+        GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL: Base64.strict_encode64(gl_editor_extensions_gallery_service_url).to_s,
+        GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL: Base64.strict_encode64(gl_editor_extensions_gallery_item_url).to_s,
+        GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE:
+          Base64.strict_encode64(gl_editor_extensions_gallery_resource_url_template).to_s
       }
     }
   end
