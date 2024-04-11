@@ -24,7 +24,7 @@ RSpec.describe 'shared/saml_reload_modal', feature_category: :system_access do
     it 'renders div with correct ID and data attribute' do
       render partial, group_or_project: root_group, current_user: user
 
-      expect(rendered).to have_selector('#js-saml-reload')
+      expect(rendered).to have_selector('#js-saml-reload[data-saml-provider-id]')
     end
   end
 
@@ -32,7 +32,7 @@ RSpec.describe 'shared/saml_reload_modal', feature_category: :system_access do
     it 'renders div with correct ID and data attribute' do
       render partial, group_or_project: nested_group, current_user: user
 
-      expect(rendered).to have_selector('#js-saml-reload')
+      expect(rendered).to have_selector('#js-saml-reload[data-saml-provider-id]')
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe 'shared/saml_reload_modal', feature_category: :system_access do
     it 'renders div with correct ID and data attribute' do
       render partial, group_or_project: project, current_user: user
 
-      expect(rendered).to have_selector('#js-saml-reload')
+      expect(rendered).to have_selector('#js-saml-reload[data-saml-provider-id]')
     end
   end
 end
