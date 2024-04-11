@@ -1,186 +1,237 @@
-import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 
-import { delay } from 'lodash';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 
-import { nextTick } from 'vue';
+import { createAlert } from '~/alert';
+
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
 import EpicItemComponent from 'ee/roadmap/components/epic_item.vue';
 import EpicItemContainer from 'ee/roadmap/components/epic_item_container.vue';
+import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
+import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
+
+import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
 
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
-import {
-  mockTimeframeInitialDate,
-  mockEpic,
-  mockGroupId,
-  mockFormattedChildEpic1,
-} from 'ee_jest/roadmap/mock_data';
+import { mockEpic, mockGroupId, mockEpicChildEpicsQueryResponse } from 'ee_jest/roadmap/mock_data';
 
-jest.mock('lodash/delay', () =>
-  jest.fn((func) => {
-    // eslint-disable-next-line no-param-reassign
-    func.delay = jest.fn();
-    return func;
-  }),
-);
+Vue.use(VueApollo);
 
-let store;
+jest.mock('~/alert');
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
   presetType: PRESET_TYPES.MONTHS,
-  initialDate: mockTimeframeInitialDate,
+  initialDate: new Date(2017, 0, 1),
 });
 
-const createComponent = ({
-  presetType = PRESET_TYPES.MONTHS,
-  epic = mockEpic,
-  timeframe = mockTimeframeMonths,
-  currentGroupId = mockGroupId,
-  childLevel = 0,
-  childrenEpics = {},
-  childrenFlags = { [mockEpic.id]: { itemExpanded: false } },
-  hasFiltersApplied = false,
-}) => {
-  return shallowMount(EpicItemComponent, {
-    store,
-    propsData: {
-      presetType,
-      epic,
-      timeframe,
-      currentGroupId,
-      childLevel,
-      childrenEpics,
-      childrenFlags,
-      hasFiltersApplied,
-    },
-    data() {
-      return {
-        // Arbitrarily set the current date to be in timeframe[1] (2017-12-01)
-        currentDate: timeframe[1],
-      };
-    },
-  });
-};
+const childEpicsQueryHandler = jest.fn().mockResolvedValue(mockEpicChildEpicsQueryResponse);
 
 describe('EpicItemComponent', () => {
   let wrapper;
+  let store;
+
+  const findTimelineCells = () => wrapper.findAllByTestId('epic-timeline-cell');
+  const findEpicItemContainer = () => wrapper.findComponent(EpicItemContainer);
+  const findEpicItemDetails = () => wrapper.findComponent(EpicItemDetails);
+  const findEpicItemTimeline = () => wrapper.findComponent(EpicItemTimeline);
+
+  const createComponent = ({ epic = mockEpic, timeframe = mockTimeframeMonths } = {}) => {
+    wrapper = shallowMountExtended(EpicItemComponent, {
+      store,
+      apolloProvider: createMockApollo([[epicChildEpicsQuery, childEpicsQueryHandler]]),
+      propsData: {
+        presetType: PRESET_TYPES.MONTHS,
+        epic,
+        timeframe,
+        childLevel: 0,
+        hasFiltersApplied: false,
+      },
+      provide: {
+        currentGroupId: mockGroupId,
+      },
+      data() {
+        return {
+          // Arbitrarily set the current date to be in timeframe[1] (2017-12-01)
+          currentDate: timeframe[1],
+        };
+      },
+    });
+  };
 
   beforeEach(() => {
     store = createStore();
-    wrapper = createComponent({});
   });
 
-  describe('startDate', () => {
+  describe('start date', () => {
     it('returns Epic.startDate when start date is within range', () => {
-      expect(wrapper.vm.startDate).toBe(mockEpic.startDate);
+      createComponent();
+
+      expect(findEpicItemTimeline().props('startDate')).toBe(mockEpic.startDate);
     });
 
     it('returns Epic.originalStartDate when start date is out of range', () => {
       const mockStartDate = new Date(2018, 0, 1);
       const epic = { ...mockEpic, startDateOutOfRange: true, originalStartDate: mockStartDate };
-      wrapper = createComponent({ epic });
+      createComponent({ epic });
 
-      expect(wrapper.vm.startDate).toBe(mockStartDate);
+      expect(findEpicItemTimeline().props('startDate')).toBe(mockStartDate);
     });
   });
 
-  describe('endDate', () => {
+  describe('end date', () => {
     it('returns Epic.endDate when end date is within range', () => {
-      expect(wrapper.vm.endDate).toBe(mockEpic.endDate);
+      createComponent();
+
+      expect(findEpicItemTimeline().props('endDate')).toBe(mockEpic.endDate);
     });
 
     it('returns Epic.originalEndDate when end date is out of range', () => {
       const mockEndDate = new Date(2018, 0, 1);
       const epic = { ...mockEpic, endDateOutOfRange: true, originalEndDate: mockEndDate };
-      wrapper = createComponent({ epic });
+      createComponent({ epic });
 
-      expect(wrapper.vm.endDate).toBe(mockEndDate);
+      expect(findEpicItemTimeline().props('endDate')).toBe(mockEndDate);
     });
   });
 
   describe('timeframeString', () => {
     it('returns timeframe string correctly when both start and end dates are defined', () => {
-      expect(wrapper.vm.timeframeString(mockEpic)).toBe('Nov 10, 2017 – Jun 2, 2018');
+      createComponent();
+
+      expect(findEpicItemDetails().props('timeframeString')).toBe('Nov 10, 2017 – Jun 2, 2018');
     });
 
     it('returns timeframe string correctly when no dates are defined', () => {
       const epic = { ...mockEpic, endDateUndefined: true, startDateUndefined: true };
-      wrapper = createComponent({ epic });
+      createComponent({ epic });
 
-      expect(wrapper.vm.timeframeString(epic)).toBe('No start and end date');
+      expect(findEpicItemDetails().props('timeframeString')).toBe('No start and end date');
     });
 
     it('returns timeframe string correctly when only start date is defined', () => {
       const epic = { ...mockEpic, endDateUndefined: true };
-      wrapper = createComponent({ epic });
+      createComponent({ epic });
 
-      expect(wrapper.vm.timeframeString(epic)).toBe('Nov 10, 2017 – No end date');
+      expect(findEpicItemDetails().props('timeframeString')).toBe('Nov 10, 2017 – No end date');
     });
 
     it('returns timeframe string correctly when only end date is defined', () => {
       const epic = { ...mockEpic, startDateUndefined: true };
-      wrapper = createComponent({ epic });
+      createComponent({ epic });
 
-      expect(wrapper.vm.timeframeString(epic)).toBe('No start date – Jun 2, 2018');
+      expect(findEpicItemDetails().props('timeframeString')).toBe('No start date – Jun 2, 2018');
     });
 
     it('returns timeframe string with hidden year for start date when both start and end dates are from same year', () => {
-      const epic = { ...mockEpic, startDate: new Date(2018, 0, 1), endDate: new Date(2018, 3, 1) };
-      wrapper = createComponent({ epic });
+      const epic = {
+        ...mockEpic,
+        startDate: new Date(2018, 0, 1),
+        endDate: new Date(2018, 3, 1),
+      };
+      createComponent({ epic });
 
-      expect(wrapper.vm.timeframeString(epic)).toBe('Jan 1 – Apr 1, 2018');
+      expect(findEpicItemDetails().props('timeframeString')).toBe('Jan 1 – Apr 1, 2018');
     });
   });
 
-  describe('methods', () => {
-    describe('removeHighlight', () => {
-      it('should wait 3 seconds before toggling `epic.newEpic` from true to false', async () => {
-        wrapper.setProps({
-          epic: {
-            ...wrapper.vm.epic,
-            newEpic: true,
-          },
+  describe('timeframe', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('renders correct number of timeframe items', () => {
+      expect(findTimelineCells()).toHaveLength(12);
+    });
+
+    it('renders current day indicator', () => {
+      expect(wrapper.findComponent(CurrentDayIndicator).exists()).toBe(true);
+    });
+  });
+
+  describe('when has children epics', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('does not render EpicItemContainer component', () => {
+      expect(findEpicItemContainer().exists()).toBe(false);
+    });
+
+    it('passes `isChildrenEmpty` prop as true to EpicDetails', () => {
+      expect(findEpicItemDetails().props('isChildrenEmpty')).toBe(true);
+    });
+
+    it('passes `isExpanded` prop as false to EpicDetails', () => {
+      expect(findEpicItemDetails().props('isExpanded')).toBe(false);
+    });
+
+    it('does not call children epics query by default', () => {
+      expect(childEpicsQueryHandler).not.toHaveBeenCalled();
+    });
+
+    describe('when expanding an epic', () => {
+      beforeEach(() => {
+        findEpicItemDetails().vm.$emit('toggleEpic');
+      });
+
+      it('calls children epics query', () => {
+        expect(childEpicsQueryHandler).toHaveBeenCalledWith({
+          authorUsername: '',
+          fullPath: '/groups/gitlab-org/',
+          iid: 1,
+          labelName: [],
+          search: '',
+          sort: '',
+          state: '',
+          withColor: false,
+        });
+      });
+
+      it('passes `isFetchingChildren` prop as true when query is in flight', () => {
+        expect(findEpicItemDetails().props('isFetchingChildren')).toBe(true);
+      });
+
+      describe('when children epics query is successful', () => {
+        it('passes `isFetchingChildren` prop as false', async () => {
+          await waitForPromises();
+
+          expect(findEpicItemDetails().props('isFetchingChildren')).toBe(false);
         });
 
-        wrapper.vm.removeHighlight();
+        it('renders EpicItemContainer component with correct number of children', async () => {
+          await waitForPromises();
 
-        await nextTick();
-        expect(delay).toHaveBeenCalledWith(expect.any(Function), 3000);
+          expect(findEpicItemContainer().exists()).toBe(true);
+          expect(findEpicItemContainer().props('children')).toHaveLength(1);
+        });
       });
-    });
-  });
 
-  describe('template', () => {
-    it('renders Epic item container', () => {
-      expect(wrapper.find('.epics-list-item').exists()).toBe(true);
-    });
+      describe('when children epics query fails', () => {
+        beforeEach(() => {
+          childEpicsQueryHandler.mockRejectedValue('Houston, we have a problem');
+        });
 
-    it('renders Epic timeline element with class `epic-timeline-cell`', () => {
-      expect(wrapper.find('.epic-timeline-cell').exists()).toBe(true);
-    });
+        it('passes `isFetchingChildren` prop as false', async () => {
+          await waitForPromises();
 
-    it('does not render Epic item container if epic is not expanded', () => {
-      expect(wrapper.findComponent(EpicItemContainer).exists()).toBe(false);
-    });
+          expect(findEpicItemDetails().props('isFetchingChildren')).toBe(false);
+        });
 
-    it('renders Epic item container element with class `epic-list-item-container` if epic has children and is expanded', () => {
-      wrapper = createComponent({
-        childrenEpics: {
-          1: [mockFormattedChildEpic1],
-        },
-        childrenFlags: {
-          1: { itemExpanded: true },
-          50: { itemExpanded: false },
-        },
+        it('creates an alert', async () => {
+          await waitForPromises();
+
+          expect(createAlert).toHaveBeenCalledWith({
+            message: 'Something went wrong while fetching epics',
+          });
+        });
       });
-      expect(wrapper.findComponent(EpicItemContainer).exists()).toBe(true);
-    });
-
-    it('renders current day indicator element', () => {
-      expect(wrapper.findComponent(CurrentDayIndicator).exists()).toBe(true);
     });
   });
 });

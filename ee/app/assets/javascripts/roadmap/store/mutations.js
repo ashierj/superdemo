@@ -1,13 +1,9 @@
-import Vue from 'vue';
-
 import { getTimeframeForRangeType } from '../utils/roadmap_utils';
 import * as types from './mutation_types';
 
 const resetEpics = (state) => {
   state.epics = [];
-  state.childrenFlags = {};
   state.epicIds = [];
-  state.childrenEpics = {};
 };
 
 export default {
@@ -56,35 +52,6 @@ export default {
     state.epicsFetchForTimeframeInProgress = false;
     state.epicsFetchForNextPageInProgress = false;
     state.epicsFetchFailure = true;
-    Object.keys(state.childrenEpics).forEach((id) => {
-      Vue.set(state.childrenFlags, id, {
-        itemChildrenFetchInProgress: false,
-      });
-    });
-  },
-
-  [types.REQUEST_CHILDREN_EPICS](state, { parentItemId }) {
-    state.childrenFlags[parentItemId].itemChildrenFetchInProgress = true;
-  },
-  [types.RECEIVE_CHILDREN_SUCCESS](state, { parentItemId, children }) {
-    Vue.set(state.childrenEpics, parentItemId, children);
-    state.childrenFlags[parentItemId].itemChildrenFetchInProgress = false;
-  },
-
-  [types.INIT_EPIC_CHILDREN_FLAGS](state, { epics }) {
-    epics.forEach((item) => {
-      Vue.set(state.childrenFlags, item.id, {
-        itemExpanded: false,
-        itemChildrenFetchInProgress: false,
-      });
-    });
-  },
-
-  [types.EXPAND_EPIC](state, { parentItemId }) {
-    state.childrenFlags[parentItemId].itemExpanded = true;
-  },
-  [types.COLLAPSE_EPIC](state, { parentItemId }) {
-    state.childrenFlags[parentItemId].itemExpanded = false;
   },
 
   [types.SET_MILESTONES](state, milestones) {
@@ -137,7 +104,6 @@ export default {
   },
 
   [types.SET_SORTED_BY](state, sortedBy) {
-    state.childrenEpics = {};
     state.sortedBy = sortedBy;
     resetEpics(state);
   },

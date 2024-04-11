@@ -1,11 +1,22 @@
 <script>
-import { delay } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
+import { mapState } from 'vuex';
 
-import { EPIC_HIGHLIGHT_REMOVE_AFTER } from '../constants';
+import { s__ } from '~/locale';
+import { createAlert } from '~/alert';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+
 import CommonMixin from '../mixins/common_mixin';
 import MonthsPresetMixin from '../mixins/months_preset_mixin';
 import QuartersPresetMixin from '../mixins/quarters_preset_mixin';
 import WeeksPresetMixin from '../mixins/weeks_preset_mixin';
+
+import epicChildEpics from '../queries/epic_child_epics.query.graphql';
+import {
+  formatRoadmapItemDetails,
+  timeframeStartDate,
+  timeframeEndDate,
+} from '../utils/roadmap_item_utils';
 
 import CurrentDayIndicator from './current_day_indicator.vue';
 
@@ -15,13 +26,21 @@ import EpicItemContainer from './epic_item_container.vue';
 
 export default {
   name: 'EpicItem',
+  errorMessage: s__('GroupRoadmap|Something went wrong while fetching epics'),
   components: {
     CurrentDayIndicator,
     EpicItemDetails,
     EpicItemTimeline,
     EpicItemContainer,
   },
-  mixins: [CommonMixin, QuartersPresetMixin, MonthsPresetMixin, WeeksPresetMixin],
+  mixins: [
+    CommonMixin,
+    QuartersPresetMixin,
+    MonthsPresetMixin,
+    WeeksPresetMixin,
+    glFeatureFlagsMixin(),
+  ],
+  inject: ['currentGroupId'],
   props: {
     presetType: {
       type: String,
@@ -44,14 +63,6 @@ export default {
       type: Number,
       required: true,
     },
-    childrenEpics: {
-      type: Object,
-      required: true,
-    },
-    childrenFlags: {
-      type: Object,
-      required: true,
-    },
     hasFiltersApplied: {
       type: Boolean,
       required: true,
@@ -63,9 +74,58 @@ export default {
 
     return {
       currentDate,
+      isExpanded: false,
+      childEpics: [],
     };
   },
+  apollo: {
+    childEpics: {
+      query: epicChildEpics,
+      variables() {
+        return {
+          iid: this.epic.iid,
+          fullPath: this.epic.group?.fullPath,
+          state: this.epicsState,
+          sort: this.sortedBy,
+          withColor: this.epicColorHighlight,
+          ...this.filterParams,
+        };
+      },
+      update(data) {
+        const rawChildren = data.group.epic.children.nodes;
+
+        return rawChildren.reduce((filteredChildren, epic) => {
+          const { presetType, timeframe } = this;
+          const formattedChild = formatRoadmapItemDetails(
+            epic,
+            timeframeStartDate(presetType, timeframe),
+            timeframeEndDate(presetType, timeframe),
+          );
+
+          formattedChild.isChildEpic = true;
+
+          // Exclude any Epic that has invalid dates
+          if (formattedChild.startDate.getTime() <= formattedChild.endDate.getTime()) {
+            filteredChildren.push(formattedChild);
+          }
+          return filteredChildren;
+        }, []);
+      },
+      skip() {
+        return !this.isExpanded;
+      },
+      error() {
+        createAlert({
+          message: this.$options.errorMessage,
+        });
+      },
+    },
+  },
   computed: {
+    ...mapState(['epicsState', 'sortedBy', 'filterParams']),
+    epicColorHighlight() {
+      return Boolean(this.glFeatures.epicColorHighlight);
+    },
     /**
      * In case Epic start date is out of range
      * we need to use original date instead of proxy date
@@ -88,36 +148,18 @@ export default {
       return this.epic.endDate;
     },
     isChildrenEmpty() {
-      return this.childrenEpics[this.epic.id] && this.childrenEpics[this.epic.id].length === 0;
+      return this.childEpics.length === 0;
     },
     hasChildrenToShow() {
-      return this.childrenFlags[this.epic.id].itemExpanded && this.childrenEpics[this.epic.id];
+      return this.isExpanded && this.childEpics?.length > 0;
+    },
+    isFetchingChildren() {
+      return this.$apollo.queries.childEpics.loading;
     },
   },
-  updated() {
-    this.removeHighlight();
-  },
   methods: {
-    /**
-     * When new epics are added to the list on
-     * timeline scroll, we set `newEpic` flag
-     * as true and then use it in template
-     * to set `newly-added-epic` class for
-     * highlighting epic using CSS animations
-     *
-     * Once animation is complete, we need to
-     * remove the flag so that animation is not
-     * replayed when list is re-rendered.
-     */
-    removeHighlight() {
-      if (this.epic.newEpic) {
-        this.$nextTick(() => {
-          delay(() => {
-            // eslint-disable-next-line vue/no-mutating-props
-            this.epic.newEpic = false;
-          }, EPIC_HIGHLIGHT_REMOVE_AFTER);
-        });
-      }
+    toggleEpic() {
+      this.isExpanded = !this.isExpanded;
     },
   },
 };
@@ -126,16 +168,17 @@ export default {
 <template>
   <div class="epic-item-container">
     <div
-      :class="{ 'newly-added-epic': epic.newEpic }"
       class="epics-list-item gl-clearfix gl-display-flex gl-flex-direction-row gl-align-items-stretch"
     >
       <epic-item-details
         :epic="epic"
         :timeframe-string="timeframeString(epic)"
         :child-level="childLevel"
-        :children-flags="childrenFlags"
+        :is-expanded="isExpanded"
+        :is-fetching-children="isFetchingChildren"
         :has-filters-applied="hasFiltersApplied"
         :is-children-empty="isChildrenEmpty"
+        @toggleEpic="toggleEpic"
       />
       <span
         v-for="(timeframeItem, index) in timeframe"
@@ -170,13 +213,8 @@ export default {
       :preset-type="presetType"
       :timeframe="timeframe"
       :client-width="clientWidth"
-      :children="
-        childrenEpics[epic.id] ||
-        [] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */
-      "
+      :children="childEpics"
       :child-level="childLevel + 1"
-      :children-epics="childrenEpics"
-      :children-flags="childrenFlags"
       :has-filters-applied="hasFiltersApplied"
     />
   </div>

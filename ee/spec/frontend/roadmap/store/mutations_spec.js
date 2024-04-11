@@ -15,7 +15,6 @@ import {
 
 const setEpicMockData = (state) => {
   state.epics = [mockEpic];
-  state.childrenFlags = { 'gid://gitlab/Epic/1': {} };
   state.epicIds = ['gid://gitlab/Epic/1'];
 };
 
@@ -142,77 +141,6 @@ describe('Roadmap Store Mutations', () => {
     });
   });
 
-  describe('REQUEST_CHILDREN_EPICS', () => {
-    const parentItemId = '1';
-
-    it('should set `itemChildrenFetchInProgress` to true for provided `parentItem` param within state.childrenFlags', () => {
-      state.childrenFlags[parentItemId] = {};
-      mutations[types.REQUEST_CHILDREN_EPICS](state, { parentItemId });
-
-      expect(state.childrenFlags[parentItemId]).toHaveProperty('itemChildrenFetchInProgress', true);
-    });
-  });
-
-  describe('RECEIVE_CHILDREN_SUCCESS', () => {
-    const parentItemId = '1';
-    const children = [{ id: 1 }, { id: 2 }];
-
-    it('should set provided `children` and `itemChildrenFetchInProgress` to false for provided `parentItem` param within state.childrenFlags', () => {
-      state.childrenFlags[parentItemId] = {};
-      mutations[types.RECEIVE_CHILDREN_SUCCESS](state, { parentItemId, children });
-
-      expect(state.childrenEpics[parentItemId]).toEqual(children);
-      expect(state.childrenFlags[parentItemId]).toHaveProperty(
-        'itemChildrenFetchInProgress',
-        false,
-      );
-    });
-  });
-
-  describe('INIT_EPIC_CHILDREN_FLAGS', () => {
-    it('should set flags in `state.childrenFlags` for each epic', () => {
-      const epics = [
-        {
-          id: '1',
-        },
-        {
-          id: '2',
-        },
-      ];
-
-      mutations[types.INIT_EPIC_CHILDREN_FLAGS](state, { epics });
-
-      epics.forEach((item) => {
-        expect(state.childrenFlags[item.id]).toMatchObject({
-          itemExpanded: false,
-          itemChildrenFetchInProgress: false,
-        });
-      });
-    });
-  });
-
-  describe('EXPAND_EPIC', () => {
-    it('should toggle collapsed epic to an expanded epic', () => {
-      const parentItemId = '1';
-      state.childrenFlags[parentItemId] = {};
-
-      mutations[types.EXPAND_EPIC](state, { parentItemId });
-
-      expect(state.childrenFlags[parentItemId]).toHaveProperty('itemExpanded', true);
-    });
-  });
-
-  describe('COLLAPSE_EPIC', () => {
-    it('should toggle expanded epic to a collapsed epic', () => {
-      const parentItemId = '2';
-      state.childrenFlags[parentItemId] = {};
-
-      mutations[types.COLLAPSE_EPIC](state, { parentItemId });
-
-      expect(state.childrenFlags[parentItemId]).toHaveProperty('itemExpanded', false);
-    });
-  });
-
   describe('SET_MILESTONES', () => {
     it('Should provided milestones array in state', () => {
       const milestones = [{ id: 1 }, { id: 2 }];
@@ -282,7 +210,6 @@ describe('Roadmap Store Mutations', () => {
         filterParams,
         hasFiltersApplied: true,
         epics: [],
-        childrenFlags: {},
         epicIds: [],
       });
     });
@@ -298,7 +225,6 @@ describe('Roadmap Store Mutations', () => {
       expect(state).toMatchObject({
         epicsState,
         epics: [],
-        childrenFlags: {},
         epicIds: [],
       });
     });
@@ -320,7 +246,6 @@ describe('Roadmap Store Mutations', () => {
           presetType,
         }),
         epics: [],
-        childrenFlags: {},
         epicIds: [],
       });
     });
@@ -334,8 +259,6 @@ describe('Roadmap Store Mutations', () => {
       mutations[types.SET_SORTED_BY](state, sortedBy);
 
       expect(state).toMatchObject({
-        childrenEpics: {},
-        childrenFlags: {},
         epicIds: [],
         epics: [],
         sortedBy,

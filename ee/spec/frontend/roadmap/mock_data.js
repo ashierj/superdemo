@@ -709,20 +709,7 @@ export const mockGroupEpicsQueryResponse = {
       id: 'gid://gitlab/Group/1',
       name: 'Gitlab Org',
       epics: {
-        edges: [
-          {
-            node: {
-              ...mockEpicNode1,
-            },
-            __typename: 'EpicEdge',
-          },
-          {
-            node: {
-              ...mockEpicNode2,
-            },
-            __typename: 'EpicEdge',
-          },
-        ],
+        nodes: [mockEpicNode1, mockEpicNode2],
         pageInfo: {
           ...mockPageInfo,
         },
@@ -746,6 +733,10 @@ export const mockChildEpicNode1 = {
   hasChildren: false,
   hasParent: true,
   confidential: false,
+  blocked: false,
+  labels: [],
+  ancestors: [],
+  blockedByCount: 0,
   descendantWeightSum: {
     closedIssues: 0,
     openedIssues: 0,
@@ -754,9 +745,12 @@ export const mockChildEpicNode1 = {
   descendantCounts: {
     openedEpics: 0,
     closedEpics: 0,
+    closedIssues: 0,
+    openedIssues: 0,
     __typename: 'EpicDescendantCount',
   },
   group: {
+    id: 'gid://gitlab/Group/2',
     name: 'Gitlab Org',
     fullName: 'Gitlab Org',
     fullPath: 'gitlab-org',
@@ -776,14 +770,7 @@ export const mockEpicChildEpicsQueryResponse = {
         title: 'Error omnis quos consequatur',
         hasChildren: true,
         children: {
-          edges: [
-            {
-              node: {
-                ...mockChildEpicNode1,
-              },
-              __typename: 'EpicEdge',
-            },
-          ],
+          nodes: [mockChildEpicNode1],
           __typename: 'EpicConnection',
         },
         __typename: 'Epic',
@@ -803,14 +790,11 @@ export const mockEpicChildEpicsWithColorQueryResponse = {
         title: 'Error omnis quos consequatur',
         hasChildren: true,
         children: {
-          edges: [
+          nodes: [
             {
-              node: {
-                ...mockChildEpicNode1,
-                color: '#1068bf',
-                textColor: '#ffffff',
-              },
-              __typename: 'EpicEdge',
+              ...mockChildEpicNode1,
+              color: '#1068bf',
+              textColor: '#ffffff',
             },
           ],
           __typename: 'EpicConnection',

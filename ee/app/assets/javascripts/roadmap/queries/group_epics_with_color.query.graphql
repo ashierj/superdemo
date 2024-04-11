@@ -37,16 +37,14 @@ query roadmapGroupEpicsWithColor(
       after: $endCursor
       includeDescendantGroups: $includeDescendantGroups
     ) {
-      edges {
-        node {
-          ...BaseEpic
-          color
-          textColor
-          parent {
-            id
-            startDate
-            dueDate
-          }
+      nodes {
+        ...BaseEpic
+        color
+        textColor
+        parent {
+          id
+          startDate
+          dueDate
         }
       }
       pageInfo {

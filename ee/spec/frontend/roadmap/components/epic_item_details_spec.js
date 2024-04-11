@@ -3,7 +3,6 @@ import { GlButton, GlLabel } from '@gitlab/ui';
 import { updateHistory } from '~/lib/utils/url_utility';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
-import eventHub from 'ee/roadmap/event_hub';
 import createStore from 'ee/roadmap/store';
 import {
   mockGroupId,
@@ -28,11 +27,10 @@ describe('EpicItemDetails', () => {
     childLevel = 0,
     allowSubEpics = true,
     allowScopedLabels = false,
-    childrenFlags = {
-      [mockFormattedEpic.id]: { itemExpanded: false },
-    },
     hasFiltersApplied = false,
     isChildrenEmpty = false,
+    isExpanded = false,
+    isFetchingChildren = false,
   } = {}) => {
     wrapper = shallowMountExtended(EpicItemDetails, {
       store,
@@ -41,9 +39,10 @@ describe('EpicItemDetails', () => {
         currentGroupId,
         timeframeString: 'Jul 10, 2017 – Jun 2, 2018',
         childLevel,
-        childrenFlags,
         hasFiltersApplied,
         isChildrenEmpty,
+        isExpanded,
+        isFetchingChildren,
       },
       provide: {
         allowSubEpics,
@@ -199,22 +198,15 @@ describe('EpicItemDetails', () => {
           expect(getExpandIconButton().classes()).not.toContain('invisible');
         });
 
-        it('emits toggleIsEpicExpanded event when clicked', () => {
-          jest.spyOn(eventHub, '$emit').mockImplementation(() => {});
+        it('emits toggleEpic event when clicked', () => {
           getExpandIconButton().vm.$emit('click');
-          expect(eventHub.$emit).toHaveBeenCalledWith('toggleIsEpicExpanded', epic);
+          expect(wrapper.emitted('toggleEpic')).toEqual([[]]);
         });
 
         describe('when child epics are expanded', () => {
-          const childrenFlags = {
-            [mockFormattedEpic.id]: { itemExpanded: true },
-          };
-
-          beforeEach(() => {
-            createWrapper({ epic, childrenFlags });
-          });
-
           it('shows collapse button', () => {
+            createWrapper({ epic, isExpanded: true });
+
             expect(getExpandButtonData()).toEqual({
               icon: 'chevron-down',
               iconLabel: 'Collapse',
@@ -226,9 +218,9 @@ describe('EpicItemDetails', () => {
             beforeEach(() => {
               createWrapper({
                 epic,
-                childrenFlags,
                 hasFiltersApplied: true,
                 isChildrenEmpty: true,
+                isExpanded: true,
               });
             });
 
@@ -244,12 +236,8 @@ describe('EpicItemDetails', () => {
 
         describe('when child epics are not expanded', () => {
           beforeEach(() => {
-            const childrenFlags = {
-              [mockFormattedEpic.id]: { itemExpanded: false },
-            };
             createWrapper({
               epic,
-              childrenFlags,
             });
           });
 

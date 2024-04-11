@@ -52,14 +52,7 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'bufferSize',
-      'childrenEpics',
-      'childrenFlags',
-      'epicIds',
-      'pageInfo',
-      'epicsFetchForNextPageInProgress',
-    ]),
+    ...mapState(['bufferSize', 'epicIds', 'pageInfo', 'epicsFetchForNextPageInProgress']),
     ...mapGetters(['isScopedRoadmap']),
     hasNextPage() {
       return this.pageInfo?.hasNextPage;
@@ -105,13 +98,11 @@ export default {
   },
   mounted() {
     eventHub.$on('epicsListScrolled', this.handleEpicsListScroll);
-    eventHub.$on('toggleIsEpicExpanded', this.toggleIsEpicExpanded);
     window.addEventListener('resize', this.syncClientWidth);
     this.initMounted();
   },
   beforeDestroy() {
     eventHub.$off('epicsListScrolled', this.handleEpicsListScroll);
-    eventHub.$off('toggleIsEpicExpanded', this.toggleIsEpicExpanded);
     window.removeEventListener('resize', this.syncClientWidth);
   },
   methods: {
@@ -166,9 +157,6 @@ export default {
         this.fetchEpics({ endCursor });
       }
     },
-    toggleIsEpicExpanded(epic) {
-      this.toggleEpic({ parentItem: epic });
-    },
     generateKey,
   },
 };
@@ -185,8 +173,6 @@ export default {
       :timeframe="timeframe"
       :client-width="clientWidth"
       :child-level="0"
-      :children-epics="childrenEpics"
-      :children-flags="childrenFlags"
       :has-filters-applied="hasFiltersApplied"
     />
     <div v-if="emptyRowContainerVisible" class="epic-item-container">
