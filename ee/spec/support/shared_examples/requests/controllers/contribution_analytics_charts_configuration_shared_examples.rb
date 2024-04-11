@@ -14,7 +14,7 @@ RSpec.shared_examples_for 'contribution analytics charts configuration' do
   end
 
   context 'when user does not have permissions to access all charts' do
-    let_it_be(:user) { create(:user).tap { |u| insights_entity.add_guest(u) } }
+    let_it_be(:user) { create(:user, guest_of: insights_entity) }
 
     it 'removes forbidden charts from configuration' do
       run_request
@@ -24,7 +24,7 @@ RSpec.shared_examples_for 'contribution analytics charts configuration' do
   end
 
   context 'when user have permissions to access all charts' do
-    let_it_be(:user) { create(:user).tap { |u| insights_entity.add_reporter(u) } }
+    let_it_be(:user) { create(:user, reporter_of: insights_entity) }
 
     it 'does not remove charts from configuration' do
       run_request

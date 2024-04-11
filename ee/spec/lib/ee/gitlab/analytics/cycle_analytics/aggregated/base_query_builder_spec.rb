@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:user) { create(:user, developer_of: group) }
 
-  let_it_be(:other_user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:other_user) { create(:user, developer_of: group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
   let_it_be(:project_1) { create(:project, group: sub_group) }
   let_it_be(:project_2) { create(:project, group: sub_group) }

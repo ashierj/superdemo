@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Insights::Loader do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be(:project) { create(:project, group: group) }
 
   subject(:serialized_data) do

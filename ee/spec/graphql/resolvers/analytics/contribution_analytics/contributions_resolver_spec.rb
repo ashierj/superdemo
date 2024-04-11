@@ -13,7 +13,7 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
     let(:args) { { from: Date.parse('2022-04-25'), to: Date.parse('2022-05-10') } }
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:user) { create(:user).tap { |u| group.add_developer(user) } }
+    let_it_be(:user) { create(:user, developer_of: group) }
     let(:current_user) { user }
 
     shared_examples 'contributions resolver' do
@@ -22,7 +22,7 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
       end
 
       context 'with data' do
-        let_it_be(:another_user) { create(:user).tap { |u| group.add_developer(user) } }
+        let_it_be(:another_user) { create(:user, developer_of: group) }
 
         let_it_be(:event1) do
           create(:event, :pushed, project: project, author: user, created_at: Date.parse('2022-04-27'))

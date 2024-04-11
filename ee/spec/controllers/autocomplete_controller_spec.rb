@@ -134,8 +134,8 @@ RSpec.describe AutocompleteController do
     let_it_be(:subgroup_1) { create(:group, :private, parent: group) }
     let_it_be(:subgroup_2) { create(:group, :private, parent: group) }
     let_it_be(:grandchild_1) { create(:group, :private, parent: subgroup_1) }
-    let_it_be(:member_in_group) { create(:user).tap { |u| group.add_reporter(u) } }
-    let_it_be(:member_in_subgroup) { create(:user).tap { |u| subgroup_1.add_reporter(u) } }
+    let_it_be(:member_in_group) { create(:user, reporter_of: group) }
+    let_it_be(:member_in_subgroup) { create(:user, reporter_of: subgroup_1) }
 
     let(:params) { { group_id: group.id } }
     let(:current_user) { member_in_group }

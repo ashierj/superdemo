@@ -20,7 +20,7 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
   subject(:service) { described_class.new(current_user, { organization_id: organization.id, namespace_id: group.id }) }
 
   context 'when current user is an owner' do
-    let_it_be(:current_user) { create(:user).tap { |user| group.add_owner(user) } }
+    let_it_be(:current_user) { create(:user, owner_of: group) }
 
     it_behaves_like 'service account creation failure'
 
@@ -184,7 +184,7 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
   end
 
   context 'when the current user is not an owner', :saas do
-    let_it_be(:current_user) { create(:user).tap { |user| group.add_maintainer(user) } }
+    let_it_be(:current_user) { create(:user, maintainer_of: group) }
     let(:hosted_plan) { create(:ultimate_plan) }
 
     before do

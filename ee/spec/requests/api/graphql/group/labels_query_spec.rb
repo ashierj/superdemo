@@ -50,7 +50,7 @@ RSpec.describe 'getting group label information', feature_category: :team_planni
       QUERY
     end
 
-    let_it_be(:current_user) { create(:user).tap { |u| group.add_developer(u) } }
+    let_it_be(:current_user) { create(:user, developer_of: group) }
 
     def run_query
       post_graphql(query, current_user: current_user, variables: { path: group.full_path })

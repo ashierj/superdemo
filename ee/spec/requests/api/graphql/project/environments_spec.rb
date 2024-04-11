@@ -8,8 +8,8 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:project) { create(:project, :private, :repository, group: group) }
   let_it_be(:environment) { create(:environment, project: project) }
-  let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
-  let_it_be(:guest) { create(:user).tap { |u| project.add_guest(u) } }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:guest) { create(:user, guest_of: project) }
 
   subject { post_graphql(query, current_user: user) }
 

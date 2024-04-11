@@ -6,9 +6,9 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
-  let_it_be(:maintainer) { create(:user).tap { |u| project.add_maintainer(u) } }
-  let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
-  let_it_be(:reporter) { create(:user).tap { |u| project.add_reporter(u) } }
+  let_it_be(:maintainer) { create(:user, maintainer_of: project) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:reporter) { create(:user, reporter_of: project) }
   let_it_be(:operator_group) { create(:group) }
 
   let(:user) { maintainer }

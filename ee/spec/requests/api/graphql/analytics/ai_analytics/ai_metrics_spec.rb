@@ -6,7 +6,7 @@ RSpec.describe 'aiMetrics', :freeze_time, feature_category: :value_stream_manage
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group, name: 'my-group') }
-  let_it_be(:current_user) { create(:user).tap { |u| group.add_reporter(u) } }
+  let_it_be(:current_user) { create(:user, reporter_of: group) }
 
   let(:filter_params) { {} }
 

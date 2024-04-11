@@ -159,7 +159,7 @@ RSpec.describe ProtectedBranch, feature_category: :source_code_management do
   describe '#can_unprotect?' do
     let(:admin) { create(:user, :admin) }
     let(:maintainer) do
-      create(:user).tap { |user| project.add_maintainer(user) }
+      create(:user, maintainer_of: project)
     end
 
     context 'without unprotect_access_levels' do

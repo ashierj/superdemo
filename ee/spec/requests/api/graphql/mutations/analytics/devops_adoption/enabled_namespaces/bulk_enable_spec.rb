@@ -52,7 +52,7 @@ RSpec.describe Mutations::Analytics::DevopsAdoption::EnabledNamespaces::BulkEnab
   end
 
   context 'when the user cannot manage enabled_namespaces at least for one namespace' do
-    let(:current_user) { create(:user).tap { |u| group.add_reporter(u) } }
+    let(:current_user) { create(:user, reporter_of: group) }
 
     it_behaves_like 'a mutation that returns a top-level access error'
   end

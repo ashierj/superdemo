@@ -7,8 +7,8 @@ RSpec.describe Mutations::Deployments::DeploymentApprove, feature_category: :env
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:non_member) { create(:user) }
-  let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
-  let_it_be(:maintainer) { create(:user).tap { |u| project.add_maintainer(u) } }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:maintainer) { create(:user, maintainer_of: project) }
 
   let_it_be(:environment) { create(:environment, :staging, project: project) }
   let_it_be(:deployment) { create(:deployment, :blocked, user: developer, project: project, environment: environment) }

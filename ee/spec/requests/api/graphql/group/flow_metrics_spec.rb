@@ -8,7 +8,7 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
   let_it_be(:group) { create(:group) }
   let_it_be(:project1) { create(:project, :repository, group: group) }
   let_it_be(:project2) { create(:project, :repository, group: group) }
-  let_it_be(:current_user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:current_user) { create(:user, developer_of: group) }
   let_it_be(:production_environment1) { create(:environment, :production, project: project1) }
   let_it_be(:production_environment2) { create(:environment, :production, project: project2) }
   let_it_be(:other_group) { create(:group) }

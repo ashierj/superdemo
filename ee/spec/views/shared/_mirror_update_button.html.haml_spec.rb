@@ -10,8 +10,8 @@ RSpec.describe 'shared/mirror_update_button' do
   let(:import_state) { project.import_state }
 
   let(:owner) { project.first_owner }
-  let(:developer) { create(:user).tap { |user| project.team.add_developer(user) } }
-  let(:reporter) { create(:user).tap { |user| project.team.add_reporter(user) } }
+  let(:developer) { create(:user, developer_of: project.team) }
+  let(:reporter) { create(:user, reporter_of: project.team) }
 
   let(:update_link) { update_now_project_mirror_path(project) }
   let(:have_update_button) { have_link('Update Now', href: update_link) }

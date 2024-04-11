@@ -8,11 +8,11 @@ RSpec.describe API::Analytics::CodeReviewAnalytics, feature_category: :value_str
   let(:current_user) { reporter }
 
   let_it_be(:reporter) do
-    create(:user).tap { |u| project.add_reporter(u) }
+    create(:user, reporter_of: project)
   end
 
   let_it_be(:guest) do
-    create(:user).tap { |u| project.add_guest(u) }
+    create(:user, guest_of: project)
   end
 
   describe 'GET code_review' do

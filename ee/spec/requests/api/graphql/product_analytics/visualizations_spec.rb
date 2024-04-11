@@ -42,7 +42,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
   end
 
   context 'when current user is a developer' do
-    let_it_be(:user) { create(:user).tap { |u| project.add_developer(u) } }
+    let_it_be(:user) { create(:user, developer_of: project) }
 
     it 'returns visualization' do
       get_graphql(query, current_user: user)
@@ -82,7 +82,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
 
     context 'when an older VSD config has missing visualization' do
       let_it_be(:project) { create(:project, :with_product_analytics_invalid_custom_visualization) }
-      let_it_be(:user) { create(:user).tap { |u| project.add_developer(u) } }
+      let_it_be(:user) { create(:user, developer_of: project) }
 
       let(:slug) { "value_streams" }
       let(:query) do
@@ -151,7 +151,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
 
     context 'when the visualization has validation errors' do
       let_it_be(:project) { create(:project, :with_product_analytics_invalid_custom_visualization) }
-      let_it_be(:user) { create(:user).tap { |u| project.add_developer(u) } }
+      let_it_be(:user) { create(:user, developer_of: project) }
 
       let(:slug) { "dashboard_example_invalid_vis" }
       let(:query) do

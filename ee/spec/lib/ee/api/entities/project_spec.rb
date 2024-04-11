@@ -6,7 +6,7 @@ RSpec.describe ::EE::API::Entities::Project, feature_category: :shared do
   let_it_be(:project) { create(:project) }
 
   let(:options) { {} }
-  let(:developer) { create(:user).tap { |u| project.add_developer(u) } }
+  let(:developer) { create(:user, developer_of: project) }
 
   let(:entity) do
     ::API::Entities::Project.new(project, options)

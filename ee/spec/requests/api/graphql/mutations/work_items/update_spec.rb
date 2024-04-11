@@ -7,8 +7,8 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:reporter) { create(:user).tap { |user| group.add_reporter(user) } }
-  let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
+  let_it_be(:reporter) { create(:user, reporter_of: group) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
   let_it_be(:project_work_item, refind: true) { create(:work_item, project: project) }
   let_it_be(:synced_epic) { create(:epic, :with_synced_work_item, group: group) }
 

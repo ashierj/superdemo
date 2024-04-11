@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'getting a list of work item types for a group EE', feature_category: :team_planning do
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:developer) { create(:user, developer_of: group) }
   let(:parent) { group }
   let(:current_user) { developer }
 

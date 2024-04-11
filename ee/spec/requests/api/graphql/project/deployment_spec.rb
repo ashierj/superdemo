@@ -7,11 +7,11 @@ RSpec.describe 'Project Deployment query', feature_category: :continuous_deliver
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :private, :repository, group: group) }
-  let_it_be(:maintainer) { create(:user).tap { |u| project.add_maintainer(u) } }
-  let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
-  let_it_be(:guest) { create(:user).tap { |u| project.add_guest(u) } }
+  let_it_be(:maintainer) { create(:user, maintainer_of: project) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:guest) { create(:user, guest_of: project) }
   let_it_be(:qa_group) { create(:group, name: 'QA', parent: group) }
-  let_it_be(:qa_user) { create(:user).tap { |u| qa_group.add_maintainer(u) } }
+  let_it_be(:qa_user) { create(:user, maintainer_of: qa_group) }
   let_it_be(:environment) { create(:environment, project: project) }
   let_it_be(:deployment) { create(:deployment, environment: environment, project: project) }
 

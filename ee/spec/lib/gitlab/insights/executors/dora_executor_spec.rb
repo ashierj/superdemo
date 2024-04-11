@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-05-15', feature_category: :devops_reports do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be(:project1) { create(:project, group: group) }
   let_it_be(:project2) { create(:project, group: group) }
 

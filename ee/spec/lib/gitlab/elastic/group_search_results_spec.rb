@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:guest) { create(:user).tap { |u| group.add_member(u, Gitlab::Access::GUEST) } }
+  let_it_be(:guest) { create(:user, guest_of: group) }
 
   let(:filters) { {} }
   let(:query) { '*' }

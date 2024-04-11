@@ -6,7 +6,7 @@ RSpec.shared_context 'for a compute service' do
     create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
 
-  let(:user) { create(:user).tap { |user| project.add_owner(user) } }
+  let(:user) { create(:user, owner_of: project) }
   let(:client_double) { instance_double('::GoogleCloud::Compute::Client') }
   let(:service) { described_class.new(container: project, current_user: user, params: params) }
 

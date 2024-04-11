@@ -6,8 +6,8 @@ RSpec.describe Groups::ProtectedEnvironmentsController, feature_category: :conti
   let_it_be(:subgroup_1) { create(:group, parent: group) }
   let_it_be(:subgroup_2) { create(:group, parent: group) }
   let_it_be(:subgroup_3) { create(:group, parent: group) }
-  let_it_be(:group_owner) { create(:user).tap { |u| group.add_owner(u) } }
-  let_it_be(:group_maintainer) { create(:user).tap { |u| group.add_maintainer(u) } }
+  let_it_be(:group_owner) { create(:user, owner_of: group) }
+  let_it_be(:group_maintainer) { create(:user, maintainer_of: group) }
 
   let(:current_user) { group_owner }
 

@@ -15,7 +15,7 @@ RSpec.describe 'Environment detail page', :js, feature_category: :environment_ma
 
   context 'when the environment is protected and the user has deployment-only access to it' do
     let_it_be(:operator_group) { create(:group) }
-    let_it_be(:operator_user) { create(:user).tap { |u| operator_group.add_reporter(u) } }
+    let_it_be(:operator_user) { create(:user, reporter_of: operator_group) }
 
     before_all do
       create(:project_group_link, :reporter, project: project, group: operator_group)

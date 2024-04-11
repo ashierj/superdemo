@@ -7,8 +7,8 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
 
   let_it_be(:group) { create(:group) }
   let_it_be_with_reload(:project) { create(:project, :private, group: group) }
-  let_it_be(:guest) { create(:user).tap { |u| group.add_guest(u) } }
-  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:guest) { create(:user, guest_of: group) }
+  let_it_be(:developer) { create(:user, developer_of: group) }
   let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: project.group)) }
   let_it_be(:project_work_item) do
     create(:work_item, project: project, description: '- List item', weight: 1, iteration: iteration)

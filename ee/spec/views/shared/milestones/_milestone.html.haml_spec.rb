@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'shared/milestones/_milestone.html.haml' do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:user) { create(:user).tap { |user| project.add_maintainer(user) } }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
   let_it_be(:releases) { create_list(:release, 4, project: project) }
   let_it_be(:milestone) { nil }
 

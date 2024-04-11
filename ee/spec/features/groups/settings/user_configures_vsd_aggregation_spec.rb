@@ -8,8 +8,8 @@ RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, namespace: subgroup) }
-  let_it_be(:user) { create(:user).tap { |u| group.add_owner(u) } }
-  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
+  let_it_be(:user) { create(:user, owner_of: group) }
+  let_it_be(:developer) { create(:user, developer_of: group) }
 
   before do
     sign_in(user)
