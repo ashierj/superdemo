@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
+RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455305' do
   include DropzoneHelper
 
   let(:user) { create(:user) }
