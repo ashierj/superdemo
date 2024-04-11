@@ -7,7 +7,7 @@ module Resolvers
         include Gitlab::Graphql::Authorize::AuthorizeResource
 
         NO_ARTIFACT_REGISTRY_INTEGRATION_MESSAGE =
-          ::GoogleCloudPlatform::ArtifactRegistry::GetDockerImageService::ERROR_RESPONSES[
+          ::GoogleCloud::ArtifactRegistry::GetDockerImageService::ERROR_RESPONSES[
             :no_artifact_registry_integration
           ].message
 
@@ -48,7 +48,7 @@ module Resolvers
             field: :artifact_registry_project_id,
             value: google_cloud_project_id,
             argument: :googleCloudProjectId,
-            field_title: s_('GoogleCloudPlatformService|Google Cloud project ID')
+            field_title: s_('GoogleCloud|Google Cloud project ID')
           )
 
           validate_on_integration(
@@ -56,7 +56,7 @@ module Resolvers
             field: :artifact_registry_location,
             value: location,
             argument: :location,
-            field_title: s_('GoogleCloudPlatformService|Repository location')
+            field_title: s_('GoogleCloud|Repository location')
           )
 
           validate_on_integration(
@@ -64,7 +64,7 @@ module Resolvers
             field: :artifact_registry_repository,
             value: repository,
             argument: :repository,
-            field_title: s_('GoogleCloudPlatformService|Repository name')
+            field_title: s_('GoogleCloud|Repository name')
           )
 
           super
@@ -74,7 +74,7 @@ module Resolvers
           name = "projects/#{google_cloud_project_id}/locations/#{location}/repositories/#{repository}/" \
                  "dockerImages/#{image}"
 
-          response = ::GoogleCloudPlatform::ArtifactRegistry::GetDockerImageService.new(
+          response = ::GoogleCloud::ArtifactRegistry::GetDockerImageService.new(
             current_user: current_user,
             project: find_project!(project_path),
             params: {

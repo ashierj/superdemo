@@ -51,7 +51,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     subject { described_class.description }
 
     it do
-      is_expected.to eq(s_('GoogleCloudPlatformService|Manage your artifacts in Google Artifact Registry.'))
+      is_expected.to eq(s_('GoogleCloud|Manage your artifacts in Google Artifact Registry.'))
     end
   end
 
@@ -169,7 +169,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
       create(:google_cloud_platform_workload_identity_federation_integration, project: integration.project)
     end
 
-    let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+    let(:client_double) { instance_double('::GoogleCloud::ArtifactRegistry::Client') }
     let(:user) { integration.project.first_owner }
     let(:data) { { current_user: user } }
 
@@ -178,7 +178,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     before do
       stub_saas_features(google_cloud_support: true)
 
-      allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+      allow(::GoogleCloud::ArtifactRegistry::Client).to receive(:new)
         .with(wlif_integration: wlif_integration, user: user).and_return(client_double)
 
       allow(client_double).to receive(:repository)
@@ -190,7 +190,7 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     context 'when the connection was not established' do
       before do
         allow(client_double).to receive(:repository)
-          .and_raise(::GoogleCloudPlatform::ApiError)
+          .and_raise(::GoogleCloud::ApiError)
       end
 
       it { is_expected.to eq(success: false, result: 'Unsuccessful Google Cloud API request') }

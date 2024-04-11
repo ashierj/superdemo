@@ -16,12 +16,12 @@ export default {
 
 <template>
   <div>
-    <h3>{{ s__('GoogleCloudPlatformService|Manual setup') }}</h3>
+    <h3>{{ s__('GoogleCloud|Manual setup') }}</h3>
     <p>
       <gl-sprintf
         :message="
           s__(
-            'GoogleCloudPlatformService|%{linkStart}Switch to the guided setup%{linkEnd} if you can manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}',
+            'GoogleCloud|%{linkStart}Switch to the guided setup%{linkEnd} if you can manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}',
           )
         "
       >
@@ -40,13 +40,13 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <h4>{{ s__('GoogleCloudPlatformService|Instructions') }}</h4>
+    <h4>{{ s__('GoogleCloud|Instructions') }}</h4>
     <ol>
       <li>
         <gl-sprintf
           :message="
             s__(
-              'GoogleCloudPlatformService|Share the following information with someone that can manage Google Cloud workload identity federation. Or %{linkStart}invite them%{linkEnd} to set up.',
+              'GoogleCloud|Share the following information with someone that can manage Google Cloud workload identity federation. Or %{linkStart}invite them%{linkEnd} to set up.',
             )
           "
         >
@@ -63,21 +63,19 @@ export default {
       </li>
       <ol type="a">
         <li>
-          {{ s__('GoogleCloudPlatformService|The setup instructions page') }}
+          {{ s__('GoogleCloud|The setup instructions page') }}
         </li>
         <li>
-          {{ s__('GoogleCloudPlatformService|Your GitLab project ID') }}
+          {{ s__('GoogleCloud|Your GitLab project ID') }}
         </li>
         <li>
-          {{
-            s__('GoogleCloudPlatformService|Your workload identify federation (WLIF) issuer URL.')
-          }}
+          {{ s__('GoogleCloud|Your workload identify federation (WLIF) issuer URL.') }}
         </li>
       </ol>
       <li>
         {{
           s__(
-            'GoogleCloudPlatformService|After Google Cloud workload identity federation has been set up, enter the details in the following form.',
+            'GoogleCloud|After Google Cloud workload identity federation has been set up, enter the details in the following form.',
           )
         }}
       </li>

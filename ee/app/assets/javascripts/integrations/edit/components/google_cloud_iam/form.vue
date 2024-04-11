@@ -33,12 +33,12 @@ export default {
   <div>
     <connection />
 
-    <h4 class="gl-mt-0">{{ s__('GoogleCloudPlatformService|Google Cloud project') }}</h4>
+    <h4 class="gl-mt-0">{{ s__('GoogleCloud|Google Cloud project') }}</h4>
     <p>
       <gl-sprintf
         :message="
           s__(
-            'GoogleCloudPlatformService|Identify the Google Cloud project with the workload identity pool and provider. %{linkStart}Where are my project ID and project number?%{linkEnd}',
+            'GoogleCloud|Identify the Google Cloud project with the workload identity pool and provider. %{linkStart}Where are my project ID and project number?%{linkEnd}',
           )
         "
       >
@@ -59,11 +59,11 @@ export default {
       class="gl-border-b gl-mb-6 gl-sm-display-flex gl-flex-direction-row gl-gap-5"
     />
 
-    <h4 class="gl-mt-0">{{ s__('GoogleCloudPlatformService|Workload identity federation') }}</h4>
+    <h4 class="gl-mt-0">{{ s__('GoogleCloud|Workload identity federation') }}</h4>
     <p>
       {{
         s__(
-          'GoogleCloudPlatformService|Connect to Google Cloud with workload identity federation for secure access without accounts or keys.',
+          'GoogleCloud|Connect to Google Cloud with workload identity federation for secure access without accounts or keys.',
         )
       }}
     </p>

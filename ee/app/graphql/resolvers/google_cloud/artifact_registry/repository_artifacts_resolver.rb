@@ -30,7 +30,7 @@ module Resolvers
         private
 
         def list_docker_images_service(params)
-          ::GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService.new(
+          ::GoogleCloud::ArtifactRegistry::ListDockerImagesService.new(
             project: project,
             current_user: current_user,
             params: {

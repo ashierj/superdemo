@@ -9,7 +9,7 @@ RSpec.describe 'User activates Artifact Management', :js, :sidekiq_inline, featu
   let_it_be(:group) { create(:group, projects: [project], parent: parent_group) }
 
   let(:integration) { build_stubbed(:google_cloud_platform_artifact_registry_integration) }
-  let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+  let(:client_double) { instance_double('::GoogleCloud::ArtifactRegistry::Client') }
 
   before_all do
     parent_group.add_owner(user)
@@ -18,7 +18,7 @@ RSpec.describe 'User activates Artifact Management', :js, :sidekiq_inline, featu
   before do
     stub_saas_features(google_cloud_support: true)
 
-    allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+    allow(::GoogleCloud::ArtifactRegistry::Client).to receive(:new)
       .with(wlif_integration: an_instance_of(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation),
         user: user)
       .and_return(client_double)
@@ -34,11 +34,11 @@ RSpec.describe 'User activates Artifact Management', :js, :sidekiq_inline, featu
 
       expect(page).not_to have_link('View artifacts')
 
-      fill_in s_('GoogleCloudPlatformService|Google Cloud project ID'),
+      fill_in s_('GoogleCloud|Google Cloud project ID'),
         with: integration.artifact_registry_project_id
-      fill_in s_('GoogleCloudPlatformService|Repository location'),
+      fill_in s_('GoogleCloud|Repository location'),
         with: integration.artifact_registry_location
-      fill_in s_('GoogleCloudPlatformService|Repository name'),
+      fill_in s_('GoogleCloud|Repository name'),
         with: integration.artifact_registry_repositories
 
       click_test_then_save_integration(expect_test_to_fail: false)

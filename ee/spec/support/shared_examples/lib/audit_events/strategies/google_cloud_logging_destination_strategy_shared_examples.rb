@@ -18,7 +18,7 @@ RSpec.shared_examples 'validate google cloud logging destination strategy' do
       subject(:track_and_stream) { instance.send(:track_and_stream, destination) }
 
       before do
-        allow_next_instance_of(GoogleCloud::LoggingService::Logger) do |instance|
+        allow_next_instance_of(AuditEvents::GoogleCloud::LoggingService::Logger) do |instance|
           allow(instance).to receive(:log).and_return(nil)
         end
         allow(instance).to receive(:request_body).and_return(request_body)
@@ -27,7 +27,7 @@ RSpec.shared_examples 'validate google cloud logging destination strategy' do
       it 'tracks audit event count and calls logger' do
         expect(instance).to receive(:track_audit_event_count)
 
-        allow_next_instance_of(GoogleCloud::LoggingService::Logger) do |logger|
+        allow_next_instance_of(AuditEvents::GoogleCloud::LoggingService::Logger) do |logger|
           expect(logger).to receive(:log).with(destination.client_email, destination.private_key, expected_log_entry)
         end
 

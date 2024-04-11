@@ -20,7 +20,7 @@ module EE
           return if job[:identity].blank?
 
           unless google_cloud_support_saas_feature?
-            error!("#{name} job: #{s_('GoogleCloudPlatformService|The google_cloud_support feature is not available')}")
+            error!("#{name} job: #{s_('GoogleCloud|The google_cloud_support feature is not available')}")
           end
 
           unless google_cloud_support_feature_flag?
@@ -30,13 +30,13 @@ module EE
 
           integration = project.google_cloud_platform_workload_identity_federation_integration
           if integration.nil?
-            error!("#{name} job: #{s_('GoogleCloudPlatformService|The Google Cloud Identity and Access Management ' \
+            error!("#{name} job: #{s_('GoogleCloud|The Google Cloud Identity and Access Management ' \
                                       'integration is not configured for this project')}")
           end
 
           return if integration.active?
 
-          error!("#{name} job: #{s_('GoogleCloudPlatformService|The Google Cloud Identity and Access Management ' \
+          error!("#{name} job: #{s_('GoogleCloud|The Google Cloud Identity and Access Management ' \
                                     'integration is not enabled for this project')}")
         end
 

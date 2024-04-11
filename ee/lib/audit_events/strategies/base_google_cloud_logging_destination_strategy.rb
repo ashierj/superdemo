@@ -4,7 +4,7 @@ module AuditEvents
   module Strategies
     class BaseGoogleCloudLoggingDestinationStrategy < ExternalDestinationStrategy
       def initialize(audit_operation, audit_event)
-        @logger = GoogleCloud::LoggingService::Logger.new
+        @logger = AuditEvents::GoogleCloud::LoggingService::Logger.new
 
         super(audit_operation, audit_event)
       end

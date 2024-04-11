@@ -25,11 +25,11 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
   let(:user) { project.first_owner }
   let(:image) { 'ruby' }
   let(:digest) { 'sha256:4ca5c21b' }
-  let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+  let(:client_double) { instance_double('::GoogleCloud::ArtifactRegistry::Client') }
   let(:page_token) { nil }
   let(:order_by) { nil }
   let(:page_size) { nil }
-  let(:default_page_size) { ::GoogleCloudPlatform::ArtifactRegistry::ListDockerImagesService::DEFAULT_PAGE_SIZE }
+  let(:default_page_size) { ::GoogleCloud::ArtifactRegistry::ListDockerImagesService::DEFAULT_PAGE_SIZE }
   let(:next_page_token) { 'next_page_token' }
 
   let(:docker_image) do
@@ -92,7 +92,7 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
   before do
     stub_saas_features(google_cloud_support: true)
 
-    allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+    allow(::GoogleCloud::ArtifactRegistry::Client).to receive(:new)
       .with(wlif_integration: wlif_integration, user: user
       ).and_return(client_double)
 

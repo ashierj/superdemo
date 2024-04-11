@@ -34,12 +34,12 @@ curl --request GET \\
 
 <template>
   <div>
-    <h3>{{ s__('GoogleCloudPlatformService|Guided setup') }}</h3>
+    <h3>{{ s__('GoogleCloud|Guided setup') }}</h3>
     <p>
       <gl-sprintf
         :message="
           s__(
-            'GoogleCloudPlatformService|%{linkStart}Switch to the manual setup%{linkEnd} if you cannot manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}',
+            'GoogleCloud|%{linkStart}Switch to the manual setup%{linkEnd} if you cannot manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}',
           )
         "
       >
@@ -59,13 +59,11 @@ curl --request GET \\
       </gl-sprintf>
     </p>
 
-    <h4>{{ s__('GoogleCloudPlatformService|Instructions') }}</h4>
+    <h4>{{ s__('GoogleCloud|Instructions') }}</h4>
     <p>
       <gl-sprintf
         :message="
-          s__(
-            'GoogleCloudPlatformService|Before you begin, %{linkStart}install the Google Cloud CLI%{linkEnd}.',
-          )
+          s__('GoogleCloud|Before you begin, %{linkStart}install the Google Cloud CLI%{linkEnd}.')
         "
       >
         <template #link="{ content }">
@@ -82,7 +80,7 @@ curl --request GET \\
     <p>
       {{
         s__(
-          'GoogleCloudPlatformService|Run the following command to set up and connect to your Google Cloud project with workload identity federation.',
+          'GoogleCloud|Run the following command to set up and connect to your Google Cloud project with workload identity federation.',
         )
       }}
     </p>
@@ -91,7 +89,7 @@ curl --request GET \\
         <gl-sprintf
           :message="
             s__(
-              'GoogleCloudPlatformService|Replace %{codeStart}your_access_token%{codeEnd} with a %{linkStart}new personal access token%{linkEnd} with the %{strongStart}api%{strongEnd} scope. This token sets up your Google Cloud IAM integration in GitLab.',
+              'GoogleCloud|Replace %{codeStart}your_access_token%{codeEnd} with a %{linkStart}new personal access token%{linkEnd} with the %{strongStart}api%{strongEnd} scope. This token sets up your Google Cloud IAM integration in GitLab.',
             )
           "
         >
@@ -112,7 +110,7 @@ curl --request GET \\
         <gl-sprintf
           :message="
             s__(
-              'GoogleCloudPlatformService|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID. To improve security, use a dedicated project for identity management, separate from resources and CI/CD projects. %{linkStart}Where’s my project ID?%{linkEnd}',
+              'GoogleCloud|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID. To improve security, use a dedicated project for identity management, separate from resources and CI/CD projects. %{linkStart}Where’s my project ID?%{linkEnd}',
             )
           "
         >
@@ -129,7 +127,7 @@ curl --request GET \\
           </template>
         </gl-sprintf>
       </li>
-      <li>{{ s__('GoogleCloudPlatformService|You might be prompted to sign in to Google.') }}</li>
+      <li>{{ s__('GoogleCloud|You might be prompted to sign in to Google.') }}</li>
     </ul>
     <div class="position-relative">
       <code-block-highlighted
@@ -148,7 +146,7 @@ curl --request GET \\
       <gl-sprintf
         :message="
           s__(
-            'GoogleCloudPlatformService|After Google Cloud workload identity federation has been set up, select %{strongStart}Continue%{strongEnd}.',
+            'GoogleCloud|After Google Cloud workload identity federation has been set up, select %{strongStart}Continue%{strongEnd}.',
           )
         "
       >

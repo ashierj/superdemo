@@ -6,7 +6,7 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
   before do
     stub_licensed_features(external_audit_events: true)
 
-    allow_next_instance_of(::GoogleCloud::Authentication) do |instance|
+    allow_next_instance_of(::AuditEvents::GoogleCloud::Authentication) do |instance|
       allow(instance).to receive(:generate_access_token).and_return("sample-token")
     end
   end

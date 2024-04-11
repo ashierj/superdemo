@@ -31,13 +31,13 @@ module Integrations
       field :workload_identity_federation_project_id,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Project ID') },
+        title: -> { s_('GoogleCloud|Project ID') },
         description: -> {
-          s_('GoogleCloudPlatformService|Google Cloud project ID for the Workload Identity Federation.')
+          s_('GoogleCloud|Google Cloud project ID for the Workload Identity Federation.')
         },
         help: -> {
           format(
-            s_('GoogleCloudPlatformService|Example: %{code_open}my-sample-project-191923%{code_close}'),
+            s_('GoogleCloud|Example: %{code_open}my-sample-project-191923%{code_close}'),
             {
               code_open: '<code>',
               code_close: '</code>'
@@ -48,13 +48,13 @@ module Integrations
       field :workload_identity_federation_project_number,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Project number') },
+        title: -> { s_('GoogleCloud|Project number') },
         description: -> {
-          s_('GoogleCloudPlatformService|Google Cloud project number for the Workload Identity Federation.')
+          s_('GoogleCloud|Google Cloud project number for the Workload Identity Federation.')
         },
         help: -> {
           format(
-            s_('GoogleCloudPlatformService|Example: %{code_open}314053285323%{code_close}'),
+            s_('GoogleCloud|Example: %{code_open}314053285323%{code_close}'),
             {
               code_open: '<code>',
               code_close: '</code>'
@@ -65,24 +65,21 @@ module Integrations
       field :workload_identity_pool_id,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Pool ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool.') }
+        title: -> { s_('GoogleCloud|Pool ID') },
+        description: -> { s_('GoogleCloud|ID of the Workload Identity Pool.') }
 
       field :workload_identity_pool_provider_id,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloudPlatformService|Provider ID') },
-        description: -> { s_('GoogleCloudPlatformService|ID of the Workload Identity Pool provider.') }
+        title: -> { s_('GoogleCloud|Provider ID') },
+        description: -> { s_('GoogleCloud|ID of the Workload Identity Pool provider.') }
 
       def self.title
-        s_('GoogleCloudPlatformService|Google Cloud IAM')
+        s_('GoogleCloud|Google Cloud IAM')
       end
 
       def self.description
-        s_(
-          'GoogleCloudPlatformService|' \
-          'Manage permissions for Google Cloud resources with Identity and Access Management (IAM).'
-        )
+        s_('GoogleCloud|Manage permissions for Google Cloud resources with Identity and Access Management (IAM).')
       end
 
       def self.to_param
@@ -102,7 +99,7 @@ module Integrations
       end
 
       def self.wlif_issuer_url(group_or_project)
-        "#{::GoogleCloudPlatform.glgo_base_url}/oidc/#{group_or_project.root_ancestor.path}"
+        "#{::GoogleCloud.glgo_base_url}/oidc/#{group_or_project.root_ancestor.path}"
       end
 
       # used when setting up WLIF pools

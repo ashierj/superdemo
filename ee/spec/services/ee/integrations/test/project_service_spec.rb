@@ -27,12 +27,12 @@ RSpec.describe ::Integrations::Test::ProjectService, feature_category: :integrat
           create(:google_cloud_platform_workload_identity_federation_integration, project: project)
         end
 
-        let(:client_double) { instance_double('::GoogleCloudPlatform::ArtifactRegistry::Client') }
+        let(:client_double) { instance_double('::GoogleCloud::ArtifactRegistry::Client') }
 
         before do
           stub_saas_features(google_cloud_support: true)
 
-          allow(::GoogleCloudPlatform::ArtifactRegistry::Client).to receive(:new)
+          allow(::GoogleCloud::ArtifactRegistry::Client).to receive(:new)
             .with(wlif_integration: wlif_integration, user: user).and_return(client_double)
 
           allow(client_double).to receive(:repository)
