@@ -1,6 +1,7 @@
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
+  PIPELINE_EXECUTION_FILTER_OPTION,
 } from 'ee/security_orchestration/components/policies/constants';
 
 /**
@@ -20,10 +21,20 @@ const validateFilter = (allowedValues, value, lowerCase = false) => {
 /**
  * Check validity of value against allowed list
  * @param value
+ * @param toggleEnabled
  * @returns {boolean}
  */
-export const validateTypeFilter = (value) =>
-  validateFilter(POLICY_TYPE_FILTER_OPTIONS, value, true);
+export const validateTypeFilter = (value, toggleEnabled = true) => {
+  const options =
+    gon.features.pipelineExecutionPolicyType && toggleEnabled
+      ? {
+          ...POLICY_TYPE_FILTER_OPTIONS,
+          ...PIPELINE_EXECUTION_FILTER_OPTION,
+        }
+      : POLICY_TYPE_FILTER_OPTIONS;
+
+  return validateFilter(options, value, true);
+};
 
 /**
  * Check validity of value against allowed list
@@ -36,12 +47,13 @@ export const validateSourceFilter = (value) => validateFilter(POLICY_SOURCE_OPTI
  * Conversion between lower case url params and policies
  * uppercase constants
  * @param type
+ * @param toggleEnabled
  * @returns {string|undefined|string}
  */
-export const extractTypeParameter = (type) => {
+export const extractTypeParameter = (type, toggleEnabled = false) => {
   // necessary for bookmarks of /-/security/policies?type=scan_result
   const updatedType = type === 'scan_result' ? 'approval' : type;
-  return validateTypeFilter(updatedType)
+  return validateTypeFilter(updatedType, toggleEnabled)
     ? updatedType?.toUpperCase()
     : POLICY_TYPE_FILTER_OPTIONS.ALL.value;
 };

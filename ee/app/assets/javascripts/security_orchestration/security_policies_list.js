@@ -15,6 +15,7 @@ export default (el, namespaceType) => {
 
   const {
     assignedPolicyProject,
+    customCiToggleEnabled,
     disableSecurityPolicyProject,
     disableScanPolicyUpdate,
     emptyFilterSvgPath,
@@ -31,6 +32,7 @@ export default (el, namespaceType) => {
     name: 'PoliciesAppRoot',
     provide: {
       assignedPolicyProject: JSON.parse(assignedPolicyProject),
+      customCiToggleEnabled: parseBoolean(customCiToggleEnabled),
       disableSecurityPolicyProject: parseBoolean(disableSecurityPolicyProject),
       disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       documentationPath,

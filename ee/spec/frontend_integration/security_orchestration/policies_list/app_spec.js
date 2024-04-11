@@ -62,6 +62,7 @@ describe('Policies List', () => {
 
   describe('default', () => {
     beforeEach(() => {
+      window.gon.features = { pipelineExecutionPolicyType: false };
       createWrapper();
     });
 

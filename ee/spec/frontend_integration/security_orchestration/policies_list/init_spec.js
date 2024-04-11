@@ -16,6 +16,7 @@ describe('Policies List', () => {
   let root;
 
   beforeEach(() => {
+    window.gon.features = { pipelineExecutionPolicyType: false };
     root = document.createElement('div');
     document.body.appendChild(root);
 

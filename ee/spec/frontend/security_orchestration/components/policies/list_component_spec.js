@@ -15,6 +15,7 @@ import groupScanResultPoliciesQuery from 'ee/security_orchestration/graphql/quer
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
+  PIPELINE_EXECUTION_FILTER_OPTION,
 } from 'ee/security_orchestration/components/policies/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -71,6 +72,7 @@ describe('List component', () => {
         documentationPath: 'documentation_path',
       },
       provide: {
+        customCiToggleEnabled: false,
         documentationPath: 'path/to/docs',
         namespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
@@ -112,9 +114,13 @@ describe('List component', () => {
   const findPolicyDrawer = () => wrapper.findByTestId('policyDrawer');
   const findPolicyScopeCells = () => wrapper.findAllByTestId('policy-scope-cell');
 
+  beforeEach(() => {
+    window.gon.features = { pipelineExecutionPolicyType: false };
+  });
+
   describe('initial state', () => {
     it('renders closed editor drawer', () => {
-      mountShallowWrapper({});
+      mountShallowWrapper();
 
       const editorDrawer = findPolicyDrawer();
       expect(editorDrawer.exists()).toBe(true);
@@ -122,7 +128,7 @@ describe('List component', () => {
     });
 
     it('fetches policies', () => {
-      mountShallowWrapper({});
+      mountShallowWrapper();
 
       expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
         fullPath: namespacePath,
@@ -547,6 +553,34 @@ describe('List component', () => {
       const icon = findPolicyStatusCells().at(2).find('svg');
 
       expect(icon.props('name')).toBe('warning');
+    });
+  });
+
+  describe('pipeline execution filter option', () => {
+    beforeEach(() => {
+      window.gon.features = { pipelineExecutionPolicyType: true };
+    });
+
+    it('updates url when type filter is selected', () => {
+      mountShallowWrapper({
+        provide: {
+          customCiToggleEnabled: true,
+          glFeatures: {
+            pipelineExecutionPolicyType: true,
+          },
+        },
+      });
+
+      findPolicyTypeFilter().vm.$emit(
+        'input',
+        PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value,
+      );
+
+      expect(urlUtils.updateHistory).toHaveBeenCalledWith({
+        title: 'Test title',
+        url: `http://test.host/?type=${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()}`,
+        replace: true,
+      });
     });
   });
 });
