@@ -5,6 +5,8 @@ module Mutations
     module Group
       module AuditEventStreamingDestinations
         class Base < BaseMutation
+          authorize :admin_external_audit_events
+
           private
 
           def audit(destination, action:)

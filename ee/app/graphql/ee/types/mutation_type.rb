@@ -170,6 +170,8 @@ module EE
         mount_mutation ::Mutations::ApprovalProjectRules::Delete, alpha: { milestone: '16.10' }
         mount_mutation ::Mutations::AuditEvents::Group::AuditEventStreamingDestinations::Create,
           alpha: { milestone: '16.11' }
+        mount_mutation ::Mutations::AuditEvents::Group::AuditEventStreamingDestinations::Delete,
+          alpha: { milestone: '16.11' }
         mount_mutation ::Mutations::AuditEvents::Instance::AuditEventStreamingDestinations::Create,
           alpha: { milestone: '16.11' }
 
