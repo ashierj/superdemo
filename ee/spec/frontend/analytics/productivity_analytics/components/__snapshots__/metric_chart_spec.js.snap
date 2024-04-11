@@ -28,7 +28,7 @@ exports[`MetricChart component template when isLoading is false and chartData is
     ischeckcentered="true"
     items="[object Object],[object Object]"
     noresultstext="No results found"
-    placement="left"
+    placement="bottom-start"
     positioningstrategy="absolute"
     resetbuttonlabel=""
     searchplaceholder="Search"
