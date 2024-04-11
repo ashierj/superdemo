@@ -833,7 +833,6 @@ module EE
     override :capacity_left_for_user?
     def capacity_left_for_user?(user)
       return true unless user_cap_available?
-      return true if user.security_policy_bot?
       return true if ::Member.in_hierarchy(root_ancestor).with_user(user).with_state(:active).exists?
 
       !user_cap_reached?
