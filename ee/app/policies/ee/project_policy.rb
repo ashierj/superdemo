@@ -466,6 +466,10 @@ module EE
         enable :admin_iteration
       end
 
+      rule { custom_roles_allowed & can?(:admin_project_member) }.policy do
+        enable :read_member_role
+      end
+
       rule { can?(:read_project) & iterations_available }.enable :read_iteration
 
       rule { security_orchestration_policies_enabled & can?(:developer_access) }.policy do

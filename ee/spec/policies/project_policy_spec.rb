@@ -2536,6 +2536,57 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'read_member_role' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be_with_reload(:project) { private_project_in_group }
+    let_it_be_with_reload(:current_user) { create(:user) }
+
+    let(:permission) { :read_member_role }
+
+    where(:role, :allowed) do
+      :guest      | false
+      :reporter   | false
+      :developer  | false
+      :maintainer | true
+      :auditor    | false
+      :owner      | true
+      :admin      | true
+    end
+
+    with_them do
+      before do
+        if role == :admin
+          current_user.update!(admin: true)
+        elsif role == :auditor
+          current_user.update!(auditor: true)
+        else
+          create(:project_member, role, source: project, user: current_user)
+        end
+
+        enable_admin_mode!(current_user) if role == :admin
+      end
+
+      context 'when custom_roles feature flag is enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it do
+          is_expected.to(allowed ? be_allowed(permission) : be_disallowed(permission))
+        end
+      end
+
+      context 'when custom_roles feature flag is disabled' do
+        before do
+          stub_feature_flags(custom_roles: false)
+        end
+
+        it { is_expected.to be_disallowed(permission) }
+      end
+    end
+  end
+
   context 'hidden projects' do
     let(:project) { create(:project, :repository, hidden: true) }
     let(:current_user) { create(:user) }

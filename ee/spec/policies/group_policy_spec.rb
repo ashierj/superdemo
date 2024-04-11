@@ -2282,6 +2282,46 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       end
     end
 
+    describe 'custom roles administration' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:permissions) { [:read_member_role, :admin_member_role] }
+
+      where(:role, :allowed) do
+        :guest      | false
+        :reporter   | false
+        :developer  | false
+        :maintainer | false
+        :auditor    | false
+        :owner      | true
+        :admin      | true
+      end
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        before do
+          enable_admin_mode!(current_user) if role == :admin
+        end
+
+        context 'when custom_roles feature flag is enabled' do
+          before do
+            stub_licensed_features(custom_roles: true)
+          end
+
+          it { is_expected.to(allowed ? be_allowed(*permissions) : be_disallowed(*permissions)) }
+        end
+
+        context 'when custom_roles feature flag is disabled' do
+          before do
+            stub_feature_flags(custom_roles: false)
+          end
+
+          it { is_expected.to be_disallowed(*permissions) }
+        end
+      end
+    end
+
     describe ':start_trial' do
       let(:policy) { :start_trial }
 

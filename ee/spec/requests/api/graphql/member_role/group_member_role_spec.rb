@@ -7,19 +7,19 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
 
   def member_roles_query(group)
     <<~QUERY
-    query {
-      group(fullPath: "#{group.full_path}") {
-        id
-        name
-        memberRoles {
-          nodes {
-            id
-            name
-            membersCount
+      query {
+        group(fullPath: "#{group.full_path}") {
+          id
+          name
+          memberRoles {
+            nodes {
+              id
+              name
+              membersCount
+            }
           }
         }
       }
-    }
     QUERY
   end
 
@@ -28,6 +28,7 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
   let_it_be(:group_member_role_1) { create(:member_role, namespace: root_group, read_code: true) }
   let_it_be(:group_member_role_2) { create(:member_role, namespace: root_group, read_vulnerability: true) }
   let_it_be(:group_2_member_role) { create(:member_role) }
+  let_it_be(:instance_role) { create(:member_role, :instance, read_vulnerability: true) }
   let_it_be(:user) { create(:user) }
 
   subject do
@@ -39,12 +40,8 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
   end
 
   shared_examples 'returns member roles' do
-    it_behaves_like 'a working graphql query'
-
-    it 'returns all member roles' do
-      subject
-
-      expect(subject).to match_array([
+    let(:group_roles) do
+      [
         {
           'id' => group_member_role_1.to_global_id.to_s,
           'name' => group_member_role_1.name,
@@ -55,7 +52,31 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
           'name' => group_member_role_2.name,
           'membersCount' => 0
         }
-      ])
+      ]
+    end
+
+    let(:instance_roles) do
+      [
+        {
+          'id' => instance_role.to_global_id.to_s,
+          'name' => instance_role.name,
+          'membersCount' => 0
+        }
+      ]
+    end
+
+    it_behaves_like 'a working graphql query'
+
+    context 'when on SaaS', :saas do
+      it 'returns only group-level custom roles' do
+        expect(subject).to match_array(group_roles)
+      end
+    end
+
+    context 'when on self-managed' do
+      it 'returns both group-level and instance-level custom roles' do
+        expect(subject).to match_array(group_roles.concat(instance_roles))
+      end
     end
   end
 

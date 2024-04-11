@@ -23,9 +23,9 @@ module EE
 
     delegator_override :valid_member_roles
     def valid_member_roles
-      root_group = member.source&.root_ancestor
+      source = member.source
       member_roles = ::MemberRoles::RolesFinder.new(current_user,
-        { parent: root_group, instance_roles: true }).execute
+        { parent: source, instance_roles: true }).execute
 
       if member.highest_group_member
         member_roles = member_roles.select do |role|

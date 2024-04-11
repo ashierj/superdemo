@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Search for member roles
-
 module MemberRoles
   class RolesFinder
     include ::GitlabSubscriptions::SubscriptionHelper
@@ -39,16 +38,16 @@ module MemberRoles
     end
 
     def valid_params
-      params.delete(:instance_roles) unless allowed_read_member_role?(root_ancestor)
+      params.delete(:instance_roles) unless can_read_instance_roles?
       params.slice(*VALID_PARAMS)
     end
 
     def by_parent(items)
       return items if params[:parent].blank?
 
-      return MemberRole.none unless allowed_read_member_role?(root_ancestor)
+      return MemberRole.none unless allowed_read_member_role?(params[:parent])
 
-      root_ancestor.member_roles
+      params[:parent]&.root_ancestor&.member_roles
     end
 
     def by_id(items)
@@ -71,20 +70,16 @@ module MemberRoles
       return items if params[:instance_roles].blank?
 
       # TODO: only return instance-level custom roles when
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/429281 is merged
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/454582 is done
       return items.or(MemberRole.for_instance) if params[:parent].present?
 
       items.for_instance
     end
 
-    def root_ancestor
-      params[:parent]&.root_ancestor
-    end
-
     def can_read_instance_roles?
       return false if gitlab_com_subscription?
 
-      Ability.allowed?(current_user, :admin_member_role)
+      allowed_read_member_role?(params[:parent])
     end
 
     def allowed_group_ids(items)
@@ -92,9 +87,12 @@ module MemberRoles
     end
 
     def allowed_read_member_role?(group)
-      return Ability.allowed?(current_user, :admin_member_role, group) if group
+      return Ability.allowed?(current_user, :read_member_role, group) if group
 
-      can_read_instance_roles?
+      # instance-level custom roles are allowed only for self-managed
+      return false if gitlab_com_subscription?
+
+      Ability.allowed?(current_user, :read_member_role)
     end
   end
 end
