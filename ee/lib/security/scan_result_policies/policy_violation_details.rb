@@ -25,8 +25,10 @@ module Security
       end
 
       def violations
-        merge_request.scan_result_policy_violations.map do |violation|
+        merge_request.scan_result_policy_violations.filter_map do |violation|
           rule = scan_result_policy_rules[violation.scan_result_policy_id]
+          next if rule.blank? # there may be a race condition situation where rule is missing
+
           Violation.new(
             report_type: rule.report_type,
             name: rule.policy_name,

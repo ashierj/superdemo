@@ -96,6 +96,22 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         expect(violation.scan_result_policy_id).to eq policy.id
       end
     end
+
+    context 'when there is a violation that has no approval rules associated with it' do
+      let_it_be(:policy_without_rules) do
+        create(:scan_result_policy_read, project: project,
+          security_orchestration_policy_configuration: security_orchestration_policy_configuration)
+      end
+
+      before do
+        create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+          scan_result_policy_read: policy_without_rules, violation_data: any_merge_request_violation_data)
+      end
+
+      it 'is ignored' do
+        expect(violations).to be_empty
+      end
+    end
   end
 
   describe '#unique_policy_names' do
