@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_support/all'
-require 'rainbow/refinement'
-
 module Gitlab
   module Backup
     # GitLab Backup CLI

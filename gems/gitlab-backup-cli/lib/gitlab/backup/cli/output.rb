@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rainbow/refinement'
+
 module Gitlab
   module Backup
     module Cli
@@ -98,7 +100,7 @@ module Gitlab
           private
 
           def timestamp_format(content)
-            "[#{Time.current}] #{content}"
+            "[#{Time.now.utc}] #{content}"
           end
         end
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'thor'
 require "gitlab/backup/cli"
+require 'active_support/all'
 require 'tmpdir'
 require 'fileutils'
 require 'factory_bot'
