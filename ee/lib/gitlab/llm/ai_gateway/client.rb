@@ -16,6 +16,7 @@ module Gitlab
         DEFAULT_TIMEOUT = 30.seconds
         DEFAULT_TYPE = 'prompt'
         DEFAULT_SOURCE = 'GitLab EE'
+        CHAT_ENDPOINT = '/v1/chat/agent'
 
         JWT_AUDIENCE = 'gitlab-ai-gateway'
 
@@ -73,7 +74,7 @@ module Gitlab
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
           response = Gitlab::HTTP.post(
-            "#{Gitlab::AiGateway.url}/v1/chat/agent",
+            "#{Gitlab::AiGateway.url}#{endpoint_url(options)}",
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
             timeout: timeout,
@@ -138,6 +139,10 @@ module Gitlab
           # instead we estimate the number of tokens based on typical token size -
           # one token is roughly 4 chars.
           content.to_s.size / 4
+        end
+
+        def endpoint_url(options)
+          options.fetch(:endpoint_url, CHAT_ENDPOINT)
         end
 
         def model
