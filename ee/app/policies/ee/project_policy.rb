@@ -973,6 +973,14 @@ module EE
         enable :destroy_saved_replies
         enable :update_saved_replies
       end
+
+      condition(:pre_receive_secret_detection_available) do
+        ::Feature.enabled?(:pre_receive_secret_detection_push_check, @subject)
+      end
+
+      rule { pre_receive_secret_detection_available & can?(:maintainer_access) }.policy do
+        enable :enable_pre_receive_secret_detection
+      end
     end
 
     override :lookup_access_level!

@@ -3619,4 +3619,25 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe 'enable_pre_receive_secret_detection' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:pre_receive_secret_detection_actor, :current_user, :match_expected_result) do
+      group | ref(:owner)      | be_allowed(:enable_pre_receive_secret_detection)
+      group | ref(:maintainer) | be_allowed(:enable_pre_receive_secret_detection)
+      group | ref(:developer)  | be_disallowed(:enable_pre_receive_secret_detection)
+      false | ref(:owner)      | be_disallowed(:enable_pre_receive_secret_detection)
+      false | ref(:maintainer) | be_disallowed(:enable_pre_receive_secret_detection)
+      false | ref(:developer)  | be_disallowed(:enable_pre_receive_secret_detection)
+    end
+
+    with_them do
+      before do
+        stub_feature_flags(pre_receive_secret_detection_push_check: pre_receive_secret_detection_actor)
+      end
+
+      it { is_expected.to match_expected_result }
+    end
+  end
 end
