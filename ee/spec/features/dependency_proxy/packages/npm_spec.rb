@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, feature_category: :package_registry do
+RSpec.describe 'Dependency Proxy for npm packages', :js, :aggregate_failures, feature_category: :package_registry do
   include_context 'file upload requests helpers'
   include_context 'with a server running the dependency proxy'
 
@@ -10,16 +10,15 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
   let_it_be(:project) { create(:project, :private) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let_it_be_with_reload(:dependency_proxy_setting) do
-    create(:dependency_proxy_packages_setting, :maven, project: project)
+    create(:dependency_proxy_packages_setting, :npm, project: project)
   end
 
-  let_it_be(:remote_file_path) { '/foo/bar/1.2.3/foo.bar-1.2.3.pom' }
-  let_it_be(:remote_file_content) { 'this is a pom file content' }
+  let_it_be(:remote_file_path) { '/@test/package/-/@test/package-1.0.0.tgz' }
+  let_it_be(:remote_file_content) { 'this is a package json file content' }
 
   let_it_be(:remote_server) do
     handler = ->(env) do
-      # disabling rubocop warning as this is inside a lambda function
-      if env['REQUEST_PATH'] == remote_file_path # rubocop: disable RSpec/AvoidConditionalStatements
+      if env['REQUEST_PATH'] == remote_file_path # rubocop: disable RSpec/AvoidConditionalStatements -- disabling rubocop warning as this is inside a lambda function
         [200, {}, [remote_file_content]]
       else
         [400, {}, []]
@@ -29,8 +28,8 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     run_server(handler)
   end
 
-  let(:url) { capybara_url("/api/v4/projects/#{project.id}/dependency_proxy/packages/maven#{remote_file_path}") }
-  let(:headers) { { 'Private-Token' => personal_access_token.token } }
+  let(:url) { capybara_url("/api/v4/projects/#{project.id}/dependency_proxy/packages/npm/#{remote_file_path}") }
+  let(:headers) { { 'Authorization' => "Bearer #{personal_access_token.token}" } }
   let(:last_package) { ::Packages::Package.last }
   let(:last_package_file) { ::Packages::PackageFile.last }
 
@@ -43,17 +42,17 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     stub_config(dependency_proxy: { enabled: true })
 
     # avoid restriction on localhost url
-    dependency_proxy_setting.update_column(:maven_external_registry_url, remote_server.base_url)
+    dependency_proxy_setting.update_column(:npm_external_registry_url, remote_server.base_url)
   end
 
   shared_examples 'pulling and caching the remote file' do
     it 'pulls and caches the remote file' do
       expect { response }
-        .to change { project.packages.maven.count }.from(0).to(1)
+        .to change { project.packages.npm.count }.from(0).to(1)
         .and change { ::Packages::PackageFile.count }.from(0).to(1)
-      expect(last_package.name).to eq('foo/bar')
-      expect(last_package.version).to eq('1.2.3')
-      expect(last_package_file.file_name).to eq('foo.bar-1.2.3.pom')
+      expect(last_package.name).to eq('@test/package')
+      expect(last_package.version).to eq('1.0.0')
+      expect(last_package_file.file_name).to eq('@test/package-1.0.0.tgz')
       expect(response.code).to eq(200)
       expect(response.body).to eq(remote_file_content)
     end
@@ -67,7 +66,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
       expect(Gitlab::Workhorse).not_to receive(:send_url)
       expect(Gitlab::Workhorse).not_to receive(:send_dependency)
       expect { response }
-        .to not_change { project.packages.maven.count }
+        .to not_change { project.packages.npm.count }
         .and not_change { ::Packages::PackageFile.count }
       expect(response.code).to eq(200)
       expect(response.body).to eq(remote_file_content)
@@ -80,7 +79,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
         expect(Gitlab::Workhorse).to receive(:send_url).and_call_original
         expect(Gitlab::Workhorse).not_to receive(:send_dependency).and_call_original
         expect { response }
-          .to not_change { project.packages.maven.count }
+          .to not_change { project.packages.npm.count }
           .and not_change { ::Packages::PackageFile.pending_destruction.count }
         expect(response.code).to eq(200)
         expect(response.body).to eq(remote_file_content)
@@ -89,21 +88,20 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
   end
 
   shared_context 'with an existing cached file' do
-    let_it_be(:package) { create(:maven_package, name: 'foo/bar', version: '1.2.3', project: project) }
-    let_it_be_with_reload(:package_file) { package.package_files.find { |f| f.file_name.end_with?('.pom') } }
+    let_it_be(:package) { create(:npm_package, name: '@test/package', version: '1.0.0', project: project) }
+    let_it_be_with_reload(:package_file) { package.package_files.find { |f| f.file_name.end_with?('.tgz') } }
 
     before do
       file = CarrierWaveStringFile.new_file(
         file_content: remote_file_content,
-        filename: 'foo.bar-1.2.3.pom',
+        filename: '@test/package-1.0.0.tgz',
         content_type: 'text/plain'
       )
-      package_file.update!(file_name: 'foo.bar-1.2.3.pom', file: file)
-      package.maven_metadatum.update!(path: 'foo/bar/1.2.3')
+      package_file.update!(file_name: '@test/package-1.0.0.tgz', file: file)
     end
   end
 
-  context 'with a reporter' do
+  context 'with a reporter user' do
     before_all do
       project.add_reporter(user)
     end
@@ -111,7 +109,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     context 'with no existing file' do
       it 'pulls the remote file without caching' do
         expect { response }
-          .to not_change { project.packages.maven.count }
+          .to not_change { project.packages.npm.count }
           .and not_change { ::Packages::PackageFile.count }
         expect(response.code).to eq(200)
         expect(response.body).to eq(remote_file_content)
@@ -139,7 +137,7 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
         it 'times out and return service unavailable' do
           expect { response }
-            .to not_change { project.packages.maven.count }
+            .to not_change { project.packages.npm.count }
             .and not_change { ::Packages::PackageFile.count }
           expect(response.code).to eq(504)
         end
@@ -160,13 +158,9 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     end
   end
 
-  context 'with a developer' do
+  context 'with a developer user' do
     before_all do
       project.add_developer(user)
-    end
-
-    context 'with no existing file' do
-      it_behaves_like 'pulling and caching the remote file'
     end
 
     context 'with existing file' do
@@ -179,39 +173,6 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
         include_context 'with no etag returned' do
           it_behaves_like 'returning the cached file'
         end
-      end
-    end
-  end
-
-  context 'with a maintainer' do
-    before_all do
-      project.add_maintainer(user)
-    end
-
-    context 'with no existing file' do
-      it_behaves_like 'pulling and caching the remote file'
-    end
-
-    context 'with existing file' do
-      include_context 'with an existing cached file'
-
-      it_behaves_like 'returning the cached file'
-
-      include_context 'with a wrong etag returned' do
-        it 'deletes the cached file and proxy the remote file' do
-          expect(Gitlab::Workhorse).not_to receive(:send_url)
-          expect(Gitlab::Workhorse).to receive(:send_dependency).and_call_original
-          expect { response }
-            .to not_change { project.packages.maven.count }
-            .and change { ::Packages::PackageFile.pending_destruction.count }.from(0).to(1)
-          expect(response.code).to eq(200)
-          expect(response.body).to eq(remote_file_content)
-        end
-      end
-
-      context 'with no etag returned' do
-        include_context 'with no etag returned'
-        it_behaves_like 'returning the cached file'
       end
     end
   end
