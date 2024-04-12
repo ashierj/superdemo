@@ -9,7 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createComplianceFrameworksReportResponse } from 'ee_jest/compliance_dashboard/mock_data';
 
 import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/frameworks_report/report.vue';
-import complianceFrameworks from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
+import complianceFrameworks from 'ee/compliance_dashboard/components/frameworks_report/graphql/compliance_frameworks_list.query.graphql';
 
 import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
 
@@ -43,6 +43,7 @@ describe('ComplianceFrameworksReport component', () => {
     featurePipelineMaintenanceModeEnabled: false,
     migratePipelineToPolicyPath: '/migrate-pipeline--to-policy-example-path',
     pipelineExecutionPolicyPath: '/pipeline-execution-policy-example-path',
+    groupSecurityPoliciesPath: '/group-security-policies-example-path',
   };
 
   function createMockApolloProvider(complianceFrameworksResolverMock) {
@@ -73,7 +74,7 @@ describe('ComplianceFrameworksReport component', () => {
           ...props,
         },
         provide: {
-          defaultInjects,
+          ...defaultInjects,
           ...provide,
         },
         mocks: {

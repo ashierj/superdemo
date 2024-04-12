@@ -6,22 +6,29 @@ import { createFramework } from 'ee_jest/compliance_dashboard/mock_data';
 describe('FrameworkInfoDrawer component', () => {
   let wrapper;
 
+  const GROUP_PATH = 'foo';
+
   const defaultFramework = createFramework({ id: 1, isDefault: true, projects: 3 });
   const nonDefaultFramework = createFramework({ id: 2 });
   const associatedProjectsCount = defaultFramework.projects.nodes.length;
+  const policiesCount =
+    defaultFramework.scanExecutionPolicies.nodes.length +
+    defaultFramework.scanResultPolicies.nodes.length;
 
   const findDefaultBadge = () => wrapper.findComponent(GlLabel);
-  const findProjectLinks = () => wrapper.findAllComponents(GlLink);
   const findAccordionItems = () => wrapper.findAllComponents(GlAccordionItem);
+  const findProjectLinks = () => findAccordionItems().at(1).findAllComponents(GlLink);
+  const findPoliciesLinks = () => findAccordionItems().at(2).findAllComponents(GlLink);
   const findTitle = () => wrapper.findComponent(GlTruncate);
   const findEditFrameworkBtn = () => wrapper.findByText('Edit framework');
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(FrameworkInfoDrawer, {
       propsData: {
         showDrawer: true,
         ...props,
       },
+      provide,
     });
   };
 
@@ -29,7 +36,11 @@ describe('FrameworkInfoDrawer component', () => {
     beforeEach(() => {
       createComponent({
         props: {
+          groupPath: GROUP_PATH,
           framework: defaultFramework,
+        },
+        provide: {
+          groupSecurityPoliciesPath: '/group-policies',
         },
       });
     });
@@ -66,6 +77,18 @@ describe('FrameworkInfoDrawer component', () => {
           defaultFramework.projects.nodes[0].webUrl,
         );
       });
+
+      it('renders the Policies accordion', () => {
+        expect(findAccordionItems().at(2).props('title')).toBe(`Policies (${policiesCount})`);
+      });
+
+      it('renders the Policies list', () => {
+        expect(findPoliciesLinks().exists()).toBe(true);
+        expect(findPoliciesLinks().wrappers).toHaveLength(policiesCount);
+        expect(findPoliciesLinks().at(0).attributes('href')).toBe(
+          `/group-policies/${defaultFramework.scanResultPolicies.nodes[0].name}/edit?type=scan_result_policy`,
+        );
+      });
     });
   });
 
@@ -74,6 +97,10 @@ describe('FrameworkInfoDrawer component', () => {
       createComponent({
         props: {
           framework: nonDefaultFramework,
+          groupPath: GROUP_PATH,
+        },
+        provide: {
+          groupSecurityPoliciesPath: '/group-policies',
         },
       });
     });

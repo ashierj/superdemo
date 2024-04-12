@@ -13046,6 +13046,9 @@ msgstr ""
 msgid "ComplianceFrameworksReport|Edit framework"
 msgstr ""
 
+msgid "ComplianceFrameworksReport|Policies"
+msgstr ""
+
 msgid "ComplianceFrameworks| Frameworks export"
 msgstr ""
 

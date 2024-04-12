@@ -9,7 +9,7 @@ import {
   updateHistory,
 } from '~/lib/utils/url_utility';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import EditorWrapper from './editor_wrapper.vue';
 import PolicyTypeSelector from './policy_type_selector.vue';
 
