@@ -585,7 +585,6 @@ RSpec.describe 'Admin updates EE-only settings' do
 
   describe 'Analytics reports settings', feature_category: :value_stream_management do
     before do
-      stub_feature_flags(clickhouse_data_collection: true)
       allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
     end
 
@@ -611,18 +610,6 @@ RSpec.describe 'Admin updates EE-only settings' do
         page.within('#js-analytics-settings') do |page|
           expect(page).to have_field('application_setting_use_clickhouse_for_analytics', disabled: true)
         end
-      end
-    end
-
-    context 'when clickhouse_data_collection feature flag is disabled' do
-      before do
-        stub_feature_flags(clickhouse_data_collection: false)
-      end
-
-      it 'does not render analytics section' do
-        visit general_admin_application_settings_path
-
-        expect(page).not_to have_selector('#js-analytics-settings')
       end
     end
   end

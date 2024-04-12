@@ -32,20 +32,6 @@ RSpec.describe ClickHouse::EventPathsConsistencyCronWorker, feature_category: :v
       end
     end
 
-    context 'when the event_sync_worker_for_click_house feature flag is off' do
-      before do
-        stub_feature_flags(event_sync_worker_for_click_house: false)
-      end
-
-      it 'does nothing' do
-        allow(ClickHouse::Client).to receive(:database_configured?).and_return(true)
-
-        expect(worker).not_to receive(:log_extra_metadata_on_done)
-
-        worker.perform
-      end
-    end
-
     context 'when ClickHouse is available', :click_house do
       let_it_be(:connection) { ClickHouse::Connection.new(:main) }
       let_it_be_with_reload(:namespace1) { create(:group) }

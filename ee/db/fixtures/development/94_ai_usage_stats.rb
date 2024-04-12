@@ -64,8 +64,6 @@ end
 
 Gitlab::Seeder.quiet do
   feature_available = ::Gitlab::ClickHouse.globally_enabled_for_analytics? &&
-    Feature.enabled?(:clickhouse_data_collection) &&
-    Feature.enabled?(:event_sync_worker_for_click_house) &&
     Feature.enabled?(:code_suggestion_events_in_click_house)
 
   unless feature_available
@@ -80,8 +78,6 @@ Gitlab::Seeder.quiet do
 
     Gitlab::CurrentSettings.current_application_settings.update(use_clickhouse_for_analytics: true)
 
-    Feature.enable(:clickhouse_data_collection)
-    Feature.enable(:event_sync_worker_for_click_house)
     Feature.enable(:code_suggestion_events_in_click_house)
     "
     break

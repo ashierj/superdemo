@@ -32,17 +32,6 @@ RSpec.describe ClickHouse::EventAuthorsConsistencyCronWorker, feature_category: 
       end
     end
 
-    context 'when the event_sync_worker_for_click_house feature flag is off' do
-      it 'does nothing' do
-        allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
-        stub_feature_flags(event_sync_worker_for_click_house: false)
-
-        expect(worker).not_to receive(:log_extra_metadata_on_done)
-
-        worker.perform
-      end
-    end
-
     context 'when ClickHouse is available', :click_house do
       let_it_be(:connection) { ClickHouse::Connection.new(:main) }
       let_it_be_with_reload(:user1) { create(:user) }
