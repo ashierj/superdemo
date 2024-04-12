@@ -203,7 +203,9 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
 
       context 'when user is signed in' do
         before do
-          allow(helper).to receive(:current_user).and_return(build_stubbed(:user))
+          allow(helper).to receive(:current_user).and_return(
+            build_stubbed(:user, created_at: IssuesMrsEmptyStateExperiment::EXCLUDE_USERS_OLDER_THAN)
+          )
         end
 
         describe 'when control behavior' do
