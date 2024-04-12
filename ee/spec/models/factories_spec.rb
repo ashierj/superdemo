@@ -173,6 +173,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     workspace
     workspace_variable
     member_approval
+    external_status_checks_protected_branch
   ].to_set.freeze
 
   # Some factories and their corresponding models are based on
