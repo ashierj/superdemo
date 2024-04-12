@@ -1,5 +1,6 @@
 <script>
 import { GlEmptyState, GlLink, GlSprintf } from '@gitlab/ui';
+import emptyStateSvgUrl from '@gitlab/svgs/dist/illustrations/tanuki-ai-sm.svg?url';
 import { __, s__ } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import {
@@ -47,12 +48,14 @@ export default {
         : this.$options.i18n.contactSales;
     },
   },
+  emptyStateSvgUrl,
 };
 </script>
 <template>
   <gl-empty-state
     :primary-button-text="buttonText"
     :primary-button-link="buttonLink"
+    :svg-path="$options.emptyStateSvgUrl"
     class="gl-max-w-48 gl-mx-auto"
   >
     <template #title>
