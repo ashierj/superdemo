@@ -138,7 +138,7 @@ module Security
         list = details.any_merge_request_violations.flat_map do |violation|
           next unless violation.commits.is_a?(Array)
 
-          violation.commits.map { |commit| "1. `#{commit}`" }
+          violation.commits.map { |commit| "1. [`#{commit}`](#{project_commit_url(project, commit)})" }
         end.compact
         return if list.empty?
 
