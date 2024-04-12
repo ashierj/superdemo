@@ -73,7 +73,7 @@ module Security
         merged_by_license.map do |license, dependencies|
           LicenseScanningViolation.new(
             license: license,
-            dependencies: dependencies.to_a,
+            dependencies: dependencies.sort.to_a,
             url: Gitlab::LicenseScanning::PackageLicenses.url_for(license_spdx_map[license])
           )
         end

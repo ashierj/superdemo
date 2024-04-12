@@ -354,14 +354,14 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
     subject(:violations) { details.license_scanning_violations }
 
     before do
-      build_violation_details(policy1, violations: { license_scanning: { 'MIT License' => %w[A B C] } })
+      build_violation_details(policy1, violations: { license_scanning: { 'MIT License' => %w[B C D] } })
     end
 
     it 'returns list of licenses with dependencies' do
       expect(violations.size).to eq 1
       violation = violations.first
       expect(violation.license).to eq 'MIT License'
-      expect(violation.dependencies).to contain_exactly('A', 'B', 'C')
+      expect(violation.dependencies).to contain_exactly('B', 'C', 'D')
       expect(violation.url).to be_nil
     end
 
@@ -379,7 +379,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
     context 'when multiple violations exist' do
       before do
         build_violation_details(policy2,
-          violations: { license_scanning: { 'MIT License' => %w[C D], 'GPL 3' => %w[A] } }
+          violations: { license_scanning: { 'MIT License' => %w[A B], 'GPL 3' => %w[A] } }
         )
       end
 
