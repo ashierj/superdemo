@@ -6,6 +6,8 @@ module EE
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
 
+      MEMBER_PER_PAGE_LIMIT = 50
+
       class_methods do
         extend ::Gitlab::Utils::Override
 
@@ -36,6 +38,7 @@ module EE
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
         @banned = presented_banned_members
         @memberships_with_custom_role = present_group_members(group_memberships_with_custom_role)
+        @pending_promotion_members = pending_promotion_members
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
       end
 
@@ -157,6 +160,16 @@ module EE
           .new(group, current_user, params: params)
           .execute(include_relations: %i[direct descendants])
           .banned_from(group)
+      end
+
+      def pending_promotion_members
+        return unless can?(current_user, :admin_group_member, group)
+        return unless ::Feature.enabled?(:member_promotion_management, type: :wip)
+        return unless ::Gitlab::CurrentSettings.enable_member_promotion_management?
+
+        ::Members::MemberApproval.pending_member_approvals(group.id)
+            .page(params[:promotion_requests_page])
+            .per(MEMBER_PER_PAGE_LIMIT)
       end
     end
   end

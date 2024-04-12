@@ -21,7 +21,8 @@ RSpec.describe Groups::GroupMembersHelper do
       access_requests: [],
       banned: banned,
       include_relations: [:inherited, :direct],
-      search: nil
+      search: nil,
+      pending_members: []
     )
   end
 
@@ -83,6 +84,26 @@ RSpec.describe Groups::GroupMembersHelper do
       it 'sets `member_path` property' do
         expect(subject[:banned][:member_path]).to eq('/groups/foo-bar/-/group_members/:id')
       end
+    end
+
+    context 'with promotion_request' do
+      let(:type) { :for_group_member }
+      let(:member_namespace) { group }
+
+      subject(:helper_app_data) do
+        helper.group_members_app_data(
+          group,
+          members: [],
+          invited: [],
+          access_requests: [],
+          banned: banned,
+          include_relations: [:inherited, :direct],
+          search: nil,
+          pending_members: pending_members
+        )
+      end
+
+      it_behaves_like 'adding promotion_request in app data'
     end
   end
 

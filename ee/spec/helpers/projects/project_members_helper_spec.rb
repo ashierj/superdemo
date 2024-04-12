@@ -51,7 +51,8 @@ RSpec.describe Projects::ProjectMembersHelper do
         invited: [],
         access_requests: [],
         include_relations: [:inherited, :direct],
-        search: nil
+        search: nil,
+        pending_members: []
       )
     end
 
@@ -68,6 +69,27 @@ RSpec.describe Projects::ProjectMembersHelper do
       end
 
       klass.new(current_user).present_members(project.members.reload)
+    end
+  end
+
+  describe '#project_members_app_data' do
+    subject(:helper_app_data) do
+      helper.project_members_app_data(
+        project,
+        members: [],
+        invited: [],
+        access_requests: [],
+        include_relations: [:inherited, :direct],
+        search: nil,
+        pending_members: pending_members
+      )
+    end
+
+    context 'with promotion_request' do
+      let(:type) { :for_project_member }
+      let(:member_namespace) { project.project_namespace }
+
+      it_behaves_like 'adding promotion_request in app data'
     end
   end
 

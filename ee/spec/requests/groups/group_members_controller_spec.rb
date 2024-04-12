@@ -15,71 +15,133 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
   end
 
   describe 'GET /groups/*group_id/-/group_members' do
-    let(:banned_member) { create(:group_member, :developer, group: group) }
-    let(:licensed_feature_available) { true }
-
-    before do
-      stub_licensed_features(unique_project_download_limit: licensed_feature_available)
-
-      create(:namespace_ban, namespace: group, user: banned_member.user)
-    end
-
     subject(:request) do
-      get group_group_members_path(group_id: group)
+      get group_group_members_path(group_id: group), params: param
     end
 
-    it 'pushes feature flag to frontend' do
-      request
+    let!(:param) { {} }
 
-      expect(response.body).to have_pushed_frontend_feature_flags(limitUniqueProjectDownloadsPerNamespaceUser: true)
-    end
+    context 'with banned members' do
+      let(:banned_member) { create(:group_member, :developer, group: group) }
+      let(:licensed_feature_available) { true }
 
-    it 'sets @banned to include banned group members' do
-      request
+      before do
+        stub_licensed_features(unique_project_download_limit: licensed_feature_available)
 
-      expect(assigns(:banned).map(&:user_id)).to contain_exactly(banned_member.user.id)
-    end
+        create(:namespace_ban, namespace: group, user: banned_member.user)
+      end
 
-    it 'sets @members not to include banned group members' do
-      request
-
-      expect(assigns(:members).map(&:user_id)).not_to include(banned_member.user.id)
-    end
-
-    shared_examples 'assigns @banned and @members correctly' do
-      it 'does not assign @banned' do
+      it 'pushes feature flag to frontend' do
         request
 
-        expect(assigns(:banned)).to be_nil
+        expect(response.body).to have_pushed_frontend_feature_flags(limitUniqueProjectDownloadsPerNamespaceUser: true)
       end
 
-      it 'sets @members to include banned group members' do
+      it 'sets @banned to include banned group members' do
         request
 
-        expect(assigns(:members).map(&:user_id)).to include(banned_member.user.id)
+        expect(assigns(:banned).map(&:user_id)).to contain_exactly(banned_member.user.id)
+      end
+
+      it 'sets @members not to include banned group members' do
+        request
+
+        expect(assigns(:members).map(&:user_id)).not_to include(banned_member.user.id)
+      end
+
+      shared_examples 'assigns @banned and @members correctly' do
+        it 'does not assign @banned' do
+          request
+
+          expect(assigns(:banned)).to be_nil
+        end
+
+        it 'sets @members to include banned group members' do
+          request
+
+          expect(assigns(:members).map(&:user_id)).to include(banned_member.user.id)
+        end
+      end
+
+      context 'when licensed feature is not available' do
+        let(:licensed_feature_available) { false }
+
+        it_behaves_like 'assigns @banned and @members correctly'
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+        end
+
+        it_behaves_like 'assigns @banned and @members correctly'
+      end
+
+      context 'when sub-group' do
+        before do
+          group.update!(parent: create(:group))
+        end
+
+        it_behaves_like 'assigns @banned and @members correctly'
       end
     end
 
-    context 'when licensed feature is not available' do
-      let(:licensed_feature_available) { false }
-
-      it_behaves_like 'assigns @banned and @members correctly'
-    end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
+    context 'with member pending promotions' do
+      let!(:pending_member_approvals) do
+        create_list(:member_approval, 2, :for_group_member, member_namespace: group)
       end
 
-      it_behaves_like 'assigns @banned and @members correctly'
-    end
+      context 'with member_promotion management feature enabled' do
+        before do
+          stub_feature_flags(member_promotion_management: true)
+          stub_application_setting(enable_member_promotion_management: true)
+        end
 
-    context 'when sub-group' do
-      before do
-        group.update!(parent: create(:group))
+        context 'when user can admin group' do
+          it 'assigns @pending_promotion_members with the correct pending members' do
+            request
+
+            expect(assigns(:pending_promotion_members)).to match_array(pending_member_approvals)
+          end
+
+          context 'with pagination' do
+            let(:param) { { promotion_requests_page: 2 } }
+
+            it 'paginates @pending_promotion_members correctly' do
+              stub_const("EE::#{described_class}::MEMBER_PER_PAGE_LIMIT", 1)
+
+              request
+
+              expect(assigns(:pending_promotion_members).size).to eq(1)
+              expect(assigns(:pending_promotion_members)).to contain_exactly(pending_member_approvals.second)
+            end
+          end
+        end
+
+        context 'when user cannot admin group' do
+          it 'does not assigns @pending_promotion_members' do
+            user = create(:user)
+            sign_in(user)
+            group.add_developer(user)
+
+            request
+
+            expect(assigns(:pending_promotion_members)).to eq(nil)
+          end
+        end
       end
 
-      it_behaves_like 'assigns @banned and @members correctly'
+      context 'with member_promotion management feature disabled' do
+        before do
+          stub_feature_flags(member_promotion_management: false)
+        end
+
+        it 'assigns @pending_promotion_members as nil' do
+          request
+
+          expect(assigns(:pending_promotion_members)).to eq(nil)
+        end
+      end
     end
   end
 
