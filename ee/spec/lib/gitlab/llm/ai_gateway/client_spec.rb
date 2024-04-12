@@ -227,9 +227,19 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
 
       context 'when response contains multiple events' do
         let(:expected_response) { "Hello World" }
+        let(:success) do
+          instance_double(HTTParty::Response,
+            code: 200,
+            success?: true,
+            parsed_response: response_body,
+            headers: response_headers,
+            body: response_body
+          )
+        end
 
         before do
-          allow(Gitlab::HTTP).to receive(:post).and_yield("Hello").and_yield(" ").and_yield("World")
+          allow(Gitlab::HTTP).to receive(:post).and_return(success)
+            .and_yield("Hello").and_yield(" ").and_yield("World")
         end
 
         it 'provides parsed streamed response' do
@@ -240,44 +250,66 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         it 'returns response' do
           expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
         end
-      end
 
-      context 'when additional params are passed in as options' do
-        let(:options) do
-          { temperature: 1, stop_sequences: %W[\n\nHuman Observation:], max_tokens_to_sample: 1024,
-            disallowed_param: 1 }
-        end
+        context 'when additional params are passed in as options' do
+          let(:options) do
+            { temperature: 1, stop_sequences: %W[\n\nHuman Observation:], max_tokens_to_sample: 1024,
+              disallowed_param: 1 }
+          end
 
-        let(:expected_response) { "Hello World" }
+          let(:expected_response) { "Hello World" }
 
-        before do
-          allow(Gitlab::HTTP).to receive(:post).and_yield("Hello").and_yield(" ").and_yield("World")
-        end
+          before do
+            allow(Gitlab::HTTP).to receive(:post).and_return(success)
+              .and_yield("Hello").and_yield(" ").and_yield("World")
+          end
 
-        it 'passes the allowed options as params' do
-          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+          it 'passes the allowed options as params' do
+            expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
 
-          expect(Gitlab::HTTP).to have_received(:post).with(
-            anything,
-            hash_including(
-              body: including(
-                '"temperature":1',
-                '"stop_sequences":["\n\nHuman","Observation:"]',
-                '"max_tokens_to_sample":1024'
+            expect(Gitlab::HTTP).to have_received(:post).with(
+              anything,
+              hash_including(
+                body: including(
+                  '"temperature":1',
+                  '"stop_sequences":["\n\nHuman","Observation:"]',
+                  '"max_tokens_to_sample":1024'
+                )
               )
             )
+          end
+
+          it 'does not pass the disallowed options as params' do
+            expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+
+            expect(Gitlab::HTTP).to have_received(:post).with(
+              anything,
+              hash_excluding(
+                body: include('disallowed_param')
+              )
+            )
+          end
+        end
+      end
+
+      context 'when response is not successful' do
+        let(:response_body) { expected_response.to_json }
+        let(:failure) do
+          instance_double(HTTParty::Response,
+            code: 400,
+            success?: false,
+            parsed_response: response_body,
+            headers: response_headers
           )
         end
 
-        it 'does not pass the disallowed options as params' do
-          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+        before do
+          allow(Gitlab::HTTP).to receive(:post).and_return(failure)
+        end
 
-          expect(Gitlab::HTTP).to have_received(:post).with(
-            anything,
-            hash_excluding(
-              body: include('disallowed_param')
-            )
-          )
+        it 'raises error' do
+          expect { described_class.new(user).stream(prompt: 'anything', **options) }
+            .to raise_error(Gitlab::Llm::AiGateway::Client::ConnectionError)
         end
       end
     end

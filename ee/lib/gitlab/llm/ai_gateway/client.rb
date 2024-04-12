@@ -22,6 +22,8 @@ module Gitlab
 
         ALLOWED_PAYLOAD_PARAM_KEYS = %i[temperature max_tokens_to_sample stop_sequences].freeze
 
+        ConnectionError = Class.new(StandardError)
+
         def self.access_token(scopes:)
           ::CloudConnector::AccessService.new.access_token(audience: JWT_AUDIENCE, scopes: scopes)
         end
@@ -41,6 +43,8 @@ module Gitlab
             perform_completion_request(prompt: prompt, options: options.except(:stream))
           end
 
+          logger.info_or_debug(user, message: "Received response from AI Gateway", response: response["response"])
+
           track_prompt_size(token_size(prompt))
           track_response_size(token_size(response["response"]))
 
@@ -52,16 +56,24 @@ module Gitlab
 
           response_body = ""
 
-          perform_completion_request(prompt: prompt, options: options.merge(stream: true)) do |chunk|
+          response = perform_completion_request(prompt: prompt, options: options.merge(stream: true)) do |chunk|
             response_body += chunk
 
             yield chunk if block_given?
           end
 
-          track_prompt_size(token_size(prompt))
-          track_response_size(token_size(response_body))
+          if response.success?
+            logger.info_or_debug(user, message: "Received response from AI Gateway", response: response_body)
 
-          response_body
+            track_prompt_size(token_size(prompt))
+            track_response_size(token_size(response_body))
+
+            response_body
+          else
+            logger.error(message: "Received error from AI gateway", response: response_body)
+
+            raise ConnectionError, 'AI gateway not reachable'
+          end
         end
         traceable :stream, name: 'Request to AI Gateway', run_type: 'llm'
 
@@ -73,7 +85,7 @@ module Gitlab
           logger.info(message: "Performing request to AI Gateway", options: options)
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
-          response = Gitlab::HTTP.post(
+          Gitlab::HTTP.post(
             "#{Gitlab::AiGateway.url}#{endpoint_url(options)}",
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
@@ -83,10 +95,6 @@ module Gitlab
           ) do |fragment|
             yield fragment if block_given?
           end
-
-          logger.info_or_debug(user, message: "Received response from AI Gateway", response: response)
-
-          response
         end
 
         def enabled?

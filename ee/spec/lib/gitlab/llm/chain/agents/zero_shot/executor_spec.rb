@@ -500,6 +500,26 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         end
       end
     end
+
+    context 'when connection error is raised' do
+      let(:error) { ::Gitlab::Llm::AiGateway::Client::ConnectionError.new }
+
+      before do
+        allow(Gitlab::ErrorTracking).to receive(:track_exception)
+      end
+
+      context 'when streamed request times out' do
+        it 'returns an error' do
+          allow(ai_request_double).to receive(:request).and_raise(error)
+
+          answer = agent.execute
+
+          expect(answer.is_final).to eq(true)
+          expect(answer.content).to include("GitLab Duo could not connect to the AI provider")
+          expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
+        end
+      end
+    end
   end
 
   def claude_3_system_prompt(agent)
