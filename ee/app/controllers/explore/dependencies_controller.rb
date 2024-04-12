@@ -22,14 +22,17 @@ module Explore
     end
 
     def index
+      paginator = dependencies.keyset_paginate(
+        cursor: finder_params[:cursor],
+        per_page: per_page
+      )
       respond_to do |format|
         format.html do
+          @page_info = formatted_page_info(paginator)
           render status: :ok
         end
         format.json do
-          render json: serializer.represent(
-            dependencies.keyset_paginate(cursor: finder_params[:cursor], per_page: per_page)
-          )
+          render json: serializer.represent(paginator)
         end
       end
     end
@@ -79,6 +82,21 @@ module Explore
       return render_404 unless Feature.enabled?(:explore_dependencies, current_user)
 
       render_403 unless can?(current_user, :read_dependency, organization)
+    end
+
+    def page_info(paginator)
+      {
+        type: "cursor",
+        has_next_page: paginator.has_next_page?,
+        has_previous_page: paginator.has_previous_page?,
+        start_cursor: paginator.cursor_for_previous_page,
+        current_cursor: finder_params[:cursor],
+        end_cursor: paginator.cursor_for_next_page
+      }
+    end
+
+    def formatted_page_info(paginator)
+      Gitlab::Json.generate(page_info(paginator))
     end
   end
 end

@@ -14,6 +14,9 @@ export const setExportDependenciesEndpoint = (handle, payload) =>
 export const setNamespaceType = (handle, payload) =>
   dispatchForNamespaces(handle, 'setNamespaceType', payload);
 
+export const setPageInfo = (handle, payload) =>
+  dispatchForNamespaces(handle, 'setPageInfo', payload);
+
 export const setSortField = (handle, payload) =>
   dispatchForNamespaces(handle, 'setSortField', payload);
 

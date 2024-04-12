@@ -42,6 +42,7 @@ export default {
     'endpoint',
     'supportDocumentationPath',
     'exportEndpoint',
+    'pageInfo',
     'namespaceType',
   ],
   data() {
@@ -129,6 +130,7 @@ export default {
     this.setDependenciesEndpoint(this.endpoint);
     this.setExportDependenciesEndpoint(this.exportEndpoint);
     this.setNamespaceType(this.namespaceType);
+    this.setPageInfo(this.pageInfo);
     this.setSortField(SORT_FIELD_SEVERITY);
   },
   methods: {
@@ -136,6 +138,7 @@ export default {
       'setDependenciesEndpoint',
       'setExportDependenciesEndpoint',
       'setNamespaceType',
+      'setPageInfo',
       'setSortField',
       'setCurrentList',
     ]),

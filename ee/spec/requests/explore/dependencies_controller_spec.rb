@@ -42,7 +42,7 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
         end
 
         context 'when the user is a member the default organization' do
-          let_it_be(:user) { create(:user, :without_default_org) }
+          let_it_be_with_reload(:user) { create(:user, :without_default_org) }
           let_it_be(:organization) { create(:organization, :default) }
           let_it_be(:organization_user) { create(:organization_user, organization: organization, user: user) }
 
@@ -51,6 +51,33 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
           end
 
           include_examples 'returning response status', :ok
+
+          context 'when loading a specific page of results' do
+            let_it_be(:per_page) { 1 }
+            let_it_be(:group) { create(:group, organization: organization) }
+            let_it_be(:project) { create(:project, organization: organization, group: group) }
+            let_it_be(:occurrences) { create_list(:sbom_occurrence, 3 * per_page, :mit, project: project) }
+            let_it_be(:ordered_occurrences) { Sbom::Occurrence.order(:id) }
+            let(:cursor) { ordered_occurrences.keyset_paginate(cursor: nil, per_page: per_page).cursor_for_next_page }
+
+            before_all do
+              project.add_developer(user)
+            end
+
+            it 'assigns pagination info' do
+              get explore_dependencies_path(cursor: cursor, per_page: per_page)
+
+              paginator = ordered_occurrences.keyset_paginate(cursor: cursor, per_page: per_page)
+              expect(Gitlab::Json.parse(assigns(:page_info))).to eql({
+                "type" => "cursor",
+                "has_next_page" => true,
+                "has_previous_page" => true,
+                "start_cursor" => paginator.cursor_for_previous_page,
+                "current_cursor" => cursor,
+                "end_cursor" => paginator.cursor_for_next_page
+              })
+            end
+          end
         end
 
         context 'when a user is not logged in' do

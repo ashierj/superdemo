@@ -3,6 +3,7 @@
 import { mapActions, mapState } from 'vuex';
 import { GlKeysetPagination } from '@gitlab/ui';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
+import { setUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import DependenciesTable from './dependencies_table.vue';
 
@@ -46,6 +47,7 @@ export default {
         return dispatch(`${this.namespace}/fetchDependencies`, { page });
       },
       fetchCursorPage(dispatch, cursor) {
+        updateHistory({ url: setUrlParams({ cursor }) });
         return dispatch(`${this.namespace}/fetchDependencies`, { cursor });
       },
       fetchVulnerabilities(dispatch, item) {

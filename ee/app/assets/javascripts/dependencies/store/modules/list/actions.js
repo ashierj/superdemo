@@ -32,11 +32,14 @@ export const setNamespaceType = ({ commit }, payload) => commit(types.SET_NAMESP
 
 export const setInitialState = ({ commit }, payload) => commit(types.SET_INITIAL_STATE, payload);
 
+export const setPageInfo = ({ commit }, payload) => commit(types.SET_PAGE_INFO, payload);
+
 export const requestDependencies = ({ commit }) => commit(types.REQUEST_DEPENDENCIES);
 
 const parseCursorPagination = (headers) => {
   return {
     type: headers['X-PAGE-TYPE'],
+    currentCursor: headers['X-PAGE'],
     endCursor: headers['X-NEXT-PAGE'],
     hasNextPage: headers['X-NEXT-PAGE'] !== '',
     hasPreviousPage: headers['X-PREV-PAGE'] !== '',
@@ -81,7 +84,7 @@ export const receiveDependenciesError = ({ commit }, error) =>
 const queryParametersFor = (state, params) => {
   if (state.pageInfo.type === 'cursor') {
     return {
-      cursor: params.cursor,
+      cursor: params.cursor || state.pageInfo.currentCursor,
     };
   }
 
