@@ -23,6 +23,10 @@ module QA
                 element 'rule-name-field'
               end
 
+              view 'ee/app/assets/javascripts/approvals/components/rule_drawer/create_rule.vue' do
+                element 'save-approval-rule-button'
+              end
+
               def add_approval_rules(rules)
                 # The Approval rules button/link is a gitlab-ui component that doesn't have a QA selector
                 click_button('Approval rules')
@@ -51,7 +55,12 @@ module QA
               # add a data attribute to the 'Ok' button without overriding it
               # So we break the rules and use a CSS selector instead of an element
               def click_approvers_modal_ok_button
-                find("#mr-edit-approvals-create-modal footer button.btn-confirm").click
+                # Conditional to handle approval rule draw https://gitlab.com/gitlab-org/gitlab/-/issues/444628
+                if has_element?('save-approval-rule-button')
+                  click_element('save-approval-rule-button')
+                else
+                  find("#mr-edit-approvals-create-modal footer button.btn-confirm").click
+                end
               end
 
               private

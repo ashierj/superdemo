@@ -78,7 +78,12 @@ export default {
     </template>
 
     <template #header>
-      <gl-button variant="confirm" :loading="isLoading" @click="submit">
+      <gl-button
+        variant="confirm"
+        data-testid="save-approval-rule-button"
+        :loading="isLoading"
+        @click="submit"
+      >
         {{ $options.I18N.saveChanges }}
       </gl-button>
       <gl-button variant="confirm" category="secondary" @click="$emit('close')">
