@@ -99,7 +99,7 @@ module ProductAnalyticsHelpers
 
   def product_analytics_billing_enabled?
     root_ancestor.present? &&
-      ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :wip) &&
+      ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :development) &&
       ::Feature.disabled?(:product_analytics_billing_override, root_ancestor, type: :wip)
   end
 

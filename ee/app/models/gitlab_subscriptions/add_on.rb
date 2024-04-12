@@ -33,7 +33,8 @@ module GitlabSubscriptions
 
     def self.check_add_on_availability!(add_on_name, namespace)
       raise ::ArgumentError if
-        add_on_name.eql?("product_analytics") && ::Feature.disabled?(:product_analytics_billing, namespace, type: :wip)
+        add_on_name.eql?("product_analytics") &&
+          ::Feature.disabled?(:product_analytics_billing, namespace, type: :development)
     end
   end
 end
