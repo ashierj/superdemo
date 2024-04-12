@@ -41,7 +41,7 @@ RSpec.describe 'Company Information', :js, feature_category: :activation do
         company_size: '1-99',
         phone_number: '+1234567890',
         country: 'US',
-        state: 'FL',
+        state: 'Florida',
         website_url: 'https://gitlab.com',
         trial_onboarding_flow: true,
         trial: false
