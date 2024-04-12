@@ -17,7 +17,8 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
     # using Array.new to create a different creator User for each of the projects
     let_it_be(:projects) do
       Array.new(3) do
-        create(:project, :repository, group: group, creator: create(:user, group_view: :security_dashboard))
+        creator = create(:user, group_view: :security_dashboard)
+        create(:project, :repository, group: group, creator: creator)
       end
     end
 
