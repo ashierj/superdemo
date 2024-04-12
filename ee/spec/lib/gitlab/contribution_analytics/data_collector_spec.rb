@@ -63,7 +63,6 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
   end
 
   describe 'data retrieval' do
-    # clickhouse_data_collection is disabled by default, but enabled for this annotation
     context 'when ClickHouse is enabled for analytics', :click_house do
       before do
         allow(::Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)

@@ -116,7 +116,6 @@ RSpec.describe ClickHouse::SyncStrategies::EventSyncStrategy, feature_category: 
       context 'when the clickhouse database is configured the feature flag is enabled' do
         before do
           allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
-          stub_feature_flags(event_sync_worker_for_click_house: true)
         end
 
         it 'returns true' do
@@ -127,17 +126,6 @@ RSpec.describe ClickHouse::SyncStrategies::EventSyncStrategy, feature_category: 
       context 'when the clickhouse database is not configured' do
         before do
           allow(Gitlab::ClickHouse).to receive(:configured?).and_return(false)
-        end
-
-        it 'returns false' do
-          expect(strategy.send(:enabled?)).to be_falsey
-        end
-      end
-
-      context 'when the feature flag is disabled' do
-        before do
-          allow(Gitlab::ClickHouse).to receive(:configured?).and_return(true)
-          stub_feature_flags(event_sync_worker_for_click_house: false)
         end
 
         it 'returns false' do

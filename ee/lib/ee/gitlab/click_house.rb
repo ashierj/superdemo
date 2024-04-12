@@ -6,8 +6,8 @@ module EE
       extend ActiveSupport::Concern
 
       class_methods do
-        def enabled_for_analytics?(group = nil)
-          globally_enabled_for_analytics? && ::Feature.enabled?(:clickhouse_data_collection, group)
+        def enabled_for_analytics?(_group = nil)
+          globally_enabled_for_analytics?
         end
 
         def globally_enabled_for_analytics?
