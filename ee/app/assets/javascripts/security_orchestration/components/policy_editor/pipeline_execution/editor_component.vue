@@ -88,6 +88,21 @@ export default {
     changeEditorMode(mode) {
       this.mode = mode;
     },
+    handleUpdateProperty(property, value) {
+      this.policy[property] = value;
+      this.updateYamlEditorValue(this.policy);
+    },
+    handleUpdateYaml(manifest) {
+      const { policy, hasParsingError } = createPolicyObject(manifest);
+
+      this.yamlEditorValue = manifest;
+      this.hasParsingError = hasParsingError;
+      this.parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
+      this.policy = policy;
+    },
+    updateYamlEditorValue(policy) {
+      this.yamlEditorValue = policyToYaml(policy);
+    },
   },
 };
 </script>
@@ -101,6 +116,8 @@ export default {
     :policy="policy"
     :yaml-editor-value="yamlEditorValue"
     @update-editor-mode="changeEditorMode"
+    @update-property="handleUpdateProperty"
+    @update-yaml="handleUpdateYaml"
   >
     <template #rules>
       <dim-disable-container :disabled="hasParsingError">

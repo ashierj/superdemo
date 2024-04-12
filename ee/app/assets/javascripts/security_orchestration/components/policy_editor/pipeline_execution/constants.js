@@ -4,8 +4,8 @@ export const DEFAULT_PIPELINE_EXECUTION_POLICY = `type: pipeline_execution_polic
 name: ''
 description: ''
 enabled: true
-actions:
-  - foo: bar
+content:
+  include: ''
 `;
 
 export const ADD_CONDITION_LABEL = s__('ScanExecutionPolicy|Add condition');

@@ -1,12 +1,35 @@
 import { safeDump, safeLoad } from 'js-yaml';
-import { addIdsToPolicy, removeIdsFromPolicy } from '../utils';
+import { hasInvalidKey } from '../utils';
 
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
-export const fromYaml = ({ manifest }) => {
+export const fromYaml = ({ manifest, validateRuleMode = false }) => {
   try {
-    const policy = addIdsToPolicy(safeLoad(manifest, { json: true }));
+    const policy = safeLoad(manifest, { json: true });
+
+    if (validateRuleMode) {
+      /**
+       * These values are what is supported by rule mode. If the yaml has any other values,
+       * rule mode will be disabled. This validation should not be used to check whether
+       * the yaml is a valid policy; that should be done on the backend with the official
+       * schema. These values should not be retrieved from the backend schema because
+       * the UI for new attributes may not be available.
+       */
+      const primaryKeys = [
+        'type',
+        'name',
+        'description',
+        'enabled',
+        'override_project_ci',
+        'content',
+      ];
+      const contentKeys = ['workflow', 'include'];
+
+      return !(hasInvalidKey(policy, primaryKeys) || hasInvalidKey(policy.content, contentKeys))
+        ? policy
+        : { error: true };
+    }
 
     return policy;
   } catch {
@@ -23,7 +46,7 @@ export const fromYaml = ({ manifest }) => {
  * @returns {Object} security policy object and any errors
  */
 export const createPolicyObject = (manifest) => {
-  const policy = fromYaml({ manifest });
+  const policy = fromYaml({ manifest, validateRuleMode: true });
 
   return { policy, hasParsingError: Boolean(policy.error) };
 };
@@ -32,7 +55,7 @@ export const createPolicyObject = (manifest) => {
  Return yaml representation of a policy.
 */
 export const policyToYaml = (policy) => {
-  return safeDump(removeIdsFromPolicy(policy));
+  return safeDump(policy);
 };
 
 export const toYaml = (yaml) => {
