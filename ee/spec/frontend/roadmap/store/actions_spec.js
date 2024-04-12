@@ -1,6 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
 import { DATE_RANGES, PRESET_TYPES, MILESTONES_GROUP } from 'ee/roadmap/constants';
-import groupMilestones from 'ee/roadmap/queries/group_milestones.query.graphql';
 import epicChildEpics from 'ee/roadmap/queries/epic_child_epics.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
@@ -21,10 +20,6 @@ import {
   mockSortedBy,
   mockGroupEpicsQueryResponse,
   mockGroupEpics,
-  mockGroupMilestonesQueryResponse,
-  mockGroupMilestones,
-  mockMilestone,
-  mockFormattedMilestone,
   mockPageInfo,
 } from '../mock_data';
 
@@ -238,175 +233,6 @@ describe('Roadmap Vuex Actions', () => {
         [{ type: types.SET_BUFFER_SIZE, payload: 10 }],
         [],
       );
-    });
-  });
-
-  describe('fetchGroupMilestones', () => {
-    let mockState;
-    let expectedVariables;
-
-    beforeEach(() => {
-      mockState = {
-        fullPath: 'gitlab-org',
-        milestonesState: 'active',
-        presetType: PRESET_TYPES.MONTHS,
-        timeframe: mockTimeframeMonths,
-        filterParams: {
-          milestoneTitle: '',
-        },
-      };
-
-      expectedVariables = {
-        fullPath: 'gitlab-org',
-        state: mockState.milestonesState,
-        timeframe: {
-          start: '2018-01-01',
-          end: '2018-12-31',
-        },
-        includeDescendants: true,
-        includeAncestors: true,
-        searchTitle: '',
-      };
-    });
-
-    it('should fetch Group Milestones using GraphQL client when milestoneIid is not present in state', () => {
-      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-        Promise.resolve({
-          data: mockGroupMilestonesQueryResponse.data,
-        }),
-      );
-
-      return actions.fetchGroupMilestones(mockState).then(() => {
-        expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
-          query: groupMilestones,
-          variables: expectedVariables,
-        });
-      });
-    });
-
-    it('should fetch searched Group Milestones using GraphQL client', async () => {
-      mockState.filterParams = {
-        milestoneTitle: mockGroupMilestones[0].title,
-      };
-
-      expectedVariables.searchTitle = mockGroupMilestones[0].title;
-
-      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-        Promise.resolve({
-          data: mockGroupMilestonesQueryResponse.data,
-        }),
-      );
-
-      await actions.fetchGroupMilestones(mockState);
-      expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
-        query: groupMilestones,
-        variables: expectedVariables,
-      });
-    });
-  });
-
-  describe('requestMilestones', () => {
-    it('should set `milestonesFetchInProgress` to true', () => {
-      return testAction(actions.requestMilestones, {}, state, [{ type: 'REQUEST_MILESTONES' }], []);
-    });
-  });
-
-  describe('fetchMilestones', () => {
-    describe('success', () => {
-      it('should dispatch requestMilestones and receiveMilestonesSuccess when request is successful', () => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-          Promise.resolve({
-            data: mockGroupMilestonesQueryResponse.data,
-          }),
-        );
-
-        return testAction(
-          actions.fetchMilestones,
-          null,
-          state,
-          [],
-          [
-            {
-              type: 'requestMilestones',
-            },
-            {
-              type: 'receiveMilestonesSuccess',
-              payload: { rawMilestones: mockGroupMilestones },
-            },
-          ],
-        );
-      });
-    });
-
-    describe('failure', () => {
-      it('should dispatch requestMilestones and receiveMilestonesFailure when request fails', () => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(Promise.reject());
-
-        return testAction(
-          actions.fetchMilestones,
-          null,
-          state,
-          [],
-          [
-            {
-              type: 'requestMilestones',
-            },
-            {
-              type: 'receiveMilestonesFailure',
-            },
-          ],
-        );
-      });
-    });
-  });
-
-  describe('receiveMilestonesSuccess', () => {
-    it('should set formatted milestones array and milestoneId to IDs array in state based on provided milestones list', () => {
-      return testAction(
-        actions.receiveMilestonesSuccess,
-        {
-          rawMilestones: [{ ...mockMilestone, start_date: '2017-12-31', end_date: '2018-2-15' }],
-        },
-        state,
-        [
-          { type: types.UPDATE_MILESTONE_IDS, payload: [mockMilestone.id] },
-          {
-            type: types.RECEIVE_MILESTONES_SUCCESS,
-            payload: [
-              {
-                ...mockFormattedMilestone,
-                startDateOutOfRange: true,
-                endDateOutOfRange: false,
-                startDate: new Date(2018, 0, 1),
-                originalStartDate: new Date(2017, 11, 31),
-                endDate: new Date(2018, 1, 15),
-                originalEndDate: new Date(2018, 1, 15),
-              },
-            ],
-          },
-        ],
-        [],
-      );
-    });
-  });
-
-  describe('receiveMilestonesFailure', () => {
-    it('should set milestonesFetchInProgress to false and milestonesFetchFailure to true', () => {
-      return testAction(
-        actions.receiveMilestonesFailure,
-        {},
-        state,
-        [{ type: types.RECEIVE_MILESTONES_FAILURE }],
-        [],
-      );
-    });
-
-    it('should show alert error', () => {
-      actions.receiveMilestonesFailure({ commit: () => {} });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Something went wrong while fetching milestones',
-      });
     });
   });
 

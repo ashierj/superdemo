@@ -54,30 +54,6 @@ export default {
     state.epicsFetchFailure = true;
   },
 
-  [types.SET_MILESTONES](state, milestones) {
-    state.milestones = milestones;
-  },
-  [types.UPDATE_MILESTONE_IDS](state, milestoneIds) {
-    state.milestoneIds.push(...milestoneIds);
-  },
-  [types.REQUEST_MILESTONES](state) {
-    state.milestonesFetchInProgress = true;
-    state.milestones = [];
-    state.milestoneIds = [];
-  },
-  [types.RECEIVE_MILESTONES_SUCCESS](state, milestones) {
-    state.milestonesFetchInProgress = false;
-    state.milestonesFetchResultEmpty = milestones.length === 0;
-
-    if (!state.milestonesFetchResultEmpty) {
-      state.milestones = milestones;
-    }
-  },
-  [types.RECEIVE_MILESTONES_FAILURE](state) {
-    state.milestonesFetchInProgress = false;
-    state.milestonesFetchFailure = true;
-  },
-
   [types.SET_BUFFER_SIZE](state, bufferSize) {
     state.bufferSize = bufferSize;
   },

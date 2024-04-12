@@ -891,20 +891,21 @@ export const mockGroupMilestonesQueryResponse = {
       id: 'gid://gitlab/Group/2',
       name: 'Gitlab Org',
       milestones: {
-        edges: [
-          {
-            node: {
-              ...mockGroupMilestoneNode1,
-            },
-            __typename: 'MilestoneEdge',
-          },
-          {
-            node: {
-              ...mockGroupMilestoneNode2,
-            },
-            __typename: 'MilestoneEdge',
-          },
-        ],
+        nodes: [mockGroupMilestoneNode1, mockGroupMilestoneNode2],
+        __typename: 'MilestoneConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockGroupMilestonesQueryResponseWithInvalidDates = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/2',
+      name: 'Gitlab Org',
+      milestones: {
+        nodes: [mockGroupMilestoneNode1, { ...mockGroupMilestoneNode2, startDate: '2018-12-26' }],
         __typename: 'MilestoneConnection',
       },
       __typename: 'Group',

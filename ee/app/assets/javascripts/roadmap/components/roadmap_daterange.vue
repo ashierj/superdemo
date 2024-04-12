@@ -59,7 +59,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setDaterange', 'fetchEpics', 'fetchMilestones']),
+    ...mapActions(['setDaterange', 'fetchEpics']),
     handleDaterangeSelect(value) {
       this.selectedDaterange = value;
     },
@@ -73,7 +73,6 @@ export default {
           presetType: getPresetTypeForTimeframeRangeType(this.selectedDaterange),
         });
         this.fetchEpics();
-        this.fetchMilestones();
       }
     },
     handleRoadmapLayoutChange(presetType) {

@@ -1,6 +1,5 @@
 import { GlButton } from '@gitlab/ui';
 import { nextTick } from 'vue';
-import MilestoneTimeline from 'ee/roadmap/components/milestone_timeline.vue';
 import milestonesListSectionComponent from 'ee/roadmap/components/milestones_list_section.vue';
 import {
   DATE_RANGES,
@@ -10,12 +9,9 @@ import {
 } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
+import eventHub from 'ee/roadmap/event_hub';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
-import {
-  mockTimeframeInitialDate,
-  mockGroupId,
-  mockGroupMilestones,
-} from 'ee_jest/roadmap/mock_data';
+import { mockTimeframeInitialDate, mockGroupMilestones } from 'ee_jest/roadmap/mock_data';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -24,11 +20,9 @@ jest.mock('ee/roadmap/utils/epic_utils');
 const initializeStore = (mockTimeframeMonths) => {
   const store = createStore();
   store.dispatch('setInitialData', {
-    currentGroupId: mockGroupId,
     presetType: PRESET_TYPES.MONTHS,
     timeframe: mockTimeframeMonths,
   });
-  store.dispatch('receiveMilestonesSuccess', { rawMilestones: mockGroupMilestones });
   return store;
 };
 
@@ -42,7 +36,6 @@ describe('MilestonesListSectionComponent', () => {
     initialDate: mockTimeframeInitialDate,
   });
   const findMilestoneCount = () => wrapper.findByTestId('count');
-  const findMilestoneCountTooltip = () => getBinding(findMilestoneCount().element, 'gl-tooltip');
   const findExpandButtonContainer = () => wrapper.findByTestId('expandButton');
   const findExpandButtonData = () => {
     const container = findExpandButtonContainer();
@@ -52,14 +45,15 @@ describe('MilestonesListSectionComponent', () => {
       tooltip: getBinding(container.element, 'gl-tooltip').value.title,
     };
   };
+  const findMilestonesListWrapper = () => wrapper.findByTestId('milestones-list-wrapper');
+  const findBottomShadow = () => wrapper.findByTestId('scroll-bottom-shadow');
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(milestonesListSectionComponent, {
       store,
       propsData: {
-        milestones: store.state.milestones,
+        milestones: mockGroupMilestones,
         timeframe: mockTimeframeMonths,
-        currentGroupId: mockGroupId,
         presetType: PRESET_TYPES.MONTHS,
         ...props,
       },
@@ -74,98 +68,61 @@ describe('MilestonesListSectionComponent', () => {
     createWrapper();
   });
 
-  describe('data', () => {
-    it('returns default data props', () => {
-      expect(wrapper.vm.offsetLeft).toBe(0);
-      expect(wrapper.vm.roadmapShellEl).toBeDefined();
-      expect(wrapper.vm.milestonesExpanded).toBe(true);
+  describe('on mount', () => {
+    it('emits `milestonesMounted` event', () => {
+      expect(wrapper.emitted('milestonesMounted')).toEqual([[]]);
+    });
+
+    it('calls `scrollToCurrentDay` method', () => {
+      expect(scrollToCurrentDay).toHaveBeenCalled();
     });
   });
 
-  describe('computed', () => {
-    describe('sectionContainerStyles', () => {
-      it('returns style string for container element based on sectionShellWidth', () => {
-        expect(wrapper.vm.sectionContainerStyles.width).toBe(
-          `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * wrapper.vm.timeframe.length}px`,
-        );
-      });
-    });
+  it('does not render the shadow at the bottom of the list', () => {
+    expect(findBottomShadow().isVisible()).toBe(false);
+  });
 
-    describe('shadowCellStyles', () => {
-      it('returns computed style object based on `offsetLeft` prop value', () => {
-        expect(wrapper.vm.shadowCellStyles.left).toBe('0px');
+  it('calculates section container styles correctly', () => {
+    expect(findMilestonesListWrapper().attributes('style')).toEqual(
+      `width: ${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * mockTimeframeMonths.length}px;`,
+    );
+  });
+
+  it('calculates shadow styles correctly', () => {
+    expect(findBottomShadow().attributes('style')).toEqual('left: 0px; display: none;');
+  });
+
+  describe('on `epicsListScrolled` global event', () => {
+    it('scrolled to the bottom and back correctly', async () => {
+      eventHub.$emit('epicsListScrolled', {
+        scrollTop: 5,
+        clientHeight: 5,
+        scrollHeight: 15,
       });
+      await nextTick();
+
+      expect(findBottomShadow().isVisible()).toBe(true);
+
+      eventHub.$emit('epicsListScrolled', {
+        scrollTop: 15,
+        clientHeight: 5,
+        scrollHeight: 15,
+      });
+      await nextTick();
+
+      expect(findBottomShadow().isVisible()).toBe(false);
     });
   });
 
-  describe('methods', () => {
-    describe('initMounted', () => {
-      it('sets value of `roadmapShellEl` with root component element', () => {
-        expect(wrapper.vm.roadmapShellEl instanceof HTMLElement).toBe(true);
-      });
-
-      it('calls `scrollToCurrentDay` following the component render', () => {
-        expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
-      });
-    });
-
-    describe('handleEpicsListScroll', () => {
-      it('toggles value of `showBottomShadow` based on provided `scrollTop`, `clientHeight` & `scrollHeight`', async () => {
-        wrapper.vm.handleEpicsListScroll({
-          scrollTop: 5,
-          clientHeight: 5,
-          scrollHeight: 15,
-        });
-
-        // Math.ceil(scrollTop) + clientHeight < scrollHeight
-        expect(wrapper.vm.showBottomShadow).toBe(true);
-        await nextTick();
-        expect(wrapper.find('.scroll-bottom-shadow').isVisible()).toBe(true);
-
-        wrapper.vm.handleEpicsListScroll({
-          scrollTop: 15,
-          clientHeight: 5,
-          scrollHeight: 15,
-        });
-
-        // Math.ceil(scrollTop) + clientHeight < scrollHeight
-        expect(wrapper.vm.showBottomShadow).toBe(false);
-        await nextTick();
-        expect(wrapper.find('.scroll-bottom-shadow').isVisible()).toBe(false);
-      });
-    });
+  it('show the correct count of milestones', () => {
+    expect(findMilestoneCount().text()).toBe('2');
   });
 
-  describe('template', () => {
-    it('renders component container element with class `milestones-list-section`', () => {
-      expect(wrapper.classes()).toContain('milestones-list-section');
-    });
-
-    it('renders element with class `milestones-list-title`', () => {
-      expect(wrapper.find('.milestones-list-title').exists()).toBe(true);
-    });
-
-    it('renders element with class `milestones-list-items` containing MilestoneTimeline component', () => {
-      const listItems = wrapper.find('.milestones-list-items');
-
-      expect(listItems.exists()).toBe(true);
-      expect(listItems.findComponent(MilestoneTimeline).exists()).toBe(true);
-    });
-
-    it('show the correct count of milestones', () => {
-      expect(findMilestoneCount().text()).toBe('2');
-    });
-
-    it('has a tooltip with the correct count of milestones', () => {
-      expect(findMilestoneCountTooltip().value).toBe('2 milestones');
-    });
-
-    it('renders milestone expand/collapse button', () => {
-      expect(findExpandButtonData()).toEqual({
-        icon: 'chevron-down',
-        iconLabel: 'Collapse milestones',
-        tooltip: 'Collapse',
-      });
+  it('shows "chevron-down" icon on toggle button', () => {
+    expect(findExpandButtonData()).toEqual({
+      icon: 'chevron-down',
+      iconLabel: 'Collapse milestones',
+      tooltip: 'Collapse',
     });
   });
 

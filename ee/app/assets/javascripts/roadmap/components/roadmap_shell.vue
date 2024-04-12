@@ -1,6 +1,16 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
+import { createAlert } from '~/alert';
+import { s__ } from '~/locale';
+
+import groupMilestones from '../queries/group_milestones.query.graphql';
+import { getEpicsTimeframeRange } from '../utils/roadmap_utils';
+import {
+  formatRoadmapItemDetails,
+  timeframeStartDate,
+  timeframeEndDate,
+} from '../utils/roadmap_item_utils';
 
 import eventHub from '../event_hub';
 import { MILESTONES_GROUP, MILESTONES_SUBGROUP, MILESTONES_PROJECT } from '../constants';
@@ -15,6 +25,7 @@ export default {
     MilestonesListSection,
     RoadmapTimelineSection,
   },
+  inject: ['fullPath', 'epicIid'],
   props: {
     presetType: {
       type: String,
@@ -37,10 +48,53 @@ export default {
     return {
       containerStyles: {},
       canCalculateEpicsListHeight: false,
+      milestones: [],
     };
   },
+  apollo: {
+    milestones: {
+      query: groupMilestones,
+      variables() {
+        return {
+          fullPath: this.fullPath,
+          state: 'active',
+          ...getEpicsTimeframeRange({
+            presetType: this.presetType,
+            timeframe: this.timeframe,
+          }),
+          includeDescendants: true,
+          includeAncestors: true,
+          searchTitle: this.filterParams.milestoneTitle,
+        };
+      },
+      skip() {
+        return !this.isShowingMilestones;
+      },
+      update(data) {
+        const rawMilestones = data.group.milestones.nodes;
+        return rawMilestones.reduce((filteredMilestones, milestone) => {
+          const formattedMilestone = formatRoadmapItemDetails(
+            milestone,
+            timeframeStartDate(this.presetType, this.timeframe),
+            timeframeEndDate(this.presetType, this.timeframe),
+          );
+          // Exclude any Milestone that has invalid dates
+          // or is already present in Roadmap timeline
+          if (formattedMilestone.startDate.getTime() <= formattedMilestone.endDate.getTime()) {
+            filteredMilestones.push(formattedMilestone);
+          }
+          return filteredMilestones;
+        }, []);
+      },
+      error() {
+        createAlert({
+          message: s__('GroupRoadmap|Something went wrong while fetching milestones'),
+        });
+      },
+    },
+  },
   computed: {
-    ...mapState(['isShowingMilestones', 'milestonesType', 'milestones']),
+    ...mapState(['isShowingMilestones', 'milestonesType', 'filterParams']),
     ...mapGetters(['isScopedRoadmap']),
     displayMilestones() {
       return Boolean(this.milestones.length) && this.isShowingMilestones;
@@ -62,15 +116,11 @@ export default {
     },
   },
   mounted() {
-    if (this.isShowingMilestones) {
-      this.fetchMilestones();
-    }
     this.$nextTick(() => {
       this.containerStyles = this.getContainerStyles();
     });
   },
   methods: {
-    ...mapActions(['fetchMilestones']),
     handleScroll() {
       const { scrollTop, scrollLeft, clientHeight, scrollHeight } = this.$el;
 
