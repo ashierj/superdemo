@@ -48,7 +48,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, :rd_fast
 
     it "returns the error message from the CLI" do
       expected_error_message =
-        "failed to populateAndParseDevfile: invalid devfile schema. errors :\n" \
+        "error parsing devfile because of non-compliant data due to invalid devfile schema. errors :\n" \
         "- (root): Additional property random is not allowed\n"
       message = result.unwrap_err
       expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileFlattenFailed)
