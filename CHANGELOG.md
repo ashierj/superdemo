@@ -1508,6 +1508,10 @@ No changes.
 
 - [Add remediation badge to vulnerability report](gitlab-org/gitlab@e6236197509eae1bb27edf8fb2c63ccf769c2642) ([merge request](gitlab-org/gitlab!142455))
 
+## 16.8.7 (2024-04-12)
+
+No changes.
+
 ## 16.8.6 (2024-04-09)
 
 ### Security (3 changes)
