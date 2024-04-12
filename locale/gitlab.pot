@@ -19929,6 +19929,9 @@ msgstr ""
 msgid "Environments|HelmReleases"
 msgstr ""
 
+msgid "Environments|How do I grant Kubernetes access?"
+msgstr ""
+
 msgid "Environments|Job"
 msgstr ""
 
@@ -20002,6 +20005,9 @@ msgid "Environments|Select Flux resource (optional)"
 msgstr ""
 
 msgid "Environments|Select agent"
+msgstr ""
+
+msgid "Environments|Select an agent with Kubernetes access to the project or group."
 msgstr ""
 
 msgid "Environments|Select namespace"
