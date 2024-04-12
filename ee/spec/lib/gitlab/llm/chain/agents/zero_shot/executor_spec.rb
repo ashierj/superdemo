@@ -177,7 +177,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       {
         prompt_version: described_class::PROMPT_TEMPLATE,
         resources: 'issues, epics',
-        agent_version_prompt: nil
+        system_prompt: nil
       }
     end
 
@@ -267,9 +267,10 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           role: 'assistant', content: 'agent version message 2')
       end
 
-      it 'includes agent version prompt in prompt options' do
+      it 'includes system prompt in prompt options' do
         expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-          .to receive(:prompt).once.with(a_hash_including({ agent_version_prompt: existing_agent_version.prompt }))
+          .to receive(:prompt).once.with(a_hash_including({ system_prompt: existing_agent_version.prompt,
+prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
 
         agent.prompt
       end

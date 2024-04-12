@@ -106,7 +106,7 @@ module Gitlab
                 conversation: conversation,
                 prompt_version: prompt_version,
                 zero_shot_prompt: zero_shot_prompt,
-                agent_version_prompt: context.agent_version&.prompt,
+                system_prompt: context.agent_version&.prompt,
                 current_resource: current_resource,
                 current_code: current_code,
                 resources: available_resources_names,
@@ -145,6 +145,8 @@ module Gitlab
             strong_memoize_attr :available_resources_names
 
             def prompt_version
+              return CUSTOM_AGENT_PROMPT_TEMPLATE if context.agent_version
+
               PROMPT_TEMPLATE
             end
 
@@ -292,6 +294,30 @@ module Gitlab
               # `prompt must end with "\n\nAssistant:" turn`.
               # See https://gitlab.com/gitlab-org/gitlab/-/issues/435911 for more information.
               Utils::Prompt.as_assistant("\nAssistant: %<agent_scratchpad>s"),
+              Utils::Prompt.as_assistant("Thought: ")
+            ].freeze
+
+            CUSTOM_AGENT_PROMPT_TEMPLATE = [
+              Utils::Prompt.as_system(
+                <<~PROMPT
+                    You must always use the following format:
+                    Question: the input question you must answer
+                    Thought: you should always think about what to do
+                    Action: the action to take, should be one tool from this list or a direct answer (then use DirectAnswer as action): [%<tool_names>s]
+                    Action Input: the input to the action needs to be provided for every action that uses a tool
+                    Observation: the result of the actions. If the Action is DirectAnswer never write an Observation, but remember that you're still #{AGENT_NAME}.
+
+                    ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
+
+                    Thought: I know the final answer.
+                    Final Answer: the final answer to the original input question.
+
+                    When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
+
+                    Begin!
+                PROMPT
+              ),
+              Utils::Prompt.as_user("Question: %<user_input>s"),
               Utils::Prompt.as_assistant("Thought: ")
             ].freeze
           end
