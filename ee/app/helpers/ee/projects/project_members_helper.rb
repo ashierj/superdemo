@@ -6,8 +6,13 @@ module EE
       extend ::Gitlab::Utils::Override
 
       override :project_members_app_data
-      def project_members_app_data(project, ...)
-        super.merge(manage_member_roles_path: manage_member_roles_path(project))
+      def project_members_app_data(
+        project, members:, invited:, access_requests:, include_relations:, search:, pending_members:
+      )
+        super.merge(
+          manage_member_roles_path: manage_member_roles_path(project),
+          promotion_request: pending_members.present? ? promotion_pending_members_list_data(pending_members) : []
+        )
       end
 
       def project_member_header_subtext(project)
