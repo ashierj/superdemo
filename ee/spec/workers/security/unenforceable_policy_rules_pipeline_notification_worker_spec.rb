@@ -3,9 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Security::UnenforceablePolicyRulesPipelineNotificationWorker, feature_category: :security_policy_management do
-  let_it_be(:pipeline) { create(:ci_empty_pipeline) }
-  let_it_be(:project) { pipeline.project }
-  let_it_be(:merge_request) { create(:ee_merge_request, head_pipeline: pipeline) }
+  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:merge_request) { create(:ee_merge_request, source_project: project) }
+  let_it_be(:pipeline) do
+    create(:ci_empty_pipeline,
+      status: :success,
+      ref: merge_request.source_branch,
+      head_pipeline_of: merge_request,
+      project: project)
+  end
+
   let_it_be(:other_merge_request) { create(:ee_merge_request) }
   let(:feature_licensed) { true }
   let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
@@ -60,14 +67,18 @@ RSpec.describe Security::UnenforceablePolicyRulesPipelineNotificationWorker, fea
       end
     end
 
-    context 'when the pipeline has all security policies reports' do
-      before do
-        pipeline_double = instance_double(Ci::Pipeline, has_all_security_policies_reports?: true)
-        allow(Ci::Pipeline).to receive(:find_by_id).with(pipeline_id).and_return(pipeline_double)
+    context 'when the pipeline is not the head_pipeline but ran for diff_head_sha of the merge request' do
+      let_it_be(:merge_request_pipeline) do
+        create(:ci_empty_pipeline, status: :success, ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha, project: project)
       end
 
-      it 'does not call UnenforceablePolicyRulesNotificationService' do
-        expect(Security::UnenforceablePolicyRulesNotificationService).not_to receive(:new)
+      let(:pipeline_id) { merge_request_pipeline.id }
+
+      it 'calls UnenforceablePolicyRulesNotificationService' do
+        expect_next_instance_of(Security::UnenforceablePolicyRulesNotificationService, merge_request) do |instance|
+          expect(instance).to receive(:execute)
+        end
 
         run_worker
       end

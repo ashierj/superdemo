@@ -444,7 +444,7 @@ module EE
       find_common_ancestor_pipeline_with_security_reports
     end
 
-    def head_sha_pipeline?(pipeline)
+    def diff_head_pipeline?(pipeline)
       pipeline.source_sha == diff_head_sha || pipeline.sha == diff_head_sha
     end
 

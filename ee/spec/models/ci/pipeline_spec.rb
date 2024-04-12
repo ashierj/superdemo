@@ -973,6 +973,43 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
+  describe '#opened_merge_requests_with_head_sha' do
+    let_it_be(:non_head_sha) { OpenSSL::Digest.hexdigest('SHA256', 'foo') }
+    let_it_be(:merge_request) do
+      create(:merge_request, :opened, source_project: project, source_branch: 'feature', target_branch: 'master')
+    end
+
+    let!(:other_merge_request) do
+      create(:merge_request, :opened, source_project: project, source_branch: 'feature', target_branch: 'merge-test')
+    end
+
+    let!(:closed_merge_request) do
+      create(:merge_request, :closed, source_project: project, source_branch: 'feature', target_branch: 'merged-target')
+    end
+
+    before do
+      create(:merge_request_diff_commit,
+        merge_request_diff: merge_request.merge_request_diff,
+        sha: non_head_sha,
+        relative_order: 5
+      )
+    end
+
+    subject(:opened_merge_requests_with_head_sha) { pipeline.opened_merge_requests_with_head_sha }
+
+    context 'when the pipeline ran for head_sha' do
+      let(:pipeline) { create(:ci_pipeline, project: project, ref: 'feature', sha: merge_request.diff_head_sha) }
+
+      it { is_expected.to contain_exactly(merge_request, other_merge_request) }
+    end
+
+    context 'when the pipeline did not run for head_sha' do
+      let(:pipeline) { create(:ci_pipeline, project: project, ref: 'feature', sha: non_head_sha) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#has_all_security_policies_reports?', feature_category: :security_policy_management do
     subject { pipeline.has_all_security_policies_reports? }
 

@@ -2,6 +2,7 @@
 
 module Security
   class UnenforceablePolicyRulesNotificationService
+    include Gitlab::Utils::StrongMemoize
     include ::Security::ScanResultPolicies::PolicyViolationCommentGenerator
 
     def initialize(merge_request)
@@ -40,11 +41,20 @@ module Security
       case report_type
       when :scan_finding
         # Pipelines which can store security reports are handled via SyncFindingsToApprovalRulesService
-        !pipeline.can_store_security_reports?
+        related_pipelines.none?(&:can_store_security_reports?)
       when :license_scanning
         # Pipelines which have scanning results available are handled via SyncLicenseScanningRulesService
-        !pipeline.can_ingest_sbom_reports?
+        related_pipelines.none?(&:can_ingest_sbom_reports?)
       end
     end
+
+    def related_pipelines
+      related_pipelines_id = Security::RelatedPipelinesFinder.new(pipeline, {
+        sources: Enums::Ci::Pipeline.ci_and_security_orchestration_sources.values
+      }).execute
+
+      project.all_pipelines.id_in(related_pipelines_id)
+    end
+    strong_memoize_attr :related_pipelines
   end
 end

@@ -17,9 +17,18 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       :with_cyclonedx_report,
       project: project,
       merge_requests_as_head_pipeline: [merge_request],
+      ref: merge_request.source_branch,
+      sha: merge_request.diff_head_sha)
+  end
+
+  let_it_be_with_reload(:target_pipeline) do
+    create(
+      :ee_ci_pipeline,
+      :success,
+      :with_cyclonedx_report,
+      project: project,
       ref: merge_request.target_branch,
-      sha: merge_request.diff_base_sha,
-      target_sha: merge_request.target_branch_sha)
+      sha: merge_request.diff_base_sha)
   end
 
   let(:license_report) { ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline).report }
@@ -85,7 +94,15 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read)
       end
 
-      let(:sbom_scanner) { instance_double('Gitlab::LicenseScanning::SbomScanner', report: target_branch_report) }
+      let(:source_branch_sbom_scanner) do
+        instance_double('Gitlab::LicenseScanning::SbomScanner', report: pipeline_report, results_available?: true)
+      end
+
+      let(:target_branch_sbom_scanner) do
+        instance_double('Gitlab::LicenseScanning::SbomScanner', report: target_branch_report, results_available?: true)
+      end
+
+      let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
       let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
 
       let(:case5) do
@@ -101,6 +118,21 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       let(:case3) { [['GPL v3', 'GNU 3', 'A'], ['MIT', 'MIT License', 'B']] }
       let(:case2) { [['GPL v3', 'GNU 3', 'A']] }
       let(:case1) { [] }
+
+      context 'when merge request has multiple pipelines for diff_head_sha' do
+        let_it_be(:pipeline) do
+          create(:ee_ci_pipeline,
+            :success,
+            :with_cyclonedx_report,
+            project: project,
+            ref: merge_request.source_branch,
+            sha: project.commit(merge_request.source_branch).sha
+          )
+        end
+
+        it_behaves_like 'triggers policy bot comment', :license_scanning, false
+        it_behaves_like 'merge request without scan result violations'
+      end
 
       context 'when target branch pipeline is empty' do
         it 'does not require approval' do
@@ -124,7 +156,10 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           allow(service).to receive(:report).and_return(pipeline_report)
 
           allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project,
-            pipeline).and_return(sbom_scanner)
+            pipeline).and_return(source_branch_sbom_scanner)
+
+          allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project,
+            target_pipeline).and_return(target_branch_sbom_scanner)
         end
 
         it_behaves_like 'triggers policy bot comment', :license_scanning, true
@@ -139,7 +174,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         context 'when targeting an unprotected branch' do
           before do
             merge_request.update!(target_branch: 'non-protected')
-            pipeline.update!(ref: 'non-protected')
+            target_pipeline.update!(ref: 'non-protected')
           end
 
           it_behaves_like 'triggers policy bot comment', :license_scanning, false, requires_approval: false
@@ -160,31 +195,9 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         end
 
         context 'with merge base pipeline and SBOM report present' do
-          let_it_be(:pipeline) do
-            create(
-              :ee_ci_pipeline,
-              :success,
-              :with_cyclonedx_report,
-              project: project,
-              merge_requests_as_head_pipeline: [merge_request],
-              ref: merge_request.target_branch,
-              sha: merge_request.diff_head_sha,
-              target_sha: merge_request.target_branch_sha)
-          end
-
-          let_it_be(:merge_base_pipeline) do
-            create(
-              :ee_ci_pipeline,
-              :success,
-              :with_cyclonedx_report,
-              project: project,
-              ref: merge_request.target_branch,
-              sha: merge_request.target_branch_sha)
-          end
-
           it 'uses the merge base pipeline for comparison' do
             expect(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline)
-              .with(project, merge_base_pipeline).and_return(sbom_scanner).ordered
+              .with(project, target_pipeline).and_return(target_branch_sbom_scanner).ordered
 
             service.execute
           end
@@ -192,7 +205,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           describe 'policy bot comment' do
             before do
               allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline)
-                                                    .with(project, merge_base_pipeline).and_return(sbom_scanner)
+                .with(project, target_pipeline).and_return(target_branch_sbom_scanner)
             end
 
             it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: true

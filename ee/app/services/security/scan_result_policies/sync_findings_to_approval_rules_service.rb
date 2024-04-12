@@ -35,7 +35,7 @@ module Security
       end
 
       def update_required_approvals_for_scan_finding
-        merge_requests_for_pipeline.each do |merge_request|
+        pipeline.opened_merge_requests_with_head_sha.each do |merge_request|
           update_approvals(merge_request)
         end
 
@@ -62,12 +62,6 @@ module Security
 
       def update_approvals(merge_request)
         Security::ScanResultPolicies::SyncMergeRequestApprovalsWorker.perform_async(pipeline.id, merge_request.id)
-      end
-
-      def merge_requests_for_pipeline
-        pipeline.all_merge_requests.opened.select do |mr|
-          mr.head_sha_pipeline?(pipeline)
-        end
       end
 
       def merge_requests_targeting_pipeline_ref
