@@ -11,6 +11,7 @@ module EE
       prepended do
         before_action do
           push_frontend_feature_flag(:show_overage_on_role_promotion)
+          push_frontend_feature_flag(:member_promotion_management)
         end
       end
 

@@ -26,6 +26,7 @@ module EE
           push_frontend_feature_flag(:limit_unique_project_downloads_per_namespace_user, @group)
           push_frontend_feature_flag(:show_overage_on_role_promotion)
           push_licensed_feature(:unique_project_download_limit, @group)
+          push_frontend_feature_flag(:member_promotion_management)
         end
       end
 

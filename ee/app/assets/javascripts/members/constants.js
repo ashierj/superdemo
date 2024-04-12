@@ -7,8 +7,10 @@ import {
   AVAILABLE_FILTERED_SEARCH_TOKENS as AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
   MEMBER_TYPES as MEMBER_TYPES_CE,
   TAB_QUERY_PARAM_VALUES as CE_TAB_QUERY_PARAM_VALUES,
+  TABS as CE_TABS,
 } from '~/members/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import PromotionRequestsTabApp from './promotion_requests/components/app.vue';
 
 // eslint-disable-next-line import/export
 export * from '~/members/constants';
@@ -55,10 +57,11 @@ export const AVAILABLE_FILTERED_SEARCH_TOKENS = [
 ];
 
 // eslint-disable-next-line import/export
-export const MEMBER_TYPES = {
+export const MEMBER_TYPES = Object.freeze({
   ...MEMBER_TYPES_CE,
+  promotionRequest: 'promotionRequest',
   banned: 'banned',
-};
+});
 
 // eslint-disable-next-line import/export
 export const EE_ACTION_BUTTONS = {
@@ -66,13 +69,21 @@ export const EE_ACTION_BUTTONS = {
 };
 
 // eslint-disable-next-line import/export
-export const TAB_QUERY_PARAM_VALUES = {
+export const TAB_QUERY_PARAM_VALUES = Object.freeze({
   ...CE_TAB_QUERY_PARAM_VALUES,
+  promotionRequest: 'promotion_request',
   banned: 'banned',
-};
+});
 
 // eslint-disable-next-line import/export
-export const EE_TABS = [
+export const TABS = [
+  ...CE_TABS,
+  {
+    namespace: MEMBER_TYPES.promotionRequest,
+    title: __('Promotions'),
+    queryParamValue: TAB_QUERY_PARAM_VALUES.promotionRequest,
+    component: PromotionRequestsTabApp,
+  },
   {
     namespace: MEMBER_TYPES.banned,
     title: __('Banned'),
@@ -80,19 +91,27 @@ export const EE_TABS = [
   },
 ];
 
+const APP_OPTIONS_BASE = {
+  [MEMBER_TYPES.promotionRequest]: gon.features?.memberPromotionManagement,
+};
+
 const uniqueProjectDownloadLimitEnabled =
   gon.features?.limitUniqueProjectDownloadsPerNamespaceUser &&
   gon.licensed_features?.uniqueProjectDownloadLimit;
 
 // eslint-disable-next-line import/export
-export const EE_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
+export const EE_GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
   ? {
+      ...APP_OPTIONS_BASE,
       [MEMBER_TYPES.banned]: {
         tableFields: ['account', 'actions'],
         requestFormatter: groupMemberRequestFormatter,
       },
     }
-  : {};
+  : APP_OPTIONS_BASE;
+
+// eslint-disable-next-line import/export
+export const EE_PROJECTS_APP_OPTIONS = APP_OPTIONS_BASE;
 
 export const GUEST_OVERAGE_MODAL_FIELDS = Object.freeze({
   TITLE: __('You are about to incur additional charges'),

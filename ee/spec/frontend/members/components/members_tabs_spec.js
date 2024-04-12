@@ -5,11 +5,12 @@ import { pagination } from 'ee_else_ce_jest/members/mock_data';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MembersApp from '~/members/components/app.vue';
 import MembersTabs from '~/members/components/members_tabs.vue';
-import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
+import { MEMBER_TYPES, TABS } from 'ee_else_ce/members/constants';
 
 describe('MembersTabs', () => {
   Vue.use(Vuex);
 
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const createComponent = ({ totalItems = 10 } = {}) => {
@@ -24,6 +25,15 @@ describe('MembersTabs', () => {
             },
             filteredSearchBar: {
               searchParam: 'search',
+            },
+          },
+        },
+        [MEMBER_TYPES.promotionRequest]: {
+          namespaced: true,
+          state: {
+            pagination: {
+              ...pagination,
+              totalItems,
             },
           },
         },
@@ -58,23 +68,29 @@ describe('MembersTabs', () => {
   const findActiveTab = () => wrapper.findByRole('tab', { selected: true });
 
   describe('when tabs have a count', () => {
-    it('renders tabs with count', async () => {
+    beforeEach(async () => {
       await createComponent();
+    });
 
+    it('renders tabs with count', () => {
       const tabs = findTabs();
 
       expect(tabs[0].text()).toBe('Members  10');
-      expect(tabs[1].text()).toBe('Banned  10');
+      expect(tabs[1].text()).toBe('Promotions  10');
+      expect(tabs[2].text()).toBe('Banned  10');
       expect(findActiveTab().text()).toContain('Members');
     });
 
-    it('renders `MembersApp` and passes `namespace` and `tabQueryParamValue` props', async () => {
-      await createComponent();
-
+    it('renders `MembersApp` and passes `namespace` and `tabQueryParamValue` props', () => {
       const membersApps = wrapper.findAllComponents(MembersApp).wrappers;
 
       expect(membersApps[0].props('namespace')).toBe(MEMBER_TYPES.user);
       expect(membersApps[1].props('namespace')).toBe(MEMBER_TYPES.banned);
+    });
+
+    it('renders the custom component for Promotion Requests', () => {
+      const promotionsTabMeta = TABS.find((tab) => tab.namespace === MEMBER_TYPES.promotionRequest);
+      expect(wrapper.findComponent(promotionsTabMeta.component).exists()).toBe(true);
     });
   });
 
