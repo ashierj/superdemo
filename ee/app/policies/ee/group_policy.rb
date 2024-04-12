@@ -758,6 +758,17 @@ module EE
       rule { ~runner_performance_insights_available }.policy do
         prevent :read_jobs_statistics
       end
+
+      condition(:pre_receive_secret_detection_available) do
+        ::Feature.enabled?(:pre_receive_secret_detection_push_check, @subject)
+      end
+
+      # At present, the security_setting feature is exclusively accessible for projects.
+      # Following the implementation of https://gitlab.com/gitlab-org/gitlab/-/issues/451357,
+      # this feature will also be available at the group level.
+      rule { pre_receive_secret_detection_available & can?(:maintainer_access) }.policy do
+        enable :enable_pre_receive_secret_detection
+      end
     end
 
     override :lookup_access_level!

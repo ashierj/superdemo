@@ -3802,4 +3802,27 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'enable_pre_receive_secret_detection' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:pre_receive_secret_detection_actor, :current_user, :match_expected_result) do
+      project | ref(:owner)      | be_allowed(:enable_pre_receive_secret_detection)
+      project | ref(:maintainer) | be_allowed(:enable_pre_receive_secret_detection)
+      project | ref(:developer)  | be_disallowed(:enable_pre_receive_secret_detection)
+      project | ref(:non_member) | be_disallowed(:enable_pre_receive_secret_detection)
+      false   | ref(:owner)      | be_disallowed(:enable_pre_receive_secret_detection)
+      false   | ref(:maintainer) | be_disallowed(:enable_pre_receive_secret_detection)
+      false   | ref(:developer)  | be_disallowed(:enable_pre_receive_secret_detection)
+      false   | ref(:non_member) | be_disallowed(:enable_pre_receive_secret_detection)
+    end
+
+    with_them do
+      before do
+        stub_feature_flags(pre_receive_secret_detection_push_check: pre_receive_secret_detection_actor)
+      end
+
+      it { is_expected.to match_expected_result }
+    end
+  end
 end
