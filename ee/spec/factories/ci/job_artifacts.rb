@@ -4,14 +4,15 @@ FactoryBot.define do
   factory :ee_ci_job_artifact, class: '::Ci::JobArtifact', parent: :ci_job_artifact do
     trait :verification_succeeded do
       common_security_report # with file
-      verification_checksum { 'abc' }
-      verification_state { Ci::JobArtifact.verification_state_value(:verification_succeeded) }
+      after(:create) do |instance, _|
+        instance.verification_checksum = 'abc'
+        instance.verification_state = Ci::JobArtifact.verification_state_value(:verification_started)
+        instance.verification_succeeded!
+      end
     end
 
     trait :verification_failed do
       common_security_report # with file
-      verification_failure { 'Could not calculate the checksum' }
-      verification_state { Ci::JobArtifact.verification_state_value(:verification_failed) }
 
       #
       # Geo::VerifiableReplicator#after_verifiable_update tries to verify
@@ -19,6 +20,8 @@ FactoryBot.define do
       # model record is created/updated.
       #
       after(:create) do |instance, _|
+        instance.verification_failure = 'Could not calculate the checksum'
+        instance.verification_state = Ci::JobArtifact.verification_state_value(:verification_started)
         instance.verification_failed!
       end
     end

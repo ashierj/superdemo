@@ -39,10 +39,19 @@ RSpec.shared_examples 'is a Geo batcher' do
 
         context 'when the destination table has a gap of at least one batch' do
           let(:batch_size) { 1 }
-          let!(:destination_records) { create(destination_class_factory, source_foreign_key => records.last.id) }
+          let!(:destination_records) do
+            create(destination_class_factory, source_query_constraints(records.last))
+          end
 
           it 'returns a batch ending at batch size' do
             expect(subject).to eq(1..source_class.first.id)
+          end
+
+          def source_query_constraints(record)
+            attrs = { source_foreign_key => record.id }
+            return attrs unless record.attributes.key?("partition_id")
+
+            attrs.merge({ "partition_id" => record.partition_id })
           end
         end
       end
