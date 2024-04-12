@@ -169,7 +169,8 @@ export default {
         this.isEditing = true;
         this.showDropdown();
       } else {
-        this.hideDropdown();
+        this.isEditing = false;
+        this.isDropdownShowing = false;
       }
     },
     showDropdown() {
@@ -178,7 +179,6 @@ export default {
     },
     hideDropdown() {
       this.isEditing = false;
-      this.isDropdownShowing = false;
     },
     setSearch(search) {
       this.search = search;

@@ -109,6 +109,16 @@ describe('Iteration select component', () => {
       expect(findEditButton().exists()).toBe(true);
     });
 
+    it('toggles edit state when edit button is clicked', async () => {
+      findEditButton().vm.$emit('click');
+      await nextTick();
+      expect(findDropdown().isVisible()).toBe(true);
+
+      findEditButton().vm.$emit('click');
+      await nextTick();
+      expect(findDropdown().isVisible()).toBe(false);
+    });
+
     it('renders cadence when Any in cadence is selected', async () => {
       findEditButton().vm.$emit('click');
 

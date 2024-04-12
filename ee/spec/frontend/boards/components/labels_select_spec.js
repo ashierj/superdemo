@@ -128,6 +128,16 @@ describe('Labels select component', () => {
     it('shows Edit button if true', () => {
       expect(findEditButton().exists()).toBe(true);
     });
+
+    it('toggles edit state when edit button is clicked', async () => {
+      findEditButton().vm.$emit('click');
+      await nextTick();
+      expect(findDropdown().isVisible()).toBe(true);
+
+      findEditButton().vm.$emit('click');
+      await nextTick();
+      expect(findDropdown().isVisible()).toBe(false);
+    });
   });
 
   it.each`
