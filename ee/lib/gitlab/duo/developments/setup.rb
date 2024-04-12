@@ -42,7 +42,7 @@ module Gitlab
 
           unless ::Gitlab::CurrentSettings.anthropic_api_key.present?
             raise <<~MSG
-              Make sure Anthropic API key is correc]tly set.
+              Make sure Anthropic API key is correctly set.
               See https://docs.gitlab.com/ee/development/ai_features/index.html#configure-anthropic-access for more information.
             MSG
           end
@@ -57,7 +57,7 @@ module Gitlab
           unless Gitlab::Database.has_config?(:embedding) # rubocop:disable Style/GuardClause -- Align guard clauses
             raise <<~MSG
               Make sure embedding database is setup.
-              See https://docs.gitlab.com/ee/development/ai_features/index.html#set-up-the-embedding-database for more information.
+              See https://docs.gitlab.com/ee/development/ai_features/index.html#embeddings-database for more information.
             MSG
           end
         end
