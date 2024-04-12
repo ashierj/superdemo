@@ -4,8 +4,6 @@ export const DEFAULT_PIPELINE_EXECUTION_POLICY = `type: pipeline_execution_polic
 name: ''
 description: ''
 enabled: true
-rules:
-  - foo: bar
 actions:
   - foo: bar
 `;
