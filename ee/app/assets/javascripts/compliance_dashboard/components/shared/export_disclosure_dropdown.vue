@@ -32,7 +32,7 @@ export default {
       required: false,
       default: null,
     },
-    frameworksCsvExportPath: {
+    projectFrameworksCsvExportPath: {
       type: String,
       required: false,
       default: null,
@@ -47,6 +47,11 @@ export default {
       required: false,
       default: null,
     },
+    frameworksCsvExportPath: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -57,6 +62,19 @@ export default {
   computed: {
     exportItems() {
       const items = [];
+
+      if (this.adherencesCsvExportPath) {
+        items.push({
+          value: 'adherences_export',
+          text: this.$options.i18n.adherencesExportTitle,
+          href: this.adherencesCsvExportPath,
+          extraAttrs: {
+            'data-track-action': 'click_export',
+            'data-track-label': 'export_all_adherences',
+          },
+          tooltipText: `${this.$options.i18n.tooltipTexts.adherence} ${this.$options.i18n.tooltipTexts.ending}`,
+        });
+      }
 
       if (this.violationsCsvExportPath) {
         items.push({
@@ -84,16 +102,16 @@ export default {
         });
       }
 
-      if (this.adherencesCsvExportPath) {
+      if (this.projectFrameworksCsvExportPath) {
         items.push({
-          value: 'adherences_export',
-          text: this.$options.i18n.adherencesExportTitle,
-          href: this.adherencesCsvExportPath,
+          value: 'project_frameworks_export',
+          text: this.$options.i18n.projectFrameworksExportTitle,
+          href: this.projectFrameworksCsvExportPath,
           extraAttrs: {
             'data-track-action': 'click_export',
-            'data-track-label': 'export_all_adherences',
+            'data-track-label': 'export_all_project_frameworks',
           },
-          tooltipText: `${this.$options.i18n.tooltipTexts.adherence} ${this.$options.i18n.tooltipTexts.ending}`,
+          tooltipText: `${this.$options.i18n.tooltipTexts.projectFrameworks} ${this.$options.i18n.tooltipTexts.ending}`,
         });
       }
 
@@ -145,8 +163,9 @@ export default {
       'Compliance Center Export|Send email of the chosen report as CSV',
     ),
     adherencesExportTitle: s__('Compliance Center Export|Export standards adherence report'),
+    frameworksExportTitle: s__('Compliance Center Export|Export frameworks report'),
     violationsExportTitle: s__('Compliance Center Export|Export violations report'),
-    frameworksExportTitle: s__('Compliance Center Export|Export list of project frameworks'),
+    projectFrameworksExportTitle: s__('Compliance Center Export|Export list of project frameworks'),
     custodyCommitsExportTitle: s__('Compliance Center Export|Export chain of custody report'),
     custodyCommitExportTitle: s__(
       'Compliance Center Export|Export custody report of a specific commit',
@@ -159,7 +178,12 @@ export default {
       adherence: s__(
         'Compliance Center Export|Export contents of the standards adherence report as a CSV file.',
       ),
-      frameworks: s__('Compliance Center Export|Export list of project frameworks as a CSV file.'),
+      frameworks: s__(
+        'Compliance Center Export|Export contents of the compliance frameworks report as a CSV file.',
+      ),
+      projectFrameworks: s__(
+        'Compliance Center Export|Export a list of compliance frameworks for a project as a CSV file.',
+      ),
       mergeCommits: s__(
         'Compliance Center Export|Export chain of custody report as a CSV file (limited to 15MB).',
       ),

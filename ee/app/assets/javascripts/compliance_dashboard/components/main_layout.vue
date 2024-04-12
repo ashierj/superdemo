@@ -31,6 +31,8 @@ export default {
     'projectFrameworksCsvExportPath',
     'violationsCsvExportPath',
     'adherencesCsvExportPath',
+    'frameworksCsvExportPath',
+    'complianceFrameworkReportUiEnabled',
   ],
   computed: {
     tabIndex() {
@@ -91,10 +93,11 @@ export default {
       <template #actions>
         <reports-export
           class="gl-float-right"
-          :frameworks-csv-export-path="projectFrameworksCsvExportPath"
+          :project-frameworks-csv-export-path="projectFrameworksCsvExportPath"
           :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
           :violations-csv-export-path="violationsCsvExportPath"
           :adherences-csv-export-path="adherencesCsvExportPath"
+          :frameworks-csv-export-path="frameworksCsvExportPath"
         />
       </template>
     </report-header>
