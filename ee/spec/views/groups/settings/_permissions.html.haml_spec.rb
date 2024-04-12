@@ -44,12 +44,12 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
 
   context 'for duo features enabled' do
     before do
-      allow(group).to receive(:licensed_feature_available?).and_call_original
+      allow(group).to receive(:licensed_ai_features_available?).and_call_original
     end
 
-    context 'when licensed feature is not available' do
+    context 'when licensed ai features is not available' do
       it 'renders nothing' do
-        allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(false)
+        allow(group).to receive(:licensed_ai_features_available?).and_return(false)
 
         render
 
@@ -58,9 +58,9 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
       end
     end
 
-    context 'when licensed feature is available' do
+    context 'when licensed ai features are available' do
       it 'renders the experiment settings' do
-        allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(true)
+        allow(group).to receive(:licensed_ai_features_available?).and_return(true)
 
         render
 
