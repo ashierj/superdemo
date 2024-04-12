@@ -25,7 +25,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:embedding) { Array.new(1536, 0.5) }
     let(:vertex_embedding) { Array.new(768, 0.5) }
     let(:openai_response) { { "data" => [{ "embedding" => embedding }] } }
-    let(:vertex_response) { { "predictions" => [{ "embeddings" => { "values" => vertex_embedding } }] } }
+    let(:predictions) { [{ "embeddings" => { "values" => vertex_embedding } }] }
+    let(:error) { nil }
+    let(:vertex_response) { { "predictions" => predictions, "error" => error } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
     let(:completion_response) { "#{answer} ATTRS: #{attrs}" }
 
@@ -33,6 +35,11 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:success) { true }
 
     subject(:execute) { instance.execute }
+
+    before do
+      allow(vertex_response).to receive(:success?).and_return(success)
+      allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+    end
 
     describe '.enabled_for?', :use_clean_rails_redis_caching do
       let_it_be_with_reload(:group) { create(:group) }
@@ -142,7 +149,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         context 'when user has AI features enabled' do
           before do
-            allow(vertex_response).to receive(:success?).and_return(true)
             allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
             allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
             allow(described_class).to receive(:enabled_for?).and_return(true)
@@ -166,7 +172,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           end
 
           it 'calls the duo_chat_documentation pipeline for the emedded content' do
-            allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
             allow(Banzai).to receive(:render).and_return('absolute_links_content')
 
             expect(anthropic_client).to receive(:stream)
@@ -210,17 +215,10 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           end
 
           context 'when searching for embeddings' do
-            let(:vertex_error_response) { { "error" => { "message" => "some error" } } }
-
-            before do
-              allow(vertex_error_response).to receive(:success?).and_return(true)
-              allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_error_response)
-            end
+            let(:error) { { "message" => "some error" } }
 
             context 'when the embeddings request is unsuccesful' do
-              before do
-                allow(vertex_error_response).to receive(:success?).and_return(false)
-              end
+              let(:success) { false }
 
               it 'logs an error message' do
                 expect(logger).to receive(:info_or_debug).with(user, message: "Could not generate embeddings",
@@ -231,12 +229,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
 
             context 'when the embeddings request has no predictions' do
-              let(:empty) { { "predictions" => [] } }
-
-              before do
-                allow(empty).to receive(:success?).and_return(true)
-                allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(empty)
-              end
+              let(:predictions) { [] }
 
               it 'returns empty response' do
                 expect(execute.response_body).to eq(empty_response_message)
@@ -246,9 +239,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           end
         end
 
-        context 'when ai_global_switch FF is disabled' do
+        context 'when ai_duo_chat_switch FF is disabled' do
           before do
-            stub_feature_flags(ai_global_switch: false)
+            stub_feature_flags(ai_duo_chat_switch: false)
           end
 
           it 'returns an empty response message' do
@@ -257,9 +250,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         end
       end
 
-      context 'when ai_global_switch FF is disabled' do
+      context 'when ai_duo_chat_switch FF is disabled' do
         before do
-          stub_feature_flags(ai_global_switch: false)
+          stub_feature_flags(ai_duo_chat_switch: false)
         end
 
         it 'returns an empty response message' do
@@ -285,7 +278,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         context 'when no neighbors are found' do
           before do
             allow(vertex_model).to receive(:neighbor_for).and_return(vertex_model.none)
-            allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
           end
 
           it 'returns an i do not know' do

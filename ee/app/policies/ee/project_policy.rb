@@ -956,7 +956,9 @@ module EE
         enable :write_ai_agents
       end
 
-      rule { can?(:read_project) & chat_allowed_for_parent_group & chat_available_for_user }.enable :access_duo_chat
+      rule { can?(:read_project) & chat_allowed_for_parent_group & chat_available_for_user }.policy do
+        enable :access_duo_chat
+      end
 
       rule { can?(:read_project) & duo_features_enabled }.enable :access_duo_features
 

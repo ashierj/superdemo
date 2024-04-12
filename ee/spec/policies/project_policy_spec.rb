@@ -3552,24 +3552,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           end
         end
       end
-
-      context 'when group has not AI enabled' do
-        context 'when user has AI enabled' do
-          before do
-            allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
-          end
-
-          context 'when container is a group' do
-            include_context 'with experiment features disabled for group'
-
-            it 'returns false' do
-              allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(true)
-
-              is_expected.to be_disallowed(:access_duo_chat)
-            end
-          end
-        end
-      end
     end
 
     context 'for self-managed' do
@@ -3583,7 +3565,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
 
       context 'when not on .org or .com' do
-        where(:licensed, :instance_level_ai_beta_features_enabled, :duo_chat_matcher) do
+        where(:licensed, :duo_features_enabled, :duo_chat_matcher) do
           true  | false | be_disallowed(policy)
           true  | true  | be_allowed(policy)
           false | false | be_disallowed(policy)
@@ -3593,7 +3575,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         with_them do
           before do
             allow(::Gitlab).to receive(:org_or_com?).and_return(false)
-            stub_ee_application_setting(instance_level_ai_beta_features_enabled: instance_level_ai_beta_features_enabled)
+            stub_ee_application_setting(duo_features_enabled: duo_features_enabled)
             stub_licensed_features(ai_chat: licensed)
           end
 

@@ -238,12 +238,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
           end
 
           before do
-            additional_group = create(:group_with_plan, plan: :ultimate_plan)
-            additional_group.update!(experiment_features_enabled: true)
-            additional_group.add_developer(user)
-
-            group.update!(experiment_features_enabled: false)
-            epic2.reload
+            stub_licensed_features(epics: true, ai_chat: false)
           end
 
           it 'returns success response' do

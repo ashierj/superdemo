@@ -72,7 +72,7 @@ module EE
         if duo_chat_free_access_was_cut_off?
           @user.duo_pro_add_on_available?
         else # Before service start date
-          ::Gitlab::CurrentSettings.instance_level_ai_beta_features_enabled?
+          ::Gitlab::CurrentSettings.duo_features_enabled?
         end
       end
 
