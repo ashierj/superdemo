@@ -29,7 +29,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     end
 
     context 'when context is authorized' do
-      include_context 'with ai features enabled for group'
+      before do
+        allow(user).to receive(:can?).with(:access_duo_chat).and_return(true)
+      end
 
       let(:expected_params) do
         { current_user: user, question: options[:input], tracking_context: { action: 'chat_documentation' } }
@@ -90,6 +92,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     end
 
     context 'when context is not authorized' do
+      before do
+        allow(user).to receive(:can?).with(:access_duo_chat).and_return(false)
+      end
+
       it 'responds with the message from TanukiBot' do
         expect(result.content)
           .to eq("I am sorry, I am unable to find what you are looking for.")

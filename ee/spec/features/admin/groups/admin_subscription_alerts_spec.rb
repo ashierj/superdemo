@@ -10,7 +10,6 @@ RSpec.describe 'Subscription expired notification', :js, feature_category: :cons
   before do
     stub_application_setting(signup_enabled: false)
     stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: false)
-
     sign_in(admin)
     enable_admin_mode!(admin, use_ui: true)
   end
@@ -32,6 +31,10 @@ RSpec.describe 'Subscription expired notification', :js, feature_category: :cons
 
     it 'displays and dismisses alert' do
       expect(page).to have_content(expected_content)
+
+      within_testid('duo-chat-promo-callout-popover') do
+        find_by_testid('close-button').click
+      end
 
       within_testid('subscribable_banner') do
         click_button('Dismiss')

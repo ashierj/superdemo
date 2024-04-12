@@ -234,13 +234,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
             let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
 
             before do
-              additional_group = create(:group_with_plan, plan: :ultimate_plan)
-              allow(additional_group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-              additional_group.update!(experiment_features_enabled: true)
-              additional_group.add_developer(user)
-              allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-              group.update!(experiment_features_enabled: false)
-              issue1.reload
+              stub_licensed_features(ai_chat: false)
             end
 
             it 'returns success response' do

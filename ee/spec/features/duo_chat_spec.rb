@@ -3,19 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_category: :duo_chat do
-  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
   let_it_be(:user) { create(:user) }
 
-  before_all do
-    group.add_developer(user)
-  end
-
   before do
-    stub_licensed_features(ai_chat: true)
+    group.add_developer(user)
     stub_application_setting(anthropic_api_key: 'somekey')
   end
 
-  context 'when group has no AI features enabled' do
+  context 'when group does not have an AI features license' do
+    let_it_be_with_reload(:group) { create(:group_with_plan) }
+
     before do
       sign_in(user)
       visit root_path
@@ -26,8 +23,10 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
     end
   end
 
-  context 'when group has AI features enabled', :sidekiq_inline do
-    include_context 'with ai features enabled for group'
+  context 'when group has an AI features license', :sidekiq_inline do
+    include_context 'with ai chat enabled for group on SaaS'
+
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 
     let(:question) { 'Who are you?' }
     let(:answer) { 'I am GitLab Duo Chat' }

@@ -666,7 +666,9 @@ module EE
 
     def any_group_with_ai_chat_available?
       Rails.cache.fetch(['users', id, GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD) do
-        member_namespaces.namespace_settings_with_ai_features_enabled.with_ai_supported_plan(:ai_chat).any?
+        groups = member_namespaces.with_ai_supported_plan(:ai_chat)
+        groups = ::Feature.enabled?(:duo_chat_ga) ? groups : groups.namespace_settings_with_ai_features_enabled
+        groups.any?
       end
     end
 
