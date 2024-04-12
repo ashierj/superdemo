@@ -20,7 +20,7 @@ module ApprovalRules
 
     # rubocop: disable CodeReuse/ActiveRecord
     def hidden_groups
-      @hidden_groups ||= groups.where.not(id: visible_groups.map(&:id))
+      @hidden_groups ||= groups.where.not(id: (visible_groups + project_groups).map(&:id).uniq)
     end
 
     def contains_hidden_groups?
@@ -29,6 +29,16 @@ module ApprovalRules
     # rubocop: enable CodeReuse/ActiveRecord
 
     private
+
+    def project_groups
+      return Group.none unless rule.respond_to?(:project)
+
+      project = rule.project
+      return Group.none unless Feature.enabled?(:show_private_groups_as_approvers,
+        project) && current_user&.can?(:read_project, project)
+
+      project.invited_groups
+    end
 
     def groups
       strong_memoize(:groups) do
