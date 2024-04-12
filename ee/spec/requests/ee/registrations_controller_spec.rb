@@ -27,7 +27,6 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         let_it_be(:devise_token) { Devise.friendly_token }
 
         before do
-          stub_feature_flags(identity_verification: false)
           allow(Devise).to receive(:friendly_token).and_return(devise_token)
         end
 
@@ -74,12 +73,12 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         end
       end
 
-      context 'when identity verification is turned on' do
+      context 'when identity verification is available' do
         let_it_be(:custom_token) { '123456' }
         let_it_be(:encrypted_token) { Devise.token_generator.digest(User, user_attrs[:email], custom_token) }
 
         before do
-          stub_feature_flags(identity_verification: true)
+          stub_saas_features(identity_verification: true)
           allow_next_instance_of(::Users::EmailVerification::GenerateTokenService) do |srvc|
             allow(srvc).to receive(:generate_token).and_return(custom_token)
           end

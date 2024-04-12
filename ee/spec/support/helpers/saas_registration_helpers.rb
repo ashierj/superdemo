@@ -80,7 +80,7 @@ module SaasRegistrationHelpers
   end
 
   def sso_sign_up(params = {}, name: 'Registering User')
-    stub_feature_flags(identity_verification: true)
+    stub_saas_features(identity_verification: true)
 
     with_omniauth_full_host do
       user_signs_up_with_sso(params, name: name)
@@ -157,7 +157,7 @@ module SaasRegistrationHelpers
   end
 
   def sso_trial_registration_sign_up(params = {}, name: 'Registering User')
-    stub_feature_flags(identity_verification: true)
+    stub_saas_features(identity_verification: true)
 
     with_omniauth_full_host do
       user_signs_up_through_trial_with_sso(params, name: name)
@@ -172,7 +172,7 @@ module SaasRegistrationHelpers
 
   def sso_subscription_sign_up
     stub_signing_key
-    stub_feature_flags(identity_verification: true)
+    stub_saas_features(identity_verification: true)
 
     with_omniauth_full_host do
       user_signs_up_through_subscription_with_sso
@@ -186,7 +186,7 @@ module SaasRegistrationHelpers
   end
 
   def sso_signup_through_signin
-    stub_feature_flags(identity_verification: true)
+    stub_saas_features(identity_verification: true)
 
     with_omniauth_full_host do
       user_signs_up_through_signin_with_sso

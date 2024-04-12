@@ -30,6 +30,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   let(:is_arkose_enabled) { true }
 
   before do
+    stub_saas_features(identity_verification: true)
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(require_admin_approval_after_user_signup: false)
 

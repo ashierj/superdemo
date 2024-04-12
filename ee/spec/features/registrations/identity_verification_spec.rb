@@ -7,6 +7,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   include ListboxHelpers
 
   before do
+    stub_saas_features(identity_verification: true)
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(
       require_admin_approval_after_user_signup: false,
