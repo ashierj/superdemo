@@ -211,11 +211,15 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
 
             it_behaves_like 'title for detected violations'
 
-            it { is_expected.to include 'Unsigned commits', 'abcd1234' }
+            it 'includes the section and a linked commit' do
+              expect(body).to include 'Unsigned commits',
+                "[`abcd1234`](#{Gitlab::Routing.url_helpers.project_commit_url(project, 'abcd1234')})"
+            end
+
             it { is_expected.not_to include described_class::MORE_VIOLATIONS_DETECTED }
 
             context 'when the list is longer than MAX_VIOLATIONS' do
-              let(:commits) { (0..Security::ScanResultPolicyViolation::MAX_VIOLATIONS).map { |n| "abcd#{n}" } }
+              let(:commits) { (0..Security::ScanResultPolicyViolation::MAX_VIOLATIONS).map { |n| "abcdef0#{n}" } }
 
               it { is_expected.to include(*commits.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS)) }
               it { is_expected.to include described_class::MORE_VIOLATIONS_DETECTED }
