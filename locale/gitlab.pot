@@ -9037,6 +9037,9 @@ msgstr ""
 msgid "BranchRules|Roles"
 msgstr ""
 
+msgid "BranchRules|Rule target"
+msgstr ""
+
 msgid "BranchRules|Select Branch or create wildcard"
 msgstr ""
 
