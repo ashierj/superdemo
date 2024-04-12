@@ -3,14 +3,66 @@
 require 'spec_helper'
 
 RSpec.describe RegistrationsController, type: :request, feature_category: :system_access do
+  include SessionHelpers
+
+  let_it_be(:user_attrs) do
+    build_stubbed(:user).slice(:first_name, :last_name, :username, :email, :password)
+  end
+
   before do
     allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
     allow(::Arkose::Settings).to receive(:enabled?).and_return(false)
   end
 
-  describe 'POST #create' do
-    let_it_be(:user_attrs) { build_stubbed(:user).slice(:first_name, :last_name, :username, :email, :password) }
+  describe 'GET #new' do
+    let(:params) { { user: user_attrs } }
 
+    subject(:new_user) { get new_user_registration_path, params: params }
+
+    context 'with tracking' do
+      it 'tracks page render' do
+        new_user
+
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'render_registration_page',
+          label: 'free_registration'
+        )
+      end
+
+      context 'when invite' do
+        let(:params) { { user: user_attrs, invite_email: 'new@email.com' } }
+
+        it 'tracks page render' do
+          new_user
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'render_registration_page',
+            label: 'invite_registration'
+          )
+        end
+      end
+
+      context 'when subscription', :saas, :clean_gitlab_redis_sessions do
+        before do
+          stub_session(user_return_to: new_subscriptions_path)
+        end
+
+        it 'tracks successful form submission' do
+          new_user
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'render_registration_page',
+            label: 'subscription_registration'
+          )
+        end
+      end
+    end
+  end
+
+  describe 'POST #create' do
     subject(:create_user) { post user_registration_path, params: { user: user_attrs } }
 
     it_behaves_like 'creates a user with ArkoseLabs risk band on signup request' do
@@ -224,6 +276,53 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
 
           user = User.find_by(email: user_attrs[:email])
           expect(user).to be_active
+        end
+      end
+    end
+
+    context 'with tracking' do
+      it 'tracks successful form submission' do
+        create_user
+
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'successfully_submitted_form',
+          label: 'free_registration',
+          user: User.find_by(email: user_attrs[:email])
+        )
+      end
+
+      context 'when invite' do
+        subject(:create_user) do
+          post user_registration_path, params: { user: user_attrs, invite_email: 'new@email.com' }
+        end
+
+        it 'tracks successful form submission' do
+          create_user
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            label: 'invite_registration',
+            user: User.find_by(email: user_attrs[:email])
+          )
+        end
+      end
+
+      context 'when subscription', :saas, :clean_gitlab_redis_sessions do
+        before do
+          stub_session(user_return_to: new_subscriptions_path)
+        end
+
+        it 'tracks successful form submission' do
+          create_user
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            label: 'subscription_registration',
+            user: User.find_by(email: user_attrs[:email])
+          )
         end
       end
     end

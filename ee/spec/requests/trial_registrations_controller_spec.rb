@@ -8,7 +8,7 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
   describe 'GET new' do
     let(:get_params) { {} }
 
-    subject do
+    subject(:get_new) do
       get new_trial_registration_path, params: get_params
       response
     end
@@ -23,6 +23,18 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
 
     context 'when user is not authenticated' do
       it { is_expected.to have_gitlab_http_status(:ok) }
+
+      context 'with tracking' do
+        it 'tracks page render' do
+          get_new
+
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'render_registration_page',
+            label: 'trial_registration'
+          )
+        end
+      end
     end
 
     context 'when user is authenticated' do
@@ -88,29 +100,15 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
       end
 
       context 'with snowplow tracking', :snowplow do
-        context 'when the password is weak' do
-          let(:user_params) { super().merge(password: '1') }
+        it 'tracks successful form submission' do
+          post_create
 
-          it 'does not track failed form submission' do
-            post_create
-
-            expect_no_snowplow_event(
-              category: described_class.name,
-              action: 'successfully_submitted_form'
-            )
-          end
-        end
-
-        context 'when the password is not weak' do
-          it 'tracks successful form submission' do
-            post_create
-
-            expect_snowplow_event(
-              category: described_class.name,
-              action: 'successfully_submitted_form',
-              user: User.find_by(email: user_params[:email])
-            )
-          end
+          expect_snowplow_event(
+            category: described_class.name,
+            action: 'successfully_submitted_form',
+            label: 'trial_registration',
+            user: User.find_by(email: user_params[:email])
+          )
         end
 
         context 'with email confirmation' do
