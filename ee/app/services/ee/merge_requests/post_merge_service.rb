@@ -6,7 +6,7 @@ module EE
       extend ::Gitlab::Utils::Override
 
       override :execute
-      def execute(merge_request)
+      def execute(merge_request, source = nil)
         super
         ApprovalRules::FinalizeService.new(merge_request).execute
 
