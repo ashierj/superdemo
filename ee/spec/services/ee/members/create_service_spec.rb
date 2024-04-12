@@ -187,7 +187,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       let(:dashboard_limit_enabled) { true }
       let_it_be(:owner) { create(:user) }
       let_it_be(:root_ancestor) do
-        create(:group_with_plan, :private, plan: :free_plan).tap { |g| g.add_owner(owner) }
+        create(:group_with_plan, :private, plan: :free_plan, owners: owner)
       end
 
       let_it_be(:invited_group) do

@@ -308,7 +308,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
 
   describe 'data loading for stages with label based events' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group).tap { |g| g.add_developer(user) } }
+    let_it_be(:group) { create(:group, developers: user) }
     let_it_be(:project) { create(:project, :repository, group: group) }
 
     let_it_be(:label1) { create(:group_label, group: group) }

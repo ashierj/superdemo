@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
   let_it_be(:developer) { create(:user) }
-  let_it_be(:group) { create(:group).tap { |proj| proj.add_developer(developer) } }
+  let_it_be(:group) { create(:group, developers: developer) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:work_item, refind: true) { create(:work_item, project: project) }
 

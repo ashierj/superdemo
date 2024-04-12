@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe WorkItems::Callbacks::Color, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:reporter) { create(:user) }
-  let_it_be(:group) { create(:group).tap { |group| group.add_reporter(reporter) } }
+  let_it_be(:group) { create(:group, reporters: reporter) }
   let_it_be_with_reload(:work_item) { create(:work_item, :epic, namespace: group, author: user) }
   let_it_be_with_reload(:color) { create(:color, work_item: work_item, color: '#1068bf') }
   let_it_be(:error_class) { ::WorkItems::Widgets::BaseService::WidgetError }

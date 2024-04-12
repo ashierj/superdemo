@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::IssueStageEvent, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, namespace: create(:group)).tap { |p| p.add_developer(user) } }
+  let_it_be(:project) { create(:project, namespace: create(:group), developers: user) }
   let_it_be(:issue1) { create(:issue, project: project) }
   let_it_be(:issue2) { create(:issue, project: project) }
   let_it_be(:issue3) { create(:issue, project: project, assignees: [user]) }

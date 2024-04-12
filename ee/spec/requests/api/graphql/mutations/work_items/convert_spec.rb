@@ -65,7 +65,7 @@ RSpec.describe "Converts a work item to a new type", feature_category: :team_pla
 
   context 'when converting epic work item' do
     let(:current_user) { developer }
-    let_it_be(:group) { create(:group).tap { |group| group.add_developer(developer) } }
+    let_it_be(:group) { create(:group, developers: developer) }
 
     before do
       stub_licensed_features(okrs: true)

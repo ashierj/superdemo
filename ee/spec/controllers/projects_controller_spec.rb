@@ -622,7 +622,7 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
     context 'analytics dashboards pointer setting' do
       let_it_be(:project, reload: true) { create(:project, namespace: group) }
       let_it_be(:another_project) do
-        create(:project, namespace: group).tap { |p| p.add_maintainer(user) }
+        create(:project, namespace: group, maintainers: user)
       end
 
       let(:params) do

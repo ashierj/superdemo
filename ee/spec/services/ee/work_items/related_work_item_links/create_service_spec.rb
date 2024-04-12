@@ -10,7 +10,7 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
     let_it_be(:reporter) { create(:user, reporter_of: project) }
     let_it_be(:user) { reporter }
     let_it_be(:work_item_a) { create(:work_item, project: project) }
-    let_it_be(:project2) { create(:project, namespace: project.namespace).tap { |p| p.add_reporter(reporter) } }
+    let_it_be(:project2) { create(:project, namespace: project.namespace, reporters: reporter) }
     let_it_be(:another_work_item) { create(:work_item, project: project2) }
 
     let(:link_class) { ::WorkItems::RelatedWorkItemLink }

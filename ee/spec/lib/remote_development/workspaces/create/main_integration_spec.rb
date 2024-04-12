@@ -11,7 +11,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
   include_context 'with remote development shared fixtures'
 
   let(:user) { create(:user) }
-  let(:group) { create(:group, name: 'test-group').tap { |group| group.add_developer(user) } }
+  let(:group) { create(:group, name: 'test-group', developers: user) }
   let(:current_user) { user }
   let(:random_string) { 'abcdef' }
   let(:devfile_ref) { 'master' }

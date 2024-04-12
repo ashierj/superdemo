@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfolio_management do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group).tap { |g| g.add_reporter(user) } }
+    let_it_be(:group) { create(:group, reporters: user) }
     let_it_be(:work_item1) { create(:work_item, :epic, namespace: group) }
     let_it_be(:work_item2) { create(:work_item, :epic, namespace: group) }
     let_it_be(:with_synced_epic) { create(:epic, :with_synced_work_item, group: group).work_item }

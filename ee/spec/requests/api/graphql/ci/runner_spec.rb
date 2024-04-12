@@ -166,7 +166,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :fleet_visibility do
         context 'requested by paid user' do
           let_it_be(:user) { create(:user, :admin, namespace: create(:user_namespace)) }
           let_it_be(:ultimate_group) do
-            create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_reporter(user) }
+            create(:group_with_plan, plan: :ultimate_plan, reporters: user)
           end
 
           let(:current_user) { user }

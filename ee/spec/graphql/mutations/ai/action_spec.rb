@@ -197,7 +197,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
     end
 
     context 'when chat input is set ' do
-      let_it_be(:project) { create(:project, :repository).tap { |p| p.add_developer(user) } }
+      let_it_be(:project) { create(:project, :repository, developers: user) }
       let_it_be(:issue) { create(:issue, project: project) }
 
       let(:input) { { chat: { resource_id: resource_id } } }

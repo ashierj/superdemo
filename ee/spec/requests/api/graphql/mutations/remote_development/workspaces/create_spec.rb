@@ -8,7 +8,7 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:current_user) { user } # NOTE: Some graphql spec helper methods rely on current_user to be set
   let_it_be(:project) do
-    create(:project, :public, :in_group, :repository).tap { |project| project.add_developer(user) }
+    create(:project, :public, :in_group, :repository, developers: user)
   end
 
   let_it_be(:agent, reload: true) do
@@ -79,7 +79,7 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
   context 'when workspace project and agent project are not in the same root namespace' do
     let_it_be(:agent_project_in_different_root_namespace, reload: true) do
-      create(:project, :public, :in_group).tap { |project| project.add_developer(user) }
+      create(:project, :public, :in_group, developers: user)
     end
 
     before do

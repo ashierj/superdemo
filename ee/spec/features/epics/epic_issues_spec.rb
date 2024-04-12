@@ -8,7 +8,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
 
   let_it_be(:non_member) { create(:user) }
   let_it_be(:developer) { create(:user) }
-  let_it_be(:group) { create(:group, :public).tap { |g| g.add_developer(developer) } }
+  let_it_be(:group) { create(:group, :public, developers: developer) }
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:public_project) { create(:project, :public, group: group) }
   let_it_be(:private_project) { create(:project, :private, group: group) }

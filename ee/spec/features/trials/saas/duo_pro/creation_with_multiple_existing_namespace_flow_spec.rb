@@ -6,8 +6,8 @@ RSpec.describe 'Duo Pro trial lead submission and creation with multiple eligibl
   # rubocop:disable Gitlab/RSpec/AvoidSetup -- skip registration and group creation
   let_it_be(:user) { create(:user) }
   let_it_be(:group) do
-    create(:group_with_plan, plan: :ultimate_plan).tap { |record| record.add_owner(user) }
-    create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab').tap { |record| record.add_owner(user) }
+    create(:group_with_plan, plan: :ultimate_plan, owners: user)
+    create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab', owners: user)
   end
 
   before_all do

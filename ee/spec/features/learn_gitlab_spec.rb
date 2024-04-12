@@ -41,7 +41,7 @@ RSpec.describe 'Learn Gitlab concerns', :feature, :js, :saas, feature_category: 
 
   context 'with learn gitlab links' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:namespace) { create(:group).tap { |g| g.add_owner(user) } }
+    let_it_be(:namespace) { create(:group, owners: user) }
     let_it_be(:project) { create(:project, namespace: namespace) }
 
     context 'with completed links' do

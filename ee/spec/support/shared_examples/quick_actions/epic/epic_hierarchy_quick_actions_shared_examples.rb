@@ -2,8 +2,8 @@
 
 RSpec.shared_context 'for epic hierarchy commands' do
   let_it_be(:guest) { create(:user) }
-  let_it_be(:private_group) { create(:group, :private).tap { |group| group.add_guest(guest) } }
-  let_it_be(:public_group) { create(:group, :public).tap { |group| group.add_guest(guest) } }
+  let_it_be(:private_group) { create(:group, :private, guests: guest) }
+  let_it_be(:public_group) { create(:group, :public, guests: guest) }
   let_it_be_with_reload(:epic) { create(:epic, group: public_group) }
   let_it_be_with_reload(:epic2) { create(:epic, group: private_group) }
 end
@@ -11,7 +11,7 @@ end
 RSpec.shared_examples 'execute epic hierarchy commands' do
   include_context 'for epic hierarchy commands'
 
-  let_it_be(:subgroup) { create(:group, parent: public_group).tap { |group| group.add_guest(guest) } }
+  let_it_be(:subgroup) { create(:group, parent: public_group, guests: guest) }
   let_it_be(:public_project) { create(:project, :public, group: public_group) }
   let_it_be_with_reload(:subgroup_epic) { create(:epic, group: subgroup) }
   let_it_be_with_reload(:child_epic) { create(:epic, group: private_group) }

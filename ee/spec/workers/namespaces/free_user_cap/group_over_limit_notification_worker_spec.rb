@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas, feature_category: :measurement_and_locking, type: :worker do
   describe '#perform' do
     let_it_be(:owner) { create :owner }
-    let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan).tap { |g| g.add_owner(owner) } }
+    let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan, owners: owner) }
     let_it_be(:project) { create(:project, namespace: group) }
     let_it_be(:invited_group) { create(:group) }
     let_it_be(:invited_group_with_same_user) { create(:group) }

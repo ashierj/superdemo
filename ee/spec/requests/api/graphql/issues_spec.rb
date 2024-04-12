@@ -6,8 +6,8 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:group1) { create(:group).tap { |group| group.add_developer(current_user) } }
-  let_it_be(:group2) { create(:group).tap { |group| group.add_developer(current_user) } }
+  let_it_be(:group1) { create(:group, developers: current_user) }
+  let_it_be(:group2) { create(:group, developers: current_user) }
   let_it_be(:project_a) { create(:project, :repository, :public, group: group1) }
   let_it_be(:project_b) { create(:project, :repository, :private, group: group1) }
   let_it_be(:project_c) { create(:project, :repository, :public, group: group2) }
@@ -69,10 +69,10 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
           end
           expect_graphql_errors_to_be_empty
 
-          new_private_project = create(:project, :private).tap { |project| project.add_developer(current_user) }
+          new_private_project = create(:project, :private, developers: current_user)
           create(:issue, project: new_private_project)
 
-          root_group = create(:group, :private).tap { |group| group.add_maintainer(current_user) }
+          root_group = create(:group, :private, maintainers: current_user)
           create(:issue, project: create(:project, :private, group: root_group))
           child_group = create(:group, :private, parent: root_group)
           create(:issue, project: create(:project, :private, group: child_group))

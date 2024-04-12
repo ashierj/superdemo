@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, :freeze_time, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:other_user) { create(:user) }
-  let_it_be(:group) { create(:group).tap { |g| g.add_developer(user) } }
+  let_it_be(:group) { create(:group, developers: user) }
   let_it_be(:from) { Date.new(2022, 5, 1) }
   let_it_be(:to) { Date.new(2022, 6, 10) }
 
