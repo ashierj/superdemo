@@ -7,7 +7,7 @@ RSpec.describe 'Query.namespace.addOnPurchase', feature_category: :seat_cost_man
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:fields) { 'id purchasedQuantity assignedQuantity name' }
-  let_it_be(:namespace) { create(:group) }
+  let_it_be(:namespace) { create(:group, owners: current_user) }
   let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
   let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: namespace, add_on: add_on) }
 
@@ -31,10 +31,6 @@ RSpec.describe 'Query.namespace.addOnPurchase', feature_category: :seat_cost_man
       "purchasedQuantity" => 1,
       "name" => 'CODE_SUGGESTIONS'
     }
-  end
-
-  before_all do
-    namespace.add_owner(current_user)
   end
 
   shared_examples 'empty response' do

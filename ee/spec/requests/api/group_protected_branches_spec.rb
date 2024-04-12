@@ -4,19 +4,14 @@ require 'spec_helper'
 
 RSpec.describe API::GroupProtectedBranches, feature_category: :source_code_management do
   let_it_be_with_reload(:group) { create(:group) }
-  let_it_be(:owner) { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:owner) { create(:user, owner_of: group) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
 
   let(:protected_name) { 'feature' }
   let(:branch_name) { protected_name }
 
   let!(:protected_branch) do
     create(:protected_branch, project: nil, group: group, name: protected_name)
-  end
-
-  before_all do
-    group.add_owner(owner)
-    group.add_guest(guest)
   end
 
   describe "GET /groups/:id/protected_branches" do

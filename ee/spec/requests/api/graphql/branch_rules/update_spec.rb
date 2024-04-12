@@ -6,7 +6,7 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :public) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
   let!(:protected_branch) { create(:protected_branch, project: project) }
   let(:branch_rule) { Projects::BranchRule.new(project, protected_branch) }
   let(:current_user) { user }
@@ -20,10 +20,6 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
   end
 
   subject(:post_mutation) { post_graphql_mutation(mutation, current_user: user) }
-
-  before_all do
-    project.add_maintainer(user)
-  end
 
   context 'with blocking scan result policy' do
     let(:branch_name) { branch_rule.name }

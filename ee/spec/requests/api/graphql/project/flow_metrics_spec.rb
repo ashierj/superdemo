@@ -14,11 +14,7 @@ RSpec.describe 'getting project flow metrics', feature_category: :value_stream_m
   let_it_be(:project2) { project1 }
   let_it_be(:production_environment1) { create(:environment, :production, project: project1) }
   let_it_be(:production_environment2) { production_environment1 }
-  let_it_be(:current_user) { create(:user) }
-
-  before_all do
-    group.add_maintainer(current_user)
-  end
+  let_it_be(:current_user) { create(:user, maintainer_of: group) }
 
   before do
     # cycle_analytics_for_groups is needed for the aggregations

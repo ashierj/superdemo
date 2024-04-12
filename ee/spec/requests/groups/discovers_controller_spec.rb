@@ -6,15 +6,9 @@ RSpec.describe Groups::DiscoversController, :saas, feature_category: :activation
   let_it_be(:owner) { create(:user) }
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:developer) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, developers: developer, maintainers: maintainer, owners: owner) }
   let_it_be(:gitlab_subscription) do
     create(:gitlab_subscription, :active_trial, :ultimate_trial, namespace: group, trial_ends_on: Date.tomorrow)
-  end
-
-  before_all do
-    group.add_developer(developer)
-    group.add_maintainer(maintainer)
-    group.add_owner(owner)
   end
 
   describe 'GET show' do

@@ -30,13 +30,8 @@ RSpec.describe 'Group.contributions', feature_category: :value_stream_management
 
   let_it_be(:banned_user) { create(:user, :banned) }
   let_it_be(:another_user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, developers: [user, another_user]) }
   let_it_be(:project) { create(:project, group: group) }
-
-  before_all do
-    group.add_developer(user)
-    group.add_developer(another_user)
-  end
 
   context 'when the license is not available' do
     it 'returns no data' do

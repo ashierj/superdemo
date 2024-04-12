@@ -6,17 +6,13 @@ RSpec.describe 'Deleting a BranchRule', feature_category: :source_code_managemen
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, maintainers: current_user) }
 
   let(:global_id) { branch_rule.to_global_id.to_s }
   let(:mutation) { graphql_mutation(:branch_rule_delete, { id: global_id }) }
   let(:mutation_response) { graphql_mutation_response(:branch_rule_delete) }
 
   subject(:mutation_request) { post_graphql_mutation(mutation, current_user: current_user) }
-
-  before_all do
-    project.add_maintainer(current_user)
-  end
 
   context 'when the branch rule is for all branches' do
     let(:branch_rule) { Projects::AllBranchesRule.new(project) }

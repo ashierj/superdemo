@@ -6,7 +6,7 @@ RSpec.describe 'Query.vulnerabilities {...fields}', feature_category: :vulnerabi
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
+  let_it_be(:user) { create(:user, security_dashboard_projects: [project], developer_of: project) }
 
   let_it_be(:fields) do
     <<~QUERY
@@ -40,10 +40,6 @@ RSpec.describe 'Query.vulnerabilities {...fields}', feature_category: :vulnerabi
   end
 
   subject { graphql_data.dig('vulnerabilities', 'nodes') }
-
-  before_all do
-    project.add_developer(user)
-  end
 
   before do
     stub_licensed_features(security_dashboard: true)

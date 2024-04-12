@@ -7,7 +7,7 @@ RSpec.describe 'Update list limit metrics', feature_category: :team_planning do
 
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:board) { create(:board, group: group) }
-  let_it_be(:user)  { create(:user) }
+  let_it_be(:user)  { create(:user, maintainer_of: group) }
   let_it_be(:list)  { create(:list, board: board) }
   let_it_be(:forbidden_user) { create(:user) }
 
@@ -16,10 +16,6 @@ RSpec.describe 'Update list limit metrics', feature_category: :team_planning do
   let(:mutation_class) { Mutations::Boards::Lists::UpdateLimitMetrics }
   let(:mutation_name) { mutation_class.graphql_name }
   let(:mutation_result_identifier) { mutation_name.camelize(:lower) }
-
-  before_all do
-    group.add_maintainer(user)
-  end
 
   context 'the current_user is not allowed to update the issue' do
     let(:current_user) { forbidden_user }

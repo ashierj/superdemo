@@ -6,17 +6,13 @@ RSpec.describe 'Destroy project saved reply', feature_category: :code_review_wor
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:current_user) { create(:user) }
+  let_it_be(:current_user) { create(:user, maintainer_of: project) }
   let_it_be(:saved_reply) { create(:project_saved_reply, project: project) }
 
   let(:input) { { id: saved_reply.to_global_id } }
 
   let(:mutation) { graphql_mutation(:project_saved_reply_destroy, input) }
   let(:mutation_response) { graphql_mutation_response(:project_saved_reply_destroy) }
-
-  before_all do
-    project.add_maintainer(current_user)
-  end
 
   context 'with project_saved_replies_flag disabled' do
     before do

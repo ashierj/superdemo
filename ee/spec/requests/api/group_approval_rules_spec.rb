@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::GroupApprovalRules, :aggregate_failures, feature_category: :security_policy_management do
   let_it_be(:group) { create(:group_with_members) }
-  let_it_be(:user_with_access) { create(:user) }
+  let_it_be(:user_with_access) { create(:user, owner_of: group) }
   let_it_be(:project) do
     create(:project, :public, :repository, creator: user_with_access, group: group,
       only_allow_merge_if_pipeline_succeeds: false)
@@ -12,10 +12,6 @@ RSpec.describe API::GroupApprovalRules, :aggregate_failures, feature_category: :
 
   before do
     stub_licensed_features(merge_request_approvers: true)
-  end
-
-  before_all do
-    group.add_owner(user_with_access)
   end
 
   shared_examples_for 'check for approval_group_rule feature flag' do

@@ -6,7 +6,7 @@ RSpec.describe 'Group saved reply', feature_category: :code_review_workflow do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, maintainers: user) }
   let_it_be(:saved_reply) { create(:group_saved_reply, group: group) }
   let(:current_user) { user }
 
@@ -34,10 +34,6 @@ RSpec.describe 'Group saved reply', feature_category: :code_review_workflow do
         saved_reply_id: saved_reply.to_global_id
       }
     )
-  end
-
-  before_all do
-    group.add_maintainer(user)
   end
 
   context 'when license is invalid' do

@@ -4,14 +4,10 @@ require 'spec_helper'
 
 RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integrations do
   let_it_be(:owner) { create(:user) }
-  let_it_be(:group) { create(:group, :private) }
+  let_it_be(:group) { create(:group, :private, owners: owner) }
   let_it_be(:project) { create(:project, namespace: group) }
 
   let(:google_cloud_project_id) { 'google-cloud-project-id' }
-
-  before_all do
-    group.add_owner(owner)
-  end
 
   shared_examples 'an endpoint generating a bash script for Google Cloud' do
     it 'generates the script' do

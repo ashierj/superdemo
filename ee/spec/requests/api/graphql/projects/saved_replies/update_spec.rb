@@ -6,17 +6,13 @@ RSpec.describe 'Update project saved reply', feature_category: :code_review_work
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:current_user) { create(:user) }
+  let_it_be(:current_user) { create(:user, maintainer_of: project) }
   let_it_be(:saved_reply) { create(:project_saved_reply, project: project, name: 'Old name', content: 'Old content') }
 
   let(:input) { { id: saved_reply.to_global_id, name: 'New name', content: 'New content' } }
 
   let(:mutation) { graphql_mutation(:project_saved_reply_update, input) }
   let(:mutation_response) { graphql_mutation_response(:project_saved_reply_update) }
-
-  before_all do
-    project.add_maintainer(current_user)
-  end
 
   context 'with project_saved_replies_flag disabled' do
     before do

@@ -7,14 +7,10 @@ RSpec.describe API::Ci::Runner, feature_category: :runner do
 
   let_it_be_with_reload(:project) { create(:project, :repository, :in_group) }
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:ref) { 'master' }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project, ref: ref) }
   let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
-
-  before_all do
-    project.add_developer(user)
-  end
 
   describe '/api/v4/jobs', feature_category: :continuous_integration do
     describe 'POST /api/v4/jobs/request' do

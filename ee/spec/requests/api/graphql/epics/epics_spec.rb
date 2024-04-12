@@ -6,13 +6,9 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, maintainers: user) }
 
   let(:node_path) { %w[group epics nodes] }
-
-  before_all do
-    group.add_maintainer(user)
-  end
 
   before do
     stub_licensed_features(epics: true)

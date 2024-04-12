@@ -27,14 +27,10 @@ RSpec.describe 'Query.project_member_role', feature_category: :system_access do
   let_it_be(:group_member_role_1) { create(:member_role, namespace: group, read_code: true) }
   let_it_be(:group_member_role_2) { create(:member_role, namespace: group, read_vulnerability: true) }
   let_it_be(:group_2_member_role) { create(:member_role) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: group) }
 
   subject do
     graphql_data.dig('project', 'memberRoles', 'nodes')
-  end
-
-  before_all do
-    group.add_owner(user)
   end
 
   context 'with custom roles feature' do

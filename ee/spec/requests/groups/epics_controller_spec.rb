@@ -5,11 +5,7 @@ require 'spec_helper'
 RSpec.describe Groups::EpicsController, feature_category: :portfolio_management do
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:epic) { create(:epic, group: group) }
-  let_it_be(:user) { create(:user) }
-
-  before_all do
-    group.add_developer(user)
-  end
+  let_it_be(:user) { create(:user, developer_of: group) }
 
   before do
     stub_licensed_features(epics: true)
