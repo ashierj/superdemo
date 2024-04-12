@@ -23046,6 +23046,9 @@ msgstr ""
 msgid "GitLab Community Edition"
 msgstr ""
 
+msgid "GitLab Duo could not connect to the AI provider."
+msgstr ""
+
 msgid "GitLab Duo didn't respond. Try again? If it fails again, your request might be too large."
 msgstr ""
 

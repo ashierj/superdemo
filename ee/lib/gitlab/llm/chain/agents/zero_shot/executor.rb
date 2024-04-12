@@ -75,6 +75,12 @@ module Gitlab
                 context: context,
                 content: _("GitLab Duo didn't respond. Try again? If it fails again, your request might be too large.")
               )
+            rescue Gitlab::Llm::AiGateway::Client::ConnectionError => error
+              Gitlab::ErrorTracking.track_exception(error)
+              Answer.error_answer(
+                context: context,
+                content: _("GitLab Duo could not connect to the AI provider.")
+              )
             end
             traceable :execute, name: 'Run ReAct'
 
