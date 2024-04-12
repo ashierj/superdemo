@@ -8,24 +8,22 @@ import {
   PARSING_ERROR_MESSAGE,
   SECURITY_POLICY_ACTIONS,
   ACTIONS_LABEL,
-  RULES_LABEL,
 } from '../constants';
 import EditorLayout from '../editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
 import RuleSection from './rule/rule_section.vue';
 import ActionSection from './action/action_section.vue';
 import { createPolicyObject, policyToYaml } from './utils';
-import { DEFAULT_PIPELINE_EXECUTION_POLICY } from './constants';
+import { CONDITIONS_LABEL, DEFAULT_PIPELINE_EXECUTION_POLICY } from './constants';
 
 export default {
   ACTION: 'actions',
-  RULE: 'rules',
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
   i18n: {
     ACTIONS_LABEL,
-    RULES_LABEL,
+    CONDITIONS_LABEL,
     PARSING_ERROR_MESSAGE,
     notOwnerButtonText: __('Learn more'),
   },
@@ -107,21 +105,14 @@ export default {
     <template #rules>
       <dim-disable-container :disabled="hasParsingError">
         <template #title>
-          <h4>{{ $options.i18n.RULES_LABEL }}</h4>
+          <h4>{{ $options.i18n.CONDITIONS_LABEL }}</h4>
         </template>
 
         <template #disabled>
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <rule-section
-          v-for="(rule, index) in policy.rules"
-          :key="rule.id"
-          :data-testid="`rule-${index}`"
-          class="gl-mb-4"
-          :init-rule="rule"
-          :rule-index="index"
-        />
+        <rule-section class="gl-mb-4" />
       </dim-disable-container>
     </template>
 

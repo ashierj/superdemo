@@ -35,8 +35,12 @@ describe('RuleSection', () => {
     factory();
     expect(findPolicyEditorLayout().exists()).toBe(true);
     expect(findActionSection().exists()).toBe(true);
-    expect(findRuleSection().exists()).toBe(true);
     expect(findEmptyState().exists()).toBe(false);
+  });
+
+  it('renders the rule section', () => {
+    factory();
+    expect(findRuleSection().exists()).toBe(true);
   });
 
   it('renders the empty page', () => {
