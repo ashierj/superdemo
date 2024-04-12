@@ -97,6 +97,8 @@ module EE
       delegate :experiment_settings_allowed?, to: :namespace_settings
       delegate :user_cap_enabled?, to: :namespace_settings
 
+      delegate :disable_personal_access_tokens=, to: :namespace_settings
+
       delegate :wiki_access_level, :wiki_access_level=, to: :group_feature, allow_nil: true
 
       # Use +checked_file_template_project+ instead, which implements important
@@ -1003,6 +1005,14 @@ module EE
 
     def code_suggestions_purchased?
       ::GitlabSubscriptions::AddOnPurchase.active.for_gitlab_duo_pro.exists?(namespace_id: id)
+    end
+
+    # Disable personal access tokens for enterprise users of this group
+    def disable_personal_access_tokens?
+      ::Feature.enabled?(:enterprise_disable_personal_access_tokens, self) &&
+        root? &&
+        licensed_feature_available?(:disable_personal_access_tokens) &&
+        namespace_settings.disable_personal_access_tokens?
     end
 
     private

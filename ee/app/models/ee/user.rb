@@ -59,6 +59,8 @@ module EE
         :onboarding_status_registration_type, :onboarding_status_registration_type=,
         :onboarding_status_email_opt_in, :onboarding_status_email_opt_in=, :onboarding_status, :onboarding_status=,
         :onboarding_status_initial_registration_type, :onboarding_status_initial_registration_type=,
+        :enterprise_group, :enterprise_group=,
+        :enterprise_group_id, :enterprise_group_id=,
         to: :user_detail, allow_nil: true
 
       delegate :enabled_zoekt?, :enabled_zoekt, :enabled_zoekt=,
@@ -525,11 +527,13 @@ module EE
     end
 
     def enterprise_user_of_group?(group)
-      user_detail.enterprise_group_id == group.id
+      enterprise_group_id == group.id
     end
 
     def enterprise_user?
-      user_detail.enterprise_group.present?
+      # NOTE: Double check is added since enterprise_group_id is a lose foreign key and this is a high traffic method
+      # This would make sure that we don't fire a query in most cases on gitlab.com, as we have more normal users than enterprise users.
+      enterprise_group_id.present? && enterprise_group.present?
     end
 
     def gitlab_employee?

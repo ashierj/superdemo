@@ -97,6 +97,7 @@ module EE
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
         params_ee << :experiment_features_enabled if experiment_settings_allowed?
         params_ee.push(%i[duo_features_enabled lock_duo_features_enabled]) if licensed_ai_features_available?
+        params_ee << :disable_personal_access_tokens
       end + security_policies_toggle_params
     end
 

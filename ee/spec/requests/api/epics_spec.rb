@@ -673,6 +673,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
 
       context 'when the request is correct' do
         before do
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(101)
           post api(url, user), params: params
         end
 
@@ -822,6 +823,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
 
       context 'with rate limiter', :freeze_time, :clean_gitlab_redis_rate_limiting do
         before do
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(101)
           stub_application_setting(issues_create_limit: 1)
         end
 
@@ -873,7 +875,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
       it 'creates a new epic with labels param as array' do
         # TODO: remove threshold after epic-work item sync
         # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(135)
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(136)
         params[:labels] = ['label1', 'label2', 'foo, bar', '&,?']
 
         post api(url, user), params: params
@@ -924,7 +926,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
         stub_licensed_features(epics: true, subepics: true)
         # TODO: reduce threshold after epic-work item sync
         # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(147)
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(148)
       end
 
       it_behaves_like 'PUT request permissions for admin mode' do
@@ -967,7 +969,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
         before do
           # TODO: reduce threshold after epic-work item sync
           # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(174)
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(175)
 
           group.add_developer(user)
         end
