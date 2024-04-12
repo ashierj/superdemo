@@ -6,11 +6,7 @@ RSpec.describe 'Feature flag issue links', :js, feature_category: :feature_flags
   include FeatureFlagHelpers
 
   let_it_be(:developer) { create(:user) }
-  let_it_be(:project) { create(:project, namespace: developer.namespace) }
-
-  before_all do
-    project.add_developer(developer)
-  end
+  let_it_be(:project) { create(:project, namespace: developer.namespace, developers: developer) }
 
   before do
     sign_in(developer)

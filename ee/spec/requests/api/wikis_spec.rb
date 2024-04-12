@@ -485,7 +485,7 @@ RSpec.describe API::Wikis, feature_category: :wiki do
     end
 
     context 'when user is owner of parent group' do
-      let_it_be(:namespace) { create(:group).tap { |g| g.add_owner(user) } }
+      let_it_be(:namespace) { create(:group, owners: user) }
       let_it_be(:group) { create(:group, :wiki_repo, parent: namespace) }
 
       include_examples 'wikis API updates wiki page'
@@ -600,7 +600,7 @@ RSpec.describe API::Wikis, feature_category: :wiki do
     end
 
     context 'when user is owner of parent group' do
-      let_it_be(:namespace) { create(:group).tap { |g| g.add_owner(user) } }
+      let_it_be(:namespace) { create(:group, owners: user) }
       let_it_be(:group) { create(:group, :wiki_repo, parent: namespace) }
 
       before do

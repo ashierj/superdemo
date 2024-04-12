@@ -1832,7 +1832,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
     subject(:fork_call) { post api("/projects/#{group_project.id}/fork", user), params: { namespace: target_namespace.id } }
 
     let!(:target_namespace) do
-      create(:group).tap { |g| g.add_owner(user) }
+      create(:group, owners: user)
     end
 
     let!(:group_project) { create(:project, namespace: group) }

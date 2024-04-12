@@ -8,7 +8,7 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:current_user) { user } # NOTE: Some graphql spec helper methods rely on current_user to be set
   let_it_be(:project) do
-    create(:project, :public, :in_group, :repository).tap { |project| project.add_developer(user) }
+    create(:project, :public, :in_group, :repository, developers: user)
   end
 
   let_it_be(:agent) do

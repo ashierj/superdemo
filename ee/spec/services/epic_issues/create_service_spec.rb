@@ -7,7 +7,7 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
     let_it_be(:non_member) { create(:user) }
     let_it_be(:guest) { create(:user) }
     let_it_be(:group) { create(:group, :public) }
-    let_it_be(:other_group) { create(:group, :public).tap { |p| p.add_guest(guest) } }
+    let_it_be(:other_group) { create(:group, :public, guests: guest) }
     let_it_be(:project) { create(:project, :public, group: other_group) }
     let_it_be(:issue) { create(:issue, project: project) }
     let_it_be(:issue2) { create(:issue, project: project) }

@@ -36,11 +36,11 @@ RSpec.describe 'Query current user groups', feature_category: :groups_and_projec
     it 'avoids N+1 queries', :request_store do
       control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
-      create(:group, :private).tap { |group| group.add_maintainer(current_user) }
+      create(:group, :private, maintainers: current_user)
       create(:group, :private, parent: private_maintainer_group)
 
       another_root = create(:group, :private, name: 'root-3', path: 'root-3')
-      create(:group, :private, parent: another_root).tap { |group| group.add_maintainer(current_user) }
+      create(:group, :private, parent: another_root, maintainers: current_user)
 
       expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
     end

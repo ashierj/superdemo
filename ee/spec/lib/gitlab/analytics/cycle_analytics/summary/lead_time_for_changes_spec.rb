@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::LeadTimeForChanges, f
 
   context 'when ProjectNamespace based stage is given' do
     let(:user)  { create(:user) }
-    let(:group) { create(:group).tap { |g| g.add_developer(user) } }
+    let(:group) { create(:group, developers: user) }
     let(:project) { create(:project, group: group) }
     let(:stage) { build(:cycle_analytics_stage, project: project) }
 

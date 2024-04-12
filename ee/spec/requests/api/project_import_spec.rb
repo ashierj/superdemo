@@ -9,7 +9,7 @@ RSpec.describe API::ProjectImport, feature_category: :importers do
   include_context 'workhorse headers'
 
   let(:user) { create(:user) }
-  let(:namespace) { create(:group).tap { |g| g.add_maintainer(user) } }
+  let(:namespace) { create(:group, maintainers: user) }
   let(:file) { File.join('spec', 'features', 'projects', 'import_export', 'test_project_export.tar.gz') }
   let(:file_name) { 'project_export.tar.gz' }
 

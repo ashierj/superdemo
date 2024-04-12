@@ -1126,7 +1126,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
     it 'avoids N+1 queries when authorizing a list of epics', :request_store do
       user = create(:user)
-      group = create(:group, :private).tap { |group| group.add_maintainer(user) }
+      group = create(:group, :private, maintainers: user)
       epic = create(:epic, group: group)
       control = ActiveRecord::QueryRecorder.new { described_class.epics_readable_by_user([epic], user) }
 

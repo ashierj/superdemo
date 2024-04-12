@@ -6,7 +6,7 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
   include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group).tap { |g| g.add_owner(user) } }
+  let_it_be(:group) { create(:group, owners: user) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, namespace: subgroup) }
 

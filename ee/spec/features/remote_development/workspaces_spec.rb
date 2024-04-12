@@ -8,7 +8,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
   include_context 'file upload requests helpers'
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, name: 'test-group').tap { |group| group.add_developer(user) } }
+  let_it_be(:group) { create(:group, name: 'test-group', developers: user) }
   let_it_be(:devfile_path) { '.devfile.yaml' }
 
   let_it_be(:project) do

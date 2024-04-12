@@ -8,7 +8,7 @@ RSpec.describe 'Map a cluster agent to a group', feature_category: :remote_devel
 
   let_it_be(:user) { create(:user, :with_namespace) }
   let_it_be(:current_user) { user } # NOTE: Some graphql spec helper methods rely on current_user to be set
-  let_it_be(:namespace) { create(:group).tap { |group| group.add_owner(user) } }
+  let_it_be(:namespace) { create(:group, owners: user) }
   let_it_be_with_reload(:agent) { create(:cluster_agent, project: create(:project, group: namespace)) }
 
   let(:mutation) do

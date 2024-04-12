@@ -6,9 +6,9 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
   describe '#execute' do
     let_it_be(:guest) { create(:user) }
     let_it_be(:non_member) { create(:user) }
-    let_it_be(:group, refind: true) { create(:group, :public).tap { |g| g.add_guest(guest) } }
+    let_it_be(:group, refind: true) { create(:group, :public, guests: guest) }
     let_it_be(:project, refind: true) do
-      create(:project, :public, group: create(:group, :public)).tap { |p| p.add_guest(guest) }
+      create(:project, :public, group: create(:group, :public), guests: guest)
     end
 
     let_it_be(:epic, reload: true) { create(:epic, group: group) }

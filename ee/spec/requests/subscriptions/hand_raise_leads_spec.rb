@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Hand Raise Leads', :saas, feature_category: :purchase do
   describe 'POST /-/subscriptions/hand_raise_leads' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:namespace) { create(:group).tap { |record| record.add_developer(user) } }
+    let_it_be(:namespace) { create(:group, developers: user) }
     let_it_be(:namespace_id) { namespace.id.to_s }
 
     let(:hand_raise_lead_result) { ServiceResponse.success }

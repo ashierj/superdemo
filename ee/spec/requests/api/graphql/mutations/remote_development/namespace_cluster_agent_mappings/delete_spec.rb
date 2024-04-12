@@ -8,7 +8,7 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
 
   let_it_be(:user) { create(:user, :with_namespace) }
   let_it_be(:current_user) { user }
-  let_it_be(:namespace) { create(:group).tap { |group| group.add_owner(user) } }
+  let_it_be(:namespace) { create(:group, owners: user) }
   let_it_be_with_reload(:agent) { create(:cluster_agent, project: create(:project, group: namespace)) }
 
   let(:mutation) do
