@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'profiles/keys/_key_details.html.haml' do
-  let_it_be(:user) { create(:user) }
+RSpec.describe 'user_settings/ssh_keys/_key_details.html.haml', feature_category: :system_access do
+  let_it_be(:user) { build_stubbed(:user) }
 
   before do
     assign(:key, key)
@@ -20,7 +20,7 @@ RSpec.describe 'profiles/keys/_key_details.html.haml' do
     end
 
     with_them do
-      let(:key) { create(:key, user: user, usage_type: usage_type) }
+      let(:key) { build_stubbed(:key, user: user, usage_type: usage_type) }
 
       it 'renders usage type text' do
         render
@@ -31,7 +31,7 @@ RSpec.describe 'profiles/keys/_key_details.html.haml' do
   end
 
   describe 'displays key attributes' do
-    let(:key) { create(:key, :expired, last_used_at: Date.today, user: user) }
+    let(:key) { build_stubbed(:key, :expired, last_used_at: Date.today, user: user) }
 
     it 'renders key attributes' do
       render

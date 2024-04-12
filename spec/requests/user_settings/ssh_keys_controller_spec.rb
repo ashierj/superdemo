@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::KeysController, feature_category: :source_code_management do
+RSpec.describe UserSettings::SshKeysController, feature_category: :source_code_management do
   let_it_be(:user) { create(:user) }
 
   before do
@@ -11,7 +11,7 @@ RSpec.describe Profiles::KeysController, feature_category: :source_code_manageme
 
   describe 'DELETE /-/profile/keys/:id/revoke' do
     it 'returns 404 if a key not found' do
-      delete revoke_profile_key_path(non_existing_record_id)
+      delete revoke_user_settings_ssh_key_path(non_existing_record_id)
 
       expect(response).to have_gitlab_http_status(:not_found)
     end
@@ -21,7 +21,7 @@ RSpec.describe Profiles::KeysController, feature_category: :source_code_manageme
       signature = create(:ssh_signature, key: key)
 
       expect do
-        delete revoke_profile_key_path(signature.key)
+        delete revoke_user_settings_ssh_key_path(signature.key)
       end.to change { signature.reload.key }.from(signature.key).to(nil)
         .and change { signature.verification_status }.from('verified').to('revoked_key')
 

@@ -7,4 +7,4 @@
 - if @params[:last_used_at]
   = _("Last used %{last_used_at} ago") % { last_used_at: time_ago_in_words(@params[:last_used_at]) }
 
-= html_escape(_("You can create a new SSH key by visiting %{link}")) % { link: profile_keys_url.html_safe }
+= html_escape(_("You can create a new SSH key by visiting %{link}")) % { link: user_settings_ssh_keys_url.html_safe }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::KeysController do
+RSpec.describe UserSettings::SshKeysController, feature_category: :user_profile do
   let(:user) { create(:user) }
 
   describe 'POST #create' do

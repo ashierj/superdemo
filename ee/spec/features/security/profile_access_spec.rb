@@ -6,7 +6,7 @@ RSpec.describe "Profile access", feature_category: :user_profile do
   include AccessMatchers
 
   describe "GET /-/profile/keys" do
-    subject { profile_keys_path }
+    subject { user_settings_ssh_keys_path }
 
     it { is_expected.to be_allowed_for :auditor }
   end

@@ -82,4 +82,18 @@ RSpec.describe "Legacy routes", type: :request, feature_category: :system_access
     delete("/-/profile/gpg_keys/1")
     expect(response).to redirect_to('/-/user_settings/gpg_keys#destroy')
   end
+
+  it "/-/profile/keys" do
+    get "/-/profile/keys"
+    expect(response).to redirect_to('/-/user_settings/ssh_keys#index')
+
+    post("/-/profile/keys")
+    expect(response).to redirect_to('/-/user_settings/ssh_keys#create')
+
+    get("/-/profile/keys/1")
+    expect(response).to redirect_to('/-/user_settings/ssh_keys#show')
+
+    delete("/-/profile/keys/1")
+    expect(response).to redirect_to('/-/user_settings/ssh_keys#destroy')
+  end
 end

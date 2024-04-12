@@ -11,4 +11,4 @@
       = _("Last used %{last_used_at} ago") % { last_used_at: time_ago_in_words(@params[:last_used_at]) }
 
 %p
-  = html_escape(_("You can create a new %{link}.")) % { link: link_to(_('SSH key'), profile_keys_url.html_safe) }
+  = html_escape(_("You can create a new %{link}.")) % { link: link_to(_('SSH key'), user_settings_ssh_keys_url.html_safe) }
