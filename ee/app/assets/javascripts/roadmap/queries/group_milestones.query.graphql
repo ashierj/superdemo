@@ -16,19 +16,17 @@ query groupMilestonesEE(
       timeframe: $timeframe
       searchTitle: $searchTitle
     ) {
-      edges {
-        node {
-          id
-          description
-          title
-          state
-          dueDate
-          startDate
-          webPath
-          projectMilestone
-          groupMilestone
-          subgroupMilestone
-        }
+      nodes {
+        id
+        description
+        title
+        state
+        dueDate
+        startDate
+        webPath
+        projectMilestone
+        groupMilestone
+        subgroupMilestone
       }
     }
   }

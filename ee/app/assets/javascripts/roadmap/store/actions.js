@@ -5,7 +5,6 @@ import { ROADMAP_PAGE_SIZE } from '../constants';
 import epicChildEpics from '../queries/epic_child_epics.query.graphql';
 import groupEpics from '../queries/group_epics.query.graphql';
 import groupEpicsWithColor from '../queries/group_epics_with_color.query.graphql';
-import groupMilestones from '../queries/group_milestones.query.graphql';
 import * as epicUtils from '../utils/epic_utils';
 import * as roadmapItemUtils from '../utils/roadmap_item_utils';
 import { getEpicsTimeframeRange, sortEpics } from '../utils/roadmap_utils';
@@ -134,87 +133,6 @@ export const fetchEpics = ({ state, commit, dispatch }, { endCursor } = {}) => {
       });
     })
     .catch(() => dispatch('receiveEpicsFailure'));
-};
-
-export const fetchGroupMilestones = (
-  { fullPath, presetType, filterParams, timeframe },
-  defaultTimeframe,
-) => {
-  const query = groupMilestones;
-  const variables = {
-    fullPath,
-    state: 'active',
-    ...getEpicsTimeframeRange({
-      presetType,
-      timeframe: defaultTimeframe || timeframe,
-    }),
-    includeDescendants: true,
-    includeAncestors: true,
-    searchTitle: filterParams.milestoneTitle,
-  };
-
-  return epicUtils.gqClient
-    .query({
-      query,
-      variables,
-    })
-    .then(({ data }) => {
-      const { group } = data;
-
-      const edges = (group.milestones && group.milestones.edges) || [];
-
-      return roadmapItemUtils.extractGroupMilestones(edges);
-    });
-};
-
-export const requestMilestones = ({ commit }) => commit(types.REQUEST_MILESTONES);
-
-export const fetchMilestones = ({ state, dispatch }) => {
-  dispatch('requestMilestones');
-
-  return fetchGroupMilestones(state)
-    .then((rawMilestones) => {
-      dispatch('receiveMilestonesSuccess', { rawMilestones });
-    })
-    .catch(() => dispatch('receiveMilestonesFailure'));
-};
-
-export const receiveMilestonesSuccess = (
-  { commit, state },
-  { rawMilestones, newMilestone }, // timeframeExtended
-) => {
-  const { presetType, timeframe } = state;
-  const milestoneIds = [];
-  const milestones = rawMilestones.reduce((filteredMilestones, milestone) => {
-    const formattedMilestone = roadmapItemUtils.formatRoadmapItemDetails(
-      milestone,
-      roadmapItemUtils.timeframeStartDate(presetType, timeframe),
-      roadmapItemUtils.timeframeEndDate(presetType, timeframe),
-    );
-    // Exclude any Milestone that has invalid dates
-    // or is already present in Roadmap timeline
-    if (
-      formattedMilestone.startDate.getTime() <= formattedMilestone.endDate.getTime() &&
-      state.milestoneIds.indexOf(formattedMilestone.id) < 0
-    ) {
-      Object.assign(formattedMilestone, {
-        newMilestone,
-      });
-      filteredMilestones.push(formattedMilestone);
-      milestoneIds.push(formattedMilestone.id);
-    }
-    return filteredMilestones;
-  }, []);
-
-  commit(types.UPDATE_MILESTONE_IDS, milestoneIds);
-  commit(types.RECEIVE_MILESTONES_SUCCESS, milestones);
-};
-
-export const receiveMilestonesFailure = ({ commit }) => {
-  commit(types.RECEIVE_MILESTONES_FAILURE);
-  createAlert({
-    message: s__('GroupRoadmap|Something went wrong while fetching milestones'),
-  });
 };
 
 export const setBufferSize = ({ commit }, bufferSize) => commit(types.SET_BUFFER_SIZE, bufferSize);

@@ -16,17 +16,11 @@ export default {
     ...mapState(['milestonesType', 'isShowingMilestones', 'milestones']),
   },
   methods: {
-    ...mapActions(['setMilestonesType', 'toggleMilestones', 'fetchMilestones']),
+    ...mapActions(['setMilestonesType', 'toggleMilestones']),
     handleMilestonesChange(option) {
       if (option !== this.milestonesType) {
         this.setMilestonesType(option);
       }
-    },
-    toggle(value) {
-      if (value && this.milestones.length === 0) {
-        this.fetchMilestones();
-      }
-      this.toggleMilestones();
     },
   },
   i18n: {
@@ -55,7 +49,7 @@ export default {
         data-track-action="click_toggle"
         :data-track-label="$options.tracking.label"
         :data-track-property="$options.tracking.property"
-        @change="toggle"
+        @change="toggleMilestones"
       />
       <gl-form-radio-group
         v-if="isShowingMilestones"

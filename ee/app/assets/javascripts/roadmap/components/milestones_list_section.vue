@@ -53,9 +53,6 @@ export default {
   },
   computed: {
     ...mapState(['bufferSize']),
-    emptyRowContainerVisible() {
-      return this.milestones.length < this.bufferSize;
-    },
     sectionContainerStyles() {
       return {
         width: `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * this.timeframe.length}px`,
@@ -111,7 +108,11 @@ export default {
 </script>
 
 <template>
-  <div :style="sectionContainerStyles" class="milestones-list-section gl-display-table clearfix">
+  <div
+    :style="sectionContainerStyles"
+    class="milestones-list-section gl-display-table clearfix"
+    data-testid="milestones-list-wrapper"
+  >
     <div
       class="milestones-list-title gl-display-table-cell border-bottom gl-vertical-align-top position-sticky gl-pl-2 gl-pr-3 gl-pt-2"
     >
@@ -153,6 +154,11 @@ export default {
         :milestones-expanded="milestonesExpanded"
       />
     </div>
-    <div v-show="showBottomShadow" :style="shadowCellStyles" class="scroll-bottom-shadow"></div>
+    <div
+      v-show="showBottomShadow"
+      :style="shadowCellStyles"
+      class="scroll-bottom-shadow"
+      data-testid="scroll-bottom-shadow"
+    ></div>
   </div>
 </template>
