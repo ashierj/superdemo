@@ -283,6 +283,11 @@ module EE
         can_store_security_reports? && can_ingest_sbom_reports?
       end
 
+      # All opened merge requests for which the current pipeline that runs/ran for the head commit
+      def opened_merge_requests_with_head_sha
+        all_merge_requests.opened.select { |merge_request| merge_request.diff_head_pipeline?(self) }
+      end
+
       private
 
       def project_has_subscriptions?

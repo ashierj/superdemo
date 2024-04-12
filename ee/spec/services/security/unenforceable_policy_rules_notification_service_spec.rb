@@ -65,6 +65,30 @@ RSpec.describe Security::UnenforceablePolicyRulesNotificationService, '#execute'
     it_behaves_like 'triggers policy bot comment for both report types'
   end
 
+  context 'when merge request has multiple pipelines for diff_head_sha' do
+    let_it_be(:merge_request_pipeline) do
+      create(:ee_ci_pipeline,
+        :success,
+        project: project,
+        ref: merge_request.source_branch,
+        sha: project.commit(merge_request.source_branch).sha
+      )
+    end
+
+    context 'when there are no security reports' do
+      it_behaves_like 'triggers policy bot comment for both report types'
+    end
+
+    context 'when there are security reports for non head pipeline' do
+      before do
+        create(:ee_ci_build, :sast, pipeline: merge_request_pipeline, project: project)
+        create(:ee_ci_build, :cyclonedx, pipeline: merge_request_pipeline, project: project)
+      end
+
+      it_behaves_like 'does not trigger policy bot comment'
+    end
+  end
+
   shared_examples_for 'unenforceable report' do |report_type|
     it_behaves_like 'triggers policy bot comment', report_type, false, requires_approval: false
 

@@ -2395,12 +2395,12 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
-  describe '#head_sha_pipeline?' do
+  describe '#diff_head_pipeline?' do
     let_it_be_with_refind(:merge_request) do
       create(:merge_request, :with_merge_request_pipeline, source_project: project)
     end
 
-    subject(:head_sha_pipeline) { merge_request.head_sha_pipeline?(pipeline) }
+    subject(:diff_head_pipeline) { merge_request.diff_head_pipeline?(pipeline) }
 
     context 'when the pipeline is the head pipeline' do
       let_it_be(:pipeline) do

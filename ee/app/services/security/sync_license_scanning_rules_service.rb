@@ -17,9 +17,7 @@ module Security
     def execute
       return unless scanner.results_available?
 
-      merge_requests = pipeline.merge_requests_as_head_pipeline.not_merged
-
-      sync_license_finding_rules(merge_requests)
+      sync_license_finding_rules
     end
 
     private
@@ -28,8 +26,8 @@ module Security
 
     delegate :project, to: :pipeline
 
-    def sync_license_finding_rules(merge_requests)
-      merge_requests.each do |merge_request|
+    def sync_license_finding_rules
+      pipeline.opened_merge_requests_with_head_sha.each do |merge_request|
         remove_required_license_finding_approval(merge_request)
       end
     end
