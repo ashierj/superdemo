@@ -122,7 +122,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         expect(group.members.map(&:user_id)).to contain_exactly(owner.id)
         expect(json_response).to eq({
           'status' => 'error',
-          'message' => 'There are not enough available seats to invite this many users.'
+          'message' => 'There are not enough available seats to invite this many users.',
+          'reason' => 'seat_limit_exceeded_error'
         })
       end
 
@@ -134,7 +135,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         expect(group.members.map(&:user_id)).to contain_exactly(owner.id)
         expect(json_response).to eq({
           'status' => 'error',
-          'message' => 'There are not enough available seats to invite this many users.'
+          'message' => 'There are not enough available seats to invite this many users.',
+          'reason' => 'seat_limit_exceeded_error'
         })
       end
 
@@ -337,6 +339,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
         expect(json_response['message']).to eq 'Members::CreateService::MembershipLockedError'
         expect(json_response['status']).to eq 'error'
+        expect(json_response['reason']).to eq 'membership_locked_error'
       end
     end
 
@@ -383,7 +386,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
             expect(project.members.map(&:user_id)).to be_empty
             expect(json_response).to eq({
               'status' => 'error',
-              'message' => 'There are not enough available seats to invite this many users.'
+              'message' => 'There are not enough available seats to invite this many users.',
+              'reason' => 'seat_limit_exceeded_error'
             })
           end
         end
@@ -401,7 +405,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
             expect(project.members.map(&:user_id)).to contain_exactly(maintainer.id)
             expect(json_response).to eq({
               'status' => 'error',
-              'message' => 'There are not enough available seats to invite this many users. Ask a user with the Owner role to purchase more seats.'
+              'message' => 'There are not enough available seats to invite this many users. Ask a user with the Owner role to purchase more seats.',
+              'reason' => 'seat_limit_exceeded_error'
             })
           end
 
@@ -421,7 +426,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
               expect(project.members.map(&:user_id)).to contain_exactly(maintainer.id)
               expect(json_response).to eq({
                 'status' => 'error',
-                'message' => 'There are not enough available seats to invite this many users. Ask a user with the Owner role to purchase more seats.'
+                'message' => 'There are not enough available seats to invite this many users. Ask a user with the Owner role to purchase more seats.',
+                'reason' => 'seat_limit_exceeded_error'
               })
             end
           end

@@ -27704,6 +27704,9 @@ msgstr ""
 msgid "InviteMembersModal|Please add members to invite"
 msgstr ""
 
+msgid "InviteMembersModal|Purchase more seats"
+msgstr ""
+
 msgid "InviteMembersModal|Review the invite errors and try again:"
 msgstr ""
 
@@ -27743,6 +27746,9 @@ msgid "InviteMembersModal|To invite new users to this top-level group, you must 
 msgstr ""
 
 msgid "InviteMembersModal|Username, name or email address"
+msgstr ""
+
+msgid "InviteMembersModal|You must purchase more seats for your subscription before this amount of users can be added."
 msgstr ""
 
 msgid "InviteMembersModal|You only have space for %{count} more %{members} in %{name}"

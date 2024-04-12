@@ -631,7 +631,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(json_response).to eq({
             'message' => 'There are not enough available seats to invite this many users.',
-            'status' => 'error'
+            'status' => 'error',
+            'reason' => 'seat_limit_exceeded_error'
           })
         end
       end

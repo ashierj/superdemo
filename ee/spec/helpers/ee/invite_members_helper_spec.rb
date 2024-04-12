@@ -27,6 +27,11 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
       stub_ee_application_setting(dashboard_limit_enabled: true)
     end
 
+    it 'includes add_seats_href' do
+      expect(helper.common_invite_modal_dataset(project)[:add_seats_href])
+        .to eq(::Gitlab::Routing.url_helpers.subscription_portal_add_extra_seats_url(project.root_ancestor.id))
+    end
+
     context 'when applying the free user cap is not valid' do
       let!(:group) do
         create(:group_with_plan, :private, projects: [project], plan: :default_plan)
