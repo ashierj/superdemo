@@ -7,12 +7,7 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
 
   let_it_be(:user) { create(:user) }
   let_it_be(:developer) { create(:user) }
-  let_it_be(:group, refind: true) { create(:group, name: 'Foo bar', path: 'foo') }
-
-  before_all do
-    group.add_owner(user)
-    group.add_developer(developer)
-  end
+  let_it_be(:group, refind: true) { create(:group, name: 'Foo bar', path: 'foo', owners: user, developers: developer) }
 
   before do
     sign_in(user)

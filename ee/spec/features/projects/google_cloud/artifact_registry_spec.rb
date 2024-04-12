@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_registry do
   include GoogleApi::CloudPlatformHelpers
   let_it_be(:user) { create(:user) }
-  let_it_be_with_reload(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project, developers: user) }
   let_it_be_with_refind(:artifact_registry_integration) do
     create(:google_cloud_platform_artifact_registry_integration, project: project)
   end
@@ -47,10 +47,6 @@ RSpec.describe 'Google Artifact Registry', :js, feature_category: :container_reg
       update_time: Time.now.utc,
       upload_time: Time.now.utc
     )
-  end
-
-  before_all do
-    project.add_developer(user)
   end
 
   before do

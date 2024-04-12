@@ -5,11 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Groups > Comment templates > User creates comment template', :js,
   feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
-
-  before_all do
-    group.add_owner(user)
-  end
+  let_it_be(:group) { create(:group, owners: user) }
 
   before do
     stub_licensed_features(group_saved_replies: true)

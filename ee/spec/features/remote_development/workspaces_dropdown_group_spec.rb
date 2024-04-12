@@ -8,7 +8,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
   include_context 'file upload requests helpers'
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, name: 'test-group') }
+  let_it_be(:group) { create(:group, name: 'test-group', developers: user) }
 
   let_it_be(:devfile_path) { '.devfile.yaml' }
 
@@ -31,10 +31,6 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
   end
 
   let(:workspaces_dropdown_selector) { '[data-testid="workspaces-dropdown-group"]' }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   before do
     allow(Gitlab::Kas).to receive(:verify_api_request).and_return(true)

@@ -6,11 +6,7 @@ RSpec.describe 'Youtube iframe content security policy', feature_category: :acti
   include ContentSecurityPolicyHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
-
-  before_all do
-    project.add_developer(user)
-  end
+  let_it_be(:project) { create(:project, developers: user) }
 
   subject(:csp_header) { response_headers['Content-Security-Policy'] }
 

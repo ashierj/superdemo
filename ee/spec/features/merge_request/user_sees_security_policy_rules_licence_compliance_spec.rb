@@ -9,14 +9,9 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
 
   let_it_be(:project) { create(:project, :repository) }
   let(:policy_management_project) { create(:project, :repository, creator: user, namespace: project.namespace) }
-  let_it_be(:user) { create(:user) }
-  let_it_be(:approver) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: project) }
+  let_it_be(:approver) { create(:user, maintainer_of: project) }
   let_it_be(:approver_roles) { ['maintainer'] }
-
-  before_all do
-    project.add_developer(user)
-    project.add_maintainer(approver)
-  end
 
   before do
     sign_in(user)

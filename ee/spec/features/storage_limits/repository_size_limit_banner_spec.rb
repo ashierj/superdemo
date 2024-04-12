@@ -6,15 +6,10 @@ RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :co
   include NamespaceStorageHelpers
 
   let_it_be(:owner) { create(:user) }
-  let_it_be(:free_group) { create(:group) }
+  let_it_be(:free_group) { create(:group, owners: owner) }
   let_it_be_with_refind(:free_group_project) { create(:project, :repository, group: free_group) }
-  let_it_be(:paid_group) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be(:paid_group) { create(:group_with_plan, plan: :ultimate_plan, owners: owner) }
   let_it_be_with_refind(:paid_group_project) { create(:project, :repository, group: paid_group) }
-
-  before_all do
-    free_group.add_owner(owner)
-    paid_group.add_owner(owner)
-  end
 
   before do
     sign_in(owner)

@@ -7,7 +7,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, owners: user) }
   let_it_be(:bronze_plan) { create(:bronze_plan) }
 
   def formatted_date(date)
@@ -16,10 +16,6 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
 
   def subscription_table
     '.subscription-table'
-  end
-
-  before_all do
-    group.add_owner(user)
   end
 
   before do

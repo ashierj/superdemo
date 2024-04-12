@@ -8,7 +8,7 @@ RSpec.describe 'epics swimlanes filtering', :js, feature_category: :team_plannin
   let_it_be(:user) { create(:user) }
   let_it_be(:user2)   { create(:user) }
   let_it_be(:group) { create(:group, :public) }
-  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:project) { create(:project, :public, group: group, maintainers: [user, user2]) }
   let_it_be(:board) { create(:board, project: project) }
 
   let_it_be(:milestone) { create(:milestone, project: project) }
@@ -36,11 +36,6 @@ RSpec.describe 'epics swimlanes filtering', :js, feature_category: :team_plannin
   let(:filter_input) { find('.gl-filtered-search-term-input') }
   let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
-
-  before_all do
-    project.add_maintainer(user)
-    project.add_maintainer(user2)
-  end
 
   context 'filtering' do
     before do

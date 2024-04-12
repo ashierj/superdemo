@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Projects settings > Admin sets repository size limit', :js, feature_category: :groups_and_projects do
   let_it_be(:project) { create(:project) }
-  let_it_be(:admin) { create(:admin) }
-
-  before_all do
-    project.add_owner(admin)
-  end
+  let_it_be(:admin) { create(:admin, owner_of: project) }
 
   before do
     stub_licensed_features(repository_size_limit: true)

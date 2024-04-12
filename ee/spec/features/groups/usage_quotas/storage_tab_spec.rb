@@ -7,14 +7,10 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
+  let_it_be(:group) { create(:group_with_plan, plan: :premium_plan, owners: user) }
   let_it_be(:root_storage_statistics, refind: true) do
     create(:namespace_root_storage_statistics, namespace: group,
       storage_size: 300.megabytes, public_forks_storage_size: 100.megabytes)
-  end
-
-  before_all do
-    group.add_owner(user)
   end
 
   before do

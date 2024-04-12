@@ -7,16 +7,12 @@ RSpec.describe "User creates issue", :js, :saas, feature_category: :team_plannin
 
   let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be(:project) { create(:project_empty_repo, :public, namespace: group) }
   let_it_be(:epic) { create(:epic, group: group, title: 'Sample epic', author: user) }
   let_it_be(:iteration) { create(:iteration, group: group, title: 'Sample iteration') }
 
   let(:issue_title) { '500 error on profile' }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   before do
     stub_licensed_features(issue_weights: true, epics: true)

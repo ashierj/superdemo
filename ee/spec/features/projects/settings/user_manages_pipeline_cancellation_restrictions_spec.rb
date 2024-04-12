@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'User manages pipeline cancellation restrictions', :js, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user) }
-
-  before_all do
-    project.add_maintainer(user)
-  end
+  let_it_be(:user) { create(:user, maintainer_of: project) }
 
   context 'with licensed feature' do
     before do

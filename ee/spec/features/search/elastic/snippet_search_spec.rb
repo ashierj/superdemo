@@ -7,11 +7,7 @@ RSpec.describe 'Snippet elastic search', :js, :clean_gitlab_redis_rate_limiting,
   let_it_be(:regular_user) { create(:user) }
   let_it_be(:authorized_user) { create(:user) }
   let_it_be(:admin_user) { create(:admin) }
-  let_it_be(:authorized_project) { create(:project, namespace: authorized_user.namespace) }
-
-  before_all do
-    authorized_project.add_maintainer(authorized_user)
-  end
+  let_it_be(:authorized_project) { create(:project, namespace: authorized_user.namespace, maintainers: authorized_user) }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)

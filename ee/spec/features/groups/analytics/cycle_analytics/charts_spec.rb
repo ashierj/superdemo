@@ -5,7 +5,7 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
   include CycleAnalyticsHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, name: 'CA-test-group') }
+  let_it_be(:group) { create(:group, name: 'CA-test-group', owners: user) }
   let_it_be(:group2) { create(:group, name: 'CA-bad-test-group') }
   let_it_be(:project) { create(:project, :repository, namespace: group, group: group, name: 'Cool fun project') }
   let_it_be(:group_label1) { create(:group_label, group: group) }
@@ -24,10 +24,6 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
 
   3.times do |i|
     let_it_be("issue_#{i}".to_sym) { create(:issue, title: "New Issue #{i}", project: project, created_at: 2.days.ago) }
-  end
-
-  before_all do
-    group.add_owner(user)
   end
 
   before do

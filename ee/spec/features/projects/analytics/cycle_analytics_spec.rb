@@ -7,7 +7,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
   include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, name: 'CA-test-group') }
+  let_it_be(:group) { create(:group, name: 'CA-test-group', owners: user) }
   let_it_be(:project) { create(:project, :repository, namespace: group, group: group, name: 'Cool fun project') }
   let_it_be(:project_namespace) { project.project_namespace }
 
@@ -17,10 +17,6 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
   let(:metrics_groups_selector) { '[data-testid="vsa-metrics-group"]' }
   let(:task_by_type_chart_selector) { '[data-testid="vsa-task-type-chart"]' }
   let(:metrics_selector) { '[data-testid="vsa-metrics"]' }
-
-  before_all do
-    group.add_owner(user)
-  end
 
   shared_examples 'Unlicensed Value Stream Analytics' do
     before do

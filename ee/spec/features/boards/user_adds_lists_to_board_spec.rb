@@ -7,7 +7,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
   let_it_be(:project) { create(:project, :public, namespace: group) }
   let_it_be(:group_board) { create(:board, group: group) }
   let_it_be(:project_board) { create(:board, project: project) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, maintainer_of: project, owner_of: group) }
 
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
@@ -15,11 +15,6 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
   let_it_be(:issue_with_milestone) { create(:issue, project: project, milestone: milestone) }
   let_it_be(:issue_with_assignee) { create(:issue, project: project, assignees: [user]) }
   let_it_be(:issue_with_iteration) { create(:issue, project: project, iteration: iteration) }
-
-  before_all do
-    project.add_maintainer(user)
-    group.add_owner(user)
-  end
 
   where(:board_type) do
     [[:project], [:group]]

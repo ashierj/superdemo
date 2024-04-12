@@ -5,12 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Assign compliance framework', feature_category: :compliance_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: group) }
   let_it_be(:framework) { create(:compliance_framework, namespace: project.group) }
-
-  before_all do
-    group.add_owner(user)
-  end
 
   before do
     stub_licensed_features(compliance_framework: true, custom_compliance_frameworks: true)

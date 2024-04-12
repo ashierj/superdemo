@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe "User reads security policies list", :js, feature_category: :security_policy_management do
   let_it_be(:owner) { create(:user) }
-  let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:policy_management_project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository, owners: owner) }
+  let_it_be(:policy_management_project) { create(:project, :repository, owners: owner) }
   let_it_be(:policy_configuration) do
     create(
       :security_orchestration_policy_configuration,
@@ -16,11 +16,6 @@ RSpec.describe "User reads security policies list", :js, feature_category: :secu
 
   let_it_be(:policy_yaml) do
     Gitlab::Config::Loader::Yaml.new(fixture_file('security_orchestration.yml', dir: 'ee')).load!
-  end
-
-  before_all do
-    project.add_owner(owner)
-    policy_management_project.add_owner(owner)
   end
 
   it_behaves_like 'policies list' do
