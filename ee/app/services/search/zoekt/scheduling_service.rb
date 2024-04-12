@@ -46,7 +46,7 @@ module Search
       end
 
       def execute_every(period, cache_key:)
-        cache_key = [self.class.name.underscore, :execute_every, cache_key].join(':')
+        cache_key = [self.class.name.underscore, :execute_every, cache_key].flatten.join(':')
 
         Gitlab::Redis::SharedState.with do |redis|
           key_set = redis.set(cache_key, 1, ex: period, nx: true)
@@ -61,7 +61,7 @@ module Search
         return false unless ::Gitlab::Saas.feature_available?(:exact_code_search)
         return false if Feature.disabled?(:zoekt_reallocation_task)
 
-        execute_every 12.hours, cache_key: :reallocation do
+        execute_every 1.hour, cache_key: [:reallocation, :v2] do
           nodes = ::Search::Zoekt::Node.online.find_each.to_a
           over_watermark_nodes = nodes.select { |n| (n.used_bytes / n.total_bytes.to_f) >= WATERMARK_LIMIT_HIGH }
 
