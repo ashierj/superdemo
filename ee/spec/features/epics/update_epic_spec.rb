@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455305' do
+RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
   include DropzoneHelper
 
   let(:user) { create(:user) }
@@ -140,6 +140,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management, quar
       describe 'autocomplete enabled' do
         it 'opens atwho container' do
           find('#issue-description').native.send_keys('@')
+          wait_for_all_requests
           expect(page).to have_selector('.atwho-container')
         end
       end
@@ -175,44 +176,43 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management, quar
   end
 
   context 'when user with developer access displays the epic' do
-    let_it_be(:group) { create(:group, :public) }
-
-    let(:epic) { create(:epic, group: group, description: markdown) }
-
-    it_behaves_like 'updates epic'
-
-    context 'when group name has dot(.)' do
-      let_it_be(:group) { create(:group, :public, name: 'test.group') }
+    it_behaves_like 'updates epic' do
+      let!(:group) { create(:group, :public) }
       let(:epic) { create(:epic, group: group, description: markdown) }
+    end
+  end
 
-      it_behaves_like 'updates epic'
+  context 'when user with developer access displays the epic when group name has dot(.)' do
+    it_behaves_like 'updates epic' do
+      let!(:group) { create(:group, :public, name: 'test.group') }
+      let!(:epic) { create(:epic, group: group, description: markdown) }
+    end
+  end
 
-      context 'when sub-group has dot(.)' do
-        let_it_be(:parent) { create(:group, :public) }
-        let_it_be(:group) { create(:group, :public, parent: parent, name: 'test.subgroup') }
-        let(:epic) { create(:epic, group: group, description: markdown) }
+  context 'when user with developer access displays the epic when sub-group has dot(.)' do
+    it_behaves_like 'updates epic' do
+      let!(:parent) { create(:group, :public) }
+      let!(:group) { create(:group, :public, parent: parent, name: 'test.subgroup') }
+      let!(:epic) { create(:epic, group: group, description: markdown) }
+    end
+  end
 
-        it_behaves_like 'updates epic'
-
-        # As we have used recurring regex in routes to have 1+ level sub groups
-        # tested 2 level subgroup here
-        context 'when 2 level subgroup name has dot(.)' do
-          let_it_be(:parent1) { create(:group, :public, parent: parent) }
-          let_it_be(:group) { create(:group, :public, parent: parent1, name: 'test.subgroup2') }
-          let(:epic) { create(:epic, group: group, description: markdown) }
-
-          it_behaves_like 'updates epic'
-        end
-      end
+  # As we have used recurring regex in routes to have 1+ level sub groups
+  # tested 2 level subgroup here
+  context 'when user with developer access displays the epic when 2 level subgroup name has dot(.)' do
+    it_behaves_like 'updates epic' do
+      let!(:parent) { create(:group, :public) }
+      let!(:parent1) { create(:group, :public, parent: parent) }
+      let!(:group) { create(:group, :public, parent: parent1, name: 'test.subgroup2') }
+      let!(:epic) { create(:epic, group: group, description: markdown) }
     end
   end
 
   context 'when user with developer access displays the epic from a subgroup' do
-    let_it_be(:parent_group) { create(:group, :public) }
-    let_it_be(:group) { create(:group, parent: parent_group) }
-
-    let(:epic) { create(:epic, group: group, description: markdown) }
-
-    it_behaves_like 'updates epic'
+    it_behaves_like 'updates epic' do
+      let!(:parent_group) { create(:group, :public) }
+      let!(:group) { create(:group, parent: parent_group) }
+      let!(:epic) { create(:epic, group: group, description: markdown) }
+    end
   end
 end
