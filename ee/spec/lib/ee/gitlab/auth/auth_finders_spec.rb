@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::AuthFinders do
+RSpec.describe Gitlab::Auth::AuthFinders, feature_category: :system_access do
   include described_class
   include ::EE::GeoHelpers
 
@@ -140,7 +140,7 @@ RSpec.describe Gitlab::Auth::AuthFinders do
         expect(find_user_from_access_token).to eq user
       end
 
-      context 'when personal access tokens are disabled' do
+      context 'when personal access tokens are disabled on instance level' do
         before do
           stub_licensed_features(disable_personal_access_tokens: true)
           stub_application_setting(disable_personal_access_tokens: true)
@@ -148,6 +148,49 @@ RSpec.describe Gitlab::Auth::AuthFinders do
 
         it 'raised unauthorized error' do
           expect { find_user_from_access_token }.to raise_error(Gitlab::Auth::UnauthorizedError)
+        end
+      end
+
+      context 'when personal access tokens are disabled for the group for enterprise users' do
+        let(:user) { create(:enterprise_user) }
+
+        before do
+          user.enterprise_group.update!(disable_personal_access_tokens: true)
+          stub_licensed_features(disable_personal_access_tokens: true)
+        end
+
+        it 'raised unauthorized error' do
+          expect { find_user_from_access_token }.to raise_error(Gitlab::Auth::UnauthorizedError)
+        end
+      end
+
+      context 'when personal access tokens are disabled for the group for service accounts' do
+        let(:user) { create(:service_account, provisioned_by_group: create(:group)) }
+
+        before do
+          user.provisioned_by_group.update!(disable_personal_access_tokens: true)
+        end
+
+        it 'returns user' do
+          expect(find_user_from_access_token).to eq user
+        end
+      end
+
+      context 'when the feature flag enterprise_disable_personal_access_tokens is disabled' do
+        before do
+          stub_feature_flags(enterprise_disable_personal_access_tokens: false)
+        end
+
+        context 'when personal access tokens are disabled for the group for enterprise users' do
+          let(:user) { create(:enterprise_user) }
+
+          before do
+            user.enterprise_group.update!(disable_personal_access_tokens: true)
+          end
+
+          it 'returns user' do
+            expect(find_user_from_access_token).to eq user
+          end
         end
       end
     end

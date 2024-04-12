@@ -24809,6 +24809,9 @@ msgstr ""
 msgid "GroupSettings|Default to Auto DevOps pipeline for all projects within this group"
 msgstr ""
 
+msgid "GroupSettings|Disable personal access tokens"
+msgstr ""
+
 msgid "GroupSettings|Duo features"
 msgstr ""
 
@@ -24855,6 +24858,9 @@ msgid "GroupSettings|Group path cannot be longer than %{length} characters."
 msgstr ""
 
 msgid "GroupSettings|How do I manage group SSH certificates?"
+msgstr ""
+
+msgid "GroupSettings|If enabled, enterprise user accounts will not be able to use personal access tokens."
 msgstr ""
 
 msgid "GroupSettings|If enabled, individual user accounts will be able to use only issued SSH certificates for Git access. It doesn't apply to service accounts, deploy keys, and other types of internal accounts."
@@ -36883,6 +36889,9 @@ msgid "Personal Access Token prefix"
 msgstr ""
 
 msgid "Personal access token"
+msgstr ""
+
+msgid "Personal access tokens"
 msgstr ""
 
 msgid "Personal projects"
