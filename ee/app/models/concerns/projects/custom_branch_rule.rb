@@ -30,6 +30,7 @@ module Projects
     def any_rules?
       approval_project_rules.present? || external_status_checks.present?
     end
+    alias_method :persisted?, :any_rules?
 
     def name
       raise NotImplementedError

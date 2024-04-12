@@ -8,11 +8,21 @@ module EE
         extend ::Gitlab::Utils::Override
         include ::Gitlab::Utils::StrongMemoize
 
+        prepended do
+          argument :build_missing, GraphQL::Types::Boolean,
+            required: false,
+            default_value: false,
+            replace_null_with_default: true,
+            description: 'Return unpersisted custom branch rules.'
+        end
+
         override :resolve_with_lookahead
         def resolve_with_lookahead(**args)
+          build_missing = args[:build_missing]
+
           super.tap do |rules|
-            rules.unshift(all_protected_branches_rule) if all_protected_branches_rule.any_rules?
-            rules.unshift(all_branches_rule) if all_branches_rule.any_rules?
+            rules.unshift(all_protected_branches_rule) if all_protected_branches_rule.persisted? || build_missing
+            rules.unshift(all_branches_rule) if all_branches_rule.persisted? || build_missing
           end
         end
 
