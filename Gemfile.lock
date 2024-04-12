@@ -1401,7 +1401,7 @@ GEM
     redis-clustering (5.0.8)
       redis (= 5.0.8)
       redis-cluster-client (>= 0.7.0)
-    redis-namespace (1.10.0)
+    redis-namespace (1.11.0)
       redis (>= 4)
     redis-rack (3.0.0)
       rack-session (>= 0.2.0)
@@ -2070,7 +2070,7 @@ DEPENDENCIES
   redis (~> 5.0.0)
   redis-actionpack (~> 5.4.0)
   redis-clustering (~> 5.0.0)
-  redis-namespace (~> 1.10.0)
+  redis-namespace (~> 1.11.0)
   request_store (~> 1.5.1)
   responders (~> 3.0)
   retriable (~> 3.1.2)
@@ -2151,4 +2151,4 @@ DEPENDENCIES
   yajl-ruby (~> 1.4.3)
 
 BUNDLED WITH
-   2.5.8
+   2.5.9
