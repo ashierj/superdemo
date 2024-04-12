@@ -22,12 +22,15 @@ describe('ComplianceReportsApp component', () => {
     projectFrameworksCsvExportPath: '/project_frameworks_report.csv',
     violationsCsvExportPath: '/compliance_violation_reports.csv',
     adherencesCsvExportPath: '/compliance_standards_adherences.csv',
+    frameworksCsvExportPath: '/compliance_frameworks_report.csv',
+    complianceFrameworkReportUiEnabled: true,
   };
 
   const findHeader = () => wrapper.findComponent(ReportHeader);
   const findMergeCommitsExportButton = () => wrapper.findByText('Export chain of custody report');
   const findViolationsExportButton = () => wrapper.findByText('Export violations report');
   const findAdherencesExportButton = () => wrapper.findByText('Export standards adherence report');
+  const findFrameworksExportButton = () => wrapper.findByText('Export frameworks report');
   const findProjectFrameworksExportButton = () =>
     wrapper.findByText('Export list of project frameworks');
   const findTabs = () => wrapper.findComponent(GlTabs);
@@ -171,6 +174,15 @@ describe('ComplianceReportsApp component', () => {
 
     it('renders the frameworks report tab', () => {
       expect(findProjectFrameworksTab().exists()).toBe(true);
+    });
+
+    it('renders the frameworks export button', () => {
+      expect(findFrameworksExportButton().exists()).toBe(true);
+    });
+
+    it('does not render the adherences export button when there is no CSV path', () => {
+      wrapper = createComponent(mount, {}, { frameworksCsvExportPath: null });
+      expect(findFrameworksExportButton().exists()).toBe(false);
     });
   });
 

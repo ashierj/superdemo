@@ -11,6 +11,7 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
 
   let(:violations_csv_export_path) { group_security_compliance_violation_reports_path(group, format: :csv) }
   let(:adherences_csv_export_path) { group_security_compliance_standards_adherence_reports_path(group, format: :csv) }
+  let(:frameworks_csv_export_path) { group_security_compliance_framework_reports_path(group, format: :csv) }
   let(:merge_commits_csv_export_path) { group_security_merge_commit_reports_path(group) }
 
   before do
@@ -46,6 +47,28 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
       render
 
       expect(rendered).to have_selector("[data-adherences-csv-export-path='#{adherences_csv_export_path}']")
+    end
+  end
+
+  context 'for frameworks export', :aggregate_failures do
+    context "when feature `compliance_frameworks_report_csv_export` is enabled" do
+      it 'renders with the correct data attributes' do
+        render
+
+        expect(rendered).to have_selector("[data-frameworks-csv-export-path='#{frameworks_csv_export_path}']")
+      end
+    end
+
+    context "when feature `compliance_frameworks_report_csv_export` is not enabled" do
+      before do
+        stub_feature_flags(compliance_frameworks_report_csv_export: false)
+      end
+
+      it 'renders with the correct data attributes' do
+        render
+
+        expect(rendered).not_to have_selector("[data-frameworks-csv-export-path='#{frameworks_csv_export_path}']")
+      end
     end
   end
 end

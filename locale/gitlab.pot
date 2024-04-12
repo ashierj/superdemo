@@ -12935,6 +12935,9 @@ msgstr ""
 msgid "Compliance Center Export|Example: 2dc6aa3"
 msgstr ""
 
+msgid "Compliance Center Export|Export a list of compliance frameworks for a project as a CSV file."
+msgstr ""
+
 msgid "Compliance Center Export|Export chain of custody report"
 msgstr ""
 
@@ -12942,6 +12945,9 @@ msgid "Compliance Center Export|Export chain of custody report as a CSV file (li
 msgstr ""
 
 msgid "Compliance Center Export|Export chain of custody report of a specific commit as a CSV file (limited to 15MB)."
+msgstr ""
+
+msgid "Compliance Center Export|Export contents of the compliance frameworks report as a CSV file."
 msgstr ""
 
 msgid "Compliance Center Export|Export contents of the standards adherence report as a CSV file."
@@ -12953,10 +12959,10 @@ msgstr ""
 msgid "Compliance Center Export|Export custody report of a specific commit"
 msgstr ""
 
-msgid "Compliance Center Export|Export list of project frameworks"
+msgid "Compliance Center Export|Export frameworks report"
 msgstr ""
 
-msgid "Compliance Center Export|Export list of project frameworks as a CSV file."
+msgid "Compliance Center Export|Export list of project frameworks"
 msgstr ""
 
 msgid "Compliance Center Export|Export merge request violations as a CSV file."

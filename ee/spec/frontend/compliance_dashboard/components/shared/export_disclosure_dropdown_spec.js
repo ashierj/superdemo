@@ -10,6 +10,7 @@ describe('ExportApp component', () => {
   const findDefaultDropdownTitle = () =>
     wrapper.findByText('Send email of the chosen report as CSV');
   const findViolationsExportButton = () => wrapper.findByText('Export violations report');
+  const findFrameworksButton = () => wrapper.findByText('Export frameworks report');
   const findProjectFrameworksButton = () => wrapper.findByText('Export list of project frameworks');
   const findChainOfCustodyReportButton = () => wrapper.findByText('Export chain of custody report');
   const findCustodyReportByCommmitButton = () =>
@@ -76,18 +77,18 @@ describe('ExportApp component', () => {
 
   describe('when project frameworks export path is passed in', () => {
     it('renders the project frameworks export button', () => {
-      wrapper = createComponent({ props: { frameworksCsvExportPath: 'example-path' } });
+      wrapper = createComponent({ props: { projectFrameworksCsvExportPath: 'example-path' } });
 
       expect(findProjectFrameworksButton().exists()).toBe(true);
     });
 
     it('has the project frameworks tooltip text', () => {
-      wrapper = createComponent({ props: { frameworksCsvExportPath: 'example-path' } });
+      wrapper = createComponent({ props: { projectFrameworksCsvExportPath: 'example-path' } });
       const tooltip = getBinding(findGlDisclosureDropdownItem().element, 'gl-tooltip');
 
       expect(tooltip.value).toMatchObject({
         title:
-          'Export list of project frameworks as a CSV file. You will be emailed after the export is processed.',
+          'Export a list of compliance frameworks for a project as a CSV file. You will be emailed after the export is processed.',
         boundary: 'viewport',
         customClass: 'gl-pointer-events-none',
         placement: 'left',
@@ -201,6 +202,27 @@ describe('ExportApp component', () => {
         it('disables the submit button', () => {
           expect(findCustodyReportByCommitExportButton().props('disabled')).toBe(true);
         });
+      });
+    });
+  });
+
+  describe('when frameworks export path is passed in', () => {
+    it('renders the frameworks export button', () => {
+      wrapper = createComponent({ props: { frameworksCsvExportPath: 'example-path' } });
+
+      expect(findFrameworksButton().exists()).toBe(true);
+    });
+
+    it('has the frameworks tooltip text', () => {
+      wrapper = createComponent({ props: { frameworksCsvExportPath: 'example-path' } });
+      const tooltip = getBinding(findGlDisclosureDropdownItem().element, 'gl-tooltip');
+
+      expect(tooltip.value).toMatchObject({
+        title:
+          'Export contents of the compliance frameworks report as a CSV file. You will be emailed after the export is processed.',
+        boundary: 'viewport',
+        customClass: 'gl-pointer-events-none',
+        placement: 'left',
       });
     });
   });
