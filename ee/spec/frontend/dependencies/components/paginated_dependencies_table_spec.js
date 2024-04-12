@@ -6,6 +6,7 @@ import PaginatedDependenciesTable from 'ee/dependencies/components/paginated_dep
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
 import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
+import * as urlUtility from '~/lib/utils/url_utility';
 import { TEST_HOST } from 'helpers/test_constants';
 import mockDependenciesResponse from '../store/modules/list/data/mock_dependencies.json';
 
@@ -38,6 +39,7 @@ describe('PaginatedDependenciesTable component', () => {
 
     originalDispatch = store.dispatch;
     jest.spyOn(store, 'dispatch').mockImplementation();
+    jest.spyOn(urlUtility, 'updateHistory');
 
     await nextTick();
   });
@@ -81,6 +83,10 @@ describe('PaginatedDependenciesTable component', () => {
     wrapper.vm.fetchCursorPage(cursor);
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchDependencies`, { cursor });
+    expect(urlUtility.updateHistory).toHaveBeenCalledTimes(1);
+    expect(urlUtility.updateHistory).toHaveBeenCalledWith({
+      url: `${TEST_HOST}/?cursor=${cursor}`,
+    });
   });
 
   it('dispatches fetch vulnerabilities', async () => {

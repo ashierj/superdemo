@@ -34,6 +34,7 @@ describe('DependenciesApp component', () => {
     exportEndpoint: '/bar',
     emptyStateSvgPath: '/bar.svg',
     documentationPath: TEST_HOST,
+    pageInfo: {},
     supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
     namespaceType: 'project',
     vulnerabilitiesEndpoint: `/vulnerabilities`,
@@ -172,6 +173,7 @@ describe('DependenciesApp component', () => {
         ['setDependenciesEndpoint', basicAppProps.endpoint],
         ['setExportDependenciesEndpoint', basicAppProps.exportEndpoint],
         ['setNamespaceType', basicAppProps.namespaceType],
+        ['setPageInfo', expect.anything()],
         ['setSortField', 'severity'],
       ]);
     });

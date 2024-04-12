@@ -48,6 +48,22 @@ describe('Dependencies mutations', () => {
     });
   });
 
+  describe(types.SET_PAGE_INFO, () => {
+    it('correctly mutates the state', () => {
+      const pageInfo = {
+        type: 'cursor',
+        currentCursor: 'eyJpZCI6IjQyIiwiX2tkIjoibiJ9',
+        endCursor: 'eyJpZCI6IjYyIiwiX2tkIjoibiJ9',
+        hasNextPage: true,
+        hasPreviousPage: true,
+        startCursor: 'eyJpZCI6IjQyIiwiX2tkIjoicCJ9',
+      };
+      mutations[types.SET_PAGE_INFO](state, pageInfo);
+
+      expect(state.pageInfo).toBe(pageInfo);
+    });
+  });
+
   describe(types.REQUEST_DEPENDENCIES, () => {
     beforeEach(() => {
       mutations[types.REQUEST_DEPENDENCIES](state);

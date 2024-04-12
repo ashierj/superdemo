@@ -38,6 +38,7 @@ describe('Dependencies actions', () => {
     ${'setNamespaceType'}              | ${NAMESPACE_GROUP}
     ${'setNamespaceType'}              | ${NAMESPACE_PROJECT}
     ${'setSortField'}                  | ${undefined}
+    ${'setPageInfo'}                   | ${{ type: 'cursor' }}
   `('$actionName', ({ actionName, payload }) => {
     it(`dispatches the ${actionName} action on each list module`, () => {
       const state = createState();

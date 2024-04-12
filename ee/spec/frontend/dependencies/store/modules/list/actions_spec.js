@@ -176,6 +176,7 @@ describe('Dependencies actions', () => {
                 reportInfo: mockDependenciesResponse.report,
                 pageInfo: {
                   type: 'cursor',
+                  currentCursor: cursorHeaders['X-Page'],
                   endCursor: cursorHeaders['X-Next-Page'],
                   hasNextPage: true,
                   hasPreviousPage: true,
@@ -269,6 +270,44 @@ describe('Dependencies actions', () => {
               },
             ],
           ));
+      });
+
+      describe('with cursor pagination', () => {
+        beforeEach(() => {
+          state.pageInfo = {
+            type: 'cursor',
+            currentCursor: cursorHeaders['X-Page'],
+            endCursor: cursorHeaders['X-Next-Page'],
+            hasNextPage: true,
+            hasPreviousPage: true,
+            startCursor: cursorHeaders['X-Prev-Page'],
+          };
+
+          mock
+            .onGet(state.endpoint, { params: { cursor: state.pageInfo.currentCursor } })
+            .replyOnce(HTTP_STATUS_OK, mockDependenciesResponse, cursorHeaders);
+        });
+
+        it('fetches the results for the current cursor', () => {
+          testAction(
+            actions.fetchDependencies,
+            {},
+            state,
+            [],
+            [
+              {
+                type: 'requestDependencies',
+              },
+              {
+                type: 'receiveDependenciesSuccess',
+                payload: expect.objectContaining({
+                  data: mockDependenciesResponse,
+                  headers: cursorHeaders,
+                }),
+              },
+            ],
+          );
+        });
       });
 
       describe('given params', () => {

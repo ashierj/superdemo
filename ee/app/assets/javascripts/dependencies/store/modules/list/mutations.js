@@ -17,6 +17,9 @@ export default {
   [types.SET_INITIAL_STATE](state, payload) {
     Object.assign(state, payload);
   },
+  [types.SET_PAGE_INFO](state, pageInfo) {
+    state.pageInfo = pageInfo;
+  },
   [types.REQUEST_DEPENDENCIES](state) {
     state.isLoading = true;
     state.errorLoading = false;
