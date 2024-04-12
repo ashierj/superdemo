@@ -22,6 +22,7 @@ module Security
         where(scan_result_policy_id: approval_rules.pluck(:scan_result_policy_id))
       }
 
+    scope :without_violation_data, -> { where(violation_data: nil) }
     scope :with_violation_data, -> { where.not(violation_data: nil) }
 
     ERRORS = {

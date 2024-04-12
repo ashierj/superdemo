@@ -138,4 +138,22 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationComment, feature_cat
       it { is_expected.to include(*expected_body) }
     end
   end
+
+  describe '#clear_report_types' do
+    subject(:clear_report_types) { comment.clear_report_types }
+
+    let(:existing_comment) { nil }
+
+    before do
+      comment.add_report_type('scan_finding', true)
+      comment.add_report_type('license_scanning', false)
+    end
+
+    it 'can clear all previously added report types' do
+      clear_report_types
+
+      expect(comment.reports).to be_empty
+      expect(comment.optional_approval_reports).to be_empty
+    end
+  end
 end

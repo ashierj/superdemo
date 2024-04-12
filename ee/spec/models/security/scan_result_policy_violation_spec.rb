@@ -124,6 +124,26 @@ RSpec.describe Security::ScanResultPolicyViolation, feature_category: :security_
     it { is_expected.to contain_exactly violation_with_data }
   end
 
+  describe '.without_violation_data' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+    let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:scan_result_policy_read_2) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:violation_with_data) do
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: scan_result_policy_read)
+    end
+
+    let_it_be(:violation_without_data) do
+      create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+        scan_result_policy_read: scan_result_policy_read_2, violation_data: nil)
+    end
+
+    subject { described_class.without_violation_data }
+
+    it { is_expected.to contain_exactly violation_without_data }
+  end
+
   describe '.trim_violations' do
     subject(:trimmed_violations) { described_class.trim_violations(violations) }
 

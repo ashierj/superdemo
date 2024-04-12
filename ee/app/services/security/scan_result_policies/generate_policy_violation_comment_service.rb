@@ -4,6 +4,7 @@ module Security
   module ScanResultPolicies
     class GeneratePolicyViolationCommentService
       include ::Gitlab::ExclusiveLeaseHelpers
+      include ::Gitlab::Utils::StrongMemoize
 
       LOCK_SLEEP_SEC = 0.5.seconds
 
@@ -45,10 +46,36 @@ module Security
 
       def comment
         @comment ||= comment_klass.new(existing_comment, merge_request).tap do |violation_comment|
-          violation_comment.remove_report_type(report_type)
-          violation_comment.add_report_type(report_type, requires_approval) if violated_policy
+          if ::Feature.enabled?(:save_policy_violation_data, project)
+            initialize_comment(violation_comment)
+          else
+            initialize_comment_legacy(violation_comment)
+          end
         end
       end
+
+      def initialize_comment(violation_comment)
+        violated_rules = merge_request.scan_result_policy_violations.filter_map do |violation|
+          scan_result_policy_rules[violation.scan_result_policy_id]
+        end
+
+        violation_comment.clear_report_types
+        violated_rules.each do |rule|
+          requires_approval = rule.approvals_required > 0
+          violation_comment.add_report_type(rule.report_type, requires_approval)
+        end
+      end
+
+      def initialize_comment_legacy(violation_comment)
+        violation_comment.remove_report_type(report_type)
+        violation_comment.add_report_type(report_type, requires_approval) if violated_policy
+      end
+
+      def scan_result_policy_rules
+        merge_request.approval_rules.applicable_to_branch(merge_request.target_branch)
+                     .index_by(&:scan_result_policy_id)
+      end
+      strong_memoize_attr :scan_result_policy_rules
 
       def comment_klass
         if ::Feature.enabled?(:save_policy_violation_data, project)

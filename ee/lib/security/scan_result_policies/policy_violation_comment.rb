@@ -4,6 +4,7 @@ module Security
   module ScanResultPolicies
     class PolicyViolationComment
       include Rails.application.routes.url_helpers
+      include Gitlab::Utils::StrongMemoize
 
       MESSAGE_HEADER = '<!-- policy_violation_comment -->'
       VIOLATED_REPORTS_HEADER_PATTERN = /<!-- violated_reports: ([a-z_,]+)/
@@ -58,11 +59,17 @@ Several factors can lead to a violation or required approval in your merge reque
         @reports -= [report_type]
       end
 
+      def clear_report_types
+        @optional_approval_reports.clear
+        @reports.clear
+      end
+
       def body
         return if existing_comment.nil? && reports.empty?
 
         [MESSAGE_HEADER, body_message].join("\n")
       end
+      strong_memoize_attr :body
 
       private
 
