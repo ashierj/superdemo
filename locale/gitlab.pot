@@ -61414,9 +61414,6 @@ msgstr ""
 msgid "must contain only a mastodon username."
 msgstr ""
 
-msgid "must follow semantic version"
-msgstr ""
-
 msgid "must have a repository"
 msgstr ""
 
