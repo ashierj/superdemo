@@ -350,7 +350,7 @@ export default {
     />
     <div
       v-if="isAnyUserSelected"
-      class="gl-display-flex gl-bg-gray-10 gl-p-5 gl-align-items-center gl-justify-content-space-between"
+      class="gl-display-flex gl-mt-5 gl-bg-gray-10 gl-p-5 gl-align-items-center gl-justify-content-space-between"
     >
       <span v-safe-html="pluralisedSelectedUsers" data-testid="selected-users-summary"></span>
       <div class="gl-display-flex gl-gap-3">
