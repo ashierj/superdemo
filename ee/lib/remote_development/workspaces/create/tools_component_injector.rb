@@ -28,9 +28,11 @@ module RemoteDevelopment
           tools_component = processed_devfile['components'].find { |c| c.dig('attributes', 'gl/inject-editor') }
 
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
-          image = vscode_1_81_image_override(tools_component: tools_component) || image_from_settings
-
-          inject_tools_components(processed_devfile: processed_devfile, tools_dir: tools_dir, image: image)
+          inject_tools_components(
+            processed_devfile: processed_devfile,
+            tools_dir: tools_dir,
+            image: image_from_settings
+          )
 
           override_main_container(
             tools_component: tools_component,
@@ -51,13 +53,6 @@ module RemoteDevelopment
             value.fetch(:params).fetch(:agent).project.root_namespace,
             type: :beta
           )
-        end
-
-        # @param [Hash] tools_component
-        # @return [String | false]
-        def self.vscode_1_81_image_override(tools_component:)
-          override_image = tools_component.fetch("attributes", {})["gl/use-vscode-1-81"].to_s == "true"
-          "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:7" if override_image
         end
 
         # @param [Hash] tools_component
