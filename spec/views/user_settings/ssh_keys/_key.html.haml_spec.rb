@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access do
-  let_it_be(:user) { create(:user) }
+RSpec.describe 'user_settings/ssh_keys/_key.html.haml', feature_category: :system_access do
+  let_it_be(:user) { build_stubbed(:user) }
 
   before do
     allow(view).to receive(:key).and_return(key)
@@ -12,7 +12,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
 
   context 'when the key partial is used' do
     let_it_be(:key) do
-      create(
+      build_stubbed(
         :personal_key,
         user: user,
         last_used_at: 7.days.ago,
@@ -56,7 +56,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
 
       context 'when the key has not been used' do
         let_it_be(:key) do
-          create(:personal_key, user: user, last_used_at: nil)
+          build_stubbed(:personal_key, user: user, last_used_at: nil)
         end
 
         it 'renders "Never" for last used' do
@@ -67,7 +67,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
       end
     end
 
-    context 'displays the usage type' do
+    context 'when usage type is displayed' do
       where(:usage_type, :usage_type_text, :displayed_buttons, :hidden_buttons) do
         [
           [:auth, 'Authentication', ['Remove'], ['Revoke']],
@@ -77,7 +77,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
       end
 
       with_them do
-        let(:key) { create(:key, user: user, usage_type: usage_type) }
+        let(:key) { build_stubbed(:key, user: user, usage_type: usage_type) }
 
         it 'renders usage type text and remove/revoke buttons', :aggregate_failures do
           render
@@ -97,7 +97,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
 
     context 'when the key does not have an expiration date' do
       let_it_be(:key) do
-        create(:personal_key, user: user, expires_at: nil)
+        build_stubbed(:personal_key, user: user, expires_at: nil)
       end
 
       it 'renders "Never" for expires' do
@@ -108,7 +108,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
     end
 
     context 'when the key has expired' do
-      let_it_be(:key) { create(:personal_key, :expired, user: user) }
+      let_it_be(:key) { build_stubbed(:personal_key, :expired, user: user) }
 
       it 'renders "Expired" as the expiration date label' do
         render
@@ -132,7 +132,7 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
       end
     end
 
-    context 'icon tooltip' do
+    context 'for icon tooltip' do
       using RSpec::Parameterized::TableSyntax
 
       where(:valid, :expiry, :result) do
@@ -142,13 +142,11 @@ RSpec.describe 'profiles/keys/_key.html.haml', feature_category: :system_access 
 
       with_them do
         let_it_be(:key) do
-          create(:personal_key, user: user)
+          build_stubbed(:personal_key, user: user)
         end
 
         it 'renders the correct icon', :aggregate_failures do
-          unless valid
-            stub_application_setting(rsa_key_restriction: ApplicationSetting::FORBIDDEN_KEY_VALUE)
-          end
+          stub_application_setting(rsa_key_restriction: ApplicationSetting::FORBIDDEN_KEY_VALUE) unless valid
 
           key.expires_at = expiry
 

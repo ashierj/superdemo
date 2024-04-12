@@ -108,7 +108,6 @@ Style/ClassAndModuleChildren:
     - 'app/controllers/profiles/chat_names_controller.rb'
     - 'app/controllers/profiles/emails_controller.rb'
     - 'app/controllers/profiles/groups_controller.rb'
-    - 'app/controllers/profiles/keys_controller.rb'
     - 'app/controllers/profiles/notifications_controller.rb'
     - 'app/controllers/profiles/preferences_controller.rb'
     - 'app/controllers/profiles/two_factor_auths_controller.rb'

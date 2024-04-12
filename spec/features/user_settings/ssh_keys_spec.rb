@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > SSH Keys', feature_category: :source_code_management do
+RSpec.describe 'User Settings > SSH Keys', feature_category: :source_code_management do
   let(:user) { create(:user) }
 
   before do
@@ -11,7 +11,7 @@ RSpec.describe 'Profile > SSH Keys', feature_category: :source_code_management d
 
   describe 'User adds a key' do
     before do
-      visit profile_keys_path
+      visit user_settings_ssh_keys_path
     end
 
     it 'auto-populates the title', :js do
@@ -75,7 +75,7 @@ RSpec.describe 'Profile > SSH Keys', feature_category: :source_code_management d
 
   it 'user sees their keys' do
     key = create(:key, user: user)
-    visit profile_keys_path
+    visit user_settings_ssh_keys_path
 
     expect(page).to have_content(key.title)
   end
@@ -98,15 +98,15 @@ RSpec.describe 'Profile > SSH Keys', feature_category: :source_code_management d
   describe 'User removes a key', :js do
     let!(:key) { create(:key, user: user) }
 
-    context 'via the key index' do
+    context 'with the key index' do
       it 'removes key' do
-        destroy_key(profile_keys_path, 'Remove', 'Delete')
+        destroy_key(user_settings_ssh_keys_path, 'Remove', 'Delete')
       end
     end
 
-    context 'via its details page' do
+    context 'with its details page' do
       it 'removes key' do
-        destroy_key(profile_keys_path(key), 'Remove', 'Delete')
+        destroy_key(user_settings_ssh_keys_path(key), 'Remove', 'Delete')
       end
     end
   end
@@ -142,7 +142,7 @@ RSpec.describe 'Profile > SSH Keys', feature_category: :source_code_management d
           expect(page).to have_content("SSH key fingerprint: #{key.fingerprint_sha256}")
         end
 
-        destroy_key(profile_keys_path, 'Revoke', 'Revoke')
+        destroy_key(user_settings_ssh_keys_path, 'Revoke', 'Revoke')
 
         visit project_commit_path(project, commit)
         wait_for_all_requests
