@@ -251,6 +251,10 @@ module EE
       def epic_sync_to_work_item_enabled?
         ::Feature.enabled?(:sync_epic_to_work_item, self, type: :wip)
       end
+
+      def work_item_sync_to_epic_enabled?
+        ::Feature.enabled?(:sync_work_item_to_epic, self, type: :wip)
+      end
     end
 
     override :usage_quotas_enabled?
