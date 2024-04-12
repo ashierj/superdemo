@@ -178,6 +178,8 @@ module EE
           alpha: { milestone: '16.11' }
         mount_mutation ::Mutations::AuditEvents::Instance::AuditEventStreamingDestinations::Delete,
           alpha: { milestone: '16.11' }
+        mount_mutation ::Mutations::AuditEvents::Instance::AuditEventStreamingDestinations::Update,
+          alpha: { milestone: '16.11' }
 
         prepend(Types::DeprecatedMutations)
       end
