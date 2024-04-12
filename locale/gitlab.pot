@@ -24227,6 +24227,12 @@ msgstr ""
 msgid "Got it"
 msgstr ""
 
+msgid "GpgKeys|Manage GPG keys"
+msgstr ""
+
+msgid "GpgKeys|There is an unverified GPG key associated with your profile. Please review your GPG keys."
+msgstr ""
+
 msgid "Grafana URL"
 msgstr ""
 
