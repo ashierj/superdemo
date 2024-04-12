@@ -16,7 +16,7 @@ module StubSaasFeatures
   # - `stub_saas_features(onboarding: true)` ... Enable `onboarding`
   #   SaaS feature globally.
   def stub_saas_features(features)
-    all_features = ::Gitlab::Saas::FEATURES.index_with { false }
+    all_features = ::Gitlab::Saas::FEATURES.index_with { |feature| ::Gitlab::Saas.feature_available?(feature) }
     all_features.merge!(features)
 
     all_features.each do |feature_name, value|

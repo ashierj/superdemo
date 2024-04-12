@@ -29,7 +29,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     with_them do
       before do
-        stub_feature_flags(identity_verification: identity_verification)
+        stub_saas_features(identity_verification: identity_verification)
         stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
         stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
       end

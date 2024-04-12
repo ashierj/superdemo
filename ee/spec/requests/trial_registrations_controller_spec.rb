@@ -116,7 +116,7 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
         context 'with email confirmation' do
           before do
             stub_application_setting(require_admin_approval_after_user_signup: false)
-            stub_feature_flags(identity_verification: false)
+            stub_saas_features(identity_verification: false)
             allow(User).to receive(:allow_unconfirmed_access_for).and_return 0
           end
 

@@ -19,11 +19,11 @@ module IdentityVerifiable
   LOW_RISK_USER_METHODS = %w[email].freeze
 
   def identity_verification_enabled?
+    return false unless ::Gitlab::Saas.feature_available?(:identity_verification)
     return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
     return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
 
-    email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(email)
-    Feature.enabled?(:identity_verification, email_wrapper)
+    true
   end
 
   def active_for_authentication?
@@ -41,8 +41,7 @@ module IdentityVerifiable
     # This prevents the scenario where a user has to verify their identity
     # multiple times. For example:
     #
-    # 1. identity_verification FF is enabled while
-    # identity_verification_credit_card is disabled
+    # 1. identity_verification_credit_card FF is disabled
     # 2. A user registers, is assigned High risk band, verifies their email as
     # prompted, and starts using GitLab
     # 3. identity_verification_credit_card FF is enabled

@@ -48,12 +48,18 @@ RSpec.describe StubSaasFeatures, feature_category: :shared do
     end
 
     context 'when checking multiple features' do
-      it 'stubs defaults false value for other known features' do
+      before do
+        allow(::Gitlab::Saas).to receive(:feature_available?).and_call_original
+        allow(::Gitlab::Saas).to receive(:feature_available?).with(:onboarding).and_return(false)
+        allow(::Gitlab::Saas).to receive(:feature_available?).with(:purchases_additional_minutes).and_return(true)
+      end
+
+      it 'keeps the current value for other known features' do
         stub_saas_features(experimentation: true)
 
         expect(::Gitlab::Saas.feature_available?(:experimentation)).to eq(true)
         expect(::Gitlab::Saas.feature_available?(:onboarding)).to eq(false)
-        expect(::Gitlab::Saas.feature_available?(:purchases_additional_minutes)).to eq(false)
+        expect(::Gitlab::Saas.feature_available?(:purchases_additional_minutes)).to eq(true)
       end
     end
   end

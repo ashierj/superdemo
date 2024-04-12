@@ -21,7 +21,7 @@ RSpec.describe 'Email Confirmation', feature_category: :instance_resiliency do
     before do
       stub_feature_flags(identity_verification_credit_card: false)
 
-      stub_feature_flags(identity_verification: identity_verification)
+      stub_saas_features(identity_verification: identity_verification)
       stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
       stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
 
@@ -64,7 +64,7 @@ RSpec.describe 'Email Confirmation', feature_category: :instance_resiliency do
 
     before do
       stub_application_setting_enum('email_confirmation_setting', 'soft')
-      stub_feature_flags(identity_verification: true)
+      stub_saas_features(identity_verification: true)
       stub_omniauth_saml_config(enabled: true, auto_link_saml_user: true)
       gitlab_sign_in_via('saml', user, external_uid)
     end
