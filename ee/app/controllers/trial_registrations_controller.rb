@@ -21,6 +21,12 @@ class TrialRegistrationsController < RegistrationsController
   override :new
   def new
     @resource = Users::AuthorizedBuildService.new(nil, {}).execute
+
+    ::Gitlab::Tracking.event(
+      self.class.name,
+      'render_registration_page',
+      label: ::Onboarding::Status::TRACKING_LABEL[:trial]
+    )
   end
 
   private

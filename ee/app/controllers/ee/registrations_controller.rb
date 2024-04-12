@@ -20,6 +20,17 @@ module EE
       before_action :verify_arkose_labs_challenge!, only: :create
     end
 
+    override :new
+    def new
+      super
+
+      ::Gitlab::Tracking.event(
+        self.class.name,
+        'render_registration_page',
+        label: registration_tracking_label
+      )
+    end
+
     override :destroy
     def destroy
       unless allow_account_deletion?
@@ -144,6 +155,16 @@ module EE
       glm_tracking_params.to_h
     end
 
+    override :track_successful_user_creation
+    def track_successful_user_creation(user)
+      ::Gitlab::Tracking.event(
+        self.class.name,
+        'successfully_submitted_form',
+        label: registration_tracking_label,
+        user: user
+      )
+    end
+
     def record_arkose_data(user)
       return unless arkose_labs_enabled?(user: user)
       return unless arkose_labs_verify_response
@@ -157,6 +178,13 @@ module EE
     override :arkose_labs_enabled?
     def arkose_labs_enabled?(user: nil)
       ::Arkose::Settings.enabled?(user: user, user_agent: request.user_agent)
+    end
+
+    def registration_tracking_label
+      return ::Onboarding::Status::TRACKING_LABEL[:trial] if onboarding_status.trial?
+      return ::Onboarding::Status::TRACKING_LABEL[:invite] if params[:invite_email].present?
+
+      onboarding_status.tracking_label
     end
 
     def allow_account_deletion?

@@ -217,13 +217,6 @@ RSpec.describe RegistrationsController, feature_category: :user_profile do
                   property: member.id.to_s,
                   user: member.reload.user
                 )
-
-                expect_snowplow_event(
-                  category: 'RegistrationsController',
-                  action: 'create_user',
-                  label: 'invited',
-                  user: member.reload.user
-                )
               end
             end
 
@@ -237,13 +230,6 @@ RSpec.describe RegistrationsController, feature_category: :user_profile do
                   category: 'RegistrationsController',
                   action: 'accepted',
                   label: 'invite_email'
-                )
-
-                expect_snowplow_event(
-                  category: 'RegistrationsController',
-                  action: 'create_user',
-                  label: 'signup',
-                  user: member.reload.user
                 )
               end
             end
@@ -559,15 +545,6 @@ RSpec.describe RegistrationsController, feature_category: :user_profile do
           method: 'create'
         )
       end
-
-      it 'does not track failed form submission' do
-        post_create
-
-        expect_no_snowplow_event(
-          category: described_class.name,
-          action: 'successfully_submitted_form'
-        )
-      end
     end
 
     context 'when the password is not weak' do
@@ -577,16 +554,6 @@ RSpec.describe RegistrationsController, feature_category: :user_profile do
         expect_no_snowplow_event(
           category: 'Gitlab::Tracking::Helpers::WeakPasswordErrorEvent',
           action: 'track_weak_password_error'
-        )
-      end
-
-      it 'tracks successful form submission' do
-        post_create
-
-        expect_snowplow_event(
-          category: described_class.name,
-          action: 'successfully_submitted_form',
-          user: User.find_by(email: base_user_params[:email])
         )
       end
     end
