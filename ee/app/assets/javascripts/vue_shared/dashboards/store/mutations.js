@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { createAlert, VARIANT_WARNING } from '~/alert';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
@@ -6,11 +5,14 @@ import { __ } from '~/locale';
 import * as types from './mutation_types';
 
 export const updatePageInfo = (state, headers) => {
-  const pageInfo = parseIntPagination(normalizeHeaders(headers));
-  Vue.set(state.pageInfo, 'currentPage', pageInfo.page);
-  Vue.set(state.pageInfo, 'nextPage', pageInfo.nextPage);
-  Vue.set(state.pageInfo, 'totalResults', pageInfo.total);
-  Vue.set(state.pageInfo, 'totalPages', pageInfo.totalPages);
+  const { page, nextPage, total, totalPages } = parseIntPagination(normalizeHeaders(headers));
+  const copy = { ...state.pageInfo };
+  copy.currentPage = page;
+  copy.nextPage = nextPage;
+  copy.totalResults = total;
+  copy.totalPages = totalPages;
+
+  state.pageInfo = copy;
 };
 
 export default {
@@ -89,7 +91,9 @@ export default {
     // Flipping this property separately to allows the UI
     // to hide the "minimum query" message
     // before the search results arrive from the API
-    Vue.set(state.messages, 'minimumQuery', false);
+    const copy = { ...state.messages };
+    copy.minimumQuery = false;
+    state.messages = copy;
 
     state.searchCount += 1;
   },
@@ -99,9 +103,11 @@ export default {
   },
   [types.RECEIVE_SEARCH_RESULTS_SUCCESS](state, results) {
     state.projectSearchResults = results.data;
-    Vue.set(state.messages, 'noResults', state.projectSearchResults.length === 0);
-    Vue.set(state.messages, 'searchError', false);
-    Vue.set(state.messages, 'minimumQuery', false);
+    const copy = { ...state.messages };
+    copy.noResults = state.projectSearchResults.length === 0;
+    copy.searchError = false;
+    copy.minimumQuery = false;
+    state.messages = copy;
 
     updatePageInfo(state, results.headers);
 
@@ -109,18 +115,22 @@ export default {
   },
   [types.RECEIVE_SEARCH_RESULTS_ERROR](state, message) {
     state.projectSearchResults = [];
-    Vue.set(state.messages, 'noResults', false);
-    Vue.set(state.messages, 'searchError', true);
-    Vue.set(state.messages, 'minimumQuery', message === 'minimumQuery');
+    const copy = { ...state.messages };
+    copy.noResults = false;
+    copy.searchError = true;
+    copy.minimumQuery = message === 'minimumQuery';
+    state.messages = copy;
 
     state.searchCount = Math.max(0, state.searchCount - 1);
   },
   [types.MINIMUM_QUERY_MESSAGE](state) {
     state.projectSearchResults = [];
     state.pageInfo.totalResults = 0;
-    Vue.set(state.messages, 'noResults', false);
-    Vue.set(state.messages, 'minimumQuery', true);
-    Vue.set(state.messages, 'searchError', false);
+    const copy = { ...state.messages };
+    copy.noResults = false;
+    copy.searchError = false;
+    copy.minimumQuery = true;
+    state.messages = copy;
 
     state.searchCount = Math.max(0, state.searchCount - 1);
   },
