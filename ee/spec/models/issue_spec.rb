@@ -1158,7 +1158,7 @@ RSpec.describe Issue, feature_category: :team_planning do
     where(:issuable_type, :project, :supports_iterations) do
       [
         [:issue, :project_with_group, true],
-        [:incident, :project_with_group, false]
+        [:incident, :project_with_group, true]
       ]
     end
 
