@@ -33749,6 +33749,7 @@ Values for sorting timelogs.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="todoactionenumadded_approver"></a>`added_approver` | User was added as an approver. |
 | <a id="todoactionenumapproval_required"></a>`approval_required` | User was set as an approver. |
 | <a id="todoactionenumassigned"></a>`assigned` | User was assigned. |
 | <a id="todoactionenumbuild_failed"></a>`build_failed` | Build triggered by the user failed. |
