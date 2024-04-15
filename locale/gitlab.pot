@@ -55878,6 +55878,9 @@ msgstr ""
 msgid "UserProfile|You can create a group for several dependent projects"
 msgstr ""
 
+msgid "UserProfile|You cannot create projects in your personal namespace. Contact your GitLab administrator."
+msgstr ""
+
 msgid "UserProfile|You do not have any followers"
 msgstr ""
 
