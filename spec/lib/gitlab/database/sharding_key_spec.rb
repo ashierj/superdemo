@@ -51,6 +51,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
   #   `CONSTRAINT example_constraint CHECK (((project_id IS NULL) <> (namespace_id IS NULL)))`
   let(:tables_with_alternative_not_null_constraint) do
     [
+      *['protected_environments.project_id', 'protected_environments.group_id'],
       'security_orchestration_policy_configurations.project_id',
       'security_orchestration_policy_configurations.namespace_id'
     ]
