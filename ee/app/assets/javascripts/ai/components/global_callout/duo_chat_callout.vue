@@ -7,11 +7,11 @@ import DUO_CHAT_ILLUSTRATION from './callout_illustration.svg?url';
 export const DUO_CHAT_GLOBAL_BUTTON_CSS_CLASS = 'js-tanuki-bot-chat-toggle';
 
 const i18n = {
-  POPOVER_LABEL: s__('TanukiBot|GitLab Duo Chat'),
-  POPOVER_DESCRIPTION: s__('TanukiBot|Use AI to answer questions about things like:'),
+  POPOVER_LABEL: s__('DuoChat|GitLab Duo Chat'),
+  POPOVER_DESCRIPTION: s__('DuoChat|Use AI to answer questions about things like:'),
   POPOVER_LIST_ITEMS: [
-    s__("TanukiBot|The issue, epic, or code you're viewing"),
-    s__('TanukiBot|How to use GitLab'),
+    s__("DuoChat|The issue, epic, or code you're viewing"),
+    s__('DuoChat|How to use GitLab'),
   ],
   POPOVER_BUTTON: __('Ask GitLab Duo'),
 };
