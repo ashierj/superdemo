@@ -45,6 +45,10 @@ module Search
         @logger ||= ::Zoekt::Logger.build
       end
 
+      def info(task, **payload)
+        logger.info(build_structured_payload(**payload.merge(task: task)))
+      end
+
       def execute_every(period, cache_key:)
         cache_key = [self.class.name.underscore, :execute_every, cache_key].flatten.join(':')
 
@@ -65,6 +69,10 @@ module Search
           nodes = ::Search::Zoekt::Node.online.find_each.to_a
           over_watermark_nodes = nodes.select { |n| (n.used_bytes / n.total_bytes.to_f) >= WATERMARK_LIMIT_HIGH }
 
+          info :reallocation, message: 'Detected nodes over watermark',
+            watermark_limit_high: WATERMARK_LIMIT_HIGH,
+            count: over_watermark_nodes.count
+
           over_watermark_nodes.each do |node|
             sizes = {}
 
@@ -81,6 +89,7 @@ module Search
             sorted = sizes.to_a.sort_by { |_k, v| v }
 
             namespaces_to_move = []
+            node_original_used_bytes = node.used_bytes
             sorted.each do |namespace_id, repository_size|
               node.used_bytes -= repository_size
 
@@ -88,6 +97,13 @@ module Search
 
               namespaces_to_move << namespace_id
             end
+
+            info :reallocation, message: 'Unassigning namespaces from node',
+              node_id: node.id,
+              watermark_limit_high: WATERMARK_LIMIT_HIGH,
+              count: namespaces_to_move.count,
+              node_used_bytes: node_original_used_bytes,
+              node_expected_used_bytes: node.used_bytes
 
             namespaces_to_move.each_slice(100) do |namespace_ids|
               scope = node.indices.for_root_namespace_id(namespace_ids)
