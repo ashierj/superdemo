@@ -17,6 +17,14 @@ module RuboCop
       #     Gitlab::Json.parse(...)
       #   end
       #
+      #   namespace :json do
+      #     require_relative 'gitlab/json'
+      #     require 'json'
+      #
+      #     task :parse_json do
+      #     end
+      #   end
+      #
       #   # good
       #
       #   task :parse_json do
@@ -24,6 +32,15 @@ module RuboCop
       #     require 'json'
       #
       #     Gitlab::Json.parse(...)
+      #   end
+      #
+      #   namespace :json do
+      #     task :parse_json do
+      #       require_relative 'gitlab/json'
+      #       require 'json'
+      #
+      #       Gitlab::Json.parse(...)
+      #     end
       #   end
       #
       #   RSpec::Core::RakeTask.new(:parse_json) do |t, args|
@@ -95,7 +112,7 @@ module RuboCop
         end
 
         def inside_method?(node)
-          node.each_ancestor(:def).any?
+          node.each_ancestor(:def, :defs).any?
         end
       end
     end

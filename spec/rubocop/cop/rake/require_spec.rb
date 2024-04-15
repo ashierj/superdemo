@@ -83,8 +83,13 @@ RSpec.describe RuboCop::Cop::Rake::Require do
           require 'json'
         end
 
+        def self.run
+          require 'yaml'
+        end
+
         task :parse do
           load_deps
+          run
         end
       RUBY
     end
