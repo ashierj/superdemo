@@ -5764,6 +5764,7 @@ CREATE TABLE catalog_resource_versions (
     semver_minor integer,
     semver_patch integer,
     semver_prerelease text,
+    semver_prefixed boolean DEFAULT false,
     CONSTRAINT check_701bdce47b CHECK ((char_length(semver_prerelease) <= 255))
 );
 
