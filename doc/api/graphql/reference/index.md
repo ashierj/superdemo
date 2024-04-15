@@ -12843,6 +12843,117 @@ The edge type for [`MlCandidate`](#mlcandidate).
 | <a id="mlcandidateedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="mlcandidateedgenode"></a>`node` | [`MlCandidate`](#mlcandidate) | The item at the end of the edge. |
 
+#### `MlCandidateMetadataConnection`
+
+The connection type for [`MlCandidateMetadata`](#mlcandidatemetadata).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetadataconnectionedges"></a>`edges` | [`[MlCandidateMetadataEdge]`](#mlcandidatemetadataedge) | A list of edges. |
+| <a id="mlcandidatemetadataconnectionnodes"></a>`nodes` | [`[MlCandidateMetadata]`](#mlcandidatemetadata) | A list of nodes. |
+| <a id="mlcandidatemetadataconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+##### Fields with arguments
+
+###### `MlCandidateMetadataConnection.count`
+
+Limited count of collection. Returns limit + 1 for counts greater than the limit.
+
+Returns [`Int!`](#int).
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetadataconnectioncountlimit"></a>`limit` | [`Int`](#int) | Limit value to be applied to the count query. Default is 1000. |
+
+#### `MlCandidateMetadataEdge`
+
+The edge type for [`MlCandidateMetadata`](#mlcandidatemetadata).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetadataedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="mlcandidatemetadataedgenode"></a>`node` | [`MlCandidateMetadata`](#mlcandidatemetadata) | The item at the end of the edge. |
+
+#### `MlCandidateMetricConnection`
+
+The connection type for [`MlCandidateMetric`](#mlcandidatemetric).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetricconnectionedges"></a>`edges` | [`[MlCandidateMetricEdge]`](#mlcandidatemetricedge) | A list of edges. |
+| <a id="mlcandidatemetricconnectionnodes"></a>`nodes` | [`[MlCandidateMetric]`](#mlcandidatemetric) | A list of nodes. |
+| <a id="mlcandidatemetricconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+##### Fields with arguments
+
+###### `MlCandidateMetricConnection.count`
+
+Limited count of collection. Returns limit + 1 for counts greater than the limit.
+
+Returns [`Int!`](#int).
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetricconnectioncountlimit"></a>`limit` | [`Int`](#int) | Limit value to be applied to the count query. Default is 1000. |
+
+#### `MlCandidateMetricEdge`
+
+The edge type for [`MlCandidateMetric`](#mlcandidatemetric).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetricedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="mlcandidatemetricedgenode"></a>`node` | [`MlCandidateMetric`](#mlcandidatemetric) | The item at the end of the edge. |
+
+#### `MlCandidateParamConnection`
+
+The connection type for [`MlCandidateParam`](#mlcandidateparam).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidateparamconnectionedges"></a>`edges` | [`[MlCandidateParamEdge]`](#mlcandidateparamedge) | A list of edges. |
+| <a id="mlcandidateparamconnectionnodes"></a>`nodes` | [`[MlCandidateParam]`](#mlcandidateparam) | A list of nodes. |
+| <a id="mlcandidateparamconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+##### Fields with arguments
+
+###### `MlCandidateParamConnection.count`
+
+Limited count of collection. Returns limit + 1 for counts greater than the limit.
+
+Returns [`Int!`](#int).
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidateparamconnectioncountlimit"></a>`limit` | [`Int`](#int) | Limit value to be applied to the count query. Default is 1000. |
+
+#### `MlCandidateParamEdge`
+
+The edge type for [`MlCandidateParam`](#mlcandidateparam).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidateparamedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="mlcandidateparamedgenode"></a>`node` | [`MlCandidateParam`](#mlcandidateparam) | The item at the end of the edge. |
+
 #### `MlModelConnection`
 
 The connection type for [`MlModel`](#mlmodel).
@@ -24616,8 +24727,48 @@ Candidate for a model version in the model registry.
 | <a id="mlcandidateeid"></a>`eid` | [`String!`](#string) | MLflow uuid for the candidate. |
 | <a id="mlcandidateid"></a>`id` | [`MlCandidateID!`](#mlcandidateid) | ID of the candidate. |
 | <a id="mlcandidateiid"></a>`iid` | [`Int!`](#int) | IID of the candidate scoped to project. |
+| <a id="mlcandidatemetadata"></a>`metadata` | [`MlCandidateMetadataConnection!`](#mlcandidatemetadataconnection) | Metadata entries for the candidate. (see [Connections](#connections)) |
+| <a id="mlcandidatemetrics"></a>`metrics` | [`MlCandidateMetricConnection!`](#mlcandidatemetricconnection) | Metrics for the candidate. (see [Connections](#connections)) |
 | <a id="mlcandidatename"></a>`name` | [`String`](#string) | Name of the candidate. |
+| <a id="mlcandidateparams"></a>`params` | [`MlCandidateParamConnection!`](#mlcandidateparamconnection) | Parameters for the candidate. (see [Connections](#connections)) |
 | <a id="mlcandidatestatus"></a>`status` | [`String`](#string) | Candidate status. |
+
+### `MlCandidateMetadata`
+
+Metadata for a candidate in the model registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetadataid"></a>`id` | [`MlCandidateMetadataID!`](#mlcandidatemetadataid) | ID of the metadata. |
+| <a id="mlcandidatemetadataname"></a>`name` | [`String`](#string) | Name of the metadata entry. |
+| <a id="mlcandidatemetadatavalue"></a>`value` | [`String!`](#string) | Value set for the metadata entry. |
+
+### `MlCandidateMetric`
+
+Metric for a candidate in the model registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidatemetricid"></a>`id` | [`MlCandidateMetricID!`](#mlcandidatemetricid) | ID of the metric. |
+| <a id="mlcandidatemetricname"></a>`name` | [`String`](#string) | Name of the metric. |
+| <a id="mlcandidatemetricstep"></a>`step` | [`Int!`](#int) | Step at which the metric was measured. |
+| <a id="mlcandidatemetricvalue"></a>`value` | [`Float!`](#float) | Value set for the metric. |
+
+### `MlCandidateParam`
+
+Parameter for a candidate in the model registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlcandidateparamid"></a>`id` | [`MlCandidateParamID!`](#mlcandidateparamid) | ID of the parameter. |
+| <a id="mlcandidateparamname"></a>`name` | [`String`](#string) | Name of the parameter. |
+| <a id="mlcandidateparamvalue"></a>`value` | [`String!`](#string) | Value set for the parameter. |
 
 ### `MlModel`
 
@@ -24681,6 +24832,7 @@ Version of a machine learning model.
 | <a id="mlmodelversioncandidate"></a>`candidate` | [`MlCandidate!`](#mlcandidate) | Metrics, params and metadata for the model version. |
 | <a id="mlmodelversioncreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
 | <a id="mlmodelversionid"></a>`id` | [`MlModelVersionID!`](#mlmodelversionid) | ID of the model version. |
+| <a id="mlmodelversionpackageid"></a>`packageId` | [`PackagesPackageID!`](#packagespackageid) | Package for model version artifacts. |
 | <a id="mlmodelversionversion"></a>`version` | [`String!`](#string) | Name of the version. |
 
 ### `MonthlyUsage`
@@ -34899,6 +35051,24 @@ An example `MilestoneID` is: `"gid://gitlab/Milestone/1"`.
 A `MlCandidateID` is a global ID. It is encoded as a string.
 
 An example `MlCandidateID` is: `"gid://gitlab/Ml::Candidate/1"`.
+
+### `MlCandidateMetadataID`
+
+A `MlCandidateMetadataID` is a global ID. It is encoded as a string.
+
+An example `MlCandidateMetadataID` is: `"gid://gitlab/Ml::CandidateMetadata/1"`.
+
+### `MlCandidateMetricID`
+
+A `MlCandidateMetricID` is a global ID. It is encoded as a string.
+
+An example `MlCandidateMetricID` is: `"gid://gitlab/Ml::CandidateMetric/1"`.
+
+### `MlCandidateParamID`
+
+A `MlCandidateParamID` is a global ID. It is encoded as a string.
+
+An example `MlCandidateParamID` is: `"gid://gitlab/Ml::CandidateParam/1"`.
 
 ### `MlModelID`
 
