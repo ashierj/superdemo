@@ -42,6 +42,11 @@ module Types
             method: :config_project,
             null: true,
             description: 'Project which contains the dashboard definition.'
+
+      field :errors,
+            type: [GraphQL::Types::String],
+            null: true,
+            description: 'Errors on yaml definition.'
     end
   end
 end

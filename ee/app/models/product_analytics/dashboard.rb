@@ -2,13 +2,16 @@
 
 module ProductAnalytics
   class Dashboard
+    include SchemaValidator
+
     attr_reader :title, :description, :schema_version, :panels, :container,
-      :config_project, :slug, :path, :user_defined, :category
+      :config_project, :slug, :path, :user_defined, :category, :errors
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
 
     PRODUCT_ANALYTICS_DASHBOARDS_LIST = %w[audience behavior].freeze
-    VALUE_STREAM_DASHBOARD_LIST = %w[value_streams_dashboard].freeze
+    VALUE_STREAM_DASHBOARD_NAME = 'value_streams_dashboard'
+    SCHEMA_PATH = 'ee/app/validators/json_schemas/analytics_dashboard.json'
 
     def self.for(container:, user:)
       unless container.is_a?(Group) || container.is_a?(Project)
@@ -25,26 +28,36 @@ module ProductAnalytics
       root_trees = config_project&.repository&.tree(:head, DASHBOARD_ROOT_LOCATION)
 
       dashboards << builtin_dashboards(container, config_project, user)
-      dashboards << local_dashboards(container, config_project, root_trees.trees) if root_trees&.trees
+      dashboards << customized_dashboards(container, config_project, root_trees.trees) if root_trees&.trees
 
-      dashboards.flatten
+      dashboards.flatten.compact
     end
 
-    def initialize(
-      title:, description:, schema_version:, panels:, container:, slug:, user_defined:,
-      config_project:)
-      @title = title
-      @description = description
-      @schema_version = schema_version
-      @panels = panels
-      @container = container
-      @config_project = config_project
-      @slug = slug
-      @user_defined = user_defined
+    def initialize(**args)
+      @container = args[:container]
+      @config_project = args[:config_project]
+      @slug = args[:slug]
+      @user_defined = args[:user_defined]
+
+      @yaml_definition = args[:config]
+      @title = @yaml_definition['title']
+      @description = @yaml_definition['description']
+      @schema_version = @yaml_definition['version']
+      @panels = ProductAnalytics::Panel.from_data(@yaml_definition['panels'], config_project)
       @category = 'analytics'
+
+      @errors = schema_errors_for(@yaml_definition)
     end
 
-    def self.local_dashboards(container, config_project, trees)
+    def ==(other)
+      slug == other.slug
+    end
+
+    private
+
+    attr_reader :yaml_definition
+
+    def self.customized_dashboards(container, config_project, trees)
       trees.delete_if { |tree| tree.name == 'visualizations' }.map do |tree|
         config_data =
           config_project.repository.blob_data_at(config_project.repository.root_ref_sha,
@@ -55,14 +68,11 @@ module ProductAnalytics
         config = YAML.safe_load(config_data)
 
         new(
-          container: container,
-          title: config['title'],
           slug: tree.name,
-          description: config['description'],
-          schema_version: config['version'],
-          panels: ProductAnalytics::Panel.from_data(config['panels'], config_project),
-          user_defined: true,
-          config_project: config_project
+          container: container,
+          config: config,
+          config_project: config_project,
+          user_defined: true
         )
       end
     end
@@ -83,51 +93,44 @@ module ProductAnalytics
         config = load_yaml_dashboard_config(name, 'ee/lib/gitlab/analytics/product_analytics/dashboards')
 
         new(
-          container: container,
-          title: config['title'],
           slug: name,
-          description: config['description'],
-          schema_version: config['version'],
-          panels: ProductAnalytics::Panel.from_data(config['panels'], config_project),
-          user_defined: false,
-          config_project: config_project
+          container: container,
+          config: config,
+          config_project: config_project,
+          user_defined: false
         )
       end
     end
 
     def self.value_stream_dashboard(container, config_project)
-      return [] unless container.value_streams_dashboard_available?
+      return unless container.value_streams_dashboard_available?
 
-      VALUE_STREAM_DASHBOARD_LIST.map do |name|
-        config = load_yaml_dashboard_config(name, 'ee/lib/gitlab/analytics/value_stream_dashboard/dashboards')
-
-        new(
-          container: container,
-          title: config['title'],
-          slug: name,
-          description: config['description'],
-          schema_version: config['version'],
-          panels: ProductAnalytics::Panel.from_data(config['panels'], config_project),
-          user_defined: false,
-          config_project: config_project
+      config =
+        load_yaml_dashboard_config(
+          VALUE_STREAM_DASHBOARD_NAME,
+          'ee/lib/gitlab/analytics/value_stream_dashboard/dashboards'
         )
-      end
+
+      new(
+        slug: VALUE_STREAM_DASHBOARD_NAME,
+        container: container,
+        config: config,
+        config_project: config_project,
+        user_defined: false
+      )
     end
 
     def self.ai_impact_dashboard(container, config_project)
-      return [] unless container.ai_impact_dashboard_available?
+      return unless container.ai_impact_dashboard_available?
 
       config = load_yaml_dashboard_config('dashboard', 'ee/lib/gitlab/analytics/ai_impact_dashboard')
 
       new(
-        container: container,
-        title: config['title'],
         slug: 'ai_impact',
-        description: config['description'],
-        schema_version: config['version'],
-        panels: ProductAnalytics::Panel.from_data(config['panels'], config_project),
-        user_defined: false,
-        config_project: config_project
+        container: container,
+        config: config,
+        config_project: config_project,
+        user_defined: false
       )
     end
 
@@ -139,10 +142,6 @@ module ProductAnalytics
       builtin << ai_impact_dashboard(container, config_project)
 
       builtin.flatten
-    end
-
-    def ==(other)
-      slug == other.slug
     end
   end
 end

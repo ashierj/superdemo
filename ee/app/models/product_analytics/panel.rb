@@ -5,6 +5,8 @@ module ProductAnalytics
     attr_reader :title, :grid_attributes, :visualization, :project, :query_overrides
 
     def self.from_data(panel_yaml, project)
+      return if panel_yaml.nil?
+
       panel_yaml.map do |panel|
         new(
           title: panel['title'],
