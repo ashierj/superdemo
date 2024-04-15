@@ -30,13 +30,13 @@ describe('GitLab Duo Chat Store Mutations', () => {
 
     describe('when there is no message with the same requestId', () => {
       it.each`
-        messageData                                                                  | expectedState
-        ${MOCK_USER_MESSAGE}                                                         | ${[MOCK_USER_MESSAGE]}
-        ${MOCK_FAILING_USER_MESSAGE}                                                 | ${[{ ...MOCK_FAILING_USER_MESSAGE, requestId: expect.any(String) }]}
-        ${{ content: 'foo', role: GENIE_CHAT_MODEL_ROLES.assistant }}                | ${[{ content: 'foo', role: GENIE_CHAT_MODEL_ROLES.assistant, chunks: [] }]}
-        ${{ content: 'foo', source: 'bar', role: GENIE_CHAT_MODEL_ROLES.assistant }} | ${[{ content: 'foo', source: 'bar', role: GENIE_CHAT_MODEL_ROLES.assistant, chunks: [] }]}
-        ${{}}                                                                        | ${[]}
-        ${undefined}                                                                 | ${[]}
+        messageData                                                                              | expectedState
+        ${MOCK_USER_MESSAGE}                                                                     | ${[MOCK_USER_MESSAGE]}
+        ${MOCK_FAILING_USER_MESSAGE}                                                             | ${[{ ...MOCK_FAILING_USER_MESSAGE, requestId: expect.any(String) }]}
+        ${{ content: 'foo', role: GENIE_CHAT_MODEL_ROLES.assistant, chunkId: undefined }}        | ${[{ content: 'foo', role: GENIE_CHAT_MODEL_ROLES.assistant, chunkId: undefined }]}
+        ${{ content: 'foo', source: 'bar', role: GENIE_CHAT_MODEL_ROLES.assistant, chunkId: 1 }} | ${[{ content: 'foo', source: 'bar', role: GENIE_CHAT_MODEL_ROLES.assistant, chunkId: 1 }]}
+        ${{}}                                                                                    | ${[]}
+        ${undefined}                                                                             | ${[]}
       `('pushes a message object to state', ({ messageData, expectedState }) => {
         mutations[types.ADD_MESSAGE](state, messageData);
         expect(state.messages).toStrictEqual(expectedState);
@@ -71,7 +71,6 @@ describe('GitLab Duo Chat Store Mutations', () => {
             ...MOCK_TANUKI_MESSAGE,
             requestId,
             content: updatedContent,
-            chunks: [],
           },
         ]);
       });
@@ -134,37 +133,6 @@ describe('GitLab Duo Chat Store Mutations', () => {
           userMessageWithRequestId,
         ]);
       });
-      it.each`
-        originalChunks        | chunkId | content  | expectedChunks
-        ${undefined}          | ${null} | ${'foo'} | ${[]}
-        ${undefined}          | ${1}    | ${'foo'} | ${['foo']}
-        ${undefined}          | ${2}    | ${'foo'} | ${[undefined, 'foo']}
-        ${[]}                 | ${1}    | ${'foo'} | ${['foo']}
-        ${[]}                 | ${2}    | ${'foo'} | ${[undefined, 'foo']}
-        ${['bar']}            | ${3}    | ${'foo'} | ${['bar', undefined, 'foo']}
-        ${[undefined, 'bar']} | ${1}    | ${'foo'} | ${['foo', 'bar']}
-        ${['bar']}            | ${1}    | ${'foo'} | ${['foo']}
-      `(
-        'correctly populates existing chunks $originalChunks when {chunkId: $chunkId, content: "$content"}',
-        ({ originalChunks, chunkId, content, expectedChunks } = {}) => {
-          state.messages.push({
-            ...MOCK_TANUKI_MESSAGE,
-            requestId,
-            chunks: originalChunks,
-          });
-          mutations[types.ADD_MESSAGE](state, {
-            requestId,
-            role: MOCK_TANUKI_MESSAGE.role,
-            content,
-            chunkId,
-          });
-          expect(state.messages[0]).toEqual(
-            expect.objectContaining({
-              chunks: expectedChunks,
-            }),
-          );
-        },
-      );
     });
 
     it.each`

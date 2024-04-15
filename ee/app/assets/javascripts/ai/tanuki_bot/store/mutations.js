@@ -27,32 +27,17 @@ export default {
         );
         const assistantMessageExists = assistantMessageWithRequestIdIndex > -1;
 
-        let chunks = [];
-        if (assistantMessageExists) {
-          chunks = state.messages[assistantMessageWithRequestIdIndex].chunks || [];
-        }
-        const { chunkId, content, ...messageAttributes } = newMessageData;
-
-        // Transform chunkId + content pair into `chunks` array
-        if (chunkId) {
-          chunks[chunkId - 1] = content;
-        } else {
-          messageAttributes.content = content; // Preserve the content.
-        }
-
-        messageAttributes.chunks = chunks;
-
         if (assistantMessageExists) {
           state.messages.splice(assistantMessageWithRequestIdIndex, 1, {
             ...state.messages[assistantMessageWithRequestIdIndex],
-            ...messageAttributes,
+            ...newMessageData,
           });
         } else if (userMessageExists) {
           // We add the new ASSISTANT message
           isLastMessage = userMessageWithRequestIdIndex === state.messages.length - 1;
-          state.messages.splice(userMessageWithRequestIdIndex + 1, 0, messageAttributes);
+          state.messages.splice(userMessageWithRequestIdIndex + 1, 0, newMessageData);
         } else {
-          state.messages.push(messageAttributes);
+          state.messages.push(newMessageData);
         }
       } else if (isUserMessage) {
         if (userMessageExists) {
