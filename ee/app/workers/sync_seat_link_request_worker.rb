@@ -99,14 +99,4 @@ class SyncSeatLinkRequestWorker
   rescue StandardError => err
     Gitlab::ErrorTracking.track_and_raise_for_dev_exception(err)
   end
-
-  def update_code_suggestions_tokens(response)
-    code_suggestions = response.dig('service_tokens', 'code_suggestions')
-    return unless code_suggestions.present?
-
-    token = code_suggestions['token']
-    expires_at = code_suggestions['expires_at']
-
-    CloudConnector::ServiceAccessTokensStorageService.new(token, expires_at).execute
-  end
 end
