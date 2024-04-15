@@ -151,6 +151,7 @@ gdk-qa-smoke:
   variables:
     QA_SCENARIO: Test::Instance::Smoke
     QA_RUN_TYPE: gdk-qa-smoke
+  parallel: 8
 
 gdk-qa-blocking:
   extends:

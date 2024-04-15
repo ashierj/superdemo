@@ -44,7 +44,7 @@ module QA
         expect_no_error_on_push for_file: 'directory/file', as_user: user_one
       end
 
-      it 'locks a file and tries to push as a second user', :reliable,
+      it 'locks a file and tries to push as a second user', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347769' do
         Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_file
@@ -54,7 +54,7 @@ module QA
         expect_no_error_on_push as_user: user_one
       end
 
-      it 'checks file locked by other user to be disabled', :reliable,
+      it 'checks file locked by other user to be disabled', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347767' do
         go_to_file
         click_lock
@@ -66,7 +66,7 @@ module QA
         end
       end
 
-      it 'creates a merge request and fails to merge', :reliable,
+      it 'creates a merge request and fails to merge', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347770' do
         push branch: 'test', as_user: user_one
 

@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Codeowners', :reliable, product_group: :source_code do
+    describe 'Codeowners', :smoke, product_group: :source_code do
       let(:files) do
         [
           {

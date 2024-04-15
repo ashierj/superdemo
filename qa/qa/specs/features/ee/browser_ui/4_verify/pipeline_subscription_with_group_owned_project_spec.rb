@@ -49,7 +49,7 @@ module QA
       end
 
       context 'when upstream project new tag pipeline finishes' do
-        it 'triggers pipeline in downstream project', :reliable,
+        it 'triggers pipeline in downstream project', :blocking,
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347998' do
           # Downstream project should have one pipeline at this time
           Support::Waiter.wait_until { downstream_project.pipelines.size == 1 }

@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern' do
-    describe 'Group access', :requires_admin, :skip_live_env, :reliable, product_group: :authentication do
+    describe 'Group access', :requires_admin, :skip_live_env, :blocking, product_group: :authentication do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
 
       let(:sandbox_group) do
