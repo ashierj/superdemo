@@ -18948,6 +18948,33 @@ msgstr ""
 msgid "Due to inactivity, this project is scheduled to be deleted on %{deletion_date}. %{link_start}Why is this scheduled?%{link_end}"
 msgstr ""
 
+msgid "DuoChat|Ask a question about GitLab"
+msgstr ""
+
+msgid "DuoChat|For example, %{linkStart}what is a fork%{linkEnd}?"
+msgstr ""
+
+msgid "DuoChat|GitLab Duo Chat"
+msgstr ""
+
+msgid "DuoChat|Give feedback"
+msgstr ""
+
+msgid "DuoChat|How to use GitLab"
+msgstr ""
+
+msgid "DuoChat|The issue, epic, or code you're viewing"
+msgstr ""
+
+msgid "DuoChat|There was an error communicating with GitLab Duo Chat. Please try again later."
+msgstr ""
+
+msgid "DuoChat|Use AI to answer questions about things like:"
+msgstr ""
+
+msgid "DuoChat|What is a fork?"
+msgstr ""
+
 msgid "DuoProTrialAlert|Dismiss Code Suggestions banner"
 msgstr ""
 
@@ -50679,33 +50706,6 @@ msgid "TagsPage|protected"
 msgstr ""
 
 msgid "Take a look at the documentation to discover all of GitLab’s capabilities."
-msgstr ""
-
-msgid "TanukiBot|Ask a question about GitLab"
-msgstr ""
-
-msgid "TanukiBot|For example, %{linkStart}what is a fork%{linkEnd}?"
-msgstr ""
-
-msgid "TanukiBot|GitLab Duo Chat"
-msgstr ""
-
-msgid "TanukiBot|Give feedback"
-msgstr ""
-
-msgid "TanukiBot|How to use GitLab"
-msgstr ""
-
-msgid "TanukiBot|The issue, epic, or code you're viewing"
-msgstr ""
-
-msgid "TanukiBot|There was an error communicating with GitLab Duo Chat. Please try again later."
-msgstr ""
-
-msgid "TanukiBot|Use AI to answer questions about things like:"
-msgstr ""
-
-msgid "TanukiBot|What is a fork?"
 msgstr ""
 
 msgid "Target"

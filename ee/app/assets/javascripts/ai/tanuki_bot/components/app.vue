@@ -24,13 +24,13 @@ import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 export default {
   name: 'TanukiBotChatApp',
   i18n: {
-    gitlabChat: s__('TanukiBot|GitLab Duo Chat'),
-    giveFeedback: s__('TanukiBot|Give feedback'),
+    gitlabChat: s__('DuoChat|GitLab Duo Chat'),
+    giveFeedback: s__('DuoChat|Give feedback'),
     source: __('Source'),
     experiment: __('Experiment'),
-    askAQuestion: s__('TanukiBot|Ask a question about GitLab'),
-    exampleQuestion: s__('TanukiBot|For example, %{linkStart}what is a fork%{linkEnd}?'),
-    whatIsAForkQuestion: s__('TanukiBot|What is a fork?'),
+    askAQuestion: s__('DuoChat|Ask a question about GitLab'),
+    exampleQuestion: s__('DuoChat|For example, %{linkStart}what is a fork%{linkEnd}?'),
+    whatIsAForkQuestion: s__('DuoChat|What is a fork?'),
     GENIE_CHAT_LEGAL_GENERATED_BY_AI: i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI,
     predefinedPrompts: [
       __('How do I change my password in GitLab?'),

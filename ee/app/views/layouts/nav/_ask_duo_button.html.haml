@@ -1,5 +1,5 @@
 - if ::Gitlab::Llm::TanukiBot.show_breadcrumbs_entry_point?(user: current_user, container: (@group || @project))
-  - label = s_('TanukiBot|GitLab Duo Chat')
+  - label = s_('DuoChat|GitLab Duo Chat')
   = render Pajamas::ButtonComponent.new(variant: :default,
     category: :secondary,
     icon: 'tanuki-ai',
