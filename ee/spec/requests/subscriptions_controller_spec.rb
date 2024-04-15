@@ -21,7 +21,7 @@ RSpec.describe SubscriptionsController, :clean_gitlab_redis_sessions, feature_ca
       let_it_be(:unverified_user) { create(:user) }
 
       before do
-        stub_session(verification_user_id: unverified_user.id)
+        stub_session(session_data: { verification_user_id: unverified_user.id })
       end
 
       it 'skips authentication' do
@@ -51,7 +51,7 @@ RSpec.describe SubscriptionsController, :clean_gitlab_redis_sessions, feature_ca
       let_it_be(:unverified_user) { create(:user) }
 
       before do
-        stub_session(verification_user_id: unverified_user.id)
+        stub_session(session_data: { verification_user_id: unverified_user.id })
       end
 
       it 'validates the payment method with the unverified user ID' do

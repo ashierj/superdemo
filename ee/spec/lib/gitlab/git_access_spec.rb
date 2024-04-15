@@ -1416,7 +1416,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
 
       with_them do
         before do
-          stub_session(user_id: user.id, **sso_session_data) if active_session?
+          stub_session(session_data: sso_session_data, user_id: user.id) if active_session?
           user.update!(admin: true) if user_is_admin?
           user.update!(auditor: true) if user_is_auditor?
 

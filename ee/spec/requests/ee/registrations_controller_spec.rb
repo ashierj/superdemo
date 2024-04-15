@@ -46,7 +46,7 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
 
       context 'when subscription', :saas, :clean_gitlab_redis_sessions do
         before do
-          stub_session(user_return_to: new_subscriptions_path)
+          stub_session(session_data: { user_return_to: new_subscriptions_path })
         end
 
         it 'tracks successful form submission' do
@@ -311,7 +311,7 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
 
       context 'when subscription', :saas, :clean_gitlab_redis_sessions do
         before do
-          stub_session(user_return_to: new_subscriptions_path)
+          stub_session(session_data: { user_return_to: new_subscriptions_path })
         end
 
         it 'tracks successful form submission' do
