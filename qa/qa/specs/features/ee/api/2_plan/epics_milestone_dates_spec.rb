@@ -32,7 +32,7 @@ module QA
         expect(epic.due_date).to eq(new_milestone_due_date)
       end
 
-      it 'updates epic dates when adding another issue', :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347955' do
+      it 'updates epic dates when adding another issue', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347955' do
         epic = create_epic_issue_milestone[0]
         new_milestone_start_date = Date.today.iso8601
         new_milestone_due_date = (Date.today + 150).iso8601
@@ -50,7 +50,7 @@ module QA
         expect(epic.due_date).to eq(new_milestone_due_date)
       end
 
-      it 'updates epic dates when removing issue', :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347957' do
+      it 'updates epic dates when removing issue', :smoke, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347957' do
         epic = create_epic_issue_milestone[0]
 
         # Get epic_issue_id
@@ -72,7 +72,7 @@ module QA
         expect(epic.due_date).to be_nil
       end
 
-      it 'updates epic dates when deleting milestones', :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347956' do
+      it 'updates epic dates when deleting milestones', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347956' do
         epic, milestone = create_epic_issue_milestone
 
         milestone.remove_via_api!

@@ -16,7 +16,7 @@ module QA
       end
     end
 
-    describe 'Project', :reliable do
+    describe 'Project', :blocking do
       let(:project) { create(:project, :with_readme, name: 'awesome-project') }
       let(:user) do
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)

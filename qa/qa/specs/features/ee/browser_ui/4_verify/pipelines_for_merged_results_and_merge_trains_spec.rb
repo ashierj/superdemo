@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Verify', :runner, :reliable, product_group: :pipeline_execution do
+  RSpec.describe 'Verify', :runner, :blocking, product_group: :pipeline_execution do
     describe 'Pipelines for merged results and merge trains' do
       let!(:project) { create(:project, name: 'pipelines-for-merge-trains') }
       let!(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }

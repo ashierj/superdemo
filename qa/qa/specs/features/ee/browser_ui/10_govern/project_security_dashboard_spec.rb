@@ -42,7 +42,7 @@ module QA
         project.visit!
       end
 
-      it 'shows vulnerability details', :reliable,
+      it 'shows vulnerability details', :smoke,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348076' do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
@@ -64,7 +64,7 @@ module QA
       end
 
       it(
-        'creates an issue from vulnerability details', :reliable,
+        'creates an issue from vulnerability details', :smoke,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347683'
       ) do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)

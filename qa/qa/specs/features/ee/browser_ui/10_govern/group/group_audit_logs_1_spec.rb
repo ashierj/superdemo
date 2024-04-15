@@ -36,7 +36,7 @@ module QA
         @event_count = get_audit_event_count(group)
       end
 
-      context 'for add group', :reliable,
+      context 'for add group', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347910' do
         before do
           @event_count = 0
@@ -49,7 +49,7 @@ module QA
         it_behaves_like 'audit event', ['Added group']
       end
 
-      context 'for change repository size limit', :requires_admin, :reliable,
+      context 'for change repository size limit', :requires_admin, :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
         before do
           sign_in(as_admin: true)
@@ -64,7 +64,7 @@ module QA
         it_behaves_like 'audit event', ['Changed repository size limit']
       end
 
-      context 'for update group name', :reliable,
+      context 'for update group name', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
         before do
           sign_in
@@ -80,7 +80,7 @@ module QA
         it_behaves_like 'audit event', ['Changed name']
       end
 
-      context 'for add user, change access level, remove user', :reliable,
+      context 'for add user, change access level, remove user', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
         before do
           sign_in
@@ -97,7 +97,7 @@ module QA
           ['Added user access as Default role: Guest', 'Changed access level', 'Removed user access']
       end
 
-      context 'for add and remove project access', :reliable,
+      context 'for add and remove project access', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
         before do
           sign_in
