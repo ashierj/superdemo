@@ -540,54 +540,6 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       create(:group_with_plan, :public, plan: :ultimate_plan, trial_ends_on: Time.current + 30.days)
     end
 
-    context 'when exempt_paid_namespace_members_and_enterprise_users_from_identity_verification feature flag off' do
-      before do
-        stub_feature_flags(exempt_paid_namespace_members_and_enterprise_users_from_identity_verification: false)
-      end
-
-      context 'when a user has a identity verification exemption by custom attribute' do
-        before do
-          add_identity_verification_exemption
-        end
-
-        it { is_expected.to be true }
-      end
-
-      context 'when a user is an enterprise user' do
-        let(:user) { create(:enterprise_user) }
-
-        it { is_expected.to be_falsy }
-      end
-
-      context 'when a user is a pending member of a paid non-trial namespace' do
-        before do
-          create(:group_member, :awaiting, :developer, source: group_paid, user: user)
-        end
-
-        it { is_expected.to be_falsy }
-      end
-
-      context 'when a user is a member of a paid non-trial namespace' do
-        before do
-          create(:group_member, :developer, source: group_paid, user: user)
-        end
-
-        it { is_expected.to be_falsy }
-      end
-
-      context 'when a user is a member of a paid trial namespace' do
-        before do
-          create(:group_member, :awaiting, :developer, source: group_trial, user: user)
-        end
-
-        it { is_expected.to be_falsy }
-      end
-
-      context 'when a user is not an enterprise user, a paid namespace member or exempted by custom attribute' do
-        it { is_expected.to be_falsy }
-      end
-    end
-
     context 'when a user has a identity verification exemption by custom attribute' do
       before do
         add_identity_verification_exemption
