@@ -361,8 +361,6 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def log_saml_response
-    return unless Feature.enabled?(:filter_saml_response)
-
     ParameterFilters::SamlResponse.log(params['SAMLResponse'].dup)
   end
 end
