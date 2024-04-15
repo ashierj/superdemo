@@ -187,6 +187,15 @@ FactoryBot.define do
         }
       end
     end
+
+    trait :with_disabled_bot_message do
+      actions do
+        [
+          { type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] },
+          { type: 'send_bot_message', enabled: false }
+        ]
+      end
+    end
   end
 
   factory :orchestration_policy_yaml,

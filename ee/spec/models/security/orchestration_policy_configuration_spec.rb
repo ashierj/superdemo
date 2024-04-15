@@ -962,124 +962,155 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
         describe "actions" do
           let(:approvals_required) { 1 }
-          let(:action) do
+          let(:require_approval_action) do
             {
               type: "require_approval",
               approvals_required: approvals_required
             }
           end
 
-          context "with invalid required approvals" do
-            let(:approvals_required) { 101 }
+          describe 'require_approval' do
+            let(:action) { require_approval_action }
 
-            specify do
-              expect(errors).to include(
-                "property '/#{type}/0/actions/0/approvals_required' is invalid: error_type=maximum")
-            end
-          end
-
-          context "without approvers" do
-            specify do
-              expect(errors).not_to be_empty
-            end
-          end
-
-          context "with user_approvers" do
-            before do
-              action[:user_approvers] = %w[foobar]
-            end
-
-            specify { expect(errors).to be_empty }
-
-            context "when empty" do
-              before do
-                action[:user_approvers] = []
-              end
+            context "with invalid required approvals" do
+              let(:approvals_required) { 101 }
 
               specify do
-                expect(errors).to contain_exactly(
-                  "property '/#{type}/0/actions/0/user_approvers' is invalid: error_type=minItems")
+                expect(errors).to include(
+                  "property '/#{type}/0/actions/0/approvals_required' is invalid: error_type=maximum")
               end
             end
-          end
 
-          context "with user_approvers_ids" do
-            before do
-              action[:user_approvers_ids] = [42]
-            end
-
-            specify { expect(errors).to be_empty }
-
-            context "when empty" do
-              before do
-                action[:user_approvers_ids] = []
-              end
-
+            context "without approvers" do
               specify do
-                expect(errors).to contain_exactly(
-                  "property '/#{type}/0/actions/0/user_approvers_ids' is invalid: error_type=minItems")
+                expect(errors).not_to be_empty
               end
             end
-          end
 
-          context "with group_approvers" do
-            before do
-              action[:group_approvers] = %w[foobar]
-            end
-
-            specify { expect(errors).to be_empty }
-
-            context "when empty" do
+            context "with user_approvers" do
               before do
-                action[:group_approvers] = []
+                action[:user_approvers] = %w[foobar]
               end
 
-              specify do
-                expect(errors).to contain_exactly(
-                  "property '/#{type}/0/actions/0/group_approvers' is invalid: error_type=minItems")
+              specify { expect(errors).to be_empty }
+
+              context "when empty" do
+                before do
+                  action[:user_approvers] = []
+                end
+
+                specify do
+                  expect(errors).to contain_exactly(
+                    "property '/#{type}/0/actions/0/user_approvers' is invalid: error_type=minItems")
+                end
               end
             end
-          end
 
-          context "with group_approvers_ids" do
-            before do
-              action[:group_approvers_ids] = [42]
-            end
-
-            specify { expect(errors).to be_empty }
-
-            context "when empty" do
+            context "with user_approvers_ids" do
               before do
-                action[:group_approvers_ids] = []
+                action[:user_approvers_ids] = [42]
               end
 
-              specify do
-                expect(errors).to contain_exactly(
-                  "property '/#{type}/0/actions/0/group_approvers_ids' is invalid: error_type=minItems")
+              specify { expect(errors).to be_empty }
+
+              context "when empty" do
+                before do
+                  action[:user_approvers_ids] = []
+                end
+
+                specify do
+                  expect(errors).to contain_exactly(
+                    "property '/#{type}/0/actions/0/user_approvers_ids' is invalid: error_type=minItems")
+                end
               end
             end
-          end
 
-          context "with role_approvers" do
-            before do
-              action[:role_approvers] = %w[guest reporter]
-            end
-
-            specify { expect(errors).to be_empty }
-
-            context "with invalid role" do
+            context "with group_approvers" do
               before do
-                action[:role_approvers] = %w[foobar]
+                action[:group_approvers] = %w[foobar]
               end
 
-              specify do
-                expect(errors.count).to be(1)
-                expect(errors.first).to match("property '/#{type}/0/actions/0/role_approvers/0' is not one of")
+              specify { expect(errors).to be_empty }
+
+              context "when empty" do
+                before do
+                  action[:group_approvers] = []
+                end
+
+                specify do
+                  expect(errors).to contain_exactly(
+                    "property '/#{type}/0/actions/0/group_approvers' is invalid: error_type=minItems")
+                end
               end
             end
+
+            context "with group_approvers_ids" do
+              before do
+                action[:group_approvers_ids] = [42]
+              end
+
+              specify { expect(errors).to be_empty }
+
+              context "when empty" do
+                before do
+                  action[:group_approvers_ids] = []
+                end
+
+                specify do
+                  expect(errors).to contain_exactly(
+                    "property '/#{type}/0/actions/0/group_approvers_ids' is invalid: error_type=minItems")
+                end
+              end
+            end
+
+            context "with role_approvers" do
+              before do
+                action[:role_approvers] = %w[guest reporter]
+              end
+
+              specify { expect(errors).to be_empty }
+
+              context "with invalid role" do
+                before do
+                  action[:role_approvers] = %w[foobar]
+                end
+
+                specify do
+                  expect(errors.count).to be(1)
+                  expect(errors.first).to match("property '/#{type}/0/actions/0/role_approvers/0' is not one of")
+                end
+              end
+            end
+
+            it_behaves_like "branch_exceptions"
           end
 
-          it_behaves_like "branch_exceptions"
+          describe 'send_bot_message' do
+            let(:actions) do
+              [
+                require_approval_action.tap { |action| action[:user_approvers] = %w[foobar] },
+                action
+              ]
+            end
+
+            let(:action) do
+              {
+                type: "send_bot_message",
+                enabled: true
+              }
+            end
+
+            it { expect(errors).to be_empty }
+
+            context 'when `enabled` property is missing' do
+              before do
+                action.delete(:enabled)
+              end
+
+              it { expect(errors).to be_present }
+              it { expect(errors.first).to match("property '/#{type}/0/actions/1' is missing required keys: enabled") }
+            end
+          end
         end
 
         context "without actions or approval_settings" do

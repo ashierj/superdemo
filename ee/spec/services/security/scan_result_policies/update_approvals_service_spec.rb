@@ -46,7 +46,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
-    let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:scan_result_policy_read, reload: true) { create(:scan_result_policy_read, project: project) }
     let(:last_violation) { merge_request.scan_result_policy_violations.last }
 
     let!(:report_approver_rule) do
@@ -290,7 +290,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
     context 'when target pipeline is nil' do
       let_it_be(:merge_request) do
-        create(:merge_request, source_branch: 'feature', target_branch: 'target-branch')
+        create(:merge_request, source_project: project, target_project: project,
+          source_branch: 'feature', target_branch: 'target-branch')
       end
 
       it_behaves_like 'does not update approvals_required'
@@ -627,7 +628,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       context 'when target pipeline is nil' do
         let_it_be(:merge_request) do
-          create(:merge_request, source_branch: 'feature', target_branch: 'target-branch')
+          create(:merge_request, source_project: project, target_project: project,
+            source_branch: 'feature', target_branch: 'target-branch')
         end
 
         it_behaves_like 'does not update approvals_required'

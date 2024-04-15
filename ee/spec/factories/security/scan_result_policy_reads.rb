@@ -28,5 +28,13 @@ FactoryBot.define do
     trait :remove_approvals_with_new_commit do
       project_approval_settings { { remove_approvals_with_new_commit: true } }
     end
+
+    trait :with_send_bot_message do
+      transient do
+        bot_message_enabled { true }
+      end
+
+      send_bot_message { { enabled: bot_message_enabled } }
+    end
   end
 end

@@ -474,6 +474,44 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'with send_bot_message action' do
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: %w[master],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
+        }
+      end
+
+      let(:policy) do
+        build(:scan_result_policy, :with_disabled_bot_message, name: 'Test Policy', rules: [rule])
+      end
+
+      it 'creates scan_result_policy_read with send_bot_message data' do
+        subject
+
+        scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+        expect(scan_result_policy_read.send_bot_message).to(eq('enabled' => false))
+      end
+
+      context 'when action includes additional properties' do
+        let(:policy) do
+          build(:scan_result_policy, name: 'Test Policy', rules: [rule],
+            actions: [{ type: 'send_bot_message', enabled: true, additional: 'unsupported' }])
+        end
+
+        it 'strips the additional properties' do
+          subject
+
+          scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+          expect(scan_result_policy_read.send_bot_message).to(eq('enabled' => true))
+        end
+      end
+    end
+
     describe 'rule params `protected_branch_ids`' do
       let(:protected_branch_name) { 'protected-branch-name' }
       let(:rule) do

@@ -26,12 +26,15 @@ module Security
 
       def create_new_approval_rules
         action_info = policy[:actions]&.find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
+        send_bot_message_action = policy[:actions]&.find do |action|
+          action[:type] == Security::ScanResultPolicy::SEND_BOT_MESSAGE
+        end
 
         policy[:rules]&.first(Security::ScanResultPolicy::RULES_LIMIT)&.each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
           scan_result_policy_read = create_scan_result_policy(
-            rule, action_info, policy[:approval_settings], project, rule_index
+            rule, action_info, send_bot_message_action, project, rule_index
           )
 
           if license_finding?(rule)
@@ -87,20 +90,21 @@ module Security
         end
       end
 
-      def create_scan_result_policy(rule, action_info, project_approval_settings, project, rule_index)
+      def create_scan_result_policy(rule, approval_action, send_bot_message_action, project, rule_index)
         policy_configuration.scan_result_policy_reads.create!(
           orchestration_policy_idx: policy_index,
           rule_idx: rule_index,
           license_states: rule[:license_states],
           match_on_inclusion: rule.fetch(:match_on_inclusion_license, rule[:match_on_inclusion]) || false,
-          role_approvers: role_access_levels(action_info&.dig(:role_approvers)),
+          role_approvers: role_access_levels(approval_action&.dig(:role_approvers)),
           vulnerability_attributes: rule[:vulnerability_attributes],
           project_id: project.id,
           age_operator: rule.dig(:vulnerability_age, :operator),
           age_interval: rule.dig(:vulnerability_age, :interval),
           age_value: rule.dig(:vulnerability_age, :value),
           commits: rule[:commits],
-          project_approval_settings: project_approval_settings || {}
+          project_approval_settings: policy[:approval_settings] || {},
+          send_bot_message: send_bot_message_action&.slice(:enabled) || {}
         )
       end
 

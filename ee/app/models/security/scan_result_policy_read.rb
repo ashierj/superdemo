@@ -29,6 +29,8 @@ module Security
       numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
     validates :project_approval_settings, json_schema: { filename: 'scan_result_policy_project_approval_settings' },
       allow_blank: true
+    validates :send_bot_message, json_schema: { filename: 'approval_policies_send_bot_message_action' },
+      allow_blank: true
 
     scope :for_project, ->(project) { where(project: project) }
     scope :targeting_commits, -> { where.not(commits: nil) }
@@ -45,6 +47,10 @@ module Security
       return {} unless age_operator.present? && age_interval.present? && age_value.present?
 
       { operator: age_operator.to_sym, interval: age_interval.to_sym, value: age_value }
+    end
+
+    def bot_message_disabled?
+      send_bot_message['enabled'] == false
     end
   end
 end
