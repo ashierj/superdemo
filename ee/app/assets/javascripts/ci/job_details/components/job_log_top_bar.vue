@@ -6,12 +6,12 @@ import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_CI_BUILD } from '~/graphql_shared/constants';
-import JobLogController from '~/ci/job_details/components/job_log_controllers.vue';
+import CeJobLogTopBar from '~/ci/job_details/components/job_log_top_bar.vue';
 import RootCauseAnalysis from './sidebar/root_cause_analysis/root_cause_analysis_app.vue';
 
 export default {
   components: {
-    JobLogController,
+    CeJobLogTopBar,
     GlButton,
     RootCauseAnalysis,
   },
@@ -110,7 +110,7 @@ export default {
       :is-job-loading="isLoading"
       @close="toggleDrawer"
     />
-    <job-log-controller
+    <ce-job-log-top-bar
       :size="size"
       :raw-path="rawPath"
       :is-scroll-top-disabled="isScrollTopDisabled"
@@ -132,6 +132,6 @@ export default {
           $options.i18n.buttonName
         }}</gl-button>
       </template>
-    </job-log-controller>
+    </ce-job-log-top-bar>
   </div>
 </template>

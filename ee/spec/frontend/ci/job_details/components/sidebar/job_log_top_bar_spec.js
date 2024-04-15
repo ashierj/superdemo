@@ -1,9 +1,9 @@
 import { mount } from '@vue/test-utils';
-import EEJobLogControllers from 'ee/ci/job_details/components/job_log_controllers.vue';
-import JobLogControllers from '~/ci/job_details/components/job_log_controllers.vue';
+import EEJobLogTopBar from 'ee/ci/job_details/components/job_log_top_bar.vue';
+import CeJobLogTopBar from '~/ci/job_details/components/job_log_top_bar.vue';
 import { mockJobLog } from '../../mock_data';
 
-describe('EE JobLogController', () => {
+describe('EE JobLogTopBar', () => {
   let wrapper;
 
   const defaultProps = {
@@ -18,7 +18,7 @@ describe('EE JobLogController', () => {
   };
 
   const createComponent = (props) => {
-    wrapper = mount(EEJobLogControllers, {
+    wrapper = mount(EEJobLogTopBar, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -29,7 +29,7 @@ describe('EE JobLogController', () => {
     });
   };
 
-  const findJobLogController = () => wrapper.findComponent(JobLogControllers);
+  const findJobLogTopBar = () => wrapper.findComponent(CeJobLogTopBar);
 
   describe('when the underlying event is triggered', () => {
     beforeEach(() => {
@@ -42,7 +42,7 @@ describe('EE JobLogController', () => {
       ${'scrollJobLogBottom'} | ${undefined}
       ${'searchResults'}      | ${'searchResults'}
     `('should re-trigger events', ({ eventName, parameter }) => {
-      findJobLogController().vm.$emit(eventName, parameter);
+      findJobLogTopBar().vm.$emit(eventName, parameter);
 
       expect(wrapper.emitted(eventName)[0][0]).toBe(parameter);
     });
