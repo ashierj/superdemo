@@ -10,7 +10,6 @@ module EE
       create_merge_request_from
       create_merge_request_in
       admin_software_license_policy
-      modify_auto_fix_setting
       create_test_case
       create_package
     ].freeze
