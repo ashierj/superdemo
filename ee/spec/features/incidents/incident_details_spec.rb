@@ -4,18 +4,13 @@ require 'spec_helper'
 
 RSpec.describe 'Incident details', :js, feature_category: :incident_management do
   let_it_be(:project) { create(:project) }
-  let_it_be(:reporter) { create(:user) }
-  let_it_be(:developer) { create(:user) }
+  let_it_be(:reporter) { create(:user, reporter_of: project) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:incident, reload: true) { create(:incident, :with_escalation_status, project: project) }
 
   let(:current_user) { reporter }
   let(:sidebar) { page.find('.right-sidebar') }
   let(:escalation_status_container) { find_by_testid('escalation_status_container') }
-
-  before_all do
-    project.add_reporter(reporter)
-    project.add_developer(developer)
-  end
 
   before do
     sign_in(current_user)

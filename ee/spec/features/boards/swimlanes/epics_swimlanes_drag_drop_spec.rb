@@ -8,8 +8,8 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   include BoardHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
-  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:group) { create(:group, :public, maintainers: user) }
+  let_it_be(:project) { create(:project, :public, group: group, maintainers: user) }
 
   let_it_be(:board) { create(:board, project: project) }
   let_it_be(:label) { create(:label, project: project, name: 'Label 1') }
@@ -19,11 +19,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
 
   let_it_be(:epic1) { create(:epic, group: group) }
   let_it_be(:epic2) { create(:epic, group: group) }
-
-  before_all do
-    project.add_maintainer(user)
-    group.add_maintainer(user)
-  end
 
   before do
     stub_licensed_features(epics: true, swimlanes: true)

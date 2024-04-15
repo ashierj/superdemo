@@ -4,16 +4,12 @@ require 'spec_helper'
 
 RSpec.describe 'User creates On-demand Scan', feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository, developers: user) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
 
   let(:on_demand_scans_path) { project_on_demand_scans_path(project) }
   let(:new_on_demand_scan_path) { new_project_on_demand_scan_path(project) }
-
-  before_all do
-    project.add_developer(user)
-  end
 
   before do
     sign_in(user)

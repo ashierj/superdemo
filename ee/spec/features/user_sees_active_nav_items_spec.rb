@@ -4,12 +4,8 @@ require 'spec_helper'
 
 RSpec.describe 'User sees correct active nav items in the super sidebar', :js, feature_category: :value_stream_management do
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, maintainers: current_user) }
   let_it_be(:project) { create(:project, group: group) }
-
-  before_all do
-    group.add_maintainer(current_user)
-  end
 
   before do
     sign_in(current_user)

@@ -6,7 +6,7 @@ RSpec.describe "User creates security policy", :js, feature_category: :security_
   include ListboxHelpers
 
   let_it_be(:owner) { create(:user, :with_namespace) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, owners: owner) }
   let_it_be(:policy_management_project) { create(:project, :repository, namespace: owner.namespace) }
   let_it_be(:policy_configuration) do
     create(
@@ -15,10 +15,6 @@ RSpec.describe "User creates security policy", :js, feature_category: :security_
       security_policy_management_project: policy_management_project,
       namespace: group
     )
-  end
-
-  before_all do
-    group.add_owner(owner)
   end
 
   it_behaves_like 'policy editor' do

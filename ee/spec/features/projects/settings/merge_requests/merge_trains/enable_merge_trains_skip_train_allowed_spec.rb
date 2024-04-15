@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Merge Trains Skip Train Setting', :js, feature_category: :merge_trains do
   let_it_be_with_reload(:project) { create(:project) }
-  let_it_be(:user) { create(:user) }
-
-  before_all do
-    project.add_maintainer(user)
-  end
+  let_it_be(:user) { create(:user, maintainer_of: project) }
 
   before do
     stub_licensed_features(merge_pipelines: true, merge_trains: true)

@@ -6,13 +6,9 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
   include Features::NotesHelpers
 
   let_it_be(:user) { create(:user, name: '💃speciąl someone💃', username: 'someone.special') }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, maintainers: user) }
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:epic2) { create(:epic, group: group) }
-
-  before_all do
-    group.add_maintainer(user)
-  end
 
   before do
     stub_licensed_features(epics: true)

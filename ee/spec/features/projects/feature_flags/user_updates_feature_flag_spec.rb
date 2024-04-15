@@ -6,7 +6,7 @@ RSpec.describe 'User updates feature flag', :js, feature_category: :feature_flag
   include FeatureFlagHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, namespace: user.namespace) }
+  let_it_be(:project) { create(:project, namespace: user.namespace, developers: user) }
 
   let_it_be(:feature_flag) do
     create_flag(
@@ -24,10 +24,6 @@ RSpec.describe 'User updates feature flag', :js, feature_category: :feature_flag
 
   let_it_be(:scope) do
     create(:operations_scope, strategy: strategy, environment_scope: '*')
-  end
-
-  before_all do
-    project.add_developer(user)
   end
 
   before do

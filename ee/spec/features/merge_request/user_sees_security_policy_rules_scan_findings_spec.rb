@@ -26,7 +26,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
 
   let(:merge_request_path) { project_merge_request_path(project, merge_request) }
 
-  let_it_be(:approver) { create(:user) }
+  let_it_be(:approver) { create(:user, maintainer_of: project) }
   let_it_be(:approver_roles) { ['maintainer'] }
   let!(:protected_branch) { create(:protected_branch, project: project, name: merge_request.target_branch) }
   let!(:pipeline) { nil }
@@ -44,7 +44,6 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
 
   before_all do
     project.add_developer(user)
-    project.add_maintainer(approver)
   end
 
   context 'with scan findings' do

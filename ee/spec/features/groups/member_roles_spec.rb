@@ -5,16 +5,12 @@ require 'spec_helper'
 RSpec.describe 'Member Roles', :js, feature_category: :permissions do
   let_it_be(:group) { create(:group) }
   let_it_be(:custom_role) { create(:member_role, namespace: group) }
-  let_it_be(:owner) { create(:user) }
+  let_it_be(:owner) { create(:user, owner_of: group) }
 
   let(:name) { 'My custom role' }
   let(:description) { 'My role description' }
   let(:access_level) { 'Developer' }
   let(:permissions) { ['Read vulnerability'] }
-
-  before_all do
-    group.add_owner(owner)
-  end
 
   before do
     stub_licensed_features(custom_roles: true)
