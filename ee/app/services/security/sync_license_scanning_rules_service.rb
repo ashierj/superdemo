@@ -70,7 +70,11 @@ module Security
     ##     the licenses from `license_types` should require approval
     def violates_policy?(merge_request, rule, violations)
       scan_result_policy_read = rule.scan_result_policy_read
-      target_branch_report = target_branch_report(merge_request)
+      target_branch_pipeline = target_branch_pipeline(merge_request)
+
+      return false if !target_branch_pipeline && fail_open?(rule)
+
+      target_branch_report = target_branch_report(target_branch_pipeline)
 
       license_policies = license_policies(scan_result_policy_read)
       licenses_from_policy = extend_from_report(license_policies)
@@ -168,8 +172,8 @@ module Security
             .select { |license| licenses.include?(license.name) || licenses.include?(license.id) }
     end
 
-    def target_branch_report(merge_request)
-      ::Gitlab::LicenseScanning.scanner_for_pipeline(project, target_branch_pipeline(merge_request)).report
+    def target_branch_report(target_branch_pipeline)
+      ::Gitlab::LicenseScanning.scanner_for_pipeline(project, target_branch_pipeline).report
     end
 
     def target_branch_pipeline(merge_request)
@@ -224,5 +228,16 @@ module Security
       end
       violations.add_violation(rule.scan_result_policy_id, trimmed_license_list)
     end
+
+    def fail_open?(approval_rule)
+      return false unless fallback_behavior_enabled?
+
+      approval_rule.scan_result_policy_read.fail_open?
+    end
+
+    def fallback_behavior_enabled?
+      Feature.enabled?(:merge_request_approval_policies_fallback_behavior, pipeline.project)
+    end
+    strong_memoize_attr :fallback_behavior_enabled?
   end
 end
