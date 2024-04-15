@@ -144,6 +144,7 @@ export default {
     :title="$options.i18n.basicInformation"
     :description="$options.i18n.basicInformationDetails"
     :expandable="expandable"
+    :initially-expanded="expandable"
   >
     <gl-form-group
       :label="$options.i18n.titleInputLabel"

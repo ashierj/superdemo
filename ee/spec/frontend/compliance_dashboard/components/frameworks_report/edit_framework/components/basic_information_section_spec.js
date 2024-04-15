@@ -1,5 +1,6 @@
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import BasicInformationSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/basic_information_section.vue';
+import EditSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/edit_section.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -21,11 +22,12 @@ describe('Basic information section', () => {
   const invalidFeedback = (input) =>
     input.closest('[role=group].is-invalid').querySelector('.invalid-feedback').textContent;
 
-  function createComponent() {
+  function createComponent(props) {
     return mountExtended(BasicInformationSection, {
       provide: provideData,
       propsData: {
         value: fakeFramework,
+        ...props,
       },
       stubs: {
         ColorPicker: true,
@@ -65,4 +67,10 @@ describe('Basic information section', () => {
       expect(invalidFeedback(pipelineInput.element)).toBe(message);
     },
   );
+
+  it('renders section as initially expanded if expandable', () => {
+    wrapper = createComponent({ expandable: true });
+
+    expect(wrapper.findComponent(EditSection).props('initiallyExpanded')).toBe(true);
+  });
 });

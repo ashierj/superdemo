@@ -20,11 +20,16 @@ export default {
       required: false,
       default: false,
     },
+    initiallyExpanded: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 
-  data() {
+  data(props) {
     return {
-      isExpanded: false,
+      isExpanded: props.initiallyExpanded,
     };
   },
 

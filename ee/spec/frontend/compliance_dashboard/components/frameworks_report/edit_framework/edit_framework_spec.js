@@ -4,6 +4,7 @@ import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import getComplianceFrameworkQuery from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/graphql/get_compliance_framework.query.graphql';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import EditFramework from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/edit_framework.vue';
+import BasicInformationSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/basic_information_section.vue';
 import PoliciesSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/policies_section.vue';
 import DeleteModal from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/delete_modal.vue';
 import createComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/create_compliance_framework.mutation.graphql';
@@ -253,6 +254,20 @@ describe('Edit Framework Form', () => {
     });
   });
 
+  describe('Basic information section', () => {
+    it('renders basic information section as non-collapsible if creating new framework', async () => {
+      wrapper = createComponent(shallowMountExtended, { routeParams: {} });
+      await waitForPromises();
+      expect(wrapper.findComponent(BasicInformationSection).props('expandable')).toBe(false);
+    });
+
+    it('renders basic information section as expandable if editing framework', async () => {
+      wrapper = createComponent(shallowMountExtended);
+      await waitForPromises();
+      expect(wrapper.findComponent(BasicInformationSection).props('expandable')).toBe(true);
+    });
+  });
+
   describe('Policies section', () => {
     it('does not render policies section if creating new framework', async () => {
       wrapper = createComponent(shallowMountExtended, { routeParams: {} });
@@ -260,12 +275,10 @@ describe('Edit Framework Form', () => {
       expect(wrapper.findComponent(PoliciesSection).exists()).toBe(false);
     });
 
-    describe('when editing framework', () => {
-      it('render policies section', async () => {
-        wrapper = createComponent(shallowMountExtended);
-        await waitForPromises();
-        expect(wrapper.findComponent(PoliciesSection).exists()).toBe(true);
-      });
+    it('render policies section if editing framework', async () => {
+      wrapper = createComponent(shallowMountExtended);
+      await waitForPromises();
+      expect(wrapper.findComponent(PoliciesSection).exists()).toBe(true);
     });
   });
 });
