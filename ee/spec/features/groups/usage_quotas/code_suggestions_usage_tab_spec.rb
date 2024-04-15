@@ -13,6 +13,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
     stub_application_setting(check_namespace_plan: true)
     stub_feature_flags(usage_quotas_for_all_editions: false)
     stub_subscription_permissions_data(group.id)
+    stub_licensed_features(code_suggestions: true)
 
     group.add_owner(user)
 

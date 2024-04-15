@@ -579,46 +579,123 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
-  describe '#show_code_suggestions_tab?' do
-    context 'on saas' do
-      before do
-        stub_saas_features(gitlab_com_subscriptions: true)
-        allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
-      end
+  describe '#show_usage_quotas_tab?' do
+    context 'when tab does not exist' do
+      it { expect(helper.show_usage_quotas_tab?(group, :nonexistent_tab)).to be false }
+    end
 
-      context 'when hamilton_seat_management is enabled' do
-        where(:has_free_or_no_subscription?, :result) do
-          true  | false
-          false | true
-        end
-        with_them do
-          it { expect(helper.show_code_suggestions_tab?(group)).to eq(result) }
-        end
-      end
+    context 'when on seats tab' do
+      where(license_feature_available: [true, false])
 
-      context 'when hamilton_seat_management is disabled' do
+      with_them do
         before do
-          stub_feature_flags(hamilton_seat_management: false)
+          stub_licensed_features(seat_usage_quotas: license_feature_available)
         end
 
-        where(:has_free_or_no_subscription?, :result) do
-          true  | false
-          false | false
-        end
-
-        with_them do
-          it { expect(helper.show_code_suggestions_tab?(group)).to eq(result) }
-        end
+        it { expect(helper.show_usage_quotas_tab?(group, :seats)).to eq(license_feature_available) }
       end
     end
 
-    context 'on self managed' do
-      before do
-        stub_saas_features(gitlab_com_subscriptions: false)
-        stub_feature_flags(self_managed_code_suggestions: true)
+    context 'when on code suggestions tab' do
+      context 'on saas' do
+        before do
+          stub_licensed_features(code_suggestions: true)
+          stub_saas_features(gitlab_com_subscriptions: true)
+          allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
+        end
+
+        context 'when hamilton_seat_management is enabled' do
+          where(:has_free_or_no_subscription?, :result) do
+            true | false
+            false | true
+          end
+          with_them do
+            it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to eq(result) }
+
+            context 'when feature not available' do
+              before do
+                stub_licensed_features(code_suggestions: false)
+              end
+
+              it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to be_falsy }
+            end
+          end
+        end
+
+        context 'when hamilton_seat_management is disabled' do
+          before do
+            stub_feature_flags(hamilton_seat_management: false)
+          end
+
+          where(:has_free_or_no_subscription?, :result) do
+            true | false
+            false | false
+          end
+
+          with_them do
+            it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to eq(result) }
+          end
+        end
       end
 
-      it { expect(helper.show_code_suggestions_tab?(group)).to be_falsy }
+      context 'on self managed' do
+        before do
+          stub_licensed_features(code_suggestions: true)
+          stub_saas_features(gitlab_com_subscriptions: false)
+          stub_feature_flags(self_managed_code_suggestions: true)
+        end
+
+        it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to be_falsy }
+      end
+    end
+
+    context 'when on pipelines tab' do
+      where(:license_feature_available, :can_admin_ci_minutes, :result) do
+        true | true | true
+        true | false | false
+        false | false | false
+        false | true | false
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(pipelines_usage_quotas: license_feature_available)
+          allow(Ability).to receive(:allowed?).with(current_user, :admin_ci_minutes, group)
+            .and_return(can_admin_ci_minutes)
+        end
+
+        it { expect(helper.show_usage_quotas_tab?(group, :pipelines)).to eq(result) }
+      end
+    end
+
+    context 'when on transfer tab' do
+      where(:license_feature_available, :ff_enabled, :result) do
+        true | true | true
+        true | false | false
+        false | false | false
+        false | true | false
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(transfer_usage_quotas: license_feature_available)
+          stub_feature_flags(data_transfer_monitoring: ff_enabled)
+        end
+
+        it { expect(helper.show_usage_quotas_tab?(group, :transfer)).to eq(result) }
+      end
+    end
+
+    context 'when on product analytics tab' do
+      where(license_feature_available: [true, false])
+
+      with_them do
+        before do
+          stub_licensed_features(product_analytics_usage_quotas: license_feature_available)
+        end
+
+        it { expect(helper.show_usage_quotas_tab?(group, :product_analytics)).to eq(license_feature_available) }
+      end
     end
   end
 

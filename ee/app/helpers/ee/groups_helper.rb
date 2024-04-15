@@ -148,8 +148,26 @@ module EE
         )
     end
 
-    def show_code_suggestions_tab?(group)
-      gitlab_com_subscription? && gitlab_duo_available?(group) && !group.has_free_or_no_subscription?
+    def show_usage_quotas_tab?(group, tab)
+      case tab
+      when :seats
+        License.feature_available?(:seat_usage_quotas)
+      when :code_suggestions
+        gitlab_com_subscription? &&
+          gitlab_duo_available?(group) &&
+          !group.has_free_or_no_subscription? &&
+          License.feature_available?(:code_suggestions)
+      when :pipelines
+        Ability.allowed?(current_user, :admin_ci_minutes, group) &&
+          License.feature_available?(:pipelines_usage_quotas)
+      when :transfer
+        ::Feature.enabled?(:data_transfer_monitoring, group) &&
+          License.feature_available?(:transfer_usage_quotas)
+      when :product_analytics
+        License.feature_available?(:product_analytics_usage_quotas)
+      else
+        false
+      end
     end
 
     def saml_sso_settings_generate_helper_text(display_none:, text:)
