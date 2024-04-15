@@ -78,7 +78,13 @@ module Analytics
 
       def code_owners_used_count
         snapshot_projects.count do |project|
-          !Gitlab::CodeOwners::Loader.new(project, project.default_branch || 'HEAD').empty_code_owners?
+          loader = Gitlab::CodeOwners::Loader.new(project, project.default_branch || 'HEAD')
+
+          if Feature.enabled?(:use_faster_code_owner_file_exist_check, @project)
+            loader.has_code_owners_file?
+          else
+            !loader.empty_code_owners?
+          end
         end
       end
 
