@@ -3,11 +3,13 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import IssueCardWeight from 'ee/boards/components/issue_card_weight.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
 import isShowingLabelsQuery from '~/graphql_shared/client/is_showing_labels.query.graphql';
 import { TYPE_ISSUE } from '~/issues/constants';
+import { mockIterations } from './mock_data';
 
 Vue.use(VueApollo);
 
@@ -141,6 +143,30 @@ describe('Board card component', () => {
       createComponent();
 
       expect(wrapper.findComponent(IssueHealthStatus).props('healthStatus')).toBe('onTrack');
+    });
+  });
+
+  describe('iteration', () => {
+    it('does not render iteration if issue has no iteration', () => {
+      createComponent();
+
+      expect(wrapper.findByTestId('issue-iteration').exists()).toBe(false);
+    });
+
+    it('renders iteration if issue has an iteration assigned', async () => {
+      createComponent({
+        props: {
+          item: {
+            ...issue,
+            iteration: mockIterations[1],
+          },
+        },
+      });
+
+      // iteration component is a dynamic import so we wait for it to load
+      await waitForPromises();
+
+      expect(wrapper.findByTestId('issue-iteration').exists()).toBe(true);
     });
   });
 
