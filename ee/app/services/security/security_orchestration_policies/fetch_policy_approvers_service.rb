@@ -7,8 +7,8 @@ module Security
 
       def initialize(policy:, container:, current_user:)
         @policy = policy
-        @container = container
         @current_user = current_user
+        @container = container.is_a?(ComplianceManagement::Framework) ? container.namespace : container
       end
 
       def execute
