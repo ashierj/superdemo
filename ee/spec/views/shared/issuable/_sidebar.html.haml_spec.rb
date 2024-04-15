@@ -20,7 +20,7 @@ RSpec.describe 'shared/issuable/_sidebar.html.haml' do
       assign(:project, project)
     end
 
-    context 'issuable that supports iterations' do
+    context 'when issuable is an issue' do
       let(:issuable) { issue }
 
       it 'shows iteration dropdown' do
@@ -28,11 +28,11 @@ RSpec.describe 'shared/issuable/_sidebar.html.haml' do
       end
     end
 
-    context 'issuable does not support iterations' do
+    context 'when issuable is an incident' do
       let(:issuable) { incident }
 
-      it 'does not show iteration dropdown' do
-        expect(rendered).not_to have_css('[data-testid="iteration-container"]')
+      it 'shows iteration dropdown' do
+        expect(rendered).to have_css('[data-testid="iteration-container"]')
       end
     end
 

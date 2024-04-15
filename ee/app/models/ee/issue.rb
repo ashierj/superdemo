@@ -211,7 +211,7 @@ module EE
 
     override :supports_iterations?
     def supports_iterations?
-      !work_item_type&.incident?
+      true
     end
 
     def can_assign_epic?(user)

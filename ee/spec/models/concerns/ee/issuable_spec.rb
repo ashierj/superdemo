@@ -92,8 +92,8 @@ RSpec.describe EE::Issuable do
       [
         [:issue, :project_with_group, true],
         [:issue, :project_without_group, true],
-        [:incident, :project_with_group, false],
-        [:incident, :project_without_group, false],
+        [:incident, :project_with_group, true],
+        [:incident, :project_without_group, true],
         [:merge_request, :project_with_group, false],
         [:merge_request, :project_without_group, false]
       ]

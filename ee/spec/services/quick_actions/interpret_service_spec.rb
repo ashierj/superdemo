@@ -463,6 +463,17 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
                 expect(message).to eq("Set the iteration to #{iteration.to_reference}.")
               end
             end
+
+            context 'when issuable is an incident' do
+              let(:incident) { create(:incident, project: project) }
+
+              it 'assigns an iteration' do
+                _, updates, message = service.execute(content, incident)
+
+                expect(updates).to eq(iteration: iteration)
+                expect(message).to eq("Set the iteration to #{iteration.to_reference}.")
+              end
+            end
           end
 
           context 'when the user does not have enough permissions' do
@@ -622,20 +633,6 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           expect(updates).to be_empty
         end
       end
-
-      context 'when issuable does not support iterations' do
-        let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
-
-        let(:content) { "/iteration #{iteration.to_reference(project)}" }
-
-        it 'does not assign an iteration to an incident' do
-          incident = create(:incident, project: project)
-
-          _, updates = service.execute(content, incident)
-
-          expect(updates).to be_empty
-        end
-      end
     end
 
     context 'remove_iteration command' do
@@ -654,6 +651,17 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
           expect(updates).to eq(iteration: nil)
           expect(message).to eq("Removed #{iteration.to_reference} iteration.")
+        end
+
+        context 'when issuable is an incident' do
+          let(:incident) { create(:incident, project: project, iteration: iteration) }
+
+          it 'removes an assigned iteration' do
+            _, updates, message = service.execute(content, incident)
+
+            expect(updates).to eq(iteration: nil)
+            expect(message).to eq("Removed #{iteration.to_reference} iteration.")
+          end
         end
 
         context 'when the user does not have enough permissions' do
@@ -678,16 +686,6 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
         it 'does not recognize /remove_iteration' do
           _, updates = service.execute(content, issue)
-
-          expect(updates).to be_empty
-        end
-      end
-
-      context 'when issuable does not support iterations' do
-        it 'does not assign an iteration to an incident' do
-          incident = create(:incident, project: project)
-
-          _, updates = service.execute(content, incident)
 
           expect(updates).to be_empty
         end
