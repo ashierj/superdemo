@@ -12,6 +12,8 @@ fragment Issue on Issue {
   iteration {
     id
     title
+    startDate
+    dueDate
     iterationCadence {
       id
       title
