@@ -58,7 +58,7 @@ module WebHooks
           hook.failed!
         end
 
-        hook.parent.update_last_failure(hook) if hook.parent
+        hook.parent.update_last_webhook_failure(hook) if hook.parent
       end
     rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
       raise if raise_lock_error?

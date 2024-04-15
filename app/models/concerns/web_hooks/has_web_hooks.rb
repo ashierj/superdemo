@@ -49,8 +49,8 @@ module WebHooks
       DateTime.parse(last_failure) if last_failure
     end
 
-    def update_last_failure(hook)
-      if hook.respond_to?(:executable?) && hook.executable?
+    def update_last_webhook_failure(hook)
+      if hook.executable?
         cache_web_hook_failure if get_web_hook_failure # may need update
       else
         cache_web_hook_failure(true) # definitely failing, no need to check
