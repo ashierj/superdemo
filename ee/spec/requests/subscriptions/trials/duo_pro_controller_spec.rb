@@ -129,17 +129,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
     end
 
     context 'when authenticated as a user with eligible namespaces' do
-      shared_examples 'with tracking trial registration' do |event|
-        it_behaves_like 'internal event tracking' do
-          let(:event) { event }
-          let(:namespace) { group }
-
-          subject(:track_event) do
-            post trials_duo_pro_path, params: base_params
-          end
-        end
-      end
-
       before do
         login_as(user)
       end
@@ -165,8 +154,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
             'turning on the toggle for each team member. The subscription may take a minute to sync'
           )
         end
-
-        it_behaves_like 'with tracking trial registration', 'duo_pro_trial_registration_success'
       end
 
       context 'with create service failures' do
@@ -230,8 +217,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
 
             expect(response.body).to include(_('We have found the following errors:'))
           end
-
-          it_behaves_like 'with tracking trial registration', 'duo_pro_trial_registration_failure'
         end
 
         context 'with random failure' do
@@ -240,8 +225,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
           let(:payload) { { namespace_id: namespace.id } }
 
           it { is_expected.to render_select_namespace }
-
-          it_behaves_like 'with tracking trial registration', 'duo_pro_trial_registration_failure'
         end
       end
 

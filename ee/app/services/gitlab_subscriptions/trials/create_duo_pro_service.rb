@@ -5,10 +5,28 @@ module GitlabSubscriptions
     class CreateDuoProService < ::GitlabSubscriptions::Trials::BaseCreateService
       private
 
-      def lead_flow
-        super.tap do |response|
-          track_lead_creation(response)
-        end
+      def after_lead_success_hook
+        track_event('duo_pro_lead_creation_success')
+
+        super
+      end
+
+      def after_lead_error_hook(_result)
+        track_event('duo_pro_lead_creation_failure')
+
+        super
+      end
+
+      def after_trial_success_hook
+        track_event('duo_pro_trial_registration_success')
+
+        super
+      end
+
+      def after_trial_error_hook(_result)
+        track_event('duo_pro_trial_registration_failure')
+
+        super
       end
 
       def lead_service_class
@@ -31,14 +49,6 @@ module GitlabSubscriptions
             opt_in: user.onboarding_status_email_opt_in
           }
         )
-      end
-
-      def track_lead_creation(response)
-        if response.error? && response.reason == LEAD_FAILED
-          track_event('duo_pro_lead_creation_failure')
-        else
-          track_event('duo_pro_lead_creation_success')
-        end
       end
 
       def track_event(action)

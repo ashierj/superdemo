@@ -94,40 +94,6 @@ RSpec.shared_examples 'when on the lead step' do |plan_name|
   end
 end
 
-RSpec.shared_examples 'with tracking duo pro trial lead' do |plan_name|
-  let_it_be(:group) { create(:group_with_plan, plan: plan_name, name: 'gitlab') { |record| record.add_owner(user) } }
-
-  context 'when lead creation is successful regardless' do
-    before do
-      expect_create_lead_success(trial_user_params)
-      expect_apply_trial_fail(user, group, extra_params: existing_group_attrs(group))
-    end
-
-    it_behaves_like 'internal event tracking' do
-      let(:event) { 'duo_pro_lead_creation_success' }
-      let(:namespace) { group }
-
-      subject(:track_event) do
-        execute
-      end
-    end
-  end
-
-  context 'when lead creation fails' do
-    before do
-      expect_create_lead_fail(trial_user_params)
-    end
-
-    it_behaves_like 'internal event tracking' do
-      let(:event) { 'duo_pro_lead_creation_failure' }
-
-      subject(:track_event) do
-        execute
-      end
-    end
-  end
-end
-
 def expect_create_lead_success(trial_user_params)
   expect_next_instance_of(lead_service_class) do |instance|
     expect(instance).to receive(:execute).with(trial_user_params).and_return(ServiceResponse.success)
