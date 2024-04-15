@@ -22,7 +22,7 @@ module Mutations
 
         def resolve(**args)
           authorized_find!(args[:project_path])
-          agent = ::Gitlab::Graphql::Lazy.force(GitlabSchema.find_by_gid(args[:agent_id]))
+          agent = find_agent(args[:agent_id])
 
           updated_agent = ::Ai::Agents::UpdateAgentService.new(agent, args[:name], args[:prompt]).execute
 

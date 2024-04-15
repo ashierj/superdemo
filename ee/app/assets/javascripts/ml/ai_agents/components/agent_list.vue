@@ -5,6 +5,7 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import { ROUTE_SHOW_AGENT } from '../constants';
 import getAiAgents from '../graphql/queries/get_ai_agents.query.graphql';
+import eventHub from '../event_hub';
 
 const GRAPHQL_PAGE_SIZE = 30;
 
@@ -37,6 +38,7 @@ export default {
   apollo: {
     agents: {
       query: getAiAgents,
+      notifyOnNetworkStatusChange: true,
       variables() {
         return this.queryVariables;
       },
@@ -65,6 +67,11 @@ export default {
     ai_agents() {
       return this.agents?.nodes ?? [];
     },
+  },
+  created() {
+    eventHub.$on('agents-changed', () => {
+      this.$apollo.queries.agents.refresh();
+    });
   },
   ROUTE_SHOW_AGENT,
   methods: {

@@ -14,6 +14,10 @@ module Mutations
           Types::Ai::Agents::AgentType,
           null: true,
           description: 'Agent after mutation.'
+
+        def find_agent(agent_id)
+          ::Gitlab::Graphql::Lazy.force(GitlabSchema.find_by_gid(agent_id))
+        end
       end
     end
   end
