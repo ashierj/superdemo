@@ -39,26 +39,6 @@ RSpec.describe 'Groups > Usage Quotas', :js, :saas, feature_category: :consumabl
         end
       end
     end
-
-    context 'when usage_quotas is not available' do
-      before do
-        stub_licensed_features(usage_quotas: false)
-      end
-
-      it 'is not linked within the group settings dropdown' do
-        visit edit_group_path(group)
-
-        within_testid('super-sidebar') do
-          expect(page).not_to have_link('Usage Quotas')
-        end
-      end
-
-      it 'renders a 404' do
-        visit_usage_quotas_page
-
-        expect(page).to have_title('Not Found')
-      end
-    end
   end
 
   context 'when accessing subgroup' do

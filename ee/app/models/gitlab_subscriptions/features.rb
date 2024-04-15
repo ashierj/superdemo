@@ -36,7 +36,10 @@ module GitlabSubscriptions
       runner_performance_insights
       runner_upgrade_management
       seat_link
-      usage_quotas
+      seat_usage_quotas
+      pipelines_usage_quotas
+      transfer_usage_quotas
+      product_analytics_usage_quotas
       zoekt_code_search
       disable_private_profiles
     ].freeze
@@ -65,7 +68,10 @@ module GitlabSubscriptions
       push_rules
       resource_access_token
       seat_link
-      usage_quotas
+      seat_usage_quotas
+      pipelines_usage_quotas
+      transfer_usage_quotas
+      product_analytics_usage_quotas
       visual_review_app
       wip_limits
       zoekt_code_search

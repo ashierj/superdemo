@@ -13,6 +13,7 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
     end
   end
 
+  let_it_be_with_refind(:subgroup) { create(:group, :private, parent: group) }
   let(:show_promotions) { false }
   let(:container) { group }
   let(:context) { Sidebars::Groups::Context.new(current_user: user, container: container, show_promotions: show_promotions) }
@@ -189,19 +190,15 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
       describe 'Usage quotas menu' do
         let(:item_id) { :usage_quotas }
-        let(:usage_quotas_enabled) { true }
 
         before do
-          stub_feature_flags(
-            usage_quotas_for_all_editions: false
-          )
-          stub_licensed_features(usage_quotas: usage_quotas_enabled)
+          stub_feature_flags(usage_quotas_for_all_editions: false)
         end
 
         it { is_expected.to be_present }
 
-        context 'when usage_quotas licensed feature is not enabled' do
-          let(:usage_quotas_enabled) { false }
+        context 'when subgroup' do
+          let(:container) { subgroup }
 
           it { is_expected.not_to be_present }
         end

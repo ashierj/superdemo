@@ -3235,26 +3235,15 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   end
 
   describe '#usage_quotas_enabled?', feature_category: :consumables_cost_management do
-    where(:feature_available, :feature_enabled, :root_group, :result) do
-      false | true  | true  | true
-      true  | true  | true  | true
-      true  | false | true  | true
-      false | false | true  | false
-      false | false | false | false
-      false | true  | false | false
-      true  | false | false | false
-      true  | true  | false | false
-    end
+    where(root_group: [true, false])
 
     with_them do
       before do
-        stub_licensed_features(usage_quotas: feature_available)
-        stub_feature_flags(usage_quotas_for_all_editions: feature_enabled)
         allow(group).to receive(:root?).and_return(root_group)
       end
 
       it 'returns the expected result' do
-        expect(group.usage_quotas_enabled?).to eq result
+        expect(group.usage_quotas_enabled?).to eq root_group
       end
     end
   end
