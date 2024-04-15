@@ -11,7 +11,7 @@ module Vulnerabilities
     self.table_name = "vulnerability_reads"
     self.primary_key = :vulnerability_id
 
-    belongs_to :vulnerability
+    belongs_to :vulnerability, inverse_of: :vulnerability_read
     belongs_to :project
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner'
 
@@ -79,6 +79,16 @@ module Vulnerabilities
     scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
     scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }
     scope :with_dismissal_reason, -> (dismissal_reason) { where(dismissal_reason: dismissal_reason) }
+    scope :with_export_entities, -> do
+      preload(
+        vulnerability: [
+          :group,
+          project: [:route],
+          notes: [:updated_by, :author],
+          findings: [:scanner, :identifiers]
+        ]
+      )
+    end
 
     scope :as_vulnerabilities, -> do
       preload(vulnerability: { project: [:route] }).current_scope.tap do |relation|
