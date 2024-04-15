@@ -131,3 +131,22 @@ export const getLatestAiAgentErrorResponse = {
     },
   ],
 };
+
+export const destroyAiAgentsResponses = {
+  success: {
+    data: {
+      aiAgentDestroy: {
+        message: 'AI Agent was successfully deleted',
+        errors: [],
+      },
+    },
+  },
+  error: {
+    data: {
+      aiAgentDestroy: {
+        message: null,
+        errors: ['AI Agent not found'],
+      },
+    },
+  },
+};

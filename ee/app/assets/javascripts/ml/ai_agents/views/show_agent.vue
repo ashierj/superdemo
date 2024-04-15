@@ -1,6 +1,7 @@
 <script>
 import { GlExperimentBadge, GlDuoChat, GlEmptyState, GlLoadingIcon, GlButton } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { s__ } from '~/locale';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import { renderMarkdown } from '~/notes/utils';
@@ -9,7 +10,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
-import { ROUTE_AGENT_SETTINGS, I18N_DEFAULT_NOT_FOUND_ERROR } from 'ee/ml/ai_agents/constants';
+import { ROUTE_AGENT_SETTINGS } from 'ee/ml/ai_agents/constants';
 import getLatestAiAgentVersion from 'ee/ml/ai_agents/graphql/queries/get_latest_ai_agent_version.query.graphql';
 
 export default {
@@ -25,7 +26,6 @@ export default {
     GlButton,
   },
   ROUTE_AGENT_SETTINGS,
-  I18N_DEFAULT_NOT_FOUND_ERROR,
   provide() {
     return {
       projectPath: this.projectPath,
@@ -85,6 +85,9 @@ export default {
       messages: [],
       isLoading: false,
     };
+  },
+  i18n: {
+    not_found_error: s__('AIAgents|The requested agent was not found.'),
   },
   computed: {
     isAgentLoading() {

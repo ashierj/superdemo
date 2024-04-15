@@ -2,15 +2,14 @@
 import { GlExperimentBadge, GlLoadingIcon, GlEmptyState, GlAlert } from '@gitlab/ui';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { s__ } from '~/locale';
 import getLatestAiAgentVersion from '../graphql/queries/get_latest_ai_agent_version.query.graphql';
 import AgentForm from '../components/agent_form.vue';
+import DeleteAgent from '../components/agent_delete.vue';
 import updateAiAgent from '../graphql/mutations/update_ai_agent.mutation.graphql';
-import {
-  I18N_UPDATE_AGENT,
-  I18N_DEFAULT_SAVE_ERROR,
-  I18N_DEFAULT_NOT_FOUND_ERROR,
-  I18N_EDIT_AGENT,
-} from '../constants';
+import destroyAiAgent from '../graphql/mutations/destroy_ai_agent.mutation.graphql';
+import { I18N_EDIT_AGENT } from '../constants';
+import eventHub from '../event_hub';
 
 export default {
   name: 'EditAiAgent',
@@ -21,10 +20,8 @@ export default {
     AgentForm,
     GlEmptyState,
     GlAlert,
+    DeleteAgent,
   },
-  I18N_UPDATE_AGENT,
-  I18N_DEFAULT_SAVE_ERROR,
-  I18N_DEFAULT_NOT_FOUND_ERROR,
   I18N_EDIT_AGENT,
   inject: ['projectPath'],
   data() {
@@ -47,6 +44,12 @@ export default {
         Sentry.captureException(error);
       },
     },
+  },
+  i18n: {
+    updateAgent: s__('AIAgent|Update agent'),
+    saveError: s__('AIAgents|An error has occurred when saving the agent.'),
+    notFoundError: s__('AIAgents|The requested agent was not found.'),
+    destroyError: s__('AIAgents|An error has occurred when deleting the agent.'),
   },
   computed: {
     isLoading() {
@@ -86,7 +89,34 @@ export default {
         }
       } catch (error) {
         Sentry.captureException(error);
-        this.errorMessage = this.$options.I18N_DEFAULT_SAVE_ERROR;
+        this.errorMessage = this.$options.i18n.saveError;
+        this.loading = false;
+      }
+    },
+    async destroyAgent(requestData) {
+      this.errorMessage = '';
+      this.loading = true;
+      try {
+        const { data } = await this.$apollo.mutate({
+          mutation: destroyAiAgent,
+          variables: requestData,
+        });
+
+        this.loading = false;
+
+        const [error] = data?.aiAgentDestroy?.errors || [];
+
+        if (error) {
+          this.errorMessage = data.aiAgentDestroy.errors.join(', ');
+        } else {
+          eventHub.$emit('agents-changed');
+          this.$router.push({
+            name: 'list',
+          });
+        }
+      } catch (error) {
+        Sentry.captureException(error);
+        this.errorMessage = this.$options.i18n.destroyError;
         this.loading = false;
       }
     },
@@ -102,10 +132,7 @@ export default {
       {{ errorMessage }}
     </gl-alert>
 
-    <gl-empty-state
-      v-else-if="agentVersionNotFound"
-      :title="$options.I18N_DEFAULT_NOT_FOUND_ERROR"
-    />
+    <gl-empty-state v-else-if="agentVersionNotFound" :title="$options.i18n.notFoundError" />
 
     <div v-else>
       <title-area>
@@ -126,10 +153,17 @@ export default {
         :agent-version="latestAgentVersion"
         :agent-name-value="latestAgentVersion.name"
         :agent-prompt-value="latestAgentVersion.latestVersion.prompt"
-        :button-label="$options.I18N_UPDATE_AGENT"
+        :button-label="$options.i18n.updateAgent"
         :error-message="errorMessage"
         :loading="loading"
         @submit="updateAgent"
+      />
+
+      <delete-agent
+        :project-path="projectPath"
+        :agent-version="latestAgentVersion"
+        :loading="loading"
+        @destroy="destroyAgent"
       />
     </div>
   </div>
