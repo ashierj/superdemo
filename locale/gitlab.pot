@@ -23664,7 +23664,7 @@ msgstr ""
 msgid "GlobalSearch|%{linkStart}Exact code search (powered by Zoekt)%{linkEnd} is disabled since %{ref_elem} is not the default branch. %{docs_link}"
 msgstr ""
 
-msgid "GlobalSearch|%{linkStart}Exact code search (powered by Zoekt)%{linkEnd} is enabled"
+msgid "GlobalSearch|%{linkStart}Exact code search (powered by Zoekt)%{linkEnd} is enabled."
 msgstr ""
 
 msgid "GlobalSearch|Aggregations load error."
@@ -23838,9 +23838,6 @@ msgstr ""
 msgid "GlobalSearch|Showing top %{maxItems}"
 msgstr ""
 
-msgid "GlobalSearch|Syntax options"
-msgstr ""
-
 msgid "GlobalSearch|The search term must be at least 3 characters long."
 msgstr ""
 
@@ -23872,6 +23869,9 @@ msgid "GlobalSearch|Type to filter labels."
 msgstr ""
 
 msgid "GlobalSearch|Users"
+msgstr ""
+
+msgid "GlobalSearch|View syntax options."
 msgstr ""
 
 msgid "GlobalSearch|What are you searching for?"
