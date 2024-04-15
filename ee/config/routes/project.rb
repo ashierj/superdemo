@@ -159,6 +159,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         end
 
         resources :compliance_frameworks, only: [:create]
+
+        resources :merge_trains, only: [:index]
       end
       # End of the /-/ scope.
 
