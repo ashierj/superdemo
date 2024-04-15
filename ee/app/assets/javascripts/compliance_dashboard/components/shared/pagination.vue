@@ -1,7 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlKeysetPagination } from '@gitlab/ui';
-import { NEXT, PREV } from '~/vue_shared/components/pagination/constants';
 import PageSizeSelector from '~/vue_shared/components/page_size_selector.vue';
 import { setUrlParams } from '~/lib/utils/url_utility';
 
@@ -55,10 +54,6 @@ export default {
       event.preventDefault();
     },
   },
-  i18n: {
-    prev: PREV,
-    next: NEXT,
-  },
 };
 </script>
 
@@ -71,8 +66,6 @@ export default {
       <gl-keyset-pagination
         v-bind="pageInfo"
         :disabled="isLoading"
-        :prev-text="$options.i18n.prev"
-        :next-text="$options.i18n.next"
         :prev-button-link="previousLink"
         :next-button-link="nextLink"
         @prev="loadPrevPage"

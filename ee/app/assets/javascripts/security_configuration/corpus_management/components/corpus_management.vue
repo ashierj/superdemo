@@ -53,8 +53,6 @@ export default {
       'CorpusManagement|Corpus files are used in coverage-guided fuzz testing as seed inputs to improve testing.',
     ),
     learnMore: __('Learn More'),
-    previousPage: __('Prev'),
-    nextPage: __('Next'),
   },
   computed: {
     corpuses() {
@@ -170,13 +168,7 @@ export default {
       </template>
 
       <div v-if="hasPagination" class="gl-display-flex gl-justify-content-center gl-mt-5">
-        <gl-keyset-pagination
-          v-bind="pageInfo"
-          :prev-text="$options.i18n.previousPage"
-          :next-text="$options.i18n.nextPage"
-          @prev="prevPage"
-          @next="nextPage"
-        />
+        <gl-keyset-pagination v-bind="pageInfo" @prev="prevPage" @next="nextPage" />
       </div>
     </div>
   </div>

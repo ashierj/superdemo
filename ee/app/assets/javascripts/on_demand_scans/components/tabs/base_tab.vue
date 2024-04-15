@@ -12,7 +12,7 @@ import {
 import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DAST_SHORT_NAME } from '~/security_configuration/constants';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { getQueryHeaders, toggleQueryPollingByVisibility } from '~/ci/pipeline_details/graph/utils';
 import handlesErrors from '../../mixins/handles_errors';
@@ -211,8 +211,6 @@ export default {
     },
   },
   i18n: {
-    previousPage: __('Prev'),
-    nextPage: __('Next'),
     errorMessage: s__(
       'OnDemandScans|Could not fetch on-demand scans. Please refresh the page, or try again later.',
     ),
@@ -312,8 +310,6 @@ export default {
         <gl-keyset-pagination
           data-testid="pagination"
           v-bind="pageInfo"
-          :prev-text="$options.i18n.previousPage"
-          :next-text="$options.i18n.nextPage"
           @prev="prevPage"
           @next="nextPage"
         />
