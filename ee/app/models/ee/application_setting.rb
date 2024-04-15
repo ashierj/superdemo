@@ -186,7 +186,8 @@ module EE
         if: :email_confirmation_setting_soft?
 
       validates :pre_receive_secret_detection_enabled,
-        inclusion: { in: [true, false], message: N_('must be a boolean value') }
+        inclusion: { in: [true, false], message: N_('must be a boolean value') },
+        if: :gitlab_dedicated_instance
 
       validates :instance_level_ai_beta_features_enabled,
         allow_nil: false,

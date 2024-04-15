@@ -48,7 +48,10 @@ module Gitlab
         return unless project.licensed_feature_available?(:pre_receive_secret_detection)
 
         # Skip if any commit has the special bypass flag `[skip secret detection]`
-        return if skip_secret_detection?
+        if skip_secret_detection?
+          log_audit_event(_("commit message"))
+          return
+        end
 
         logger.log_timed(LOG_MESSAGES[:secrets_check]) do
           blobs = ::Gitlab::Checks::ChangedBlobs.new(
@@ -81,6 +84,20 @@ module Gitlab
 
       def secret_detection_logger
         @secret_detection_logger ||= ::Gitlab::SecretDetectionLogger.build
+      end
+
+      def log_audit_event(skip_method)
+        message = "#{_('Pre-receive secret detection skipped via')} #{skip_method}"
+
+        audit_context = {
+          name: "skip_pre_receive_secret_detection",
+          author: changes_access.user_access.user,
+          target: project,
+          scope: project,
+          message: message
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
 
       def format_response(response)
