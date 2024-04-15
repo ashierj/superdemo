@@ -29,6 +29,7 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
       'ci_pipeline_schedules.project_id',
       'ci_sources_pipelines.project_id',
       'ci_triggers.project_id',
+      'gpg_signatures.project_id',
       *['internal_ids.project_id', 'internal_ids.namespace_id'], # https://gitlab.com/gitlab-org/gitlab/-/issues/451900
       *['labels.project_id', 'labels.group_id'], # https://gitlab.com/gitlab-org/gitlab/-/issues/434356
       'member_roles.namespace_id', # https://gitlab.com/gitlab-org/gitlab/-/issues/444161
@@ -53,7 +54,8 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
     [
       *['protected_environments.project_id', 'protected_environments.group_id'],
       'security_orchestration_policy_configurations.project_id',
-      'security_orchestration_policy_configurations.namespace_id'
+      'security_orchestration_policy_configurations.namespace_id',
+      *['protected_branches.project_id', 'protected_branches.namespace_id']
     ]
   end
 
