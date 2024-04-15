@@ -7,7 +7,7 @@ RSpec.describe CloudConnector::AvailableServiceData, feature_category: :cloud_co
   let_it_be(:purchased_add_ons) { %w[code_suggestions] }
 
   describe '#free_access?' do
-    subject(:access_token) { described_class.new(:duo_chat, cut_off_date, nil).free_access? }
+    subject(:free_access) { described_class.new(:duo_chat, cut_off_date, nil).free_access? }
 
     context 'when cut_off_date is in the past' do
       let_it_be(:cut_off_date) { 1.day.ago }
@@ -48,8 +48,8 @@ RSpec.describe CloudConnector::AvailableServiceData, feature_category: :cloud_co
       it { is_expected.to be true }
 
       it 'caches the available services' do
-        expect(GitlabSubscriptions::UserAddOnAssignment)
-          .to receive_message_chain(:by_user, :for_active_add_on_purchases, :any?)
+        expect(GitlabSubscriptions::AddOnPurchase)
+          .to receive_message_chain(:assigned_to_user, :by_add_on_name).and_return([])
 
         2.times do
           allowed_for?
