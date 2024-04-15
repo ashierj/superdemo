@@ -23136,6 +23136,9 @@ msgstr ""
 msgid "GitLab KAS"
 msgstr ""
 
+msgid "GitLab Logo"
+msgstr ""
+
 msgid "GitLab Pages"
 msgstr ""
 
