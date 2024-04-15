@@ -54,6 +54,8 @@ module RuboCop
         METHODS = %i[require require_relative].freeze
         RESTRICT_ON_SEND = METHODS
 
+        EAGER_EVALUATED_BLOCKS = %i[namespace].freeze
+
         def_node_matcher :require_method, <<~PATTERN
           (send nil? ${#{METHODS.map(&:inspect).join(' ')}} $_)
         PATTERN
@@ -65,7 +67,8 @@ module RuboCop
           return unless method
 
           return if requires_task?(file)
-          return if inside_block_or_method?(node)
+          return if inside_block(node, skip: EAGER_EVALUATED_BLOCKS)
+          return if inside_method?(node)
 
           add_offense(node)
         end
@@ -85,8 +88,14 @@ module RuboCop
           file.source.include?('task')
         end
 
-        def inside_block_or_method?(node)
-          node.each_ancestor(:block, :def).any?
+        def inside_block(node, skip:)
+          node.each_ancestor(:block).any? do |block|
+            !skip.include?(block.method_name) # rubocop:disable Rails/NegateInclude -- This is not Rails
+          end
+        end
+
+        def inside_method?(node)
+          node.each_ancestor(:def).any?
         end
       end
     end
