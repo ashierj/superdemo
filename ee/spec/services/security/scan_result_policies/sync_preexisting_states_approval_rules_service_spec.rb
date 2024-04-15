@@ -13,6 +13,7 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
   end
 
   let_it_be(:scan_result_policy_read, reload: true) { create(:scan_result_policy_read, project: project) }
+  let_it_be(:protected_branch) { create(:protected_branch, name: merge_request.target_branch, project: project) }
 
   before do
     stub_licensed_features(security_orchestration_policies: true)
@@ -24,7 +25,8 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
     let(:approvals_required) { 1 }
 
     let!(:approval_project_rule) do
-      create(:approval_project_rule, :scan_finding, project: project, approvals_required: approvals_required)
+      create(:approval_project_rule, :scan_finding, project: project, approvals_required: approvals_required,
+        scan_result_policy_read: scan_result_policy_read)
     end
 
     let!(:approver_rule) do
@@ -156,7 +158,10 @@ RSpec.describe Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesS
         it_behaves_like 'merge request without scan result violations', previous_violation: false
 
         context 'when there are other scan_finding violations' do
-          let_it_be(:scan_result_policy_read_other_scan_finding) { create(:scan_result_policy_read, project: project) }
+          let_it_be_with_reload(:scan_result_policy_read_other_scan_finding) do
+            create(:scan_result_policy_read, project: project)
+          end
+
           let_it_be(:approval_project_rule_other) do
             create(:approval_project_rule, :scan_finding, project: project, approvals_required: 1,
               scan_result_policy_read: scan_result_policy_read_other_scan_finding)

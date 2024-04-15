@@ -78,7 +78,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
 
       let(:scan_result_policy_read) do
-        create(:scan_result_policy_read, license_states: license_states,
+        create(:scan_result_policy_read, project: project, license_states: license_states,
           match_on_inclusion_license: match_on_inclusion_license)
       end
 

@@ -17,6 +17,7 @@ module Security
     SCAN_RESULT_POLICY_TYPES = %i[scan_result_policy approval_policy].freeze
 
     REQUIRE_APPROVAL = 'require_approval'
+    SEND_BOT_MESSAGE = 'send_bot_message'
 
     ALLOWED_ROLES = %w[developer maintainer owner].freeze
 

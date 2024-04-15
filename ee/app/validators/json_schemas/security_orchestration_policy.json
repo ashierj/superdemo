@@ -773,55 +773,19 @@
             }
           },
           "actions": {
-            "description": "Specifies a list of actions that should be enforced in this policy. At least one of `user_approvers`, `user_approvers_ids`, `group_approvers`, `group_approvers_ids`, `role_approvers` should be provided.",
+            "description": "Specifies a list of actions that should be enforced in this policy. For `require_approval` action, at least one of `user_approvers`, `user_approvers_ids`, `group_approvers`, `group_approvers_ids`, `role_approvers` should be provided.",
             "type": "array",
             "additionalItems": false,
             "items": {
-              "anyOf": [
-                {
-                  "required": [
-                    "type",
-                    "approvals_required",
-                    "user_approvers"
-                  ]
-                },
-                {
-                  "required": [
-                    "type",
-                    "approvals_required",
-                    "user_approvers_ids"
-                  ]
-                },
-                {
-                  "required": [
-                    "type",
-                    "approvals_required",
-                    "group_approvers"
-                  ]
-                },
-                {
-                  "required": [
-                    "type",
-                    "approvals_required",
-                    "group_approvers_ids"
-                  ]
-                },
-                {
-                  "required": [
-                    "type",
-                    "approvals_required",
-                    "role_approvers"
-                  ]
-                }
-              ],
               "type": "object",
               "properties": {
                 "type": {
                   "enum": [
-                    "require_approval"
+                    "require_approval",
+                    "send_bot_message"
                   ],
                   "type": "string",
-                  "description": "Specified a type of the policy action. `require_approval` action specifies required approvals (from selected groups or users) when this policy is applied."
+                  "description": "Specified a type of the policy action. `require_approval` action specifies required approvals (from selected groups or users) when this policy is applied. `send_bot_message` enables comments on merge requests when policy violations are detected."
                 },
                 "approvals_required": {
                   "description": "Specifies a number of required merge request approvals.",
@@ -885,8 +849,75 @@
                     ],
                     "minLength": 1
                   }
+                },
+                "enabled": {
+                  "type": "boolean"
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "require_approval"
+                      }
+                    }
+                  },
+                  "then": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "type",
+                          "approvals_required",
+                          "user_approvers"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "type",
+                          "approvals_required",
+                          "user_approvers_ids"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "type",
+                          "approvals_required",
+                          "group_approvers"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "type",
+                          "approvals_required",
+                          "group_approvers_ids"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "type",
+                          "approvals_required",
+                          "role_approvers"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "send_bot_message"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "enabled"
+                    ]
+                  }
+                }
+              ]
             }
           },
           "approval_settings": {

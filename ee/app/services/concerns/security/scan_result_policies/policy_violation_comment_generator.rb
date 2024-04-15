@@ -6,6 +6,7 @@ module Security
       private
 
       def generate_policy_bot_comment(merge_request, approval_rules, report_type)
+        return if bot_message_disabled?(merge_request)
         return unless violations_populated?(merge_request)
 
         Security::GeneratePolicyViolationCommentWorker.perform_async(
@@ -30,6 +31,21 @@ module Security
 
       def rules_requiring_approval?(approval_rules)
         approval_rules.any? { |rule| rule.approvals_required > 0 }
+      end
+
+      def bot_message_disabled?(merge_request)
+        project = merge_request.project
+        return false if Feature.disabled?(:approval_policy_disable_bot_comment, project)
+
+        security_policy_ids = merge_request.approval_rules.report_approver
+                                           .applicable_to_branch(merge_request.target_branch)
+                                           .filter_map(&:scan_result_policy_id)
+        return false if security_policy_ids.blank?
+
+        policies = project.scan_result_policy_reads.id_in(security_policy_ids)
+        return false if policies.blank?
+
+        policies.all?(&:bot_message_disabled?)
       end
     end
   end

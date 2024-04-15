@@ -46,6 +46,12 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
       ).for(:project_approval_settings)
     end
 
+    it { is_expected.not_to allow_value('string').for(:send_bot_message) }
+    it { is_expected.to allow_value({}).for(:send_bot_message) }
+    it { is_expected.to allow_value({ enabled: true }).for(:send_bot_message) }
+    it { is_expected.to allow_value({ enabled: false }).for(:send_bot_message) }
+    it { is_expected.not_to allow_value({ enabled: 'foo' }).for(:send_bot_message) }
+
     it do
       is_expected.to(
         validate_uniqueness_of(:rule_idx)
@@ -122,6 +128,32 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
       end
 
       it { is_expected.to eq({}) }
+    end
+  end
+
+  describe '#bot_message_disabled?' do
+    subject { scan_result_policy_read.bot_message_disabled? }
+
+    let_it_be(:project) { create(:project) }
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let(:scan_result_policy_read) do
+      create(:scan_result_policy_read, :with_send_bot_message, project: project, bot_message_enabled: false)
+    end
+
+    it { is_expected.to eq true }
+
+    context 'when send_bot_message data is present and enabled is true' do
+      let(:scan_result_policy_read) do
+        create(:scan_result_policy_read, :with_send_bot_message, project: project, bot_message_enabled: true)
+      end
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when send_bot_message data is not present' do
+      let(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
+
+      it { is_expected.to eq false }
     end
   end
 end
