@@ -1009,4 +1009,9 @@ RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
       expect { subject.validate! }.not_to raise_error
     end
   end
+
+  it 'creates an audit event' do
+    expect { subject.validate! }.to change { AuditEvent.count }.by(1)
+    expect(AuditEvent.last.details[:custom_message]).to eq("Pre-receive secret detection skipped via commit message")
+  end
 end
