@@ -18,6 +18,8 @@ class TrialRegistrationsController < RegistrationsController
   before_action :verify_onboarding_enabled!
   before_action :redirect_to_trial, only: [:new], if: :user_signed_in?
 
+  feature_category :onboarding
+
   override :new
   def new
     @resource = Users::AuthorizedBuildService.new(nil, {}).execute

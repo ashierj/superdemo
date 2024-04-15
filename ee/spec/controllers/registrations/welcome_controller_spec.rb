@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::WelcomeController, feature_category: :system_access do
+RSpec.describe Registrations::WelcomeController, feature_category: :onboarding do
   let_it_be(:user) { create(:user, onboarding_in_progress: true) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }

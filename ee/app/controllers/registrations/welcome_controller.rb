@@ -16,7 +16,7 @@ module Registrations
 
     helper_method :onboarding_status
 
-    feature_category :user_management
+    feature_category :onboarding
 
     def show
       return redirect_to path_for_signed_in_user if completed_welcome_step?
