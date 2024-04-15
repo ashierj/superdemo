@@ -24638,6 +24638,18 @@ Machine learning model in the model registry.
 
 #### Fields with arguments
 
+##### `MlModel.version`
+
+Version of the model.
+
+Returns [`MlModelVersion`](#mlmodelversion).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mlmodelversionmodelversionid"></a>`modelVersionId` | [`MlModelVersionID`](#mlmodelversionid) | Id of the version to be fetched. |
+
 ##### `MlModel.versions`
 
 Versions of the model.
