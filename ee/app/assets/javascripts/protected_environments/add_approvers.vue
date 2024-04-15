@@ -152,8 +152,7 @@ export default {
     },
     removeApprover({ type, id }) {
       const key = ID_FOR_TYPE[type];
-      const index = this.approvers.findIndex(({ [key]: i }) => id === i);
-      this.$delete(this.approvers, index);
+      this.approvers = this.approvers.filter(({ [key]: i }) => id !== i);
     },
     isApprovalValid(approvals) {
       const count = parseFloat(approvals);
