@@ -8,6 +8,8 @@ RSpec.describe 'Every metric definition', feature_category: :service_ping do
   before do
     allow(Gitlab::Geo).to receive(:enabled?).and_return(true)
     allow(::Gitlab::CurrentSettings).to receive(:current_application_settings).and_return(settings)
+
+    stub_saas_features(google_cloud_support: true)
   end
 
   include_examples "every metric definition"
