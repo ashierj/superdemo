@@ -25,4 +25,10 @@ RSpec.describe ProductAnalytics::Panel, feature_category: :product_analytics_dat
       .to eq({ 'xAxis' => { 'name' => 'Time', 'type' => 'time' }, 'yAxis' => { 'name' => 'Counts' } })
     expect(subject.data['type']).to eq('Cube')
   end
+
+  describe '.from_data' do
+    it 'returns nil when yaml is missing' do # instead of raising a 500
+      expect(described_class.from_data(nil, project)).to be_nil
+    end
+  end
 end

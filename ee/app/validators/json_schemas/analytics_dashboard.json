@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-06/schema#",
   "$ref": "#/definitions/AnalyticsDashboard",
   "definitions": {
-    "Welcome6": {
+    "AnalyticsDashboard": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

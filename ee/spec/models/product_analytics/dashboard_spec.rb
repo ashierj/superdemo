@@ -23,6 +23,42 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     )
   end
 
+  describe '#errors' do
+    let(:dashboard) do
+      described_class.new(
+        container: group,
+        config: YAML.safe_load(config_yaml),
+        slug: 'test2',
+        user_defined: true,
+        config_project: project
+      )
+    end
+
+    context 'when yaml is valid' do
+      let(:config_yaml) do
+        File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dashboard_example_1.yaml')).read
+      end
+
+      it 'returns nil' do
+        expect(dashboard.errors).to be_nil
+      end
+    end
+
+    context 'when yaml is faulty' do
+      let(:config_yaml) do
+        <<-YAML
+---
+title: not good yaml
+description: with missing properties
+        YAML
+      end
+
+      it 'returns schema errors' do
+        expect(dashboard.errors).to eq(["root is missing required keys: version, panels"])
+      end
+    end
+  end
+
   describe '.for' do
     context 'when resource is a project' do
       let(:resource_parent) { project }
@@ -60,11 +96,13 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
           expect(subject.last.slug).to eq('dashboard_example_1')
           expect(subject.last.description).to eq('North Star Metrics across all departments for the last 3 quarters.')
           expect(subject.last.schema_version).to eq('1')
+          expect(subject.last.errors).to be_nil
         end
       end
 
       context 'when the dashboard file does not exist in the directory' do
         before do
+          # Invalid dashboard - should not be included
           project.repository.create_file(
             project.creator,
             '.gitlab/analytics/dashboards/dashboard_example_1/project_dashboard_example_wrongly_named.yaml',
@@ -72,10 +110,22 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
             message: 'test',
             branch_name: 'master'
           )
+
+          # Valid dashboard - should be included
+          project.repository.create_file(
+            project.creator,
+            '.gitlab/analytics/dashboards/dashboard_example_2/dashboard_example_2.yaml',
+            File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dashboard_example_1.yaml')).read,
+            message: 'test',
+            branch_name: 'master'
+          )
         end
 
         it 'excludes the dashboard from the list' do
-          expect(subject.size).to eq(5)
+          expected_dashboards =
+            ["Audience", "Behavior", "Value Streams Dashboard", "AI impact analytics", "Dashboard Example 1"]
+
+          expect(subject.map(&:title)).to eq(expected_dashboards)
         end
       end
 
@@ -176,12 +226,13 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
   describe '#==' do
     let(:dashboard_1) { described_class.for(container: project, user: user).first }
     let(:dashboard_2) do
+      config_yaml =
+        File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dashboard_example_1.yaml')).read
+      config_yaml = YAML.safe_load(config_yaml)
+
       described_class.new(
-        title: 'a',
-        description: 'b',
-        schema_version: '1',
-        panels: [],
         container: project,
+        config: config_yaml,
         slug: 'test2',
         user_defined: true,
         config_project: project
@@ -197,7 +248,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     subject { described_class.value_stream_dashboard(project, config_project) }
 
     it 'returns the value stream dashboard' do
-      dashboard = subject.first
+      dashboard = subject
       expect(dashboard).to be_a(described_class)
       expect(dashboard.title).to eq('Value Streams Dashboard')
       expect(dashboard.slug).to eq('value_streams_dashboard')
@@ -214,16 +265,16 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       end
 
       context 'for projects' do
-        it 'returns an empty array' do
+        it 'returns nil' do
           dashboard = described_class.value_stream_dashboard(project, config_project)
 
-          expect(dashboard).to match_array([])
+          expect(dashboard).to be_nil
         end
       end
 
       context 'for groups' do
         it 'returns the value streams dashboard' do
-          dashboard = described_class.value_stream_dashboard(group, config_project).first
+          dashboard = described_class.value_stream_dashboard(group, config_project)
 
           expect(dashboard).to be_a(described_class)
           expect(dashboard.title).to eq('Value Streams Dashboard')
@@ -248,9 +299,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
           stub_feature_flags(ai_impact_analytics_dashboard: false)
         end
 
-        it 'returns an empty array' do
-          expect(subject).to match_array([])
-        end
+        it { is_expected.to be_nil }
       end
     end
 
@@ -268,9 +317,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
           stub_feature_flags(ai_impact_analytics_dashboard: false)
         end
 
-        it 'returns an empty array' do
-          expect(subject).to match_array([])
-        end
+        it { is_expected.to be_nil }
       end
     end
   end

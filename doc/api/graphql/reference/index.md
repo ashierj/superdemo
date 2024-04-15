@@ -18415,6 +18415,7 @@ Represents a product analytics dashboard.
 | <a id="customizabledashboardcategory"></a>`category` | [`CustomizableDashboardCategory!`](#customizabledashboardcategory) | Category of dashboard. |
 | <a id="customizabledashboardconfigurationproject"></a>`configurationProject` | [`Project`](#project) | Project which contains the dashboard definition. |
 | <a id="customizabledashboarddescription"></a>`description` | [`String`](#string) | Description of the dashboard. |
+| <a id="customizabledashboarderrors"></a>`errors` | [`[String!]`](#string) | Errors on yaml definition. |
 | <a id="customizabledashboardpanels"></a>`panels` | [`CustomizableDashboardPanelConnection!`](#customizabledashboardpanelconnection) | Panels shown on the dashboard. (see [Connections](#connections)) |
 | <a id="customizabledashboardslug"></a>`slug` | [`String!`](#string) | Slug of the dashboard. |
 | <a id="customizabledashboardtitle"></a>`title` | [`String!`](#string) | Title of the dashboard. |

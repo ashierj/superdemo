@@ -2,6 +2,8 @@
 
 module ProductAnalytics
   class Visualization
+    include SchemaValidator
+
     attr_reader :type, :container, :data, :options, :config, :slug, :errors
 
     VISUALIZATIONS_ROOT_LOCATION = '.gitlab/analytics/dashboards/visualizations'
@@ -120,13 +122,7 @@ module ProductAnalytics
         @errors = [e.message]
       end
       @slug = slug&.parameterize&.underscore
-      validate
-    end
-
-    def validate
-      validator = JSONSchemer.schema(Pathname.new(SCHEMA_PATH))
-      validator_errors = validator.validate(@config)
-      @errors = validator_errors.map { |e| JSONSchemer::Errors.pretty(e) } if validator_errors.any?
+      @errors = schema_errors_for(@config)
     end
 
     def self.visualization_config_path(data)
