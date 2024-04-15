@@ -32,7 +32,8 @@ RSpec.describe "Code owner approvals reset after merging to source branch", :js,
         source_project: project,
         source_branch: branch_name,
         target_project: project,
-        target_branch: 'master'
+        target_branch: 'master',
+        merge_status: 'can_be_merged'
       )
     end
 

@@ -425,7 +425,7 @@ RSpec.describe Projects::MergeRequestsController do
     context 'with STRATEGY_MERGE_WHEN_CHECKS_PASS requested' do
       def merge_when_pipeline_succeeds
         post :merge, params: base_params.merge(sha: merge_request.diff_head_sha, merge_when_pipeline_succeeds: '1',
-          auto_merge_strategy: AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS)
+          auto_merge_strategy: ::AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS)
       end
 
       shared_examples_for 'merge MR when checks pass' do
