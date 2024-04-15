@@ -62,6 +62,19 @@ RSpec.shared_examples 'resource with requirement permissions' do
     context 'with guest' do
       let(:current_user) { guest }
 
+      context 'with user as author/assignee' do
+        let(:allowed_guest_author_permissions) { [:read_requirement, :update_requirement, :admin_requirement] }
+        let(:disallowed_guest_author_permissions) { all_permissions - allowed_guest_author_permissions }
+
+        before do
+          skip("Only applicable for requirement object") if resource.is_a?(Project)
+          allow(resource.requirement_issue).to receive(:assignee_or_author?).and_return(true)
+        end
+
+        it { is_expected.to be_allowed(*allowed_guest_author_permissions) }
+        it { is_expected.to be_disallowed(*disallowed_guest_author_permissions) }
+      end
+
       it_behaves_like 'user with read-only permissions'
     end
 
