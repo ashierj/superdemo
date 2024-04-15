@@ -12,27 +12,6 @@ module Security
 
     feature_category :security_policy_management
 
-    DELAY_INTERVAL = 30.seconds.to_i
-
-    def handle_event(event)
-      return if ::Feature.enabled?(:add_policy_approvers_to_rules)
-
-      project = Project.find_by_id(event.data[:project_id])
-      return unless project
-
-      return unless project.licensed_feature_available?(:security_orchestration_policies)
-
-      configurations_with_users = project.all_security_orchestration_policy_configurations.select do |configuration|
-        configuration.active_scan_result_policies.any? do |policy|
-          policy[:actions].any? do |action|
-            action[:user_approvers].present? || action[:user_approvers_ids].present?
-          end
-        end
-      end
-
-      configurations_with_users.each_with_index do |configuration, index|
-        Security::ProcessScanResultPolicyWorker.perform_in(index * DELAY_INTERVAL, project.id, configuration.id)
-      end
-    end
+    def handle_event(event); end
   end
 end

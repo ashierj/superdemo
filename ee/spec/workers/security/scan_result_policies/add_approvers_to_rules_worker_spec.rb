@@ -54,18 +54,6 @@ RSpec.describe Security::ScanResultPolicies::AddApproversToRulesWorker, feature_
     end
   end
 
-  context 'when the feature flag "add_policy_approvers_to_rules" is disabled' do
-    before do
-      stub_feature_flags(add_policy_approvers_to_rules: false)
-    end
-
-    it 'does not call Security::ScanResultPolicies::AddApproversToRulesService' do
-      expect(Security::ScanResultPolicies::AddApproversToRulesService).not_to receive(:new)
-
-      expect { consume_event(subscriber: described_class, event: authorizations_event) }.not_to raise_exception
-    end
-  end
-
   context 'when the feature is not licensed' do
     let(:licensed_feature) { false }
 

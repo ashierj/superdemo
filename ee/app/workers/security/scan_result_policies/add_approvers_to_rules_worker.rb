@@ -10,8 +10,6 @@ module Security
       idempotent!
 
       def handle_event(event)
-        return if ::Feature.disabled?(:add_policy_approvers_to_rules)
-
         user_ids = event.data[:user_ids]
         return if user_ids.blank?
 
