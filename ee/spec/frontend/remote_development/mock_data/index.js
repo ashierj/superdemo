@@ -295,6 +295,47 @@ export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_DUPLICATES_ROOTGROUP
   },
 };
 
+export const GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_NO_AGENTS = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/81',
+      fullPath: 'gitlab-org/subgroup',
+      remoteDevelopmentClusterAgents: {
+        nodes: [],
+      },
+    },
+  },
+};
+
+export const GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/81',
+      fullPath: 'gitlab-org/subgroup',
+      remoteDevelopmentClusterAgents: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Clusters::Agent/1',
+            name: 'rootgroup-agent',
+            project: {
+              id: 'gid://gitlab/Project/101',
+              nameWithNamespace: 'GitLab Org / GitLab Agent One',
+            },
+          },
+          {
+            id: 'gid://gitlab/Clusters::Agent/2',
+            name: 'rootgroup-agent-2',
+            project: {
+              id: 'gid://gitlab/Project/102',
+              nameWithNamespace: 'GitLab Org / GitLab Agent Two',
+            },
+          },
+        ],
+      },
+    },
+  },
+};
+
 export const WORKSPACE_CREATE_MUTATION_RESULT = {
   data: {
     workspaceCreate: {
