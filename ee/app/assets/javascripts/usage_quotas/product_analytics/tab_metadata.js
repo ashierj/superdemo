@@ -22,6 +22,7 @@ export const getProductAnalyticsTabMetadata = ({ includeEl = false } = {}) => {
   const productAnalyticsTabMetadata = {
     title: s__('UsageQuota|Product analytics'),
     hash: '#product-analytics-usage-quota-tab',
+    testid: 'product-analytics-tab',
     component: {
       name: 'ProductAnalyticsUsageQuotaTab',
       apolloProvider,

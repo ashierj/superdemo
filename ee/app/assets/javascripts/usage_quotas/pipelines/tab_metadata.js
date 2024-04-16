@@ -53,6 +53,7 @@ export const getPipelineTabMetadata = ({ includeEl = false } = {}) => {
   const pipelineTabMetadata = {
     title: __('Pipelines'),
     hash: '#pipelines-quota-tab',
+    testid: 'pipelines-tab',
     component: {
       name: 'PipelineUsageTab',
       provide: parseProvideData(el),

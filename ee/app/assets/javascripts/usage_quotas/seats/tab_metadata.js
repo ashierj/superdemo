@@ -70,6 +70,7 @@ export const getSeatTabMetadata = ({ includeEl = false } = {}) => {
   const seatTabMetadata = {
     title: __('Seats'),
     hash: '#seats-quota-tab',
+    testid: 'seats-tab',
     component: {
       name: 'SeatUsageTab',
       apolloProvider: writeSeatsDataToApolloCache(apolloProvider, { subscriptionId: namespaceId }),
