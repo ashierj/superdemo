@@ -52,7 +52,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     context 'when on user setting new password page' do
       let(:path_to_visit) { new_user_settings_password_path }
       let(:password_input_selector) { :user_new_password }
-      let(:submit_button_selector) { _('Set new password') }
+      let(:submit_button_selector) { _('Update password') }
       let(:flash_message) { _('Password successfully changed') }
 
       it_behaves_like 'set a new password'
