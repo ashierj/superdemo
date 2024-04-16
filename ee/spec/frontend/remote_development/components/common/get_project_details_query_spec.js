@@ -4,6 +4,7 @@ import { cloneDeep } from 'lodash';
 import { logError } from '~/lib/logger';
 import getProjectDetailsQuery from 'ee/remote_development/graphql/queries/get_project_details.query.graphql';
 import getGroupClusterAgentsQuery from 'ee/remote_development/graphql/queries/get_group_cluster_agents.query.graphql';
+import getRemoteDevelopmentClusterAgentsQuery from 'ee/remote_development/graphql/queries/get_remote_development_cluster_agents.query.graphql';
 import GetProjectDetailsQuery from 'ee/remote_development/components/common/get_project_details_query.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -15,6 +16,8 @@ import {
   GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_NO_AGENT,
   GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
   GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_DUPLICATES_ROOTGROUP,
+  GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS,
+  GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_NO_AGENTS,
 } from '../../mock_data';
 
 Vue.use(VueApollo);
@@ -24,6 +27,8 @@ jest.mock('~/lib/logger');
 describe('remote_development/components/create/get_project_details_query', () => {
   let getProjectDetailsQueryHandler;
   let getGroupClusterAgentsQueryHandler;
+  let getRemoteDevelopmentClusterAgentsQueryHandler;
+  let glFeatures;
   let wrapper;
   const projectFullPathFixture = 'gitlab-org/gitlab';
 
@@ -43,15 +48,23 @@ describe('remote_development/components/create/get_project_details_query', () =>
     });
   };
 
+  const setupRemoteDevelopmentClusterAgentsQueryHandler = (responses) => {
+    getRemoteDevelopmentClusterAgentsQueryHandler.mockResolvedValueOnce(responses);
+  };
+
   const buildWrapper = async ({ projectFullPath = projectFullPathFixture } = {}) => {
     const apolloProvider = createMockApollo([
       [getProjectDetailsQuery, getProjectDetailsQueryHandler],
       [getGroupClusterAgentsQuery, getGroupClusterAgentsQueryHandler],
+      [getRemoteDevelopmentClusterAgentsQuery, getRemoteDevelopmentClusterAgentsQueryHandler],
     ]);
 
     // noinspection JSCheckFunctionSignatures - TODO: Address in https://gitlab.com/gitlab-org/gitlab/-/issues/437600
     wrapper = shallowMountExtended(GetProjectDetailsQuery, {
       apolloProvider,
+      provide: {
+        glFeatures,
+      },
       propsData: {
         projectFullPath,
       },
@@ -60,9 +73,29 @@ describe('remote_development/components/create/get_project_details_query', () =>
     await waitForPromises();
   };
 
+  const transformGroupClusterAgentGraphQLResultToClusterAgents = (clusterAgentsGraphQLResult) =>
+    clusterAgentsGraphQLResult.data.group.clusterAgents.nodes.map(({ id, name, project }) => ({
+      text: `${project.nameWithNamespace} / ${name}`,
+      value: id,
+    }));
+
+  const transformRemoveDevelopmentClusterAgentGraphQLResultToClusterAgents = (
+    clusterAgentsGraphQLResult,
+  ) =>
+    clusterAgentsGraphQLResult.data.namespace.remoteDevelopmentClusterAgents.nodes.map(
+      ({ id, name, project }) => ({
+        text: `${project.nameWithNamespace} / ${name}`,
+        value: id,
+      }),
+    );
+
   beforeEach(() => {
+    glFeatures = { remoteDevelopmentNamespaceAgentAuthorization: false };
     getProjectDetailsQueryHandler = jest.fn();
     getGroupClusterAgentsQueryHandler = jest.fn();
+    getRemoteDevelopmentClusterAgentsQueryHandler = jest.fn();
+
+    logError.mockReset();
 
     getProjectDetailsQueryHandler.mockResolvedValueOnce(GET_PROJECT_DETAILS_QUERY_RESULT);
     setupGroupClusterAgentsQueryHandler([]);
@@ -103,17 +136,11 @@ describe('remote_development/components/create/get_project_details_query', () =>
       await buildWrapper();
 
       const expectedClusterAgents = [
-        ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
-          ({ id, name, project }) => ({
-            text: `${project.nameWithNamespace} / ${name}`,
-            value: id,
-          }),
+        ...transformGroupClusterAgentGraphQLResultToClusterAgents(
+          GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT,
         ),
-        ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
-          ({ id, name, project }) => ({
-            text: `${project.nameWithNamespace} / ${name}`,
-            value: id,
-          }),
+        ...transformGroupClusterAgentGraphQLResultToClusterAgents(
+          GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
         ),
       ];
 
@@ -152,11 +179,8 @@ describe('remote_development/components/create/get_project_details_query', () =>
       await buildWrapper();
 
       expect(wrapper.emitted('result')[0][0]).toEqual({
-        clusterAgents: GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
-          ({ id, name, project }) => ({
-            text: `${project.nameWithNamespace} / ${name}`,
-            value: id,
-          }),
+        clusterAgents: transformGroupClusterAgentGraphQLResultToClusterAgents(
+          GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
         ),
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
@@ -220,17 +244,11 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
       expect(wrapper.emitted('result')[0][0]).toEqual({
         clusterAgents: [
-          ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
-            ({ id, name, project }) => ({
-              text: `${project.nameWithNamespace} / ${name}`,
-              value: id,
-            }),
+          ...transformGroupClusterAgentGraphQLResultToClusterAgents(
+            GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT,
           ),
-          ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
-            ({ id, name, project }) => ({
-              text: `${project.nameWithNamespace} / ${name}`,
-              value: id,
-            }),
+          ...transformGroupClusterAgentGraphQLResultToClusterAgents(
+            GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
           ),
         ],
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
@@ -423,6 +441,102 @@ describe('remote_development/components/create/get_project_details_query', () =>
       await buildWrapper();
 
       expect(wrapper.emitted('error')).toEqual([[]]);
+    });
+  });
+
+  describe('when remote_development_namespace_agent_authorization feature flag is enabled', () => {
+    beforeEach(() => {
+      glFeatures.remoteDevelopmentNamespaceAgentAuthorization = true;
+    });
+
+    describe('when the project belongs to a group', () => {
+      beforeEach(async () => {
+        await buildWrapper();
+      });
+
+      it('executes getRemoteDevelopmentClusterAgents query', () => {
+        expect(getRemoteDevelopmentClusterAgentsQueryHandler).toHaveBeenCalledTimes(1);
+        expect(getRemoteDevelopmentClusterAgentsQueryHandler).toHaveBeenCalledWith({
+          namespace: 'gitlab-org/subgroup',
+        });
+      });
+
+      it('does not execute getRemoteDevelopmentClusterAgents', () => {
+        expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('when getRemoteDevelopmentClusterAgents query contains one or more cluster agents', () => {
+      beforeEach(async () => {
+        setupRemoteDevelopmentClusterAgentsQueryHandler(
+          GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS,
+        );
+        await buildWrapper();
+      });
+
+      it('emits result event with the cluster agents', async () => {
+        await waitForPromises();
+
+        expect(wrapper.emitted('result')[0][0]).toEqual({
+          clusterAgents: transformRemoveDevelopmentClusterAgentGraphQLResultToClusterAgents(
+            GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS,
+          ),
+          id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+          rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+          fullPath: projectFullPathFixture,
+          nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
+        });
+      });
+    });
+
+    describe('when getRemoteDevelopmentClusterAgents query does not contain cluster agents', () => {
+      beforeEach(async () => {
+        setupRemoteDevelopmentClusterAgentsQueryHandler(
+          GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_NO_AGENTS,
+        );
+        await buildWrapper();
+      });
+
+      it('emits result event with the cluster agents', async () => {
+        await waitForPromises();
+
+        expect(wrapper.emitted('result')[0][0]).toEqual({
+          clusterAgents: [],
+          id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+          rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+          fullPath: projectFullPathFixture,
+          nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
+        });
+      });
+    });
+
+    describe('when getRemoteDevelopmentClusterAgents query fails', () => {
+      const error = new Error();
+
+      beforeEach(() => {
+        getRemoteDevelopmentClusterAgentsQueryHandler.mockReset();
+        getRemoteDevelopmentClusterAgentsQueryHandler.mockRejectedValueOnce(error);
+      });
+
+      it('logs the error', async () => {
+        expect(logError).not.toHaveBeenCalled();
+
+        await buildWrapper();
+
+        expect(logError).toHaveBeenCalledWith(error);
+      });
+
+      it('does not emit result event', async () => {
+        await buildWrapper();
+
+        expect(wrapper.emitted('result')).toBe(undefined);
+      });
+
+      it('emits error event', async () => {
+        await buildWrapper();
+
+        expect(wrapper.emitted('error')).toEqual([[]]);
+      });
     });
   });
 });
