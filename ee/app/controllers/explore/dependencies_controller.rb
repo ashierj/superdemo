@@ -12,6 +12,8 @@
 
 module Explore
   class DependenciesController < ::Explore::ApplicationController
+    include GovernUsageTracking
+    track_govern_activity 'dependencies', :index
     feature_category :dependency_management
     urgency :low
 
@@ -100,6 +102,14 @@ module Explore
 
     def formatted_page_info(paginator)
       Gitlab::Json.generate(page_info(paginator))
+    end
+
+    def tracking_namespace_source
+      current_user.namespace
+    end
+
+    def tracking_project_source
+      nil
     end
   end
 end
