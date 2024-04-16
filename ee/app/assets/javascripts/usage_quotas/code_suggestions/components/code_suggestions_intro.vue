@@ -38,23 +38,15 @@ export default {
     createHandRaiseLeadPath: { default: null },
     addDuoProHref: { default: null },
   },
-  computed: {
-    buttonLink() {
-      return this.addDuoProHref ? this.addDuoProHref : this.$options.helpLinks.salesLink;
-    },
-    buttonText() {
-      return this.addDuoProHref
-        ? this.$options.i18n.purchaseSeats
-        : this.$options.i18n.contactSales;
-    },
-  },
   emptyStateSvgUrl,
 };
 </script>
 <template>
   <gl-empty-state
-    :primary-button-text="buttonText"
-    :primary-button-link="buttonLink"
+    :primary-button-text="$options.i18n.purchaseSeats"
+    :primary-button-link="addDuoProHref"
+    :secondary-button-link="$options.helpLinks.salesLink"
+    :secondary-button-text="$options.i18n.contactSales"
     :svg-path="$options.emptyStateSvgUrl"
     class="gl-max-w-48 gl-mx-auto"
   >

@@ -30,6 +30,8 @@ describe('Code Suggestions Intro', () => {
         expect(emptyState().exists()).toBe(true);
         expect(emptyState().props('primaryButtonLink')).toBe(addDuoProHref);
         expect(emptyState().props('primaryButtonText')).toBe('Purchase seats');
+        expect(emptyState().props('secondaryButtonLink')).toBe(salesLink);
+        expect(emptyState().props('secondaryButtonText')).toBe('Contact sales');
         expect(handRaiseLeadButton().exists()).toBe(false);
       });
     });
@@ -44,18 +46,6 @@ describe('Code Suggestions Intro', () => {
         expect(emptyState().exists()).toBe(true);
         expect(handRaiseLeadButton().exists()).toBe(true);
         expect(defaultButton.exists()).toBe(false);
-      });
-    });
-
-    describe('without addDuoProHref', () => {
-      beforeEach(() => {
-        return createComponent({ addDuoProHref: '' });
-      });
-
-      it('renders gl-empty-state component', () => {
-        expect(emptyState().exists()).toBe(true);
-        expect(emptyState().props('primaryButtonLink')).toBe(salesLink);
-        expect(emptyState().props('primaryButtonText')).toBe('Contact sales');
       });
     });
   });
