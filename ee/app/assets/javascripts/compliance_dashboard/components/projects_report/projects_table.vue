@@ -196,11 +196,6 @@ export default {
       this.$refs.createModal.hide();
     },
 
-    editComplianceFramework(framework) {
-      this.frameworkSelectedForEdit = framework;
-      this.$refs.editModal.show();
-    },
-
     resetEditModal() {
       this.frameworkSelectedForEdit = null;
       this.$refs.editModal.hide();
@@ -347,7 +342,6 @@ export default {
           :key="framework.id"
           closeable
           :framework="framework"
-          @edit="editComplianceFramework(framework)"
           @close="
             applySingleItemOperation({
               projectId: id,

@@ -3,7 +3,7 @@ import Vue from 'vue';
 import { GlButton, GlLoadingIcon, GlSearchBoxByClick, GlTable, GlToast, GlLink } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import FrameworkBadge from '../shared/framework_badge.vue';
-import { ROUTE_EDIT_FRAMEWORK, ROUTE_NEW_FRAMEWORK } from '../../constants';
+import { ROUTE_NEW_FRAMEWORK } from '../../constants';
 import FrameworkInfoDrawer from './framework_info_drawer.vue';
 
 Vue.use(GlToast);
@@ -56,9 +56,6 @@ export default {
     },
     closeDrawer() {
       this.selectedFramework = null;
-    },
-    editComplianceFramework(framework) {
-      this.$router.push({ name: ROUTE_EDIT_FRAMEWORK, params: { id: framework.id } });
     },
     isLastItem(index, arr) {
       return index >= arr.length - 1;
@@ -126,7 +123,7 @@ export default {
       @row-clicked="toggleDrawer"
     >
       <template #cell(frameworkName)="{ item }">
-        <framework-badge :framework="item" @edit="editComplianceFramework(item)" />
+        <framework-badge :framework="item" />
       </template>
       <template
         #cell(associatedProjects)="{
@@ -161,7 +158,6 @@ export default {
       :show-drawer="showDrawer"
       :framework="selectedFramework"
       @close="closeDrawer"
-      @edit="editComplianceFramework"
     />
   </section>
 </template>

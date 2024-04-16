@@ -47,14 +47,16 @@ export const createComplianceAdherence = (id, checkName) => ({
     name: 'Example Project',
     webUrl: 'example.com/groups/example-group/example-project',
     complianceFrameworks: {
-      nodes: {
-        id: 'gid://gitlab/ComplianceManagement::Framework/1',
-        name: 'Example Framework',
-        description: 'asds',
-        color: '#0000ff',
-        __typename: 'ComplianceFramework',
-        default: true,
-      },
+      nodes: [
+        {
+          id: 'gid://gitlab/ComplianceManagement::Framework/1',
+          name: 'Example Framework',
+          description: 'asds',
+          color: '#0000ff',
+          __typename: 'ComplianceFramework',
+          default: true,
+        },
+      ],
     },
   },
 });

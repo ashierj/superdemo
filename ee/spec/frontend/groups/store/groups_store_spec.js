@@ -1,4 +1,5 @@
 import GroupsStore from '~/groups/store/groups_store';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { mockRawChildren } from '../mock_data';
 
 describe('ee/ProjectsStore', () => {
@@ -15,6 +16,10 @@ describe('ee/ProjectsStore', () => {
       const updatedGroupItem = store.formatGroupItem(mockRawChildren[1]);
 
       expect(updatedGroupItem.complianceFramework).toStrictEqual({
+        id: convertToGraphQLId(
+          'ComplianceManagement::Framework',
+          mockRawChildren[1].compliance_management_framework.id,
+        ),
         name: mockRawChildren[1].compliance_management_framework.name,
         color: mockRawChildren[1].compliance_management_framework.color,
         description: mockRawChildren[1].compliance_management_framework.description,

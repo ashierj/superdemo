@@ -1,9 +1,10 @@
 <script>
-import { GlAlert, GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlTable, GlIcon, GlLink, GlLoadingIcon } from '@gitlab/ui';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getProjectComplianceStandardsAdherence from 'ee/compliance_dashboard/graphql/compliance_standards_adherence.query.graphql';
+import FrameworkBadge from '../shared/framework_badge.vue';
 import Pagination from '../shared/pagination.vue';
 import { GRAPHQL_PAGE_SIZE } from '../../constants';
 import {
@@ -22,10 +23,10 @@ export default {
     GlTable,
     GlIcon,
     GlLink,
-    GlBadge,
     GlLoadingIcon,
     FixSuggestionsSidebar,
     Pagination,
+    FrameworkBadge,
   },
   props: {
     groupPath: {
@@ -292,7 +293,7 @@ export default {
           class="gl-label"
           :title="framework.name"
         >
-          <gl-badge size="sm" class="gl-mt-3 gl-label-text"> {{ framework.name }}</gl-badge>
+          <framework-badge :framework="framework" size="sm" />
         </div>
       </template>
 

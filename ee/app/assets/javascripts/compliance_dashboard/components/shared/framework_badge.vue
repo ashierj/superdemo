@@ -2,7 +2,11 @@
 import { GlButton, GlLabel, GlPopover } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
-import { FRAMEWORK_BADGE_SIZE_MD, FRAMEWORK_BADGE_SIZES } from '../../constants';
+import {
+  FRAMEWORK_BADGE_SIZE_MD,
+  FRAMEWORK_BADGE_SIZES,
+  ROUTE_EDIT_FRAMEWORK,
+} from '../../constants';
 
 export default {
   name: 'ComplianceFrameworkBadge',
@@ -32,15 +36,23 @@ export default {
       required: false,
       default: false,
     },
+    showEdit: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   computed: {
     showDefaultBadge() {
       return this.showDefault && this.framework.default;
     },
     frameworkName() {
-      return this.showDefaultBadge
-        ? `${this.framework.name} (${this.$options.i18n.default})`
-        : this.framework.name;
+      const maxLength = 30;
+      const name =
+        this.framework?.name?.length > maxLength
+          ? `${this.framework.name.substring(0, maxLength)}...`
+          : this.framework.name;
+      return this.showDefaultBadge ? `${name} (${this.$options.i18n.default})` : name;
     },
     frameworkTestId() {
       return this.showDefaultBadge
@@ -50,8 +62,7 @@ export default {
   },
   methods: {
     editFromPopover() {
-      this.$refs.popover.$emit('close');
-      this.$emit('edit');
+      this.$router.push({ name: ROUTE_EDIT_FRAMEWORK, params: { id: this.framework.id } });
     },
   },
   i18n: {
@@ -63,10 +74,12 @@ export default {
 <template>
   <div ref="badge">
     <gl-popover ref="popover" :target="() => $refs.label">
+      <h5 v-if="framework.name" class="gl-text-left">{{ framework.name }}</h5>
       <p v-if="framework.description" class="gl-text-left">{{ framework.description }}</p>
-      <div class="gl-text-left">
+      <div v-if="showEdit" class="gl-text-left">
         <gl-button
           category="tertiary"
+          size="small"
           variant="confirm"
           class="gl-font-sm"
           @click="editFromPopover"
@@ -82,6 +95,7 @@ export default {
         :title="frameworkName"
         :size="size"
         :show-close-button="closeable"
+        class="gl-md-max-w-26"
         @close="$emit('close')"
       />
     </span>
