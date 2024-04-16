@@ -30,6 +30,12 @@ describe('Section', () => {
     it('does not render expand/collapse button', () => {
       expect(findButton('Expand').exists()).toBe(false);
     });
+
+    it('ignores initiallyExpanded prop', () => {
+      wrapper = createComponent({ expandable: false, initiallyExpanded: false });
+
+      expect(findCollapse().props('visible')).toBe(true);
+    });
   });
 
   describe('if expandable', () => {
