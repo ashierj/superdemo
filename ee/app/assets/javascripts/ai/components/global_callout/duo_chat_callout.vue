@@ -74,7 +74,7 @@ export default {
         :target="popoverTarget"
         :show="shouldShowCallout"
         show-close-button
-        :css-classes="['gl-max-w-48', 'gl-shadow-lg', 'gl-p-2']"
+        :css-classes="['duo-chat-callout-popover', 'gl-max-w-48', 'gl-shadow-lg', 'gl-p-2']"
         triggers="manual"
         data-testid="duo-chat-promo-callout-popover"
         @close-button-clicked="dismissCallout(dismiss)"
@@ -109,7 +109,7 @@ export default {
   </user-callout-dismisser>
 </template>
 <style lang="scss">
-.gl-popover.bs-popover-bottom > .arrow::after {
+.duo-chat-callout-popover.bs-popover-bottom > .arrow::after {
   border-bottom-color: #c4bae2;
   top: 1px;
 }
