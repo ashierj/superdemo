@@ -122,7 +122,10 @@ RSpec.describe Groups::DependencyProxyForContainersController, feature_category:
         it_behaves_like 'returning response status', :not_found
 
         context 'when user is a deploy token' do
-          let_it_be(:deploy_token) { create(:deploy_token, read_package_registry: true, write_package_registry: true) }
+          let_it_be(:deploy_token) do
+            create(:deploy_token, user: user, read_package_registry: true, write_package_registry: true)
+          end
+
           let_it_be(:group_deploy_token) { create(:group_deploy_token, deploy_token: deploy_token, group: group) }
 
           let(:authenticated_subject) { deploy_token }
