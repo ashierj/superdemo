@@ -3,19 +3,25 @@ import { shallowMount } from '@vue/test-utils';
 
 import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 
+import { ROUTE_EDIT_FRAMEWORK } from 'ee/compliance_dashboard/constants';
 import { complianceFramework } from '../../mock_data';
 
 describe('FrameworkBadge component', () => {
   let wrapper;
+  let routerPushMock;
 
   const findLabel = () => wrapper.findComponent(GlLabel);
   const findTooltip = () => wrapper.findComponent(GlPopover);
   const findEditButton = () => wrapper.findComponent(GlPopover).findComponent(GlButton);
 
   const createComponent = (props = {}) => {
+    routerPushMock = jest.fn();
     return shallowMount(FrameworkBadge, {
       propsData: {
         ...props,
+      },
+      mocks: {
+        $router: { push: routerPushMock },
       },
     });
   };
@@ -31,7 +37,12 @@ describe('FrameworkBadge component', () => {
       wrapper = createComponent({ framework: complianceFramework });
 
       await findEditButton().vm.$emit('click', new MouseEvent('click'));
-      expect(wrapper.emitted('edit')).toHaveLength(1);
+      expect(routerPushMock).toHaveBeenCalledWith({
+        name: ROUTE_EDIT_FRAMEWORK,
+        params: {
+          id: complianceFramework.id,
+        },
+      });
     });
 
     it('renders the framework label', () => {
@@ -48,6 +59,18 @@ describe('FrameworkBadge component', () => {
       wrapper = createComponent({ framework: { ...complianceFramework, default: true } });
 
       expect(findLabel().props('title')).toEqual(`${complianceFramework.name} (default)`);
+    });
+
+    it('renders the truncated text when the framework name is long', () => {
+      wrapper = createComponent({
+        framework: {
+          ...complianceFramework,
+          name: 'A really long standard regulation name that will not fit in one line',
+          default: false,
+        },
+      });
+
+      expect(findLabel().props('title')).toEqual('A really long standard regulat...');
     });
 
     it('does not render the default addition when the framework is default but component is configured to hide the badge', () => {

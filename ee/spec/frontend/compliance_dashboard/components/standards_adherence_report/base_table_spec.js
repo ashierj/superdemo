@@ -167,16 +167,19 @@ describe('AdherencesBaseTable component', () => {
 
     describe('when check is `PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR`', () => {
       it('renders the table row properly', () => {
-        const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+        const [
+          rowStatus,
+          rowProject,
+          rowCheck,
+          rowStandard,
+          rowDate,
+        ] = findFirstTableRowData().wrappers.map((e) => e.text());
 
-        expect(rowText).toStrictEqual([
-          'Success',
-          'Example Project',
-          'Prevent authors as approvers',
-          'GitLab',
-          'Jul 1, 2023',
-          'View details',
-        ]);
+        expect(rowStatus).toContain('Success');
+        expect(rowProject).toContain('Example Project');
+        expect(rowCheck).toContain('Prevent authors as approvers');
+        expect(rowStandard).toContain('GitLab');
+        expect(rowDate).toContain('Jul 1, 2023');
       });
     });
 
@@ -195,16 +198,19 @@ describe('AdherencesBaseTable component', () => {
       });
 
       it('renders the table row properly', () => {
-        const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+        const [
+          rowStatus,
+          rowProject,
+          rowCheck,
+          rowStandard,
+          rowDate,
+        ] = findFirstTableRowData().wrappers.map((e) => e.text());
 
-        expect(rowText).toStrictEqual([
-          'Success',
-          'Example Project',
-          'Prevent committers as approvers',
-          'GitLab',
-          'Jul 1, 2023',
-          'View details',
-        ]);
+        expect(rowStatus).toContain('Success');
+        expect(rowProject).toContain('Example Project');
+        expect(rowCheck).toContain('Prevent committers as approvers');
+        expect(rowStandard).toContain('GitLab');
+        expect(rowDate).toContain('Jul 1, 2023');
       });
     });
 
@@ -221,16 +227,19 @@ describe('AdherencesBaseTable component', () => {
       });
 
       it('renders the table row properly', () => {
-        const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+        const [
+          rowStatus,
+          rowProject,
+          rowCheck,
+          rowStandard,
+          rowDate,
+        ] = findFirstTableRowData().wrappers.map((e) => e.text());
 
-        expect(rowText).toStrictEqual([
-          'Success',
-          'Example Project',
-          'At least two approvals',
-          'GitLab',
-          'Jul 1, 2023',
-          'View details',
-        ]);
+        expect(rowStatus).toContain('Success');
+        expect(rowProject).toContain('Example Project');
+        expect(rowCheck).toContain('At least two approvals');
+        expect(rowStandard).toContain('GitLab');
+        expect(rowDate).toContain('Jul 1, 2023');
       });
     });
 

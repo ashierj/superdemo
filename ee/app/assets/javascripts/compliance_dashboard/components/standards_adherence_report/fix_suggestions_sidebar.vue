@@ -1,9 +1,10 @@
 <script>
-import { GlDrawer, GlIcon, GlBadge, GlButton, GlLink } from '@gitlab/ui';
+import { GlDrawer, GlIcon, GlButton, GlLink } from '@gitlab/ui';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 import {
   FAIL_STATUS,
   STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS,
@@ -20,9 +21,9 @@ export default {
   components: {
     GlDrawer,
     GlIcon,
-    GlBadge,
     GlButton,
     GlLink,
+    FrameworkBadge,
   },
   props: {
     groupPath: {
@@ -96,7 +97,7 @@ export default {
           <gl-link class="gl-mx-3" :href="project.webUrl"> {{ project.name }} </gl-link>
 
           <span v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
-            <gl-badge size="sm" class="gl-mt-3"> {{ framework.name }}</gl-badge>
+            <framework-badge :framework="framework" size="sm" :show-edit="false" />
           </span>
         </div>
       </div>

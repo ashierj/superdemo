@@ -7,9 +7,8 @@ import { stubComponent } from 'helpers/stub_component';
 
 import { createComplianceFrameworksReportResponse } from 'ee_jest/compliance_dashboard/mock_data';
 import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
-import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
-import { ROUTE_NEW_FRAMEWORK, ROUTE_EDIT_FRAMEWORK } from 'ee/compliance_dashboard/constants';
+import { ROUTE_NEW_FRAMEWORK } from 'ee/compliance_dashboard/constants';
 
 Vue.use(VueApollo);
 
@@ -151,21 +150,6 @@ describe('FrameworksTable component', () => {
       expect(findTableLinks(idx).wrappers.map((w) => w.attributes('href'))).toStrictEqual(
         projects.map((p) => p.webUrl),
       );
-    });
-
-    describe('when edit framework requested from framework badge', () => {
-      beforeEach(() => {
-        findTableRow(rowCheckIndex).findComponent(FrameworkBadge).vm.$emit('edit');
-      });
-
-      it('opens edit route with correct props', () => {
-        expect(routerPushMock).toHaveBeenCalledWith({
-          name: ROUTE_EDIT_FRAMEWORK,
-          params: {
-            id: frameworks[rowCheckIndex].id,
-          },
-        });
-      });
     });
 
     describe('Sidebar', () => {

@@ -2,7 +2,6 @@ import { GlFormCheckbox, GlLabel, GlLoadingIcon, GlTable, GlModal } from '@gitla
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
-import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -13,7 +12,6 @@ import {
   createComplianceFrameworksResponse,
   createProjectSetComplianceFrameworkResponse,
 } from 'ee_jest/compliance_dashboard/mock_data';
-import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 import FrameworkSelectionBox from 'ee/compliance_dashboard/components/projects_report/framework_selection_box.vue';
 import ProjectsTable from 'ee/compliance_dashboard/components/projects_report/projects_table.vue';
 import SelectionOperations from 'ee/compliance_dashboard/components/projects_report/selection_operations.vue';
@@ -49,7 +47,6 @@ describe('ProjectsTable component', () => {
     wrapper.findAllComponents(GlModal).wrappers.find((w) => w.props('modalId') === modalId);
 
   const findCreateModal = () => findModalByModalId('create-framework-form-modal');
-  const findEditModal = () => findModalByModalId('edit-framework-form-modal');
 
   const findSelectAllCheckbox = () =>
     findTable().findAll('th > div').at(0).findComponent(GlFormCheckbox);
@@ -330,35 +327,6 @@ describe('ProjectsTable component', () => {
 
       it('closes modal on cancel', () => {
         findCreateModal().findComponent(CreateForm).vm.$emit('cancel');
-
-        expect(GlModalStub.methods.hide).toHaveBeenCalled();
-      });
-    });
-
-    describe('when edit framework requested from framework badge', () => {
-      beforeEach(() => {
-        findTableRowData(ROW_WITH_FRAMEWORK_IDX)
-          .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
-          .findComponent(FrameworkBadge)
-          .vm.$emit('edit');
-      });
-
-      it('opens edit modal with correct props', () => {
-        expect(findEditModal().findComponent(EditForm).props('id')).toEqual(
-          projects[ROW_WITH_FRAMEWORK_IDX].complianceFrameworks[0].id,
-        );
-
-        expect(GlModalStub.methods.show).toHaveBeenCalled();
-      });
-
-      it('closes modal on cancel', () => {
-        findEditModal().findComponent(EditForm).vm.$emit('cancel');
-
-        expect(GlModalStub.methods.hide).toHaveBeenCalled();
-      });
-
-      it('closes modal on success', () => {
-        findEditModal().findComponent(EditForm).vm.$emit('success');
 
         expect(GlModalStub.methods.hide).toHaveBeenCalled();
       });

@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlLabel } from '@gitlab/ui';
+import FrameworkBadge from 'ee_else_ce/compliance_dashboard/components/shared/framework_badge.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import GroupFolder from '~/groups/components/group_folder.vue';
 import GroupItem from 'jh_else_ce/groups/components/group_item.vue';
@@ -21,26 +21,25 @@ const createComponent = (props = {}) => {
 describe('GroupItemComponent', () => {
   let wrapper;
 
-  const findComplianceFrameworkLabel = () => wrapper.findComponent(GlLabel);
+  const findComplianceFrameworkBadge = () => wrapper.findComponent(FrameworkBadge);
 
   describe('Compliance framework label', () => {
     it('does not render if the item does not have a compliance framework', async () => {
       wrapper = createComponent({ group: mockChildren[0] });
       await waitForPromises();
 
-      expect(findComplianceFrameworkLabel().exists()).toBe(false);
+      expect(findComplianceFrameworkBadge().exists()).toBe(false);
     });
 
     it('renders if the item has a compliance framework', async () => {
-      const { color, description, name } = mockChildren[1].complianceFramework;
-
       wrapper = createComponent({ group: mockChildren[1] });
       await waitForPromises();
 
-      expect(findComplianceFrameworkLabel().props()).toMatchObject({
-        backgroundColor: color,
-        description,
-        title: name,
+      expect(findComplianceFrameworkBadge().exists()).toBe(true);
+
+      expect(findComplianceFrameworkBadge().props()).toMatchObject({
+        framework: mockChildren[1].complianceFramework,
+        showEdit: false,
         size: 'sm',
       });
     });

@@ -76,6 +76,7 @@ export const mockChildren = [
     isBeingRemoved: false,
     updatedAt: '2017-04-09T18:40:39.101Z',
     complianceFramework: {
+      id: 'gid://gitlab/ComplianceManagement::Framework/1',
       name: 'GDPR',
       description: 'General Data Protection Regulation',
       color: '#009966',
