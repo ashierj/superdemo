@@ -96,7 +96,7 @@ describe('GridstackWrapper', () => {
       expect(mockGridLoad).toHaveBeenCalledWith(dashboard.panels.map(parsePanelToGridItem));
     });
 
-    it('does not render a the grab cursor on grid panels', () => {
+    it('does not render the grab cursor on grid panels', () => {
       expect(findGridStackPanels().at(0).classes()).not.toContain('gl-cursor-grab');
     });
 
