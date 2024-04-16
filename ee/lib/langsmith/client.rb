@@ -72,15 +72,15 @@ module Langsmith
     end
 
     def api_key
-      @api_key ||= ENV['LANGCHAIN_API_KEY']
+      ENV['LANGCHAIN_API_KEY']
     end
 
     def endpoint
-      @endpoint ||= ENV['LANGCHAIN_ENDPOINT']
+      ENV['LANGCHAIN_ENDPOINT']
     end
 
     def project_name
-      @project_name ||= ENV['LANGCHAIN_PROJECT']
+      ENV['LANGCHAIN_PROJECT']
     end
 
     def current_time
