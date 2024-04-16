@@ -43,10 +43,24 @@ module Types
         alpha: { milestone: '16.7' },
         description: 'Total number of members with the custom role.'
 
+      field :edit_path,
+        GraphQL::Types::String,
+        null: false,
+        alpha: { milestone: '16.11' },
+        description: 'Web UI path to edit the custom role.'
+
       def members_count
         return object.members_count if object.respond_to?(:members_count)
 
         object.members.count
+      end
+
+      def edit_path
+        if object.namespace
+          ::Gitlab::Routing.url_helpers.edit_group_settings_roles_and_permission_path(object.namespace, object)
+        else
+          ::Gitlab::Routing.url_helpers.edit_admin_application_settings_roles_and_permission_path(object)
+        end
       end
     end
     # rubocop: enable Graphql/AuthorizeTypes

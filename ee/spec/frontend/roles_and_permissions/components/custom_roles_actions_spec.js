@@ -1,11 +1,14 @@
 import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import CustomRolesActions from 'ee/roles_and_permissions/components/custom_roles_actions.vue';
+import { visitUrl } from '~/lib/utils/url_utility';
+
+jest.mock('~/lib/utils/url_utility');
 
 describe('CustomRolesActions', () => {
   let wrapper;
 
-  const mockCustomRole = { membersCount: 0 };
+  const mockCustomRole = { membersCount: 0, editPath: 'edit/path' };
 
   const createComponent = ({ customRole = mockCustomRole } = {}) => {
     wrapper = mountExtended(CustomRolesActions, {
@@ -37,6 +40,12 @@ describe('CustomRolesActions', () => {
   describe('edit role', () => {
     it('renders the edit role action item', () => {
       expect(findEditRole().props('item')).toMatchObject({ text: 'Edit role' });
+    });
+
+    it('goes to the edit page when clicked', () => {
+      findEditRole().vm.$emit('action');
+
+      expect(visitUrl).toHaveBeenCalledWith('edit/path');
     });
   });
 

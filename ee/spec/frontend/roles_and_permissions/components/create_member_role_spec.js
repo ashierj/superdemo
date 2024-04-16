@@ -1,15 +1,18 @@
-import { GlFormInput, GlFormSelect } from '@gitlab/ui';
+import { GlFormInput, GlFormSelect, GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import createMemberRoleMutation from 'ee/roles_and_permissions/graphql/create_member_role.mutation.graphql';
+import updateMemberRoleMutation from 'ee/roles_and_permissions/graphql/update_member_role.mutation.graphql';
 import CreateMemberRole from 'ee/roles_and_permissions/components/create_member_role.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
+import memberRoleQuery from 'ee/roles_and_permissions/graphql/member_role.query.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
 import PermissionsSelector from 'ee/roles_and_permissions/components/permissions_selector.vue';
+import { mockMemberRoleQueryResponse } from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -25,23 +28,32 @@ jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn(),
 }));
 
+const mutationSuccessData = { data: { memberRoleSave: { errors: [] } } };
+
 describe('CreateMemberRole', () => {
   let wrapper;
 
-  const mutationSuccessHandler = jest
-    .fn()
-    .mockResolvedValue({ data: { memberRoleCreate: { errors: [] } } });
+  const createMutationSuccessHandler = jest.fn().mockResolvedValue(mutationSuccessData);
+  const updateMutationSuccessHandler = jest.fn().mockResolvedValue(mutationSuccessData);
+  const defaultMemberRoleHandler = jest.fn().mockResolvedValue(mockMemberRoleQueryResponse);
 
   const createComponent = ({
     stubs,
-    mutationMock = mutationSuccessHandler,
+    createMutationMock = createMutationSuccessHandler,
+    updateMutationMock = updateMutationSuccessHandler,
+    memberRoleHandler = defaultMemberRoleHandler,
     groupFullPath = 'test-group',
     embedded = false,
+    roleId,
   } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
-      propsData: { groupFullPath, embedded, listPagePath: 'http://list/page/path' },
+      propsData: { groupFullPath, embedded, listPagePath: 'http://list/page/path', roleId },
       stubs: { PermissionsSelector: true, ...stubs },
-      apolloProvider: createMockApollo([[createMemberRoleMutation, mutationMock]]),
+      apolloProvider: createMockApollo([
+        [memberRoleQuery, memberRoleHandler],
+        [createMemberRoleMutation, createMutationMock],
+        [updateMemberRoleMutation, updateMutationMock],
+      ]),
     });
 
     return waitForPromises();
@@ -53,6 +65,8 @@ describe('CreateMemberRole', () => {
   const findSelect = () => wrapper.findComponent(GlFormSelect);
   const findDescriptionField = () => wrapper.findAllComponents(GlFormInput).at(1);
   const findPermissionsSelector = () => wrapper.findComponent(PermissionsSelector);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   const fillForm = () => {
     findSelect().setValue('GUEST');
@@ -89,6 +103,12 @@ describe('CreateMemberRole', () => {
     findButtonCancel().trigger('click');
 
     expect(visitUrl).toHaveBeenCalledWith('http://list/page/path');
+  });
+
+  it('does not fetch a member role on page load when creating a role', () => {
+    createComponent();
+
+    expect(defaultMemberRoleHandler).not.toHaveBeenCalled();
   });
 
   describe('embedded mode', () => {
@@ -147,7 +167,7 @@ describe('CreateMemberRole', () => {
     });
 
     it('dismisses any previous alert', async () => {
-      await createComponent({ mutationMock: jest.fn().mockRejectedValue() });
+      await createComponent({ createMutationMock: jest.fn().mockRejectedValue() });
       await fillForm();
       await submitForm(waitForPromises);
 
@@ -177,7 +197,7 @@ describe('CreateMemberRole', () => {
           ...(groupFullPath ? { groupPath: groupFullPath } : {}),
         };
 
-        expect(mutationSuccessHandler).toHaveBeenCalledWith({ input });
+        expect(createMutationSuccessHandler).toHaveBeenCalledWith({ input });
       },
     );
   });
@@ -206,12 +226,12 @@ describe('CreateMemberRole', () => {
   });
 
   describe('when there is an error creating the role', () => {
-    const mutationMock = jest
+    const createMutationMock = jest
       .fn()
-      .mockResolvedValue({ data: { memberRoleCreate: { errors: ['reason'] } } });
+      .mockResolvedValue({ data: { memberRoleSave: { errors: ['reason'] } } });
 
     beforeEach(async () => {
-      await createComponent({ mutationMock });
+      await createComponent({ createMutationMock });
       await fillForm();
     });
 
@@ -228,6 +248,74 @@ describe('CreateMemberRole', () => {
 
     it('does not emit the success event', () => {
       expect(wrapper.emitted('success')).toBeUndefined();
+    });
+  });
+
+  describe('edit role', () => {
+    describe('on page load', () => {
+      beforeEach(() => {
+        createComponent({ roleId: 1 });
+      });
+
+      it('shows a loading spinner', () => {
+        createComponent({ roleId: 1 });
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('starts the member role query', () => {
+        expect(defaultMemberRoleHandler).toHaveBeenCalledTimes(1);
+        expect(defaultMemberRoleHandler).toHaveBeenCalledWith({ id: 'gid://gitlab/MemberRole/1' });
+      });
+    });
+
+    describe('on role fetch error', () => {
+      it('shows error message when there is no role', async () => {
+        const memberRoleHandler = jest.fn().mockResolvedValue({ data: { memberRole: null } });
+        await createComponent({ roleId: 1, memberRoleHandler });
+
+        expect(findAlert().text()).toBe('Failed to load custom role.');
+      });
+
+      it('shows error message when there was an error fetching the role', async () => {
+        const memberRoleHandler = jest.fn().mockRejectedValue();
+        await createComponent({ roleId: 1, memberRoleHandler });
+
+        expect(findAlert().text()).toBe('Failed to load custom role.');
+      });
+    });
+
+    describe('after the member role is loaded', () => {
+      beforeEach(() => {
+        return createComponent({ roleId: 1, stubs: { GlFormCheckboxGroup: true } });
+      });
+
+      it('shows the form with the expected pre-filled data', () => {
+        expect(findSelect().element.value).toBe('DEVELOPER');
+        expect(findNameField().element.value).toBe('Custom role');
+        expect(findDescriptionField().element.value).toBe('Custom role description');
+        expect(findPermissionsSelector().props('permissions')).toEqual(['A', 'B']);
+      });
+
+      it('disables the base role selector', () => {
+        expect(findSelect().element.disabled).toBe(true);
+      });
+    });
+
+    describe('saving the role', () => {
+      it('calls the update mutation with the expected data', async () => {
+        await createComponent({ roleId: 1 });
+        await submitForm();
+
+        expect(updateMutationSuccessHandler).toHaveBeenCalledWith({
+          input: {
+            id: 'gid://gitlab/MemberRole/1',
+            name: 'Custom role',
+            description: 'Custom role description',
+            permissions: ['A', 'B'],
+          },
+        });
+      });
     });
   });
 });

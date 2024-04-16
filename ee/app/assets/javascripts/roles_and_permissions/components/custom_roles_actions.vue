@@ -1,6 +1,7 @@
 <script>
 import { GlDisclosureDropdown, GlDisclosureDropdownItem, GlTooltipDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { visitUrl } from '~/lib/utils/url_utility';
 
 export default {
   i18n: {
@@ -45,6 +46,11 @@ export default {
       return this.hasAssignedUsers ? this.$options.i18n.deleteDisabledTooltip : '';
     },
   },
+  methods: {
+    navigateToEditPage() {
+      visitUrl(this.customRole.editPath);
+    },
+  },
 };
 </script>
 <template>
@@ -57,7 +63,7 @@ export default {
     text-sr-only
     :toggle-text="$options.i18n.actionsText"
   >
-    <gl-disclosure-dropdown-item :item="editRoleItem" hidden />
+    <gl-disclosure-dropdown-item :item="editRoleItem" @action="navigateToEditPage" />
     <gl-disclosure-dropdown-item
       v-gl-tooltip.left.viewport.d0="deleteTooltip"
       :item="deleteRoleItem"

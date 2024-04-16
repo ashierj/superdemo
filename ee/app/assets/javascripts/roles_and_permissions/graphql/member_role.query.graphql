@@ -1,0 +1,15 @@
+query memberRole($id: MemberRoleID!) {
+  memberRole(id: $id) {
+    id
+    name
+    description
+    baseAccessLevel {
+      stringValue
+    }
+    enabledPermissions {
+      nodes {
+        value
+      }
+    }
+  }
+}

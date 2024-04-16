@@ -1,5 +1,5 @@
 mutation createMemberRole($input: MemberRoleCreateInput!) {
-  memberRoleCreate(input: $input) {
+  memberRoleSave: memberRoleCreate(input: $input) {
     errors
   }
 }

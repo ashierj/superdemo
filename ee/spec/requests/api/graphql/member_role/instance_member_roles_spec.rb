@@ -12,6 +12,8 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
         nodes {
           id
           name
+          membersCount
+          editPath
         }
       }
     }
@@ -52,7 +54,12 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
 
         it 'returns instance roles' do
           expected_result = [
-            { 'id' => instance_role.to_global_id.to_s, 'name' => instance_role.name }
+            {
+              'id' => instance_role.to_global_id.to_s,
+              'name' => instance_role.name,
+              'membersCount' => 0,
+              'editPath' => edit_admin_application_settings_roles_and_permission_path(instance_role)
+            }
           ]
 
           expect(roles).to match_array(expected_result)
