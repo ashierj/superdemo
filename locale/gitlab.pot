@@ -61028,6 +61028,9 @@ msgstr ""
 msgid "manual"
 msgstr ""
 
+msgid "math|Display anyway"
+msgstr ""
+
 msgid "math|Displaying this math block may cause performance issues on this page."
 msgstr ""
 
