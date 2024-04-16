@@ -9,17 +9,19 @@ product_group: compliance
 value_type: number
 status: active
 time_frame: 7d
-instrumentation_class: AggregatedMetric
+instrumentation_class: RedisHLLMetric
 data_source: redis_hll
-options:
-  aggregate:
-    attribute: user.id
-  events:
-    - 'g_compliance_audit_events'
-    - 'g_compliance_dashboard'
-    - 'i_compliance_audit_events'
-    - 'a_compliance_audit_events_api'
-    - 'i_compliance_credential_inventory'
+events:
+- name: g_compliance_audit_events
+  unique: user.id
+- name: g_compliance_dashboard
+  unique: user.id
+- name: i_compliance_audit_events
+  unique: user.id
+- name: a_compliance_audit_events_api
+  unique: user.id
+- name: i_compliance_credential_inventory
+  unique: user.id
 distribution:
 - ee
 tier:

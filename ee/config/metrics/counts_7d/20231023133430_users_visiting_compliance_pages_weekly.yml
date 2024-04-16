@@ -11,13 +11,12 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/135000
 time_frame: 7d
 data_source: redis_hll
 data_category: optional
-instrumentation_class: AggregatedMetric
-options:
-  aggregate:
-    attribute: user.id
-  events:
-    - g_compliance_dashboard
-    - users_visiting_audit_events
+instrumentation_class: RedisHLLMetric
+events:
+- name: g_compliance_dashboard
+  unique: user.id
+- name: users_visiting_audit_events
+  unique: user.id
 performance_indicator_type: []
 distribution:
 - ee

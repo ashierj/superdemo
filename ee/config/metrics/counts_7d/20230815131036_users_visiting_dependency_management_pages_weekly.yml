@@ -11,13 +11,12 @@ introduced_by_url:
 time_frame: 7d
 data_source: redis_hll
 data_category: optional
-instrumentation_class: AggregatedMetric
-options:
-  aggregate:
-    attribute: user.id
-  events:
-    - users_visiting_dependencies
-    - users_visiting_licenses
+instrumentation_class: RedisHLLMetric
+events:
+- name: users_visiting_dependencies
+  unique: user.id
+- name: users_visiting_licenses
+  unique: user.id
 performance_indicator_type: []
 distribution:
 - ee

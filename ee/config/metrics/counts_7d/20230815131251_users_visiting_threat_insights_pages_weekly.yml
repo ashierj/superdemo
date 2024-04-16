@@ -11,19 +11,24 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129482
 time_frame: 7d
 data_source: redis_hll
 data_category: optional
-instrumentation_class: AggregatedMetric
-options:
-  aggregate:
-    attribute: user.id
-  events:
-    - users_visiting_security_vulnerability_report
-    - users_visiting_security_dashboard
-    - users_visiting_security_vulnerabilities
-    - users_visiting_pipeline_security
-    - users_visiting_security_configuration_threat_management
-    - users_visiting_dependencies
-    - users_visiting_licenses
-    - i_code_review_merge_request_widget_security_reports_expand
+instrumentation_class: RedisHLLMetric
+events:
+- name: users_visiting_security_vulnerability_report
+  unique: user.id
+- name: users_visiting_security_dashboard
+  unique: user.id
+- name: users_visiting_security_vulnerabilities
+  unique: user.id
+- name: users_visiting_pipeline_security
+  unique: user.id
+- name: users_visiting_security_configuration_threat_management
+  unique: user.id
+- name: users_visiting_dependencies
+  unique: user.id
+- name: users_visiting_licenses
+  unique: user.id
+- name: i_code_review_merge_request_widget_security_reports_expand
+  unique: user.id
 performance_indicator_type: []
 distribution:
 - ee
