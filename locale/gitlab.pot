@@ -10203,6 +10203,9 @@ msgstr ""
 msgid "Change path"
 msgstr ""
 
+msgid "Change reviewer"
+msgstr ""
+
 msgid "Change reviewers"
 msgstr ""
 
