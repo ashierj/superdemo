@@ -7,8 +7,7 @@ module Gitlab
         CLIENT_NAMES = {
           'Gitlab::Llm::AiGateway::Client' => :ai_gateway,
           'Gitlab::Llm::VertexAi::Client' => :vertex_ai,
-          'Gitlab::Llm::Anthropic::Client' => :anthropic,
-          'Gitlab::Llm::OpenAi::Client' => :open_ai
+          'Gitlab::Llm::Anthropic::Client' => :anthropic
         }.freeze
 
         def initialize_slis!
