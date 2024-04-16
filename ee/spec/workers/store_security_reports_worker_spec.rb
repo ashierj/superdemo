@@ -40,7 +40,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           stub_exclusive_lease_taken("StoreSecurityReportsWorker:projects:#{project.id}")
 
           expect(::Security::Ingestion::IngestReportsService).not_to receive(:execute).with(pipeline)
-          expect(described_class).to receive(:perform_in).with(5.minutes, pipeline.id)
+          expect(described_class).to receive(:perform_in).with(be_between(1.minute, 5.minutes), pipeline.id)
 
           worker.perform(pipeline.id)
         end
