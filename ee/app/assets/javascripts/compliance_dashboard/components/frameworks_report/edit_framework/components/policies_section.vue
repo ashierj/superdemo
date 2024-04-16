@@ -1,5 +1,12 @@
 <script>
-import { GlBadge, GlFormCheckbox, GlLoadingIcon, GlTable, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlBadge,
+  GlButton,
+  GlFormCheckbox,
+  GlLoadingIcon,
+  GlTable,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 
 import { sprintf } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -24,6 +31,7 @@ export default {
     EditSection,
 
     GlBadge,
+    GlButton,
     GlLoadingIcon,
     GlFormCheckbox,
     GlTable,
@@ -217,6 +225,12 @@ export default {
       key: 'description',
       label: i18n.policiesTableFields.desc,
     },
+    {
+      key: 'edit',
+      label: '',
+      thClass: 'gl-w-1',
+      tdClass: 'gl-text-right',
+    },
   ],
   i18n,
 };
@@ -248,6 +262,11 @@ export default {
             {{ __('Disabled') }}
           </gl-badge>
         </div>
+      </template>
+      <template #cell(edit)="{ item }">
+        <gl-button variant="link" size="small" icon="pencil" :href="item.editPath">
+          {{ __('Edit') }}
+        </gl-button>
       </template>
 
       <template #table-busy>
