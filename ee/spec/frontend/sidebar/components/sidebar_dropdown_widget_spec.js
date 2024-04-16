@@ -11,7 +11,7 @@ import groupEpicsQuery from 'ee/sidebar/queries/group_epics.query.graphql';
 import projectIssueEpicMutation from 'ee/sidebar/queries/project_issue_epic.mutation.graphql';
 import updateWorkItemParent from 'ee/sidebar/queries/project_issue_update_parent.mutation.graphql';
 import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.graphql';
-import workItemParent from 'ee/sidebar/queries/project_issue_parent.query.graphql';
+import workItemParentQuery from 'ee/sidebar/queries/project_issue_parent.query.graphql';
 import projectIssueEpicSubscription from 'ee/sidebar/queries/issuable_epic.subscription.graphql';
 import workItemUpdateParentSubscription from 'ee/sidebar/queries/work_item_parent.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -47,6 +47,9 @@ describe('SidebarDropdownWidget', () => {
   let wrapper;
   let mockApollo;
 
+  const mockCurrentWorkItemEpicSpy = jest.fn().mockResolvedValue(currentWorkItemEpicResponse);
+  const mockCurrentEpicSpy = jest.fn().mockResolvedValue(currentEpicResponse);
+
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findSidebarDropdown = () => wrapper.findComponent(SidebarDropdown);
   const findPopoverCta = () => wrapper.findByTestId('confirm-edit-cta');
@@ -65,6 +68,7 @@ describe('SidebarDropdownWidget', () => {
     requestHandlers = [],
     groupEpicsSpy = jest.fn().mockResolvedValue(mockGroupEpicsResponse),
     currentEpicSpy = jest.fn().mockResolvedValue(noCurrentEpicResponse),
+    currentWorkItemEpicSpy = mockCurrentWorkItemEpicSpy,
     epicUpdatedSpy = jest.fn().mockResolvedValue(mockEpicUpdatesSubscriptionResponse),
     parentUpdatedSpy = jest.fn().mockResolvedValue(noParentUpdatedResponse),
     showWorkItemEpics = false,
@@ -73,6 +77,7 @@ describe('SidebarDropdownWidget', () => {
     mockApollo = createMockApollo([
       [groupEpicsQuery, groupEpicsSpy],
       [projectIssueEpicQuery, currentEpicSpy],
+      [workItemParentQuery, currentWorkItemEpicSpy],
       [projectIssueEpicSubscription, epicUpdatedSpy],
       [workItemUpdateParentSubscription, parentUpdatedSpy],
       ...requestHandlers,
@@ -283,10 +288,24 @@ describe('SidebarDropdownWidget', () => {
           });
         });
 
+        describe('showWorkItemEpics is false', () => {
+          beforeEach(async () => {
+            await createComponentWithApollo({
+              currentEpicSpy: mockCurrentEpicSpy,
+            });
+          });
+
+          it('does not call work item query', () => {
+            expect(mockCurrentEpicSpy).toHaveBeenCalledWith({
+              fullPath: 'gitlab-org/some-project',
+              iid: '1',
+            });
+            expect(mockCurrentWorkItemEpicSpy).not.toHaveBeenCalled();
+          });
+        });
+
         describe('showWorkItemEpics is true', () => {
           const currentEpicHasParentSpy = jest.fn().mockResolvedValue(currentEpicHasParentResponse);
-          const currentEpicSpy = jest.fn().mockResolvedValue(currentEpicResponse);
-          const currentWorkItemEpicSpy = jest.fn().mockResolvedValue(currentWorkItemEpicResponse);
           const setEpicNullMutationSpy = jest
             .fn()
             .mockResolvedValue(mockSetEpicNullMutationResponse);
@@ -299,61 +318,79 @@ describe('SidebarDropdownWidget', () => {
             .mockResolvedValue(mockSetWorkItemEpicNullMutationResponse);
           const groupWorkItemEpicsSpy = jest.fn().mockResolvedValue(mockGroupWorkItemEpicsResponse);
 
+          it('searches work item Epic with the entered search term "foo" in TITLE param', async () => {
+            await createComponentWithApollo({
+              showWorkItemEpics: true,
+              currentEpicSpy: currentEpicHasParentSpy,
+              groupEpicsSpy: groupWorkItemEpicsSpy,
+            });
+
+            await clickEdit(wrapper);
+
+            await search(wrapper, mockSearchTerm);
+
+            expect(groupWorkItemEpicsSpy).toHaveBeenCalledWith({
+              fullPath: mockIssue.groupPath,
+              sort: 'TITLE_ASC',
+              state: 'opened',
+              title: mockSearchTerm,
+              includeWorkItems: true,
+              in: 'TITLE',
+              types: [WORK_ITEM_TYPE_ENUM_EPIC],
+            });
+          });
+
           describe('when hasParent is true', () => {
             beforeEach(async () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
                 currentEpicSpy: currentEpicHasParentSpy,
                 groupEpicsSpy: groupWorkItemEpicsSpy,
-                requestHandlers: [[workItemParent, currentWorkItemEpicSpy]],
               });
 
               await clickEdit(wrapper);
             });
 
-            it('sends a groupEpics query with the entered search term "foo" and in TITLE param', async () => {
-              await search(wrapper, mockSearchTerm);
-
-              expect(groupWorkItemEpicsSpy).toHaveBeenCalledWith({
-                fullPath: mockIssue.groupPath,
-                sort: 'TITLE_ASC',
-                state: 'opened',
-                title: mockSearchTerm,
-                includeWorkItems: true,
-                in: 'TITLE',
-                types: [WORK_ITEM_TYPE_ENUM_EPIC],
+            it('calls work item query to fetch current work item epic', () => {
+              expect(currentEpicHasParentSpy).toHaveBeenCalledWith({
+                fullPath: 'gitlab-org/some-project',
+                iid: '1',
+              });
+              expect(mockCurrentWorkItemEpicSpy).toHaveBeenCalledWith({
+                id: 'gid://gitlab/Issue/1',
               });
             });
 
-            it('calls work item query to fetch current work item epic', () => {
-              expect(currentEpicHasParentSpy).toHaveBeenCalled();
-              expect(currentWorkItemEpicSpy).toHaveBeenCalled();
-            });
-
-            it('calls workItemUpdate and then setIssueAttribute mutation on selecting an epic', async () => {
+            it('calls workItemUpdate and then setIssueAttribute mutation on selecting an legacy epic', async () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
                 currentEpicSpy: currentEpicHasParentSpy,
                 requestHandlers: [
                   [projectIssueEpicMutation, epicMutationSpy],
                   [updateWorkItemParent, setWorkItemEpicNullMutationSpy],
-                  [workItemParent, currentWorkItemEpicSpy],
                 ],
               });
 
+              // Set legacy epic as Epic value
               findSidebarDropdown().vm.$emit('change', {
                 id: 'gid://gitlab/Epic/2',
               });
 
+              // Assert work item Epic is set to null before setting the legacy Epic
               expect(setWorkItemEpicNullMutationSpy).toHaveBeenCalledWith({
                 input: {
                   id: mockIssue.id,
                   hierarchyWidget: { parentId: null },
                 },
               });
+              // Assert if work item query is called with the null value
+              expect(mockCurrentWorkItemEpicSpy).toHaveBeenCalledWith({
+                id: 'gid://gitlab/Issue/1',
+              });
 
               await waitForPromises();
 
+              // Assert if legacy Epic is set using the mutation
               expect(epicMutationSpy).toHaveBeenCalledWith({
                 iid: mockIssue.iid,
                 attributeId: 'gid://gitlab/Epic/2',
@@ -361,21 +398,20 @@ describe('SidebarDropdownWidget', () => {
               });
             });
 
-            it('calls workItemUpdate mutation on selecting a work item epic', async () => {
+            it('calls workItemUpdate mutation twice on selecting a work item epic', async () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
                 currentEpicSpy: currentEpicHasParentSpy,
-                requestHandlers: [
-                  [updateWorkItemParent, workItemEpicMutationSpy],
-                  [workItemParent, currentWorkItemEpicSpy],
-                ],
+                requestHandlers: [[updateWorkItemParent, workItemEpicMutationSpy]],
               });
 
+              // Set work item Epic as Epic value
               findSidebarDropdown().vm.$emit('change', {
                 id: 'gid://gitlab/WorkItem/4',
                 workItemType: { name: WORK_ITEM_TYPE_VALUE_EPIC },
               });
 
+              // Assert work item Epic is set to null before setting the new Epic value
               expect(workItemEpicMutationSpy).toHaveBeenCalledWith({
                 input: {
                   id: mockIssue.id,
@@ -385,11 +421,44 @@ describe('SidebarDropdownWidget', () => {
 
               await waitForPromises();
 
+              // Assert if actual work item Epic is set using the workItemUpdate mutation
               expect(workItemEpicMutationSpy).toHaveBeenCalledWith({
                 input: {
                   id: mockIssue.id,
                   hierarchyWidget: { parentId: 'gid://gitlab/WorkItem/4' },
                 },
+              });
+
+              // Assert if work item query is called with the new Epic value
+              expect(mockCurrentWorkItemEpicSpy).toHaveBeenCalledWith({
+                id: 'gid://gitlab/Issue/1',
+              });
+            });
+
+            it('calls workItemUpdate mutation on selecting a None as Epic value', async () => {
+              await createComponentWithApollo({
+                showWorkItemEpics: true,
+                currentEpicSpy: currentEpicHasParentSpy,
+                requestHandlers: [[updateWorkItemParent, workItemEpicMutationSpy]],
+              });
+
+              // Set work item Epic as Epic value
+              findSidebarDropdown().vm.$emit('change', {
+                id: null,
+                workItemType: undefined,
+              });
+
+              // Assert work item Epic is set to null before setting the new Epic value
+              expect(workItemEpicMutationSpy).toHaveBeenCalledWith({
+                input: {
+                  id: mockIssue.id,
+                  hierarchyWidget: { parentId: null },
+                },
+              });
+
+              // Assert if work item query is called with the new Epic value
+              expect(mockCurrentWorkItemEpicSpy).toHaveBeenCalledWith({
+                id: 'gid://gitlab/Issue/1',
               });
             });
           });
@@ -398,34 +467,38 @@ describe('SidebarDropdownWidget', () => {
             beforeEach(async () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
-                currentEpicSpy,
+                currentEpicSpy: mockCurrentEpicSpy,
                 groupEpicsSpy: groupWorkItemEpicsSpy,
-                requestHandlers: [[workItemParent, currentWorkItemEpicSpy]],
               });
 
               await clickEdit(wrapper);
             });
 
             it('does not call work item query', () => {
-              expect(currentEpicSpy).toHaveBeenCalled();
-              expect(currentWorkItemEpicSpy).not.toHaveBeenCalled();
+              expect(mockCurrentEpicSpy).toHaveBeenCalledWith({
+                fullPath: 'gitlab-org/some-project',
+                iid: '1',
+              });
+              expect(mockCurrentWorkItemEpicSpy).not.toHaveBeenCalled();
             });
 
             it('calls setIssueAttribute and then work item mutation on selecting an work item epic', async () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
-                currentEpicSpy,
+                currentEpicSpy: mockCurrentEpicSpy,
                 requestHandlers: [
                   [projectIssueEpicMutation, setEpicNullMutationSpy],
                   [updateWorkItemParent, workItemEpicMutationSpy],
                 ],
               });
 
+              // Set work item Epic as Epic value
               findSidebarDropdown().vm.$emit('change', {
                 id: 'gid://gitlab/WorkItem/4',
                 workItemType: { name: WORK_ITEM_TYPE_VALUE_EPIC },
               });
 
+              // Assert legacy Epic is set to null before setting the new Epic value
               expect(setEpicNullMutationSpy).toHaveBeenCalledWith({
                 iid: mockIssue.iid,
                 attributeId: null,
@@ -434,6 +507,67 @@ describe('SidebarDropdownWidget', () => {
 
               await waitForPromises();
 
+              // Assert if actual work item Epic is set using the workItemUpdate mutation
+              expect(workItemEpicMutationSpy).toHaveBeenCalledWith({
+                input: {
+                  id: mockIssue.id,
+                  hierarchyWidget: { parentId: 'gid://gitlab/WorkItem/4' },
+                },
+              });
+
+              // Assert if work item query is called with the new Epic value
+              expect(mockCurrentWorkItemEpicSpy).toHaveBeenCalledWith({
+                id: 'gid://gitlab/Issue/1',
+              });
+            });
+
+            it('calls setIssueAttribute on selecting a None as Epic value', async () => {
+              await createComponentWithApollo({
+                showWorkItemEpics: true,
+                currentEpicSpy: mockCurrentEpicSpy,
+                requestHandlers: [
+                  [projectIssueEpicMutation, setEpicNullMutationSpy],
+                  [updateWorkItemParent, workItemEpicMutationSpy],
+                ],
+              });
+
+              // Set null as Epic value
+              findSidebarDropdown().vm.$emit('change', {
+                id: null,
+                workItemType: undefined,
+              });
+
+              // Assert legacy Epic is set to null before setting the new Epic value
+              expect(setEpicNullMutationSpy).toHaveBeenCalledWith({
+                iid: mockIssue.iid,
+                attributeId: null,
+                fullPath: mockIssue.projectPath,
+              });
+
+              await waitForPromises();
+
+              // Assert if work item mutation is not called
+              expect(workItemEpicMutationSpy).not.toHaveBeenCalled();
+            });
+
+            it('when current value is None calls workItemUpdate on selecting a work item as Epic value', async () => {
+              await createComponentWithApollo({
+                showWorkItemEpics: true,
+                requestHandlers: [
+                  [projectIssueEpicMutation, setEpicNullMutationSpy],
+                  [updateWorkItemParent, workItemEpicMutationSpy],
+                ],
+              });
+
+              // Set null as Epic value
+              findSidebarDropdown().vm.$emit('change', {
+                id: 'gid://gitlab/WorkItem/4',
+                workItemType: { name: WORK_ITEM_TYPE_VALUE_EPIC },
+              });
+
+              await waitForPromises();
+
+              // Assert if actual work item Epic is set using the workItemUpdate mutation
               expect(workItemEpicMutationSpy).toHaveBeenCalledWith({
                 input: {
                   id: mockIssue.id,

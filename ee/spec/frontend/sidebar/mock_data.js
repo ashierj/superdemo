@@ -174,7 +174,7 @@ export const currentEpicResponse = {
       id: '1',
       issuable: {
         id: mockIssueId,
-        hasEpic: false,
+        hasEpic: true,
         hasParent: false,
         attribute: mockEpic1,
         __typename: 'Issue',

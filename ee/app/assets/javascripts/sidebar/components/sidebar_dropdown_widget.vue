@@ -100,9 +100,34 @@ export default {
       },
       result({ data }) {
         this.hasWorkItemParent = data?.workspace?.issuable?.hasParent && this.showWorkItemEpics;
-        // Fetch work item epic when hasParent is true
-        if (this.hasWorkItemParent) {
-          this.fetchWorkItemParent();
+      },
+      error(error) {
+        createAlert({
+          message: this.i18n.currentFetchError,
+          captureError: true,
+          error,
+        });
+      },
+    },
+    workItem: {
+      query() {
+        return issuableAttributesQueries[IssuableAttributeType.Parent].current[this.issuableType]
+          .query;
+      },
+      variables() {
+        return {
+          id: this.issuableId,
+        };
+      },
+      update(data) {
+        return data.workspace?.workItems?.nodes[0] || {};
+      },
+      skip() {
+        return !this.hasWorkItemParent;
+      },
+      result({ data }) {
+        if (data?.workItem) {
+          this.setParentData(data.workItem);
         }
       },
       error(error) {
@@ -208,8 +233,7 @@ export default {
           });
         } else {
           this.hasWorkItemParent =
-            workItemType?.name === WORK_ITEM_TYPE_VALUE_EPIC ||
-            response.data.issuableSetAttribute?.issuable?.hasParent;
+            workItemType?.name === WORK_ITEM_TYPE_VALUE_EPIC && this.showWorkItemEpics;
           this.$emit('attribute-updated', response.data);
         }
       } catch (error) {
@@ -235,27 +259,6 @@ export default {
         mutation,
         variables,
       });
-    },
-    fetchWorkItemParent() {
-      const { current } = issuableAttributesQueries[IssuableAttributeType.Parent];
-      const { query } = current[this.issuableType];
-      this.$apollo
-        .query({
-          query,
-          variables: {
-            id: this.issuableId,
-          },
-        })
-        .then(({ data: { workItem } }) => {
-          this.setParentData(workItem);
-        })
-        .catch((error) => {
-          createAlert({
-            message: this.i18n.currentFetchError,
-            captureError: true,
-            error,
-          });
-        });
     },
     setParentData(workItem) {
       const parent = workItem?.widgets?.find((widget) => widget.type === 'HIERARCHY')?.parent;
