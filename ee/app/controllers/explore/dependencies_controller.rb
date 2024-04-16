@@ -43,7 +43,10 @@ module Explore
       ::Sbom::DependenciesFinder.new(
         organization,
         current_user: current_user,
-        params: finder_params
+        params: finder_params.merge({
+          sort_by: "name",
+          sort: "asc"
+        })
       )
     end
 
