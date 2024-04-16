@@ -7,19 +7,20 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
 
   def member_roles_query(group)
     <<~QUERY
-      query {
-        group(fullPath: "#{group.full_path}") {
-          id
-          name
-          memberRoles {
-            nodes {
-              id
-              name
-              membersCount
-            }
+    query {
+      group(fullPath: "#{group.full_path}") {
+        id
+        name
+        memberRoles {
+          nodes {
+            id
+            name
+            membersCount
+            editPath
           }
         }
       }
+    }
     QUERY
   end
 
@@ -45,12 +46,16 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
         {
           'id' => group_member_role_1.to_global_id.to_s,
           'name' => group_member_role_1.name,
-          'membersCount' => 0
+          'membersCount' => 0,
+          'editPath' => edit_group_settings_roles_and_permission_path(group_member_role_1.namespace,
+            group_member_role_1)
         },
         {
           'id' => group_member_role_2.to_global_id.to_s,
           'name' => group_member_role_2.name,
-          'membersCount' => 0
+          'membersCount' => 0,
+          'editPath' => edit_group_settings_roles_and_permission_path(group_member_role_2.namespace,
+            group_member_role_2)
         }
       ]
     end
@@ -60,7 +65,8 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
         {
           'id' => instance_role.to_global_id.to_s,
           'name' => instance_role.name,
-          'membersCount' => 0
+          'membersCount' => 0,
+          'editPath' => edit_admin_application_settings_roles_and_permission_path(instance_role)
         }
       ]
     end

@@ -42,6 +42,7 @@ export const mockMemberRoles = {
             name: 'Test',
             description: 'Test description',
             membersCount: 0,
+            editPath: 'edit/path',
             enabledPermissions: {
               nodes: [
                 {
@@ -65,6 +66,7 @@ export const mockMemberRoles = {
             name: 'Test 2',
             description: '',
             membersCount: 1,
+            editPath: 'edit/path',
             enabledPermissions: {
               nodes: [
                 {
@@ -100,6 +102,7 @@ export const mockInstanceMemberRoles = {
           name: 'Instance Test',
           description: 'Instance Test description',
           membersCount: 0,
+          editPath: 'edit/path',
           enabledPermissions: {
             nodes: [
               {
@@ -112,6 +115,20 @@ export const mockInstanceMemberRoles = {
         },
       ],
       __typename: 'MemberRoleConnection',
+    },
+  },
+};
+
+export const mockMemberRoleQueryResponse = {
+  data: {
+    memberRole: {
+      id: 1,
+      name: 'Custom role',
+      description: 'Custom role description',
+      baseAccessLevel: { stringValue: 'DEVELOPER' },
+      enabledPermissions: {
+        nodes: [{ value: 'A' }, { value: 'B' }],
+      },
     },
   },
 };

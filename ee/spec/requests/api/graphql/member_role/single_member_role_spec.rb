@@ -12,6 +12,7 @@ RSpec.describe 'Query.single_member_role', feature_category: :system_access do
         id
         name
         membersCount
+        editPath
       }
     }
     QUERY
@@ -47,7 +48,8 @@ RSpec.describe 'Query.single_member_role', feature_category: :system_access do
       expect(subject).to eq({
         'id' => member_role.to_global_id.to_s,
         'name' => member_role.name,
-        'membersCount' => group_members.count
+        'membersCount' => group_members.count,
+        'editPath' => edit_group_settings_roles_and_permission_path(member_role.namespace, member_role)
       })
     end
   end
