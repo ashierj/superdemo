@@ -243,7 +243,11 @@ export default {
               data-testid="panel-title-tooltip-icon"
               name="information-o"
             />
-            <gl-popover data-testid="panel-title-popover" :target="() => $refs.titleTooltip.$el">
+            <gl-popover
+              data-testid="panel-title-popover"
+              boundary="viewport"
+              :target="() => $refs.titleTooltip.$el"
+            >
               {{ panelTitleTooltip }}
             </gl-popover>
           </template>
