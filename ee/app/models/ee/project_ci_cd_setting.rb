@@ -31,7 +31,10 @@ module EE
     end
 
     def merge_trains_skip_train_allowed?
-      merge_trains_skip_train_allowed && merge_trains_enabled? && ::Feature.enabled?(:merge_trains_skip_train, project)
+      merge_trains_skip_train_allowed &&
+        merge_trains_enabled? &&
+        !project.ff_merge_must_be_possible? && # Not yet supported, see https://gitlab.com/gitlab-org/gitlab/-/issues/429009
+        ::Feature.enabled?(:merge_trains_skip_train, project)
     end
   end
 end

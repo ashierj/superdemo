@@ -117,12 +117,18 @@ RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
 
     let(:project) { create(:project) }
 
-    where(:merge_pipelines_enabled, :merge_trains_enabled, :skip_train_allowed, :feature_available, :expected_result) do
-      true  | true  | true  | true  | true
-      false | true  | true  | true  | false
-      true  | false | true  | true  | false
-      true  | true  | false | true  | false
-      true  | true  | true  | false | false
+    where(:merge_pipelines_enabled, :merge_trains_enabled, :skip_train_allowed, :ff_only, :rebase, :feature_available,
+      :expected_result) do
+      true  | true  | true  | false | false | true  | true
+      false | true  | true  | false | false | true  | false
+      true  | false | true  | false | false | true  | false
+      true  | true  | false | false | false | true  | false
+      true  | true  | true  | false | false | false | false
+
+      # For flags rebase and ff_only
+      true  | true  | true  | true  | true  | true  | false
+      true  | true  | true  | false | true  | true  | false
+      true  | true  | true  | true  | false | true  | false
     end
 
     with_them do
@@ -134,7 +140,9 @@ RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
         project.update!(
           merge_pipelines_enabled: merge_pipelines_enabled,
           merge_trains_enabled: merge_trains_enabled,
-          merge_trains_skip_train_allowed: skip_train_allowed
+          merge_trains_skip_train_allowed: skip_train_allowed,
+          merge_requests_rebase_enabled: rebase,
+          merge_requests_ff_only_enabled: ff_only
         )
 
         expect(result).to eq(expected_result)
