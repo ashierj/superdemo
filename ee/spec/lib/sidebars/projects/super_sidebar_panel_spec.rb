@@ -15,6 +15,9 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
     create(:google_cloud_platform_workload_identity_federation_integration, project: project)
   end
 
+  # required by the Harbor Registry item
+  let_it_be(:harbor_integration) { create(:harbor_integration, project: project) }
+
   let(:user) { project.first_owner }
   let(:context) do
     Sidebars::Projects::Context.new(
