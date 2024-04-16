@@ -9,7 +9,7 @@ RSpec.describe Preloaders::Environments::ProtectedEnvironmentPreloader, :aggrega
 
   describe '#initialize' do
     it 'raises an error if environments belong to more than one project' do
-      expect { described_class.new([create(:environment), create(:environment)]) }
+      expect { described_class.new(create_list(:environment, 2)) }
         .to raise_error('This preloader supports only environments in the same project')
     end
   end

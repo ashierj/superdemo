@@ -363,7 +363,7 @@ RSpec.describe ProtectedEnvironment do
     it { is_expected.to match_array([protected_environment]) }
 
     it 'raises an error if environments belong to more than one project' do
-      expect { described_class.for_environments([create(:environment), create(:environment)]) }
+      expect { described_class.for_environments(create_list(:environment, 2)) }
         .to raise_error(ArgumentError, 'Environments must be in the same project')
     end
 

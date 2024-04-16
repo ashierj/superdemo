@@ -430,7 +430,7 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
           it 'avoids un-necessary database queries' do
             control = ActiveRecord::QueryRecorder.new { add_epic([valid_reference]) }
 
-            new_epics = [create(:epic, group: group), create(:epic, group: group)]
+            new_epics = Array.new(2) { create(:epic, group: group) }
 
             # threshold is 8 because
             # 1. we need to check hierarchy for each child epic (3 queries)
