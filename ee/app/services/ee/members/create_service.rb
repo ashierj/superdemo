@@ -55,6 +55,8 @@ module EE
         return unless root_namespace.block_seat_overages?
         return if root_namespace.seats_available_for?(invites)
 
+        notify_owners(invites)
+
         messages = [
           s_('AddMember|There are not enough available seats to invite this many users.')
         ]
@@ -64,6 +66,20 @@ module EE
         end
 
         raise ::Members::CreateService::SeatLimitExceededError, messages.join(" ")
+      end
+
+      def notify_owners(invites)
+        root_namespace = source.root_ancestor
+        invited_user_ids = invites.select { |i| i.to_i.to_s == i }
+
+        return if invited_user_ids.empty?
+
+        # rubocop:disable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord -- Limit of 100 is defined in validate_invitable! method
+        requested_member_list = ::User.id_in(invited_user_ids).pluck(:name)
+        # rubocop:enable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord
+        root_namespace.owners.each do |owner|
+          ::Notify.no_more_seats(owner.id, current_user.id, source, requested_member_list).deliver_now
+        end
       end
 
       def invite_quota_exceeded?
