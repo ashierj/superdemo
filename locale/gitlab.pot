@@ -30740,6 +30740,9 @@ msgstr ""
 msgid "Manage milestones"
 msgstr ""
 
+msgid "Manage project comment templates"
+msgstr ""
+
 msgid "Manage project labels"
 msgstr ""
 

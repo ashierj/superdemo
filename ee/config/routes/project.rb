@@ -40,6 +40,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :target_branch_rules, only: [:index, :create, :destroy]
 
+        resources :comment_templates, only: [:index, :show], action: :index
+
         resources :automations, only: [:index]
 
         resources :subscriptions, only: [:create, :destroy]

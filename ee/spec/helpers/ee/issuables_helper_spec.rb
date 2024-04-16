@@ -197,5 +197,33 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
         })
       end
     end
+
+    context 'with project' do
+      let_it_be(:project) { create(:project) }
+
+      context 'when user does not have permission' do
+        before do
+          allow(helper).to receive(:can?).with(user, :create_saved_replies, group).and_return(false)
+          allow(helper).to receive(:can?).with(user, :create_saved_replies, project).and_return(false)
+        end
+
+        it { expect(helper.new_comment_template_paths(group, project).size).to eq(1) }
+      end
+
+      context 'when user has permission' do
+        before do
+          allow(helper).to receive(:can?).with(user, :create_saved_replies, group).and_return(true)
+          allow(helper).to receive(:can?).with(user, :create_saved_replies, project).and_return(true)
+        end
+
+        it 'returns array with project comment templates path' do
+          expect(helper.new_comment_template_paths(group, project).size).to eq(3)
+          expect(helper.new_comment_template_paths(group, project)).to include({
+            text: "Manage project comment templates",
+            path: project_comment_templates_path(project)
+          })
+        end
+      end
+    end
   end
 end
