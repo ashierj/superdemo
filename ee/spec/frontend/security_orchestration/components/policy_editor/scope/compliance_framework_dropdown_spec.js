@@ -48,6 +48,7 @@ describe('ComplianceFrameworkDropdown', () => {
           {
             id: '1',
             name: 'project-1',
+            webUrl: 'gid://gitlab/Project/1',
           },
         ],
       },
@@ -64,10 +65,12 @@ describe('ComplianceFrameworkDropdown', () => {
           {
             id: '1',
             name: 'project-1',
+            webUrl: 'gid://gitlab/Project/1',
           },
           {
             id: '2',
             name: 'project-2',
+            webUrl: 'gid://gitlab/Project/2',
           },
         ],
       },
