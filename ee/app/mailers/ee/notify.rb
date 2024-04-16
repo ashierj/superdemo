@@ -24,6 +24,7 @@ module EE
       include ::Emails::ComplianceFrameworks
       include ::Emails::Okr
       include ::Emails::CiRunnerUsageByProject
+      include ::Emails::BlockSeatOverages
     end
 
     attr_reader :group
