@@ -125,5 +125,40 @@ RSpec.describe Security::RelatedPipelinesFinder, feature_category: :security_pol
         }
       end
     end
+
+    context 'with limit' do
+      let_it_be(:sha) { 'sha' }
+      let(:params) { { sources: Enums::Ci::Pipeline.ci_and_security_orchestration_sources.values } }
+
+      let_it_be(:pipeline) do
+        create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:push], sha: sha)
+      end
+
+      let_it_be(:webide_pipeline) do
+        create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:webide], sha: sha)
+      end
+
+      let_it_be(:mr_pipeline) do
+        create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:merge_request_event],
+          sha: sha)
+      end
+
+      let_it_be(:security_policy_pipeline) do
+        create(:ci_pipeline, :success, project: project,
+          source: Enums::Ci::Pipeline.sources[:security_orchestration_policy], sha: sha)
+      end
+
+      let_it_be(:child_pipeline_1) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
+      let_it_be(:child_pipeline_2) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
+
+      before do
+        create_source_pipeline(pipeline, child_pipeline_1)
+        create_source_pipeline(webide_pipeline, child_pipeline_2)
+
+        stub_const("#{described_class}::PIPELINES_LIMIT", 4)
+      end
+
+      it { is_expected.to match_array([pipeline.id, mr_pipeline.id, security_policy_pipeline.id, child_pipeline_1.id]) }
+    end
   end
 end

@@ -15,6 +15,8 @@ module Security
   class RelatedPipelinesFinder
     attr_reader :pipeline, :params
 
+    PIPELINES_LIMIT = 1_000
+
     def initialize(pipeline, params = {})
       @pipeline = pipeline
       @params = params
@@ -30,11 +32,11 @@ module Security
       pipeline_ids = pipelines.map(&:id)
       return pipeline_ids unless Feature.enabled?(:approval_policy_parent_child_pipeline, project)
 
-      # rubocop:disable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord -- number of pipelines is limited by source
+      # rubocop:disable CodeReuse/ActiveRecord -- number of pipelines is limited by source
       Ci::Pipeline
         .object_hierarchy(all_pipelines.id_in(pipeline_ids), project_condition: :same)
-        .base_and_descendant_ids.pluck(:id)
-      # rubocop:enable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord
+        .base_and_descendant_ids.limit(PIPELINES_LIMIT).pluck(:id)
+      # rubocop:enable CodeReuse/ActiveRecord
     end
 
     private
