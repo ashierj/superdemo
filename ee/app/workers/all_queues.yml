@@ -471,15 +471,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: cronjob:llm_embedding_gitlab_documentation_create_empty_embeddings_records
-  :worker_name: Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker
-  :feature_category: :duo_chat
-  :has_external_dependencies: false
-  :urgency: :throttled
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: cronjob:okrs_checkin_reminder_emails_cron
   :worker_name: Okrs::CheckinReminderEmailsCronWorker
   :feature_category: :team_planning
