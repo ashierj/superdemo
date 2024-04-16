@@ -55,6 +55,16 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       is_expected.to eq(:merge_train)
     end
 
+    context 'when merge request is already on the train' do
+      before do
+        service.execute(merge_request)
+      end
+
+      it 'does not change the merge train car' do
+        expect { service.execute(merge_request) }.not_to change { merge_request.reload.merge_train_car }
+      end
+    end
+
     context 'when failed to save the record' do
       before do
         allow(merge_request).to receive(:save!) { raise PG::QueryCanceled }

@@ -10,6 +10,14 @@ module AutoMerge
 
     override :execute
     def execute(merge_request)
+      # No-op if already on the train. Especially important because assigning a
+      # duplicate has_one association with build_#{association} below would
+      # permanently delete any pre-existing one, regardless of whether the new
+      # one eventually gets saved. Just destroying a car is not safe and can
+      # leave the train in an inconsistent state. See #cancel and #abort for the
+      # extra steps necessary.
+      return if merge_request.on_train?
+
       merge_request.build_merge_train_car(
         user: current_user,
         target_project: merge_request.target_project,
