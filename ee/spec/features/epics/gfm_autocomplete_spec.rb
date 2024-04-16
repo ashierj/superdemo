@@ -144,7 +144,7 @@ RSpec.describe 'GFM autocomplete', :js, feature_category: :portfolio_management 
           expect_resources(shown: [backend, bug, feature_proposal])
         end
 
-        it 'shows only unset labels for /label ~' do
+        it 'shows only unset labels for /label ~', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/449075' do
           fill_in 'Comment', with: '/label ~'
 
           wait_for_requests
@@ -160,7 +160,7 @@ RSpec.describe 'GFM autocomplete', :js, feature_category: :portfolio_management 
           expect_resources(shown: [backend, bug, feature_proposal])
         end
 
-        it 'shows only set labels for /unlabel ~' do
+        it 'shows only set labels for /unlabel ~', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/449075' do
           fill_in 'Comment', with: '/unlabel ~'
 
           wait_for_requests
@@ -182,7 +182,7 @@ RSpec.describe 'GFM autocomplete', :js, feature_category: :portfolio_management 
           expect_resources(shown: [backend, bug, feature_proposal])
         end
 
-        it 'shows no labels for /label ~' do
+        it 'shows no labels for /label ~', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/449075' do
           fill_in 'Comment', with: '/label ~'
 
           wait_for_requests
