@@ -17,8 +17,17 @@ module QA
                 element 'sdk-host-container'
               end
 
+              view 'ee/app/assets/javascripts/product_analytics/onboarding/' \
+                   'components/providers/self_managed_provider_card.vue' do
+                element 'connect-your-own-provider-btn'
+              end
+
               view 'ee/app/assets/javascripts/product_analytics/shared/analytics_clipboard_input.vue' do
                 element 'sdk-value-field'
+              end
+
+              def connect_your_own_provider
+                click_element('connect-your-own-provider-btn')
               end
 
               def click_set_up_product_analytics

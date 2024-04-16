@@ -19,6 +19,12 @@ module QA
               def behavior_dashboard_panels
                 all_elements('grid-stack-panel', minimum: 5)
               end
+
+              def panel_value_content(panel:)
+                within_element_by_index('grid-stack-panel', panel) do
+                  find('[data-testid="displayValue"]').text.to_i
+                end
+              end
             end
           end
         end
