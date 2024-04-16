@@ -114,8 +114,11 @@ module EE
     # return the blob for the tag. To resolve this pass either
     # `refs/heads/develop` or `refs/tags/develop`
     def code_owners_blob(ref:)
-      possible_code_owner_blobs = ::Gitlab::CodeOwners::FILE_PATHS.map { |path| [ref, path] }
-      blobs_at(possible_code_owner_blobs).compact.first
+      blobs_at(possible_code_owner_blobs(ref: ref)).compact.first
+    end
+
+    def possible_code_owner_blobs(ref:)
+      ::Gitlab::CodeOwners::FILE_PATHS.map { |path| [ref, path] }
     end
 
     def insights_config_for(sha)

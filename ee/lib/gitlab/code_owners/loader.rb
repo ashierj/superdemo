@@ -39,6 +39,16 @@ module Gitlab
         code_owners_file.empty?
       end
 
+      def has_code_owners_file?
+        repository = @project.repository
+        objects = repository.possible_code_owner_blobs(ref: @ref).map { |array| array.join(':') }
+        begin
+          repository.check_objects_exist(objects).values.any?
+        rescue Gitlab::Git::Repository::NoRepository
+          false
+        end
+      end
+
       def code_owners_path
         code_owners_file&.path
       end

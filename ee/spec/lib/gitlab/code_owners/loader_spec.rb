@@ -222,6 +222,45 @@ RSpec.describe Gitlab::CodeOwners::Loader, feature_category: :source_code_manage
     end
   end
 
+  describe '#has_code_owners_file?' do
+    subject(:loader) { described_class.new(project, project.default_branch) }
+
+    let(:files) { {} }
+    let(:project) { create(:project, :custom_repo, files: files) }
+
+    context 'when repository is not present' do
+      let(:project) { create(:project) }
+
+      it 'returns false' do
+        expect(loader).not_to have_code_owners_file
+      end
+    end
+
+    context 'when file does not exist' do
+      let(:files) { { 'file' => 'other file' } }
+
+      it 'returns false' do
+        expect(loader).not_to have_code_owners_file
+      end
+    end
+
+    context 'when file is empty' do
+      let(:files) { { 'CODEOWNERS' => '' } }
+
+      it 'returns true' do
+        expect(loader).to have_code_owners_file
+      end
+    end
+
+    context 'when file content exists' do
+      let(:files) { { 'CODEOWNERS' => 'README.md @root' } }
+
+      it 'returns true' do
+        expect(loader).to have_code_owners_file
+      end
+    end
+  end
+
   describe '#track_file_validation' do
     subject { loader.track_file_validation }
 

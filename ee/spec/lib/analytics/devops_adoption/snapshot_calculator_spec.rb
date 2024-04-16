@@ -2,15 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
+RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator, feature_category: :devops_reports do
   let_it_be(:group1) { create(:group) }
   let_it_be(:enabled_namespace) { create(:devops_adoption_enabled_namespace, namespace: group1) }
   let_it_be(:subgroup) { create(:group, parent: group1) }
-  let_it_be(:project) { create(:project, group: group1) }
-  let_it_be(:subproject) { create(:project, group: subgroup) }
+  let_it_be(:project) { create(:project, :repository, group: group1) }
+  let_it_be(:subproject) { create(:project, :repository, group: subgroup) }
   let_it_be(:range_end) { Time.zone.parse('2020-12-01').end_of_month }
 
-  subject(:data) { described_class.new(enabled_namespace: enabled_namespace, range_end: range_end).calculate }
+  let(:service) { described_class.new(enabled_namespace: enabled_namespace, range_end: range_end) }
+
+  subject(:data) { service.calculate }
 
   describe 'end_time' do
     it 'equals to range_end' do
@@ -121,25 +123,51 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
   end
 
   describe 'code_owners_used_count' do
-    let!(:project_with_code_owners) { create(:project, :repository, group: subgroup) }
-
     subject { data[:code_owners_used_count] }
 
-    before do
-      allow_any_instance_of(Project).to receive(:default_branch).and_return('with-codeowners') # rubocop:disable RSpec/AnyInstanceOf
-    end
+    it 'returns 1 for code_owners_used_count' do
+      allow(subproject).to receive(:default_branch).and_return('with-codeowners')
+      allow(service).to receive(:snapshot_projects).and_return([project, subproject])
 
-    it { is_expected.to eq 1 }
+      is_expected.to eq 1
+    end
 
     context 'when there is no default branch' do
       before do
-        allow_any_instance_of(Project).to receive(:default_branch).and_return(nil) # rubocop:disable RSpec/AnyInstanceOf
+        allow_any_instance_of(Project).to receive(:default_branch).and_return(nil) # rubocop:disable RSpec/AnyInstanceOf -- it was disabled long time ago
       end
 
-      it 'uses HEAD as default value' do
-        expect(Gitlab::CodeOwners::Loader).to receive(:new).with(kind_of(Project), 'HEAD').thrice.and_call_original
-
+      it 'returns 0 count' do
         expect(subject).to eq 0
+      end
+    end
+  end
+
+  context 'when use_faster_code_owner_file_exist_check feature flag is off' do
+    before do
+      stub_feature_flags(use_faster_code_owner_file_exist_check: false)
+    end
+
+    describe 'code_owners_used_count' do
+      subject { data[:code_owners_used_count] }
+
+      it 'returns 1 for code_owners_used_count' do
+        allow(subproject).to receive(:default_branch).and_return('with-codeowners')
+        allow(service).to receive(:snapshot_projects).and_return([project, subproject])
+
+        is_expected.to eq 1
+      end
+
+      context 'when there is no default branch' do
+        before do
+          allow_any_instance_of(Project).to receive(:default_branch).and_return(nil) # rubocop:disable RSpec/AnyInstanceOf
+        end
+
+        it 'uses HEAD as default value' do
+          expect(Gitlab::CodeOwners::Loader).to receive(:new).with(kind_of(Project), 'HEAD').twice.and_call_original
+
+          expect(subject).to eq 0
+        end
       end
     end
   end
