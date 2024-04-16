@@ -211,7 +211,7 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     before do
       project.update!(harbor_integration: harbor_integration)
 
-      insert_harbor_registry_nav(_('AWS'))
+      insert_harbor_registry_nav
 
       visit project_path(project)
     end

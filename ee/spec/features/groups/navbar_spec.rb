@@ -175,7 +175,7 @@ RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
       before do
         group.update!(harbor_integration: harbor_integration)
 
-        insert_harbor_registry_nav(_('Terraform modules'))
+        insert_harbor_registry_nav
 
         visit group_path(group)
       end
