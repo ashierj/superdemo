@@ -11399,9 +11399,6 @@ msgstr ""
 msgid "Close %{tabname}"
 msgstr ""
 
-msgid "Close %{workItemType}"
-msgstr ""
-
 msgid "Close design"
 msgstr ""
 
@@ -11448,9 +11445,6 @@ msgid "Closes this issue. Marks as related to, and a duplicate of, %{duplicate_r
 msgstr ""
 
 msgid "Closing %{issuableType}..."
-msgstr ""
-
-msgid "Closing %{workItemType}"
 msgstr ""
 
 msgid "Cloud Run"
@@ -12676,12 +12670,6 @@ msgid "Commands did not apply"
 msgstr ""
 
 msgid "Comment"
-msgstr ""
-
-msgid "Comment & close %{workItemType}"
-msgstr ""
-
-msgid "Comment & reopen %{workItemType}"
 msgstr ""
 
 msgid "Comment '%{label}' position"
@@ -42607,9 +42595,6 @@ msgstr ""
 msgid "Reopen %{noteable}"
 msgstr ""
 
-msgid "Reopen %{workItemType}"
-msgstr ""
-
 msgid "Reopen epic"
 msgstr ""
 
@@ -42623,9 +42608,6 @@ msgid "Reopened this %{quick_action_target}."
 msgstr ""
 
 msgid "Reopening %{issuableType}..."
-msgstr ""
-
-msgid "Reopening %{workItemType}"
 msgstr ""
 
 msgid "Reopening..."
@@ -58004,6 +57986,9 @@ msgstr ""
 msgid "WorkItem|Are you sure you want to cancel editing?"
 msgstr ""
 
+msgid "WorkItem|Are you sure you want to close this blocked %{workItemType}?"
+msgstr ""
+
 msgid "WorkItem|Are you sure you want to delete the %{workItemType}? This action cannot be reversed."
 msgstr ""
 
@@ -58039,10 +58024,22 @@ msgstr ""
 msgid "WorkItem|Child removed"
 msgstr ""
 
+msgid "WorkItem|Close %{workItemType}"
+msgstr ""
+
 msgid "WorkItem|Closed"
 msgstr ""
 
+msgid "WorkItem|Closing %{workItemType}"
+msgstr ""
+
 msgid "WorkItem|Coffee"
+msgstr ""
+
+msgid "WorkItem|Comment & close %{workItemType}"
+msgstr ""
+
+msgid "WorkItem|Comment & reopen %{workItemType}"
 msgstr ""
 
 msgid "WorkItem|Comments only"
@@ -58219,6 +58216,12 @@ msgstr ""
 msgid "WorkItem|Remove"
 msgstr ""
 
+msgid "WorkItem|Reopen %{workItemType}"
+msgstr ""
+
+msgid "WorkItem|Reopening %{workItemType}"
+msgstr ""
+
 msgid "WorkItem|Requirements"
 msgstr ""
 
@@ -58354,6 +58357,9 @@ msgstr ""
 msgid "WorkItem|This %{workItemType} is confidential and should only be visible to team members with at least Reporter access"
 msgstr ""
 
+msgid "WorkItem|This %{workItemType} is currently blocked by the following items:"
+msgstr ""
+
 msgid "WorkItem|This work item is not available. It either doesn't exist or you don't have permission to view it."
 msgstr ""
 
@@ -58382,6 +58388,9 @@ msgid "WorkItem|Work item not found"
 msgstr ""
 
 msgid "WorkItem|Work items"
+msgstr ""
+
+msgid "WorkItem|Yes, close %{workItemType}"
 msgstr ""
 
 msgid "WorkItem|You're only seeing %{boldStart}other activity%{boldEnd} in the feed. To add a comment, switch to one of the following options."
