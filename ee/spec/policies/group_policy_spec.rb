@@ -3126,7 +3126,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       end
     end
 
-    context 'for self-managed' do
+    context 'for self-managed', :with_cloud_connector do
       let_it_be_with_reload(:group) { create(:group) }
       let(:policy) { :access_duo_chat }
 

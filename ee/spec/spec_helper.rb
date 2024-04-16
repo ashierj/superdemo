@@ -46,6 +46,14 @@ RSpec.configure do |config|
     TestLicense.init
   end
 
+  config.before(:context, :with_cloud_connector) do
+    create(:cloud_connector_access, data:
+      { available_services: [
+        { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z" },
+        { "name" => "duo_chat", "serviceStartTime" => nil }
+      ] })
+  end
+
   config.around(:each, :geo_tracking_db) do |example|
     example.run if Gitlab::Geo.geo_database_configured?
   end

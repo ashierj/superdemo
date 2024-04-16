@@ -56,7 +56,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
     end
   end
 
-  context 'for self-managed' do
+  context 'for self-managed', :with_cloud_connector do
     before do
       sign_in(user)
     end

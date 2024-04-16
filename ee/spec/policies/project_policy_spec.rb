@@ -3554,7 +3554,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
 
-    context 'for self-managed' do
+    context 'for self-managed', :with_cloud_connector do
       using RSpec::Parameterized::TableSyntax
 
       let_it_be_with_reload(:group) { create(:group) }

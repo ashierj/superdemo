@@ -19,14 +19,12 @@ module CloudConnector
     end
 
     # We allow free usage of cloud connected feature on Self-Managed if:
-    # 1) the service record is missing entirely in Cloud Connector,
-    # 2) or the cut off date is empty,
-    # 3) or the cut off date is set in the future
+    # 1) the cut off date is empty,
+    # 2) or the cut off date is set in the future
     def free_access_for?(service_name)
       return false if Gitlab.org_or_com? # Safety check. This method should only be called on SM.
 
-      service = available_services[service_name]
-      service.nil? || service.free_access?
+      !!available_services[service_name]&.free_access?
     end
     # rubocop:enable Gitlab/AvoidGitlabInstanceChecks
 

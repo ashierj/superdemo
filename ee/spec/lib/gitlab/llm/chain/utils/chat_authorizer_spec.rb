@@ -274,7 +274,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
     end
   end
 
-  context 'for self-managed' do
+  context 'for self-managed', :with_cloud_connector do
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:project) {  create(:project, group: group) }
     let_it_be_with_reload(:resource) { create(:issue, project: project) }
