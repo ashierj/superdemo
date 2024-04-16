@@ -257,10 +257,21 @@ describe('AiCubeQueryGenerator', () => {
                 },
               },
             }),
-          expectLoggedToSentry: () =>
-            expect(Sentry.captureException.mock.calls?.at(0)?.at(0)?.message).toBe(
-              'Unexpected token m in JSON at position 15',
-            ),
+          expectLoggedToSentry: () => {
+            const errorMessage = Sentry.captureException.mock.calls?.at(0)?.at(0)?.message;
+
+            if (errorMessage.includes('Unexpected token m in JSON')) {
+              // Error message for Node.js 18
+              expect(errorMessage).toBe('Unexpected token m in JSON at position 15');
+            } else if (errorMessage.includes('Expected double-quoted property name in JSON')) {
+              // Error message for Node.js 20
+              expect(errorMessage).toBe(
+                'Expected double-quoted property name in JSON at position 15',
+              );
+            } else {
+              throw new Error(`Unexpected error message: ${errorMessage}`);
+            }
+          },
         },
       ])('$testCase', ({ mockMutation, mockSubscription, expectLoggedToSentry }) => {
         beforeEach(() => {
