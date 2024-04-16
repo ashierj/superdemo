@@ -10,16 +10,18 @@ status: broken
 repair_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/378091
 time_frame: 7d
 data_source: redis_hll
-instrumentation_class: AggregatedMetric
-options:
-  aggregate:
-    attribute: user.id
-  events:
-  - g_compliance_dashboard
-  - g_compliance_audit_events
-  - i_compliance_audit_events
-  - i_compliance_credential_inventory
-  - a_compliance_audit_events_api
+instrumentation_class: RedisHLLMetric
+events:
+- name: g_compliance_dashboard
+  unique: user.id
+- name: g_compliance_audit_events
+  unique: user.id
+- name: i_compliance_audit_events
+  unique: user.id
+- name: i_compliance_credential_inventory
+  unique: user.id
+- name: a_compliance_audit_events_api
+  unique: user.id
 distribution:
 - ee
 tier:
