@@ -101,7 +101,7 @@ RSpec.describe CloudConnector::AccessService, feature_category: :cloud_connector
       :past_cut_off_date_service   | false | false
       :future_cut_off_date_service | false | true
       :no_cut_off_date_service     | false | true
-      :unknown                     | false | true
+      :unknown                     | false | false
       :past_cut_off_date_service   | true  | false
       :future_cut_off_date_service | true  | false
       :no_cut_off_date_service     | true  | false

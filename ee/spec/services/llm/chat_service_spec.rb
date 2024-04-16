@@ -20,7 +20,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
     end
   end
 
-  context 'for self-managed' do
+  context 'for self-managed', :with_cloud_connector do
     let_it_be_with_reload(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:issue) { create(:issue, project: project) }

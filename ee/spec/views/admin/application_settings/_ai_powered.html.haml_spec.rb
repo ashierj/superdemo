@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin/application_settings/_ai_powered', feature_category: :ai_abstraction_layer do
+RSpec.describe 'admin/application_settings/_ai_powered', :with_cloud_connector, feature_category: :ai_abstraction_layer do
   let_it_be(:application_setting) { build(:application_setting) }
 
   before do
