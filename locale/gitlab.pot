@@ -10083,9 +10083,6 @@ msgstr ""
 msgid "Cannot merge"
 msgstr ""
 
-msgid "Cannot merge the source into the target branch, due to a conflict."
-msgstr ""
-
 msgid "Cannot modify %{profile_name} referenced in security policy"
 msgstr ""
 
