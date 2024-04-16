@@ -32,6 +32,7 @@ export const SUPPORTED_FLOW_METRICS = [
   FLOW_METRICS.ISSUES,
   FLOW_METRICS.ISSUES_COMPLETED,
   FLOW_METRICS.DEPLOYS,
+  FLOW_METRICS.MEDIAN_TIME_TO_MERGE,
 ];
 
 export const SUPPORTED_MERGE_REQUEST_METRICS = [MERGE_REQUEST_METRICS.THROUGHPUT];
@@ -95,6 +96,11 @@ export const TABLE_METRICS = {
   [MERGE_REQUEST_METRICS.THROUGHPUT]: {
     label: s__('DORA4Metrics|Merge request throughput'),
     units: UNITS.COUNT,
+  },
+  [FLOW_METRICS.MEDIAN_TIME_TO_MERGE]: {
+    label: s__('DORA4Metrics|Median time to merge'),
+    invertTrendColor: true,
+    units: UNITS.DAYS,
   },
   [CONTRIBUTOR_METRICS.COUNT]: {
     label: s__('DORA4Metrics|Contributor count'),

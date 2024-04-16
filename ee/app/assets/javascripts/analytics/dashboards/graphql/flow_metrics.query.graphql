@@ -23,6 +23,9 @@ query flowMetricsQuery($fullPath: ID!, $startDate: Time!, $endDate: Time!, $labe
       deploys: deploymentCount(from: $startDate, to: $endDate) {
         ...FlowMetricItem
       }
+      median_time_to_merge: timeToMerge(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
     }
   }
   group(fullPath: $fullPath) {
@@ -45,6 +48,9 @@ query flowMetricsQuery($fullPath: ID!, $startDate: Time!, $endDate: Time!, $labe
         ...FlowMetricItem
       }
       deploys: deploymentCount(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
+      median_time_to_merge: timeToMerge(from: $startDate, to: $endDate) {
         ...FlowMetricItem
       }
     }
