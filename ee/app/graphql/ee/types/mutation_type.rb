@@ -149,6 +149,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceEventTypeFilters::Destroy
         mount_mutation ::Mutations::Security::CiConfiguration::ProjectSetContinuousVulnerabilityScanning
         mount_mutation ::Mutations::Security::CiConfiguration::SetPreReceiveSecretDetection
+        mount_mutation ::Mutations::Security::CiConfiguration::SetContainerScanningForRegistry
         mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Destroy
         mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Update
         mount_mutation ::Mutations::DependencyProxy::Packages::Settings::Update

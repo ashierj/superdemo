@@ -980,6 +980,14 @@ module EE
       rule { pre_receive_secret_detection_available & can?(:maintainer_access) }.policy do
         enable :enable_pre_receive_secret_detection
       end
+
+      condition(:container_scanning_for_registry_available) do
+        ::Feature.enabled?(:container_scanning_for_registry)
+      end
+
+      rule { container_scanning_for_registry_available & can?(:maintainer_access) }.policy do
+        enable :enable_container_scanning_for_registry
+      end
     end
 
     override :lookup_access_level!
