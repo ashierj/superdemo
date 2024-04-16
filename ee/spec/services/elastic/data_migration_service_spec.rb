@@ -32,6 +32,35 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
         expect(migration.name).to eq('ExampleMigration')
         expect(migration.filename).to eq(migration_files.first)
       end
+
+      context 'when exclude_skipped is true' do
+        let(:filename) { 'test.rb' }
+        let(:version) { 20201105180000 }
+        let(:skipped_migration) { Elastic::MigrationRecord.new(version: version, name: 'Test', filename: filename) }
+        let(:migration_files) { ["ee/elastic/migrate/#{version}_#{filename}"] }
+
+        before do
+          allow(subject).to receive(:migration_files).and_return(migration_files)
+          allow(Elastic::MigrationRecord).to receive(:new).and_return(skipped_migration)
+          allow(skipped_migration).to receive(:skip?).and_return(skip)
+        end
+
+        context 'when there is one migration and it is skipped' do
+          let(:skip) { true }
+
+          it 'is empty' do
+            expect(subject.migrations(exclude_skipped: true)).to be_empty
+          end
+        end
+
+        context 'when there is one migration and it is not skipped' do
+          let(:skip) { false }
+
+          it 'returns the migration' do
+            expect(subject.migrations(exclude_skipped: true).first.version).to eq(version)
+          end
+        end
+      end
     end
 
     context 'migrations in optimized order for each index' do

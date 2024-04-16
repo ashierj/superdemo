@@ -11,13 +11,14 @@ module Elastic
         Dir[migrations_full_path]
       end
 
-      def migrations
+      def migrations(exclude_skipped: false)
         migrations = migration_files.map do |file|
           version, name = parse_migration_filename(file)
 
           Elastic::MigrationRecord.new(version: version.to_i, name: name.camelize, filename: file)
         end
 
+        migrations.reject!(&:skip?) if exclude_skipped
         migrations.sort_by(&:version)
       end
 
@@ -69,13 +70,13 @@ module Elastic
       end
 
       def pending_migrations?
-        migrations.reverse.any? do |migration|
+        migrations(exclude_skipped: true).reverse.any? do |migration|
           !migration_has_finished?(migration.name_for_key)
         end
       end
 
       def pending_migrations
-        migrations.select do |migration|
+        migrations(exclude_skipped: true).select do |migration|
           !migration_has_finished?(migration.name_for_key)
         end
       end
