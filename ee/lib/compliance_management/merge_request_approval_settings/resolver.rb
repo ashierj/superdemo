@@ -80,18 +80,8 @@ module ComplianceManagement
         @group&.group_merge_request_approval_setting
       end
 
-      def value(instance_value, group_value, project_value)
-        [instance_value, group_value, project_value].compact.all?
-      end
-
       def require_password_value(group_value, project_value)
         [group_value, project_value].any?
-      end
-
-      def locked?(instance_value, group_value, project_value)
-        _, *inherited = [project_value, group_value, instance_value].compact
-
-        inherited.any?(false)
       end
 
       def require_password_locked?(group_value, default)
@@ -101,19 +91,12 @@ module ComplianceManagement
         group_value || default
       end
 
-      def inherited_from(instance_value, group_value, project_value)
-        return :instance if instance_value == false
-        return :group if group_value == false && !project_value.nil?
-
-        nil
-      end
-
       def setting(instance_value, group_value, project_value)
-        ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
-          value: value(instance_value, group_value, project_value),
-          locked: locked?(instance_value, group_value, project_value),
-          inherited_from: inherited_from(instance_value, group_value, project_value)
-        )
+        ComplianceManagement::MergeRequestApprovalSettings::SettingsBuilder.new(
+          instance_value: instance_value,
+          group_value: group_value,
+          project_value: project_value
+        ).to_settings
       end
     end
   end
