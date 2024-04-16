@@ -101,11 +101,19 @@ describe('Analytics Dashboards api', () => {
       issues: { identifier: 'issues', value: 10 },
       issues_completed: { identifier: 'issues_completed', value: 109 },
       lead_time: { identifier: 'lead_time', value: 10 },
+      median_time_to_merge: { identifier: 'median_time_to_merge', value: '0.3' },
     };
 
     it('returns each flow metric', () => {
       const keys = Object.keys(extractGraphqlFlowData(mockFlowMetricsResponseData));
-      expect(keys).toEqual(['lead_time', 'cycle_time', 'issues', 'issues_completed', 'deploys']);
+      expect(keys).toEqual([
+        'lead_time',
+        'cycle_time',
+        'issues',
+        'issues_completed',
+        'deploys',
+        'median_time_to_merge',
+      ]);
     });
 
     it('replaces null values with `-`', () => {

@@ -16,6 +16,7 @@ const METRIC_IDENTIFIERS = [
   'vulnerability_critical',
   'vulnerability_high',
   'merge_request_throughput',
+  'median_time_to_merge',
 ];
 
 const hasValue = (obj, key) => !isUndefined(obj[key]) && obj[key] !== null;
@@ -104,6 +105,7 @@ export const mockMonthToDate = mockMetrics({
   vulnerability_critical: 3,
   vulnerability_high: 0,
   merge_request_throughput: 5,
+  median_time_to_merge: 0,
 });
 
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
@@ -122,6 +124,7 @@ export const mockPreviousMonth = mockMetrics({
   vulnerability_critical: 0,
   vulnerability_high: 3,
   merge_request_throughput: 2,
+  median_time_to_merge: 2,
 });
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
@@ -158,6 +161,7 @@ export const mockThreeMonthsAgo = mockMetrics({
   vulnerability_critical: 0,
   vulnerability_high: 0,
   merge_request_throughput: 15,
+  median_time_to_merge: 15,
 });
 export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
 export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
@@ -178,6 +182,7 @@ export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i)
     vulnerability_critical: i % 4,
     vulnerability_high: i % 2,
     merge_request_throughput: i,
+    median_time_to_merge: 0,
   }),
 }));
 
@@ -384,6 +389,24 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
+      identifier: 'median_time_to_merge',
+      value: 'Median time to merge',
+    },
+    lastMonth: {
+      change: 0,
+      value: '2.0 d',
+    },
+    thisMonth: {
+      change: 0,
+      value: '0.0 d',
+    },
+    twoMonthsAgo: {
+      change: 0,
+      value: '-',
+    },
+  },
+  {
+    metric: {
       identifier: 'contributor_count',
       value: 'Contributor count',
     },
@@ -539,6 +562,12 @@ export const mockChartData = {
       data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
     },
   },
+  median_time_to_merge: {
+    chart: {
+      tooltipLabel: 'days',
+      data: mockChartDataWithSameValue(6, 0),
+    },
+  },
 };
 
 export const mockLastVulnerabilityCountData = {
@@ -632,6 +661,14 @@ export const mockFlowMetricsResponseData = {
     identifier: 'deploys',
     links: [],
     title: 'Deploys',
+    __typename: 'ValueStreamAnalyticsMetric',
+  },
+  median_time_to_merge: {
+    unit: 'days',
+    value: '0.3',
+    identifier: 'median_time_to_merge',
+    links: [],
+    title: 'Time to Merge',
     __typename: 'ValueStreamAnalyticsMetric',
   },
   __typename: 'GroupValueStreamAnalyticsFlowMetrics',
