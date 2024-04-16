@@ -1,6 +1,6 @@
 import { GlBadge, GlSkeletonLoader, GlTruncate } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { formatDate } from '~/lib/utils/datetime/date_format_utility';
+import { localeDateFormat } from '~/lib/utils/datetime_utility';
 import ArtifactRegistryImageDetails from 'ee_component/packages_and_registries/google_artifact_registry/components/details/image.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { imageData, imageDetailsFields } from '../../mock_data';
@@ -63,7 +63,9 @@ describe('ArtifactRegistryImageDetails', () => {
   it.each(['buildTime', 'uploadTime', 'updateTime'])('renders formatted %s', (field) => {
     createComponent();
 
-    expect(wrapper.findByTestId(field).text()).toContain(formatDate(defaultProps.data[field]));
+    expect(wrapper.findByTestId(field).text()).toContain(
+      localeDateFormat.asDateTimeFull.format(defaultProps.data[field]),
+    );
   });
 
   describe('nullable fields', () => {

@@ -1,7 +1,7 @@
 <script>
 import { GlBadge, GlSkeletonLoader, GlTruncate } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import { formatDate } from '~/lib/utils/datetime/date_format_utility';
+import { localeDateFormat } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 
@@ -29,13 +29,13 @@ export default {
       return numberToHumanSize(Number(imageSizeBytes));
     },
     buildTime() {
-      return this.data.buildTime ? formatDate(this.data.buildTime) : '';
+      return this.data.buildTime ? this.format(this.data.buildTime) : '';
     },
     uploadTime() {
-      return this.data.uploadTime ? formatDate(this.data.uploadTime) : '';
+      return this.data.uploadTime ? this.format(this.data.uploadTime) : '';
     },
     updateTime() {
-      return this.data.updateTime ? formatDate(this.data.updateTime) : '';
+      return this.data.updateTime ? this.format(this.data.updateTime) : '';
     },
     rows() {
       return Object.entries({
@@ -85,6 +85,9 @@ export default {
   methods: {
     isDigest(key) {
       return key === 'digest';
+    },
+    format(time) {
+      return localeDateFormat.asDateTimeFull.format(time);
     },
   },
 };
