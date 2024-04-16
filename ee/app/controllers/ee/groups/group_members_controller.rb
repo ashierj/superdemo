@@ -165,12 +165,12 @@ module EE
 
       def pending_promotion_members
         return unless can?(current_user, :admin_group_member, group)
-        return unless ::Feature.enabled?(:member_promotion_management, type: :wip)
-        return unless ::Gitlab::CurrentSettings.enable_member_promotion_management?
 
-        ::Members::MemberApproval.pending_member_approvals(group.id)
-            .page(params[:promotion_requests_page])
-            .per(MEMBER_PER_PAGE_LIMIT)
+        ::MemberManagement::MemberApprovalFinder
+          .new(current_user: current_user, params: params, source: group)
+          .execute
+          .page(params[:promotion_requests_page])
+          .per(MEMBER_PER_PAGE_LIMIT)
       end
     end
   end

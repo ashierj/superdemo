@@ -69,10 +69,10 @@ RSpec.describe Projects::ProjectMembersController, feature_category: :groups_and
           stub_feature_flags(member_promotion_management: false)
         end
 
-        it 'assigns @pending_promotion_members as nil' do
+        it 'assigns @pending_promotion_members be empty' do
           make_request
 
-          expect(assigns(:pending_promotion_members)).to eq(nil)
+          expect(assigns(:pending_promotion_members)).to be_empty
         end
       end
     end
