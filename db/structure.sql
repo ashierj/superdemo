@@ -17109,6 +17109,7 @@ CREATE TABLE user_preferences (
     time_display_format smallint DEFAULT 0 NOT NULL,
     home_organization_id bigint,
     use_web_ide_extension_marketplace boolean DEFAULT false NOT NULL,
+    extensions_marketplace_opt_in_status smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_1d670edc68 CHECK ((time_display_relative IS NOT NULL)),
     CONSTRAINT check_89bf269f41 CHECK ((char_length(diffs_deletion_color) <= 7)),
     CONSTRAINT check_b22446f91a CHECK ((render_whitespace_in_code IS NOT NULL)),
