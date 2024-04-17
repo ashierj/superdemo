@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Reviewer drawer approval rules component renders non-optional rules by default 1`] = `
+<tr
+  role="row"
+>
+  <td
+    aria-colindex="1"
+    class="gl-px-0! gl-py-4!"
+    role="cell"
+  >
+    Required rule
+  </td>
+  <td
+    aria-colindex="2"
+    class="gl-px-0! gl-py-4!"
+    role="cell"
+  >
+    0 of 1
+  </td>
+</tr>
+`;
+
+exports[`Reviewer drawer approval rules component toggles optional rows when clicking toggle 1`] = `
+<tr
+  role="row"
+>
+  <td
+    aria-colindex="1"
+    class="gl-px-0! gl-py-4!"
+    role="cell"
+  >
+    Optional rule
+  </td>
+  <td
+    aria-colindex="2"
+    class="gl-px-0! gl-py-4!"
+    role="cell"
+  >
+    0 of 0
+  </td>
+</tr>
+`;
