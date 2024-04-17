@@ -59,7 +59,7 @@ module Types
         description: 'Global ID of the agent version to answer the message.'
 
       def id
-        object[:id]
+        object['id']
       end
 
       def content_html
