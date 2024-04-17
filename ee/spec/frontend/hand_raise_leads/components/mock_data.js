@@ -11,6 +11,18 @@ export const STATES = [
   { countryId: 'CA', id: 'BC', name: 'British Columbia' },
 ];
 
+export const USER = {
+  namespaceId: '1',
+  userName: 'joe',
+  firstName: 'Joe',
+  lastName: 'Doe',
+  companyName: 'ACME',
+  glmContent: 'some-content',
+  productInteraction: '_product_interaction_',
+};
+
+export const CREATE_HAND_RAISE_LEAD_PATH = '/-/subscriptions/hand_raise_leads';
+
 export const FORM_DATA = {
   firstName: 'Joe',
   lastName: 'Doe',

@@ -1,77 +1,31 @@
-import { GlButton, GlModal, GlFormTextarea } from '@gitlab/ui';
-import { kebabCase, pick } from 'lodash';
-import Vue, { nextTick } from 'vue';
-import VueApollo from 'vue-apollo';
-import { sprintf } from '~/locale';
+import { GlButton } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
+import HandRaiseLeadModal from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_modal.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
-import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
-import {
-  PQL_BUTTON_TEXT,
-  PQL_MODAL_PRIMARY,
-  PQL_MODAL_CANCEL,
-  PQL_MODAL_HEADER_TEXT,
-  PQL_MODAL_FOOTER_TEXT,
-} from 'ee/hand_raise_leads/hand_raise_lead/constants';
-import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import { FORM_DATA } from './mock_data';
-
-Vue.use(VueApollo);
+import { PQL_BUTTON_TEXT } from 'ee/hand_raise_leads/hand_raise_lead/constants';
+import { USER, CREATE_HAND_RAISE_LEAD_PATH } from './mock_data';
 
 describe('HandRaiseLeadButton', () => {
   let wrapper;
   let trackingSpy;
+  const ctaTracking = {};
 
   const createComponent = (providers = {}) => {
     return shallowMountExtended(HandRaiseLeadButton, {
       provide: {
         small: false,
-        createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
-        user: {
-          namespaceId: '1',
-          userName: 'joe',
-          firstName: 'Joe',
-          lastName: 'Doe',
-          companyName: 'ACME',
-          glmContent: 'some-content',
-          productInteraction: '_product_interaction_',
-        },
-        ctaTracking: {},
+        createHandRaiseLeadPath: CREATE_HAND_RAISE_LEAD_PATH,
+        user: USER,
+        ctaTracking,
         ...providers,
       },
     });
   };
 
   const findButton = () => wrapper.findComponent(GlButton);
-  const findModal = () => wrapper.findComponent(GlModal);
-  const findFormInput = (testId) => wrapper.findByTestId(testId);
-  const findCountryOrRegionSelector = () => wrapper.findComponent(CountryOrRegionSelector);
-
-  const fillForm = ({ stateRequired = false, comment = '' } = {}) => {
-    const { country, state } = FORM_DATA;
-    const inputForms = pick(FORM_DATA, [
-      'firstName',
-      'lastName',
-      'companyName',
-      'companySize',
-      'phoneNumber',
-    ]);
-
-    Object.entries(inputForms).forEach(([key, value]) => {
-      wrapper.findByTestId(kebabCase(key)).vm.$emit('input', value);
-    });
-
-    findCountryOrRegionSelector().vm.$emit('change', {
-      country,
-      state,
-      stateRequired,
-    });
-
-    wrapper.findComponent(GlFormTextarea).vm.$emit('input', comment);
-
-    return nextTick();
-  };
+  const findModal = () => wrapper.findComponent(HandRaiseLeadModal);
 
   describe('rendering', () => {
     beforeEach(() => {
@@ -91,57 +45,14 @@ describe('HandRaiseLeadButton', () => {
       expect(button.text()).toBe(PQL_BUTTON_TEXT);
     });
 
-    it('has the default injected values', () => {
-      const formInputValues = [
-        { id: 'first-name', value: 'Joe' },
-        { id: 'last-name', value: 'Doe' },
-        { id: 'company-name', value: 'ACME' },
-        { id: 'phone-number', value: '' },
-        { id: 'company-size', value: undefined },
-      ];
-
-      formInputValues.forEach(({ id, value }) => {
-        expect(findFormInput(id).attributes('value')).toBe(value);
-      });
-
-      expect(findFormInput('state').exists()).toBe(false);
-    });
-
-    it('has the correct form input in the form content', () => {
-      const visibleFields = [
-        'first-name',
-        'last-name',
-        'company-name',
-        'company-size',
-        'phone-number',
-      ];
-
-      visibleFields.forEach((f) => expect(wrapper.findByTestId(f).exists()).toBe(true));
-
-      expect(wrapper.findByTestId('state').exists()).toBe(false);
-    });
-
-    it('has the correct text in the modal content', () => {
-      expect(findModal().text()).toContain(sprintf(PQL_MODAL_HEADER_TEXT, { userName: 'joe' }));
-      expect(findModal().text()).toContain(PQL_MODAL_FOOTER_TEXT);
+    it('renders the hand raise lead modal', () => {
+      expect(findModal().exists()).toBe(true);
     });
 
     it('has the correct modal props', () => {
-      expect(findModal().props('actionPrimary')).toStrictEqual({
-        text: PQL_MODAL_PRIMARY,
-        attributes: { variant: 'confirm', disabled: true },
-      });
-      expect(findModal().props('actionCancel')).toStrictEqual({
-        text: PQL_MODAL_CANCEL,
-      });
-    });
-
-    it('tracks modal view', async () => {
-      await findModal().vm.$emit('change');
-
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_viewed', {
-        label: 'hand_raise_lead_form',
-      });
+      expect(findModal().props('user')).toStrictEqual(USER);
+      expect(findModal().props('submitPath')).toStrictEqual(CREATE_HAND_RAISE_LEAD_PATH);
+      expect(findModal().props('ctaTracking')).toStrictEqual(ctaTracking);
     });
 
     describe('sets button attributes', () => {
@@ -176,10 +87,11 @@ describe('HandRaiseLeadButton', () => {
     describe('when provided with all of the CTA tracking options', () => {
       const property = 'a thing';
       const value = '123';
+      const localCtaTracking = { category, action, label, property, value, experiment };
 
       beforeEach(() => {
         wrapper = createComponent({
-          ctaTracking: { category, action, label, property, value, experiment },
+          ctaTracking: localCtaTracking,
         });
         trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
       });
@@ -197,22 +109,9 @@ describe('HandRaiseLeadButton', () => {
           experiment,
         });
       });
-    });
 
-    describe('when provided with some of the CTA tracking options', () => {
-      beforeEach(() => {
-        wrapper = createComponent({
-          ctaTracking: { category, action, label, experiment },
-        });
-        trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
-      });
-
-      it('sets up tracking on the CTA button', () => {
-        const button = findButton();
-
-        button.vm.$emit('click');
-
-        expect(trackingSpy).toHaveBeenCalledWith(category, action, { label, experiment, category });
+      it('passes the ctaTracking to the modal', () => {
+        expect(findModal().props('ctaTracking')).toStrictEqual(localCtaTracking);
       });
     });
 
@@ -251,92 +150,19 @@ describe('HandRaiseLeadButton', () => {
     });
   });
 
-  describe('submit button', () => {
-    beforeEach(() => {
+  describe('loading', () => {
+    it('changes the state of loading', async () => {
       wrapper = createComponent();
-    });
 
-    it('becomes enabled when required info is there', async () => {
-      await fillForm();
+      findModal().vm.$emit('loading', true);
+      await nextTick();
 
-      expect(findModal().props('actionPrimary')).toStrictEqual({
-        text: PQL_MODAL_PRIMARY,
-        attributes: { variant: 'confirm', disabled: false },
-      });
-    });
-  });
+      expect(findButton().props('loading')).toBe(true);
 
-  describe('form', () => {
-    beforeEach(async () => {
-      wrapper = createComponent();
-      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-      await fillForm({ stateRequired: true, comment: 'comment' });
-    });
+      findModal().vm.$emit('loading', false);
+      await nextTick();
 
-    describe('successful submission', () => {
-      beforeEach(() => {
-        jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockResolvedValue();
-
-        findModal().vm.$emit('primary');
-      });
-
-      it('primary submits the valid form', () => {
-        expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith(
-          '/-/subscriptions/hand_raise_leads',
-          {
-            namespaceId: 1,
-            comment: 'comment',
-            glmContent: 'some-content',
-            productInteraction: '_product_interaction_',
-            ...FORM_DATA,
-          },
-        );
-      });
-
-      it('clears the form after submission', () => {
-        ['first-name', 'last-name', 'company-name', 'phone-number'].forEach((f) =>
-          expect(wrapper.findByTestId(f).attributes('value')).toBe(''),
-        );
-
-        expect(wrapper.findByTestId('company-size').attributes('value')).toBe(undefined);
-        expect(findCountryOrRegionSelector().props()).toMatchObject({
-          country: '',
-          state: '',
-          required: false,
-        });
-      });
-
-      it('tracks successful submission', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_succeeded', {
-          label: 'hand_raise_lead_form',
-        });
-      });
-    });
-
-    describe('failed submission', () => {
-      beforeEach(() => {
-        jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockRejectedValue();
-
-        findModal().vm.$emit('primary');
-      });
-
-      it('tracks failed submission', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_failed', {
-          label: 'hand_raise_lead_form',
-        });
-      });
-    });
-
-    describe('form cancel', () => {
-      beforeEach(() => {
-        findModal().vm.$emit('cancel');
-      });
-
-      it('tracks failed submission', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_canceled', {
-          label: 'hand_raise_lead_form',
-        });
-      });
+      expect(findButton().props('loading')).toBe(false);
     });
   });
 });
