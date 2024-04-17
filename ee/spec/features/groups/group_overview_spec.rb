@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: :groups_and_projects do
   include BillableMembersHelpers
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
@@ -45,8 +46,8 @@ RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: 
 
         page.within(find('.content')) do
           expect(page).to have_content s_("SecurityReports|Either you don't have permission to view this dashboard or "\
-                                       'the dashboard has not been setup. Please check your permission settings '\
-                                       'with your administrator or check your dashboard configurations to proceed.')
+                                          'the dashboard has not been setup. Please check your permission settings '\
+                                          'with your administrator or check your dashboard configurations to proceed.')
         end
       end
     end
@@ -92,6 +93,75 @@ RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: 
     it_behaves_like 'over the free user limit alert'
   end
 
+  context 'with all seats used alert', :saas, :use_clean_rails_memory_store_caching do
+    context 'when all seats are used' do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 1) }
+
+      before do
+        stub_billable_members_reactive_cache(group)
+      end
+
+      context 'when the user is an owner' do
+        it 'displays the all seats used alert' do
+          visit_page
+
+          expect(page).to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+
+          within_testid('all-seats-used-alert') do
+            expect(page).to have_css('[data-testid="close-icon"]')
+            expect(page).to have_text "No more seats in subscription"
+            expect(page).to have_text "Your namespace has used all the seats in your subscription and users can " \
+                                        "no longer be invited or added to the namespace."
+            expect(page).to have_link 'Purchase more seats', href:
+              help_page_path('subscriptions/gitlab_com/index', anchor: 'add-seats-to-your-subscription')
+          end
+        end
+
+        context 'when the user is not an owner' do
+          where(:role) do
+            ::Gitlab::Access.sym_options.keys.map(&:to_sym)
+          end
+
+          with_them do
+            it 'does not display the all seats used alert' do
+              visit_page
+
+              expect(page).not_to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+            end
+          end
+        end
+      end
+    end
+
+    context 'when not all seats are used' do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 5) }
+
+      before do
+        stub_billable_members_reactive_cache(group)
+      end
+
+      it 'does not display the all seats used alert' do
+        visit_page
+
+        expect(page).not_to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+      end
+    end
+
+    context 'with a free plan' do
+      let_it_be(:subscription) { create(:gitlab_subscription, :free, namespace: group, seats: 1) }
+
+      before do
+        stub_billable_members_reactive_cache(group)
+      end
+
+      it 'does not display the all seats used alert' do
+        visit_page
+
+        expect(page).not_to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+      end
+    end
+  end
+
   context 'when there is a seat overage', :saas, :use_clean_rails_memory_store_caching do
     let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 1) }
 
@@ -100,8 +170,6 @@ RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: 
     end
 
     before do
-      stub_feature_flags(block_seat_overages: true)
-
       stub_billable_members_reactive_cache(group)
     end
 
