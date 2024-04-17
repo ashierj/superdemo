@@ -4136,4 +4136,30 @@ RSpec.describe User, feature_category: :system_access do
       expect(subject).to contain_exactly(group_with_events)
     end
   end
+
+  describe '#ldap_sync_time' do
+    let(:user) { build(:user) }
+
+    before do
+      stub_config(ldap: { sync_time: 10.hours })
+    end
+
+    it 'is equal to the configured value' do
+      expect(user.ldap_sync_time).to eq(10.hours)
+    end
+  end
+
+  describe '#has_current_license?' do
+    let(:user) { build_stubbed :user }
+
+    subject { user.has_current_license? }
+
+    context 'when there is no license', :without_license do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when there is a current license', :with_license do
+      it { is_expected.to be_truthy }
+    end
+  end
 end
