@@ -82,6 +82,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
   ].freeze
 
   geo_configured = Gitlab.ee? && Gitlab::Geo.geo_database_configured?
+  check_create = !Support::GitlabCi.predictive_job? && !Support::GitlabCi.fail_fast_job?
 
   shared_examples 'factory' do |factory|
     skip_any = skipped.include?([factory.name, any])
@@ -107,7 +108,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
         expect { build(factory.name) }.not_to raise_error
       end
 
-      it 'does not raise error when created' do
+      it 'does not raise error when created', if: check_create do
         pending 'Factory skipped linting due to legacy error' if skip_any
 
         expect { create(factory.name) }.not_to raise_error # rubocop:disable Rails/SaveBang
@@ -117,7 +118,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
         skip_trait = skip_any || skipped.include?([factory.name, trait_name.to_sym])
 
         describe "linting :#{trait_name} trait" do
-          it 'does not raise error when created' do
+          it 'does not raise error when created', if: check_create do
             skip 'Trait skipped linting due to legacy error' if skip_trait
 
             expect { create(factory.name, trait_name) }.not_to raise_error
