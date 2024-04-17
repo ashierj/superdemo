@@ -7,10 +7,10 @@ import {
   nSecondsBefore,
 } from '~/lib/utils/datetime_utility';
 import { formatMetric, percentChange, isMetricInTimePeriods } from '../utils';
-import { TABLE_METRICS } from './constants';
+import { AI_IMPACT_TABLE_METRICS } from './constants';
 
-const getStartOfMonth = (now) => dateAtFirstDayOfMonth(getStartOfDay(now));
 const getColumnKeyForMonth = (monthsAgo) => `${monthsAgo}-months-ago`;
+const getStartOfMonth = (now) => dateAtFirstDayOfMonth(getStartOfDay(now));
 
 /**
  * Generates the time period columns, from This month -> 5 months ago.
@@ -76,7 +76,7 @@ export const generateTableColumns = (now) => [
  * @returns {Array} array of data-less table rows
  */
 export const generateSkeletonTableData = () =>
-  Object.entries(TABLE_METRICS).map(([identifier, { label, invertTrendColor }]) => ({
+  Object.entries(AI_IMPACT_TABLE_METRICS).map(([identifier, { label, invertTrendColor }]) => ({
     metric: { identifier, value: label },
     invertTrendColor,
   }));
@@ -118,7 +118,7 @@ const buildTableRow = ({ identifier, units, timePeriods }) => {
  * @returns {Object} object containing the same data, formatted for the table
  */
 export const generateTableRows = (timePeriods) =>
-  Object.entries(TABLE_METRICS).reduce((acc, [identifier, { units }]) => {
+  Object.entries(AI_IMPACT_TABLE_METRICS).reduce((acc, [identifier, { units }]) => {
     if (!isMetricInTimePeriods(identifier, timePeriods)) return acc;
 
     return Object.assign(acc, {

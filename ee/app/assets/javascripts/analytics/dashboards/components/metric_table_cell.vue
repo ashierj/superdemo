@@ -4,7 +4,7 @@ import { joinPaths, mergeUrlParams } from '~/lib/utils/url_utility';
 import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
 import { s__ } from '~/locale';
 import { TABLE_METRICS } from '../constants';
-import { TABLE_METRICS as AI_IMPACT_TABLE_METRICS } from '../ai_impact/constants';
+import { AI_IMPACT_TABLE_METRICS } from '../ai_impact/constants';
 
 export default {
   name: 'MetricTableCell',
