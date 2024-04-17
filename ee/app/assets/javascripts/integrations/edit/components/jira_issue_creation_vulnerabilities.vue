@@ -5,33 +5,38 @@ import {
   GlButton,
   GlButtonGroup,
   GlCollapsibleListbox,
+  GlFormGroup,
   GlFormCheckbox,
+  GlFormInput,
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapState } from 'vuex';
 import { s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { billingPlans, billingPlanNames } from '~/integrations/constants';
 import { defaultJiraIssueTypeId } from '../constants';
 
 export const i18n = {
   checkbox: {
-    label: s__('JiraService|Enable Jira issue creation from vulnerabilities'),
+    label: s__('JiraService|Create Jira issues for vulnerabilities'),
     description: s__(
-      'JiraService|Issues created from vulnerabilities in this project will be Jira issues, even if GitLab issues are enabled.',
+      "JiraService|Create only Jira issues for vulnerabilities in this project even if you've enabled GitLab issues.",
     ),
   },
   issueTypeSelect: {
-    description: s__('JiraService|Create Jira issues of this type from vulnerabilities.'),
+    description: s__('JiraService|Create Jira issues of this type.'),
     defaultText: s__('JiraService|Select issue type'),
   },
   issueTypeLabel: s__('JiraService|Jira issue type'),
-  fetchIssueTypesButtonLabel: s__('JiraService|Fetch issue types for this Jira project'),
-  fetchIssueTypesErrorMessage: s__('JiraService|An error occurred while fetching issue list'),
+  fetchIssueTypesButtonLabel: s__('JiraService|Fetch issue types for this project key'),
+  fetchIssueTypesErrorMessage: s__(
+    'JiraService|An error occurred while fetching the Jira issue list',
+  ),
   projectKeyWarnings: {
-    missing: s__('JiraService|Project key is required to generate issue types'),
-    changed: s__('JiraService|Project key changed, refresh list'),
+    missing: s__('JiraService|Enter a Jira project key to generate issue types.'),
+    changed: s__('JiraService|Fetch issue types again for the new project key.'),
   },
 };
 
@@ -43,12 +48,15 @@ export default {
     GlButton,
     GlButtonGroup,
     GlCollapsibleListbox,
+    GlFormGroup,
     GlFormCheckbox,
+    GlFormInput,
     GlIcon,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     showFullFeature: {
       type: Boolean,
@@ -70,11 +78,22 @@ export default {
       required: false,
       default: false,
     },
+    initialProjectKey: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    isValidated: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       isLoadingErrorAlertDismissed: false,
       projectKeyForCurrentIssues: '',
+      issueCreationProjectKey: this.initialProjectKey,
       isJiraVulnerabilitiesEnabled: this.initialIsEnabled,
       selectedJiraIssueTypeId: null,
     };
@@ -86,6 +105,13 @@ export default {
       return !this.showFullFeature || this.isInheriting;
     },
     hasProjectKeyChanged() {
+      if (this.multipleProjectKeys) {
+        return (
+          this.projectKeyForCurrentIssues &&
+          this.issueCreationProjectKey !== this.projectKeyForCurrentIssues
+        );
+      }
+
       return this.projectKeyForCurrentIssues && this.projectKey !== this.projectKeyForCurrentIssues;
     },
     shouldShowLoadingErrorAlert() {
@@ -98,9 +124,13 @@ export default {
         },
       } = this;
 
-      if (!this.projectKey) {
+      if (
+        (this.multipleProjectKeys && !this.issueCreationProjectKey) ||
+        (!this.multipleProjectKeys && !this.projectKey)
+      ) {
         return projectKeyWarnings.missing;
       }
+
       if (this.hasProjectKeyChanged) {
         return projectKeyWarnings.changed;
       }
@@ -128,6 +158,16 @@ export default {
         this.$options.i18n.issueTypeSelect.defaultText
       );
     },
+    validProjectKey() {
+      return (
+        !this.isJiraVulnerabilitiesEnabled ||
+        Boolean(this.issueCreationProjectKey) ||
+        !this.isValidated
+      );
+    },
+    multipleProjectKeys() {
+      return this.glFeatures.jiraMultipleProjectKeys;
+    },
   },
   watch: {
     jiraIssueTypes() {
@@ -147,7 +187,9 @@ export default {
     },
     handleLoadJiraIssueTypesClick() {
       this.requestJiraIssueTypes();
-      this.projectKeyForCurrentIssues = this.projectKey;
+      this.projectKeyForCurrentIssues = this.multipleProjectKeys
+        ? this.issueCreationProjectKey
+        : this.projectKey;
       this.isLoadingErrorAlertDismissed = false;
     },
   },
@@ -163,6 +205,7 @@ export default {
     >
       <span>{{ $options.i18n.checkbox.label }}</span
       ><gl-badge
+        v-if="!multipleProjectKeys"
         :href="propsSource.aboutPricingUrl"
         target="_blank"
         rel="noopener noreferrer"
@@ -188,6 +231,26 @@ export default {
         class="gl-mt-3 gl-ml-6"
         data-testid="issue-type-section"
       >
+        <gl-form-group
+          v-if="multipleProjectKeys"
+          :label="s__('JiraService|Jira project key')"
+          label-for="service_project_key"
+          :invalid-feedback="__('This field is required.')"
+          :state="validProjectKey"
+          data-testid="jira-project-key"
+        >
+          <gl-form-input
+            id="service_project_key"
+            v-model="issueCreationProjectKey"
+            name="service[project_key]"
+            width="md"
+            :placeholder="s__('JiraService|AB')"
+            :required="isJiraVulnerabilitiesEnabled"
+            :state="validProjectKey"
+            :readonly="isInheriting"
+          />
+        </gl-form-group>
+
         <label id="issue-type-label" class="gl-mb-0">{{ $options.i18n.issueTypeLabel }}</label>
         <p class="gl-mb-3">{{ $options.i18n.issueTypeSelect.description }}</p>
         <gl-alert
