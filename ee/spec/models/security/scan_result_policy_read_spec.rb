@@ -32,6 +32,12 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
     it { is_expected.not_to allow_value("string").for(:project_approval_settings) }
     it { is_expected.to allow_value({}).for(:project_approval_settings) }
 
+    it { is_expected.not_to allow_value("string").for(:fallback_behavior) }
+    it { is_expected.to allow_value({}).for(:fallback_behavior) }
+    it { is_expected.to allow_value({ fail: described_class::FALLBACK_BEHAVIORS[:open] }).for(:fallback_behavior) }
+    it { is_expected.to allow_value({ fail: described_class::FALLBACK_BEHAVIORS[:closed] }).for(:fallback_behavior) }
+    it { is_expected.not_to allow_value({ fail: "foo" }).for(:fallback_behavior) }
+
     it do
       is_expected.to allow_value(
         { prevent_approval_by_author: true, prevent_approval_by_commit_author: false,
@@ -154,6 +160,28 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
       let(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
 
       it { is_expected.to eq false }
+    end
+  end
+
+  describe "#fail_open?" do
+    subject(:fail_open) { read.fail_open? }
+
+    context "when failing open" do
+      let(:read) { create(:scan_result_policy_read, :fail_open) }
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when failing closed" do
+      let(:read) { create(:scan_result_policy_read, :fail_closed) }
+
+      it { is_expected.to be(false) }
+    end
+
+    context "without fallback_behavior" do
+      let(:read) { create(:scan_result_policy_read) }
+
+      it { is_expected.to be(false) }
     end
   end
 end

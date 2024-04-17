@@ -6,6 +6,11 @@ module Security
 
     self.table_name = 'scan_result_policies'
 
+    FALLBACK_BEHAVIORS = {
+      open: "open",
+      closed: "closed"
+    }.freeze
+
     alias_attribute :match_on_inclusion_license, :match_on_inclusion
 
     enum age_operator: { greater_than: 0, less_than: 1 }
@@ -31,12 +36,18 @@ module Security
       allow_blank: true
     validates :send_bot_message, json_schema: { filename: 'approval_policies_send_bot_message_action' },
       allow_blank: true
+    validates :fallback_behavior, json_schema: { filename: 'approval_policies_fallback_behavior' },
+      allow_blank: true
 
     scope :for_project, ->(project) { where(project: project) }
     scope :targeting_commits, -> { where.not(commits: nil) }
     scope :including_approval_merge_request_rules, -> { includes(:approval_merge_request_rules) }
     scope :blocking_branch_modification, -> do
       where("project_approval_settings->>'block_branch_modification' = 'true'")
+    end
+
+    def fail_open?
+      fallback_behavior["fail"] == FALLBACK_BEHAVIORS[:open]
     end
 
     def newly_detected?

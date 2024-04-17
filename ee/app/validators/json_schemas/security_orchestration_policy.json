@@ -443,6 +443,18 @@
             "description": "Whether to enforce this policy or not.",
             "type": "boolean"
           },
+          "fallback_behavior": {
+            "type": "object",
+            "properties": {
+              "fail": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "closed"
+                ]
+              }
+            }
+          },
           "policy_scope": {
             "type": "object",
             "properties": {

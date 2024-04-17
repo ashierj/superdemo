@@ -713,5 +713,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       expect(scan_finding_rule.security_orchestration_policy_configuration).to eq(policy_configuration)
       expect(scan_finding_rule.orchestration_policy_idx).to eq(0)
     end
+
+    context 'with fallback_behavior' do
+      let(:policy) { build(:scan_result_policy, :fail_open) }
+
+      it 'sets fallback_behavior' do
+        subject
+
+        read = project.approval_rules.first.scan_result_policy_read
+
+        expect(read.fallback_behavior).to eq("fail" => "open")
+      end
+    end
   end
 end

@@ -139,6 +139,51 @@ RSpec.describe Security::UnenforceablePolicyRulesNotificationService, '#execute'
         it_behaves_like 'triggers policy bot comment', report_type, false, requires_approval: false
       end
     end
+
+    describe 'fail-open rules' do
+      let_it_be_with_reload(:fail_open_rule) do
+        create(
+          :report_approver_rule,
+          report_type,
+          name: "#{report_type} Fail Open",
+          merge_request: merge_request,
+          approvals_required: 1,
+          scan_result_policy_read: create(:scan_result_policy_read, :fail_open, project: project))
+      end
+
+      let_it_be_with_reload(:fail_closed_rule) do
+        create(
+          :report_approver_rule,
+          report_type,
+          name: "#{report_type} Fail Closed",
+          merge_request: merge_request,
+          approvals_required: 1,
+          scan_result_policy_read: create(:scan_result_policy_read, project: project))
+      end
+
+      it "unblocks fail-open rules" do
+        expect { subject }.to change { fail_open_rule.reload.approvals_required }
+        .and not_change { fail_closed_rule.reload.approvals_required }
+      end
+
+      it_behaves_like 'triggers policy bot comment', report_type, true, requires_approval: true
+
+      context "when all rules fail open" do
+        before do
+          fail_closed_rule.delete
+        end
+
+        it_behaves_like 'triggers policy bot comment', report_type, false, requires_approval: false
+
+        context 'with feature disabled' do
+          before do
+            stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
+          end
+
+          it_behaves_like 'triggers policy bot comment', report_type, true, requires_approval: true
+        end
+      end
+    end
   end
 
   context 'with unenforceable scan_finding report' do

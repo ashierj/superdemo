@@ -36,5 +36,13 @@ FactoryBot.define do
 
       send_bot_message { { enabled: bot_message_enabled } }
     end
+
+    trait :fail_open do
+      fallback_behavior { { fail: "open" } }
+    end
+
+    trait :fail_closed do
+      fallback_behavior { { fail: "closed" } }
+    end
   end
 end

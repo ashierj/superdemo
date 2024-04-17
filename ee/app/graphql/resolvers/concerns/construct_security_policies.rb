@@ -4,7 +4,8 @@ module ConstructSecurityPolicies
   extend ActiveSupport::Concern
   include Security::ScanResultPolicies::DeprecatedPropertiesChecker
 
-  POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules approval_settings policy_scope].freeze
+  POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules approval_settings policy_scope
+    fallback_behavior].freeze
 
   def construct_scan_execution_policies(policies)
     policies.map do |policy|

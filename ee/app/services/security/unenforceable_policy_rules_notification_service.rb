@@ -24,10 +24,14 @@ module Security
     def notify_for_report_type(merge_request, report_type, approval_rules)
       return unless unenforceable_report?(report_type)
 
+      unblock_fail_open_rules(report_type)
+
       applicable_rules = approval_rules.applicable_to_branch(merge_request.target_branch)
 
       violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request, report_type)
       applicable_rules.each do |rule|
+        next if rule.scan_result_policy_read.fail_open?
+
         violations.add_error(rule.scan_result_policy_id, :artifacts_missing)
       end
       violations.execute
@@ -56,5 +60,18 @@ module Security
       project.all_pipelines.id_in(related_pipelines_id)
     end
     strong_memoize_attr :related_pipelines
+
+    def unblock_fail_open_rules(report_type)
+      return unless fallback_behavior_enabled?
+
+      Security::ScanResultPolicies::UnblockFailOpenApprovalRulesService
+        .new(merge_request: merge_request, report_types: [report_type])
+        .execute
+    end
+
+    def fallback_behavior_enabled?
+      Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
+    end
+    strong_memoize_attr :fallback_behavior_enabled?
   end
 end
