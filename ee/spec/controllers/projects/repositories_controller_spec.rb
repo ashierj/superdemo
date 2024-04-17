@@ -16,18 +16,6 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
       stub_licensed_features(external_audit_events: true)
     end
 
-    shared_examples 'logs the audit event' do
-      it 'logs the audit event' do
-        expect { get_archive }.to change { AuditEvent.count }.by(1)
-        expect(AuditEvent.last.details).to include({
-          author_name: user_name,
-          custom_message: "Repository Download Started",
-          target_id: project.id,
-          target_type: "Project"
-        })
-      end
-    end
-
     shared_examples 'sends the streaming audit event' do
       it 'sends the streaming event with audit event type' do
         expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
@@ -41,9 +29,10 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
     end
 
     context 'when unauthenticated', 'for a public project' do
-      it_behaves_like 'logs the audit event' do
-        let_it_be(:project) { create(:project, :repository, :public) }
-        let_it_be(:user_name) { "An unauthenticated user" }
+      let_it_be(:project) { create(:project, :repository, :public) }
+
+      it 'does not log audit event' do
+        expect { get_archive }.not_to change { AuditEvent.count }
       end
 
       context 'when group sets event destination' do
@@ -53,7 +42,7 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
 
         it_behaves_like 'sends the streaming audit event' do
           let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
-          let_it_be(:event_type) { "repository_download_operation" }
+          let_it_be(:event_type) { "public_repository_download_operation" }
           let_it_be(:user_name) { "An unauthenticated user" }
         end
       end
@@ -65,9 +54,16 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
         sign_in(user)
       end
 
-      it_behaves_like 'logs the audit event' do
-        let_it_be(:user) { create(:user) }
-        let_it_be(:user_name) { user.name }
+      let_it_be(:user) { create(:user) }
+      let_it_be(:user_name) { user.name }
+
+      it 'logs the audit event' do
+        expect { get_archive }.to change { AuditEvent.count }.by(1)
+        expect(AuditEvent.last.details).to include
+        { author_name: user_name,
+          custom_message: "Repository Download Started",
+          target_id: project.id,
+          target_type: "Project" }
       end
 
       context 'when group sets event destination' do
@@ -77,9 +73,26 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
           set_group_destination
         end
 
-        it_behaves_like 'sends the streaming audit event' do
-          let(:event_type) { "repository_download_operation" }
-          let_it_be(:user_name) { user.name }
+        context 'when project is public' do
+          before do
+            project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+          end
+
+          it_behaves_like 'sends the streaming audit event' do
+            let(:event_type) { "public_repository_download_operation" }
+            let_it_be(:user_name) { user.name }
+          end
+        end
+
+        context 'when project is not public' do
+          before do
+            project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+          end
+
+          it_behaves_like 'sends the streaming audit event' do
+            let(:event_type) { "repository_download_operation" }
+            let_it_be(:user_name) { user.name }
+          end
         end
       end
     end

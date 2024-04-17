@@ -142,8 +142,9 @@ module EE
         forbidden!(_('You are not allowed to download code from this project.')) if result.error?
 
         project = repository.project
+        audit_event_type = project.public? ? 'public_repository_download_operation' : 'repository_download_operation'
         audit_context = {
-          name: 'repository_download_operation',
+          name: audit_event_type,
           ip_address: ip_address,
           author: current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new,
           target: project,

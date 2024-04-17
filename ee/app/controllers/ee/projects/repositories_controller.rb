@@ -15,8 +15,9 @@ module EE
 
       def log_audit_event
         project = repository.project
+        audit_event_type = project.public? ? 'public_repository_download_operation' : 'repository_download_operation'
         audit_context = {
-          name: 'repository_download_operation',
+          name: audit_event_type,
           author: current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new,
           scope: project,
           target: project,
