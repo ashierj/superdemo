@@ -143,4 +143,79 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
       expect(page).to have_selector('[data-testid="settings-project-link"]')
     end
   end
+
+  describe 'all seats used alert', :saas, :use_clean_rails_memory_store_caching do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+
+    before do
+      group.add_member(create(:user), GroupMember::DEVELOPER)
+      sign_in(user)
+    end
+
+    context 'when all seats are used' do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 1) }
+
+      context 'when the user is an owner' do
+        before do
+          stub_billable_members_reactive_cache(group)
+
+          group.add_owner(user)
+        end
+
+        it 'displays the all seats used alert' do
+          visit project_path(project)
+
+          expect(page).to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+
+          within_testid('all-seats-used-alert') do
+            expect(page).to have_css('[data-testid="close-icon"]')
+            expect(page).to have_text "No more seats in subscription"
+            expect(page).to have_text "Your namespace has used all the seats in your subscription and users can " \
+                                      "no longer be invited or added to the namespace."
+            expect(page).to have_link 'Purchase more seats', href:
+              help_page_path('subscriptions/gitlab_com/index', anchor: 'add-seats-to-your-subscription')
+          end
+        end
+      end
+
+      context 'when the user is not an owner' do
+        let(:role) { :developer }
+
+        it 'does not display the all seats used alert' do
+          visit project_path(project)
+
+          expect(page).not_to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+        end
+      end
+    end
+
+    context 'with a free plan' do
+      let_it_be(:subscription) { create(:gitlab_subscription, :free, namespace: group, seats: 1) }
+
+      before do
+        stub_billable_members_reactive_cache(group)
+      end
+
+      it 'does not display the all seats used alert' do
+        visit project_path(project)
+
+        expect(page).not_to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+      end
+    end
+
+    context 'when not all seats are used' do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 3) }
+
+      before do
+        stub_billable_members_reactive_cache(group)
+      end
+
+      it 'does not display the all seats used alert' do
+        visit project_path(project)
+
+        expect(page).not_to have_css '[data-testid="all-seats-used-alert"].gl-alert-warning'
+      end
+    end
+  end
 end

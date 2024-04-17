@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#
+
 module GitlabSubscriptions
   module Reconciliations
     class CalculateSeatCountDataService

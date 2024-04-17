@@ -4,6 +4,7 @@ module EE
   module Users
     module GroupCalloutsHelper
       UNLIMITED_MEMBERS_DURING_TRIAL_ALERT = 'unlimited_members_during_trial_alert'
+      ALL_SEATS_USED_ALERT = 'all_seats_used_alert'
 
       def show_unlimited_members_during_trial_alert?(group)
         ::Namespaces::FreeUserCap::Enforcement.new(group).qualified_namespace? &&
