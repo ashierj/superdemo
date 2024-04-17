@@ -270,6 +270,13 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                     expect(subject[:status]).to eq(:success)
                   end
 
+                  it 'keeps epics timestamps in sync' do
+                    expect(subject[:status]).to eq(:success)
+
+                    expect(old_parent.updated_at).to eq(old_parent.work_item.updated_at)
+                    expect(new_parent.updated_at).to eq(new_parent.work_item.updated_at)
+                  end
+
                   context 'when feature flag is turned off' do
                     before do
                       stub_feature_flags(sync_epic_work_item_order: false)

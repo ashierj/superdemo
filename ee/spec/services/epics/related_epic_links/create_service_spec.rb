@@ -152,6 +152,9 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
 
             expect(WorkItems::RelatedWorkItemLink.find_by!(target: epic_b.work_item))
               .to have_attributes(source: epic_a.work_item, link_type: IssuableLink::TYPE_RELATES_TO)
+
+            expect(epic_a.reload.updated_at).to eq(epic_a.work_item.updated_at)
+            expect(epic_b.reload.updated_at).to eq(epic_b.work_item.updated_at)
           end
 
           context 'when link type is blocking' do

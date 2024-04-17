@@ -89,6 +89,20 @@ module EE
       for_vulnerability? || super
     end
 
+    override :touch_noteable
+    def touch_noteable
+      return super unless for_epic?
+
+      assoc = association(:noteable)
+      noteable_object = assoc.loaded? ? noteable : assoc.scope.select(:id, :updated_at, :issue_id, :group_id, :iid).take
+
+      noteable_object&.touch
+      # Ensure epic and work items are kept in sync after creating notes on the epic
+      noteable_object&.sync_work_item_updated_at
+
+      noteable_object
+    end
+
     def usage_ping_track_updated_epic_note(user)
       return unless for_epic?
 

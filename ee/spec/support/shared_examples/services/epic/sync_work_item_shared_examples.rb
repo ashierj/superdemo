@@ -26,6 +26,7 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     expect(work_item.state).to eq(epic.state)
     expect(work_item.author).to eq(epic.author)
     expect(work_item.created_at).to eq(epic.created_at)
+    expect(work_item.updated_at).to eq(epic.updated_at)
     expect(work_item.state).to eq(epic.state)
     expect(work_item.external_key).to eq(epic.external_key)
     expect(work_item.lock_version).to eq(epic.lock_version)
@@ -46,6 +47,7 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
 
     if epic.parent
       expect(work_item.work_item_parent).to eq(epic.parent.work_item)
+      expect(work_item.work_item_parent.updated_at).to eq(epic.parent.updated_at)
       expect(work_item.parent_link.relative_position).to eq(epic.relative_position)
     else
       expect(work_item.work_item_parent).to be_nil
@@ -65,7 +67,11 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
       related_epic_issue_ids = epic.unauthorized_related_epics.map(&:issue_id)
       related_work_item_ids = work_item.related_issues(authorize: false).map(&:id)
 
+      related_epic_updated_at = epic.unauthorized_related_epics.map(&:updated_at)
+      related_work_item_updated_at = work_item.related_issues(authorize: false).map(&:updated_at)
+
       expect(related_work_item_ids).to match(related_epic_issue_ids)
+      expect(related_epic_updated_at).to match(related_work_item_updated_at)
     end
 
     # Data we do not want to sync yet

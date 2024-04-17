@@ -18,6 +18,7 @@ module Epics
         next true unless work_item
 
         work_item.reopen!
+        epic.sync_work_item_updated_at
       end
 
     rescue StateMachines::InvalidTransition

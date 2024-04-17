@@ -733,6 +733,16 @@ module EE
       super + [:notes]
     end
 
+    # When syncing an epic and its associated work item the column updated_at may become out of sync due to
+    # further actions executed outside the nested transaction (e.g. when creating system notes).
+    # To account for this mismatch we call this method on the updated epic to set the same updated_at value on the
+    # work item while bypassing validations and callbacks
+    def sync_work_item_updated_at
+      return unless work_item && group.epic_sync_to_work_item_enabled?
+
+      work_item.update_column(:updated_at, updated_at)
+    end
+
     private
 
     def validate_parent_epic

@@ -55,6 +55,8 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
 
             expect(source.reload.work_item.notes).to be_empty
             expect(target.reload.work_item.notes).to be_empty
+            expect(source.updated_at).to eq(source.work_item.updated_at)
+            expect(target.updated_at).to eq(target.work_item.updated_at)
           end
         end
 
