@@ -145,7 +145,13 @@ export default {
       return this.namespaceFullPath;
     },
     panelTitle() {
-      return sprintf(this.title, { namespaceName: this.rootNamespaceName });
+      return sprintf(this.title, {
+        namespaceName: this.namespaceName,
+        namespaceType: this.isProject ? __('project') : __('group'),
+        namespaceFullPath: this.namespaceFullPath,
+        rootNamespaceName: this.rootNamespaceName,
+        rootNamespaceFullPath: this.rootNamespaceFullPath,
+      });
     },
   },
   watch: {
