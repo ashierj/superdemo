@@ -28,7 +28,7 @@ describe('PanelsBase', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
-  const createWrapper = (props = {}, mountFn = shallowMountExtended) => {
+  const createWrapper = ({ props = {}, provide = {}, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(PanelsBase, {
       provide: {
         namespaceId: '1',
@@ -37,6 +37,7 @@ describe('PanelsBase', () => {
         rootNamespaceName: 'MEOW',
         rootNamespaceFullPath: 'namespace',
         isProject: true,
+        ...provide,
       },
       propsData: {
         title: panelConfig.title,
@@ -87,7 +88,7 @@ describe('PanelsBase', () => {
   describe('when a visualization does not match the analytics schema', () => {
     beforeEach(() => {
       createWrapper({
-        visualization: invalidVisualization,
+        props: { visualization: invalidVisualization },
       });
     });
 
@@ -324,7 +325,7 @@ describe('PanelsBase', () => {
 
     beforeEach(() => {
       jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(new Promise(() => {}));
-      createWrapper({ filters });
+      createWrapper({ props: { filters } });
       return waitForPromises();
     });
 
@@ -337,7 +338,7 @@ describe('PanelsBase', () => {
 
   describe('when the panel has no title', () => {
     beforeEach(() => {
-      createWrapper({ title: null });
+      createWrapper({ props: { title: null } });
     });
 
     it('should not render the title', () => {
@@ -347,7 +348,55 @@ describe('PanelsBase', () => {
 
   describe('when the title includes %{namespaceName}', () => {
     beforeEach(() => {
-      createWrapper({ title: 'title for %{namespaceName}' });
+      createWrapper({ props: { title: 'title for %{namespaceName}' } });
+    });
+
+    it('replaces the token with the namespace name', () => {
+      expect(findPanelTitle().text()).toBe('title for Namespace name');
+    });
+  });
+
+  describe('when the title includes %{namespaceFullPath}', () => {
+    beforeEach(() => {
+      createWrapper({ props: { title: 'title for %{namespaceFullPath}' } });
+    });
+
+    it('replaces the token with the root namespace name', () => {
+      expect(findPanelTitle().text()).toBe('title for namespace/full/path');
+    });
+  });
+
+  describe('when the title includes %{namespaceType}', () => {
+    describe('for group', () => {
+      beforeEach(() => {
+        createWrapper({
+          props: { title: 'title for %{namespaceType}' },
+          provide: { isProject: false },
+        });
+      });
+
+      it('replaces the token with `group`', () => {
+        expect(findPanelTitle().text()).toBe('title for group');
+      });
+    });
+
+    describe('for project', () => {
+      beforeEach(() => {
+        createWrapper({
+          props: { title: 'title for %{namespaceType}' },
+          provide: { isProject: true },
+        });
+      });
+
+      it('replaces the token with `project`', () => {
+        expect(findPanelTitle().text()).toBe('title for project');
+      });
+    });
+  });
+
+  describe('when the title includes %{rootNamespaceName}', () => {
+    beforeEach(() => {
+      createWrapper({ props: { title: 'title for %{rootNamespaceName}' } });
     });
 
     it('replaces the token with the root namespace name', () => {
@@ -355,9 +404,19 @@ describe('PanelsBase', () => {
     });
   });
 
+  describe('when the title includes %{rootNamespaceFullPath}', () => {
+    beforeEach(() => {
+      createWrapper({ props: { title: 'title for %{rootNamespaceFullPath}' } });
+    });
+
+    it('replaces the token with the root namespace name', () => {
+      expect(findPanelTitle().text()).toBe('title for namespace');
+    });
+  });
+
   describe('when editing', () => {
     beforeEach(() => {
-      createWrapper({ editing: true }, mountExtended);
+      createWrapper({ props: { editing: true }, mountFn: mountExtended });
     });
 
     it('should render actions dropdown', () => {
@@ -374,7 +433,10 @@ describe('PanelsBase', () => {
 
   describe('when editing with a visualization error', () => {
     beforeEach(() => {
-      createWrapper({ editing: true, visualization: invalidVisualization }, mountExtended);
+      createWrapper({
+        props: { editing: true, visualization: invalidVisualization },
+        mountFn: mountExtended,
+      });
     });
 
     it('shows the error popover when the dropdown is closed', () => {
