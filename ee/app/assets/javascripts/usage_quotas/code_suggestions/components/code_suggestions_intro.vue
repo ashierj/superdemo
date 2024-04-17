@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlEmptyState, GlLink, GlSprintf, GlButton } from '@gitlab/ui';
 import emptyStateSvgUrl from '@gitlab/svgs/dist/illustrations/tanuki-ai-sm.svg?url';
 import { __, s__ } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
@@ -32,6 +32,7 @@ export default {
     GlEmptyState,
     GlLink,
     GlSprintf,
+    GlButton,
   },
   apolloProvider,
   inject: {
@@ -42,14 +43,7 @@ export default {
 };
 </script>
 <template>
-  <gl-empty-state
-    :primary-button-text="$options.i18n.purchaseSeats"
-    :primary-button-link="addDuoProHref"
-    :secondary-button-link="$options.helpLinks.salesLink"
-    :secondary-button-text="$options.i18n.contactSales"
-    :svg-path="$options.emptyStateSvgUrl"
-    class="gl-max-w-48 gl-mx-auto"
-  >
+  <gl-empty-state :svg-path="$options.emptyStateSvgUrl">
     <template #title>
       <h1
         v-safe-html="$options.i18n.title"
@@ -66,7 +60,22 @@ export default {
       </gl-sprintf>
     </template>
     <template #actions>
-      <hand-raise-lead-button v-if="createHandRaiseLeadPath" />
+      <gl-button :href="addDuoProHref" variant="confirm" category="primary">
+        {{ $options.i18n.purchaseSeats }}
+      </gl-button>
+      <hand-raise-lead-button
+        v-if="createHandRaiseLeadPath"
+        class="gl-sm-ml-3 gl-ml-3 gl-sm-ml-0"
+      />
+      <gl-button
+        v-else
+        :href="$options.helpLinks.salesLink"
+        class="gl-sm-ml-3 gl-ml-3 gl-sm-ml-0"
+        variant="confirm"
+        category="secondary"
+      >
+        {{ $options.i18n.contactSales }}
+      </gl-button>
     </template>
   </gl-empty-state>
 </template>
