@@ -215,7 +215,7 @@ describe('RoadmapFilters', () => {
         expect(filteredSearchBar.props('initialFilterValue')).toEqual(mockInitialFilterValue);
       });
 
-      it('fetches filtered epics when `onFilter` event is emitted', async () => {
+      it('sets correct filter params when `onFilter` event is emitted', async () => {
         jest.spyOn(store, 'dispatch');
 
         await nextTick();
@@ -233,10 +233,9 @@ describe('RoadmapFilters', () => {
           'not[labelName]': ['Feature'],
           'not[myReactionEmoji]': 'thumbs_up',
         });
-        expect(store.dispatch).toHaveBeenCalledWith('fetchEpics');
       });
 
-      it('fetches epics with updated sort order when `onSort` event is emitted', async () => {
+      it('updates sort order when `onSort` event is emitted', async () => {
         jest.spyOn(store, 'dispatch');
 
         await nextTick();
@@ -246,10 +245,9 @@ describe('RoadmapFilters', () => {
         await nextTick();
 
         expect(store.dispatch).toHaveBeenCalledWith('setSortedBy', 'end_date_asc');
-        expect(store.dispatch).toHaveBeenCalledWith('fetchEpics');
       });
 
-      it('does not set filters params or fetch epics when onFilter event is triggered with empty filters array and cleared param set to false', async () => {
+      it('does not set filters params when onFilter event is triggered with empty filters array and cleared param set to false', async () => {
         jest.spyOn(store, 'dispatch');
 
         filteredSearchBar.vm.$emit('onFilter', [], false);
@@ -257,7 +255,6 @@ describe('RoadmapFilters', () => {
         await nextTick();
 
         expect(store.dispatch).not.toHaveBeenCalledWith('setFilterParams');
-        expect(store.dispatch).not.toHaveBeenCalledWith('fetchEpics');
       });
 
       describe('when user is logged in', () => {

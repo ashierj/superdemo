@@ -1,6 +1,6 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 
@@ -40,6 +40,14 @@ export default {
       required: true,
     },
     hasFiltersApplied: {
+      type: Boolean,
+      required: true,
+    },
+    epicsFetchNextPageInProgress: {
+      type: Boolean,
+      required: true,
+    },
+    hasNextPage: {
       type: Boolean,
       required: true,
     },
@@ -95,7 +103,9 @@ export default {
   },
   computed: {
     ...mapState(['isShowingMilestones', 'milestonesType', 'filterParams']),
-    ...mapGetters(['isScopedRoadmap']),
+    isScopedRoadmap() {
+      return Boolean(this.epicIid);
+    },
     displayMilestones() {
       return Boolean(this.milestones.length) && this.isShowingMilestones;
     },
@@ -165,6 +175,9 @@ export default {
       :epics="epics"
       :timeframe="timeframe"
       :has-filters-applied="hasFiltersApplied"
+      :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
+      :has-next-page="hasNextPage"
+      @scrolledToEnd="$emit('scrolledToEnd')"
     />
   </div>
 </template>

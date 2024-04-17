@@ -19,7 +19,6 @@ import {
   mockEpicsWithParents,
   mockEpicsWithSkippedParents,
   mockSortedBy,
-  mockPageInfo,
   basePath,
 } from 'ee_jest/roadmap/mock_data';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -34,7 +33,6 @@ const mockTimeframeMonths = getTimeframeForRangeType({
 });
 const store = createStore();
 store.dispatch('setInitialData', {
-  currentGroupId: mockGroupId,
   sortedBy: mockSortedBy,
   presetType: PRESET_TYPES.MONTHS,
   timeframe: mockTimeframeMonths,
@@ -42,208 +40,172 @@ store.dispatch('setInitialData', {
   basePath,
 });
 
-store.dispatch('receiveEpicsSuccess', {
-  rawEpics,
-  pageInfo: mockPageInfo,
-  appendToList: true,
-});
-
-const mockEpics = store.state.epics;
-
 describe('EpicsListSectionComponent', () => {
   let wrapper;
 
   const findBottomShadow = () => wrapper.findByTestId('epic-scroll-bottom-shadow');
   const findEmptyRowEl = () => wrapper.find('.epics-list-item-empty');
   const findAllEpicItems = () => wrapper.findAllComponents(EpicItem);
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
 
   const createComponent = ({
-    epics = mockEpics,
-    timeframe = mockTimeframeMonths,
-    currentGroupId = mockGroupId,
-    presetType = PRESET_TYPES.MONTHS,
-    hasFiltersApplied = false,
+    epics = rawEpics,
+    epicsFetchNextPageInProgress = false,
+    hasNextPage = false,
+    epicIid = null,
   } = {}) => {
     wrapper = shallowMountExtended(EpicsListSection, {
       store,
       propsData: {
-        presetType,
+        presetType: PRESET_TYPES.MONTHS,
+        timeframe: mockTimeframeMonths,
+        hasFiltersApplied: false,
         epics,
-        timeframe,
-        currentGroupId,
-        hasFiltersApplied,
+        epicsFetchNextPageInProgress,
+        hasNextPage,
+      },
+      provide: {
+        currentGroupId: mockGroupId,
+        epicIid,
       },
     });
   };
 
-  beforeEach(() => {
+  it('renders all top-level epics by default', () => {
     createComponent();
+
+    expect(findAllEpicItems()).toHaveLength(
+      // Only top-level epics are visible by default, any child
+      // epics are shown only when the parent is expanded.
+      rawEpics.filter((epic) => !epic.hasParent).length,
+    );
   });
 
-  describe('computed', () => {
-    describe('emptyRowContainerVisible', () => {
-      it('returns true when total epics are less than buffer size', () => {
-        store.dispatch('setBufferSize', mockEpics.length + 1);
+  it('renders empty row container when number of epics is smaller than buffer size', async () => {
+    createComponent();
+    store.dispatch('setBufferSize', rawEpics.length + 1);
 
-        expect(findEmptyRowEl().exists()).toBe(true);
-      });
-    });
+    await nextTick();
 
-    describe('sectionContainerStyles', () => {
-      it('returns style string for container element based on sectionShellWidth', () => {
-        expect(wrapper.attributes('style')).toContain(
-          `width: ${
-            EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * mockTimeframeMonths.length
-          }px;`,
-        );
-      });
-    });
-
-    describe('epicsWithAssociatedParents', () => {
-      it('should return epics which contain parent associations', async () => {
-        expect(findAllEpicItems()).toHaveLength(
-          // Only top-level epics are visible by default, any child
-          // epics are shown only when the parent is expanded.
-          mockEpics.filter((epic) => !epic.hasParent).length,
-        );
-
-        wrapper.setProps({
-          epics: mockEpicsWithParents,
-        });
-
-        await nextTick();
-
-        expect(findAllEpicItems()).toHaveLength(mockEpicsWithParents.length);
-      });
-
-      it('should return epics which match the applied filter when one of the epic in hierarchy is not matching the filter', async () => {
-        createComponent({ epics: mockEpicsWithSkippedParents });
-        store.state.epicIds = mockEpicsWithSkippedParents.map((epic) => epic.id);
-
-        await nextTick();
-
-        expect(findAllEpicItems()).toHaveLength(mockEpicsWithSkippedParents.length);
-      });
-    });
-
-    describe('displayedEpics', () => {
-      beforeAll(() => {
-        store.state.epicIds = ['1', '2', '3'];
-      });
-
-      it('returns all epics if epicIid is specified', () => {
-        store.state.epicIid = '23';
-        mockEpics.forEach((epic, index) => {
-          expect(findAllEpicItems().at(index).props('epic')).toMatchObject(epic);
-        });
-      });
-    });
+    expect(findEmptyRowEl().exists()).toBe(true);
   });
 
-  describe('methods', () => {
-    describe('initMounted', () => {
-      beforeEach(() => {
-        // Destroy the existing wrapper, and create a new one. This works
-        // around a race condition between how Jest runs tests and the
-        // $nextTick call in EpicsListSectionComponent's mounted hook.
-        // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27992#note_319213990
-        wrapper.destroy();
-        store.state.epicIid = undefined;
-        createComponent();
-      });
+  it('renders correct styles for container element based on sectionShellWidth', () => {
+    createComponent();
 
-      it('calls action `setBufferSize` with value based on window.innerHeight and component element position', () => {
-        expect(store.state.bufferSize).toBe(16);
-      });
+    expect(wrapper.attributes('style')).toContain(
+      `width: ${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * mockTimeframeMonths.length}px;`,
+    );
+  });
 
-      it('calls `scrollToCurrentDay` following the component render', () => {
-        expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.element);
-      });
+  it('does not set style attribute on empty row when no epics are available to render', async () => {
+    createComponent({ epics: [] });
+    await nextTick();
 
-      it('sets style attribute containing `height` on empty row', () => {
-        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 1px);');
-      });
+    expect(findEmptyRowEl().attributes('style')).not.toBeDefined();
+  });
+
+  it('sets style attribute with `height` on empty row when there epics available to render', async () => {
+    createComponent();
+    await nextTick();
+
+    expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 1px);');
+  });
+
+  describe('epics with associated parents', () => {
+    it('should return only epics where parent is not present on top level', async () => {
+      createComponent({ epics: mockEpicsWithParents });
+
+      await nextTick();
+
+      expect(findAllEpicItems()).toHaveLength(1);
     });
 
-    describe('getEmptyRowContainerStyles', () => {
-      it('does not set style attribute on empty row when no epics are available to render', () => {
-        createComponent({ epics: [] });
+    it('should return epics which match the applied filter when one of the epic in hierarchy is not matching the filter', async () => {
+      createComponent({ epics: mockEpicsWithSkippedParents });
 
-        expect(findEmptyRowEl().attributes('style')).not.toBeDefined();
-      });
+      await nextTick();
 
-      it('sets style attribute with `height` on empty row when there epics available to render', () => {
-        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 1px);');
-      });
+      expect(findAllEpicItems()).toHaveLength(mockEpicsWithSkippedParents.length);
     });
 
-    describe('handleEpicsListScroll', () => {
-      it('toggles value of `showBottomShadow` based on provided `scrollTop`, `clientHeight` & `scrollHeight`', async () => {
-        const bottomShadow = findBottomShadow();
+    it('returns all epics if epicIid is specified', () => {
+      createComponent({ epics: mockEpicsWithParents, epicIid: '1' });
 
-        eventHub.$emit('epicsListScrolled', {
-          scrollTop: 5,
-          clientHeight: 5,
-          scrollHeight: 15,
-        });
-        await nextTick();
-
-        // Math.ceil(scrollTop) + clientHeight < scrollHeight
-        expect(bottomShadow.isVisible()).toBe(true);
-
-        eventHub.$emit('epicsListScrolled', {
-          scrollTop: 15,
-          clientHeight: 5,
-          scrollHeight: 15,
-        });
-        await nextTick();
-
-        // Math.ceil(scrollTop) + clientHeight < scrollHeight
-        expect(bottomShadow.isVisible()).toBe(false);
-      });
+      expect(findAllEpicItems()).toHaveLength(mockEpicsWithParents.length);
     });
   });
 
-  describe('template', () => {
-    const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
-
-    it('renders component container element with class `epics-list-section`', () => {
-      expect(wrapper.classes('epics-list-section')).toBe(true);
+  describe('when mounted', () => {
+    beforeEach(() => {
+      createComponent();
     });
 
-    it('renders epic-item', () => {
-      expect(wrapper.findComponent(EpicItem).exists()).toBe(true);
+    it('calls action `setBufferSize` with value based on window.innerHeight and component element position', () => {
+      expect(store.state.bufferSize).toBe(16);
     });
 
-    it('renders empty row element when `epics.length` is less than `bufferSize`', () => {
-      store.dispatch('setBufferSize', 50);
-
-      expect(findEmptyRowEl().exists()).toBe(true);
+    it('calls `scrollToCurrentDay` following the component render', () => {
+      expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.element);
     });
 
+    it('sets style attribute containing `height` on empty row', () => {
+      expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 1px);');
+    });
+  });
+
+  describe('on global epic scroll event', () => {
+    it('toggles value of `showBottomShadow` based on provided `scrollTop`, `clientHeight` & `scrollHeight`', async () => {
+      createComponent();
+
+      const bottomShadow = findBottomShadow();
+
+      eventHub.$emit('epicsListScrolled', {
+        scrollTop: 5,
+        clientHeight: 5,
+        scrollHeight: 15,
+      });
+      await nextTick();
+
+      // Math.ceil(scrollTop) + clientHeight < scrollHeight
+      expect(bottomShadow.isVisible()).toBe(true);
+
+      eventHub.$emit('epicsListScrolled', {
+        scrollTop: 15,
+        clientHeight: 5,
+        scrollHeight: 15,
+      });
+      await nextTick();
+
+      // Math.ceil(scrollTop) + clientHeight < scrollHeight
+      expect(bottomShadow.isVisible()).toBe(false);
+    });
+  });
+
+  describe('when epics list has next page', () => {
     it('renders gl-intersection-observer component', () => {
+      createComponent({ hasNextPage: true });
+
       expect(findIntersectionObserver().exists()).toBe(true);
     });
 
-    it('calls action `fetchEpics` when gl-intersection-observer appears in viewport', () => {
-      jest.spyOn(store, 'dispatch').mockImplementation();
+    it('emits `scrolledToEnd` event when gl-intersection-observer appears in viewport', () => {
+      createComponent({ hasNextPage: true });
 
       findIntersectionObserver().vm.$emit('appear');
 
-      expect(store.dispatch).toHaveBeenCalledWith('fetchEpics', {
-        endCursor: mockPageInfo.endCursor,
-      });
+      expect(wrapper.emitted('scrolledToEnd')).toHaveLength(1);
     });
 
-    it('renders gl-loading icon when epicsFetchForNextPageInProgress is true', async () => {
-      store.state.epicsFetchForNextPageInProgress = true;
-      await nextTick();
+    it('renders loading icon when epicsFetchForNextPageInProgress is true', () => {
+      createComponent({ hasNextPage: true, epicsFetchNextPageInProgress: true });
 
       expect(wrapper.findByTestId('next-page-loading').text()).toContain('Loading epics');
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('renders bottom shadow element when `showBottomShadow` prop is true', () => {
+      createComponent({ hasNextPage: true });
       eventHub.$emit('epicsListScrolled', {
         scrollTop: 5,
         clientHeight: 5,

@@ -21,11 +21,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setEpicsState', 'fetchEpics']),
+    ...mapActions(['setEpicsState']),
     handleEpicStateChange(epicsState) {
       if (epicsState !== this.epicsState) {
         this.setEpicsState(epicsState);
-        this.fetchEpics();
       }
     },
   },

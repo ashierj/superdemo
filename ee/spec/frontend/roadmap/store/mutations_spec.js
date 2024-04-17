@@ -5,13 +5,7 @@ import { PROGRESS_COUNT, MILESTONES_GROUP } from 'ee/roadmap/constants';
 import defaultState from 'ee/roadmap/store/state';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
-import {
-  mockGroupId,
-  basePath,
-  mockSortedBy,
-  mockEpic,
-  mockPageInfo,
-} from 'ee_jest/roadmap/mock_data';
+import { basePath, mockSortedBy, mockEpic } from 'ee_jest/roadmap/mock_data';
 
 const setEpicMockData = (state) => {
   state.epics = [mockEpic];
@@ -28,116 +22,16 @@ describe('Roadmap Store Mutations', () => {
   describe('SET_INITIAL_DATA', () => {
     it('Should set initial Roadmap data to state', () => {
       const initialData = {
-        epicsFetchInProgress: false,
-        epicsFetchForTimeframeInProgress: false,
-        epicsFetchFailure: false,
-        epicsFetchResultEmpty: false,
-        currentGroupId: mockGroupId,
         sortedBy: mockSortedBy,
         extendedTimeframe: [],
         filterQueryString: '',
         epicsState: 'all',
-        epicIds: [],
-        epics: [],
         basePath,
       };
 
       mutations[types.SET_INITIAL_DATA](state, initialData);
 
       expect(state).toEqual(expect.objectContaining(initialData));
-    });
-  });
-
-  describe('SET_EPICS', () => {
-    it('Should provided epics array in state', () => {
-      const epics = [{ id: 1 }, { id: 2 }];
-
-      mutations[types.SET_EPICS](state, epics);
-
-      expect(state.epics).toEqual(epics);
-    });
-  });
-
-  describe('UPDATE_EPIC_IDS', () => {
-    it('Should insert provided epicId to epicIds array in state', () => {
-      mutations[types.UPDATE_EPIC_IDS](state, [22]);
-
-      expect(state.epicIds).toHaveLength(1);
-      expect(state.epicIds[0]).toBe(22);
-    });
-  });
-
-  describe('REQUEST_EPICS', () => {
-    it('Should set state.epicsFetchInProgress to `true`', () => {
-      mutations[types.REQUEST_EPICS](state);
-
-      expect(state.epicsFetchInProgress).toBe(true);
-    });
-  });
-
-  describe('REQUEST_EPICS_FOR_TIMEFRAME', () => {
-    it('Should set state.epicsFetchForTimeframeInProgress to `true`', () => {
-      mutations[types.REQUEST_EPICS_FOR_TIMEFRAME](state);
-
-      expect(state.epicsFetchForTimeframeInProgress).toBe(true);
-    });
-  });
-
-  describe('REQUEST_EPICS_FOR_NEXT_PAGE', () => {
-    it('Should set state.epicsFetchForNextPageInProgress to `true`', () => {
-      mutations[types.REQUEST_EPICS_FOR_NEXT_PAGE](state);
-
-      expect(state.epicsFetchForNextPageInProgress).toBe(true);
-    });
-  });
-
-  describe('RECEIVE_EPICS_SUCCESS', () => {
-    it('Should set epicsFetchResultEmpty, epics in state based on provided epics array and set epicsFetchInProgress to `false`', () => {
-      const epics = [{ id: 1 }, { id: 2 }];
-
-      mutations[types.RECEIVE_EPICS_SUCCESS](state, { epics, pageInfo: mockPageInfo });
-
-      expect(state.epicsFetchResultEmpty).toBe(false);
-      expect(state.epics).toEqual(epics);
-      expect(state.pageInfo).toEqual(mockPageInfo);
-      expect(state.epicsFetchInProgress).toBe(false);
-    });
-  });
-
-  describe('RECEIVE_EPICS_FOR_TIMEFRAME_SUCCESS', () => {
-    it('Should set epics in state based on provided epics array and set epicsFetchForTimeframeInProgress to `false`', () => {
-      const epics = [{ id: 1 }, { id: 2 }];
-
-      mutations[types.RECEIVE_EPICS_FOR_TIMEFRAME_SUCCESS](state, epics);
-
-      expect(state.epics).toEqual(epics);
-      expect(state.epicsFetchForTimeframeInProgress).toBe(false);
-    });
-  });
-
-  describe('RECEIVE_EPICS_FOR_NEXT_PAGE_SUCCESS', () => {
-    it('Should set epics in state based on provided epics array and set epicsFetchForNextPageInProgress to `false`', () => {
-      const epics = [{ id: 1 }, { id: 2 }];
-
-      mutations[types.RECEIVE_EPICS_FOR_NEXT_PAGE_SUCCESS](state, {
-        epics,
-        pageInfo: mockPageInfo,
-      });
-
-      expect(state.epics).toEqual(epics);
-      expect(state.pageInfo).toEqual(mockPageInfo);
-      expect(state.epicsFetchForNextPageInProgress).toBe(false);
-    });
-  });
-
-  describe('RECEIVE_EPICS_FAILURE', () => {
-    it('Should set epicsFetchInProgress & epicsFetchForTimeframeInProgress to false and epicsFetchFailure to true', () => {
-      mutations[types.RECEIVE_EPICS_FAILURE](state);
-
-      expect(state.epicsFetchInProgress).toBe(false);
-      expect(state.epicsFetchForTimeframeInProgress).toBe(false);
-      expect(state.epicsFetchForNextPageInProgress).toBe(false);
-      expect(state.epicsFetchFailure).toBe(true);
     });
   });
 

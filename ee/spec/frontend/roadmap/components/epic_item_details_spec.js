@@ -376,9 +376,8 @@ describe('EpicItemDetails', () => {
           expect(updateHistory).toHaveBeenCalledTimes(1);
         });
 
-        it('dispatches setFilterParams and fetchEpics vuex actions', () => {
+        it('dispatches setFilterParams vuex action', () => {
           expect(store.dispatch.mock.calls[0]).toEqual(['setFilterParams', {}]);
-          expect(store.dispatch.mock.calls[1]).toEqual(['fetchEpics']);
         });
       });
 

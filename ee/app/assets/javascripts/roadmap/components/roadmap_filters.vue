@@ -63,16 +63,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setFilterParams', 'setSortedBy', 'fetchEpics']),
+    ...mapActions(['setFilterParams', 'setSortedBy']),
     handleFilterEpics(filters, cleared) {
       if (filters.length || cleared) {
         this.setFilterParams(this.getFilterParams(filters));
-        this.fetchEpics();
       }
     },
     handleSortEpics(sortedBy) {
       this.setSortedBy(sortedBy);
-      this.fetchEpics();
     },
   },
   i18n: {

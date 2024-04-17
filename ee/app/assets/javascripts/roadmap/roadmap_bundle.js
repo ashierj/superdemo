@@ -4,11 +4,11 @@ import VueApollo from 'vue-apollo';
 import { mapActions } from 'vuex';
 
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import createDefaultClient from '~/lib/graphql';
 import { queryToObject } from '~/lib/utils/url_utility';
 import Translate from '~/vue_shared/translate';
 
 import RoadmapApp from './components/roadmap_app.vue';
+import { defaultClient } from './graphql';
 import {
   DATE_RANGES,
   PROGRESS_WEIGHT,
@@ -24,6 +24,7 @@ import {
 } from './utils/roadmap_utils';
 
 Vue.use(Translate);
+Vue.use(VueApollo);
 
 export default () => {
   const el = document.getElementById('js-roadmap');
@@ -34,8 +35,6 @@ export default () => {
 
   const { dataset } = el;
 
-  Vue.use(VueApollo);
-  const defaultClient = createDefaultClient();
   const apolloProvider = new VueApollo({
     defaultClient,
   });
@@ -58,8 +57,8 @@ export default () => {
         groupMilestonesPath: dataset.groupMilestonesEndpoint,
         canCreateEpic: parseBoolean(dataset.canCreateEpic),
         emptyStateIllustrationPath: dataset.emptyStateIllustration,
-        fullPath: this.fullPath,
-        epicIid: this.epicIid,
+        fullPath: dataset.fullPath,
+        epicIid: dataset.iid,
         allowSubEpics: parseBoolean(dataset.allowSubEpics),
         allowScopedLabels: dataset.allowScopedLabels,
         isChildEpics: parseBoolean(dataset.childEpics),
@@ -97,8 +96,6 @@ export default () => {
 
       return {
         hasFiltersApplied: parseBoolean(dataset.hasFiltersApplied),
-        fullPath: dataset.fullPath,
-        epicIid: dataset.iid,
         epicsState: dataset.epicsState,
         sortedBy: ALLOWED_SORT_VALUES.includes(dataset.sortedBy)
           ? dataset.sortedBy
@@ -122,8 +119,6 @@ export default () => {
     },
     created() {
       this.setInitialData({
-        fullPath: this.fullPath,
-        epicIid: this.epicIid,
         sortedBy: this.sortedBy,
         timeframeRangeType: this.timeframeRangeType,
         presetType: this.presetType,

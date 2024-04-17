@@ -59,7 +59,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setDaterange', 'fetchEpics']),
+    ...mapActions(['setDaterange']),
     handleDaterangeSelect(value) {
       this.selectedDaterange = value;
     },
@@ -72,13 +72,11 @@ export default {
           timeframeRangeType: this.selectedDaterange,
           presetType: getPresetTypeForTimeframeRangeType(this.selectedDaterange),
         });
-        this.fetchEpics();
       }
     },
     handleRoadmapLayoutChange(presetType) {
       if (presetType !== this.presetType) {
         this.setDaterange({ timeframeRangeType: this.selectedDaterange, presetType });
-        this.fetchEpics();
       }
     },
   },

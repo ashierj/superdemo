@@ -1,7 +1,7 @@
 <script>
 import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { EPIC_DETAILS_CELL_WIDTH, TIMELINE_CELL_MIN_WIDTH, EPIC_ITEM_HEIGHT } from '../constants';
@@ -42,6 +42,14 @@ export default {
       type: Boolean,
       required: true,
     },
+    epicsFetchNextPageInProgress: {
+      type: Boolean,
+      required: true,
+    },
+    hasNextPage: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -52,10 +60,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(['bufferSize', 'epicIds', 'pageInfo', 'epicsFetchForNextPageInProgress']),
-    ...mapGetters(['isScopedRoadmap']),
-    hasNextPage() {
-      return this.pageInfo?.hasNextPage;
+    ...mapState(['bufferSize']),
+    isScopedRoadmap() {
+      return Boolean(this.epicIid);
+    },
+    epicIds() {
+      return this.epics.map((epic) => epic.id);
     },
     emptyRowContainerVisible() {
       return this.displayedEpics.length < this.bufferSize;
@@ -106,7 +116,7 @@ export default {
     window.removeEventListener('resize', this.syncClientWidth);
   },
   methods: {
-    ...mapActions(['setBufferSize', 'toggleEpic', 'fetchEpics']),
+    ...mapActions(['setBufferSize']),
     initMounted() {
       const containerInnerHeight = this.isScopedRoadmap
         ? this.$root.$el.clientHeight
@@ -150,12 +160,7 @@ export default {
       this.showBottomShadow = Math.ceil(scrollTop) + clientHeight < scrollHeight;
     },
     handleScrolledToEnd() {
-      if (!this.pageInfo) return;
-
-      const { hasNextPage, endCursor } = this.pageInfo;
-      if (!this.epicsFetchForNextPageInProgress && hasNextPage) {
-        this.fetchEpics({ endCursor });
-      }
+      this.$emit('scrolledToEnd');
     },
     generateKey,
   },
@@ -193,7 +198,7 @@ export default {
     </div>
     <gl-intersection-observer v-if="hasNextPage" @appear="handleScrolledToEnd">
       <div
-        v-if="epicsFetchForNextPageInProgress"
+        v-if="epicsFetchNextPageInProgress"
         class="gl-text-center gl-py-3"
         data-testid="next-page-loading"
       >

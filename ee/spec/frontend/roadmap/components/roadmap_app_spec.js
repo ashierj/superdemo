@@ -1,34 +1,52 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+
+import { createAlert } from '~/alert';
+
 import EpicsListEmpty from 'ee/roadmap/components/epics_list_empty.vue';
 import RoadmapApp from 'ee/roadmap/components/roadmap_app.vue';
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
 import RoadmapShell from 'ee/roadmap/components/roadmap_shell.vue';
 import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
-import * as types from 'ee/roadmap/store/mutation_types';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+
+import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
+import groupEpicsQuery from 'ee/roadmap/queries/group_epics.query.graphql';
+import groupEpicsWithColorQuery from 'ee/roadmap/queries/group_epics_with_color.query.graphql';
+
 import {
   basePath,
-  mockFormattedEpic,
-  mockGroupId,
   mockSortedBy,
   mockSvgPath,
+  mockPageInfo,
   mockTimeframeInitialDate,
+  mockGroupEpicsQueryResponse,
+  mockEpicChildEpicsQueryResponse,
+  mockGroupEpicsQueryResponseEmpty,
 } from 'ee_jest/roadmap/mock_data';
 
 Vue.use(Vuex);
+Vue.use(VueApollo);
+
+jest.mock('~/alert');
+
+const childEpicsQueryHandler = jest.fn().mockResolvedValue(mockEpicChildEpicsQueryResponse);
+const groupEpicsQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse);
+const groupEpicsWithColorQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse);
 
 describe('RoadmapApp', () => {
   let store;
   let wrapper;
 
-  const currentGroupId = mockGroupId;
   const emptyStateIllustrationPath = mockSvgPath;
-  const epics = [mockFormattedEpic];
   const hasFiltersApplied = true;
   const presetType = PRESET_TYPES.MONTHS;
   const timeframeRangeType = DATE_RANGES.CURRENT_YEAR;
@@ -38,17 +56,25 @@ describe('RoadmapApp', () => {
     initialDate: mockTimeframeInitialDate,
   });
 
-  const createComponent = ({ epicIid } = {}) => {
+  const createComponent = ({ epicIid, epicColorHighlight = false } = {}) => {
     wrapper = shallowMountExtended(RoadmapApp, {
       propsData: {
         emptyStateIllustrationPath,
       },
       provide: {
-        groupFullPath: 'gitlab-org',
+        fullPath: 'gitlab-org',
         groupMilestonesPath: '/groups/gitlab-org/-/milestones.json',
         listEpicsPath: '/groups/gitlab-org/-/epics',
         epicIid,
+        glFeatures: {
+          epicColorHighlight,
+        },
       },
+      apolloProvider: createMockApollo([
+        [epicChildEpicsQuery, childEpicsQueryHandler],
+        [groupEpicsQuery, groupEpicsQueryHandler],
+        [groupEpicsWithColorQuery, groupEpicsWithColorQueryHandler],
+      ]),
       store,
     });
   };
@@ -62,7 +88,6 @@ describe('RoadmapApp', () => {
   beforeEach(() => {
     store = createStore();
     store.dispatch('setInitialData', {
-      currentGroupId,
       sortedBy: mockSortedBy,
       presetType,
       timeframe,
@@ -74,17 +99,24 @@ describe('RoadmapApp', () => {
   });
 
   describe.each`
-    testLabel         | epicList | showLoading | showRoadmapShell | showEpicsListEmpty
-    ${'is loading'}   | ${null}  | ${true}     | ${false}         | ${false}
-    ${'has epics'}    | ${epics} | ${false}    | ${true}          | ${false}
-    ${'has no epics'} | ${[]}    | ${false}    | ${false}         | ${true}
+    testLabel         | hasEpics | hasError | showLoading | showRoadmapShell | showEpicsListEmpty | showAlert
+    ${'is loading'}   | ${true}  | ${false} | ${true}     | ${false}         | ${false}           | ${false}
+    ${'has epics'}    | ${true}  | ${false} | ${false}    | ${true}          | ${false}           | ${false}
+    ${'has no epics'} | ${false} | ${false} | ${false}    | ${false}         | ${true}            | ${false}
+    ${'has error'}    | ${true}  | ${true}  | ${false}    | ${false}         | ${true}            | ${true}
   `(
     `when epic list $testLabel`,
-    ({ epicList, showLoading, showRoadmapShell, showEpicsListEmpty }) => {
-      beforeEach(() => {
+    ({ hasEpics, hasError, showLoading, showRoadmapShell, showEpicsListEmpty, showAlert }) => {
+      beforeEach(async () => {
+        if (hasError) {
+          groupEpicsQueryHandler.mockRejectedValueOnce('Houston, we have a problem');
+        } else if (!hasEpics) {
+          groupEpicsQueryHandler.mockResolvedValueOnce(mockGroupEpicsQueryResponseEmpty);
+        }
         createComponent();
-        if (epicList) {
-          store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: epicList });
+
+        if (!showLoading) {
+          await waitForPromises();
         }
       });
 
@@ -99,26 +131,12 @@ describe('RoadmapApp', () => {
       it(`empty state view is${showEpicsListEmpty ? '' : ' not'} shown`, () => {
         expect(findEpicsListEmpty().exists()).toBe(showEpicsListEmpty);
       });
+
+      it(`alert is${showAlert ? '' : ' not'} shown`, () => {
+        expect(createAlert).toHaveBeenCalledTimes(showAlert ? 1 : 0);
+      });
     },
   );
-
-  describe('empty state view', () => {
-    beforeEach(() => {
-      createComponent();
-      store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: [] });
-    });
-
-    it('shows epic-list-empty component', () => {
-      const epicsListEmpty = findEpicsListEmpty();
-      expect(epicsListEmpty.exists()).toBe(true);
-      expect(epicsListEmpty.props()).toMatchObject({
-        hasFiltersApplied,
-        presetType,
-        timeframeStart: timeframe[0],
-        timeframeEnd: timeframe[timeframe.length - 1],
-      });
-    });
-  });
 
   describe('roadmap view', () => {
     it('does not show filters UI when epicIid is present', () => {
@@ -135,24 +153,94 @@ describe('RoadmapApp', () => {
 
     it('shows roadmap-shell component', async () => {
       createComponent();
-      store.commit(types.RECEIVE_EPICS_SUCCESS, { epics });
 
-      await nextTick();
+      await waitForPromises();
 
       const roadmapShell = findRoadmapShell();
       expect(roadmapShell.exists()).toBe(true);
-      expect(roadmapShell.props()).toMatchObject({
-        epics,
-        hasFiltersApplied,
-        presetType,
-        timeframe,
-      });
     });
 
     it('renders settings sidebar', () => {
       createComponent();
 
       expect(findSettingsSidebar().exists()).toBe(true);
+    });
+  });
+
+  it('calls group epic query with correct variables if epicIid is not present', () => {
+    createComponent();
+
+    expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        first: 50,
+        endCursor: '',
+      }),
+    );
+
+    expect(childEpicsQueryHandler).not.toHaveBeenCalled();
+  });
+
+  it('calls group epic query with correct variables from filterParams', () => {
+    const groupPath = 'test-group';
+    const epicIid = '1::&Epic 1';
+    store.state.filterParams = {
+      groupPath,
+      epicIid,
+    };
+    createComponent();
+
+    expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        groupPath,
+        iid: 'Epic 1',
+      }),
+    );
+  });
+
+  it('calls child epics query with correct variables when epicIid is present', () => {
+    const epicIid = '1';
+    createComponent({ epicIid });
+
+    expect(childEpicsQueryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        iid: epicIid,
+        withColor: false,
+      }),
+    );
+
+    expect(groupEpicsQueryHandler).not.toHaveBeenCalled();
+  });
+
+  it('fetches next page when there is next page and epics list is scrolled to bottom', async () => {
+    createComponent();
+    await waitForPromises();
+    expect(groupEpicsQueryHandler).toHaveBeenCalledTimes(1);
+
+    findRoadmapShell().vm.$emit('scrolledToEnd');
+    await waitForPromises();
+    expect(groupEpicsQueryHandler).toHaveBeenCalledTimes(2);
+    expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ endCursor: mockPageInfo.endCursor }),
+    );
+  });
+
+  describe('when epicColorHighlight feature flag is enabled', () => {
+    it('calls group epic with color query if epic iid is not present', () => {
+      createComponent({ epicColorHighlight: true });
+
+      expect(groupEpicsWithColorQueryHandler).toHaveBeenCalled();
+    });
+
+    it('calles child epics query with `withColor` variable if epic iid is present', () => {
+      const epicIid = '1';
+      createComponent({ epicIid, epicColorHighlight: true });
+
+      expect(childEpicsQueryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          iid: epicIid,
+          withColor: true,
+        }),
+      );
     });
   });
 });

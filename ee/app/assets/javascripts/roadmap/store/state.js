@@ -9,12 +9,6 @@ export default () => ({
   isShowingLabels: false,
 
   // Data
-  epicIid: '',
-  epics: [],
-  pageInfo: null,
-  visibleEpics: [],
-  epicIds: [],
-  fullPath: '',
   timeframe: [],
   presetType: '',
   timeframeRangeType: '',
@@ -23,9 +17,4 @@ export default () => ({
 
   // UI Flags
   hasFiltersApplied: false,
-  epicsFetchInProgress: false,
-  epicsFetchForTimeframeInProgress: false,
-  epicsFetchForNextPageInProgress: false,
-  epicsFetchFailure: false,
-  epicsFetchResultEmpty: false,
 });
