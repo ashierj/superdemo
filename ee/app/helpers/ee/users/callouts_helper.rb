@@ -16,6 +16,7 @@ module EE
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
       JOINING_A_PROJECT_ALERT = 'joining_a_project_alert'
       DUO_PRO_TRIAL_ALERT = 'duo_pro_trial_alert'
+      DUO_CHAT_GA_ALERT = 'duo_chat_ga_alert'
 
       override :render_dashboard_ultimate_trial
       def render_dashboard_ultimate_trial(user)
@@ -81,6 +82,15 @@ module EE
         return false unless group.paid? && group.subscription_add_on_purchases.for_gitlab_duo_pro.none?
 
         !user_dismissed?(DUO_PRO_TRIAL_ALERT)
+      end
+
+      def show_duo_chat_ga_alert?(group)
+        return false unless ::Gitlab::Saas.feature_available?(:subscriptions_trials)
+        return false unless ::Feature.enabled?(:duo_chat_ga_alert, group, type: :gitlab_com_derisk)
+        return false unless group.paid? && !group.trial?
+        return false unless group.member?(current_user)
+
+        !user_dismissed?(DUO_CHAT_GA_ALERT)
       end
 
       private
