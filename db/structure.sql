@@ -24117,6 +24117,14 @@ CREATE INDEX idx_vulnerability_reads_project_id_scanner_id_vulnerability_id ON v
 
 CREATE UNIQUE INDEX idx_work_item_types_on_namespace_id_and_name_null_namespace ON work_item_types USING btree (btrim(lower(name)), ((namespace_id IS NULL))) WHERE (namespace_id IS NULL);
 
+CREATE INDEX p_ci_builds_project_id_bigint_id_idx ON ONLY p_ci_builds USING btree (project_id_convert_to_bigint, id);
+
+CREATE INDEX index_3591adffe4 ON ci_builds USING btree (project_id_convert_to_bigint, id);
+
+CREATE INDEX p_ci_builds_status_type_runner_id_bigint_idx ON ONLY p_ci_builds USING btree (status, type, runner_id_convert_to_bigint);
+
+CREATE INDEX index_9f1fa3baee ON ci_builds USING btree (status, type, runner_id_convert_to_bigint);
+
 CREATE INDEX index_abuse_events_on_abuse_report_id ON abuse_events USING btree (abuse_report_id);
 
 CREATE INDEX index_abuse_events_on_category_and_source ON abuse_events USING btree (category, source);
@@ -24330,6 +24338,10 @@ CREATE INDEX index_award_emoji_on_awardable_type_and_awardable_id ON award_emoji
 CREATE UNIQUE INDEX index_aws_roles_on_role_external_id ON aws_roles USING btree (role_external_id);
 
 CREATE UNIQUE INDEX index_aws_roles_on_user_id ON aws_roles USING btree (user_id);
+
+CREATE INDEX p_ci_builds_runner_id_bigint_idx ON ONLY p_ci_builds USING btree (runner_id_convert_to_bigint) WHERE (((status)::text = 'running'::text) AND ((type)::text = 'Ci::Build'::text));
+
+CREATE INDEX index_b4cf879bcf ON ci_builds USING btree (runner_id_convert_to_bigint) WHERE (((status)::text = 'running'::text) AND ((type)::text = 'Ci::Build'::text));
 
 CREATE INDEX index_background_migration_jobs_for_partitioning_migrations ON background_migration_jobs USING btree (((arguments ->> 2))) WHERE (class_name = 'Gitlab::Database::PartitioningMigrationHelpers::BackfillPartitionedTable'::text);
 
@@ -29473,7 +29485,13 @@ ALTER INDEX p_ci_stages_pkey ATTACH PARTITION ci_stages_pkey;
 
 ALTER INDEX p_ci_job_artifacts_job_id_file_type_partition_id_idx ATTACH PARTITION idx_ci_job_artifacts_on_job_id_file_type_and_partition_id_uniq;
 
+ALTER INDEX p_ci_builds_project_id_bigint_id_idx ATTACH PARTITION index_3591adffe4;
+
+ALTER INDEX p_ci_builds_status_type_runner_id_bigint_idx ATTACH PARTITION index_9f1fa3baee;
+
 ALTER INDEX p_ci_builds_runner_id_bigint_id_idx ATTACH PARTITION index_adafd086ad;
+
+ALTER INDEX p_ci_builds_runner_id_bigint_idx ATTACH PARTITION index_b4cf879bcf;
 
 ALTER INDEX p_ci_builds_metadata_build_id_idx ATTACH PARTITION index_ci_builds_metadata_on_build_id_and_has_exposed_artifacts;
 
