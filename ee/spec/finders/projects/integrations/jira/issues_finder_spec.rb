@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Integrations::Jira::IssuesFinder do
+RSpec.describe Projects::Integrations::Jira::IssuesFinder, feature_category: :integrations do
   let_it_be(:project, refind: true) { create(:project) }
   let_it_be(:jira_integration, reload: true) { create(:jira_integration, project: project) }
 
@@ -16,6 +16,8 @@ RSpec.describe Projects::Integrations::Jira::IssuesFinder do
   describe '#execute' do
     subject(:issues) { service.execute }
 
+    let(:client) { double(options: { site: 'https://jira.example.com' }) }
+
     context 'when jira service integration is not active' do
       before do
         jira_integration.update!(active: false)
@@ -26,12 +28,10 @@ RSpec.describe Projects::Integrations::Jira::IssuesFinder do
       end
     end
 
-    context 'when jira service integration has project_keys' do
+    context 'when jira service integration is active' do
       let(:params) { {} }
-      let(:client) { double(options: { site: 'https://jira.example.com' }) }
 
       before do
-        jira_integration.update!(project_keys: ['TEST'])
         expect_next_instance_of(Jira::Requests::Issues::ListService) do |instance|
           expect(instance).to receive(:client).at_least(:once).and_return(client)
         end
@@ -116,6 +116,70 @@ RSpec.describe Projects::Integrations::Jira::IssuesFinder do
 
             subject
           end
+        end
+      end
+    end
+
+    context 'when filtering by project' do
+      let(:params) { { project: 'TEST1' } }
+
+      context 'when project_keys are present' do
+        before do
+          jira_integration.update!(project_keys: %w[TEST1 TEST2])
+        end
+
+        context 'when project_keys does not include project filter' do
+          let(:params) { { project: 'TEST3' } }
+
+          it 'returns empty issues' do
+            expect(subject).to eq []
+          end
+        end
+
+        context 'when project_keys includes project filter' do
+          before do
+            expect_next_instance_of(Jira::Requests::Issues::ListService) do |instance|
+              expect(instance).to receive(:client).at_least(:once).and_return(client)
+            end
+            expect(client).to receive(:get).and_return(
+              {
+                "total" => 375,
+                "startAt" => 0,
+                "issues" => [{ "key" => 'TEST-1' }, { "key" => 'TEST-2' }]
+              }
+            )
+          end
+
+          it 'passes the project filter to JqlBuilderService' do
+            expect(::Jira::JqlBuilderService).to receive(:new)
+              .with('TEST1', include({ sort: 'created', sort_direction: 'DESC' }))
+              .and_call_original
+
+            subject
+          end
+        end
+      end
+
+      context 'when project_keys are empty' do
+        before do
+          expect_next_instance_of(Jira::Requests::Issues::ListService) do |instance|
+            expect(instance).to receive(:client).at_least(:once).and_return(client)
+          end
+          expect(client).to receive(:get).and_return(
+            {
+              "total" => 375,
+              "startAt" => 0,
+              "issues" => [{ "key" => 'TEST-1' }, { "key" => 'TEST-2' }]
+            }
+          )
+        end
+
+        it 'passes the project filter to JqlBuilderService' do
+          expect(::Jira::JqlBuilderService).to receive(:new)
+            .with('TEST1', include({ sort: 'created', sort_direction: 'DESC' }))
+            .and_call_original
+
+          subject
         end
       end
     end
