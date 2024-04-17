@@ -2779,6 +2779,10 @@ RSpec.describe User, feature_category: :system_access do
 
     subject(:duo_pro_add_on_available_namespace_ids) { user.duo_pro_add_on_available_namespace_ids }
 
+    before do
+      stub_saas_features(gitlab_com_subscriptions: true)
+    end
+
     context 'when the user has an active assigned duo pro seat' do
       it 'returns the namespace ID' do
         create(
@@ -3039,88 +3043,102 @@ RSpec.describe User, feature_category: :system_access do
 
     subject { user.billable_gitlab_duo_pro_root_group_ids }
 
-    where(:access_level, :include_group) do
-      :guest      | false
-      :reporter   | true
-      :developer  | true
-      :maintainer | true
-      :owner      | true
+    context 'when on gitlab.com' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
+      where(:access_level, :include_group) do
+        :guest      | false
+        :reporter   | true
+        :developer  | true
+        :maintainer | true
+        :owner      | true
+      end
+
+      with_them do
+        let(:result) { include_group ? [root_group.id] : [] }
+
+        context 'when the user is a member of the top level group' do
+          before do
+            root_group.add_member(user, access_level)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+
+        context 'when the user is a member of a sub group of the top level group' do
+          before do
+            sub_group.add_member(user, access_level)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+
+        context 'when the user is a member of a project within the top level group' do
+          before do
+            group_project.add_member(user, access_level)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+
+        context 'when the user is a member of a project within a sub group of the top level group' do
+          before do
+            sub_group_project.add_member(user, access_level)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+
+        context 'when the user is a member of an invited group' do
+          let_it_be(:invited_group) { create(:group) }
+
+          before do
+            invited_group.add_member(user, access_level)
+          end
+
+          where(:shared_group_access_level, :include_group_via_link) do
+            :guest      | false
+            :reporter   | true
+            :developer  | true
+            :maintainer | true
+            :owner      | true
+          end
+
+          context 'when the group is invited to a project' do
+            with_them do
+              let(:result) { include_group && include_group_via_link ? [root_group.id] : [] }
+
+              before do
+                create(:project_group_link, project: project, group: invited_group)
+              end
+
+              it { is_expected.to eq(result) }
+            end
+          end
+
+          context 'when the group is invited to a group' do
+            with_them do
+              let(:result) { include_group && include_group_via_link ? [root_group.id] : [] }
+
+              before do
+                create(:group_group_link, shared_group: group, shared_with_group: invited_group)
+              end
+
+              it { is_expected.to eq(result) }
+            end
+          end
+        end
+      end
     end
 
-    with_them do
-      let(:result) { include_group ? [root_group.id] : [] }
-
-      context 'when the user is a member of the top level group' do
-        before do
-          root_group.add_member(user, access_level)
-        end
-
-        it { is_expected.to eq(result) }
+    context 'when on self managed' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
       end
 
-      context 'when the user is a member of a sub group of the top level group' do
-        before do
-          sub_group.add_member(user, access_level)
-        end
-
-        it { is_expected.to eq(result) }
-      end
-
-      context 'when the user is a member of a project within the top level group' do
-        before do
-          group_project.add_member(user, access_level)
-        end
-
-        it { is_expected.to eq(result) }
-      end
-
-      context 'when the user is a member of a project within a sub group of the top level group' do
-        before do
-          sub_group_project.add_member(user, access_level)
-        end
-
-        it { is_expected.to eq(result) }
-      end
-
-      context 'when the user is a member of an invited group' do
-        let_it_be(:invited_group) { create(:group) }
-
-        before do
-          invited_group.add_member(user, access_level)
-        end
-
-        where(:shared_group_access_level, :include_group_via_link) do
-          :guest      | false
-          :reporter   | true
-          :developer  | true
-          :maintainer | true
-          :owner      | true
-        end
-
-        context 'when the group is invited to a project' do
-          with_them do
-            let(:result) { include_group && include_group_via_link ? [root_group.id] : [] }
-
-            before do
-              create(:project_group_link, project: project, group: invited_group)
-            end
-
-            it { is_expected.to eq(result) }
-          end
-        end
-
-        context 'when the group is invited to a group' do
-          with_them do
-            let(:result) { include_group && include_group_via_link ? [root_group.id] : [] }
-
-            before do
-              create(:group_group_link, shared_group: group, shared_with_group: invited_group)
-            end
-
-            it { is_expected.to eq(result) }
-          end
-        end
-      end
+      it { is_expected.to eq(nil) }
     end
   end
 

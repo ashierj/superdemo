@@ -22,6 +22,9 @@ module GitlabSubscriptions
     scope :for_gitlab_duo_pro, -> { where(subscription_add_on_id: AddOn.code_suggestions.pick(:id)) }
     scope :for_product_analytics, -> { where(subscription_add_on_id: AddOn.product_analytics.pick(:id)) }
     scope :for_user, ->(user) { where(namespace_id: user.billable_gitlab_duo_pro_root_group_ids) }
+    scope :assigned_to_user, ->(user) do
+      active.for_user(user).joins(:assigned_users).merge(UserAddOnAssignment.by_user(user))
+    end
 
     scope :requiring_assigned_users_refresh, ->(limit) do
       # Fetches add_on_purchases whose assigned_users have not been refreshed in last 8 hours.

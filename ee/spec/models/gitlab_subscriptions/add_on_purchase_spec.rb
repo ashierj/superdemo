@@ -245,7 +245,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
       end
     end
 
-    describe '.for_user' do
+    describe '.for_user', :saas do
       subject(:user_purchases) { described_class.for_user(user) }
 
       include_context 'with add-on purchases'
@@ -257,6 +257,38 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
             active_gitlab_duo_pro_purchase_as_developer, active_gitlab_duo_pro_purchase_as_maintainer,
             expired_product_analytics_purchase_as_owner, active_product_analytics_purchase_as_reporter,
             active_product_analytics_purchase_as_developer, active_product_analytics_purchase_as_maintainer
+          ]
+        )
+      end
+    end
+
+    describe '.assigned_to_user', :saas do
+      before do
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: active_gitlab_duo_pro_purchase_unrelated
+        )
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: active_gitlab_duo_pro_purchase_as_developer
+        )
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: expired_gitlab_duo_pro_purchase_as_owner
+        )
+      end
+
+      subject(:user_purchases) { described_class.assigned_to_user(user) }
+
+      include_context 'with add-on purchases'
+
+      it 'returns all the non-guest purchases related to the user top level namespaces' do
+        expect(user_purchases).to match_array(
+          [
+            active_gitlab_duo_pro_purchase_as_developer
           ]
         )
       end

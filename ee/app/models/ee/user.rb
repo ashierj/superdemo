@@ -637,6 +637,8 @@ module EE
     end
 
     def billable_gitlab_duo_pro_root_group_ids
+      return unless gitlab_com_subscription?
+
       group_ids_from_project_authorizaton = ::Project.where(id: project_authorizations.non_guests.select(:project_id)).pluck(:namespace_id)
       group_ids_from_memberships = ::GroupMember.with_user(self).active.non_guests.pluck(:source_id)
       group_ids_from_linked_groups = ::GroupGroupLink.non_guests.where(shared_with_group_id: group_ids_from_memberships).pluck(:shared_group_id)
