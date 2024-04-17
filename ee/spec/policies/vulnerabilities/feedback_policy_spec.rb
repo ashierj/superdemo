@@ -76,13 +76,6 @@ RSpec.describe Vulnerabilities::FeedbackPolicy, feature_category: :vulnerability
         let(:current_user) { create(:user, :security_bot) }
         let_it_be_with_reload(:project) { create(:project, :public) }
 
-        before do
-          project.security_setting.update!(
-            auto_fix_dependency_scanning: false,
-            auto_fix_container_scanning: false
-          )
-        end
-
         it { is_expected.to be_disallowed(:create_vulnerability_feedback) }
       end
     end

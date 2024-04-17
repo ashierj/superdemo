@@ -233,7 +233,6 @@ module EE
           no_vulnerabilities_svg_path: image_path('illustrations/empty-state/empty-search-md.svg'),
           new_project_pipeline_path: new_project_pipeline_path(project),
           operational_configuration_path: new_project_security_policy_path(@project),
-          auto_fix_mrs_path: project_merge_requests_path(@project, label_name: 'GitLab-auto-fix'),
           scanners: VulnerabilityScanners::ListService.new(project).execute.to_json,
           can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
           can_view_false_positive: can_view_false_positive?,

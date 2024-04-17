@@ -98,22 +98,6 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
     end
   end
 
-  describe 'security_settings' do
-    let_it_be(:project) { create(:project, name: 'project', path: 'project') }
-
-    let(:user) { create(:user) }
-
-    before do
-      setup_import_export_config('complex', 'ee')
-      restored_project_json
-    end
-
-    it 'creates security setting' do
-      expect(project.security_setting.auto_fix_dependency_scanning).to be_falsey
-      expect(project.security_setting.auto_fix_container_scanning).to be_truthy
-    end
-  end
-
   describe 'push_rules' do
     let_it_be(:project) { create(:project, name: 'project', path: 'project') }
 
