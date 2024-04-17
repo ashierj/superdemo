@@ -22,8 +22,9 @@ RSpec.describe 'Instance-level Member Roles', feature_category: :permissions do
     fill_in 'Name', with: name
     fill_in 'Description', with: description
     select access_level, from: 'Base role'
+
     permissions.each do |permission|
-      page.check permission
+      page.find('tr', text: permission).click
     end
 
     click_button s_('MemberRole|Create role')

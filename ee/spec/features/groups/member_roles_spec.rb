@@ -26,7 +26,7 @@ RSpec.describe 'Member Roles', :js, feature_category: :permissions do
     select access_level, from: 'Base role'
 
     permissions.each do |permission|
-      page.check(permission)
+      page.find('tr', text: permission).click
     end
 
     click_button s_('MemberRole|Create role')

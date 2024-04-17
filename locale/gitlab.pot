@@ -31370,13 +31370,13 @@ msgstr ""
 msgid "MemberInviteEmail|Invitation to join the %{project_or_group} %{project_or_group_name}"
 msgstr ""
 
+msgid "MemberRole|%{count} of %{total} permissions selected"
+msgstr ""
+
 msgid "MemberRole|%{requirement} has to be enabled in order to enable %{permission}"
 msgstr ""
 
 msgid "MemberRole|Actions"
-msgstr ""
-
-msgid "MemberRole|Add at least one custom permission to the base role."
 msgstr ""
 
 msgid "MemberRole|Are you sure you want to delete this custom role? Before you delete this custom role, make sure no group member has this role."
@@ -31454,6 +31454,9 @@ msgstr ""
 msgid "MemberRole|ID"
 msgstr ""
 
+msgid "MemberRole|Learn more about %{linkStart}available custom permissions%{linkEnd}."
+msgstr ""
+
 msgid "MemberRole|Manage roles"
 msgstr ""
 
@@ -31472,6 +31475,9 @@ msgstr ""
 msgid "MemberRole|No description"
 msgstr ""
 
+msgid "MemberRole|Permission"
+msgstr ""
+
 msgid "MemberRole|Permissions"
 msgstr ""
 
@@ -31488,6 +31494,9 @@ msgid "MemberRole|Save role"
 msgstr ""
 
 msgid "MemberRole|Select a %{linkStart}pre-existing static role%{linkEnd} to predefine a set of permissions."
+msgstr ""
+
+msgid "MemberRole|Select at least one permission."
 msgstr ""
 
 msgid "MemberRole|Standard roles"

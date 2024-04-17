@@ -1,85 +1,117 @@
-import { GlFormCheckbox, GlFormCheckboxGroup, GlSkeletonLoader } from '@gitlab/ui';
+import { GlTable, GlFormCheckbox, GlAlert, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import PermissionsSelector from 'ee/roles_and_permissions/components/permissions_selector.vue';
-import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import PermissionsSelector, {
+  FIELDS,
+} from 'ee/roles_and_permissions/components/permissions_selector.vue';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 import { mockPermissions, mockDefaultPermissions } from '../mock_data';
 
 Vue.use(VueApollo);
-jest.mock('~/alert');
 
 describe('Permissions Selector component', () => {
   let wrapper;
 
   const defaultAvailablePermissionsHandler = jest.fn().mockResolvedValue(mockPermissions);
+  const glTableStub = stubComponent(GlTable, { props: ['items', 'fields', 'busy'] });
 
   const createComponent = ({
-    permissions = [],
-    state = true,
-    availablePermissionsHandler = defaultAvailablePermissionsHandler,
     mountFn = shallowMountExtended,
+    permissions = [],
+    isValid = true,
+    availablePermissionsHandler = defaultAvailablePermissionsHandler,
   } = {}) => {
     wrapper = mountFn(PermissionsSelector, {
-      propsData: { permissions, state },
+      propsData: { permissions, isValid },
       apolloProvider: createMockApollo([[memberRolePermissionsQuery, availablePermissionsHandler]]),
+      stubs: {
+        GlSprintf,
+        ...(mountFn === shallowMountExtended ? { GlTable: glTableStub } : {}),
+      },
     });
 
     return waitForPromises();
   };
 
-  const findCheckboxes = () => wrapper.findAllComponents(GlFormCheckbox);
-  const findCheckboxGroup = () => wrapper.findComponent(GlFormCheckboxGroup);
-  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findTable = () => wrapper.findComponent(GlTable);
+  const findPermissionsSelectedMessage = () => wrapper.findByTestId('permissions-selected-message');
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
-  const checkPermissions = (permissions) => {
-    findCheckboxGroup().vm.$emit('input', permissions);
+  const checkPermission = (value) => {
+    findTable().vm.$emit('row-clicked', { value });
   };
 
-  const expectCheckedPermissions = (expected) => {
-    const permissions = wrapper.emitted('update:permissions')[0][0];
+  const expectSelectedPermissions = (expected) => {
+    const permissions = wrapper.emitted('change')[0][0];
 
     expect(permissions.sort()).toEqual(expected.sort());
   };
 
   describe('available permissions', () => {
-    it('loads the available permissions', () => {
-      createComponent();
+    describe('when loading', () => {
+      beforeEach(() => {
+        createComponent();
+      });
 
-      expect(defaultAvailablePermissionsHandler).toHaveBeenCalledTimes(1);
-    });
+      it('calls the query', () => {
+        expect(defaultAvailablePermissionsHandler).toHaveBeenCalledTimes(1);
+      });
 
-    it('shows the GlSkeletonLoader when the query is loading', () => {
-      createComponent();
+      it('shows the table as busy', () => {
+        expect(findTable().props('busy')).toBe(true);
+      });
 
-      expect(findSkeletonLoader().exists()).toBe(true);
-      expect(findCheckboxes()).toHaveLength(0);
-    });
+      it('does not show the permissions selected message', () => {
+        expect(findPermissionsSelectedMessage().exists()).toBe(false);
+      });
 
-    it('shows the expected permissions when loaded', async () => {
-      await createComponent();
-
-      expect(findSkeletonLoader().exists()).toBe(false);
-      expect(findCheckboxes()).toHaveLength(mockDefaultPermissions.length);
-
-      mockDefaultPermissions.forEach((permission, index) => {
-        const checkboxText = findCheckboxes().at(index).text();
-
-        expect(checkboxText).toContain(permission.name);
-        expect(checkboxText).toContain(permission.description);
+      it('does not show the error message', () => {
+        expect(findAlert().exists()).toBe(false);
       });
     });
 
-    it('shows an error if the query fails', async () => {
-      const availablePermissionsHandler = jest.fn().mockRejectedValue(new Error('failed'));
-      await createComponent({ availablePermissionsHandler });
+    describe('after data is loaded', () => {
+      beforeEach(() => {
+        return createComponent();
+      });
 
-      expect(findCheckboxes()).toHaveLength(0);
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Could not fetch available permissions.',
+      it('shows the table with the expected permissions', () => {
+        expect(findTable().props('busy')).toBe(false);
+        expect(findTable().props()).toMatchObject({
+          fields: FIELDS,
+          items: mockDefaultPermissions,
+        });
+      });
+
+      it('shows the permissions selected message', () => {
+        expect(findPermissionsSelectedMessage().text()).toBe('0 of 7 permissions selected');
+      });
+
+      it('does not show the error message', () => {
+        expect(findAlert().exists()).toBe(false);
+      });
+    });
+
+    describe('on query error', () => {
+      beforeEach(() => {
+        const availablePermissionsHandler = jest.fn().mockRejectedValue();
+        return createComponent({ availablePermissionsHandler });
+      });
+
+      it('shows the error message', () => {
+        expect(findAlert().text()).toBe('Could not fetch available permissions.');
+      });
+
+      it('does not show the table', () => {
+        expect(findTable().exists()).toBe(false);
+      });
+
+      it('does not show the permissions selected message', () => {
+        expect(findPermissionsSelectedMessage().exists()).toBe(false);
       });
     });
   });
@@ -96,9 +128,9 @@ describe('Permissions Selector component', () => {
       ${'G'}     | ${['A', 'B', 'C', 'G']}
     `('selects $expected when $permission is selected', async ({ permission, expected }) => {
       await createComponent();
-      checkPermissions([permission]);
+      checkPermission(permission);
 
-      expectCheckedPermissions(expected);
+      expectSelectedPermissions(expected);
     });
 
     it.each`
@@ -114,28 +146,34 @@ describe('Permissions Selector component', () => {
       'selects $expected when all permissions start off selected and $permission is unselected',
       async ({ permission, expected }) => {
         const permissions = mockDefaultPermissions.map((p) => p.value);
-        const selectedPermissions = permissions.filter((v) => v !== permission);
         await createComponent({ permissions });
         // Uncheck the permission by removing it from all permissions.
-        checkPermissions(selectedPermissions);
+        checkPermission(permission);
 
-        expectCheckedPermissions(expected);
+        expectSelectedPermissions(expected);
       },
     );
+
+    it('checks the permission when the table row is clicked', async () => {
+      await createComponent({ mountFn: mountExtended });
+      findTable().find('tbody tr').trigger('click');
+
+      expectSelectedPermissions(['A']);
+    });
+
+    it('checks the permission when the checkbox is clicked', async () => {
+      await createComponent({ mountFn: mountExtended });
+      wrapper.findAllComponents(GlFormCheckbox).at(1).trigger('click');
+
+      expectSelectedPermissions(['A']);
+    });
   });
 
   describe('validation state', () => {
-    it.each`
-      state    | expectedIsInvalid
-      ${true}  | ${false}
-      ${false} | ${true}
-    `('shows validation as $state when state is $state', async ({ state, expectedIsInvalid }) => {
-      await createComponent({ state, mountFn: mountExtended });
+    it.each([true, false])('shows the expected text when isValid prop is %s', async (isValid) => {
+      await createComponent({ mountFn: mountExtended, isValid });
 
-      const input = findCheckboxes().at(0).find('input');
-      // is-valid should always be false, otherwise the text color will be green instead of black.
-      expect(input.classes('is-valid')).toBe(false);
-      expect(input.classes('is-invalid')).toBe(expectedIsInvalid);
+      expect(wrapper.find('tbody td span').classes('gl-text-red-500')).toBe(!isValid);
     });
   });
 });

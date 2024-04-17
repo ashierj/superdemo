@@ -72,7 +72,7 @@ describe('CreateMemberRole', () => {
     findSelect().setValue('GUEST');
     findNameField().setValue('My role name');
     findDescriptionField().setValue('My description');
-    findPermissionsSelector().vm.$emit('update:permissions', ['A']);
+    findPermissionsSelector().vm.$emit('change', ['A']);
 
     return nextTick();
   };
@@ -143,12 +143,12 @@ describe('CreateMemberRole', () => {
     });
 
     it('shows a warning if no permissions are selected', async () => {
-      expect(findPermissionsSelector().props('state')).toBe(true);
+      expect(findPermissionsSelector().props('isValid')).toBe(true);
 
       findPermissionsSelector().vm.$emit('update:permissions', []);
       await submitForm();
 
-      expect(findPermissionsSelector().props('state')).toBe(false);
+      expect(findPermissionsSelector().props('isValid')).toBe(false);
     });
   });
 

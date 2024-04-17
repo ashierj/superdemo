@@ -277,7 +277,7 @@ export default {
         <div class="gl-mb-3">
           <gl-sprintf :message="$options.i18n.baseRoleHelpText">
             <template #link="{ content }">
-              <gl-link :href="staticRolesHelpPagePath">{{ content }}</gl-link>
+              <gl-link :href="staticRolesHelpPagePath" target="_blank">{{ content }}</gl-link>
             </template>
           </gl-sprintf>
         </div>
@@ -292,7 +292,7 @@ export default {
       />
     </gl-form-group>
 
-    <permissions-selector :permissions.sync="memberRole.permissions" :state="isPermissionsValid" />
+    <permissions-selector v-model="memberRole.permissions" :is-valid="isPermissionsValid" />
 
     <div class="gl-display-flex gl-flex-wrap gl-gap-3">
       <gl-button
