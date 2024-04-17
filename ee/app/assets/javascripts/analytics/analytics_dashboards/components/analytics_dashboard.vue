@@ -179,16 +179,7 @@ export default {
 
         return {
           ...dashboard,
-          panels:
-            // Panel ids need to remain consistent and they are unique to the
-            // frontend. Thus they don't get saved with GraphQL and we need to
-            // reference the saved panels array to persist the ids.
-            this.savedPanels ||
-            dashboard.panels?.nodes?.map((panel) => ({
-              ...panel,
-              id: getUniquePanelId(),
-            })) ||
-            [],
+          panels: this.getDashboardPanels(dashboard),
         };
       },
       result() {
@@ -249,6 +240,19 @@ export default {
   methods: {
     createNewDashboard() {
       return NEW_DASHBOARD();
+    },
+    getDashboardPanels(dashboard) {
+      // Panel ids need to remain consistent and they are unique to the
+      // frontend. Thus they don't get saved with GraphQL and we need to
+      // reference the saved panels array to persist the ids.
+      if (this.savedPanels) return this.savedPanels;
+
+      const panels = dashboard.panels?.nodes || [];
+
+      return panels.map(({ id, ...panel }) => ({
+        ...panel,
+        id: getUniquePanelId(),
+      }));
     },
     async saveDashboard(dashboardSlug, dashboard) {
       this.validateDashboardTitle(dashboard.title, true);

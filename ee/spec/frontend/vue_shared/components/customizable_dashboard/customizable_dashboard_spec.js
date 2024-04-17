@@ -26,7 +26,6 @@ import {
   TEST_EMPTY_DASHBOARD_SVG_PATH,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
-import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
 import { stubComponent } from 'helpers/stub_component';
 import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
 
@@ -472,8 +471,18 @@ describe('CustomizableDashboard', () => {
 
           expect(panels).toHaveLength(3);
           expect(panels[2]).toMatchObject({
-            ...createNewVisualizationPanel(TEST_VISUALIZATION()),
             id: expect.stringContaining('panel-'),
+            title: 'Test visualization',
+            gridAttributes: { width: 4, height: 3 },
+            queryOverrides: {},
+            options: {},
+            visualization: {
+              version: 1,
+              type: 'LineChart',
+              slug: 'test_visualization',
+              data: { type: 'cube_analytics', query: expect.any(Object) },
+              errors: null,
+            },
           });
         });
       });
