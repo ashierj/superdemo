@@ -584,14 +584,18 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   end
 
   describe '#create_identity_verification_exemption' do
-    subject(:create_identity_verification_exemption) { user.create_identity_verification_exemption }
+    subject(:create_identity_verification_exemption) { user.create_identity_verification_exemption('because') }
 
     let(:user) { create(:user) }
 
-    it 'creates an exemption' do
+    it 'creates an exemption', :aggregate_failures do
       expect { subject }.to change {
         user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT).count
       }.from(0).to(1)
+
+      expect(
+        user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT).first.value
+      ).to eq('because')
     end
   end
 

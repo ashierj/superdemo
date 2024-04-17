@@ -69,6 +69,7 @@ module EE
     def invite_root_namespace
       member&.source&.root_ancestor
     end
+    strong_memoize_attr :invite_root_namespace
 
     def member
       member_id = session[:originating_member_id]
@@ -78,6 +79,14 @@ module EE
     end
     strong_memoize_attr :member
 
+    def exempt_paid_namespace_invitee_from_identity_verification(user)
+      return unless identity_verification_enabled?
+      return unless invite_root_namespace&.has_subscription?
+      return unless invite_root_namespace&.actual_plan&.paid_excluding_trials?
+
+      user.create_identity_verification_exemption('invited to paid namespace')
+    end
+
     override :after_successful_create_hook
     def after_successful_create_hook(user)
       # The order matters here as the arkose call needs to come before the devise action happens.
@@ -86,6 +95,9 @@ module EE
       # that are added by this action so that the IdentityVerifiable module observation of them is correct.
       # Identity Verification feature specs cover this ordering.
       record_arkose_data(user)
+
+      # calling this before super since originating_member_id will be cleared from the session when super is called
+      exempt_paid_namespace_invitee_from_identity_verification(user)
 
       super
 

@@ -102,8 +102,8 @@ module IdentityVerifiable
     exempt_from_phone_number_verification? ? destroy_phone_number_exemption : create_phone_number_exemption!
   end
 
-  def create_identity_verification_exemption
-    custom_attributes.create(key: UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT, value: true)
+  def create_identity_verification_exemption(reason)
+    custom_attributes.create(key: UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT, value: reason)
   end
 
   def destroy_identity_verification_exemption
@@ -111,10 +111,11 @@ module IdentityVerifiable
   end
 
   def exempt_from_identity_verification?
-    return true if belongs_to_paid_namespace?(exclude_trials: true)
+    return true if identity_verification_exemption_attribute.present?
     return true if enterprise_user?
+    return true if belongs_to_paid_namespace?(exclude_trials: true)
 
-    identity_verification_exemption_attribute.present?
+    false
   end
 
   def verification_method_enabled?(method)

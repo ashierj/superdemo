@@ -116,6 +116,8 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
   end
 
   describe '#create', :clean_gitlab_redis_rate_limiting do
+    using RSpec::Parameterized::TableSyntax
+
     let_it_be(:base_user_params) { build_stubbed(:user).slice(:first_name, :last_name, :username, :password) }
     let_it_be(:new_user_email) { 'new@user.com' }
     let_it_be(:user_params) { { user: base_user_params.merge(email: new_user_email) } }
@@ -124,7 +126,28 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
 
     subject(:post_create) { post :create, params: params.merge(user_params), session: session }
 
+    def identity_verification_exempt_for_user?
+      created_user = User.find_by(email: new_user_email)
+      created_user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT).any?
+    end
+
     it_behaves_like 'geo-ip restriction'
+
+    shared_examples 'not exempt from identity verification' do
+      before do
+        stub_saas_features(identity_verification: true)
+        stub_application_setting_enum('email_confirmation_setting', 'hard')
+        stub_application_setting(require_admin_approval_after_user_signup: false)
+      end
+
+      it 'does not exempt identity verification', :aggregate_failures do
+        subject
+        created_user = User.find_by(email: new_user_email)
+
+        expect(created_user.identity_verification_enabled?).to eq(true)
+        expect(identity_verification_exempt_for_user?).to eq(false)
+      end
+    end
 
     shared_examples 'blocked user by default' do
       it 'registers the user in blocked_pending_approval state' do
@@ -148,6 +171,8 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         expect(flash[:notice])
           .to match(/your account is awaiting approval from your GitLab administrator/)
       end
+
+      it_behaves_like 'not exempt from identity verification'
     end
 
     shared_examples 'active user by default' do
@@ -164,6 +189,8 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
 
         expect(flash[:notice]).to be_nil
       end
+
+      it_behaves_like 'not exempt from identity verification'
     end
 
     context 'for onboarding concerns' do
@@ -210,6 +237,58 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         end
 
         it_behaves_like 'blocked user by default'
+      end
+    end
+
+    context 'when identity verification is enabled', :saas do
+      let_it_be(:free_group) { create(:group) }
+      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:ultimate_trial_group) { create(:group_with_plan, plan: :ultimate_trial_plan) }
+      let_it_be(:free_member) { create(:group_member, :invited, invite_email: new_user_email, group: free_group) }
+      let_it_be(:paid_member) { create(:group_member, :invited, invite_email: new_user_email, group: ultimate_group) }
+      let_it_be(:trial_member) do
+        create(:group_member, :invited, invite_email: new_user_email, group: ultimate_trial_group)
+      end
+
+      before do
+        allow_next_instance_of(User) do |instance|
+          allow(instance).to receive(:identity_verification_enabled?).and_return(true)
+        end
+        session[:originating_member_id] = member.id
+      end
+
+      where(:member, :exempt) do
+        ref(:free_member)  | false
+        ref(:paid_member)  | true
+        ref(:trial_member) | false
+      end
+
+      with_them do
+        exempts = params[:exempt] ? 'exempts' : 'does not exempt'
+
+        it "#{exempts} the user from identity verification" do
+          subject
+
+          expect(identity_verification_exempt_for_user?).to eq(exempt)
+        end
+      end
+    end
+
+    context 'when identity verification is disabled', :saas do
+      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be(:member) { create(:group_member, :invited, invite_email: new_user_email, group: ultimate_group) }
+
+      before do
+        allow_next_instance_of(User) do |instance|
+          allow(instance).to receive(:identity_verification_enabled?).and_return(false)
+        end
+        session[:originating_member_id] = member.id
+      end
+
+      it "does not create an exemption for a user invited to a paid namespace" do
+        subject
+
+        expect(identity_verification_exempt_for_user?).to eq(false)
       end
     end
 
