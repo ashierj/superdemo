@@ -573,6 +573,14 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
           expect(child_epic.reload.relative_position).to eq(child_work_item.parent_link.reload.relative_position)
         end
 
+        it 'keeps epics timestamp in sync' do
+          expect { create_link }.to change { parent_epic.children.count }.by(1)
+            .and(change { WorkItems::ParentLink.count }.by(1))
+
+          expect(parent_epic.reload.updated_at).to eq(parent_epic.work_item.updated_at)
+          expect(child_epic.reload.updated_at).to eq(child_epic.work_item.updated_at)
+        end
+
         it 'does not create resource event for the work item' do
           expect(WorkItems::ResourceLinkEvent).not_to receive(:create)
 
@@ -604,11 +612,13 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
             expect(child_epic2.reload.relative_position).to eq(child_work_item2.reload.parent_link.relative_position)
           end
 
-          it 'does not create resource event for the work item' do
-            expect(WorkItems::ResourceLinkEvent).not_to receive(:create)
-
+          it 'keeps epics timestamp in sync' do
             expect { create_link }.to change { parent_epic.children.count }.by(2)
               .and(change { WorkItems::ParentLink.count }.by(2))
+
+            expect(parent_epic.reload.updated_at).to eq(parent_epic.work_item.updated_at)
+            expect(child_epic.reload.updated_at).to eq(child_epic.work_item.updated_at)
+            expect(child_epic2.reload.updated_at).to eq(child_epic2.work_item.updated_at)
           end
 
           it 'creates system notes only for the epics' do

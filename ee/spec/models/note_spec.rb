@@ -31,6 +31,55 @@ RSpec.describe Note, feature_category: :team_planning do
     end
   end
 
+  describe 'callbacks' do
+    describe '#touch_noteable' do
+      it 'calls #touch on the noteable' do
+        noteable = create(:issue)
+        note = build(:note, project: noteable.project, noteable: noteable)
+
+        expect(note).to receive(:touch_noteable).and_call_original
+        expect(note.noteable).to receive(:touch)
+
+        note.save!
+      end
+
+      context 'when noteable is an epic' do
+        let_it_be(:noteable) { create(:epic) }
+        let(:note) { build(:note, project: nil, noteable: noteable) }
+        let(:noteable_association) { note.association(:noteable) }
+
+        before do
+          allow(noteable_association).to receive(:loaded?).and_return(object_loaded)
+          allow(note).to receive(:touch_noteable).and_call_original
+        end
+
+        context 'when noteable is loaded' do
+          let(:object_loaded) { true }
+
+          it 'calls #touch and #sync_work_item_updated_at on the noteable' do
+            expect(note.noteable).to receive(:touch)
+            expect(note.noteable).to receive(:sync_work_item_updated_at)
+
+            note.save!
+          end
+        end
+
+        context 'when noteable is not loaded' do
+          let(:object_loaded) { false }
+
+          it 'calls #touch and #sync_work_item_updated_at on the noteable' do
+            expect_any_instance_of(::Epic) do |epic|
+              expect(epic).to receive(:touch)
+              expect(epic).to receive(:sync_work_item_updated_at)
+            end
+
+            note.save!
+          end
+        end
+      end
+    end
+  end
+
   describe '#ensure_namespace_id' do
     context 'for an epic note' do
       let_it_be(:epic) { create(:epic) }

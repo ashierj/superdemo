@@ -23,7 +23,7 @@ RSpec.describe 'Epics > User uses quick actions', :js, feature_category: :portfo
     it 'applies quick action' do
       # TODO: remove threshold after epic-work item sync
       # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(112)
       epic_2 = create(:epic, group: group)
       visit group_epic_path(group, epic_2)
       wait_for_requests

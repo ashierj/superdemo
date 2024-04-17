@@ -133,6 +133,8 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
 
             expect(parent_epic.reload.children).not_to include(child_epic)
             expect(parent.reload.work_item_children).not_to include(child)
+            expect(parent_epic.updated_at).to eq(parent_epic.work_item.updated_at)
+            expect(child_epic.updated_at).to eq(child_epic.work_item.updated_at)
           end
 
           it 'does not create resource event for the work item' do

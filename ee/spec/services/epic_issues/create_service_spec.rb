@@ -226,6 +226,13 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                 expect(created_link.relative_position).to eq(epic.work_item.child_links[0].relative_position)
               end
 
+              it 'keeps epic timestamps in sync' do
+                expect { subject }.to change { EpicIssue.count }.by(1)
+                  .and(change { WorkItems::ParentLink.count }.by(1))
+
+                expect(epic.updated_at).to eq(epic.work_item.updated_at)
+              end
+
               context 'when work item already has a parent' do
                 before do
                   create(:epic_issue, epic: epic, issue: issue)

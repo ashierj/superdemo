@@ -36,7 +36,8 @@ module Epics
         work_item.relative_position = epic.id
         work_item.title_html = epic.title_html
         work_item.description_html = epic.description_html
-        work_item.save!
+        work_item.updated_at = epic.updated_at
+        work_item.save!(touch: false)
       end
     end
 

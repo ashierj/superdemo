@@ -1558,4 +1558,26 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       expect(epic4.linked_items_count).to eq(0)
     end
   end
+
+  describe '#sync_work_item_updated_at' do
+    let_it_be(:epic) { create(:epic, group: group) }
+
+    it 'updates the updated_at column on the work item' do
+      expect(epic.work_item).to receive(:update_column).with(:updated_at, epic.updated_at).once
+
+      epic.sync_work_item_updated_at
+    end
+
+    context 'when sync_epic_to_work_item feature flag is disabled' do
+      before do
+        stub_feature_flags(sync_epic_to_work_item: false)
+      end
+
+      it 'does not update the updated_at column on the work item' do
+        expect(epic.work_item).not_to receive(:update_column)
+
+        epic.sync_work_item_updated_at
+      end
+    end
+  end
 end

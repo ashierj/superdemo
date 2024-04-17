@@ -110,9 +110,11 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
             allow(Epics::UpdateDatesService).to receive(:new).and_call_original
           end
 
-          it 'removes the epic and work item link' do
+          it 'removes the epic and work item link and keep epic in sync' do
             expect { subject }.to change { EpicIssue.count }.by(-1)
               .and(change { WorkItems::ParentLink.count }.by(-1))
+
+            expect(epic.reload.updated_at).to eq(epic.work_item.updated_at)
           end
 
           context 'when feature flag is disabled' do
