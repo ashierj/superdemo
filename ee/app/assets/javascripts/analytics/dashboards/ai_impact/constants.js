@@ -20,14 +20,14 @@ export const SUPPORTED_VULNERABILITY_METRICS = [VULNERABILITY_METRICS.CRITICAL];
 
 export const SUPPORTED_AI_METRICS = [AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE];
 
-export const TABLE_METRICS = {
+export const AI_IMPACT_TABLE_METRICS = {
   ...pick(VSD_TABLE_METRICS, [
     ...SUPPORTED_FLOW_METRICS,
     ...SUPPORTED_DORA_METRICS,
     ...SUPPORTED_VULNERABILITY_METRICS,
   ]),
   [AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE]: {
-    label: s__('DORA4Metrics|Code Suggestions usage'),
+    label: s__('AiImpactAnalytics|Code Suggestions usage'),
     units: UNITS.PERCENT,
   },
 };

@@ -18,7 +18,7 @@ import {
   generateTableRows,
 } from '../utils';
 import {
-  TABLE_METRICS,
+  AI_IMPACT_TABLE_METRICS,
   SUPPORTED_DORA_METRICS,
   SUPPORTED_FLOW_METRICS,
   SUPPORTED_VULNERABILITY_METRICS,
@@ -99,7 +99,7 @@ export default {
       // Return an array of the failed metric IDs
       return result
         .reduce((acc, { reason = [] }) => acc.concat(reason), [])
-        .map((metric) => TABLE_METRICS[metric].label);
+        .map((metric) => AI_IMPACT_TABLE_METRICS[metric].label);
     },
 
     async fetchTableMetrics({ metrics, queryFn }) {
