@@ -16,6 +16,8 @@ export const handleIssuablePopoverMount = ({
   namespacePath,
   title,
   iid,
+  milestone,
+  innerText,
   referenceType,
   target,
 }) =>
@@ -25,6 +27,8 @@ export const handleIssuablePopoverMount = ({
     namespacePath,
     title,
     iid,
+    milestone,
+    innerText,
     referenceType,
     target,
   });
