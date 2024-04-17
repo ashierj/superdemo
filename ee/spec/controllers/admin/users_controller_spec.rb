@@ -140,7 +140,9 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
 
     context 'when it is successful' do
       it 'calls create_identity_verification_exemption and redirects with a success notice' do
-        expect(user).to receive(:create_identity_verification_exemption).once.and_call_original
+        expect(user).to receive(:create_identity_verification_exemption).once.with(
+          "set by #{admin.username}"
+        ).and_call_original
 
         subject
 

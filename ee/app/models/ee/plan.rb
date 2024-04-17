@@ -29,6 +29,7 @@ module EE
         PREMIUM_TRIAL,
         OPEN_SOURCE
       ].freeze
+      FREE_TRIAL_PLANS = [ULTIMATE_TRIAL, PREMIUM_TRIAL].freeze
       EE_ALL_PLANS = (EE_DEFAULT_PLANS + PAID_HOSTED_PLANS).freeze
       PLANS_ELIGIBLE_FOR_TRIAL = EE_DEFAULT_PLANS
       TOP_PLANS = [GOLD, ULTIMATE, OPEN_SOURCE].freeze
@@ -77,6 +78,10 @@ module EE
     override :paid?
     def paid?
       PAID_HOSTED_PLANS.include?(name)
+    end
+
+    def paid_excluding_trials?
+      (PAID_HOSTED_PLANS - FREE_TRIAL_PLANS).include?(name)
     end
 
     def open_source?

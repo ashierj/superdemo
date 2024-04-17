@@ -169,6 +169,22 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#has_subscription?' do
+    subject { namespace.has_subscription? }
+
+    context 'when namespace does not have a subscription associated' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when namespace has a subscription associated', :saas do
+      before do
+        create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+  end
+
   describe '#actual_plan_name' do
     let_it_be(:namespace, refind: true) { create(:namespace) }
 

@@ -256,6 +256,10 @@ module EE
       end
     end
 
+    def has_subscription?
+      !root_ancestor.gitlab_subscription.nil?
+    end
+
     def actual_plan_store_key
       "namespaces:#{id}:actual_plan"
     end
