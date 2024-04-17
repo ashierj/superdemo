@@ -8,9 +8,6 @@ module Gitlab
           module Prompts
             class Anthropic
               include Concerns::AnthropicPrompt
-
-              MODEL = 'claude-instant-1.2'
-
               def self.prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROMPT_TEMPLATE, options
@@ -20,7 +17,7 @@ module Gitlab
                   "\n\nHuman: #{base_prompt}\n\nAssistant: ```json
                     \{
                       \"ResourceIdentifierType\": \"",
-                  options: { model: MODEL }
+                  options: { model: ::Gitlab::Llm::AiGateway::Client::DEFAULT_INSTANT_MODEL }
                 )
               end
             end

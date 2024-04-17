@@ -13,6 +13,7 @@ module Gitlab
         CLAUDE_3_SONNET = 'claude-3-sonnet-20240229'
         DEFAULT_PROVIDER = 'anthropic'
         DEFAULT_MODEL = 'claude-2.1'
+        DEFAULT_INSTANT_MODEL = 'claude-instant-1.2'
         DEFAULT_TIMEOUT = 30.seconds
         DEFAULT_TYPE = 'prompt'
         DEFAULT_SOURCE = 'GitLab EE'
