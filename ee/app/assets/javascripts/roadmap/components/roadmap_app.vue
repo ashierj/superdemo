@@ -1,14 +1,32 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
+
 import RoadmapShell from 'jh_else_ee/roadmap/components/roadmap_shell.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+
+import { createAlert } from '~/alert';
+import { s__ } from '~/locale';
+
+import { getEpicsTimeframeRange } from '../utils/roadmap_utils';
+import { transformFetchEpicFilterParams } from '../utils/epic_utils';
+import { ROADMAP_PAGE_SIZE } from '../constants';
+import {
+  formatRoadmapItemDetails,
+  timeframeStartDate,
+  timeframeEndDate,
+} from '../utils/roadmap_item_utils';
+import epicChildEpics from '../queries/epic_child_epics.query.graphql';
+import groupEpics from '../queries/group_epics.query.graphql';
+import groupEpicsWithColor from '../queries/group_epics_with_color.query.graphql';
 
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
 import RoadmapSettings from './roadmap_settings.vue';
 
 export default {
+  epicsFetchError: s__('GroupRoadmap|Something went wrong while fetching epics'),
   components: {
     EpicsListEmpty,
     GlLoadingIcon,
@@ -16,24 +34,123 @@ export default {
     RoadmapSettings,
     RoadmapShell,
   },
-  inject: ['epicIid'],
+  mixins: [glFeatureFlagsMixin()],
+  inject: ['epicIid', 'fullPath'],
   data() {
     return {
       isSettingsSidebarOpen: false,
+      rawEpics: {},
+      epicsFetchFailure: false,
+      epicsFetchNextPageInProgress: false,
     };
+  },
+  apollo: {
+    rawEpics: {
+      query() {
+        return this.epicsQuery;
+      },
+      variables() {
+        return { ...this.epicsQueryVariables };
+      },
+      update(data) {
+        return this.epicIid ? data?.group?.epic?.children : data?.group?.epics;
+      },
+      error() {
+        this.epicsFetchFailure = true;
+        createAlert({
+          message: this.$options.epicsFetchError,
+        });
+      },
+    },
   },
   computed: {
     ...mapState([
-      'epics',
       'timeframe',
-      'epicsFetchInProgress',
-      'epicsFetchResultEmpty',
-      'epicsFetchFailure',
       'hasFiltersApplied',
       'filterParams',
       'presetType',
       'timeframeRangeType',
+      'epicsState',
+      'sortedBy',
     ]),
+    epicColorHighlightEnabled() {
+      return Boolean(this.glFeatures.epicColorHighlight);
+    },
+    epicsQuery() {
+      if (this.epicIid) {
+        return epicChildEpics;
+      }
+      return this.epicColorHighlightEnabled ? groupEpicsWithColor : groupEpics;
+    },
+    epicsQueryVariables() {
+      let variables = {
+        fullPath: this.fullPath,
+        state: this.epicsState,
+        sort: this.sortedBy,
+        ...getEpicsTimeframeRange({
+          presetType: this.presetType,
+          timeframe: this.timeframe,
+        }),
+      };
+
+      const transformedFilterParams = transformFetchEpicFilterParams(this.filterParams);
+
+      if (this.epicIid) {
+        variables.iid = this.epicIid;
+        variables.withColor = this.epicColorHighlightEnabled;
+      } else {
+        variables = {
+          ...variables,
+          ...transformedFilterParams,
+          first: ROADMAP_PAGE_SIZE,
+          endCursor: '',
+        };
+
+        if (transformedFilterParams?.epicIid) {
+          variables.iid = transformedFilterParams.epicIid.split('::&').pop();
+        }
+        if (transformedFilterParams?.groupPath) {
+          variables.fullPath = transformedFilterParams.groupPath;
+          variables.includeDescendantGroups = false;
+        }
+      }
+
+      return variables;
+    },
+
+    epics() {
+      const epics = this.rawEpics.nodes || [];
+      return epics.reduce((filteredEpics, epic) => {
+        const { presetType, timeframe } = this;
+        const formattedEpic = formatRoadmapItemDetails(
+          epic,
+          timeframeStartDate(presetType, timeframe),
+          timeframeEndDate(presetType, timeframe),
+        );
+
+        formattedEpic.isChildEpic = true;
+
+        // Exclude any Epic that has invalid dates
+        // or is already present in Roadmap timeline
+        if (formattedEpic.startDate.getTime() <= formattedEpic.endDate.getTime()) {
+          filteredEpics.push(formattedEpic);
+        }
+
+        return filteredEpics;
+      }, []);
+    },
+    epicsFetchResultEmpty() {
+      return this.epics.length === 0;
+    },
+    epicsFetchInProgress() {
+      return this.$apollo.queries.rawEpics.loading && !this.epicsFetchNextPageInProgress;
+    },
+    hasNextPage() {
+      return Boolean(this.rawEpics.pageInfo?.hasNextPage);
+    },
+    endCursor() {
+      return this.rawEpics.pageInfo?.endCursor || '';
+    },
     showFilteredSearchbar() {
       if (this.epicsFetchResultEmpty) {
         return this.hasFiltersApplied;
@@ -51,13 +168,28 @@ export default {
       return !this.isWarningDismissed && this.epics.length > gon?.roadmap_epics_limit;
     },
   },
-  created() {
-    this.fetchEpics();
-  },
   methods: {
-    ...mapActions(['fetchEpics']),
     toggleSettings() {
       this.isSettingsSidebarOpen = !this.isSettingsSidebarOpen;
+    },
+    async fetchNextPage() {
+      if (this.hasNextPage && !this.epicsFetchNextPageInProgress) {
+        this.epicsFetchNextPageInProgress = true;
+
+        try {
+          await this.$apollo.queries.rawEpics.fetchMore({
+            variables: {
+              endCursor: this.endCursor,
+            },
+          });
+        } catch {
+          this.epicsFetchFailure = true;
+          createAlert({
+            message: this.$options.epicsFetchError,
+          });
+        }
+        this.epicsFetchNextPageInProgress = false;
+      }
     },
   },
 };
@@ -88,8 +220,11 @@ export default {
         :preset-type="presetType"
         :epics="epics"
         :timeframe="timeframe"
+        :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
+        :has-next-page="hasNextPage"
         :has-filters-applied="hasFiltersApplied"
         :is-settings-sidebar-open="isSettingsSidebarOpen"
+        @scrolledToEnd="fetchNextPage"
       />
     </div>
     <roadmap-settings

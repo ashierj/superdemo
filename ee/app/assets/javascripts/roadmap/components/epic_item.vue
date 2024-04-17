@@ -87,7 +87,7 @@ export default {
           fullPath: this.epic.group?.fullPath,
           state: this.epicsState,
           sort: this.sortedBy,
-          withColor: this.epicColorHighlight,
+          withColor: this.epicColorHighlightEnabled,
           ...this.filterParams,
         };
       },
@@ -123,7 +123,7 @@ export default {
   },
   computed: {
     ...mapState(['epicsState', 'sortedBy', 'filterParams']),
-    epicColorHighlight() {
+    epicColorHighlightEnabled() {
       return Boolean(this.glFeatures.epicColorHighlight);
     },
     /**

@@ -27,9 +27,6 @@ describe('RoadmapDaterange', () => {
       },
       mutations,
       state: state(),
-      getters: {
-        isScopedRoadmap: (s) => Boolean(s.epicIid),
-      },
     });
 
     store.dispatch('setInitialData', {

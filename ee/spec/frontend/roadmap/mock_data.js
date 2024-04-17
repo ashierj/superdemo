@@ -624,6 +624,8 @@ export const mockAncestorEpicNode = {
 export const mockEpicNode1 = {
   __typename: 'Epic',
   parent: null,
+  blocked: false,
+  blockedByCount: 0,
   id: 'gid://gitlab/Epic/40',
   iid: '2',
   title: 'Marketing epic',
@@ -643,17 +645,13 @@ export const mockEpicNode1 = {
   descendantCounts: {
     openedEpics: 3,
     closedEpics: 2,
+    openedIssues: 0,
+    closedIssues: 1,
     __typename: 'EpicDescendantCount',
   },
+  labels: [],
   ancestors: {
-    edges: [
-      {
-        node: {
-          ...mockAncestorEpicNode,
-        },
-        __typename: 'EpicEdge',
-      },
-    ],
+    nodes: [mockAncestorEpicNode],
     __typename: 'EpicConnection',
   },
   group: mockGroup1,
@@ -662,13 +660,19 @@ export const mockEpicNode1 = {
 export const mockEpicNode2 = {
   __typename: 'Epic',
   parent: null,
+  blocked: false,
+  blockedByCount: 0,
   id: 'gid://gitlab/Epic/41',
   iid: '3',
   title: 'Another marketing',
   startDate: '2017-12-26',
   dueDate: '2018-03-10',
   state: 'opened',
+  hasChildren: false,
+  hasParent: false,
+  confidential: false,
   webUrl: 'http://gdk.test:3000/groups/gitlab-org/marketing/-/epics/2',
+  description: '',
   descendantWeightSum: {
     closedIssues: 0,
     openedIssues: 1,
@@ -677,17 +681,13 @@ export const mockEpicNode2 = {
   descendantCounts: {
     openedEpics: 0,
     closedEpics: 0,
+    openedIssues: 0,
+    closedIssues: 1,
     __typename: 'EpicDescendantCount',
   },
+  labels: [],
   ancestors: {
-    edges: [
-      {
-        node: {
-          ...mockAncestorEpicNode,
-        },
-        __typename: 'EpicEdge',
-      },
-    ],
+    nodes: [mockAncestorEpicNode],
     __typename: 'EpicConnection',
   },
   group: mockGroup1,
@@ -710,6 +710,23 @@ export const mockGroupEpicsQueryResponse = {
       name: 'Gitlab Org',
       epics: {
         nodes: [mockEpicNode1, mockEpicNode2],
+        pageInfo: {
+          ...mockPageInfo,
+        },
+        __typename: 'EpicConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockGroupEpicsQueryResponseEmpty = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      name: 'Gitlab Org',
+      epics: {
+        nodes: [],
         pageInfo: {
           ...mockPageInfo,
         },

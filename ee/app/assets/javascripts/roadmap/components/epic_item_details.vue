@@ -107,7 +107,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setFilterParams', 'fetchEpics']),
+    ...mapActions(['setFilterParams']),
     toggleEpic() {
       if (!this.isEmptyChildrenWithFilter) {
         this.$emit('toggleEpic');
@@ -131,7 +131,6 @@ export default {
             { dropKeys: UNSUPPORTED_ROADMAP_PARAMS },
           ),
         );
-        this.fetchEpics();
       }
     },
     scopedLabel(label) {
