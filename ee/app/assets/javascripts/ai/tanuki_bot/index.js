@@ -18,7 +18,9 @@ export const initTanukiBotChatDrawer = () => {
     return false;
   }
 
-  const toggleEls = document.querySelectorAll('.js-tanuki-bot-chat-toggle');
+  const toggleEls = document.querySelectorAll(
+    '.js-tanuki-bot-chat-toggle, .js-tanuki-bot-chat-ga-alert-toggle',
+  );
   if (toggleEls.length) {
     toggleEls.forEach((toggleEl) => {
       toggleEl.addEventListener('click', () => {
