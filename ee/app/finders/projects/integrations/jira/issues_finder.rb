@@ -35,7 +35,9 @@ module Projects
 
             raise IntegrationError, _('Jira project key is not configured.') if project_keys.blank?
           else
-            project_keys = (params[:project].presence || jira_integration.project_keys_as_string)
+            return [] unless project_keys_allowed?
+
+            project_keys = params[:project].presence || jira_integration.project_keys_as_string
           end
 
           fetch_issues(project_keys)
@@ -77,6 +79,12 @@ module Projects
         def set_pagination
           @page = (params[:page].presence || 1).to_i
           @per_page = (params[:per_page].presence || ::Jira::Requests::Issues::ListService::PER_PAGE).to_i
+        end
+
+        def project_keys_allowed?
+          return true if jira_integration.project_keys.blank? || params[:project].blank?
+
+          jira_integration.project_keys.include?(params[:project])
         end
       end
     end
