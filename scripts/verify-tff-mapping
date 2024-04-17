@@ -144,18 +144,6 @@ tests = [
   },
 
   {
-    explanation: 'FOSS factory should map to factories spec',
-    changed_file: 'spec/factories/users.rb',
-    expected: ['ee/spec/models/factories_spec.rb']
-  },
-
-  {
-    explanation: 'EE factory should map to factories spec',
-    changed_file: 'ee/spec/factories/users.rb',
-    expected: ['ee/spec/models/factories_spec.rb']
-  },
-
-  {
     explanation: 'Whats New should map to its respective spec',
     changed_file: 'data/whats_new/202101140001_13_08.yml',
     expected: ['spec/lib/release_highlights/validator_spec.rb']
