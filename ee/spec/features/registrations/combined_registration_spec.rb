@@ -7,7 +7,7 @@ RSpec.describe 'Registration group and project creation flow', :js, feature_cate
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(158)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(160)
 
     # Stubbed not to break query budget. Should be safe as the query only happens on SaaS and the result is cached
     allow(Gitlab::Com).to receive(:gitlab_com_group_member?).and_return(nil)

@@ -59,15 +59,34 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
       end
 
       context 'when in trial flow' do
-        it 'tracks render event' do
-          get :new, params: { trial: true }
+        context 'when trial is detected from params' do
+          it 'tracks render event' do
+            get :new, params: { trial: true }
 
-          expect_snowplow_event(
-            category: described_class.name,
-            action: 'render',
-            user: user,
-            label: 'trial_registration'
-          )
+            expect_snowplow_event(
+              category: described_class.name,
+              action: 'render',
+              user: user,
+              label: 'trial_registration'
+            )
+          end
+        end
+
+        context 'when trial is detected from onboarding_status' do
+          before do
+            user.update!(onboarding_status_registration_type: 'trial')
+          end
+
+          it 'tracks render event' do
+            get :new
+
+            expect_snowplow_event(
+              category: described_class.name,
+              action: 'render',
+              user: user,
+              label: 'trial_registration'
+            )
+          end
         end
       end
     end
@@ -166,7 +185,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         end
       end
 
-      context 'when saving onboarding_step_url' do
+      context 'when saving onboarding_status_step_url' do
         let(:path) { new_users_sign_up_group_path(redirect_params) }
 
         before do
@@ -180,7 +199,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
             it 'stores onboarding url' do
               post_create
 
-              expect(user.onboarding_status_step_url).to eq(path)
+              expect(user.reset.onboarding_status_step_url).to eq(path)
             end
           end
 
@@ -215,17 +234,36 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         end
 
         context 'when in trial flow' do
-          let(:params) { { trial: 'true' } }
+          context 'when trial is detected from params' do
+            let(:params) { { trial: 'true' } }
 
-          it 'tracks successful submission event' do
-            post_create
+            it 'tracks successful submission event' do
+              post_create
 
-            expect_snowplow_event(
-              category: described_class.name,
-              action: 'successfully_submitted_form',
-              user: user,
-              label: 'trial_registration'
-            )
+              expect_snowplow_event(
+                category: described_class.name,
+                action: 'successfully_submitted_form',
+                user: user,
+                label: 'trial_registration'
+              )
+            end
+          end
+
+          context 'when trial is detected from onboarding_status' do
+            before do
+              user.update!(onboarding_status_registration_type: 'trial')
+            end
+
+            it 'tracks successful submission event' do
+              post_create
+
+              expect_snowplow_event(
+                category: described_class.name,
+                action: 'successfully_submitted_form',
+                user: user,
+                label: 'trial_registration'
+              )
+            end
           end
         end
       end

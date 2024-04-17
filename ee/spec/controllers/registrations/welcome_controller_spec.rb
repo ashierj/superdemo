@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::WelcomeController, feature_category: :onboarding do
-  let_it_be(:user) { create(:user, onboarding_in_progress: true) }
+  let_it_be(:user, reload: true) { create(:user, onboarding_in_progress: true) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
 
@@ -63,34 +63,72 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
       end
 
       context 'when in invitation flow' do
-        before do
-          create(:group_member, source: group, user: user)
+        context 'when invitation detected via user memberships' do
+          before do
+            create(:group_member, source: group, user: user)
+          end
+
+          it 'tracks render event' do
+            get_show
+
+            expect_snowplow_event(
+              category: 'registrations:welcome:show',
+              action: 'render',
+              user: user,
+              label: 'invite_registration'
+            )
+          end
         end
 
-        it 'tracks render event' do
-          get_show
+        context 'when invitation detected via onboarding_status' do
+          before do
+            user.update!(onboarding_status_registration_type: 'invite')
+          end
 
-          expect_snowplow_event(
-            category: 'registrations:welcome:show',
-            action: 'render',
-            user: user,
-            label: 'invite_registration'
-          )
+          it 'tracks render event' do
+            get_show
+
+            expect_snowplow_event(
+              category: 'registrations:welcome:show',
+              action: 'render',
+              user: user,
+              label: 'invite_registration'
+            )
+          end
         end
       end
 
       context 'when in trial flow' do
-        let(:show_params) { { trial: 'true' } }
+        context 'when trial detected via params' do
+          let(:show_params) { { trial: 'true' } }
 
-        it 'tracks render event' do
-          get_show
+          it 'tracks render event' do
+            get_show
 
-          expect_snowplow_event(
-            category: 'registrations:welcome:show',
-            action: 'render',
-            user: user,
-            label: 'trial_registration'
-          )
+            expect_snowplow_event(
+              category: 'registrations:welcome:show',
+              action: 'render',
+              user: user,
+              label: 'trial_registration'
+            )
+          end
+        end
+
+        context 'when trial detected via onboarding_status' do
+          before do
+            user.update!(onboarding_status_registration_type: 'trial')
+          end
+
+          it 'tracks render event' do
+            get_show
+
+            expect_snowplow_event(
+              category: 'registrations:welcome:show',
+              action: 'render',
+              user: user,
+              label: 'trial_registration'
+            )
+          end
         end
       end
 
@@ -141,7 +179,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
             sign_in(user)
           end
 
-          it { is_expected.to render_template(:show) }
+          it { is_expected.not_to redirect_to user_session_path }
         end
 
         context 'when user is not confirmed' do
@@ -290,7 +328,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
         end
 
         context 'when onboarding is enabled' do
-          let_it_be(:user) do
+          let_it_be(:user, reload: true) do
             create(:user, onboarding_in_progress: true) do |record|
               create(:user_detail, user: record, onboarding_status_step_url: '_url_')
             end
@@ -313,7 +351,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
             specify do
               patch_update
-              user.reload
+              user.reset
 
               expect(user.onboarding_in_progress).to be(false)
               expect(response).to redirect_to dashboard_projects_path
@@ -324,7 +362,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
             context 'with group and project creation' do
               specify do
                 patch_update
-                user.reload
+                user.reset
                 path = new_users_sign_up_group_path
 
                 expect(user.onboarding_in_progress).to be(true)
@@ -388,7 +426,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
               context 'for an invite' do
                 specify do
                   patch_update
-                  user.reload
+                  user.reset
 
                   expect(user.onboarding_status_email_opt_in).to eq(false)
                 end
@@ -402,7 +440,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
                   specify do
                     patch_update
-                    user.reload
+                    user.reset
 
                     expect(user.onboarding_status_email_opt_in).to eq(true)
                   end
@@ -411,7 +449,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                 context 'when setup_for_company is false' do
                   specify do
                     patch_update
-                    user.reload
+                    user.reset
 
                     expect(user.onboarding_status_email_opt_in).to eq(opt_in)
                   end
@@ -436,7 +474,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
             it 'redirects to the company path and stores the url' do
               patch_update
-              user.reload
+              user.reset
 
               expect(user.onboarding_in_progress).to be(true)
               expect(user.onboarding_status_step_url).to eq(redirect_path)
@@ -470,17 +508,49 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
               end
             end
 
-            context 'when user is an invite flow eligible registration' do
-              before do
-                create(:group_member, source: group, user: user)
+            context 'when user is an invite registration' do
+              context 'when detected from user memberships' do
+                before do
+                  create(:group_member, source: group, user: user)
+                end
+
+                it 'does not convert to a trial' do
+                  patch_update
+                  user.reset
+
+                  expect(user.onboarding_status_registration_type)
+                    .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                end
               end
 
-              it 'does not convert to a trial' do
-                patch_update
-                user.reload
+              context 'when detected from onboarding_status' do
+                before do
+                  user.update!(onboarding_status_registration_type: 'invite')
+                end
 
-                expect(user.onboarding_status_registration_type)
-                  .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:invite])
+                it 'does not convert to a trial' do
+                  patch_update
+                  user.reset
+
+                  expect(user.onboarding_status_registration_type)
+                    .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                end
+              end
+            end
+
+            context 'when user is a subscription registration' do
+              context 'when detected from onboarding_status' do
+                before do
+                  user.update!(onboarding_status_registration_type: 'subscription')
+                end
+
+                it 'does not convert to a trial' do
+                  patch_update
+                  user.reset
+
+                  expect(user.onboarding_status_registration_type)
+                    .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                end
               end
             end
           end
@@ -490,7 +560,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
             specify do
               patch_update
-              user.reload
+              user.reset
               path = new_users_sign_up_group_path
 
               expect(user.onboarding_in_progress).to be(true)
@@ -500,40 +570,82 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
               expect(response).to redirect_to path
             end
 
-            context 'when trial is true' do
+            context 'when it is a trial registration' do
               using RSpec::Parameterized::TableSyntax
 
-              let(:extra_params) { { trial: 'true' } }
+              context 'when trial detected via params' do
+                let(:extra_params) { { trial: 'true' } }
 
-              where(:extra_user_params, :opt_in) do
-                { onboarding_status_email_opt_in: 'true' }  | true
-                { onboarding_status_email_opt_in: 'false' } | false
-                { onboarding_status_email_opt_in: nil }     | false
-                { onboarding_status_email_opt_in: '1' }     | true
-                { onboarding_status_email_opt_in: '0' }     | false
-                { onboarding_status_email_opt_in: '' }      | false
-                {}                                          | false
+                where(:extra_user_params, :opt_in) do
+                  { onboarding_status_email_opt_in: 'true' }  | true
+                  { onboarding_status_email_opt_in: 'false' } | false
+                  { onboarding_status_email_opt_in: nil }     | false
+                  { onboarding_status_email_opt_in: '1' }     | true
+                  { onboarding_status_email_opt_in: '0' }     | false
+                  { onboarding_status_email_opt_in: '' }      | false
+                  {}                                          | false
+                end
+
+                with_them do
+                  specify do
+                    expected_params = {
+                      registration_objective: 'code_storage',
+                      role: 'software_developer',
+                      jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                      glm_source: 'some_source',
+                      glm_content: 'some_content',
+                      trial: 'true'
+                    }
+
+                    patch_update
+                    user.reset
+                    path = new_users_sign_up_company_path(expected_params)
+
+                    expect(user.onboarding_in_progress).to be(true)
+                    expect(user.onboarding_status_step_url).to eq(path)
+                    expect(user.onboarding_status_email_opt_in).to eq(opt_in)
+                    expect(response).to redirect_to path
+                  end
+                end
               end
 
-              with_them do
-                specify do
-                  expected_params = {
-                    registration_objective: 'code_storage',
-                    role: 'software_developer',
-                    jobs_to_be_done_other: '_jobs_to_be_done_other_',
-                    glm_source: 'some_source',
-                    glm_content: 'some_content',
-                    trial: 'true'
-                  }
+              context 'when trial detected via onboarding_status' do
+                before do
+                  user.update!(
+                    onboarding_status_initial_registration_type: 'trial', onboarding_status_registration_type: 'trial'
+                  )
+                end
 
-                  patch_update
-                  user.reload
-                  path = new_users_sign_up_company_path(expected_params)
+                where(:extra_user_params, :opt_in) do
+                  { onboarding_status_email_opt_in: 'true' }  | true
+                  { onboarding_status_email_opt_in: 'false' } | false
+                  { onboarding_status_email_opt_in: nil }     | false
+                  { onboarding_status_email_opt_in: '1' }     | true
+                  { onboarding_status_email_opt_in: '0' }     | false
+                  { onboarding_status_email_opt_in: '' }      | false
+                  {}                                          | false
+                end
 
-                  expect(user.onboarding_in_progress).to be(true)
-                  expect(user.onboarding_status_step_url).to eq(path)
-                  expect(user.onboarding_status_email_opt_in).to eq(opt_in)
-                  expect(response).to redirect_to path
+                with_them do
+                  specify do
+                    expected_params = {
+                      registration_objective: 'code_storage',
+                      role: 'software_developer',
+                      jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                      glm_source: 'some_source',
+                      glm_content: 'some_content',
+                      trial: 'true'
+                    }
+
+                    patch_update
+                    user.reset
+                    path = new_users_sign_up_company_path(expected_params)
+
+                    expect(user.onboarding_in_progress).to be(true)
+                    expect(user.onboarding_status_step_url).to eq(path)
+                    expect(user.onboarding_status_email_opt_in).to eq(opt_in)
+                    expect(response).to redirect_to path
+                  end
                 end
               end
             end
@@ -553,7 +665,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
               specify do
                 patch_update
-                user.reload
+                user.reset
                 path = new_users_sign_up_group_path
 
                 expect(user.onboarding_in_progress).to be(true)
@@ -613,7 +725,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
               specify do
                 patch_update
-                user.reload
+                user.reset
 
                 path = ::Gitlab::Utils.add_url_parameters(
                   stored_path, {

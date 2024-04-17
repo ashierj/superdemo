@@ -68,10 +68,13 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#convert_to_automatic_trial?' do
-    where(:setup_for_company?, :invite?, :expected_result) do
-      true  | false | true
-      false | false | false
-      false | true  | false
+    where(:setup_for_company?, :invite?, :subscription?, :trial?, :expected_result) do
+      true  | false | false | false | true
+      false | false | false | false | false
+      false | true  | false | false | false
+      true  | true  | false | false | false
+      true  | false | true  | false | false
+      true  | false | false | true  | false
     end
 
     with_them do
@@ -81,6 +84,8 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
       before do
         allow(instance).to receive(:invite?).and_return(invite?)
+        allow(instance).to receive(:subscription?).and_return(subscription?)
+        allow(instance).to receive(:trial?).and_return(trial?)
         allow(instance).to receive(:setup_for_company?).and_return(setup_for_company?)
       end
 
@@ -374,7 +379,11 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
     subject { described_class.new(nil, session, current_user).subscription? }
 
-    context 'when on SaaS', :saas do
+    context 'when onboarding feature is available' do
+      before do
+        stub_saas_features(onboarding: true)
+      end
+
       context 'when in subscription flow' do
         it { is_expected.to eq(true) }
 
@@ -414,22 +423,40 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       end
     end
 
-    context 'when not on SaaS' do
+    context 'when onboarding feature is not available' do
       it { is_expected.to eq(false) }
     end
   end
 
   describe '#iterable_product_interaction' do
-    subject { described_class.new(nil, nil, user).iterable_product_interaction }
+    let(:current_user) { user }
 
-    context 'with members for the user' do
-      it { is_expected.to eq('Invited User') }
+    subject { described_class.new(nil, nil, current_user).iterable_product_interaction }
+
+    context 'when invite registration is detected onboarding_status' do
+      context 'when it is an invite registration' do
+        let(:current_user) { build_stubbed(:user, onboarding_status_registration_type: 'invite') }
+
+        it { is_expected.to eq('Invited User') }
+      end
+
+      context 'when it is not an invite registration' do
+        let(:current_user) { build_stubbed(:user, onboarding_status_registration_type: 'free') }
+
+        it { is_expected.to eq('Personal SaaS Registration') }
+      end
     end
 
-    context 'without members for the user' do
-      let(:user) { build_stubbed(:user) }
+    context 'when invite registration is detected from user memberships' do
+      context 'with members for the user' do
+        it { is_expected.to eq('Invited User') }
+      end
 
-      it { is_expected.to eq('Personal SaaS Registration') }
+      context 'without members for the user' do
+        let(:current_user) { build_stubbed(:user) }
+
+        it { is_expected.to eq('Personal SaaS Registration') }
+      end
     end
   end
 
@@ -455,7 +482,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
 
     context 'when it has an initial trial registration_type' do
-      let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'trial' } }
+      let(:current_user) { build_stubbed(:user, onboarding_status_initial_registration_type: 'trial') }
 
       context 'when it has trial set from params' do
         it { is_expected.to eq('SaaS Trial') }
@@ -479,7 +506,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
 
     context 'when it is initially free registration_type' do
-      let(:current_user) { build_stubbed(:user) { |u| u.onboarding_status_initial_registration_type = 'free' } }
+      let(:current_user) { build_stubbed(:user, onboarding_status_initial_registration_type: 'free') }
 
       context 'when it has trial set from params' do
         it { is_expected.to eq('SaaS Trial - defaulted') }
@@ -535,6 +562,13 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     context 'when setup_for_company is true and a user is a member already' do
       let(:params) { { user: { setup_for_company: true } } }
       let(:current_user) { user }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when setup_for_company is true and a user registration is an invite' do
+      let(:params) { { user: { setup_for_company: true } } }
+      let(:current_user) { build_stubbed(:user, onboarding_status_registration_type: 'invite') }
 
       it { is_expected.to eq(true) }
     end

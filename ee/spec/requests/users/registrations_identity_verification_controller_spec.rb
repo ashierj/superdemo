@@ -8,7 +8,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:unconfirmed_user) { create(:user, :unconfirmed, :low_risk) }
-  let_it_be(:confirmed_user) { create(:user, :low_risk) }
+  let_it_be(:confirmed_user, reload: true) { create(:user, :low_risk) }
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
 
   let(:successful_verification_response) do
@@ -952,22 +952,38 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     context 'for trial registration' do
       before do
         stub_saas_features(onboarding: true)
-
-        get success_signup_identity_verification_path
       end
 
-      context 'when it is an sso registration' do
-        let(:stored_user_return_to_path) { '/user/return/to/path?trial=true' }
+      context 'when trial is detected from params' do
+        before do
+          get success_signup_identity_verification_path
+        end
 
-        it 'detects a trial from stored user location' do
-          expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
+        context 'when it is an sso registration' do
+          let(:stored_user_return_to_path) { '/user/return/to/path?trial=true' }
+
+          it 'detects a trial from stored user location' do
+            expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
+          end
+        end
+
+        context 'when it is a non sso registration' do
+          let(:return_to_entries) { { redirect_return_to: '/user/return/to/path?trial=true' } }
+
+          it 'detects a trial from stored redirect location' do
+            expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
+          end
         end
       end
 
-      context 'when it is a non sso registration' do
-        let(:return_to_entries) { { redirect_return_to: '/user/return/to/path?trial=true' } }
+      context 'when a trial is detected from onboarding_status' do
+        before do
+          confirmed_user.update!(onboarding_status_registration_type: 'trial')
 
-        it 'detects a trial from stored redirect location' do
+          get success_signup_identity_verification_path
+        end
+
+        it 'detects a trial' do
           expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
         end
       end

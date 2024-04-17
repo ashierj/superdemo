@@ -46,7 +46,7 @@ module GitlabSubscriptions
 
     def build_product_interaction
       @product_interaction = ::Onboarding::Status.new(@params, nil, user).company_lead_product_interaction
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
       # reliance on passing of trial once we cut over to fully use db solution as this is merely tracking initial
       # trial and so we can merely call that in the places that consume this.
       @params.delete(:trial)
