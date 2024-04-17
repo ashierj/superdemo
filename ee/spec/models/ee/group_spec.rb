@@ -1327,6 +1327,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       group.add_maintainer(create(:user, :security_bot))
       group.add_maintainer(create(:user, :automation_bot))
       group.add_maintainer(create(:user, :admin_bot))
+      group.add_guest(create(:user, :security_policy_bot))
       create(:group_member, :developer)
       create(:project_member, :developer, source: create(:project, namespace: group))
       create(:group_member, :invited, :developer, source: group)
@@ -2092,22 +2093,33 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   describe '#capacity_left_for_user?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
 
-    where(:user_cap_available, :user_cap_reached, :existing_membership, :result) do
-      false           | false              | false               | true
-      false           | false              | true                | true
-      false           | true               | true                | true
-      true            | false              | false               | true
-      true            | false              | true                | true
-      true            | true               | true                | true
-      true            | true               | false               | false
+    where(:current_user, :user_cap_available, :user_cap_reached, :existing_membership, :result) do
+      ref(:user)                | false           | false              | false               | true
+      ref(:user)                | false           | false              | true                | true
+      ref(:user)                | false           | true               | true                | true
+      ref(:user)                | true            | false              | false               | true
+      ref(:user)                | true            | false              | true                | true
+      ref(:user)                | true            | true               | true                | true
+      ref(:user)                | true            | true               | false               | false
+      ref(:security_policy_bot) | false           | false              | false               | true
+      ref(:security_policy_bot) | false           | false              | true                | true
+      ref(:security_policy_bot) | false           | true               | true                | true
+      ref(:security_policy_bot) | true            | false              | false               | true
+      ref(:security_policy_bot) | true            | false              | true                | true
+      ref(:security_policy_bot) | true            | true               | true                | true
+      ref(:security_policy_bot) | true            | true               | false               | true
+      nil                       | false           | false              | false               | true
+      nil                       | true            | false              | false               | true
+      nil                       | true            | true               | false               | false
     end
 
-    subject { group.capacity_left_for_user?(user) }
+    subject { group.capacity_left_for_user?(current_user) }
 
     with_them do
       before do
-        create(:group_member, source: group, user: user) if existing_membership
+        create(:group_member, source: group, user: current_user) if existing_membership
 
         allow(group).to receive(:user_cap_available?).and_return(user_cap_available)
         allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
