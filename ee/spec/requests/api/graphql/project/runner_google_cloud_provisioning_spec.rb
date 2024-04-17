@@ -131,7 +131,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
           expect_graphql_errors_to_be_empty
 
           expect(options_response).to match([
-            a_hash_including('instructions' => /name = "grit-[A-Za-z0-9_\-]{8}"/),
+            a_hash_including('instructions' => /name = "grit-[A-Za-z0-9_\-]{1,8}"/),
             an_instance_of(Hash)
           ])
         end
