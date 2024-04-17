@@ -19,7 +19,7 @@ module QA
         Resource::Repository::ProjectPush.fabricate! do |push|
           push.project = project
           push.file_name = 'file'
-          push.file_content = SecureRandom.hex(100000)
+          push.file_content = SecureRandom.hex(100)
           push.new_branch = false
         end
 
@@ -131,7 +131,7 @@ module QA
           push.project = project
           push.new_branch = false unless branch != project.default_branch
           push.file_name = file
-          push.file_content = SecureRandom.hex(100000)
+          push.file_content = SecureRandom.hex(100)
           push.user = as_user
           push.branch_name = branch
         end

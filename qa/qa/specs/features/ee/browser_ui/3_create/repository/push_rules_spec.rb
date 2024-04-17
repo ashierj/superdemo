@@ -29,11 +29,11 @@ module QA
           end
         end
 
-        it 'allows an unrestricted push', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347790' do
+        it 'allows an unrestricted push', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347790' do
           expect_no_error_on_push(file: standard_file)
         end
 
-        it 'restricts files by name and size', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347784' do
+        it 'restricts files by name and size', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347784' do
           # Note: The file size limits in this test should be lower than the limits in
           # browser_ui/3_create/repository/push_over_http_file_size_spec to prevent
           # the limit set in that test from triggering in this test (which can happen
@@ -86,7 +86,7 @@ module QA
             error: Regexp.escape("Commit message contains the forbidden pattern '#{@deny_message_phrase_limitation}'"))
         end
 
-        it 'restricts committing files with secrets', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347779' do
+        it 'restricts committing files with secrets', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347779' do
           secret_file = [{
             name: 'id_rsa',
             content: SecureRandom.hex(100)
