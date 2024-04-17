@@ -40,11 +40,7 @@ module Gitlab
         end
 
         def ai_request
-          if ::Feature.enabled?(:gitlab_duo_chat_requests_to_ai_gateway, user)
-            ::Gitlab::Llm::Chain::Requests::AiGateway.new(user, tracking_context: tracking_context)
-          else
-            ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context)
-          end
+          ::Gitlab::Llm::Chain::Requests::AiGateway.new(user, tracking_context: tracking_context)
         end
 
         def execute
