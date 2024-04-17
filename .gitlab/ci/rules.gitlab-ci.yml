@@ -981,8 +981,6 @@
       changes: *nodejs-patterns
     - <<: *if-merge-request
       changes: *ci-qa-patterns
-    - <<: *if-security-merge-request
-      changes: *code-patterns
     - <<: *if-merge-request
       changes: *code-qa-patterns
     - <<: *if-force-ci
