@@ -28830,13 +28830,19 @@ msgstr ""
 msgid "JiraService|%{user_link} mentioned this issue in %{entity_link} of %{project_link}%{branch}:{quote}%{entity_message}{quote}"
 msgstr ""
 
+msgid "JiraService|AB"
+msgstr ""
+
+msgid "JiraService|AB,CD"
+msgstr ""
+
 msgid "JiraService|API token for Jira Cloud or password for Jira Data Center and Jira Server"
 msgstr ""
 
 msgid "JiraService|API token or password"
 msgstr ""
 
-msgid "JiraService|An error occurred while fetching issue list"
+msgid "JiraService|An error occurred while fetching the Jira issue list"
 msgstr ""
 
 msgid "JiraService|Authentication type"
@@ -28851,13 +28857,19 @@ msgstr ""
 msgid "JiraService|Basic"
 msgstr ""
 
-msgid "JiraService|Create Jira issues of this type from vulnerabilities."
+msgid "JiraService|Comma-separated list of Jira project keys. Leave blank to include all available keys."
 msgstr ""
 
-msgid "JiraService|Create a Jira issue for a vulnerability to track any action taken to resolve or mitigate a vulnerability."
+msgid "JiraService|Create Jira issues for vulnerabilities"
 msgstr ""
 
-msgid "JiraService|Displaying Jira issues while leaving GitLab issues also enabled might be confusing. Consider %{gitlab_issues_link_start}disabling GitLab issues%{link_end} if they won't otherwise be used."
+msgid "JiraService|Create Jira issues from GitLab to track any action taken to resolve or mitigate vulnerabilities."
+msgstr ""
+
+msgid "JiraService|Create Jira issues of this type."
+msgstr ""
+
+msgid "JiraService|Create only Jira issues for vulnerabilities in this project even if you've enabled GitLab issues."
 msgstr ""
 
 msgid "JiraService|Email for Jira Cloud or username for Jira Data Center and Jira Server"
@@ -28866,13 +28878,10 @@ msgstr ""
 msgid "JiraService|Email or username"
 msgstr ""
 
-msgid "JiraService|Enable Jira issue creation from vulnerabilities"
-msgstr ""
-
-msgid "JiraService|Enable Jira issues"
-msgstr ""
-
 msgid "JiraService|Enable Jira transitions"
+msgstr ""
+
+msgid "JiraService|Enter a Jira project key to generate issue types."
 msgstr ""
 
 msgid "JiraService|Events for %{noteable_model_name} are disabled."
@@ -28881,7 +28890,10 @@ msgstr ""
 msgid "JiraService|Failed to load Jira issue. View the issue in Jira, or reload the page."
 msgstr ""
 
-msgid "JiraService|Fetch issue types for this Jira project"
+msgid "JiraService|Fetch issue types again for the new project key."
+msgstr ""
+
+msgid "JiraService|Fetch issue types for this project key"
 msgstr ""
 
 msgid "JiraService|For Jira Cloud, the authentication type must be %{basic}"
@@ -28890,19 +28902,13 @@ msgstr ""
 msgid "JiraService|For example, 12, 24"
 msgstr ""
 
-msgid "JiraService|For example, AB"
-msgstr ""
-
-msgid "JiraService|For example, AB,CD"
-msgstr ""
-
 msgid "JiraService|IDs must be a list of numbers that can be split with , or ;"
 msgstr ""
 
 msgid "JiraService|If different from the Web URL"
 msgstr ""
 
-msgid "JiraService|Issues created from vulnerabilities in this project will be Jira issues, even if GitLab issues are enabled."
+msgid "JiraService|If you access Jira issues in GitLab, you might want to %{link_start}disable GitLab issues%{link_end}."
 msgstr ""
 
 msgid "JiraService|Jira API URL"
@@ -28912,9 +28918,6 @@ msgid "JiraService|Jira comments are created when an issue is referenced in a co
 msgstr ""
 
 msgid "JiraService|Jira comments are created when an issue is referenced in a merge request."
-msgstr ""
-
-msgid "JiraService|Jira issue creation from vulnerabilities (optional)"
 msgstr ""
 
 msgid "JiraService|Jira issue prefix"
@@ -28927,6 +28930,12 @@ msgid "JiraService|Jira issue type"
 msgstr ""
 
 msgid "JiraService|Jira issues"
+msgstr ""
+
+msgid "JiraService|Jira issues (optional)"
+msgstr ""
+
+msgid "JiraService|Jira issues for vulnerabilities (optional)"
 msgstr ""
 
 msgid "JiraService|Jira personal access token"
@@ -28954,12 +28963,6 @@ msgid "JiraService|New Jira personal access token"
 msgstr ""
 
 msgid "JiraService|Open Jira"
-msgstr ""
-
-msgid "JiraService|Project key changed, refresh list"
-msgstr ""
-
-msgid "JiraService|Project key is required to generate issue types"
 msgstr ""
 
 msgid "JiraService|Recommended. Only available for Jira Data Center and Jira Server."
@@ -28995,19 +28998,19 @@ msgstr ""
 msgid "JiraService|Using Jira for issue tracking?"
 msgstr ""
 
-msgid "JiraService|View Jira issues (optional)"
+msgid "JiraService|View Jira issues"
 msgstr ""
 
-msgid "JiraService|Warning: All GitLab users with access to this GitLab project can view all issues from the Jira project you select."
+msgid "JiraService|View issues from multiple Jira projects in this GitLab project. Access a read-only list of your Jira issues."
+msgstr ""
+
+msgid "JiraService|Warning: All users with access to this GitLab project can view all issues from the Jira project you specify."
 msgstr ""
 
 msgid "JiraService|Web URL"
 msgstr ""
 
 msgid "JiraService|When a Jira issue is mentioned in a commit or merge request, a remote link and comment (if enabled) will be created."
-msgstr ""
-
-msgid "JiraService|Work on Jira issues without leaving GitLab. Add a Jira menu to access a read-only list of your Jira issues. %{jira_issues_link_start}Learn more.%{link_end}"
 msgstr ""
 
 msgid "JiraService|You must configure Jira before enabling this integration. %{jira_doc_link_start}Learn more.%{link_end}"

@@ -15,14 +15,11 @@ RSpec.describe 'User activates Jira', :js, feature_category: :integrations do
     context 'when Jira connection test succeeds' do
       before do
         stub_licensed_features(jira_issues_integration: true)
-        allow_next_instance_of(Integrations::Jira) do |instance|
-          allow(instance).to receive(:issues_enabled).and_return(true)
-        end
 
         visit_project_integration('Jira')
         fill_form
-        fill_in 'service_project_key', with: 'AB'
-        fill_in 'service_project_keys', with: 'AB,CD'
+        find('label', text: 'View Jira issues').click
+        fill_in 'Jira project keys', with: 'AB,CD'
         click_test_then_save_integration(expect_test_to_fail: false)
       end
 
@@ -42,6 +39,7 @@ RSpec.describe 'User activates Jira', :js, feature_category: :integrations do
 
         visit_project_integration('Jira')
         fill_form
+        find('label', text: 'View Jira issues').click
         click_save_integration
       end
 

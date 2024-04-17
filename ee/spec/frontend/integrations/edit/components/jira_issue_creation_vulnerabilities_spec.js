@@ -1,11 +1,10 @@
-import { GlAlert, GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
-import { mount, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import JiraIssueCreationVulnerabilities, {
   i18n,
 } from 'ee/integrations/edit/components/jira_issue_creation_vulnerabilities.vue';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { createStore } from '~/integrations/edit/store';
 import { billingPlans, billingPlanNames } from '~/integrations/constants';
 
@@ -23,21 +22,24 @@ describe('JiraIssueCreationVulnerabilities', () => {
     { id: '3', name: 'epic', description: 'epic' },
   ];
 
-  const createComponent = (mountFn) => ({ isInheriting = false, props } = {}) => {
+  const createComponent = (mountFn) => ({
+    isInheriting = false,
+    props = {},
+    provide = {},
+  } = {}) => {
     store = createStore({
       defaultState: isInheriting ? {} : undefined,
     });
 
-    return extendedWrapper(
-      mountFn(JiraIssueCreationVulnerabilities, {
-        store,
-        propsData: { ...defaultProps, ...props },
-      }),
-    );
+    return mountFn(JiraIssueCreationVulnerabilities, {
+      store,
+      propsData: { ...defaultProps, ...props },
+      provide,
+    });
   };
 
-  const createShallowComponent = createComponent(shallowMount);
-  const createFullComponent = createComponent(mount);
+  const createShallowComponent = createComponent(shallowMountExtended);
+  const createFullComponent = createComponent(mountExtended);
 
   const withinComponent = () => within(wrapper.element);
   const findHiddenInput = (name) => wrapper.find(`input[name="service[${name}]"]`);
@@ -46,6 +48,8 @@ describe('JiraIssueCreationVulnerabilities', () => {
   const findIssueTypeSection = () => wrapper.findByTestId('issue-type-section');
   const findIssueTypeListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findIssueTypeLabel = () => wrapper.findComponent('label');
+  const findProjectKey = () => wrapper.findByTestId('jira-project-key');
+  const findProjectKeyInput = () => findProjectKey().findComponent(GlFormInput);
   const findGlBadge = () => wrapper.findComponent(GlBadge);
   const findFetchIssueTypeButton = () =>
     wrapper.findByTestId('jira-issue-types-fetch-retry-button');
@@ -265,6 +269,73 @@ describe('JiraIssueCreationVulnerabilities', () => {
 
       it('shows a warning message telling the user to refetch the issues list', () => {
         expect(withinComponent().getByText(i18n.projectKeyWarnings.changed)).not.toBe(null);
+      });
+    });
+  });
+
+  describe('when jira_multiple_project_keys is not enabled', () => {
+    beforeEach(() => {
+      wrapper = createShallowComponent({
+        props: {
+          initialIsEnabled: true,
+        },
+      });
+    });
+
+    it('does not render "Jira project key" input', () => {
+      expect(findProjectKey().exists()).toBe(false);
+    });
+  });
+
+  describe('when jira_multiple_project_keys is enabled', () => {
+    beforeEach(() => {
+      wrapper = createShallowComponent({
+        props: {
+          initialIsEnabled: true,
+        },
+        provide: {
+          glFeatures: {
+            jiraMultipleProjectKeys: true,
+          },
+        },
+      });
+    });
+
+    it('does not render GlBadge', () => {
+      expect(findGlBadge().exists()).toBe(false);
+    });
+
+    it('renders "Jira project key" input', () => {
+      expect(findProjectKey().attributes('label')).toBe('Jira project key');
+      expect(findProjectKeyInput().attributes('required')).toBe('true');
+    });
+
+    describe('when "Jira project key" is empty', () => {
+      it('shows a warning message telling the user to enter a valid project key', () => {
+        expect(wrapper.text()).toContain('Enter a Jira project key to generate issue types.');
+      });
+    });
+
+    describe('when "Jira project key" is not empty, then is changed after fetching issue types', () => {
+      beforeEach(() => {
+        wrapper = createShallowComponent({
+          props: {
+            initialIsEnabled: true,
+            initialProjectKey: 'INITIAL',
+          },
+          provide: {
+            glFeatures: {
+              jiraMultipleProjectKeys: true,
+            },
+          },
+        });
+        findFetchIssueTypeButton().vm.$emit('click');
+
+        findProjectKeyInput().vm.$emit('input', 'CHANGED');
+      });
+
+      it('shows a warning message telling the user to refetch the issues list', () => {
+        expect(wrapper.text()).toContain('Fetch issue types again for the new project key.');
       });
     });
   });
