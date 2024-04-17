@@ -1,30 +1,44 @@
 <script>
-import { GlFormCheckbox, GlFormCheckboxGroup, GlFormGroup, GlSkeletonLoader } from '@gitlab/ui';
-import { difference, pull } from 'lodash';
-import { createAlert } from '~/alert';
+import { GlFormCheckbox, GlLoadingIcon, GlTable, GlSprintf, GlLink, GlAlert } from '@gitlab/ui';
+import { pull } from 'lodash';
 import { s__ } from '~/locale';
 import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
+import { helpPagePath } from '~/helpers/help_page_helper';
+
+export const FIELDS = [
+  { key: 'checkbox', label: '' },
+  { key: 'name', label: s__('MemberRole|Permission') },
+  { key: 'description', label: s__('MemberRole|Description') },
+];
 
 export default {
   i18n: {
     customPermissionsLabel: s__('MemberRole|Custom permissions'),
     customPermissionsDescription: s__(
-      'MemberRole|Add at least one custom permission to the base role.',
+      'MemberRole|Learn more about %{linkStart}available custom permissions%{linkEnd}.',
     ),
     permissionsFetchError: s__('MemberRole|Could not fetch available permissions.'),
+    permissionsSelected: s__('MemberRole|%{count} of %{total} permissions selected'),
+    permissionsSelectionError: s__('MemberRole|Select at least one permission.'),
   },
   components: {
-    GlFormCheckboxGroup,
     GlFormCheckbox,
-    GlFormGroup,
-    GlSkeletonLoader,
+    GlLoadingIcon,
+    GlLink,
+    GlSprintf,
+    GlTable,
+    GlAlert,
+  },
+  model: {
+    prop: 'permissions',
+    event: 'change',
   },
   props: {
     permissions: {
       type: Array,
       required: true,
     },
-    state: {
+    isValid: {
       type: Boolean,
       required: true,
     },
@@ -41,16 +55,30 @@ export default {
         return data.memberRolePermissions?.nodes || [];
       },
       error() {
-        createAlert({ message: this.$options.i18n.permissionsFetchError });
+        this.availablePermissions = [];
       },
     },
   },
   computed: {
+    docsPath() {
+      return helpPagePath('user/custom_roles/abilities');
+    },
     isLoadingPermissions() {
       return this.$apollo.queries.availablePermissions.loading;
     },
-    permissionsState() {
-      return this.state ? null : false;
+    isErrorLoadingPermissions() {
+      return !this.isLoadingPermissions && !this.hasAvailablePermissions;
+    },
+    hasAvailablePermissions() {
+      return this.availablePermissions.length > 0;
+    },
+    isSomePermissionsSelected() {
+      return this.permissions.length > 0 && !this.isAllPermissionsSelected;
+    },
+    isAllPermissionsSelected() {
+      return (
+        !this.isLoadingPermissions && this.permissions.length >= this.availablePermissions.length
+      );
     },
     parentPermissionsLookup() {
       return this.availablePermissions.reduce((acc, { value, requirements }) => {
@@ -74,20 +102,37 @@ export default {
     },
   },
   methods: {
-    emitSelectedPermissions(selected) {
-      const added = difference(selected, this.permissions);
-      const removed = difference(this.permissions, selected);
-      // Check/uncheck any dependent permissions based on what permissions are selected.
-      added.forEach((permission) => this.selectParentPermissions(permission, selected));
-      removed.forEach((permission) => this.deselectChildPermissions(permission, selected));
+    isSelected({ value }) {
+      return this.permissions.includes(value);
+    },
+    updatePermissions({ value }) {
+      const selected = [...this.permissions];
 
-      this.$emit('update:permissions', selected);
+      if (selected.includes(value)) {
+        // Permission is being removed, remove it and deselect any child permissions.
+        pull(selected, value);
+        this.deselectChildPermissions(value, selected);
+      } else {
+        // Permission is being added, select it and select any parent permissions.
+        selected.push(value);
+        this.selectParentPermissions(value, selected);
+      }
+
+      this.emitPermissionsUpdate(selected);
+    },
+    toggleAllPermissions() {
+      const permissions = this.isAllPermissionsSelected ? [] : this.availablePermissions;
+      this.emitPermissionsUpdate(permissions.map(({ value }) => value));
+    },
+    emitPermissionsUpdate(permissions) {
+      this.$emit('change', permissions);
     },
     selectParentPermissions(permission, selected) {
       const parentPermissions = this.parentPermissionsLookup[permission];
 
       parentPermissions?.forEach((parent) => {
-        // Only select the parent permission if it's not already selected.
+        // Only select the parent permission if it's not selected. This prevents an infinite loop if there are
+        // circular dependencies, i.e. A depends on B and B depends on A.
         if (!selected.includes(parent)) {
           selected.push(parent);
           this.selectParentPermissions(parent, selected);
@@ -98,7 +143,8 @@ export default {
       const childPermissions = this.childPermissionsLookup[permission];
 
       childPermissions?.forEach((child) => {
-        // Only remove the child permission if it's selected.
+        // Only unselect the child permission if it's already selected. This prevents an infinite loop if there are
+        // circular dependencies, i.e. A depends on B and B depends on A.
         if (selected.includes(child)) {
           pull(selected, child);
           this.deselectChildPermissions(child, selected);
@@ -106,38 +152,78 @@ export default {
       });
     },
   },
+  FIELDS,
 };
 </script>
 
 <template>
-  <gl-form-group :label="$options.i18n.customPermissionsLabel" label-class="gl-pb-1!">
-    <template #label-description>
-      <div v-if="!isLoadingPermissions" class="gl-mb-6">
-        {{ $options.i18n.customPermissionsDescription }}
-      </div>
-    </template>
-
-    <div v-if="isLoadingPermissions" class="gl-mt-5">
-      <gl-skeleton-loader />
-    </div>
-
-    <gl-form-checkbox-group
-      v-else
-      :checked="permissions"
-      :state="permissionsState"
-      @input="emitSelectedPermissions"
-    >
-      <gl-form-checkbox
-        v-for="permission in availablePermissions"
-        :key="permission.value"
-        :value="permission.value"
-        :data-testid="permission.value"
+  <fieldset>
+    <legend class="gl-mb-1 gl-border-b-0 gl-font-base">
+      <span class="gl-font-weight-bold">{{ $options.i18n.customPermissionsLabel }}</span>
+      <span
+        v-if="hasAvailablePermissions"
+        class="gl-text-gray-400 gl-ml-3"
+        data-testid="permissions-selected-message"
       >
-        {{ permission.name }}
-        <template v-if="permission.description" #help>
-          {{ permission.description }}
+        <gl-sprintf :message="$options.i18n.permissionsSelected">
+          <template #count>{{ permissions.length }}</template>
+          <template #total>{{ availablePermissions.length }}</template>
+        </gl-sprintf>
+      </span>
+    </legend>
+
+    <p class="gl-mb-4">
+      <gl-sprintf :message="$options.i18n.customPermissionsDescription">
+        <template #link="{ content }">
+          <gl-link :href="docsPath" target="_blank">{{ content }}</gl-link>
         </template>
-      </gl-form-checkbox>
-    </gl-form-checkbox-group>
-  </gl-form-group>
+      </gl-sprintf>
+    </p>
+
+    <p v-if="!isValid" class="gl-text-red-500">{{ $options.i18n.permissionsSelectionError }}</p>
+
+    <gl-alert
+      v-if="isErrorLoadingPermissions"
+      :dismissible="false"
+      variant="danger"
+      class="gl-mb-6 gl-display-inline-block"
+    >
+      {{ $options.i18n.permissionsFetchError }}
+    </gl-alert>
+
+    <gl-table
+      v-else
+      :items="availablePermissions"
+      :fields="$options.FIELDS"
+      :busy="isLoadingPermissions"
+      hover
+      selected-variant=""
+      selectable
+      class="gl-my-8"
+      @row-clicked="updatePermissions"
+    >
+      <template #table-busy>
+        <gl-loading-icon size="md" />
+      </template>
+
+      <template #head(checkbox)>
+        <gl-form-checkbox
+          :disabled="isLoadingPermissions"
+          :checked="isAllPermissionsSelected"
+          :indeterminate="isSomePermissionsSelected"
+          @change="toggleAllPermissions"
+        />
+      </template>
+
+      <template #cell(checkbox)="{ item }">
+        <gl-form-checkbox :checked="isSelected(item)" @change="updatePermissions(item)" />
+      </template>
+
+      <template #cell(name)="{ item }">
+        <span :class="{ 'gl-text-red-500': !isValid }" class="gl-white-space-nowrap">
+          {{ item.name }}
+        </span>
+      </template>
+    </gl-table>
+  </fieldset>
 </template>
