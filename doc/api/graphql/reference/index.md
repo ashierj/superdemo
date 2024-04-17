@@ -4095,8 +4095,7 @@ Input type: `DuoUserFeedbackInput`
 | <a id="mutationduouserfeedbackagentversionid"></a>`agentVersionId` | [`AiAgentVersionID`](#aiagentversionid) | Global ID of the agent to answer the chat. |
 | <a id="mutationduouserfeedbackaimessageid"></a>`aiMessageId` | [`String!`](#string) | ID of the AI Message. |
 | <a id="mutationduouserfeedbackclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationduouserfeedbackextendedfeedback"></a>`extendedFeedback` | [`String`](#string) | Freeform user feedback. |
-| <a id="mutationduouserfeedbackselectedfeedbackoptions"></a>`selectedFeedbackOptions` | [`[String!]`](#string) | User selected feedback options. |
+| <a id="mutationduouserfeedbacktrackingevent"></a>`trackingEvent` | [`TrackingEventInput`](#trackingeventinput) | Tracking event data. |
 
 #### Fields
 
@@ -36733,6 +36732,21 @@ A time-frame defined as a closed inclusive range of two dates.
 | ---- | ---- | ----------- |
 | <a id="timeframeend"></a>`end` | [`Date!`](#date) | End of the range. |
 | <a id="timeframestart"></a>`start` | [`Date!`](#date) | Start of the range. |
+
+### `TrackingEventInput`
+
+Attributes for defining a tracking event.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="trackingeventinputaction"></a>`action` | [`String!`](#string) | Event action. |
+| <a id="trackingeventinputcategory"></a>`category` | [`String!`](#string) | Event category. |
+| <a id="trackingeventinputextra"></a>`extra` | [`JSON`](#json) | Extra metadata for the event. |
+| <a id="trackingeventinputlabel"></a>`label` | [`String`](#string) | Event label. |
+| <a id="trackingeventinputproperty"></a>`property` | [`String`](#string) | Event property. |
+| <a id="trackingeventinputvalue"></a>`value` | [`String`](#string) | Event value. |
 
 ### `UnionedEpicFilterInput`
 

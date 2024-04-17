@@ -8,9 +8,7 @@ module Mutations
       argument :agent_version_id, ::Types::GlobalIDType[::Ai::AgentVersion], required: false,
         description: "Global ID of the agent to answer the chat."
       argument :ai_message_id, GraphQL::Types::String, required: true, description: 'ID of the AI Message.'
-      argument :extended_feedback, GraphQL::Types::String, required: false, description: 'Freeform user feedback.'
-      argument :selected_feedback_options, [GraphQL::Types::String], required: false,
-        description: 'User selected feedback options.'
+      argument :tracking_event, ::Types::Tracking::EventInputType, required: false, description: 'Tracking event data.'
 
       def resolve(**args)
         raise_resource_not_available_error! unless current_user
@@ -22,7 +20,26 @@ module Mutations
 
         chat_storage.set_has_feedback(message)
 
+        track_snowplow_event(args[:tracking_event])
+
         { errors: [] }
+      end
+
+      private
+
+      def track_snowplow_event(event)
+        return unless event
+
+        extra = event.extra.is_a?(Hash) ? event.extra.slice('improveWhat', 'didWhat', 'promptLocation') : {}
+
+        Gitlab::Tracking.event(
+          event.category,
+          event.action,
+          user: current_user,
+          label: event.label,
+          property: event.property,
+          **extra
+        )
       end
     end
   end
