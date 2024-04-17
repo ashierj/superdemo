@@ -34806,6 +34806,9 @@ msgstr ""
 msgid "ObservabilityMetrics|+%{count} more"
 msgstr ""
 
+msgid "ObservabilityMetrics|Attribute"
+msgstr ""
+
 msgid "ObservabilityMetrics|Attributes"
 msgstr ""
 
