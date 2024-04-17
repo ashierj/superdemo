@@ -40,6 +40,7 @@ export default {
       labels: [],
       selected: this.board.labels,
       isEditing: false,
+      isDropdownShowing: false,
       showDropdownContentsCreateView: false,
     };
   },
@@ -122,18 +123,20 @@ export default {
       this.$emit('set-labels', labels);
     },
     toggleEdit() {
-      if (!this.isEditing) {
+      if (!this.isEditing && !this.isDropdownShowing) {
+        this.isEditing = true;
         this.showDropdown();
       } else {
-        this.hideDropdown();
+        this.isEditing = false;
+        this.isDropdownShowing = false;
       }
     },
     showDropdown() {
-      this.isEditing = true;
       this.$refs.editDropdown.showDropdown();
       debounce(() => {
         this.setFocus();
       }, 50)();
+      this.isDropdownShowing = true;
     },
     hideDropdown() {
       this.isEditing = false;
