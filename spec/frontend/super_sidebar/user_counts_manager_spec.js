@@ -25,7 +25,7 @@ const userCountUpdate = {
   review_requested_merge_requests: 101112,
 };
 
-describe('User Merge Requests', () => {
+describe('User Count Manager', () => {
   let channelMock;
   let newBroadcastChannelMock;
 
@@ -108,6 +108,11 @@ describe('User Merge Requests', () => {
         'userCounts:fetch',
         expect.any(Function),
       );
+      expect(document.removeEventListener).toHaveBeenCalledWith(
+        'todo:toggle',
+        expect.any(Function),
+      );
+      expect(document.addEventListener).toHaveBeenCalledWith('todo:toggle', expect.any(Function));
     });
   });
 
@@ -142,6 +147,46 @@ describe('User Merge Requests', () => {
         expect(UserApi.getUserCounts).toHaveBeenCalled();
         expect(userCounts).toMatchObject(userCountUpdate);
         expect(channelMock.postMessage).toHaveBeenLastCalledWith(userCounts);
+      });
+    });
+  });
+
+  describe('Event listener todo:toggle', () => {
+    beforeEach(() => {
+      createUserCountsManager();
+      userCounts.todos = 10;
+    });
+
+    describe('with total count', () => {
+      it.each([
+        { count: 123, expected: 123 },
+        { count: -500, expected: 0 },
+        { count: 0, expected: 0 },
+        { count: NaN, expected: 10 },
+        { count: '99+', expected: 10 },
+      ])(`with count: $count results in $expected`, ({ count, expected }) => {
+        expect(userCounts.todos).toBe(10);
+
+        document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { count } }));
+
+        expect(userCounts.todos).toBe(expected);
+      });
+    });
+
+    describe('with diff on count', () => {
+      it.each([
+        { diff: 5, expected: 15 },
+        { diff: -5, expected: 5 },
+        { diff: 0, expected: 10 },
+        { diff: -100, expected: 0 },
+        { diff: NaN, expected: 10 },
+        { diff: '99+', expected: 10 },
+      ])(`with count: $diff results in $expected`, ({ diff, expected }) => {
+        expect(userCounts.todos).toBe(10);
+
+        document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { diff } }));
+
+        expect(userCounts.todos).toBe(expected);
       });
     });
   });
