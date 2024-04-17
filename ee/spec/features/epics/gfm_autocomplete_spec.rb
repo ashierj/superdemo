@@ -160,7 +160,7 @@ RSpec.describe 'GFM autocomplete', :js, feature_category: :portfolio_management 
           expect_resources(shown: [backend, bug, feature_proposal])
         end
 
-        it 'shows only set labels for /unlabel ~', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/449075' do
+        it 'shows only set labels for /unlabel ~', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444686' do
           fill_in 'Comment', with: '/unlabel ~'
 
           wait_for_requests
