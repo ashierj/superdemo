@@ -1,5 +1,6 @@
 <script>
-import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll, GlFilteredSearchToken } from '@gitlab/ui';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, joinPaths, setUrlParams } from '~/lib/utils/url_utility';
@@ -13,6 +14,7 @@ import {
   filterObjToQuery,
   filterObjToFilterToken,
   filterTokensToFilterObj,
+  ATTRIBUTE_FILTER_TOKEN_TYPE,
 } from './filters';
 import MetricsTable from './metrics_table.vue';
 
@@ -29,6 +31,7 @@ export default {
   },
   i18n: {
     searchInputPlaceholder: s__('ObservabilityMetrics|Search metrics...'),
+    attributeFilterTitle: s__('ObservabilityMetrics|Attribute'),
   },
   props: {
     observabilityClient: {
@@ -52,6 +55,27 @@ export default {
     },
     initialFilterValue() {
       return filterObjToFilterToken(this.filters);
+    },
+    availableAttributes() {
+      const attributes = Array.from(
+        new Set(this.metrics.flatMap((metric) => metric.attributes)),
+      ).map((attribute) => ({
+        value: attribute,
+        title: attribute,
+      }));
+      attributes.sort();
+      return attributes;
+    },
+    tokens() {
+      return [
+        {
+          title: this.$options.i18n.attributeFilterTitle,
+          type: ATTRIBUTE_FILTER_TOKEN_TYPE,
+          token: GlFilteredSearchToken,
+          operators: OPERATORS_IS,
+          options: this.availableAttributes,
+        },
+      ];
     },
   },
   created() {
@@ -98,7 +122,6 @@ export default {
       this.fetchMetrics();
     },
   },
-  EMPTY_TOKENS: [],
 };
 </script>
 
@@ -116,7 +139,7 @@ export default {
           :initial-filter-value="initialFilterValue"
           recent-searches-storage-key="recent-metrics-filter-search"
           namespace="metrics-list-filtered-search"
-          :tokens="$options.EMPTY_TOKENS"
+          :tokens="tokens"
           :search-input-placeholder="$options.i18n.searchInputPlaceholder"
           @onFilter="onFilter"
         />

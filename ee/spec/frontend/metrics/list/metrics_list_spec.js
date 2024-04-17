@@ -92,7 +92,7 @@ describe('MetricsComponent', () => {
 
   describe('filtered search', () => {
     beforeEach(async () => {
-      setWindowLocation('?search=foo+bar');
+      setWindowLocation('?search=foo+bar&attribute[]=test.attr');
       await mountComponent();
     });
 
@@ -100,13 +100,30 @@ describe('MetricsComponent', () => {
       expect(findFilteredSearch().props('initialFilterValue')).toEqual(
         filterObjToFilterToken({
           search: [{ value: 'foo bar' }],
+          attribute: [{ value: 'test.attr', operator: '=' }],
         }),
       );
+    });
+
+    it('renders FilteredSeach with Attribute tokens', () => {
+      const tokens = findFilteredSearch()
+        .props('tokens')
+        .find(({ type }) => type === 'attribute');
+
+      expect(tokens).toBeDefined();
+      expect(tokens.options).toEqual([
+        { title: 'attribute_a', value: 'attribute_a' },
+        { title: 'attribute_b', value: 'attribute_b' },
+        { title: 'attribute_c', value: 'attribute_c' },
+        { title: 'attribute_d', value: 'attribute_d' },
+      ]);
     });
 
     it('renders UrlSync and sets query prop', () => {
       expect(findUrlSync().props('query')).toEqual({
         search: 'foo bar',
+        attribute: ['test.attr'],
+        'not[attribute]': null,
       });
     });
 
@@ -114,6 +131,7 @@ describe('MetricsComponent', () => {
       expect(observabilityClientMock.fetchMetrics).toHaveBeenLastCalledWith({
         filters: {
           search: [{ value: 'foo bar' }],
+          attribute: [{ value: 'test.attr', operator: '=' }],
         },
         limit: 50,
       });
@@ -123,6 +141,7 @@ describe('MetricsComponent', () => {
       beforeEach(async () => {
         await setFilters({
           search: [{ value: 'search query' }],
+          attribute: [{ value: 'updated.attr.filter', operator: '=' }],
         });
       });
 
@@ -136,6 +155,8 @@ describe('MetricsComponent', () => {
       it('updates the query on search submit', () => {
         expect(findUrlSync().props('query')).toEqual({
           search: 'search query',
+          attribute: ['updated.attr.filter'],
+          'not[attribute]': null,
         });
       });
 
@@ -143,6 +164,7 @@ describe('MetricsComponent', () => {
         expect(observabilityClientMock.fetchMetrics).toHaveBeenLastCalledWith({
           filters: {
             search: [{ value: 'search query' }],
+            attribute: [{ value: 'updated.attr.filter', operator: '=' }],
           },
           limit: 50,
         });
@@ -152,6 +174,7 @@ describe('MetricsComponent', () => {
         expect(findFilteredSearch().props('initialFilterValue')).toEqual(
           filterObjToFilterToken({
             search: [{ value: 'search query' }],
+            attribute: [{ value: 'updated.attr.filter', operator: '=' }],
           }),
         );
       });
