@@ -7,8 +7,6 @@ module Gitlab
         module EpicIdentifier
           module Prompts
             class Anthropic
-              MODEL = 'claude-instant-1.2'
-
               def self.prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::PROMPT_TEMPLATE, options
@@ -18,7 +16,7 @@ module Gitlab
                   prompt: "\n\nHuman: #{base_prompt}\n\nAssistant: ```json
                     \{
                       \"ResourceIdentifierType\": \"",
-                  options: { model: MODEL }
+                  options: { model: ::Gitlab::Llm::AiGateway::Client::DEFAULT_INSTANT_MODEL }
                 }
               end
             end

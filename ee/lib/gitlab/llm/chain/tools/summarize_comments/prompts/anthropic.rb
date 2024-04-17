@@ -10,7 +10,6 @@ module Gitlab
               include Concerns::AnthropicPrompt
 
               OUTPUT_TOKEN_LIMIT = 8000
-              MODEL = 'claude-instant-1'
 
               def self.prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
@@ -20,7 +19,7 @@ module Gitlab
                 Requests::Anthropic.prompt(
                   "\n\nHuman: #{base_prompt}\n\nAssistant:",
                   options: {
-                    model: MODEL,
+                    model: ::Gitlab::Llm::AiGateway::Client::DEFAULT_INSTANT_MODEL,
                     max_tokens_to_sample: OUTPUT_TOKEN_LIMIT
                   }
                 )

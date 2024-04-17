@@ -5,7 +5,6 @@ module Gitlab
     module Anthropic
       module Completions
         class GenerateDescription < Gitlab::Llm::Completions::Base
-          MODEL = 'claude-instant-1.2'
           OUTPUT_TOKEN_LIMIT = 8000
 
           def execute
@@ -28,7 +27,7 @@ module Gitlab
             ai_client.complete(
               prompt: prompt_template.to_prompt,
               max_tokens_to_sample: OUTPUT_TOKEN_LIMIT,
-              model: MODEL
+              model: ::Gitlab::Llm::AiGateway::Client::DEFAULT_INSTANT_MODEL
             )
           end
 
