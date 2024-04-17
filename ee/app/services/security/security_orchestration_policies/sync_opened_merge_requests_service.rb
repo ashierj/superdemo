@@ -20,7 +20,11 @@ module Security
           notify_for_policy_violations(merge_request)
 
           head_pipeline = merge_request.diff_head_pipeline
-          next unless head_pipeline
+          unless head_pipeline
+            next unless Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
+
+            next ::Security::ScanResultPolicies::UnblockFailOpenApprovalRulesWorker.perform_async(merge_request.id)
+          end
 
           ::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(head_pipeline.id)
           ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(head_pipeline.id)

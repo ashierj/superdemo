@@ -104,7 +104,8 @@ module Security
           age_value: rule.dig(:vulnerability_age, :value),
           commits: rule[:commits],
           project_approval_settings: policy[:approval_settings] || {},
-          send_bot_message: send_bot_message_action&.slice(:enabled) || {}
+          send_bot_message: send_bot_message_action&.slice(:enabled) || {},
+          fallback_behavior: policy.fetch(:fallback_behavior, {})
         )
       end
 

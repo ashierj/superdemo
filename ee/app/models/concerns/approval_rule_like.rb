@@ -61,6 +61,7 @@ module ApprovalRuleLike
     scope :for_policy_configuration, -> (configuration_id) do
       where(security_orchestration_policy_configuration_id: configuration_id)
     end
+    scope :by_report_types, -> (report_types) { where(report_type: report_types) }
   end
 
   def vulnerability_attribute_false_positive

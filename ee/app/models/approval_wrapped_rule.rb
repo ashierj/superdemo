@@ -97,6 +97,8 @@ class ApprovalWrappedRule
   end
 
   def allow_merge_when_invalid?
+    return true if fail_open?
+
     !approval_rule.from_scan_result_policy? ||
       Security::OrchestrationPolicyConfiguration.policy_management_project?(project)
   end
@@ -121,6 +123,8 @@ class ApprovalWrappedRule
   # requests (in case only one approval is needed).
   def approvals_left
     strong_memoize(:approvals_left) do
+      next 0 if invalid_rule? && fail_open?
+
       approvals_left_count = approvals_required - approved_approvers.size
 
       [approvals_left_count, 0].max
@@ -138,6 +142,12 @@ class ApprovalWrappedRule
   end
 
   private
+
+  def fail_open?
+    return false unless Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
+
+    approval_rule.scan_result_policy_read&.fail_open? || false
+  end
 
   def filter_approvers(approvers)
     filtered_approvers =

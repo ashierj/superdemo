@@ -61,7 +61,7 @@ module Security
         approval_rules.partition do |approval_rule|
           approval_rule = approval_rule.source_rule if approval_rule.source_rule
 
-          if scan_removed?(approval_rule)
+          if !fail_open?(approval_rule) && scan_removed?(approval_rule)
             log_update_approval_rule(
               'Updating MR approval rule',
               reason: 'Scanner removed by MR',
@@ -72,7 +72,6 @@ module Security
             violations.add_error(
               approval_rule.scan_result_policy_id, :scan_removed, missing_scans: missing_scans(approval_rule)
             )
-
             next true
           end
 
@@ -236,6 +235,17 @@ module Security
           vulnerability_age: approval_rule.scan_result_policy_read&.vulnerability_age
         ).execute
       end
+
+      def fail_open?(approval_rule)
+        return false unless fallback_behavior_enabled?
+
+        approval_rule.scan_result_policy_read.fail_open?
+      end
+
+      def fallback_behavior_enabled?
+        Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
+      end
+      strong_memoize_attr :fallback_behavior_enabled?
     end
   end
 end

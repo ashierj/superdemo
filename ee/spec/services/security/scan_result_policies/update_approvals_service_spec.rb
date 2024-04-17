@@ -179,6 +179,18 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           execute
         end
 
+        context 'when policy fails open' do
+          before do
+            report_approver_rule.scan_result_policy_read.update!(fallback_behavior: { fail: "open" })
+          end
+
+          it 'does not block the rule' do
+            expect(::Gitlab::AppJsonLogger).not_to receive(:info).with(hash_including(reason: 'Scanner removed by MR'))
+
+            execute
+          end
+        end
+
         it 'persists the error in violation data' do
           execute
 

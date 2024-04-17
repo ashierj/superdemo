@@ -73,7 +73,8 @@ FactoryBot.define do
   end
 
   factory :scan_result_policy,
-    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings, :policy_scope),
+    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings, :policy_scope,
+      :fallback_behavior),
     aliases: %i[approval_policy] do
     skip_create
 
@@ -85,8 +86,9 @@ FactoryBot.define do
       rules = attributes[:rules]
       approval_settings = attributes[:approval_settings]
       policy_scope = attributes[:policy_scope]
+      fallback_behavior = attributes[:fallback_behavior]
 
-      new(name, description, enabled, actions, rules, approval_settings, policy_scope).to_h
+      new(name, description, enabled, actions, rules, approval_settings, policy_scope, fallback_behavior).to_h
     end
 
     transient do
@@ -115,6 +117,7 @@ FactoryBot.define do
     actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }] }
     approval_settings { {} }
     policy_scope { {} }
+    fallback_behavior { {} }
 
     trait :license_finding do
       rules do
@@ -195,6 +198,10 @@ FactoryBot.define do
           { type: 'send_bot_message', enabled: false }
         ]
       end
+    end
+
+    trait :fail_open do
+      fallback_behavior { { fail: "open" } }
     end
   end
 
