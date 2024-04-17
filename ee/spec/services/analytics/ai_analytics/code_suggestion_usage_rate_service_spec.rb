@@ -44,7 +44,11 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
       context 'without data' do
         it 'returns 0' do
           expect(service_response).to be_success
-          expect(service_response.payload).to eq(0)
+          expect(service_response.payload).to eq({
+            code_suggestions_usage_rate: 0,
+            code_contributors_count: 0,
+            code_suggestions_contributors_count: 0
+          })
         end
       end
 
@@ -67,7 +71,11 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
 
         it 'returns percentage of matched code contributors who used AI' do
           expect(service_response).to be_success
-          expect(service_response.payload).to be_within(0.0001).of(2 / 3.0)
+          expect(service_response.payload).to match(
+            code_suggestions_usage_rate: 2 / 3.0,
+            code_contributors_count: 3,
+            code_suggestions_contributors_count: 2
+          )
         end
       end
     end
