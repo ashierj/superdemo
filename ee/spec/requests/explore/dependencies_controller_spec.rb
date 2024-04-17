@@ -57,7 +57,7 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
             let_it_be(:group) { create(:group, organization: organization) }
             let_it_be(:project) { create(:project, organization: organization, group: group) }
             let_it_be(:occurrences) { create_list(:sbom_occurrence, 3 * per_page, :mit, project: project) }
-            let_it_be(:ordered_occurrences) { Sbom::Occurrence.order(:component_name) }
+            let_it_be(:ordered_occurrences) { Sbom::Occurrence.order(:id) }
             let(:cursor) { ordered_occurrences.keyset_paginate(cursor: nil, per_page: per_page).cursor_for_next_page }
 
             before_all do
@@ -126,11 +126,9 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
           context "with occurrences" do
             let_it_be(:per_page) { 20 }
             let_it_be(:occurrences) { create_list(:sbom_occurrence, 2 * per_page, :mit, project: project) }
-            let(:cursor) do
-              Sbom::Occurrence.order(:component_name).keyset_paginate(per_page: per_page).cursor_for_next_page
-            end
+            let(:cursor) { Sbom::Occurrence.order(:id).keyset_paginate(per_page: per_page).cursor_for_next_page }
 
-            it 'renders a JSON response sorted by name by default', :aggregate_failures do
+            it 'renders a JSON response', :aggregate_failures do
               get explore_dependencies_path(cursor: cursor), as: :json
 
               expect(response).to have_gitlab_http_status(:ok)
@@ -140,7 +138,7 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
               expect(response.headers['X-Page-Type']).to eql('cursor')
               expect(response.headers['X-Per-Page']).to eql(per_page)
 
-              expected_occurrences = occurrences.sort_by(&:name)[per_page...(per_page + per_page)].map do |occurrences|
+              expected_occurrences = occurrences[per_page...(per_page + per_page)].map do |occurrences|
                 {
                   'name' => occurrences.name,
                   'packager' => occurrences.packager,
