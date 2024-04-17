@@ -8,17 +8,21 @@ module EE
           extend ::Gitlab::Utils::Override
 
           override :resolve
-          def resolve
-            unless ::Gitlab::Analytics::CycleAnalytics.licensed?(parent_namespace)
-              return if object.is_a?(Group) # Group value streams only exists on EE
+          def resolve(id: nil)
+            # FOSS VSA is not supported for groups
+            return if object.is_a?(Group) && !::Gitlab::Analytics::CycleAnalytics.licensed?(parent_namespace)
 
-              return super
-            end
-
-            parent_namespace.value_streams.preload_associated_models.order_by_name_asc
+            super
           end
 
           private
+
+          override :service_params
+          def service_params(id: nil)
+            params = { parent: parent_namespace, current_user: current_user, params: {} }
+            params[:params][:value_stream_ids] = [::GitlabSchema.parse_gid(id).model_id] if id
+            params
+          end
 
           def parent_namespace
             object.try(:project_namespace) || object

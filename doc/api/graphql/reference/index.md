@@ -20949,7 +20949,6 @@ GPG signature for a signed commit.
 | <a id="grouptwofactorgraceperiod"></a>`twoFactorGracePeriod` | [`Int`](#int) | Time before two-factor authentication is enforced. |
 | <a id="groupuserpermissions"></a>`userPermissions` | [`GroupPermissions!`](#grouppermissions) | Permissions for the current user on the resource. |
 | <a id="groupvaluestreamanalytics"></a>`valueStreamAnalytics` | [`ValueStreamAnalytics`](#valuestreamanalytics) | Information about Value Stream Analytics within the group. |
-| <a id="groupvaluestreams"></a>`valueStreams` | [`ValueStreamConnection`](#valuestreamconnection) | Value streams available to the group. (see [Connections](#connections)) |
 | <a id="groupvisibility"></a>`visibility` | [`String`](#string) | Visibility of the namespace. |
 | <a id="groupvulnerabilityscanners"></a>`vulnerabilityScanners` | [`VulnerabilityScannerConnection`](#vulnerabilityscannerconnection) | Vulnerability scanners reported on the project vulnerabilities of the group and its subgroups. (see [Connections](#connections)) |
 | <a id="groupweburl"></a>`webUrl` | [`String!`](#string) | Web URL of the group. |
@@ -22016,6 +22015,22 @@ Returns [`ValueStreamDashboardCount`](#valuestreamdashboardcount).
 | ---- | ---- | ----------- |
 | <a id="groupvaluestreamdashboardusageoverviewidentifier"></a>`identifier` | [`ValueStreamDashboardMetric!`](#valuestreamdashboardmetric) | Type of counts to retrieve. |
 | <a id="groupvaluestreamdashboardusageoverviewtimeframe"></a>`timeframe` | [`Timeframe!`](#timeframe) | Counts recorded during this time frame, usually from beginning of the month until the end of the month (the system runs monthly aggregations). |
+
+##### `Group.valueStreams`
+
+Value streams available to the group.
+
+Returns [`ValueStreamConnection`](#valuestreamconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupvaluestreamsid"></a>`id` | [`ID`](#id) | Value stream id. |
 
 ##### `Group.vulnerabilities`
 
@@ -26488,7 +26503,6 @@ Represents generic policy violation information.
 | <a id="projectuseraccessauthorizedagents"></a>`userAccessAuthorizedAgents` | [`ClusterAgentAuthorizationUserAccessConnection`](#clusteragentauthorizationuseraccessconnection) | Authorized cluster agents for the project through user_access keyword. (see [Connections](#connections)) |
 | <a id="projectuserpermissions"></a>`userPermissions` | [`ProjectPermissions!`](#projectpermissions) | Permissions for the current user on the resource. |
 | <a id="projectvaluestreamanalytics"></a>`valueStreamAnalytics` | [`ValueStreamAnalytics`](#valuestreamanalytics) | Information about Value Stream Analytics within the project. |
-| <a id="projectvaluestreams"></a>`valueStreams` | [`ValueStreamConnection`](#valuestreamconnection) | Value streams available to the project. (see [Connections](#connections)) |
 | <a id="projectvisibility"></a>`visibility` | [`String`](#string) | Visibility of the project. |
 | <a id="projectvulnerabilityimages"></a>`vulnerabilityImages` | [`VulnerabilityContainerImageConnection`](#vulnerabilitycontainerimageconnection) | Container images reported on the project vulnerabilities. (see [Connections](#connections)) |
 | <a id="projectvulnerabilityscanners"></a>`vulnerabilityScanners` | [`VulnerabilityScannerConnection`](#vulnerabilityscannerconnection) | Vulnerability scanners reported on the project vulnerabilities. (see [Connections](#connections)) |
@@ -27964,6 +27978,22 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="projecttimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
 | <a id="projecttimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
 | <a id="projecttimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
+
+##### `Project.valueStreams`
+
+Value streams available to the project.
+
+Returns [`ValueStreamConnection`](#valuestreamconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectvaluestreamsid"></a>`id` | [`ID`](#id) | Value stream id. |
 
 ##### `Project.visibleForks`
 
@@ -30466,7 +30496,20 @@ fields relate to interactions between the two entities.
 | <a id="valuestreamname"></a>`name` | [`String!`](#string) | Name of the value stream. |
 | <a id="valuestreamnamespace"></a>`namespace` | [`Namespace!`](#namespace) | Namespace the value stream belongs to. |
 | <a id="valuestreamproject"></a>`project` **{warning-solid}** | [`Project`](#project) | **Introduced** in GitLab 15.6. **Status**: Experiment. Project the value stream belongs to, returns empty if it belongs to a group. |
-| <a id="valuestreamstages"></a>`stages` | [`[ValueStreamStage!]`](#valuestreamstage) | Value Stream stages. |
+
+#### Fields with arguments
+
+##### `ValueStream.stages`
+
+Value Stream stages.
+
+Returns [`[ValueStreamStage!]`](#valuestreamstage).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="valuestreamstagesid"></a>`id` | [`ID`](#id) | Value stream stage id. |
 
 ### `ValueStreamAnalytics`
 
@@ -30518,10 +30561,13 @@ Represents a recorded measurement (object count) for the requested group.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="valuestreamstagecustom"></a>`custom` | [`Boolean!`](#boolean) | Whether the stage is customized. |
+| <a id="valuestreamstageendeventhtmldescription"></a>`endEventHtmlDescription` | [`String!`](#string) | HTML description of the end event. |
 | <a id="valuestreamstageendeventidentifier"></a>`endEventIdentifier` | [`ValueStreamStageEvent!`](#valuestreamstageevent) | End event identifier. |
 | <a id="valuestreamstageendeventlabel"></a>`endEventLabel` | [`Label`](#label) | Label associated with end event. |
 | <a id="valuestreamstagehidden"></a>`hidden` | [`Boolean!`](#boolean) | Whether the stage is hidden. |
+| <a id="valuestreamstageid"></a>`id` | [`AnalyticsCycleAnalyticsStageID!`](#analyticscycleanalyticsstageid) | ID of the value stream. |
 | <a id="valuestreamstagename"></a>`name` | [`String!`](#string) | Name of the stage. |
+| <a id="valuestreamstagestarteventhtmldescription"></a>`startEventHtmlDescription` | [`String!`](#string) | HTML description of the start event. |
 | <a id="valuestreamstagestarteventidentifier"></a>`startEventIdentifier` | [`ValueStreamStageEvent!`](#valuestreamstageevent) | Start event identifier. |
 | <a id="valuestreamstagestarteventlabel"></a>`startEventLabel` | [`Label`](#label) | Label associated with start event. |
 
@@ -34736,6 +34782,12 @@ An example `AlertManagementAlertID` is: `"gid://gitlab/AlertManagement::Alert/1"
 A `AlertManagementHttpIntegrationID` is a global ID. It is encoded as a string.
 
 An example `AlertManagementHttpIntegrationID` is: `"gid://gitlab/AlertManagement::HttpIntegration/1"`.
+
+### `AnalyticsCycleAnalyticsStageID`
+
+A `AnalyticsCycleAnalyticsStageID` is a global ID. It is encoded as a string.
+
+An example `AnalyticsCycleAnalyticsStageID` is: `"gid://gitlab/Analytics::CycleAnalytics::Stage/1"`.
 
 ### `AnalyticsCycleAnalyticsValueStreamID`
 

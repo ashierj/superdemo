@@ -8,16 +8,18 @@ module EE
           extend ::Gitlab::Utils::Override
 
           override :resolve
-          def resolve
+          def resolve(id: nil)
             return super unless ::Gitlab::Analytics::CycleAnalytics.licensed?(namespace)
 
-            BatchLoader::GraphQL.for(object.id).batch(key: object.class.name, cache: false) do |ids, loader, _|
-              stages = list_stages({ value_streams_ids: ids })
+            BatchLoader::GraphQL.for(object.id).batch(key: object.class.name,
+              cache: false) do |value_stream_ids, loader, _|
+              list_params = stage_params(id: id).merge(value_streams_ids: value_stream_ids)
+              stages = list_stages(list_params)
 
               grouped_stages = stages.present? ? stages.group_by(&:value_stream_id) : {}
 
-              ids.each do |id|
-                loader.call(id, grouped_stages[id] || [])
+              value_stream_ids.each do |value_stream_id|
+                loader.call(value_stream_id, grouped_stages[value_stream_id] || [])
               end
             end
           end

@@ -67,5 +67,19 @@ RSpec.describe Analytics::CycleAnalytics::Stages::ListService, feature_category:
     it 'returns stages filtered by value streams' do
       expect(stages).to match_array([stage1, stage2])
     end
+
+    context 'when filtering stage ids' do
+      let(:stage_ids) { [stage1.id] }
+
+      subject { described_class.new(parent: group, current_user: user, params: { value_stream_ids: [value_stream.id], stage_ids: [stage1.id] }).execute.payload[:stages] }
+
+      it { is_expected.to eq([stage1]) }
+
+      context 'when stage id does not belong to the value stream' do
+        let(:stage_ids) { [stage1.id, stage2.id] }
+
+        it { is_expected.to eq([stage1]) }
+      end
+    end
   end
 end
