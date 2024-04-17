@@ -27,7 +27,7 @@ RSpec.describe Release do
     end
 
     context 'when an array of namespace ids is passed' do
-      let(:ns_id) { group.self_and_descendants.select(:id) }
+      let(:ns_id) { group.self_and_descendant_ids }
 
       it 'returns releases associated to projects of all provided groups' do
         expect(described_class.by_namespace_id(ns_id)).to match_array(

@@ -642,7 +642,7 @@ module EE
     def vulnerability_reads(use_traversal_ids: false)
       return ::Vulnerabilities::Read.by_group(self) if use_traversal_ids
 
-      ::Vulnerabilities::Read.where(namespace_id: self_and_descendants.select(:id))
+      ::Vulnerabilities::Read.where(namespace_id: self_and_descendant_ids)
     end
 
     def next_traversal_ids
@@ -746,7 +746,7 @@ module EE
     end
 
     def releases_count
-      ::Release.by_namespace_id(self_and_descendants.select(:id)).count
+      ::Release.by_namespace_id(self_and_descendant_ids).count
     end
 
     def releases_percentage
@@ -758,7 +758,7 @@ module EE
 
       self.class.count_by_sql(
         ::Project.select(calculate_sql)
-        .where(namespace_id: self_and_descendants.select(:id)).to_sql
+        .where(namespace_id: self_and_descendant_ids).to_sql
       )
     end
 
@@ -1016,7 +1016,7 @@ module EE
     def active_project_tokens_of_root_ancestor
       root_ancestor_and_descendants_project_bots = ::User
         .joins(projects: :group)
-        .where(namespaces: { id: root_ancestor.self_and_descendants.select(:id) })
+        .where(namespaces: { id: root_ancestor.self_and_descendant_ids })
         .project_bot
         .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/428542")
 
