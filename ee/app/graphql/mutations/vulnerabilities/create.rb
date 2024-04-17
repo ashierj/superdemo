@@ -37,15 +37,6 @@ module Mutations
         description: 'Severity of the vulnerability (defaults to `unknown`).',
         default_value: 'unknown'
 
-      argument :confidence, Types::VulnerabilityConfidenceEnum,
-        required: false,
-        description: 'Confidence of the vulnerability (defaults to `unknown`).',
-        default_value: 'unknown',
-        deprecated: {
-          reason: 'This field will be removed from the Vulnerability domain model',
-          milestone: '15.4'
-        }
-
       argument :solution, GraphQL::Types::String,
         required: false,
         description: 'Instructions for how to fix the vulnerability.'
