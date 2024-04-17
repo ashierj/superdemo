@@ -30,14 +30,10 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
   let_it_be(:group_member_role_2) { create(:member_role, namespace: root_group, read_vulnerability: true) }
   let_it_be(:group_2_member_role) { create(:member_role) }
   let_it_be(:instance_role) { create(:member_role, :instance, read_vulnerability: true) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: root_group) }
 
   subject do
     graphql_data.dig('group', 'memberRoles', 'nodes')
-  end
-
-  before_all do
-    root_group.add_owner(user)
   end
 
   shared_examples 'returns member roles' do

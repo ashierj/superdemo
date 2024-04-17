@@ -8,7 +8,7 @@ RSpec.describe 'Query.project(fullPath).product_analytics_events_stored',
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: project) }
 
   let(:query) do
     %(
@@ -29,10 +29,6 @@ RSpec.describe 'Query.project(fullPath).product_analytics_events_stored',
 
   subject do
     post_graphql(query, current_user: user)
-  end
-
-  before_all do
-    project.add_owner(user)
   end
 
   context 'when project does not have product analytics enabled' do

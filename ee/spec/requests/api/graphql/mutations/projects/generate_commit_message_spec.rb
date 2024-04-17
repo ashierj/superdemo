@@ -8,7 +8,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
 
   let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:current_user) { create(:user, developer_of: project) }
+  let_it_be(:current_user) { create(:user, developer_of: [project, group]) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
 
   let(:mutation) do
@@ -25,10 +25,6 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_licensed_features(generate_commit_message: true, ai_features: true, experimental_features: true)
     group.namespace_settings.update!(experiment_features_enabled: true)
-  end
-
-  before_all do
-    group.add_developer(current_user)
   end
 
   it 'successfully performs an generate commit message request' do

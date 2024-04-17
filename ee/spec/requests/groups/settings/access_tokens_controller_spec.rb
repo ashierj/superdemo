@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::Settings::AccessTokensController, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
-  let_it_be(:resource) { create(:group) }
-
-  before_all do
-    resource.add_owner(user)
-  end
+  let_it_be(:resource) { create(:group, owners: user) }
 
   before do
     sign_in(user)

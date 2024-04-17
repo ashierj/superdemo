@@ -8,7 +8,7 @@ RSpec.describe 'AiAction for Summarize New Merge Request', :saas, feature_catego
 
   let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:current_user) { create(:user, developer_of: project) }
+  let_it_be(:current_user) { create(:user, developer_of: [project, group]) }
 
   let(:mutation) do
     params = {
@@ -30,10 +30,6 @@ RSpec.describe 'AiAction for Summarize New Merge Request', :saas, feature_catego
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_licensed_features(summarize_new_merge_request: true, ai_features: true, experimental_features: true)
     group.namespace_settings.update!(experiment_features_enabled: true)
-  end
-
-  before_all do
-    group.add_developer(current_user)
   end
 
   it 'successfully performs an explain code request' do

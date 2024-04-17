@@ -8,7 +8,7 @@ RSpec.describe 'Querying a Board list', feature_category: :team_planning do
   let_it_be(:unknown_user) { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:project) { create(:project, group: group, guests: guest) }
   let_it_be(:board) { create(:board, resource_parent: project) }
   let_it_be(:label) { create(:label, project: project, name: 'foo') }
   let_it_be(:list) { create(:list, board: board, label: label) }
@@ -30,10 +30,6 @@ RSpec.describe 'Querying a Board list', feature_category: :team_planning do
   end
 
   subject { graphql_data['boardList'] }
-
-  before_all do
-    project.add_guest(guest)
-  end
 
   before do
     post_graphql(query, current_user: current_user)

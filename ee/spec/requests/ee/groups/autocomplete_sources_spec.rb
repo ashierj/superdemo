@@ -4,12 +4,8 @@ require 'spec_helper'
 
 RSpec.describe 'groups autocomplete', feature_category: :groups_and_projects do
   let_it_be(:user) { create(:user) }
-  let_it_be_with_reload(:group) { create(:group, :private) }
+  let_it_be_with_reload(:group) { create(:group, :private, developers: user) }
   let_it_be(:epic) { create(:epic, group: group) }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   before do
     stub_licensed_features(epics: true)

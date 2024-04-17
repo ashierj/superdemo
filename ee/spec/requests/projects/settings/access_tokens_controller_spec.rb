@@ -5,18 +5,13 @@ require 'spec_helper'
 RSpec.describe Projects::Settings::AccessTokensController, :saas, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:resource) { create(:project, group: group) }
-  let_it_be(:access_token_user) { create(:user, :project_bot) }
+  let_it_be(:resource) { create(:project, group: group, maintainers: user) }
+  let_it_be(:access_token_user) { create(:user, :project_bot, maintainer_of: resource) }
 
   before do
     allow(Gitlab).to receive(:com?).and_return(true)
     stub_ee_application_setting(should_check_namespace_plan: true)
     sign_in(user)
-  end
-
-  before_all do
-    resource.add_maintainer(access_token_user)
-    resource.add_maintainer(user)
   end
 
   shared_examples 'feature unavailable' do

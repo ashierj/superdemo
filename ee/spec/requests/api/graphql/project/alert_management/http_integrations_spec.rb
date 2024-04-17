@@ -25,8 +25,8 @@ RSpec.describe 'getting Alert Management HTTP Integrations', feature_category: :
   end
 
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:maintainer) { create(:user) }
-  let_it_be(:developer) { create(:user) }
+  let_it_be(:maintainer) { create(:user, maintainer_of: project) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:prometheus_integration) { create(:prometheus_integration, project: project) }
   let_it_be(:project_alerting_setting) { create(:project_alerting_setting, project: project) }
@@ -59,11 +59,6 @@ RSpec.describe 'getting Alert Management HTTP Integrations', feature_category: :
 
   before do
     stub_licensed_features(multiple_alert_http_integrations: true)
-  end
-
-  before_all do
-    project.add_developer(developer)
-    project.add_maintainer(maintainer)
   end
 
   context 'with integrations' do

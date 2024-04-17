@@ -6,7 +6,7 @@ RSpec.describe 'Querying a Milestone', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, guests: current_user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:milestone) { create(:milestone, project: project, start_date: '2020-01-01', due_date: '2020-01-15') }
 
@@ -15,10 +15,6 @@ RSpec.describe 'Querying a Milestone', feature_category: :team_planning do
   end
 
   subject { graphql_data['milestone'] }
-
-  before_all do
-    project.add_guest(current_user)
-  end
 
   context 'burnupTimeSeries' do
     let(:fields) do

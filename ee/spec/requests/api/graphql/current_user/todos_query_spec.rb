@@ -6,7 +6,7 @@ RSpec.describe 'getting project information', feature_category: :team_planning d
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, developers: current_user) }
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:epic_todo) { create(:todo, user: current_user, target: epic) }
 
@@ -23,10 +23,6 @@ RSpec.describe 'getting project information', feature_category: :team_planning d
   end
 
   subject { graphql_data.dig('currentUser', 'todos', 'nodes') }
-
-  before_all do
-    group.add_developer(current_user)
-  end
 
   before do
     stub_licensed_features(epics: true)

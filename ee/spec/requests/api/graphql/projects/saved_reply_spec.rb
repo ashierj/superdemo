@@ -6,7 +6,7 @@ RSpec.describe 'Project saved reply', feature_category: :code_review_workflow do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, maintainers: user) }
   let_it_be(:saved_reply) { create(:project_saved_reply, project: project) }
   let(:current_user) { user }
 
@@ -34,10 +34,6 @@ RSpec.describe 'Project saved reply', feature_category: :code_review_workflow do
         saved_reply_id: saved_reply.to_global_id
       }
     )
-  end
-
-  before_all do
-    project.add_maintainer(user)
   end
 
   context 'when license is invalid' do

@@ -6,16 +6,12 @@ RSpec.describe 'Create group saved reply', feature_category: :code_review_workfl
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:current_user) { create(:user) }
+  let_it_be(:current_user) { create(:user, maintainer_of: group) }
 
   let(:input) { { group_id: group.to_global_id, name: 'Test name', content: 'Test content' } }
 
   let(:mutation) { graphql_mutation(:group_saved_reply_create, input) }
   let(:mutation_response) { graphql_mutation_response(:group_saved_reply_create) }
-
-  before_all do
-    group.add_maintainer(current_user)
-  end
 
   context 'with group_saved_replies_flag disabled' do
     before do
