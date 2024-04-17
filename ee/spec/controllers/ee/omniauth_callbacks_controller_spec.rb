@@ -281,6 +281,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
       let_it_be(:user) { build_stubbed(:user, email: 'new@example.com') }
       let_it_be(:new_user_email) { user.email }
       let(:base_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
+      let(:glm_params) { {} }
       let(:redirect_params) { glm_params }
 
       subject(:post_create) { post provider }
@@ -308,6 +309,36 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
         it_behaves_like EE::Onboarding::Redirectable, 'invite' do
           let(:glm_params) { base_params }
+        end
+      end
+
+      context 'with subscription concerns for stored location values' do
+        let(:session) { { 'user_return_to' => return_to } }
+
+        before do
+          stub_saas_features(onboarding: true)
+        end
+
+        subject(:post_create) { post provider, session: session }
+
+        context 'when it is a subscription' do
+          let(:return_to) { ::Gitlab::Routing.url_helpers.new_subscriptions_path }
+
+          it 'does not overwrite the stored location' do
+            expect(controller).not_to receive(:store_location_for).with(:user, return_to)
+
+            post_create
+          end
+        end
+
+        context 'when it is not a subscription' do
+          let(:return_to) { 'some_other/path' }
+
+          it 'overwrites the stored location' do
+            expect(controller).to receive(:store_location_for).with(:user, users_sign_up_welcome_path)
+
+            post_create
+          end
         end
       end
     end

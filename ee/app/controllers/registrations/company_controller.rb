@@ -56,14 +56,14 @@ module Registrations
     end
 
     def service_params
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove this
+      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove this
       # passing of trial once we cut over to fully use db solution as this is merely tracking initial
       # trial and so we can merely call that off the user record in the service layer.
       permitted_params.merge(trial_onboarding_flow: true, trial: onboarding_status.trial_from_the_beginning?)
     end
 
     def redirect_params
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove this
+      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove this
       # passing of trial and trial_onboarding_flow once we cut over to fully use db solution as this is
       # merely tracking initial and current states of trial which we are recording in user.onboarding_status now
       # and so we can merely call that in the places that consume this.

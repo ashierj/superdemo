@@ -40,20 +40,24 @@ module EE
 
     override :perform_registration_tasks
     def perform_registration_tasks(user, provider)
-      # We need to do this here since the subscription flow relies on what was set in the stored_location_for(:user)
-      # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.
-      # Then the RegistrationsIdentityVerificationController#success will get
-      # whatever is set in super instead of the subscription path we desire.
-      super unless onboarding_status.subscription?
-
       # This also protects the sub classes group saml and ldap from staring onboarding
       # as we don't want those to onboard.
-      return unless provider.to_sym.in?(::AuthHelper.providers_for_base_controller)
+      if provider.to_sym.in?(::AuthHelper.providers_for_base_controller)
+        ::Onboarding::StatusCreateService
+          .new(
+            request.env.fetch('omniauth.params', {}).deep_symbolize_keys, session, user, onboarding_first_step_path
+          ).execute
 
-      ::Onboarding::StatusCreateService
-        .new(
-          request.env.fetch('omniauth.params', {}).deep_symbolize_keys, session, user, onboarding_first_step_path
-        ).execute
+        # TODO: We can look at removing this `unless onboarding_status.subscription?` and out of our conditionals here
+        # in the next steps of https://gitlab.com/gitlab-org/gitlab/-/issues/435746 where we only drive off db values.
+        # We need to do this here since the subscription flow relies on what was set in the stored_location_for(:user)
+        # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.
+        # Then the RegistrationsIdentityVerificationController#success will get
+        # whatever is set in super instead of the subscription path we desire.
+        super unless onboarding_status.subscription?
+      else
+        super
+      end
     end
 
     def onboarding_params

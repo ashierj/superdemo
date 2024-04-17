@@ -31,6 +31,7 @@ module EE
       def after_commit_tasks
         super
 
+        convert_invited_user_to_invite_onboarding
         finish_onboarding_user
       end
 
@@ -41,6 +42,14 @@ module EE
         else
           super
         end
+      end
+
+      def convert_invited_user_to_invite_onboarding
+        # When a user is in onboarding, but have not finished onboarding and then are invited, we need
+        # to then convert that user to be an invite registration.
+        return unless member.user.present?
+
+        ::Onboarding::StatusConvertToInviteService.new(member.user).execute
       end
 
       def finish_onboarding_user

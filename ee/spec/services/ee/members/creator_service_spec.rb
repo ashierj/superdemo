@@ -4,17 +4,25 @@ require 'spec_helper'
 
 RSpec.describe Members::CreatorService, feature_category: :groups_and_projects do
   describe '.add_member' do
-    let_it_be(:user) { create(:user) }
+    let_it_be(:user, reload: true) { create(:user) }
 
     context 'for onboarding concerns', :saas do
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
-        stub_ee_application_setting(should_check_namespace_plan: true)
+        stub_saas_features(onboarding: true)
         create(:group_member, source: group)
       end
 
       context 'when user qualifies for being in onboarding' do
+        it 'converts the user to an invite registration' do
+          user.update!(onboarding_in_progress: true, onboarding_status_registration_type: 'free')
+
+          expect do
+            described_class.add_member(group, user, :owner)
+          end.to change { user.reset.onboarding_status_registration_type }.from('free').to('invite')
+        end
+
         context 'when user has finished the welcome step' do
           before do
             user.update!(onboarding_in_progress: true)
@@ -41,7 +49,15 @@ RSpec.describe Members::CreatorService, feature_category: :groups_and_projects d
       end
 
       context 'when user does not qualify for onboarding' do
-        let(:check_namespace_plan) { false }
+        before do
+          stub_saas_features(onboarding: false)
+        end
+
+        it 'does not convert the user to an invite registration' do
+          expect do
+            described_class.add_member(group, user, :owner)
+          end.not_to change { user.reset.onboarding_status_registration_type }
+        end
 
         context 'when user has finished the welcome step' do
           before do

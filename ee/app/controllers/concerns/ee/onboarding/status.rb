@@ -51,20 +51,22 @@ module EE
       end
 
       def convert_to_automatic_trial?
-        return false if invite?
+        # TODO: Basically only free, but this logic may go away soon as we start the next step in
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/453979
+        return false if invite? || subscription? || trial?
 
         setup_for_company?
       end
 
       def invite?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
         # invited_registration_type? from this logic as we will be fully driving off the db value.
 
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite] || invited_registration_type?
       end
 
       def trial?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
         # the params and stored location considerations as we will be fully driving off the db registration_type.
         return false unless enabled?
 
@@ -143,7 +145,7 @@ module EE
         # We do not need to consider trial_from_stored_location? here as this is only used in the
         # identity_verification area and this method is not called there.
         # TODO: We can simplify/remove this method once we cutover to DB only solution as the next step in
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/435745.
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/435746.
 
         trial_from_params? || (user.onboarding_status_initial_registration_type.present? && initial_trial?)
       end
@@ -176,7 +178,7 @@ module EE
       end
 
       def subscription_from_stored_location?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
         # subscription_from_stored_location? alias and use as we will drive off the DB.
         # This method will need to remain though long term.
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path
@@ -187,7 +189,7 @@ module EE
       end
 
       def initial_trial?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435745, we can remove the
+        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
         # return true condition here and simplify this area as we drive off the db values.
         return true unless user.onboarding_status_initial_registration_type
 
@@ -209,7 +211,7 @@ module EE
         # TODO: See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/143148
         # This is used for detection of proper tracking in the identity_verification
         # area. We can also look to remove this in the next step where we rely
-        # on the database in https://gitlab.com/gitlab-org/gitlab/-/issues/435745.
+        # on the database in https://gitlab.com/gitlab-org/gitlab/-/issues/435746.
         return false unless session
 
         # for regular signup it will be in `redirect`, but for SSO it will be in `user`
