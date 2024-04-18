@@ -2,17 +2,19 @@
 
 require "spec_helper"
 
-RSpec.describe Projects::DisableLegacyInactiveProjectsService do
+RSpec.describe Projects::DisableLegacyInactiveProjectsService, feature_category: :groups_and_projects do
   describe '#perform' do
     using RSpec::Parameterized::TableSyntax
 
+    let_it_be(:inactive_timestamp) { described_class::LAST_ACTIVITY - 1.day }
     let_it_be(:active_private_project) { create_legacy_license_project(Gitlab::VisibilityLevel::PRIVATE, 1.day.ago) }
-    let_it_be(:inactive_private_project) { create_legacy_license_project(Gitlab::VisibilityLevel::PRIVATE, 1.year.ago) }
     let_it_be(:active_public_project) { create_legacy_license_project(Gitlab::VisibilityLevel::PUBLIC, 1.day.ago) }
+    let_it_be(:inactive_private_project) do
+      create_legacy_license_project(Gitlab::VisibilityLevel::PRIVATE, inactive_timestamp)
+    end
+
     let_it_be(:inactive_public_projects) do
-      projects = []
-      4.times { projects << create_legacy_license_project(Gitlab::VisibilityLevel::PUBLIC, 1.year.ago) }
-      projects
+      Array.new(4) { create_legacy_license_project(Gitlab::VisibilityLevel::PUBLIC, inactive_timestamp) }
     end
 
     before do
@@ -43,18 +45,14 @@ RSpec.describe Projects::DisableLegacyInactiveProjectsService do
       it 'terminates the worker before completing all the projects' do
         subject.execute
 
-        migrated_licenses = inactive_public_projects
-                              .first(described_class::LOOP_LIMIT)
-                              .map { |inactive_public_project| updated_license(inactive_public_project) }
-
-        expect(migrated_licenses).to all(eq false)
-
+        migrated_projects_count = described_class::LOOP_LIMIT
         unmigrated_projects_count = inactive_public_projects.size - described_class::LOOP_LIMIT
-        unmigrated_licenses = inactive_public_projects
-                                .last(unmigrated_projects_count)
-                                .map { |inactive_public_project| updated_license(inactive_public_project) }
 
-        expect(unmigrated_licenses).to all(eq true)
+        all_licenses = inactive_public_projects
+          .map { |inactive_public_project| updated_license(inactive_public_project) }
+
+        expect(all_licenses.count(false)).to eq(migrated_projects_count)
+        expect(all_licenses.count(true)).to eq(unmigrated_projects_count)
       end
     end
   end
