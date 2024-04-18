@@ -28827,7 +28827,7 @@ msgstr ""
 msgid "JiraRequest|An error occurred while requesting data from Jira. Check your %{docs_link_start}Jira integration configuration%{docs_link_end} and try again."
 msgstr ""
 
-msgid "JiraRequest|An error occurred while requesting data from Jira: %{messages}. Check your %{docs_link_start}Jira integration configuration%{docs_link_end} and try again."
+msgid "JiraRequest|An error occurred while requesting data from Jira: %{messages} Check your %{docs_link_start}Jira integration configuration%{docs_link_end} and try again."
 msgstr ""
 
 msgid "JiraRequest|The Jira API URL for connecting to Jira is not valid. Check your Jira integration API URL and try again."
