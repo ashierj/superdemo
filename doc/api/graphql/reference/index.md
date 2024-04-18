@@ -19533,7 +19533,6 @@ Returns [`[DoraMetric!]`](#dorametric).
 | <a id="dorametricsenddate"></a>`endDate` | [`Date`](#date) | Date range to end at. Default is the current date. |
 | <a id="dorametricsenvironmenttiers"></a>`environmentTiers` | [`[DeploymentTier!]`](#deploymenttier) | Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`. |
 | <a id="dorametricsinterval"></a>`interval` | [`DoraMetricBucketingInterval`](#dorametricbucketinginterval) | How the metric should be aggregated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`. |
-| <a id="dorametricsmetric"></a>`metric` **{warning-solid}** | [`DoraMetricType`](#dorametrictype) | **Deprecated** in GitLab 15.10. Superseded by metrics fields. See `DoraMetric` type. |
 | <a id="dorametricsstartdate"></a>`startDate` | [`Date`](#date) | Date range to start from. Default is 3 months ago. |
 
 ### `DoraMetric`
@@ -19547,7 +19546,6 @@ Returns [`[DoraMetric!]`](#dorametric).
 | <a id="dorametricdeploymentfrequency"></a>`deploymentFrequency` | [`Float`](#float) | Number of deployments per day. |
 | <a id="dorametricleadtimeforchanges"></a>`leadTimeForChanges` | [`Float`](#float) | Median time to deploy a merged merge request. |
 | <a id="dorametrictimetorestoreservice"></a>`timeToRestoreService` | [`Float`](#float) | Median time to close an incident. |
-| <a id="dorametricvalue"></a>`value` **{warning-solid}** | [`Float`](#float) | **Deprecated** in GitLab 15.10. Moved to corresponding metric field. |
 
 ### `DoraPerformanceScoreCount`
 
@@ -32575,17 +32573,6 @@ All possible ways that DORA metrics can be aggregated.
 | <a id="dorametricbucketingintervalall"></a>`ALL` | All data points are combined into a single value. |
 | <a id="dorametricbucketingintervaldaily"></a>`DAILY` | Data points are combined into chunks by day. |
 | <a id="dorametricbucketingintervalmonthly"></a>`MONTHLY` | Data points are combined into chunks by month. |
-
-### `DoraMetricType`
-
-All supported DORA metric types.
-
-| Value | Description |
-| ----- | ----------- |
-| <a id="dorametrictypechange_failure_rate"></a>`CHANGE_FAILURE_RATE` | Change failure rate. |
-| <a id="dorametrictypedeployment_frequency"></a>`DEPLOYMENT_FREQUENCY` | Deployment frequency. |
-| <a id="dorametrictypelead_time_for_changes"></a>`LEAD_TIME_FOR_CHANGES` | Lead time for changes. |
-| <a id="dorametrictypetime_to_restore_service"></a>`TIME_TO_RESTORE_SERVICE` | Time to restore service. |
 
 ### `EntryType`
 

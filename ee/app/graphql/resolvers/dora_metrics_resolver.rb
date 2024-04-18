@@ -10,11 +10,6 @@ module Resolvers
     type [::Types::DoraMetricType], null: true
     alias_method :container, :object
 
-    argument :metric, Types::DoraMetricTypeEnum,
-             required: false,
-             description: 'Type of metric to return.',
-             deprecated: { reason: 'Superseded by metrics fields. See `DoraMetric` type', milestone: '15.10' }
-
     argument :start_date, Types::DateType,
              required: false,
              description: 'Date range to start from. Default is 3 months ago.'
@@ -32,7 +27,7 @@ module Resolvers
              description: 'Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`.'
 
     def resolve_with_lookahead(**params)
-      params[:metrics] = Array(params[:metric] || selected_metrics)
+      params[:metrics] = selected_metrics
 
       service = ::Dora::AggregateMetricsService
         .new(container: container, current_user: current_user, params: params)
@@ -41,12 +36,7 @@ module Resolvers
 
       raise Gitlab::Graphql::Errors::ArgumentError, result[:message] unless result[:status] == :success
 
-      if params[:metric]
-        # Backwards compatibility until %17.0
-        single_metric_support(result[:data], params[:metric])
-      else
-        include_nil_values_for(result[:data], service)
-      end
+      include_nil_values_for(result[:data], service)
     end
 
     private
@@ -75,10 +65,6 @@ module Resolvers
 
       # Transforms data back to original format after nil values are included
       data_with_nil_values.map { |k, v| { 'date' => k }.merge(v) }
-    end
-
-    def single_metric_support(data, metric)
-      data.each { |row| row['value'] = row[metric] }
     end
 
     def metrics_default_values
