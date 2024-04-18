@@ -1,11 +1,10 @@
 <script>
 import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg?raw';
-import { GlAlert, GlCard, GlIcon, GlLink, GlLoadingIcon, GlButton, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlCard, GlIcon, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import CreateJiraIssue from 'ee/vue_shared/security_reports/components/create_jira_issue.vue';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export const i18n = {
   cardHeading: s__('VulnerabilityManagement|Related Jira issues'),
@@ -13,7 +12,6 @@ export const i18n = {
     'VulnerabilityManagement|Something went wrong while trying to fetch related Jira issues. Please check the %{linkStart}Jira integration settings%{linkEnd} and try again.',
   ),
   helpPageLinkLabel: s__('VulnerabilityManagement|Read more about related issues'),
-  createNewIssueLinkText: s__('VulnerabilityManagement|Create Jira issue'),
   loadingStateLabel: s__('VulnerabilityManagement|Fetching linked Jira issues'),
 };
 
@@ -21,7 +19,6 @@ export default {
   i18n,
   jiraLogo,
   components: {
-    GlButton,
     CreateJiraIssue,
     GlAlert,
     GlCard,
@@ -33,11 +30,7 @@ export default {
   directives: {
     SafeHtml,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: {
-    createJiraIssueUrl: {
-      default: '',
-    },
     relatedJiraIssuesPath: {
       default: '',
     },
@@ -155,24 +148,11 @@ export default {
           {{ issuesCount }}
         </span>
         <create-jira-issue
-          v-if="glFeatures.createVulnerabilityJiraIssueViaGraphql"
           class="gl-ml-auto"
           :vulnerability-id="vulnerabilityId"
           @create-jira-issue-error="createJiraIssueErrorHandler"
           @mutated="fetchRelatedIssues"
         />
-        <gl-button
-          v-else
-          variant="confirm"
-          category="secondary"
-          :href="createJiraIssueUrl"
-          icon="external-link"
-          target="_blank"
-          class="gl-ml-auto"
-          data-testid="create-new-jira-issue-link"
-        >
-          {{ $options.i18n.createNewIssueLinkText }}
-        </gl-button>
       </template>
       <section
         :hidden="!shouldShowIssuesBody"
