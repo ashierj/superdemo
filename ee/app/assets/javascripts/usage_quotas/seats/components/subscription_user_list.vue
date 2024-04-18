@@ -203,7 +203,7 @@ export default {
             v-else
             v-gl-tooltip
             :title="$options.i18n.emailNotVisibleTooltipText"
-            class="gl-font-style-italic"
+            class="gl-italic"
           >
             {{ s__('Billing|Private') }}
           </span>
