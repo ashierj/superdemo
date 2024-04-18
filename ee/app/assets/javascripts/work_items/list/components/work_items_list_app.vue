@@ -1,14 +1,12 @@
 <script>
-import { GlButton } from '@gitlab/ui';
-import { WORK_ITEM_TYPE_VALUE_EPIC } from '~/work_items/constants';
+import { WORK_ITEM_TYPE_ENUM_EPIC } from '~/work_items/constants';
 import WorkItemsListApp from '~/work_items/list/components/work_items_list_app.vue';
-import CreateWorkItemForm from '../../components/create_work_item_form.vue';
+import CreateWorkItemModal from '~/work_items/components/create_work_item_modal.vue';
 
 export default {
-  WORK_ITEM_TYPE_VALUE_EPIC,
+  WORK_ITEM_TYPE_ENUM_EPIC,
   components: {
-    CreateWorkItemForm,
-    GlButton,
+    CreateWorkItemModal,
     WorkItemsListApp,
   },
   inject: ['hasEpicsFeature'],
@@ -25,12 +23,6 @@ export default {
         this.$refs.workItemsListApp.$apollo.queries.workItems.refetch();
       }
     },
-    hideForm() {
-      this.showEpicCreationForm = false;
-    },
-    showForm() {
-      this.showEpicCreationForm = true;
-    },
   },
 };
 </script>
@@ -38,16 +30,9 @@ export default {
 <template>
   <work-items-list-app ref="workItemsListApp">
     <template v-if="hasEpicsFeature" #nav-actions>
-      <gl-button variant="confirm" @click="showForm">
-        {{ __('Create epic') }}
-      </gl-button>
-    </template>
-    <template v-if="hasEpicsFeature && showEpicCreationForm" #list-body>
-      <create-work-item-form
-        is-group
-        :work-item-type="$options.WORK_ITEM_TYPE_VALUE_EPIC"
-        @created="handleCreated"
-        @hide="hideForm"
+      <create-work-item-modal
+        class="gl-flex-grow-1"
+        :work-item-type="$options.WORK_ITEM_TYPE_ENUM_EPIC"
       />
     </template>
   </work-items-list-app>
