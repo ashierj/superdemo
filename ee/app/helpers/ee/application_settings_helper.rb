@@ -68,7 +68,6 @@ module EE
         :product_analytics_configurator_connection_string,
         :cube_api_base_url,
         :cube_api_key,
-        :openai_api_key,
         :security_policy_global_group_approvers_enabled,
         :security_approval_policies_limit,
         :anthropic_api_key,
