@@ -39,7 +39,7 @@ describe('EmptyState', () => {
 
   it('renders description', () => {
     expect(findDescription().text()).toBe(
-      'First, secure your usage with the Google Cloud Identity and Access Management (IAM) integration. Simplify access without the need to manage accounts or keys.',
+      'First, secure your usage with the Google Cloud IAM integration. Simplify access without the need to manage accounts or keys.',
     );
   });
 

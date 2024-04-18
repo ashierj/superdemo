@@ -74,23 +74,31 @@ describe('ConfigurationInstructions', () => {
     expect(findAccordionItem().props('visible')).toBe(true);
   });
 
-  it('renders link to Google Cloud CLI installation', () => {
+  it('renders link to Google Cloud IAM permissions', () => {
     createComponent();
 
     expect(findLinks().at(0).attributes()).toMatchObject({
+      href:
+        'https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions',
+      target: '_blank',
+    });
+  });
+
+  it('renders link to Google Cloud CLI installation', () => {
+    createComponent();
+
+    expect(findLinks().at(1).attributes()).toMatchObject({
       href: 'https://cloud.google.com/sdk/docs/install',
       target: '_blank',
-      rel: 'noopener noreferrer',
     });
   });
 
   it('renders link to personal access tokens path', () => {
     createComponent();
 
-    expect(findLinks().at(1).attributes()).toMatchObject({
+    expect(findLinks().at(2).attributes()).toMatchObject({
       href: '/path/to/personal/access/tokens',
       target: '_blank',
-      rel: 'noopener noreferrer',
     });
   });
 

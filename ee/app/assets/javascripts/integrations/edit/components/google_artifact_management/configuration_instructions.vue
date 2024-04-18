@@ -69,28 +69,46 @@ export default {
         :header-level="3"
         :visible="!operating"
       >
-        <p>
-          <gl-sprintf
-            :message="
-              s__(
-                'GoogleArtifactRegistry|Before you begin, %{linkStart}install the Google Cloud CLI%{linkEnd}.',
-              )
-            "
-          >
-            <template #link="{ content }">
-              <gl-link
-                href="https://cloud.google.com/sdk/docs/install"
-                target="_blank"
-                rel="noopener noreferrer"
-                >{{ content }} <gl-icon name="external-link" :aria-label="__('(external link)')"
-              /></gl-link>
-            </template>
-          </gl-sprintf>
-        </p>
+        <p>{{ s__('GoogleArtifactRegistry|Before you begin:') }}</p>
+        <ul>
+          <li>
+            <gl-sprintf
+              :message="
+                s__(
+                  'GoogleArtifactRegistry|Ensure you have the %{linkStart}permissions needed%{linkEnd} in your Google Cloud project.',
+                )
+              "
+            >
+              <template #link="{ content }">
+                <gl-link
+                  href="https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions"
+                  target="_blank"
+                >
+                  {{ content }}
+                  <gl-icon name="external-link" :aria-label="__('(external link)')" />
+                </gl-link>
+              </template>
+            </gl-sprintf>
+          </li>
+          <li>
+            <gl-sprintf
+              :message="
+                s__('GoogleArtifactRegistry|%{linkStart}Install the Google Cloud CLI%{linkEnd}.')
+              "
+            >
+              <template #link="{ content }">
+                <gl-link href="https://cloud.google.com/sdk/docs/install" target="_blank">
+                  {{ content }}
+                  <gl-icon name="external-link" :aria-label="__('(external link)')" />
+                </gl-link>
+              </template>
+            </gl-sprintf>
+          </li>
+        </ul>
         <p>
           {{
             s__(
-              'GoogleArtifactRegistry|Run the following command to setup IAM read and write policies in your Google Cloud project.',
+              'GoogleArtifactRegistry|Run the following command to set up IAM read and write policies in your Google Cloud project.',
             )
           }}
         </p>
@@ -109,12 +127,7 @@ export default {
                 <strong>{{ content }}</strong>
               </template>
               <template #link="{ content }">
-                <gl-link
-                  :href="personalAccessTokensPath"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >{{ content }}</gl-link
-                >
+                <gl-link :href="personalAccessTokensPath" target="_blank">{{ content }}</gl-link>
               </template>
             </gl-sprintf>
           </li>
