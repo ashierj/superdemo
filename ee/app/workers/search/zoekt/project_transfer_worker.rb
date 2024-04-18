@@ -23,7 +23,7 @@ module Search
         return false unless project && old_namespace
 
         if old_namespace.use_zoekt?
-          Search::Zoekt::DeleteProjectWorker.perform_async(old_namespace.root_ancestor.id, project_id)
+          Search::Zoekt.delete_async(project_id, root_namespace_id: old_namespace.root_ancestor.id)
         end
 
         return unless project.use_zoekt?

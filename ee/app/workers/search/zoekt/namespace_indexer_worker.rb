@@ -43,18 +43,8 @@ module Search
       end
 
       def remove_projects(namespace, node_id:)
-        namespace.all_projects.find_in_batches do |batch|
-          ::Search::Zoekt::DeleteProjectWorker.bulk_perform_async_with_contexts(
-            batch,
-            arguments_proc: ->(project) do
-              [
-                project.root_namespace&.id,
-                project.id,
-                node_id
-              ]
-            end,
-            context_proc: ->(project) { { project: project } }
-          )
+        namespace.all_projects.find_each do |project|
+          ::Search::Zoekt.delete_async(project.id, root_namespace_id: project.root_namespace&.id, node_id: node_id)
         end
       end
     end

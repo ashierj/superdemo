@@ -55,12 +55,13 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
       let_it_be(:projects) { create_list :project, 3, namespace: namespace }
 
       it 'deletes all projects belonging to the namespace' do
-        expect(::Search::Zoekt::DeleteProjectWorker).to receive(:bulk_perform_async)
-          .with(a_collection_containing_exactly(
-            [projects[0].root_namespace.id, projects[0].id, zoekt_node.id],
-            [projects[1].root_namespace.id, projects[1].id, zoekt_node.id],
-            [projects[2].root_namespace.id, projects[2].id, zoekt_node.id]
-          ))
+        projects.each do |project|
+          expect(::Search::Zoekt).to receive(:delete_async).with(
+            project.id,
+            root_namespace_id: project.root_namespace.id,
+            node_id: zoekt_node.id
+          )
+        end
 
         subject
       end
@@ -71,7 +72,7 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         end
 
         it 'does nothing' do
-          expect(::Search::Zoekt::DeleteProjectWorker).not_to receive(:bulk_perform_async)
+          expect(::Search::Zoekt).not_to receive(:delete_async)
 
           subject
         end
@@ -83,12 +84,13 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         end
 
         it 'deletes index files' do
-          expect(::Search::Zoekt::DeleteProjectWorker).to receive(:bulk_perform_async)
-            .with(a_collection_containing_exactly(
-              [projects[0].root_namespace.id, projects[0].id, zoekt_node.id],
-              [projects[1].root_namespace.id, projects[1].id, zoekt_node.id],
-              [projects[2].root_namespace.id, projects[2].id, zoekt_node.id]
-            ))
+          projects.each do |project|
+            expect(::Search::Zoekt).to receive(:delete_async).with(
+              project.id,
+              root_namespace_id: project.root_namespace.id,
+              node_id: zoekt_node.id
+            )
+          end
 
           subject
         end
