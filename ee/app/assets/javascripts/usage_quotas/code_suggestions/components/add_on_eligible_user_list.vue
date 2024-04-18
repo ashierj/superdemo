@@ -428,7 +428,7 @@ export default {
             v-else
             v-gl-tooltip
             :title="s__('Billing|An email address is only visible for users with public emails.')"
-            class="gl-font-style-italic"
+            class="gl-italic"
           >
             {{ s__('Billing|Private') }}
           </span>

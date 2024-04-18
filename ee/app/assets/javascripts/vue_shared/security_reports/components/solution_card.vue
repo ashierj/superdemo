@@ -31,7 +31,7 @@ export default {
   <div>
     <h3>{{ s__('ciReport|Solution') }}</h3>
     <p ref="markdownContent" v-safe-html="solutionText" data-testid="solution-text"></p>
-    <p v-if="canDownloadPatch" class="gl-font-style-italic" data-testid="create-mr-message">
+    <p v-if="canDownloadPatch" class="gl-italic" data-testid="create-mr-message">
       {{ $options.i18n.createMergeRequestMsg }}
     </p>
   </div>
