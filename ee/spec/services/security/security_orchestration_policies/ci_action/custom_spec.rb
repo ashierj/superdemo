@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Custom,
+  :yaml_processor_feature_flag_corectness,
   feature_category: :security_policy_management do
   describe '#config' do
     subject { described_class.new(action, ci_variables, ci_context, 0).config }

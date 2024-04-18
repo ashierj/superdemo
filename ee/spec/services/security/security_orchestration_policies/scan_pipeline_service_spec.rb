@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, feature_category: :security_policy_management do
+RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService,
+  :yaml_processor_feature_flag_corectness,
+  feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
