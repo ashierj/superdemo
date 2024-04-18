@@ -39,6 +39,13 @@ module Audit
         model: model,
         event_type: 'duo_features_enabled_updated'
       )
+      audit_changes(
+        :selective_code_owner_removals,
+        as: 'selective_code_owner_removals',
+        entity: @project,
+        model: model,
+        event_type: 'selective_code_owner_removals_updated'
+      )
     end
 
     def attributes_from_auditable_model(column)

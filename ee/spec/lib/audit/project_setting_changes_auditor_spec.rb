@@ -110,6 +110,10 @@ RSpec.describe Audit::ProjectSettingChangesAuditor, feature_category: :audit_eve
           it_behaves_like 'audited setting', :duo_features_enabled, 'duo_features_enabled_updated'
           it_behaves_like 'audited setting', :allow_merge_on_skipped_pipeline, 'allow_merge_on_skipped_pipeline_updated'
         end
+
+        context 'when `selective_code_owner_removals` is updated' do
+          it_behaves_like 'audited setting', :selective_code_owner_removals, 'selective_code_owner_removals_updated'
+        end
       end
     end
   end
