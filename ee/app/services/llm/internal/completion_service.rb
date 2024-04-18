@@ -5,7 +5,7 @@ module Llm
     class CompletionService < BaseService
       extend ::Gitlab::Utils::Override
 
-      MAX_RUN_TIME = 20.seconds
+      MAX_RUN_TIME = 30.seconds
 
       attr_reader :prompt_message, :options
 
