@@ -7,12 +7,13 @@ module Projects
     UPDATE_BATCH_SIZE = 500
     LOOP_LIMIT = 200
     PAUSE_SECONDS = 1 # We don't want to execute too many heavy queries at once
+    LAST_ACTIVITY = 1.year.ago
 
     def execute
       loop_until(limit: LOOP_LIMIT) do
         inactive_public_projects_batch = Project
                                            .public_only
-                                           .last_activity_before(1.year.ago)
+                                           .last_activity_before(LAST_ACTIVITY)
                                            .with_legacy_open_source_license(true)
                                            .limit(UPDATE_BATCH_SIZE)
         updated_records_count = ProjectSetting
