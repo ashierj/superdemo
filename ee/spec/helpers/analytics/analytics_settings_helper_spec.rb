@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Analytics::AnalyticsSettingsHelper, feature_category: :product_analytics_visualization do
   let(:form_name) { 'project[foo_bar]' }
   let(:value) { 'some_value' }
+  let(:testid) { 'some-testid' }
 
   describe '#product_analytics_configurator_connection_string_data' do
     let(:expected_name) { "#{form_name}[product_analytics_configurator_connection_string]" }
@@ -17,7 +18,7 @@ RSpec.describe Analytics::AnalyticsSettingsHelper, feature_category: :product_an
       }
 
       expect(helper.product_analytics_configurator_connection_string_data(form_name: form_name,
-        value: value)).to eq(expected_data(test_data, expected_name))
+        value: value, testid: testid)).to eq(expected_data(test_data, expected_name))
     end
   end
 
@@ -32,7 +33,7 @@ RSpec.describe Analytics::AnalyticsSettingsHelper, feature_category: :product_an
       }
 
       expect(helper.cube_api_key_data(form_name: form_name,
-        value: value)).to eq(expected_data(test_data, expected_name))
+        value: value, testid: testid)).to eq(expected_data(test_data, expected_name))
     end
   end
 
@@ -41,6 +42,7 @@ RSpec.describe Analytics::AnalyticsSettingsHelper, feature_category: :product_an
       name: expected_name,
       value: value,
       form_input_group_props: {
+        'data-testid': testid,
         placeholder: test_data[:placeholder],
         id: expected_name
       }.to_json,
