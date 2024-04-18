@@ -74,7 +74,7 @@ module EE
     end
 
     def complete_identity_verification
-      user = ::User.find_by_login(user_params[:login])
+      user = ::User.find_by_login(user_params[:login].to_s)
 
       return if !user || !user.valid_password?(user_params[:password]) || user.access_locked?
       return if ::Gitlab::Qa.request?(request.user_agent)

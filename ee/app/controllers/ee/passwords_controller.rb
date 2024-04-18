@@ -25,7 +25,7 @@ module EE
         author: current_user || unauth_author,
         scope: requester,
         target: requester,
-        target_details: resource_params[:email],
+        target_details: resource_params[:email].to_s,
         message: "Ask for password reset",
         ip_address: request.remote_ip
       })
