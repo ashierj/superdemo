@@ -4366,6 +4366,9 @@ msgstr ""
 msgid "AdminUsers|Trusted"
 msgstr ""
 
+msgid "AdminUsers|Two-factor authentication"
+msgstr ""
+
 msgid "AdminUsers|Unban user"
 msgstr ""
 
@@ -49630,6 +49633,9 @@ msgid "Starts on"
 msgstr ""
 
 msgid "Starts: %{startsAt}"
+msgstr ""
+
+msgid "State"
 msgstr ""
 
 msgid "State your message to activate"
