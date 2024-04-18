@@ -507,7 +507,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               post_api
             end
 
-            it 'includes additional headers for SaaS' do
+            it 'includes additional headers for SaaS', :freeze_time do
               group = create(:group)
               group.add_developer(authorized_user)
 
@@ -516,7 +516,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               _, params = workhorse_send_data
               expect(params['Header']).to include(
                 'X-Gitlab-Saas-Namespace-Ids' => [''],
-                'X-Gitlab-Saas-Duo-Pro-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
+                'X-Gitlab-Saas-Duo-Pro-Namespace-Ids' => [add_on_purchase.namespace.id.to_s],
+                'X-Gitlab-Rails-Send-Start' => [Time.now.to_f.to_s]
               )
             end
 
@@ -722,13 +723,14 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       context 'when user is authorized' do
         let(:current_user) { authorized_user }
 
-        it 'does not include additional headers, which are for SaaS only' do
+        it 'does not include additional headers, which are for SaaS only', :freeze_time do
           post_api
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response.body).to eq("".to_json)
           _, params = workhorse_send_data
           expect(params['Header']).not_to have_key('X-Gitlab-Saas-Namespace-Ids')
+          expect(params['Header']).to include('X-Gitlab-Rails-Send-Start' => [Time.now.to_f.to_s])
         end
       end
 
