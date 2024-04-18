@@ -30,6 +30,8 @@ module API
         {
           'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
           'X-Gitlab-Authentication-Type' => 'oidc',
+          # Forward the request time on to the model gateway to calculate latency
+          'X-Gitlab-Rails-Send-Start' => Time.now.to_f.to_s,
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
