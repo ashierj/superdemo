@@ -18,7 +18,7 @@ module QA
           end
 
           def dismiss_duo_chat_popup
-            return unless has_element?('duo-chat-promo-callout-popover')
+            return unless has_element?('duo-chat-promo-callout-popover', wait: 0.5)
 
             within_element('duo-chat-promo-callout-popover') do
               click_element('close-button')
