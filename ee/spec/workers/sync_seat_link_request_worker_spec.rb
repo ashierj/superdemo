@@ -43,6 +43,16 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       let(:license_key) { build(:gitlab_license, :cloud).export }
       let(:body) { { success: true, license: license_key }.to_json }
 
+      shared_examples 'clearing license cache' do
+        it 'resets the current license cache', :request_store do
+          # called twice because the current license cache is reset before checking the up to date current license
+          # within this class and then again with the `after_commit :reset_current` when creating the new license
+          expect(License).to receive(:reset_current).twice.and_call_original
+
+          sync_seat_link
+        end
+      end
+
       shared_examples 'successful license creation' do
         it 'persists the new license' do
           freeze_time do
@@ -61,51 +71,65 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
           License.delete_all
         end
 
+        it_behaves_like 'clearing license cache'
         it_behaves_like 'successful license creation'
       end
 
       context 'when there is a previous license' do
+        before do
+          License.current # set up license cache
+        end
+
         context 'when it is a cloud license' do
           context 'when the current license key does not match the one returned from sync' do
-            it 'creates a new license' do
-              freeze_time do
-                current_license = create(:license, cloud: true, last_synced_at: 1.day.ago)
+            let!(:current_license) { create(:license, cloud: true, last_synced_at: 1.day.ago) }
 
-                expect { sync_seat_link }.to change(License.cloud, :count).by(1)
+            it_behaves_like 'clearing license cache'
 
-                new_current_license = License.current
-                expect(new_current_license).not_to eq(current_license.id)
-                expect(new_current_license).to have_attributes(
-                  data: license_key,
-                  cloud: true,
-                  last_synced_at: Time.current
-                )
-              end
+            it 'creates a new license', :freeze_time do
+              expect { sync_seat_link }.to change(License.cloud, :count).by(1)
+
+              new_current_license = License.current
+              expect(new_current_license).not_to eq(current_license.id)
+              expect(new_current_license).to have_attributes(
+                data: license_key,
+                cloud: true,
+                last_synced_at: Time.current
+              )
             end
           end
 
           context 'when the current license key matches the one returned from sync' do
-            it 'reuses the current license and updates the last_synced_at', :request_store do
-              freeze_time do
-                current_license = create(:license, cloud: true, data: license_key, last_synced_at: 1.day.ago)
+            let!(:current_license) { create(:license, cloud: true, data: license_key, last_synced_at: 1.day.ago) }
 
-                expect { sync_seat_link }.not_to change(License.cloud, :count)
+            it_behaves_like 'clearing license cache'
 
-                expect(License.current).to have_attributes(
-                  id: current_license.id,
-                  data: license_key,
-                  cloud: true,
-                  last_synced_at: Time.current
-                )
-              end
+            it 'reuses the current license and updates the last_synced_at', :request_store, :freeze_time do
+              expect { sync_seat_link }.not_to change(License.cloud, :count)
+
+              expect(License.current).to have_attributes(
+                id: current_license.id,
+                data: license_key,
+                cloud: true,
+                last_synced_at: Time.current
+              )
             end
           end
 
           context 'when persisting fails' do
             let(:license_key) { 'invalid-key' }
+            let!(:current_license) { License.current }
+
+            it 'resets the current license cache', :request_store do
+              allow(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).and_call_original
+
+              # called only once because no new license is created and the `after_commit :reset_current` isn't executed
+              expect(License).to receive(:reset_current).once.and_call_original
+
+              expect { sync_seat_link }.to raise_error ActiveRecord::RecordInvalid
+            end
 
             it 'does not delete the current license and logs error' do
-              current_license = License.current
               expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).and_call_original
 
               expect { sync_seat_link }.to raise_error ActiveRecord::RecordInvalid
@@ -116,10 +140,9 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
         end
 
         context 'when it is not a cloud license' do
-          before do
-            create(:license)
-          end
+          let!(:current_license) { create(:license) }
 
+          it_behaves_like 'clearing license cache'
           it_behaves_like 'successful license creation'
         end
       end

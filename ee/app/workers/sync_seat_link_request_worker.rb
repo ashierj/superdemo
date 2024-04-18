@@ -43,6 +43,8 @@ class SyncSeatLinkRequestWorker
   private
 
   def reset_license!(license_key)
+    License.reset_current
+
     if License.current_cloud_license?(license_key)
       License.current.reset.touch(:last_synced_at)
     else
