@@ -204,7 +204,7 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
           end
         end
 
-        context 'when user is not admin' do
+        context 'when the user is not a member of the default organization' do
           let_it_be(:user) { create(:user, :without_default_org) }
 
           before do

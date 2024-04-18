@@ -133,7 +133,8 @@ module Sbom
     scope :visible_to, ->(user) do
       return self if user.can_read_all_resources?
 
-      where(project_id: user.project_authorizations.select(:project_id))
+      joins(project: [:project_authorizations])
+        .where(project_authorizations: { user_id: user.id })
     end
 
     def location

@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Dependencies::ExportSerializers::OrganizationDependenciesService, feature_category: :dependency_management do
   let_it_be(:organization) { create(:organization) }
+  let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:project) { create(:project, organization: organization) }
-  let_it_be(:export) { create(:dependency_list_export, project: nil, organization: organization) }
+  let_it_be(:export) { create(:dependency_list_export, project: nil, organization: organization, author: user) }
 
   let(:service_class) { described_class.new(export) }
 
@@ -26,16 +27,61 @@ RSpec.describe Dependencies::ExportSerializers::OrganizationDependenciesService,
         create(:sbom_occurrence, :mit, project: project, component: bundler, component_version: bundler_v1)
       end
 
-      it 'includes each occurrence' do
-        expect(dependencies).to match_array([
-          header,
-          CSV.generate_line([
-            occurrence_1.component_name,
-            occurrence_1.version,
-            occurrence_1.package_manager,
-            occurrence_1.location[:blob_path]
-          ], force_quotes: true)
-        ])
+      context 'when the user is an organization owner' do
+        let_it_be(:organization_user) { create(:organization_user, :owner, organization: organization, user: user) }
+
+        it 'includes each occurrence', :aggregate_failures do
+          expect(dependencies.count).to eq(2)
+          expect(dependencies).to match_array([
+            header,
+            CSV.generate_line([
+              occurrence_1.component_name,
+              occurrence_1.version,
+              occurrence_1.package_manager,
+              occurrence_1.location[:blob_path]
+            ], force_quotes: true)
+          ])
+        end
+      end
+
+      context 'when the user is an admin', :enable_admin_mode do
+        before_all do
+          user.update!(admin: true)
+        end
+
+        it 'includes each occurrence' do
+          expect(dependencies).to match_array([
+            header,
+            CSV.generate_line([
+              occurrence_1.component_name,
+              occurrence_1.version,
+              occurrence_1.package_manager,
+              occurrence_1.location[:blob_path]
+            ], force_quotes: true)
+          ])
+        end
+      end
+
+      context 'when the user has limited access' do
+        let_it_be(:other_project) { create(:project, organization: organization) }
+        let_it_be(:visible_occurrence) { create(:sbom_occurrence, project: other_project) }
+
+        before_all do
+          other_project.add_developer(export.author)
+        end
+
+        it 'includes each occurrence they have access to', :aggregate_failures do
+          expect(dependencies.count).to eq(2)
+          expect(dependencies).to match_array([
+            header,
+            CSV.generate_line([
+              visible_occurrence.component_name,
+              visible_occurrence.version,
+              visible_occurrence.package_manager,
+              visible_occurrence.location[:blob_path]
+            ], force_quotes: true)
+          ])
+        end
       end
 
       it 'avoids N+1 queries' do

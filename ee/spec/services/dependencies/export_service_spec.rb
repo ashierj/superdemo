@@ -92,8 +92,12 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
         let_it_be(:organization) { create(:organization) }
         let_it_be(:project) { create(:project, organization: organization) }
         let_it_be(:occurrences) { create_list(:sbom_occurrence, 2, project: project) }
-        let(:export) { create(:dependency_list_export, project: nil, exportable: organization) }
+        let_it_be_with_reload(:export) { create(:dependency_list_export, project: nil, exportable: organization) }
         let(:expected_filename) { "#{organization.to_param}_dependencies_#{timestamp}.csv" }
+
+        before_all do
+          project.add_developer(export.author)
+        end
 
         it { expect(execute).to be_present }
         it { expect { execute }.to change { export.file.filename }.to(expected_filename) }
