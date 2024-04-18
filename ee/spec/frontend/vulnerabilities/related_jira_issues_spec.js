@@ -35,15 +35,12 @@ describe('EE RelatedJiraIssues Component', () => {
     },
   ];
 
-  const createWrapper = (mountFn, { createVulnerabilityJiraIssueViaGraphql = true } = {}) => () => {
+  const createWrapper = (mountFn) => () => {
     return extendedWrapper(
       mountFn(RelatedJiraIssues, {
         provide: {
           ...defaultProvide,
           ...{ vulnerabilityId: 1 },
-          glFeatures: {
-            createVulnerabilityJiraIssueViaGraphql,
-          },
         },
       }),
     );
@@ -68,7 +65,6 @@ describe('EE RelatedJiraIssues Component', () => {
   const withinComponent = () => within(wrapper.element);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findRelatedJiraIssuesCount = () => wrapper.findByTestId('related-jira-issues-count');
-  const findCreateJiraIssueLink = () => wrapper.findByTestId('create-new-jira-issue-link');
   const findRelatedJiraIssuesSection = () => wrapper.findByTestId('related-jira-issues-section');
   const withinRelatedJiraIssuesSection = () => within(findRelatedJiraIssuesSection().element);
   const findShowCreateJiraIssueErrorAlert = () =>
@@ -134,38 +130,8 @@ describe('EE RelatedJiraIssues Component', () => {
         ).not.toBe(undefined);
       });
 
-      describe('when createVulnerabilityJiraIssueViaGraphql Flag is on', () => {
-        it('shows createJiraIssue Component', () => {
-          expect(findCreateJiraIssueComponent().exists()).toBe(true);
-        });
-
-        it('does not show CreateJiraIssueButton', () => {
-          expect(findCreateJiraIssueLink().exists()).toBe(false);
-        });
-      });
-
-      describe('when createVulnerabilityJiraIssueViaGraphql Flag is off', () => {
-        beforeEach(async () => {
-          wrapper = await withResponse(
-            createWrapper(mount, { createVulnerabilityJiraIssueViaGraphql: false }),
-          );
-        });
-
-        it('does not show createJiraIssue Component', () => {
-          expect(findCreateJiraIssueComponent().exists()).toBe(false);
-        });
-
-        it('shows CreateJiraIssueButton', () => {
-          expect(findCreateJiraIssueLink().props()).toMatchObject({
-            variant: 'confirm',
-            category: 'secondary',
-            icon: 'external-link',
-          });
-
-          expect(findCreateJiraIssueLink().attributes()).toMatchObject({
-            href: defaultProvide.createJiraIssueUrl,
-          });
-        });
+      it('shows createJiraIssue Component', () => {
+        expect(findCreateJiraIssueComponent().exists()).toBe(true);
       });
 
       it('should not show showCreateJiraIssueErrorAlert Banner', () => {

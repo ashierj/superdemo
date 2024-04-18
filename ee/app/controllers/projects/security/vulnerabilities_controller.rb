@@ -6,10 +6,6 @@ module Projects
       include IssuableActions
       include GovernUsageProjectTracking
 
-      before_action do
-        push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)
-      end
-
       before_action :vulnerability, except: [:new]
       before_action :authorize_admin_vulnerability!, except: [:show, :discussions]
       before_action :authorize_read_vulnerability!, except: [:new]
