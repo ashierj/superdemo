@@ -3,7 +3,7 @@
 module EE
   module Gitlab
     module Pages
-      module DeploymentUpdate
+      module DeploymentValidations
         extend ::Gitlab::Utils::Override
 
         override :max_size_from_settings
