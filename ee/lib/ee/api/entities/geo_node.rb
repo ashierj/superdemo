@@ -34,11 +34,6 @@ module EE
           ::Gitlab::Routing.url_helpers.edit_admin_geo_node_url(geo_node)
         end
 
-        # @deprecated in favor of web_geo_replication_details_url
-        expose :web_geo_projects_url, if: ->(geo_node, _) { geo_node.secondary? } do |geo_node|
-          geo_node.geo_projects_url
-        end
-
         expose :web_geo_replication_details_url, if: ->(geo_node, _) { geo_node.secondary? } do |geo_node|
           geo_node.geo_replication_details_url
         end

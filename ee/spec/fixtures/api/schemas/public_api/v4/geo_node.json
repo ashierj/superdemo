@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "required" : [
+  "required": [
     "id",
     "name",
     "url",
@@ -19,44 +19,107 @@
     "web_edit_url",
     "_links"
   ],
-  "properties" : {
-    "id": { "type": "integer" },
-    "name": { "type": ["string", "null"] },
-    "url": { "type": ["string", "null"] },
-    "primary": { "type": "boolean" },
-    "internal_url": { "type": ["string", "null"] },
-    "enabled": { "type": "boolean" },
-    "current": { "type": "boolean" },
-    "files_max_capacity": { "type": "integer" },
-    "repos_max_capacity": { "type": "integer" },
-    "verification_max_capacity": { "type": "integer" },
-    "container_repositories_max_capacity": { "type": "integer" },
-    "selective_sync_type": { "type": ["string", "null"] },
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "primary": {
+      "type": "boolean"
+    },
+    "internal_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "files_max_capacity": {
+      "type": "integer"
+    },
+    "repos_max_capacity": {
+      "type": "integer"
+    },
+    "verification_max_capacity": {
+      "type": "integer"
+    },
+    "container_repositories_max_capacity": {
+      "type": "integer"
+    },
+    "selective_sync_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "selective_sync_shards": {
-      "type": ["array", "null"],
+      "type": [
+        "array",
+        "null"
+      ],
       "items": {
         "type": "string"
       }
     },
     "selective_sync_namespace_ids": {
-      "type": ["array", "null"],
+      "type": [
+        "array",
+        "null"
+      ],
       "items": {
         "type": "integer"
       }
     },
-    "minimum_reverification_interval": { "type": "integer" },
-    "sync_object_storage" : { "type":  "boolean" },
-    "clone_protocol": { "type": "string" },
-    "web_edit_url": { "type": "string" },
-    "web_geo_projects_url": { "type": ["string", "null"] },
-    "web_geo_replication_details_url" : { "type": ["string", "null"] },
+    "minimum_reverification_interval": {
+      "type": "integer"
+    },
+    "sync_object_storage": {
+      "type": "boolean"
+    },
+    "clone_protocol": {
+      "type": "string"
+    },
+    "web_edit_url": {
+      "type": "string"
+    },
+    "web_geo_replication_details_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "_links": {
       "type": "object",
-      "required": ["self", "repair"],
-      "properties" : {
-        "self": { "type": "string" },
-        "status": { "type": "string" },
-        "repair": { "type": "string" }
+      "required": [
+        "self",
+        "repair"
+      ],
+      "properties": {
+        "self": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "repair": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     }

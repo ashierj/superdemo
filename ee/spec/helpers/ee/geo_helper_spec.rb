@@ -52,7 +52,7 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
   end
 
   describe '#geo_filter_nav_options' do
-    let(:replicable_controller) { 'admin/geo/projects' }
+    let(:replicable_controller) { 'admin/geo/replicables' }
     let(:replicable_name) { 'projects' }
     let(:expected_nav_options) do
       [

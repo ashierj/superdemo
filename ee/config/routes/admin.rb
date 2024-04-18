@@ -72,21 +72,6 @@ namespace :admin do
 
     scope '/replication' do
       get '/', to: redirect(path: 'admin/geo/sites')
-
-      resources :projects, only: [:index, :destroy] do
-        member do
-          post :reverify
-          post :resync
-        end
-
-        collection do
-          post :reverify_all
-          post :resync_all
-        end
-      end
-
-      resources :designs, only: [:index]
-
       get '/:replicable_name_plural', to: 'replicables#index', as: 'replicables'
     end
 
