@@ -67,56 +67,6 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         expect(rendered).to have_css(css)
       end
 
-      context 'with Duo Pro trial link' do
-        context 'when duo_pro_trials and duo_pro_trials_for_free_plans is enabled' do
-          before do
-            stub_feature_flags(duo_pro_trials: true)
-            stub_feature_flags(duo_pro_trials_for_free_plans: true)
-          end
-
-          it 'renders the link' do
-            render
-
-            expect(rendered).to have_link(
-              'Start a free GitLab Duo Pro trial',
-              href: new_trials_duo_pro_path(namespace_id: group.id)
-            )
-          end
-        end
-
-        context 'when duo_pro_trials_for_free_plans is enabled' do
-          before do
-            stub_feature_flags(duo_pro_trials: false)
-            stub_feature_flags(duo_pro_trials_for_free_plans: true)
-          end
-
-          it 'does not render the link' do
-            render
-
-            expect(rendered).not_to have_link(
-              'Start a free GitLab Duo Pro trial',
-              href: new_trials_duo_pro_path(namespace_id: group.id)
-            )
-          end
-        end
-
-        context 'when duo_pro_trials is enabled' do
-          before do
-            stub_feature_flags(duo_pro_trials: true)
-            stub_feature_flags(duo_pro_trials_for_free_plans: false)
-          end
-
-          it 'does not render the link' do
-            render
-
-            expect(rendered).not_to have_link(
-              'Start a free GitLab Duo Pro trial',
-              href: new_trials_duo_pro_path(namespace_id: group.id)
-            )
-          end
-        end
-      end
-
       context 'with an expired trial' do
         let_it_be(:group) { create(:group_with_plan, plan: :free_plan, trial_ends_on: Date.yesterday) }
 
@@ -156,7 +106,6 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         context 'when duo_pro_trials is enabled' do
           before do
             stub_feature_flags(duo_pro_trials: true)
-            stub_feature_flags(duo_pro_trials_for_free_plans: false)
           end
 
           it 'renders the link' do
@@ -169,10 +118,9 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
           end
         end
 
-        context 'when duo_pro_trials_for_free_plans is enabled' do
+        context 'when duo_pro_trials is disabled' do
           before do
             stub_feature_flags(duo_pro_trials: false)
-            stub_feature_flags(duo_pro_trials_for_free_plans: true)
           end
 
           it 'does not render the link' do
