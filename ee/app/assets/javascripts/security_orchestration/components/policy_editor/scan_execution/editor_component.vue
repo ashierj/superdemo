@@ -126,7 +126,11 @@ export default {
       return this.existingPolicy?.name;
     },
     showActionSection() {
-      return this.glFeatures.compliancePipelineInPolicies && this.customCiToggleEnabled;
+      return (
+        this.glFeatures.compliancePipelineInPolicies &&
+        this.customCiToggleEnabled &&
+        !this.glFeatures.pipelineExecutionPolicyType
+      );
     },
   },
   methods: {

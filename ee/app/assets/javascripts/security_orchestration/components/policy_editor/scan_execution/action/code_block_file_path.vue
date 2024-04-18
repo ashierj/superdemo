@@ -2,6 +2,7 @@
 import {
   GlFormGroup,
   GlFormInputGroup,
+  GlIcon,
   GlInputGroupText,
   GlSprintf,
   GlFormInput,
@@ -11,16 +12,21 @@ import {
 import { s__, __ } from '~/locale';
 import { BV_SHOW_TOOLTIP, BV_HIDE_TOOLTIP } from '~/lib/utils/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import RefSelector from '~/ref/components/ref_selector.vue';
-import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
 import { isGroup } from 'ee/security_orchestration/components/utils';
+import CodeBlockSourceSelector from './code_block_source_selector.vue';
+import CodeBlockOverrideSelector from './code_block_override_selector.vue';
 
 export default {
   i18n: {
     filePathInputCopy: s__('ScanExecutionPolicy|%{labelStart}File path:%{labelEnd} %{filePath}'),
     filePathCopy: s__(
       'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} from the project %{projectSelector} with ref %{refSelector}',
+    ),
+    pipelineFilePathCopy: s__(
+      'ScanExecutionPolicy|%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector} And run with reference (Optional) %{refSelector}',
     ),
     filePathPrependLabel: __('No project selected'),
     fileRefLabel: s__('ScanExecutionPolicy|Select ref'),
@@ -30,6 +36,9 @@ export default {
       "ScanExecutionPolicy|The file at that project, ref, and path doesn't exist",
     ),
     formGroupLabel: s__('ScanExecutionPolicy|file path group'),
+    selectedProjectInformation: s__(
+      'ScanExecutionPolicy|The content of this pipeline execution YAML file is included in the .gitlab-ci.yml file of the target project. All GitLab CI/CD features are supported.',
+    ),
     tooltipText: s__('ScanExecutionPolicy|Select project first, and then insert a file path'),
   },
   refSelectorTranslations: {
@@ -38,7 +47,9 @@ export default {
   SELECTED_PROJECT_TOOLTIP: 'selected-project-tooltip',
   name: 'CodeBlockFilePath',
   components: {
+    CodeBlockOverrideSelector,
     CodeBlockSourceSelector,
+    GlIcon,
     GlFormGroup,
     GlFormInputGroup,
     GlFormInput,
@@ -49,8 +60,14 @@ export default {
     RefSelector,
   },
   directives: { GlTooltip: GlTooltipDirective },
+  mixins: [glFeatureFlagMixin()],
   inject: ['namespacePath', 'rootNamespacePath', 'namespaceType'],
   props: {
+    overrideType: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     selectedType: {
       type: String,
       required: false,
@@ -78,6 +95,14 @@ export default {
     },
   },
   computed: {
+    isPipelineExecution() {
+      return this.glFeatures.pipelineExecutionPolicyType;
+    },
+    fileBlockMessage() {
+      return this.isPipelineExecution
+        ? this.$options.i18n.pipelineFilePathCopy
+        : this.$options.i18n.filePathCopy;
+    },
     isValidFilePath() {
       if (this.filePath === null) {
         return null;
@@ -123,6 +148,10 @@ export default {
     updatedFilePath(value) {
       this.$emit('update-file-path', value);
     },
+    setOverride(override) {
+      this.$emit('select-override', override);
+    },
+
     setSelectedProject(project) {
       this.$emit('select-project', project);
     },
@@ -143,7 +172,11 @@ export default {
 <template>
   <div class="gl-display-flex gl-w-full gl-flex-direction-column gl-gap-3">
     <div class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
-      <gl-sprintf :message="$options.i18n.filePathCopy">
+      <gl-sprintf :message="fileBlockMessage">
+        <template #overrideSelector>
+          <code-block-override-selector :override-type="overrideType" @select="setOverride" />
+        </template>
+
         <template #bold="{ content }">
           <b>{{ content }}</b>
         </template>
@@ -160,6 +193,12 @@ export default {
             :multiple="false"
             :state="projectAndRefState"
             @select="setSelectedProject"
+          />
+          <gl-icon
+            v-if="isPipelineExecution"
+            v-gl-tooltip
+            name="question-o"
+            :title="$options.i18n.selectedProjectInformation"
           />
         </template>
 

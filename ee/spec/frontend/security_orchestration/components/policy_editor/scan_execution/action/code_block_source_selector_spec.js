@@ -7,7 +7,7 @@ import {
   CUSTOM_ACTION_OPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 
-describe('ActionTypeSelector', () => {
+describe('CodeBlockSourceSelector', () => {
   let wrapper;
 
   const createComponent = ({ propsData = {} } = {}) => {

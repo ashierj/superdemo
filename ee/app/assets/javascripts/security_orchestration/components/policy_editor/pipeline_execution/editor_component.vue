@@ -11,8 +11,8 @@ import {
 } from '../constants';
 import EditorLayout from '../editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
-import RuleSection from './rule/rule_section.vue';
 import ActionSection from './action/action_section.vue';
+import RuleSection from './rule/rule_section.vue';
 import { createPolicyObject, policyToYaml } from './utils';
 import { CONDITIONS_LABEL, DEFAULT_PIPELINE_EXECUTION_POLICY } from './constants';
 
@@ -143,13 +143,7 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <action-section
-          v-for="(action, index) in policy.actions"
-          :key="action.id"
-          :data-testid="`action-${index}`"
-          :action-index="index"
-          :init-action="action"
-        />
+        <action-section class="gl-mb-4 security-policies-bg-gray-10 gl-rounded-base gl-p-5" />
       </dim-disable-container>
     </template>
   </editor-layout>
