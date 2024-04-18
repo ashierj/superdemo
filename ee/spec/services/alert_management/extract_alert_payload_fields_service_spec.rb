@@ -45,6 +45,20 @@ RSpec.describe AlertManagement::ExtractAlertPayloadFieldsService do
           end
         end
 
+        context 'when payload is integer' do
+          let(:payload) { { key: 100 } }
+
+          it 'returns parsed fields' do
+            fields = response.payload[:payload_alert_fields]
+            field = fields.first
+
+            expect(fields.count).to eq(1)
+            expect(field.label).to eq('key')
+            expect(field.type).to eq('number')
+            expect(field.path).to eq(%w[key])
+          end
+        end
+
         context 'when limits are exceeded' do
           before do
             allow(Gitlab::Utils::DeepSize)
