@@ -26,13 +26,5 @@ RSpec.describe Ai::AiResource::Issue, feature_category: :duo_chat do
     it 'returns prompt' do
       expect(wrapped_issue.current_page_sentence).to include("utilize it instead of using the 'IssueReader' tool")
     end
-
-    context 'when ai_prompt_current_page_skip_reader is off' do
-      it 'returns older prompt' do
-        stub_feature_flags(ai_prompt_current_page_skip_reader: false)
-
-        expect(wrapped_issue.current_page_sentence).to include('Here is additional data in <resource></resource>')
-      end
-    end
   end
 end
