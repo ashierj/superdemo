@@ -16,8 +16,11 @@ module AuditEvents
         private
 
         def model_of_destination(destination)
-          if destination.is_a?(AuditEvents::InstanceExternalAuditEventDestination)
+          case destination
+          when AuditEvents::InstanceExternalAuditEventDestination
             ::AuditEvents::Streaming::InstanceEventTypeFilter
+          when AuditEvents::Group::ExternalStreamingDestination
+            ::AuditEvents::Group::EventTypeFilter
           else
             ::AuditEvents::Streaming::EventTypeFilter
           end
