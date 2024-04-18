@@ -28,13 +28,16 @@ module API
         telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
         {
-          'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-        }.merge(telemetry_headers).merge(saas_headers).merge(cloud_connector_headers(current_user))
+        }.merge(telemetry_headers).merge(saas_headers).merge(connector_headers)
           .transform_values { |v| Array(v) }
+      end
+
+      def connector_headers
+        cloud_connector_headers(current_user).merge('X-Gitlab-Host-Name' => Gitlab.config.gitlab.host)
       end
 
       def saas_headers
@@ -46,6 +49,16 @@ module API
                                                      .duo_pro_add_on_available_namespace_ids
                                                      .join(',')
         }
+      end
+
+      def token_expiration_time
+        # Because we temporarily use selfissued or instance JWT (not ready for production use) which doesn't expose
+        # expiration time, expiration time is taken directly from the token record. This helper method is temporary and
+        # should be removed with
+        # https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/429
+        return ::CloudConnector::ServiceAccessToken.active.last&.expires_at&.to_i unless Gitlab.org_or_com?
+
+        Time.now.to_i + ::Gitlab::CloudConnector::SelfIssuedToken::EXPIRES_IN
       end
     end
 
@@ -111,6 +124,41 @@ module API
 
           status :ok
           body ''
+        end
+      end
+
+      resources :direct_access do
+        desc 'Connection details for accessing code suggestions directly' do
+          success code: 201
+          failure [
+            { code: 401, message: 'Unauthorized' },
+            { code: 404, message: 'Not found' },
+            { code: 429, message: 'Too many requests' }
+          ]
+        end
+
+        post do
+          not_found! unless Feature.enabled?(:code_suggestions_direct_completions, current_user)
+
+          check_rate_limit!(:code_suggestions_direct_access, scope: current_user) do
+            Gitlab::InternalEvents.track_event(
+              'code_suggestions_direct_access_rate_limit_exceeded',
+              user: current_user
+            )
+
+            render_api_error!({ error: _('This endpoint has been requested too many times. Try again later.') }, 429)
+          end
+
+          access = {
+            base_url: ::Gitlab::AiGateway.url,
+            # for development purposes we just return instance JWT, this should not be used in production
+            # until we generate a short-term token for user
+            # https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/429
+            token: ::Gitlab::Llm::AiGateway::Client.access_token(scopes: [:code_suggestions]),
+            expires_at: token_expiration_time,
+            headers: connector_headers
+          }
+          present access, with: Grape::Presenters::Presenter
         end
       end
 

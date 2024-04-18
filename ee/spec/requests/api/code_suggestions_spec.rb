@@ -20,6 +20,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   let(:headers) { {} }
   let(:access_code_suggestions) { true }
   let(:is_saas) { true }
+  let(:global_instance_id) { 'instance-ABC' }
+  let(:global_user_id) { 'user-ABC' }
+  let(:gitlab_realm) { 'saas' }
 
   before do
     allow(Gitlab).to receive(:com?).and_return(is_saas)
@@ -35,6 +38,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     stub_feature_flags(claude_3_code_generation_opus: false)
     stub_feature_flags(claude_3_code_generation_sonnet: false)
     stub_feature_flags(claude_3_code_generation_haiku: false)
+
+    allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
+      allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
+    end
   end
 
   shared_examples 'a response' do |case_name|
@@ -129,10 +136,22 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
+  shared_examples_for 'rate limited and tracked endpoint' do |rate_limit_key:, event_name:|
+    it_behaves_like 'rate limited endpoint', rate_limit_key: rate_limit_key
+
+    it 'tracks rate limit exceeded event' do
+      allow(Gitlab::ApplicationRateLimiter).to receive(:throttled_request?).and_return(true)
+
+      request
+
+      expect(Gitlab::InternalEvents)
+        .to have_received(:track_event)
+        .with(event_name, user: current_user)
+    end
+  end
+
   describe 'POST /code_suggestions/completions' do
     let(:access_code_suggestions) { true }
-    let(:global_instance_id) { 'instance-ABC' }
-    let(:global_user_id) { 'user-ABC' }
 
     let(:prefix) do
       <<~PREFIX
@@ -175,10 +194,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     before do
       allow(Gitlab::ApplicationRateLimiter).to receive(:threshold).and_return(0)
-
-      allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
-        allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
-      end
     end
 
     shared_examples 'code completions endpoint' do
@@ -197,31 +212,18 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       context 'when user is logged in' do
         let(:current_user) { authorized_user }
 
-        it_behaves_like 'rate limited endpoint', rate_limit_key: :code_suggestions_api_endpoint do
+        it_behaves_like 'rate limited and tracked endpoint',
+          { rate_limit_key: :code_suggestions_api_endpoint,
+            event_name: 'code_suggestions_rate_limit_exceeded' } do
           def request
             post api('/code_suggestions/completions', current_user), headers: headers, params: body.to_json
-          end
-
-          context 'when rate limit is exceeded' do
-            it 'tracks a code_suggestions_rate_limit_exceeded event' do
-              allow(Gitlab::ApplicationRateLimiter).to receive(:throttled_request?).and_return(true)
-
-              request
-
-              expect(response).to have_gitlab_http_status(:too_many_requests)
-              # `error_message` defined in the shared example
-              expect(response.body).to eq({ message: { error: error_message } }.to_json)
-              expect(Gitlab::InternalEvents)
-                .to have_received(:track_event)
-                .with('code_suggestions_rate_limit_exceeded', user: current_user)
-            end
           end
         end
 
         it 'delegates downstream service call to Workhorse with correct auth token' do
           post_api
 
-          expect(response.status).to be(200)
+          expect(response).to have_gitlab_http_status(:ok)
           expect(response.body).to eq("".to_json)
           command, params = workhorse_send_data
           expect(command).to eq('send-url')
@@ -369,7 +371,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     context 'when the instance is Gitlab.org_or_com' do
       let(:is_saas) { true }
-      let(:gitlab_realm) { 'saas' }
       let_it_be(:token) { 'generated-jwt' }
 
       let(:headers) do
@@ -724,7 +725,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         it 'does not include additional headers, which are for SaaS only' do
           post_api
 
-          expect(response.status).to be(200)
+          expect(response).to have_gitlab_http_status(:ok)
           expect(response.body).to eq("".to_json)
           _, params = workhorse_send_data
           expect(params['Header']).not_to have_key('X-Gitlab-Saas-Namespace-Ids')
@@ -744,6 +745,75 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           let(:response_body) do
             { "message" => "401 Unauthorized" }
           end
+        end
+      end
+    end
+  end
+
+  describe 'POST /code_suggestions/direct_access', :freeze_time do
+    subject(:post_api) { post api('/code_suggestions/direct_access', current_user) }
+
+    context 'when unauthorized' do
+      let(:current_user) { unauthorized_user }
+
+      it_behaves_like 'an unauthorized response'
+    end
+
+    context 'when authorized' do
+      let(:current_user) { authorized_user }
+      let(:expected_expiration) { Time.now.to_i + 3600 }
+      let(:expected_response) do
+        {
+          'base_url' => 'https://cloud.gitlab.com/ai',
+          'expires_at' => expected_expiration,
+          'token' => an_instance_of(String),
+          'headers' => {
+            'X-Gitlab-Global-User-Id' => global_user_id,
+            'X-Gitlab-Instance-Id' => global_instance_id,
+            'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
+            'X-Gitlab-Realm' => gitlab_realm
+          }
+        }
+      end
+
+      it_behaves_like 'rate limited and tracked endpoint',
+        { rate_limit_key: :code_suggestions_direct_access,
+          event_name: 'code_suggestions_direct_access_rate_limit_exceeded' } do
+        def request
+          post api('/code_suggestions/direct_access', current_user)
+        end
+      end
+
+      it 'returns direct access details', :freeze_time do
+        post_api
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to match(expected_response)
+      end
+
+      context 'when not SaaS' do
+        let_it_be(:active_token) { create(:service_access_token, :active) }
+        let(:is_saas) { false }
+        let(:expected_expiration) { active_token.expires_at.to_i }
+        let(:gitlab_realm) { 'self-managed' }
+
+        it 'returns direct access details', :freeze_time do
+          post_api
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response).to match(expected_response)
+        end
+      end
+
+      context 'when code_suggestions_direct_completions flag is disabled' do
+        before do
+          stub_feature_flags(code_suggestions_direct_completions: false)
+        end
+
+        it 'returns not_found' do
+          post_api
+
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
     end
