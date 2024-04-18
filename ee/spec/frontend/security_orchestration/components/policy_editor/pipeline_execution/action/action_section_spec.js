@@ -1,5 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ActionSection from 'ee/security_orchestration/components/policy_editor/pipeline_execution/action/action_section.vue';
+import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
 
 describe('ActionSection', () => {
   let wrapper;
@@ -15,8 +16,10 @@ describe('ActionSection', () => {
     });
   };
 
+  const findCodeBlockFilePath = () => wrapper.findComponent(CodeBlockFilePath);
+
   it('renders', () => {
     factory();
-    expect(wrapper.find('div').exists()).toBe(true);
+    expect(findCodeBlockFilePath().exists()).toBe(true);
   });
 });

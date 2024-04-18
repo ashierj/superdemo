@@ -396,19 +396,34 @@ enabled: true`;
   });
 
   describe('execute yaml block section', () => {
-    it.each([true, false])(
-      'should render action builder when feature flag is enabled',
-      (flagEnabled) => {
+    it.each`
+      compliancePipelineInPolicies | customCiToggleEnabled | pipelineExecutionPolicyType | output
+      ${true}                      | ${true}               | ${true}                     | ${false}
+      ${true}                      | ${true}               | ${false}                    | ${true}
+      ${true}                      | ${false}              | ${true}                     | ${false}
+      ${true}                      | ${false}              | ${false}                    | ${false}
+      ${false}                     | ${true}               | ${true}                     | ${false}
+      ${false}                     | ${true}               | ${false}                    | ${false}
+      ${false}                     | ${false}              | ${true}                     | ${false}
+      ${false}                     | ${false}              | ${false}                    | ${false}
+    `(
+      'should render the correct action builder when compliancePipelineInPolicies is $compliancePipelineInPolicies, customCiToggleEnabled is $customCiToggleEnabled, and pipelineExecutionPolicyType is $pipelineExecutionPolicyType',
+      ({
+        compliancePipelineInPolicies,
+        customCiToggleEnabled,
+        pipelineExecutionPolicyType,
+        output,
+      }) => {
         factory({
           provide: {
-            glFeatures: { compliancePipelineInPolicies: flagEnabled },
-            customCiToggleEnabled: flagEnabled,
+            glFeatures: { compliancePipelineInPolicies, pipelineExecutionPolicyType },
+            customCiToggleEnabled,
           },
         });
 
-        expect(findActionSection().exists()).toBe(flagEnabled);
-        expect(findScanFilterSelector().exists()).toBe(flagEnabled);
-        expect(findAddActionButton().exists()).toBe(!flagEnabled);
+        expect(findActionSection().exists()).toBe(output);
+        expect(findScanFilterSelector().exists()).toBe(output);
+        expect(findAddActionButton().exists()).toBe(!output);
       },
     );
 
