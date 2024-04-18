@@ -17,7 +17,7 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
     let(:file_name) { 'foo.bar-1.2.3.pom' }
     let(:url) { "/projects/#{project.id}/dependency_proxy/packages/maven/#{path}/#{file_name}" }
 
-    subject { get(api(url), headers: headers) }
+    subject(:api_request) { get(api(url), headers: headers) }
 
     context 'with valid parameters' do
       shared_examples 'handling different token types' do |personal_access_token_cases:|
@@ -414,6 +414,23 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         end
 
         it_behaves_like 'returning response status', :not_found
+      end
+
+      context 'when external registry url has extra trailing slash' do
+        before do
+          dependency_proxy_setting.update_column(:maven_external_registry_url, 'http://sandbox.test/')
+          allow(Gitlab::Workhorse).to receive(:send_dependency)
+        end
+
+        it 'strips the trailing slash' do
+          api_request
+
+          expect(Gitlab::Workhorse).to have_received(:send_dependency).with(
+            an_instance_of(Hash),
+            a_string_matching(%r{sandbox.test/#{path}/#{file_name}}),
+            a_hash_including(:upload_config)
+          )
+        end
       end
 
       %i[packages dependency_proxy].each do |configuration_field|

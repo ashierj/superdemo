@@ -15,23 +15,14 @@ module API
         DIGESTS_FORMATS = %w[sha1 md5].freeze
 
         helpers do
-          delegate :maven_external_registry_username, :maven_external_registry_password, :maven_external_registry_url,
-            to: :dependency_proxy_setting
+          delegate :from_maven_upstream, to: :dependency_proxy_setting
 
           def project
             authorized_user_project(action: :read_package)
           end
 
           def remote_package_file_url
-            full_url = [maven_external_registry_url, declared_params[:path], declared_params[:file_name]].join('/')
-            uri = Addressable::URI.parse(full_url)
-
-            if maven_external_registry_username.present? && maven_external_registry_password.present?
-              uri.user = maven_external_registry_username
-              uri.password = maven_external_registry_password
-            end
-
-            uri.to_s
+            from_maven_upstream(path: declared_params[:path], file_name: declared_params[:file_name])
           end
 
           def respond_digest(digest)

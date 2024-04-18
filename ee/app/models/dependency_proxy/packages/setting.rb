@@ -61,6 +61,19 @@ module DependencyProxy
 
       scope :enabled, -> { where(enabled: true) }
 
+      def from_maven_upstream(path:, file_name:)
+        full_url = [maven_external_registry_url, path, file_name].join('/')
+        uri = Addressable::URI.parse(full_url)
+        uri.path = uri.path.squeeze('/')
+
+        if maven_external_registry_username.present? && maven_external_registry_password.present?
+          uri.user = maven_external_registry_username
+          uri.password = maven_external_registry_password
+        end
+
+        uri.to_s
+      end
+
       private
 
       def nullify_credentials_values
