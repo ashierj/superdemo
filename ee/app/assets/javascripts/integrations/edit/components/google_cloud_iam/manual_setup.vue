@@ -75,7 +75,7 @@ export default {
       <li>
         {{
           s__(
-            'GoogleCloud|After Google Cloud workload identity federation has been set up, enter the details in the following form.',
+            'GoogleCloud|After the Google Cloud workload identity federation has been set up, complete the following fields.',
           )
         }}
       </li>

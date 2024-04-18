@@ -29,7 +29,7 @@ export default {
       <gl-sprintf
         :message="
           s__(
-            'GoogleArtifactRegistry|First, secure your usage with the %{strongStart}Google Cloud Identity and Access Management (IAM)%{strongEnd} integration. Simplify access without the need to manage accounts or keys.',
+            'GoogleArtifactRegistry|First, secure your usage with the %{strongStart}Google Cloud IAM%{strongEnd} integration. Simplify access without the need to manage accounts or keys.',
           )
         "
         ><template #strong="{ content }">
