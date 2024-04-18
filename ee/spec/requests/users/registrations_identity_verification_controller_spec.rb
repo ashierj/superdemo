@@ -784,6 +784,17 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         expect(response.body).to eq({ message: service_response.message, reason: service_response.reason }.to_json)
       end
     end
+
+    context 'when multiple codes are attempted' do
+      let_it_be(:params) do
+        { registrations_identity_verification: { verification_code: %w[998 999] } }
+      end
+
+      it 'passes no params to VerifyCodeService' do
+        do_request
+        expect(::PhoneVerification::Users::VerifyCodeService).to have_received(:new).with(user, {})
+      end
+    end
   end
 
   shared_examples 'it requires a user without an arkose risk_band' do

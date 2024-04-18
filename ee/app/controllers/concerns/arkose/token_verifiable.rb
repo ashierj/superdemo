@@ -45,7 +45,7 @@ module Arkose
     end
 
     def token
-      @token ||= params[:arkose_labs_token]
+      @token ||= params[:arkose_labs_token].to_s
     end
 
     def arkose_down?
