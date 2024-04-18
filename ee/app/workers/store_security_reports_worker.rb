@@ -22,15 +22,9 @@ class StoreSecurityReportsWorker # rubocop:disable Scalability/IdempotentWorker
     in_lock(lease_key(pipeline.project), ttl: LEASE_TTL) do
       ::Security::Ingestion::IngestReportsService.execute(pipeline)
     end
-  rescue ::Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
-    self.class.perform_in(retry_in, pipeline_id)
   end
 
   private
-
-  def retry_in
-    1.minute + rand((1.minute)..(4.minutes))
-  end
 
   def lease_key(project)
     "StoreSecurityReportsWorker:projects:#{project.id}"
