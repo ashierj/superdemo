@@ -36,13 +36,10 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           worker.perform(pipeline.id)
         end
 
-        it 'reschedules work if lease is taken' do
+        it 'raises an exception if lease is taken' do
           stub_exclusive_lease_taken("StoreSecurityReportsWorker:projects:#{project.id}")
 
-          expect(::Security::Ingestion::IngestReportsService).not_to receive(:execute).with(pipeline)
-          expect(described_class).to receive(:perform_in).with(be_between(1.minute, 5.minutes), pipeline.id)
-
-          worker.perform(pipeline.id)
+          expect { worker.perform(pipeline.id) }.to raise_error(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
         end
       end
     end
