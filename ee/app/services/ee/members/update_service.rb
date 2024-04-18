@@ -50,7 +50,10 @@ module EE
 
       def split_members_requiring_update_and_approval(members)
         members_to_queue, members_to_update = members.partition do |member|
-          member.member_promotion_management_required?(params[:access_level])
+          member.member_promotion_management_required?(
+            new_access_level: params[:access_level],
+            member_role_id: params[:member_role_id]
+          )
         end
 
         [members_to_update, members_to_queue]
