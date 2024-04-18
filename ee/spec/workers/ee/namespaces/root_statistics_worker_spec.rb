@@ -7,16 +7,12 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_cate
 
   let_it_be(:group, refind: true) { create(:group_with_plan, :with_aggregation_schedule, plan: :ultimate_plan) }
   let_it_be(:project, refind: true) { create(:project, namespace: group) }
-  let_it_be(:owner) { create(:user) }
+  let_it_be(:owner) { create(:user, owner_of: group) }
 
   let(:mailer) { class_double(::Emails::NamespaceStorageUsageMailer).as_stubbed_const }
   let(:action_mailer) { instance_double(ActionMailer::MessageDelivery) }
 
   subject(:worker) { described_class.new }
-
-  before_all do
-    group.add_owner(owner)
-  end
 
   context 'when storage limits are enforced for the namespace' do
     before do

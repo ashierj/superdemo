@@ -6,7 +6,7 @@ RSpec.describe Mutations::Vulnerabilities::BulkDismiss, feature_category: :vulne
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
   let_it_be(:vulnerabilities) { create_list(:vulnerability, 2, :with_findings, project: project) }
 
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
@@ -16,10 +16,6 @@ RSpec.describe Mutations::Vulnerabilities::BulkDismiss, feature_category: :vulne
 
   before do
     stub_licensed_features(security_dashboard: true)
-  end
-
-  before_all do
-    project.add_maintainer(user)
   end
 
   subject do

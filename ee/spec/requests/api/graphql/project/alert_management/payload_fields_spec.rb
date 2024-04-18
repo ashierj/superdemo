@@ -6,8 +6,8 @@ RSpec.describe 'parse alert payload fields', feature_category: :incident_managem
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project) }
-  let_it_be(:maintainer) { create(:user) }
-  let_it_be(:developer) { create(:user) }
+  let_it_be(:maintainer) { create(:user, maintainer_of: project) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
 
   let(:current_user) { maintainer }
   let(:license) { true }
@@ -39,11 +39,6 @@ RSpec.describe 'parse alert payload fields', feature_category: :incident_managem
 
   let(:parsed_fields) do
     graphql_data.dig('project', 'alertManagementPayloadFields')
-  end
-
-  before_all do
-    project.add_developer(developer)
-    project.add_maintainer(maintainer)
   end
 
   before do

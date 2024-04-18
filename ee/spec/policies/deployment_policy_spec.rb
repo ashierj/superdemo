@@ -9,7 +9,7 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
   let_it_be(:maintainer) { create(:user, maintainer_of: project) }
   let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:reporter) { create(:user, reporter_of: project) }
-  let_it_be(:operator_group) { create(:group) }
+  let_it_be(:operator_group) { create(:group, developers: reporter) }
 
   let(:user) { maintainer }
 
@@ -17,10 +17,6 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
   let(:deployment) { create(:deployment, environment: environment, project: project) }
 
   subject { described_class.new(user, deployment) }
-
-  before_all do
-    operator_group.add_developer(reporter)
-  end
 
   before do
     stub_licensed_features(protected_environments: true)

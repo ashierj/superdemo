@@ -4,13 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Audit::PushRules::GroupPushRulesChangesAuditor, feature_category: :source_code_management do
   let_it_be(:group) { create(:group) }
-  let_it_be(:current_user) { create(:user) }
+  let_it_be(:current_user) { create(:user, owner_of: group) }
 
   let(:push_rule) { group.build_push_rule }
-
-  before_all do
-    group.add_owner(current_user)
-  end
 
   before do
     stub_licensed_features(audit_events: true, external_audit_events: true)

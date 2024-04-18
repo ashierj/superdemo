@@ -6,9 +6,9 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
   include ExclusiveLeaseHelpers
 
   let_it_be(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
-  let_it_be(:guest) { create(:user) }
-  let_it_be(:developer) { create(:user) }
-  let_it_be(:maintainer) { create(:user) }
+  let_it_be(:guest) { create(:user, guest_of: project) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:maintainer) { create(:user, maintainer_of: project) }
   let(:user) { maintainer }
   let(:merge_request) do
     create(:merge_request,
@@ -29,12 +29,6 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
       project: merge_request.source_project)
 
     merge_request.update_head_pipeline
-  end
-
-  before_all do
-    project.add_guest(guest)
-    project.add_developer(developer)
-    project.add_maintainer(maintainer)
   end
 
   shared_examples 'succeeds to add to merge train' do

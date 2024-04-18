@@ -8,7 +8,7 @@ RSpec.describe Mutations::Vulnerabilities::RemoveAllFromProject, feature_categor
   let_it_be(:project1) { create(:project) }
   let_it_be(:project2) { create(:project) }
   let_it_be(:project3) { create(:project) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: [project1, project2]) }
 
   let(:klass) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
   let(:project_ids) { [project1, project2].map(&:to_global_id) }
@@ -17,11 +17,6 @@ RSpec.describe Mutations::Vulnerabilities::RemoveAllFromProject, feature_categor
     stub_licensed_features(security_dashboard: true)
     create_list(:vulnerability, 2, :with_findings, project: project1)
     create_list(:vulnerability, 2, :with_findings, project: project2)
-  end
-
-  before_all do
-    project1.add_owner(user)
-    project2.add_owner(user)
   end
 
   describe '#resolve' do

@@ -4,15 +4,11 @@ require 'spec_helper'
 
 RSpec.describe ApprovalRules::ApprovalGroupRulePolicy, feature_category: :source_code_management do
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: group) }
   let_it_be(:approval_rule) { create(:approval_group_rule, group: group) }
 
   def permissions(user, approval_rule)
     described_class.new(user, approval_rule)
-  end
-
-  before_all do
-    group.add_owner(user)
   end
 
   context 'when user can update group' do

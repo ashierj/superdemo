@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::RunnersController, feature_category: :fleet_visibility do
   let_it_be(:group) { create(:group) }
-  let_it_be(:owner) { create(:user) }
-
-  before_all do
-    group.add_owner(owner)
-  end
+  let_it_be(:owner) { create(:user, owner_of: group) }
 
   before do
     sign_in(owner)

@@ -5,18 +5,13 @@ require 'spec_helper'
 RSpec.describe Mutations::Boards::Lists::UpdateLimitMetrics do
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:board) { create(:board, group: group) }
-  let_it_be(:user)  { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:user)  { create(:user, maintainer_of: group) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
   let_it_be(:list)  { create(:list, board: board) }
 
   let(:current_user) { user }
   let(:mutation) { described_class.new(object: nil, context: { current_user: current_user }, field: nil) }
   let(:list_update_params) { { limit_metric: :all_metrics, max_issue_count: 10, max_issue_weight: 50 } }
-
-  before_all do
-    group.add_maintainer(user)
-    group.add_guest(guest)
-  end
 
   subject { mutation.resolve(list_id: list.to_global_id, **list_update_params) }
 

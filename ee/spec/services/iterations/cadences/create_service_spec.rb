@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Iterations::Cadences::CreateService, feature_category: :team_planning do
   let_it_be(:group, refind: true) { create(:group) }
-  let_it_be(:user) { create(:user) }
-
-  before_all do
-    group.add_reporter(user)
-  end
+  let_it_be(:user) { create(:user, reporter_of: group) }
 
   shared_examples 'does not create an interation cadence' do |errors|
     it 'does not create an iteration cadence and returns errors' do

@@ -4,10 +4,10 @@ require 'spec_helper'
 RSpec.describe Deployments::ApprovalSummary do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
-  let_it_be(:group_user_1) { create(:user) }
-  let_it_be(:group_user_2) { create(:user) }
+  let_it_be(:group_user_1) { create(:user, developer_of: group) }
+  let_it_be(:group_user_2) { create(:user, developer_of: group) }
   let_it_be(:approver_user) { create(:user) }
-  let_it_be(:project_maintainer) { create(:user) }
+  let_it_be(:project_maintainer) { create(:user, maintainer_of: project) }
   let_it_be_with_refind(:environment) { create(:environment, project: project) }
   let_it_be_with_refind(:deployment) { create(:deployment, project: project, environment: environment) }
 
@@ -31,12 +31,6 @@ RSpec.describe Deployments::ApprovalSummary do
   end
 
   let(:approval_summary) { described_class.new(deployment: deployment) }
-
-  before_all do
-    group.add_developer(group_user_1)
-    group.add_developer(group_user_2)
-    project.add_maintainer(project_maintainer)
-  end
 
   shared_context 'with all rules have been approved' do
     before do

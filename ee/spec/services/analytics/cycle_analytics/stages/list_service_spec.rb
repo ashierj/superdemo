@@ -5,15 +5,11 @@ require 'spec_helper'
 RSpec.describe Analytics::CycleAnalytics::Stages::ListService, feature_category: :value_stream_management do
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:value_stream, refind: true) { create(:cycle_analytics_value_stream, namespace: group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, reporter_of: group) }
 
   let(:stages) { subject.payload[:stages] }
 
   subject { described_class.new(parent: group, current_user: user, params: { value_stream: value_stream }).execute }
-
-  before_all do
-    group.add_reporter(user)
-  end
 
   before do
     stub_licensed_features(cycle_analytics_for_groups: true)

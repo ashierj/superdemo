@@ -8,17 +8,13 @@ RSpec.describe Gitlab::Duo::Developments::Setup, :real_ai_request, :saas, :gitla
 
   let_it_be(:group) { create(:group, path: 'test-group') }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
 
   let(:task) { described_class.new(args) }
   let(:args) { { root_group_path: group.path } }
   let(:rake_task) { instance_double(Rake::Task, invoke: true) }
 
   subject(:setup) { task.execute }
-
-  before_all do
-    project.add_maintainer(user)
-  end
 
   before do
     allow(Rake::Task).to receive(:[]).with(any_args).and_return(rake_task)

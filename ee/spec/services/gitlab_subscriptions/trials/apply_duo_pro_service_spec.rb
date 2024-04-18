@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_category: :subscription_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan, owners: user) }
 
   let(:trial_user_information) { { namespace_id: namespace.id } }
   let(:apply_trial_params) do
@@ -12,10 +12,6 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_c
       uid: user.id,
       trial_user_information: trial_user_information
     }
-  end
-
-  before_all do
-    namespace.add_owner(user)
   end
 
   describe '.execute' do

@@ -13,23 +13,16 @@ RSpec.describe Resolvers::TimeboxReportResolver, feature_category: :team_plannin
   let_it_be(:private_subgroup) { create(:group, :private, parent: private_group) }
   let_it_be(:private_project1) { create(:project, group: private_group) }
   let_it_be(:private_project2) { create(:project, group: private_group) }
-  let_it_be(:group_member) { create(:user) }
-  let_it_be(:private_group_member) { create(:user) }
-  let_it_be(:private_project1_member) { create(:user) }
-  let_it_be(:private_project2_member) { create(:user) }
+  let_it_be(:group_member) { create(:user, guest_of: group) }
+  let_it_be(:private_group_member) { create(:user, guest_of: private_group) }
+  let_it_be(:private_project1_member) { create(:user, guest_of: private_project1) }
+  let_it_be(:private_project2_member) { create(:user, guest_of: private_project2) }
   let_it_be(:issues) { create_list(:issue, 2, project: project) }
   let_it_be(:due_date) { Date.current }
   let_it_be(:start_date) { due_date - 2.weeks }
 
   let(:event_aggregation_service_class) { TimeboxReportService }
   let(:report_service_class) { TimeboxReportService }
-
-  before_all do
-    group.add_guest(group_member)
-    private_group.add_guest(private_group_member)
-    private_project1.add_guest(private_project1_member)
-    private_project2.add_guest(private_project2_member)
-  end
 
   before do
     stub_feature_flags(rollup_timebox_chart: false)

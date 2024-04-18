@@ -5,15 +5,10 @@ require 'spec_helper'
 RSpec.describe Projects::Security::ApiFuzzingConfigurationController, feature_category: :fuzz_testing do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:developer) { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:developer) { create(:user, developer_of: group) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
 
   subject(:request) { get :show, params: { namespace_id: project.namespace, project_id: project } }
-
-  before_all do
-    group.add_developer(developer)
-    group.add_guest(guest)
-  end
 
   include_context '"Security and Compliance" permissions' do
     let(:valid_request) { request }

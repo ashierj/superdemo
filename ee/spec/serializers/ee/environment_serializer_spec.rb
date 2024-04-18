@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe EE::EnvironmentSerializer do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project, reload: true) { create(:project, :repository) }
-
-  before_all do
-    project.add_developer(user)
-  end
+  let_it_be(:project, reload: true) { create(:project, :repository, developers: user) }
 
   before do
     stub_licensed_features(environment_alerts: true, protected_environments: true)

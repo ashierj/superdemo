@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::LazyComplianceFrameworkAggregate, feature_category: :security_policy_management do
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, maintainers: current_user) }
   let_it_be_with_reload(:framework) { create(:compliance_framework) }
   let_it_be_with_reload(:other_framework) { create(:compliance_framework) }
   let_it_be_with_reload(:policy_configuration) do
@@ -19,10 +19,6 @@ RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::Laz
   let(:query_ctx) { { current_user: current_user } }
 
   subject(:lazy_aggregate) { described_class.new(query_ctx, framework, policy_type) }
-
-  before_all do
-    project.add_maintainer(current_user)
-  end
 
   describe '#initialize' do
     it 'adds the frameworks to the lazy state' do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AlertManagement::Alerts::UpdateService, feature_category: :incident_management do
   let_it_be(:user_with_permissions) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, developers: user_with_permissions) }
   let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
   let_it_be(:alert, reload: true) { create(:alert_management_alert, :triggered, project: project) }
 
@@ -15,10 +15,6 @@ RSpec.describe AlertManagement::Alerts::UpdateService, feature_category: :incide
 
   before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
-  end
-
-  before_all do
-    project.add_developer(user_with_permissions)
   end
 
   describe '#execute' do

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe IncidentManagement::EscalationPolicies::UpdateService, feature_category: :incident_management do
   let_it_be(:user_with_permissions) { create(:user) }
   let_it_be(:user_without_permissions) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, maintainers: user_with_permissions) }
   let_it_be(:oncall_schedule) { create(:incident_management_oncall_schedule, project: project) }
 
   let_it_be_with_reload(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
@@ -47,10 +47,6 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService, feature_ca
 
   before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
-  end
-
-  before_all do
-    project.add_maintainer(user_with_permissions)
   end
 
   describe '#execute' do

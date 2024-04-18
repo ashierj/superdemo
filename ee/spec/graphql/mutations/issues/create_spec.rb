@@ -10,8 +10,8 @@ RSpec.describe Mutations::Issues::Create do
   let_it_be(:cadence1) { create(:iterations_cadence, group: group) }
   let_it_be(:current_iteration) { create(:iteration, iterations_cadence: cadence1, start_date: 2.days.ago, due_date: 5.days.from_now) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:assignee1) { create(:user) }
-  let_it_be(:assignee2) { create(:user) }
+  let_it_be(:assignee1) { create(:user, guest_of: project) }
+  let_it_be(:assignee2) { create(:user, guest_of: project) }
 
   let(:expected_attributes) do
     {
@@ -39,11 +39,6 @@ RSpec.describe Mutations::Issues::Create do
   let(:additional_attributes) { {} }
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
   let(:mutated_issue) { resolved_mutation[:issue] }
-
-  before_all do
-    project.add_guest(assignee1)
-    project.add_guest(assignee2)
-  end
 
   specify { expect(described_class).to require_graphql_authorizations(:create_issue) }
 

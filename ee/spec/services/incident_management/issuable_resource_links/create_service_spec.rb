@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature_category: :incident_management do
   let_it_be(:user_with_permissions) { create(:user) }
   let_it_be(:user_without_permissions) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, reporters: user_with_permissions, guests: user_without_permissions) }
   let_it_be(:error_message) { 'You have insufficient permissions to manage resource links for this incident' }
   let_it_be_with_refind(:incident) { create(:incident, project: project) }
 
@@ -18,11 +18,6 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature
 
   before do
     stub_licensed_features(issuable_resource_links: true)
-  end
-
-  before_all do
-    project.add_reporter(user_with_permissions)
-    project.add_guest(user_without_permissions)
   end
 
   describe '#execute' do
