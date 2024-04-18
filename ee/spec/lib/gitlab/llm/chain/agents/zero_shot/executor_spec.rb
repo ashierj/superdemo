@@ -287,19 +287,7 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
       end
     end
 
-    context 'when duo_chat_current_resource_by_default is enabled' do
-      it 'does not include resource metadata by default' do
-        expect(agent.prompt[:prompt]).not_to include("<resource>")
-      end
-
-      context 'when the resource is nil' do
-        let(:resource) { nil }
-
-        it 'does not include resource metadata' do
-          expect(agent.prompt[:prompt]).not_to include("<resource>")
-        end
-      end
-
+    context 'when duo chat context is created' do
       shared_examples_for 'includes metadata' do
         let(:metadata) do
           <<~XML
@@ -330,32 +318,12 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
             expect(context).to receive(:resource_serialized).and_return(metadata)
             expect(agent.prompt[:prompt]).to include(prompt_resource)
           end
-
-          context 'when duo_chat_current_resource_by_default is disabled' do
-            before do
-              stub_feature_flags(duo_chat_current_resource_by_default: false)
-            end
-
-            it 'does not include resource metadata' do
-              expect(agent.prompt[:prompt]).not_to include("<resource>")
-            end
-          end
         end
 
         context "with claude 3" do
           it 'includes the current resource metadata' do
             expect(context).to receive(:resource_serialized).and_return(metadata)
             expect(claude_3_system_prompt(agent)).to include(prompt_resource)
-          end
-
-          context 'when duo_chat_current_resource_by_default is disabled' do
-            before do
-              stub_feature_flags(duo_chat_current_resource_by_default: false)
-            end
-
-            it 'does not include resource metadata' do
-              expect(claude_3_system_prompt(agent)).not_to include("<resource>")
-            end
           end
         end
       end

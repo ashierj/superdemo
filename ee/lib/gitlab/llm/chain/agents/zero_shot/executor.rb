@@ -197,8 +197,6 @@ module Gitlab
             end
 
             def current_resource
-              return "" unless Feature.enabled?(:duo_chat_current_resource_by_default, context.current_user)
-
               # We use a content limit of 10% of the total limit because LLMs can be appreciably slower when dealing
               # with larger prompts. Since we're including the resource by default when possible, we don't want to
               # slow down every request. This also reduces the possibility that the complete prompt exceeds the maximum.
