@@ -11,7 +11,7 @@ RSpec.describe Groups::SshCertificates::VerifySignatureService, feature_category
 
   let_it_be_with_refind(:ssh_certificate) { create(:group_ssh_certificate, key: ca_key.public_key.openssh) }
   let_it_be_with_refind(:group) { ssh_certificate.group }
-  let_it_be_with_refind(:user) { create(:enterprise_user, enterprise_group: group) }
+  let_it_be_with_refind(:user) { create(:enterprise_user, enterprise_group: group, developer_of: group) }
   let_it_be_with_refind(:project) { create(:project, :repository, group: group) }
 
   let(:signature) do
@@ -30,10 +30,6 @@ RSpec.describe Groups::SshCertificates::VerifySignatureService, feature_category
   let(:committer_email) { user.email }
   let(:certificate) { signature.public_key }
   let(:service) { described_class.new(project, committer_email, certificate) }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   before do
     stub_licensed_features(ssh_certificates: true)

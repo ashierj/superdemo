@@ -3,13 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe ::IncidentManagement::OncallShifts::ReadService, feature_category: :incident_management do
-  let_it_be(:user_with_permissions) { create(:user) }
-  let_it_be(:user_without_permissions) { create(:user) }
-  let_it_be(:current_user) { user_with_permissions }
-
   let_it_be_with_refind(:rotation) { create(:incident_management_oncall_rotation, :utc, length: 1, length_unit: :days) }
   let_it_be(:participant) { create(:incident_management_oncall_participant, :with_developer_access, rotation: rotation) }
   let_it_be(:project) { rotation.project }
+
+  let_it_be(:user_with_permissions) { create(:user, developer_of: project) }
+  let_it_be(:user_without_permissions) { create(:user) }
+  let_it_be(:current_user) { user_with_permissions }
 
   let_it_be(:persisted_first_shift) { create(:incident_management_oncall_shift, participant: participant) }
   let_it_be(:first_shift) { build(:incident_management_oncall_shift, participant: participant) }
@@ -21,10 +21,6 @@ RSpec.describe ::IncidentManagement::OncallShifts::ReadService, feature_category
   let(:params) { { start_time: start_time, end_time: end_time } }
 
   let(:service) { described_class.new(rotation, current_user, **params) }
-
-  before_all do
-    project.add_reporter(user_with_permissions)
-  end
 
   before do
     stub_licensed_features(oncall_schedules: true)

@@ -5,15 +5,11 @@ require 'spec_helper'
 RSpec.describe Groups::SshCertificates::FindService, feature_category: :source_code_management do
   let_it_be(:ssh_certificate) { create(:group_ssh_certificate) }
   let_it_be(:group) { ssh_certificate.group }
-  let_it_be(:user) { create(:enterprise_user, enterprise_group: group) }
+  let_it_be(:user) { create(:enterprise_user, enterprise_group: group, developer_of: group) }
 
   let(:ca_fingerprint) { ssh_certificate.fingerprint }
   let(:user_identifier) { user.username }
   let(:service) { described_class.new(ca_fingerprint, user_identifier) }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   before do
     stub_licensed_features(ssh_certificates: true)
