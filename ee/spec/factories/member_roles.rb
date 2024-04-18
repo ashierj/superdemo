@@ -11,6 +11,7 @@ FactoryBot.define do
     trait(:maintainer) { base_access_level { Gitlab::Access::MAINTAINER } }
     trait(:reporter) { base_access_level { Gitlab::Access::REPORTER } }
     trait(:guest) { base_access_level { Gitlab::Access::GUEST } }
+    trait(:minimal_access) { base_access_level { Gitlab::Access::MINIMAL_ACCESS } }
 
     trait :admin_merge_request do
       admin_merge_request { true }

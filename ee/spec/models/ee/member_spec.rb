@@ -182,7 +182,7 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
         allow(user).to receive(:using_license_seat?).and_return(false)
       end
 
-      subject { member.member_promotion_management_required?(::Gitlab::Access::DEVELOPER) }
+      subject { member.member_promotion_management_required?(new_access_level: ::Gitlab::Access::DEVELOPER) }
 
       it { is_expected.to eq(false) }
     end
@@ -205,35 +205,75 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
       end
 
       context 'when self-managed' do
-        using RSpec::Parameterized::TableSyntax
-
-        where(:license_plan, :using_seat, :new_access_level, :answer) do
-          nil                    | true  | ::Gitlab::Access::DEVELOPER | false
-          nil                    | true  | ::Gitlab::Access::GUEST     | false
-          nil                    | false | ::Gitlab::Access::DEVELOPER | false
-          nil                    | false | ::Gitlab::Access::GUEST     | false
-          License::STARTER_PLAN  | true  | ::Gitlab::Access::DEVELOPER | false
-          License::STARTER_PLAN  | true  | ::Gitlab::Access::GUEST     | false
-          License::STARTER_PLAN  | false | ::Gitlab::Access::DEVELOPER | false
-          License::STARTER_PLAN  | false | ::Gitlab::Access::GUEST     | false
-          License::ULTIMATE_PLAN | true  | ::Gitlab::Access::DEVELOPER | false
-          License::ULTIMATE_PLAN | true  | ::Gitlab::Access::GUEST     | false
-          License::ULTIMATE_PLAN | false | ::Gitlab::Access::DEVELOPER | true
-          License::ULTIMATE_PLAN | false | ::Gitlab::Access::GUEST     | false
+        before do
+          allow(::Gitlab::CurrentSettings).to receive(:enable_member_promotion_management?).and_return(true)
+          allow(License).to receive(:current).and_return(license)
+          allow(user).to receive(:using_license_seat?).and_return(using_seat)
         end
 
-        with_them do
-          subject { member.member_promotion_management_required?(new_access_level) }
+        subject { member.member_promotion_management_required?(new_access_level: new_access_level, member_role_id: member_role_id) }
 
-          let(:license) { create(:license, plan: license_plan) if license_plan }
+        context 'without member_role_id' do
+          using RSpec::Parameterized::TableSyntax
 
-          before do
-            allow(::Gitlab::CurrentSettings).to receive(:enable_member_promotion_management?).and_return(true)
-            allow(License).to receive(:current).and_return(license)
-            allow(user).to receive(:using_license_seat?).and_return(using_seat)
+          where(:license_plan, :using_seat, :new_access_level, :member_role_id, :answer) do
+            nil                    | true  | ::Gitlab::Access::DEVELOPER | nil | false
+            nil                    | true  | ::Gitlab::Access::GUEST     | nil | false
+            nil                    | false | ::Gitlab::Access::DEVELOPER | nil | false
+            nil                    | false | ::Gitlab::Access::GUEST     | nil | false
+            License::STARTER_PLAN  | true  | ::Gitlab::Access::DEVELOPER | nil | false
+            License::STARTER_PLAN  | true  | ::Gitlab::Access::GUEST     | nil | false
+            License::STARTER_PLAN  | false | ::Gitlab::Access::DEVELOPER | nil | false
+            License::STARTER_PLAN  | false | ::Gitlab::Access::GUEST     | nil | false
+            License::ULTIMATE_PLAN | true  | ::Gitlab::Access::DEVELOPER | nil | false
+            License::ULTIMATE_PLAN | true  | ::Gitlab::Access::GUEST     | nil | false
+            License::ULTIMATE_PLAN | false | ::Gitlab::Access::DEVELOPER | nil | true
+            License::ULTIMATE_PLAN | false | ::Gitlab::Access::GUEST     | nil | false
           end
 
-          it { is_expected.to eq(answer) }
+          with_them do
+            let(:license) { create(:license, plan: license_plan) if license_plan }
+
+            it { is_expected.to eq(answer) }
+          end
+        end
+
+        context 'with member_role_id' do
+          let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+          let(:using_seat) { false }
+
+          shared_examples 'with member_role_id' do |role_sym, non_billable_expected, billable_expected|
+            context 'when member_role is read_code' do
+              let(:non_billable_member_role) { create(:member_role, role_sym, namespace: nil, read_code: true) }
+              let(:member_role_id) { non_billable_member_role.id }
+
+              it { is_expected.to eq(non_billable_expected) }
+            end
+
+            context 'when member_role is read_vulnerability' do
+              let(:billable_member_role) do
+                create(:member_role, role_sym, namespace: nil, read_vulnerability: true)
+              end
+
+              let(:member_role_id) { billable_member_role.id }
+
+              it { is_expected.to eq(billable_expected) }
+            end
+          end
+
+          context 'when role is GUEST' do
+            let(:new_access_level) { ::Gitlab::Access::GUEST }
+            let(:role_sym) { :guest }
+
+            it_behaves_like 'with member_role_id', :guest, false, true
+          end
+
+          context 'when role is MINIMAL_ACCESS' do
+            let(:new_access_level) { ::Gitlab::Access::MINIMAL_ACCESS }
+            let(:role_sym) { :minimal_access }
+
+            it_behaves_like 'with member_role_id', :minimal_access, true, true
+          end
         end
       end
     end
