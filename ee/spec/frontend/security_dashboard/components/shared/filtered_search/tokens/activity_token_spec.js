@@ -241,9 +241,14 @@ describe('ActivityToken', () => {
       expect(findViewSlot().text()).toBe('Has issue');
     });
 
-    it('shows "Has issue +1 more" when "Has issue" and another option is selected', async () => {
+    it('shows "Has issue, Has merge request" when "Has issue" and another option is selected', async () => {
       await clickDropdownItem('HAS_ISSUE', 'HAS_MERGE_REQUEST');
-      expect(findViewSlot().text()).toBe('Has issue +1 more');
+      expect(findViewSlot().text()).toBe('Has issue, Has merge request');
+    });
+
+    it('shows "Still detected, Has issue +1 more" when more than 2 options are selected', async () => {
+      await clickDropdownItem('STILL_DETECTED', 'HAS_ISSUE', 'HAS_MERGE_REQUEST');
+      expect(findViewSlot().text()).toBe('Still detected, Has issue +1 more');
     });
 
     it('shows "All activity" when "All activity" is selected', async () => {

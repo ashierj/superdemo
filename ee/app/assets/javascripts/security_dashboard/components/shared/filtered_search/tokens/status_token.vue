@@ -80,6 +80,7 @@ export default {
       return getSelectedOptionsText({
         options: [...GROUPS[0].options, ...GROUPS[1].options],
         selected: this.selectedStatuses,
+        maxOptionsShown: 2,
       });
     },
   },

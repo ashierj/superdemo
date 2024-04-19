@@ -230,7 +230,7 @@ describe('ToolToken', () => {
 
     it('shows "OWASP Zed Attack Proxy (ZAP) +1 more" when "zaproxy" and another option is selected', async () => {
       await clickDropdownItem('zaproxy', 'gitleaks');
-      expect(findViewSlot().text()).toBe('OWASP Zed Attack Proxy (ZAP) +1 more');
+      expect(findViewSlot().text()).toBe('OWASP Zed Attack Proxy (ZAP), GitLeaks');
     });
 
     it('shows "All tools" when "All tool" is selected', async () => {

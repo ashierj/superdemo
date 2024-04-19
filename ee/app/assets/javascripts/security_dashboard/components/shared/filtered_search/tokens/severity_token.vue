@@ -52,6 +52,7 @@ export default {
       return getSelectedOptionsText({
         options: this.$options.items,
         selected: this.selectedSeverities,
+        maxOptionsShown: 2,
       });
     },
   },
