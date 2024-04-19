@@ -262,8 +262,6 @@ curl --request DELETE --header "PRIVATE-TOKEN: <your_access_token>" "https://git
 
 ## Delete multiple stopped review apps
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/296625) in GitLab 14.2.
-
 It schedules for deletion multiple environments that have already been
 [stopped](../ci/environments/index.md#stopping-an-environment) and
 are [in the review app folder](../ci/review_apps/index.md).
