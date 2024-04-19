@@ -13,12 +13,14 @@ import ManualSetup from 'ee/integrations/edit/components/google_cloud_iam/manual
 import { createStore } from '~/integrations/edit/store';
 
 describe('IntegrationSectionGoogleCloudIAM', () => {
+  const wlifIssuer = 'https://test.com';
   let wrapper;
 
   const createComponent = ({ fields = [] } = {}) => {
     const store = createStore({
       customState: {
         fields,
+        wlifIssuer,
       },
     });
 
@@ -83,5 +85,13 @@ describe('IntegrationSectionGoogleCloudIAM', () => {
         expect(findGcIamForm().exists()).toBe(hasGcIamForm);
       },
     );
+  });
+
+  it('pass `wlifIssuer` prop to ManualSetup component', async () => {
+    createComponent();
+    findEmptyState().vm.$emit('show', STATE_MANUAL);
+    await nextTick();
+
+    expect(findManualSetup().props('wlifIssuer')).toBe(wlifIssuer);
   });
 });

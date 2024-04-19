@@ -24227,6 +24227,12 @@ msgstr ""
 msgid "GoogleCloud|Connect to Google Cloud with workload identity federation. Select %{strongStart}Guided setup%{strongEnd} if you can manage workload identity federation in Google Cloud. %{linkStart}What are the required permissions?%{linkEnd}"
 msgstr ""
 
+msgid "GoogleCloud|Copy instructions URL"
+msgstr ""
+
+msgid "GoogleCloud|Copy issuer"
+msgstr ""
+
 msgid "GoogleCloud|Create service account"
 msgstr ""
 
@@ -24341,6 +24347,9 @@ msgstr ""
 msgid "GoogleCloud|Run the following command to set up and connect to your Google Cloud project with workload identity federation."
 msgstr ""
 
+msgid "GoogleCloud|Setup instructions"
+msgstr ""
+
 msgid "GoogleCloud|Share the following information with someone that can manage Google Cloud workload identity federation. Or %{linkStart}invite them%{linkEnd} to set up."
 msgstr ""
 
@@ -24353,9 +24362,6 @@ msgstr ""
 msgid "GoogleCloud|The google_cloud_support feature is not available"
 msgstr ""
 
-msgid "GoogleCloud|The setup instructions page"
-msgstr ""
-
 msgid "GoogleCloud|To improve security, use a dedicated project for resources, separate from CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}"
 msgstr ""
 
@@ -24365,10 +24371,7 @@ msgstr ""
 msgid "GoogleCloud|You might be prompted to sign in to Google."
 msgstr ""
 
-msgid "GoogleCloud|Your GitLab project ID"
-msgstr ""
-
-msgid "GoogleCloud|Your workload identify federation (WLIF) issuer URL."
+msgid "GoogleCloud|Your identity provider issuer: %{issuer}"
 msgstr ""
 
 msgid "GooglePlayStore|Protected branches and tags only"

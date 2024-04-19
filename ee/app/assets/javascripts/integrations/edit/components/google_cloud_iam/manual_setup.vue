@@ -1,6 +1,10 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+import { helpPagePath } from '~/helpers/help_page_helper';
+import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
+
 import InviteMembersTrigger from '~/invite_members/components/invite_members_trigger.vue';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { STATE_GUIDED } from './constants';
 
 export default {
@@ -9,8 +13,21 @@ export default {
     GlLink,
     GlSprintf,
     InviteMembersTrigger,
+    ClipboardButton,
+  },
+  props: {
+    wlifIssuer: {
+      type: String,
+      required: true,
+    },
   },
   STATE_GUIDED,
+  helpURL: joinPaths(
+    getBaseURL(),
+    helpPagePath('integration/google_cloud_iam', {
+      anchor: 'with-the-google-cloud-cli',
+    }),
+  ),
 };
 </script>
 
@@ -63,13 +80,27 @@ export default {
       </li>
       <ol type="a">
         <li>
-          {{ s__('GoogleCloud|The setup instructions page') }}
+          <gl-link :href="$options.helpURL">{{ s__('GoogleCloud|Setup instructions') }}</gl-link>
+          <clipboard-button
+            :text="$options.helpURL"
+            :title="s__('GoogleCloud|Copy instructions URL')"
+            category="tertiary"
+            size="small"
+          />
         </li>
         <li>
-          {{ s__('GoogleCloud|Your GitLab project ID') }}
-        </li>
-        <li>
-          {{ s__('GoogleCloud|Your workload identify federation (WLIF) issuer URL.') }}
+          <gl-sprintf :message="s__('GoogleCloud|Your identity provider issuer: %{issuer}')">
+            <template #issuer>
+              <code>{{ wlifIssuer }}</code>
+            </template>
+            >
+          </gl-sprintf>
+          <clipboard-button
+            :text="wlifIssuer"
+            :title="s__('GoogleCloud|Copy issuer')"
+            category="tertiary"
+            size="small"
+          />
         </li>
       </ol>
       <li>
