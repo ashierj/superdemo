@@ -25001,6 +25001,9 @@ msgstr ""
 msgid "GroupSettings|Git abuse rate limit"
 msgstr ""
 
+msgid "GroupSettings|Group CI/CD settings were successfully updated."
+msgstr ""
+
 msgid "GroupSettings|Group members are not notified if the group is mentioned."
 msgstr ""
 
@@ -25035,9 +25038,6 @@ msgid "GroupSettings|Namespace setting"
 msgstr ""
 
 msgid "GroupSettings|Organizations and contacts can be created and associated with issues."
-msgstr ""
-
-msgid "GroupSettings|Pipeline settings was updated for the group"
 msgstr ""
 
 msgid "GroupSettings|Please choose a group URL with no special characters or spaces."
@@ -25094,7 +25094,7 @@ msgstr ""
 msgid "GroupSettings|There was a problem updating Auto DevOps pipeline: %{error_messages}."
 msgstr ""
 
-msgid "GroupSettings|There was a problem updating the pipeline settings: %{error_messages}."
+msgid "GroupSettings|There was a problem updating the group CI/CD settings: %{error_messages}."
 msgstr ""
 
 msgid "GroupSettings|These features are being developed and might be unstable."
