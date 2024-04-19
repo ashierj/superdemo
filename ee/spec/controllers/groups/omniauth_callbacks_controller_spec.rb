@@ -181,18 +181,6 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
         post provider, params: { group_id: group, RelayState: '.example.com' }
       end
 
-      context 'when the feature flag filter_saml_response is disabled' do
-        before do
-          stub_feature_flags(filter_saml_response: false)
-        end
-
-        it 'logs saml_response for debugging' do
-          expect(ParameterFilters::SamlResponse).not_to receive(:log).with(nil)
-
-          post provider, params: { group_id: group, RelayState: '.example.com' }
-        end
-      end
-
       include_examples 'works with session enforcement'
     end
 
