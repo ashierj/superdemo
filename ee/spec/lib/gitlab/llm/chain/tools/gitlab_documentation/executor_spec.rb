@@ -52,10 +52,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
         let(:second_response_double) { double }
 
         before do
-          allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with("In")
+          allow(Gitlab::Llm::Chain::StreamedResponseModifier).to receive(:new).with("In", { chunk_id: 1 })
             .and_return(first_response_double)
 
-          allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with("your")
+          allow(Gitlab::Llm::Chain::StreamedResponseModifier).to receive(:new).with("your", { chunk_id: 2 })
             .and_return(second_response_double)
         end
 
