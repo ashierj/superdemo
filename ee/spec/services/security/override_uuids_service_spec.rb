@@ -71,15 +71,35 @@ RSpec.describe Security::OverrideUuidsService, feature_category: :vulnerability_
 
     subject(:override_uuids) { service_object.execute }
 
-    it 'overrides finding uuids and prioritizes the existing findings' do
-      expect { override_uuids }
-        .to change { report.findings.map(&:overridden_uuid) }.from(Array.new(4) { nil }).to([an_instance_of(String), an_instance_of(String), nil, nil])
-        .and change { matching_report_finding_by_signature.uuid }.from(matching_report_finding_uuid_1).to(vulnerability_finding_uuid_1)
-        .and change { matching_report_finding_by_signature.overridden_uuid }.from(nil).to(matching_report_finding_uuid_1)
-        .and change { matching_report_finding_by_location.uuid }.from(matching_report_finding_uuid_2).to(vulnerability_finding_uuid_2)
-        .and change { matching_report_finding_by_location.overridden_uuid }.from(nil).to(matching_report_finding_uuid_2)
-        .and not_change { matching_report_finding_by_location_conflict.uuid }
-        .and not_change { unmatching_report_finding.uuid }
+    context 'when the `vulnerability_finding_signatures` is enabled' do
+      before do
+        stub_licensed_features(vulnerability_finding_signatures: true)
+      end
+
+      it 'overrides finding uuids and prioritizes the existing findings' do
+        expect { override_uuids }
+          .to change { report.findings.map(&:overridden_uuid) }.from(Array.new(4) { nil }).to([an_instance_of(String), an_instance_of(String), nil, nil])
+          .and change { matching_report_finding_by_signature.uuid }.from(matching_report_finding_uuid_1).to(vulnerability_finding_uuid_1)
+          .and change { matching_report_finding_by_signature.overridden_uuid }.from(nil).to(matching_report_finding_uuid_1)
+          .and change { matching_report_finding_by_location.uuid }.from(matching_report_finding_uuid_2).to(vulnerability_finding_uuid_2)
+          .and change { matching_report_finding_by_location.overridden_uuid }.from(nil).to(matching_report_finding_uuid_2)
+          .and not_change { matching_report_finding_by_location_conflict.uuid }
+          .and not_change { unmatching_report_finding.uuid }
+      end
+    end
+
+    context 'when the `vulnerability_finding_signatures` is disabled' do
+      before do
+        stub_licensed_features(vulnerability_finding_signatures: false)
+      end
+
+      it 'does not override finding uuids despite signatures being present' do
+        expect { override_uuids }
+          .to not_change { matching_report_finding_by_signature.uuid }
+          .and not_change { matching_report_finding_by_signature.overridden_uuid }
+          .and not_change { matching_report_finding_by_location.uuid }
+          .and not_change { matching_report_finding_by_location.overridden_uuid }
+      end
     end
   end
 end
