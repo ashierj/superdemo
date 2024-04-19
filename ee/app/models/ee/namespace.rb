@@ -219,6 +219,11 @@ module EE
     # being licensed.
     override :licensed_feature_available?
     def licensed_feature_available?(feature)
+      if GitlabSubscriptions::Features.global?(feature)
+        raise ArgumentError, "Use `License.feature_available?` for features that cannot be restricted to only a " \
+                             "subset of projects or namespaces"
+      end
+
       available_features = strong_memoize(:licensed_feature_available) do
         Hash.new do |h, f|
           h[f] = load_feature_available(f)
