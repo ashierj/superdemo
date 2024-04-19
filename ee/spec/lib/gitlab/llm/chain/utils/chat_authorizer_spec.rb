@@ -25,6 +25,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
     end
 
     before do
+      stub_feature_flags(duo_chat_requires_licensed_seat: false)
       allow(Gitlab).to receive(:org_or_com?).and_return(true)
 
       stub_licensed_features(ai_chat: true)

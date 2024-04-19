@@ -6,6 +6,7 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
   let_it_be(:user) { create(:user) }
 
   before do
+    stub_feature_flags(duo_chat_requires_licensed_seat: false)
     group.add_developer(user)
     stub_application_setting(anthropic_api_key: 'somekey')
   end

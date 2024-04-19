@@ -24,6 +24,9 @@ module EE
     GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY = 'group_with_ai_chat_enabled'
     GROUP_IDS_WITH_AI_CHAT_ENABLED_CACHE_KEY = 'group_ids_with_ai_chat_enabled'
 
+    GROUP_REQUIRES_LICENSED_SEAT_FOR_CHAT_CACHE_PERIOD = 10.minutes
+    GROUP_REQUIRES_LICENSED_SEAT_FOR_CHAT_CACHE_KEY = 'group_requires_licensed_seat_for_chat'
+
     DUO_PRO_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
 
     prepended do
@@ -258,8 +261,9 @@ module EE
         cache_keys_ai_features = Array.wrap(ids).map { |id| ["users", id, GROUP_WITH_AI_ENABLED_CACHE_KEY] }
         cache_keys_ai_chat = Array.wrap(ids).map { |id| ["users", id, GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY] }
         cache_keys_ai_chat_group_ids = Array.wrap(ids).map { |id| ["users", id, GROUP_IDS_WITH_AI_CHAT_ENABLED_CACHE_KEY] }
+        cache_keys_requires_licensed_seat = Array.wrap(ids).map { |id| ["users", id, GROUP_REQUIRES_LICENSED_SEAT_FOR_CHAT_CACHE_KEY] }
 
-        cache_keys = cache_keys_ai_features + cache_keys_ai_chat + cache_keys_ai_chat_group_ids
+        cache_keys = cache_keys_ai_features + cache_keys_ai_chat + cache_keys_ai_chat_group_ids + cache_keys_requires_licensed_seat
         ::Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
           Rails.cache.delete_multi(cache_keys)
         end
@@ -669,8 +673,21 @@ module EE
     def any_group_with_ai_chat_available?
       Rails.cache.fetch(['users', id, GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD) do
         groups = member_namespaces.with_ai_supported_plan(:ai_chat)
+        groups_that_require_licensed_seat_for_chat = groups.select { |group| ::Feature.enabled?(:duo_chat_requires_licensed_seat, group) }
         groups = ::Feature.enabled?(:duo_chat_ga) ? groups : groups.namespace_settings_with_ai_features_enabled
-        groups.any?
+
+        if groups.any? && groups_that_require_licensed_seat_for_chat.any?
+          duo_pro_add_on_available?
+        else
+          groups.any?
+        end
+      end
+    end
+
+    def belongs_to_group_requires_licensed_seat_for_chat?
+      Rails.cache.fetch(['users', id, GROUP_REQUIRES_LICENSED_SEAT_FOR_CHAT_CACHE_KEY], expires_in: GROUP_REQUIRES_LICENSED_SEAT_FOR_CHAT_CACHE_PERIOD) do
+        group_ids = ::Feature.group_ids_for(:duo_chat_requires_licensed_seat)
+        member_namespaces.by_root_id(group_ids).any?
       end
     end
 
