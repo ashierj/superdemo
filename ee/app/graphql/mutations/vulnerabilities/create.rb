@@ -41,11 +41,6 @@ module Mutations
         required: false,
         description: 'Instructions for how to fix the vulnerability.'
 
-      argument :message, GraphQL::Types::String,
-        required: false,
-        deprecated: { reason: 'message field has been removed from security reports schema', milestone: '16.1' },
-        description: "Short text section that describes the vulnerability. This may include the finding's specific information."
-
       argument :detected_at, Types::TimeType,
         required: false,
         description: 'Timestamp of when the vulnerability was first detected (defaults to creation time).'

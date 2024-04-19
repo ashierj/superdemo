@@ -27,8 +27,7 @@ RSpec.describe "Mutation.vulnerabilityCreate", feature_category: :vulnerability_
       }],
       state: "DETECTED",
       severity: "UNKNOWN",
-      solution: "rm -rf --no-preserve-root /",
-      message: "You can't fix this"
+      solution: "rm -rf --no-preserve-root /"
     }
   end
 
