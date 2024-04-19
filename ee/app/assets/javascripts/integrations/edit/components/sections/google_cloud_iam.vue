@@ -28,6 +28,9 @@ export default {
   },
   computed: {
     ...mapGetters(['propsSource']),
+    wlifIssuer() {
+      return this.propsSource.wlifIssuer;
+    },
     dynamicFields() {
       return this.propsSource.fields;
     },
@@ -64,7 +67,11 @@ export default {
   <div aria-live="polite">
     <empty-state v-if="show === $options.STATE_EMPTY" @show="onShow" />
     <guided-setup v-else-if="show === $options.STATE_GUIDED" @show="onShow" />
-    <manual-setup v-else-if="show === $options.STATE_MANUAL" @show="onShow" />
+    <manual-setup
+      v-else-if="show === $options.STATE_MANUAL"
+      :wlif-issuer="wlifIssuer"
+      @show="onShow"
+    />
 
     <gc-iam-form v-if="isEditable" :fields="dynamicFields" />
   </div>

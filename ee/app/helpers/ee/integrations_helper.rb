@@ -42,6 +42,10 @@ module EE
         end
       end
 
+      if integration.is_a?(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation)
+        form_data[:wlif_issuer] = ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(group || project)
+      end
+
       form_data
     end
 

@@ -7,100 +7,126 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
   let_it_be_with_refind(:project) { create(:project, group: group) }
 
   describe '#integration_form_data' do
-    let(:integration) { build(:jenkins_integration) }
+    context 'when integration is at the project level' do
+      let(:integration) { build(:jenkins_integration) }
 
-    let(:jira_fields) do
-      {
-        show_jira_issues_integration: 'false',
-        show_jira_vulnerabilities_integration: 'false',
-        enable_jira_issues: 'true',
-        enable_jira_vulnerabilities: 'false',
-        project_key: 'FE',
-        project_keys: 'FE,BE',
-        vulnerabilities_issuetype: '10001'
-      }
-    end
-
-    subject(:form_data) { helper.integration_form_data(integration, project: project) }
-
-    it 'does not include Jira-specific fields' do
-      is_expected.not_to include(*jira_fields.keys)
-    end
-
-    context 'with a Jira integration' do
-      let_it_be_with_refind(:integration) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'FE', project_keys: %w[FE BE], vulnerabilities_enabled: true, vulnerabilities_issuetype: '10001') }
-
-      context 'when there is no license for jira_vulnerabilities_integration' do
-        before do
-          allow(integration).to receive(:jira_vulnerabilities_integration_available?).and_return(false)
-        end
-
-        it 'includes default Jira fields' do
-          is_expected.to include(jira_fields)
-        end
+      let(:jira_fields) do
+        {
+          show_jira_issues_integration: 'false',
+          show_jira_vulnerabilities_integration: 'false',
+          enable_jira_issues: 'true',
+          enable_jira_vulnerabilities: 'false',
+          project_key: 'FE',
+          project_keys: 'FE,BE',
+          vulnerabilities_issuetype: '10001'
+        }
       end
 
-      context 'when all flags are enabled' do
-        before do
-          stub_licensed_features(jira_issues_integration: true, jira_vulnerabilities_integration: true)
+      subject(:form_data) { helper.integration_form_data(integration, project: project) }
+
+      it 'does not include Jira-specific fields' do
+        is_expected.not_to include(*jira_fields.keys)
+      end
+
+      context 'with a Jira integration' do
+        let_it_be_with_refind(:integration) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'FE', project_keys: %w[FE BE], vulnerabilities_enabled: true, vulnerabilities_issuetype: '10001') }
+
+        context 'when there is no license for jira_vulnerabilities_integration' do
+          before do
+            allow(integration).to receive(:jira_vulnerabilities_integration_available?).and_return(false)
+          end
+
+          it 'includes default Jira fields' do
+            is_expected.to include(jira_fields)
+          end
         end
 
-        it 'includes all Jira fields' do
-          is_expected.to include(
-            jira_fields.merge(
-              show_jira_issues_integration: 'true',
-              show_jira_vulnerabilities_integration: 'true',
-              enable_jira_vulnerabilities: 'true'
+        context 'when all flags are enabled' do
+          before do
+            stub_licensed_features(jira_issues_integration: true, jira_vulnerabilities_integration: true)
+          end
+
+          it 'includes all Jira fields' do
+            is_expected.to include(
+              jira_fields.merge(
+                show_jira_issues_integration: 'true',
+                show_jira_vulnerabilities_integration: 'true',
+                enable_jira_vulnerabilities: 'true'
+              )
             )
+          end
+        end
+      end
+
+      context 'with Google Artifact Registry integration' do
+        let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+
+        shared_examples 'excludes wlif related fields' do
+          it 'is editable' do
+            is_expected.to include(editable: 'true')
+          end
+
+          it 'does not include wlif related fields' do
+            is_expected.not_to include(
+              workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
+            )
+          end
+        end
+
+        context 'when Google Cloud IAM integration does not exist' do
+          it 'includes Google Artifact Registry fields' do
+            is_expected.to include(
+              artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
+              personal_access_tokens_path: user_settings_personal_access_tokens_path,
+              operating: 'true',
+              editable: 'false',
+              workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
+            )
+          end
+        end
+
+        context 'with active Google Cloud IAM integration' do
+          before do
+            create(:google_cloud_platform_workload_identity_federation_integration, project: project)
+          end
+
+          it_behaves_like 'excludes wlif related fields'
+        end
+
+        context 'with inactive Google Cloud IAM integration' do
+          before do
+            create(:google_cloud_platform_workload_identity_federation_integration, project: project, active: false)
+          end
+
+          it 'includes Google Artifact Registry fields' do
+            is_expected.to include(
+              editable: 'false',
+              workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
+            )
+          end
+        end
+      end
+
+      context 'with Google Cloud IAM integration' do
+        let_it_be_with_refind(:integration) { create(:google_cloud_platform_workload_identity_federation_integration, project: project) }
+
+        it 'include wlif_issuer field' do
+          is_expected.to include(
+            wlif_issuer: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(project)
           )
         end
       end
     end
 
-    context 'with Google Artifact Registry integration' do
-      let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
+    context 'when integration is at the group level' do
+      let(:integration) { build(:google_cloud_platform_workload_identity_federation_integration, group: group) }
 
-      shared_examples 'excludes wlif related fields' do
-        it 'is editable' do
-          is_expected.to include(editable: 'true')
-        end
+      subject(:form_data) { helper.integration_form_data(integration, group: group) }
 
-        it 'does not include wlif related fields' do
-          is_expected.not_to include(
-            workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
-          )
-        end
-      end
-
-      context 'when Google Cloud IAM integration does not exist' do
-        it 'includes Google Artifact Registry fields' do
+      context 'with Google Cloud IAM integration' do
+        it 'include wlif_issuer field' do
           is_expected.to include(
-            artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
-            personal_access_tokens_path: user_settings_personal_access_tokens_path,
-            operating: 'true',
-            editable: 'false',
-            workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
-          )
-        end
-      end
-
-      context 'with active Google Cloud IAM integration' do
-        before do
-          create(:google_cloud_platform_workload_identity_federation_integration, project: project)
-        end
-
-        it_behaves_like 'excludes wlif related fields'
-      end
-
-      context 'with inactive Google Cloud IAM integration at project level' do
-        before do
-          create(:google_cloud_platform_workload_identity_federation_integration, project: project, active: false)
-        end
-
-        it 'includes Google Artifact Registry fields' do
-          is_expected.to include(
-            editable: 'false',
-            workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
+            wlif_issuer: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(group)
           )
         end
       end
