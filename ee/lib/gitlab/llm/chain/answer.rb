@@ -64,7 +64,7 @@ module Gitlab
         end
 
         def self.default_final_message
-          s_("AI|I don't see how I can help. Please give better instructions!")
+          s_("AI|I'm sorry, I can't find the answer, but it's my fault, not yours. Please try something different.")
         end
 
         def self.error_answer(context:, content:)
