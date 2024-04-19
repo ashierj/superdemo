@@ -182,7 +182,7 @@ module QA
         }]
       end
 
-      def push(commit_message:, branch:, file:, user:, tag:, gpg:)
+      def push(commit_message:, branch:, file:, user:, tag:, gpg:, max_attempts:)
         Resource::Repository::ProjectPush.fabricate! do |push|
           push.project = @project
           push.commit_message = commit_message
@@ -192,18 +192,19 @@ module QA
           push.files = file if tag.nil?
           push.tag_name = tag unless tag.nil?
           push.gpg_key_id = gpg.key_id unless gpg.nil?
+          push.max_attempts = max_attempts if max_attempts
         end
       end
 
       def expect_no_error_on_push(file:, commit_message: 'allowed commit', branch: @project.default_branch, user: @creator, tag: nil, gpg: nil)
         expect do
-          push commit_message: commit_message, branch: branch, file: file, user: user, tag: tag, gpg: gpg
+          push commit_message: commit_message, branch: branch, file: file, user: user, tag: tag, gpg: gpg, max_attempts: 3
         end.not_to raise_error
       end
 
       def expect_error_on_push(file:, commit_message: 'allowed commit', branch: @project.default_branch, user: @creator, tag: nil, gpg: nil, error: nil)
         expect do
-          push commit_message: commit_message, branch: branch, file: file, user: user, tag: tag, gpg: gpg
+          push commit_message: commit_message, branch: branch, file: file, user: user, tag: tag, gpg: gpg, max_attempts: 1
         end.to raise_error(QA::Support::Run::CommandError, /#{error}/)
       end
 
