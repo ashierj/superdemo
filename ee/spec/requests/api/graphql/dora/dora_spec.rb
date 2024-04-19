@@ -217,68 +217,6 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
     end
   end
 
-  context 'with deprecated format' do
-    let(:query_body) do
-      <<~QUERY
-      dora {
-        metrics(metric: DEPLOYMENT_FREQUENCY) {
-          date
-          value
-        }
-      }
-      QUERY
-    end
-
-    context 'when querying for project-level metrics' do
-      let(:path_prefix) { %w[project dora metrics] }
-
-      let(:query) do
-        graphql_query_for(:project, { fullPath: project_1.full_path }, query_body)
-      end
-
-      it 'returns the expected project-level DORA metrics' do
-        post_query
-
-        expect(data).to eq(
-          [
-            { 'value' => 3, 'date' => '2021-01-01' },
-            { 'value' => 3, 'date' => '2021-01-02' },
-            { 'value' => 2, 'date' => '2021-01-03' },
-            { 'value' => 2, 'date' => '2021-01-04' },
-            { 'value' => 1, 'date' => '2021-01-05' },
-            { 'value' => 1, 'date' => '2021-01-06' },
-            { 'value' => nil, 'date' => '2021-01-07' }
-          ]
-        )
-      end
-    end
-
-    context 'when querying for group-level metrics' do
-      let(:path_prefix) { %w[group dora metrics] }
-
-      let(:query) do
-        graphql_query_for(:group, { fullPath: group.full_path }, query_body)
-      end
-
-      it 'returns the expected group-level DORA metrics' do
-        post_query
-
-        expect(data).to eq(
-          [
-            { 'value' => 3, 'date' => '2021-01-01' },
-            { 'value' => 3, 'date' => '2021-01-02' },
-            { 'value' => 2, 'date' => '2021-01-03' },
-            { 'value' => 2, 'date' => '2021-01-04' },
-            { 'value' => 1, 'date' => '2021-01-05' },
-            { 'value' => 1, 'date' => '2021-01-06' },
-            { 'value' => nil, 'date' => '2021-01-07' },
-            { 'value' => 4, 'date' => '2021-01-09' }
-          ]
-        )
-      end
-    end
-  end
-
   def empty_metric_rows(from:, to:)
     empty_rows = []
 
