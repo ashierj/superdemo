@@ -23,17 +23,27 @@ module Gitlab
         private
 
         def active_scan_execution_policies?
+          return false unless @ref
+
+          service = ::Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: @project)
+
           ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations
             .new(@project).all
             .to_a
             .flat_map(&:active_scan_execution_policies_for_pipelines)
-            .any? { |policy| policy_applicable?(policy) }
+            .any? { |policy| policy_applicable?(policy) && applicable_for_branch?(service, policy) }
         end
 
         def policy_applicable?(policy)
           ::Security::SecurityOrchestrationPolicies::PolicyScopeService
             .new(project: @project)
             .policy_applicable?(policy)
+        end
+
+        def applicable_for_branch?(service, policy)
+          applicable_branches = service.scan_execution_branches(policy[:rules])
+
+          @ref.in?(applicable_branches)
         end
       end
     end

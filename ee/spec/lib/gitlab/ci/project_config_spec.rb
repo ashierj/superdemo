@@ -3,12 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integration do
-  let(:project) { create(:project, ci_config_path: nil) }
+  let_it_be_with_reload(:project) { create(:project, :repository, ci_config_path: nil) }
   let(:sha) { '123456' }
   let(:content) { nil }
   let(:source) { :push }
   let(:bridge) { nil }
   let(:triggered_for_branch) { true }
+  let(:ref) { 'master' }
   let(:security_policies) { {} }
 
   let(:content_result) do
@@ -27,7 +28,8 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
       custom_content: content,
       pipeline_source: source,
       pipeline_source_bridge: bridge,
-      triggered_for_branch: triggered_for_branch
+      triggered_for_branch: triggered_for_branch,
+      ref: ref
     )
   end
 
@@ -170,9 +172,11 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
             context 'when active policies includes a rule with pipeline type' do
               let(:rule) { { type: 'pipeline', branches: branches } }
 
-              it 'includes security policies default pipeline configuration content' do
-                expect(config.source).to eq(:security_policies_default_source)
-                expect(config.content).to eq(security_policy_default_content)
+              context 'when policy applies to the pipeline\'s branch' do
+                it 'includes security policies default pipeline configuration content' do
+                  expect(config.source).to eq(:security_policies_default_source)
+                  expect(config.content).to eq(security_policy_default_content)
+                end
               end
             end
           end
@@ -224,6 +228,14 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
 
           context 'when active policies does not include a rule with pipeline type' do
             let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
+
+            it 'does not include security policies default pipeline configuration content' do
+              expect(config.source).to eq(nil)
+            end
+          end
+
+          context 'when policy does not apply to the branch' do
+            let(:rule) { { type: 'pipeline', branches: ['main'] } }
 
             it 'does not include security policies default pipeline configuration content' do
               expect(config.source).to eq(nil)
