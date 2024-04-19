@@ -274,10 +274,10 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
         context 'when move_before_id is not a sibling epic' do
           let(:move_before_epic) { create(:epic, group: group) }
 
-          it 'returns status 404' do
+          it 'returns status 422' do
             subject
 
-            expect(response).to have_gitlab_http_status(:not_found)
+            expect(response).to have_gitlab_http_status(:unprocessable_entity)
           end
         end
       end
