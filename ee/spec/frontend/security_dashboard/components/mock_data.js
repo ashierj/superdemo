@@ -335,3 +335,69 @@ export const generateVulnerabilities = () => [
 ];
 
 export const vulnerabilities = generateVulnerabilities();
+
+export const generateFindings = () => [
+  {
+    id: 'id_0',
+    name: 'Finding 0',
+    description: 'Description 0',
+    falsePositive: false,
+    identifiers: [
+      {
+        externalType: 'cve',
+        name: 'CVE-2018-1234',
+      },
+      {
+        externalType: 'gemnasium',
+        name: 'Gemnasium-2018-1234',
+      },
+    ],
+    reportType: 'SAST',
+    scanner: {
+      id: 'scanner-1',
+      vendor: 'GitLab',
+    },
+    state: 'DETECTED',
+    dismissalReason: null,
+    severity: 'CRITICAL',
+    solution: 'Upgrade to version 1.2.0 or above.',
+    location: {
+      image:
+        'registry.gitlab.com/groulot/container-scanning-test/main:5f21de6956aee99ddb68ae49498662d9872f50ff',
+    },
+    issueLinks: {
+      nodes: [
+        {
+          id: 'issue-1',
+          issue: {
+            id: 'issue-1',
+            iid: 15,
+            webUrl: 'url',
+            webPath: 'path',
+            title: 'title',
+            state: 'state',
+            resolvedOnDefaultBranch: true,
+          },
+        },
+      ],
+    },
+    vulnerability: {
+      id: 'gid://gitlab/Vulnerability/1',
+      externalIssueLinks: {
+        nodes: [
+          {
+            id: 'issue-1',
+            issue: {
+              webUrl: 'https://test.atlassian.net/browse/TP-1',
+              externalTracker: 'jira',
+              title: 'Vulnerability 0 issue',
+              iid: 'TP-1',
+            },
+          },
+        ],
+      },
+    },
+  },
+];
+
+export const findings = generateFindings();

@@ -18,11 +18,13 @@ export const getPipelineReportOptions = (data) => {
     emptyStateUnauthorizedSvgPath,
     emptyStateForbiddenSvgPath,
     canViewFalsePositive,
+    hasJiraVulnerabilitiesIntegrationEnabled,
   } = data;
   const loadingErrorIllustrations = {
     [LOADING_VULNERABILITIES_ERROR_CODES.UNAUTHORIZED]: emptyStateUnauthorizedSvgPath,
     [LOADING_VULNERABILITIES_ERROR_CODES.FORBIDDEN]: emptyStateForbiddenSvgPath,
   };
+
   return {
     commitPathTemplate,
     projectFullPath,
@@ -43,5 +45,8 @@ export const getPipelineReportOptions = (data) => {
     loadingErrorIllustrations,
     canViewFalsePositive: parseBoolean(canViewFalsePositive),
     vulnerabilitiesQuery: findingsQuery,
+    hasJiraVulnerabilitiesIntegrationEnabled: parseBoolean(
+      hasJiraVulnerabilitiesIntegrationEnabled,
+    ),
   };
 };
