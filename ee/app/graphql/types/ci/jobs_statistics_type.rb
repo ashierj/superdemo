@@ -15,8 +15,7 @@ module Types
               "based on the most recent #{Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT} jobs executed by " \
               "the #{Resolvers::Ci::RunnersJobsStatisticsResolver::RUNNERS_LIMIT} most recently created runners in " \
               "context. If no filter is applied to runners, the calculation is performed based on the most " \
-              "recent #{Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT} jobs globally.",
-            alpha: { milestone: '15.8' }
+              "recent #{Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT} jobs globally."
 
       def queued_duration
         object.object[:queued_duration]
