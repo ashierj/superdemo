@@ -67,6 +67,20 @@ query pipelineFindings(
               }
             }
           }
+          vulnerability {
+            id
+            externalIssueLinks {
+              nodes {
+                id
+                issue: externalIssue {
+                  webUrl
+                  externalTracker
+                  title
+                  iid: relativeReference
+                }
+              }
+            }
+          }
         }
         pageInfo {
           ...PageInfo

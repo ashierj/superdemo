@@ -27,6 +27,7 @@ describe('getPipelineReportOptions', () => {
       },
       canViewFalsePositive: true,
       vulnerabilitiesQuery: findingsQuery,
+      hasJiraVulnerabilitiesIntegrationEnabled: false,
     });
   });
 
