@@ -10,9 +10,6 @@ FactoryBot.define do
     enabled { true }
     scope { {} }
     approval_settings { {} }
-    security_policy_management_project_id do
-      security_orchestration_policy_configuration.security_policy_management_project_id
-    end
     require_approval
 
     trait :require_approval do
