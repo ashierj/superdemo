@@ -139,22 +139,20 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       end
 
       context 'when work item creation fails' do
-        it 'does not create epic' do
-          error_message = ['error 1', 'error 2']
-          allow_next_instance_of(WorkItems::CreateService) do |instance|
-            allow(instance).to receive(:execute).and_return(ServiceResponse.error(message: error_message))
-          end
+        it 'does not create epic or work item' do
+          allow(WorkItem).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new)
 
           expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
             .with({
               message: "Not able to create epic work item",
-              error_message: error_message,
+              error_message: 'Record invalid',
               group_id: group.id,
               epic_id: nil
             })
 
-          expect { subject }.to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
+          expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
             .and not_change { Epic.count }
+            .and not_change { WorkItem.count }
         end
       end
 

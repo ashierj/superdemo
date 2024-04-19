@@ -104,7 +104,6 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
       it 'triggers GraphQL description updated subscription' do
         expect(GraphqlTriggers).to receive(:issuable_description_updated).with(epic).and_call_original
-        expect(GraphqlTriggers).to receive(:issuable_description_updated).with(epic.work_item).and_call_original
 
         update_epic(description: 'updated description')
       end
@@ -935,16 +934,9 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 end
 
                 context 'when saving to the work item fails' do
-                  let(:error_message) { ['errors'] }
-
                   before do
-                    allow_next_instance_of(WorkItems::UpdateService) do |instance|
-                      allow(instance).to receive(:execute).and_return(
-                        {
-                          status: :error,
-                          message: error_message
-                        }
-                      )
+                    allow_next_found_instance_of(::WorkItem) do |instance|
+                      allow(instance).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new)
                     end
                   end
 
@@ -952,12 +944,12 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                     expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
                       .with({
                         message: "Not able to update epic work item",
-                        error_message: error_message,
+                        error_message: 'Record invalid',
                         group_id: group.id,
                         epic_id: epic.id
                       })
 
-                    expect { subject }.to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
+                    expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
 
                     expect(epic.reload.description).to eq('- [ ] Task')
                     expect(work_item.reload.description).to eq('- [ ] Task')
@@ -1021,34 +1013,23 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           end
         end
 
-        context 'when work item update errors' do
-          let(:error_message) { ["error 1", "error 2"] }
-
-          before do
-            allow_next_instance_of(WorkItems::UpdateService) do |instance|
-              allow(instance).to receive(:execute).and_return(
-                {
-                  status: :error,
-                  message: error_message
-                }
-              )
-            end
+        it 'does not propagate the update to the work item and resets the epic updates on an error' do
+          allow_next_found_instance_of(::WorkItem) do |instance|
+            allow(instance).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new)
           end
 
-          it 'does not propagate the update to the work item and resets the epic udpates' do
-            expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
-              .with({
-                message: "Not able to update epic work item",
-                error_message: error_message,
-                group_id: group.id,
-                epic_id: epic.id
-              })
+          expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+            .with({
+              message: "Not able to update epic work item",
+              error_message: 'Record invalid',
+              group_id: group.id,
+              epic_id: epic.id
+            })
 
-            expect { update_epic({ title: 'New title' }) }
-              .to raise_error(Epics::SyncAsWorkItem::SyncAsWorkItemError)
-              .and not_change { work_item.reload }
-              .and not_change { epic.reload }
-          end
+          expect { update_epic({ title: 'New title' }) }
+            .to raise_error(ActiveRecord::RecordInvalid)
+            .and not_change { work_item.reload }
+            .and not_change { epic.reload }
         end
       end
 

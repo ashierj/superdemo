@@ -11,33 +11,27 @@ module Epics
       last_edited_by_id last_edited_at closed_by_id closed_at state_id external_key
     ].freeze
 
-    def create_work_item_for!
+    def create_work_item_for!(epic)
       return unless group.epic_sync_to_work_item_enabled?
 
-      service_response = ::WorkItems::CreateService.new(
-        container: group,
-        current_user: current_user,
-        params: create_params,
-        widget_params: extract_widget_params
-      ).execute_without_rate_limiting
+      work_item = WorkItem.create!(create_params)
+      sync_color!(work_item)
+      sync_dates!(epic, work_item)
 
-      handle_response!(:create, service_response)
-
-      service_response.payload[:work_item]
+      work_item
+    rescue StandardError => error
+      handle_error!(:create, error)
     end
 
     def update_work_item_for!(epic)
       return true unless group.epic_sync_to_work_item_enabled?
       return true unless epic.work_item
 
-      service_response = ::WorkItems::UpdateService.new(
-        container: epic.group,
-        current_user: current_user,
-        params: update_params(epic),
-        widget_params: extract_widget_params
-      ).execute(epic.work_item)
-
-      handle_response!(:update, service_response, epic)
+      sync_color!(epic.work_item)
+      sync_dates!(epic, epic.work_item)
+      epic.work_item.update!(update_params(epic))
+    rescue StandardError => error
+      handle_error!(:update, error, epic)
     end
 
     private
@@ -49,15 +43,14 @@ module Epics
     def create_params
       filtered_params.merge(
         work_item_type: WorkItems::Type.default_by_type(:epic),
-        extra_params: { synced_work_item: true }
+        namespace_id: group.id
       )
     end
 
     def update_params(epic)
       update_params = filtered_params.merge({
         updated_by: epic.updated_by,
-        updated_at: epic.updated_at,
-        extra_params: { synced_work_item: true }
+        updated_at: epic.updated_at
       })
 
       if epic.edited?
@@ -71,27 +64,43 @@ module Epics
       update_params
     end
 
-    def handle_response!(action, service_response, epic = nil)
-      return true if service_response[:status] == :success
+    def sync_color!(work_item)
+      return unless params[:color]
 
-      error_message = Array.wrap(service_response[:message])
-      Gitlab::EpicWorkItemSync::Logger.error(
-        message: "Not able to #{action} epic work item", error_message: error_message, group_id: group.id,
-        epic_id: epic&.id
-      )
+      color = work_item.color || work_item.build_color
 
-      raise SyncAsWorkItemError, error_message.join(", ")
+      color.color = params[:color]
+      color.save!
     end
 
-    def extract_widget_params
-      work_item_type = WorkItems::Type.default_by_type(:epic)
+    def sync_dates!(epic, work_item)
+      return unless params.values_at(:start_date, :due_date, :start_date_is_fixed, :due_date_is_fixed).any?(&:present?)
 
-      work_item_type.widgets(group).each_with_object({}) do |widget, widget_params|
-        attributes = params.slice(*widget.sync_params)
-        next unless attributes.present?
+      dates_source = work_item.dates_source || work_item.build_dates_source
 
-        widget_params[widget.api_symbol] = attributes.merge({ synced_work_item: true })
-      end
+      dates_source.start_date = epic.start_date
+      dates_source.start_date_fixed = epic.start_date_fixed
+      dates_source.start_date_is_fixed = epic.start_date_is_fixed || false
+      dates_source.start_date_sourcing_milestone_id = epic.start_date_sourcing_milestone_id
+      dates_source.start_date_sourcing_work_item_id = epic.start_date_sourcing_epic&.issue_id
+
+      dates_source.due_date = epic.due_date
+      dates_source.due_date_fixed = epic.due_date_fixed
+      dates_source.due_date_is_fixed = epic.due_date_is_fixed || false
+      dates_source.due_date_sourcing_milestone_id = epic.due_date_sourcing_milestone_id
+      dates_source.due_date_sourcing_work_item_id = epic.due_date_sourcing_epic&.issue_id
+
+      dates_source.save!
+    end
+
+    def handle_error!(action, error, epic = nil)
+      Gitlab::EpicWorkItemSync::Logger.error(
+        message: "Not able to #{action} epic work item",
+        error_message: error.message,
+        group_id: group.id,
+        epic_id: epic&.id)
+
+      Gitlab::ErrorTracking.track_and_raise_exception(error, epic_id: epic&.id)
     end
   end
 end

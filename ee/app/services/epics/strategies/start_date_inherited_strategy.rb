@@ -5,7 +5,17 @@ module Epics
     class StartDateInheritedStrategy < BaseDatesStrategy
       # rubocop: disable CodeReuse/ActiveRecord
       def execute
-        @epics.start_date_inherited.update_all(
+        ApplicationRecord.transaction do
+          epics_with_inherited_start_date = @epics.start_date_inherited
+          update_epics(epics_with_inherited_start_date)
+          update_epic_work_items(epics_with_inherited_start_date)
+        end
+      end
+
+      private
+
+      def update_epics(epics)
+        epics.update_all(
           [
             %{ (start_date, start_date_sourcing_milestone_id, start_date_sourcing_epic_id) = (?) },
             ::Epic.from_union([min_milestone_start_date, min_child_epics_start_date], alias_as: 'min_date')
@@ -15,8 +25,6 @@ module Epics
           ]
         )
       end
-
-      private
 
       def min_milestone_start_date
         source_milestones_query
