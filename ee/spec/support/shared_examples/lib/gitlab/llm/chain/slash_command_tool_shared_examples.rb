@@ -96,10 +96,10 @@ RSpec.shared_examples 'slash command tool' do
       first_response_double = double
       second_response_double = double
 
-      allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with("Hello")
+      allow(Gitlab::Llm::Chain::StreamedResponseModifier).to receive(:new).with("Hello", { chunk_id: 1 })
         .and_return(first_response_double)
 
-      allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with(" World")
+      allow(Gitlab::Llm::Chain::StreamedResponseModifier).to receive(:new).with(" World", { chunk_id: 2 })
         .and_return(second_response_double)
 
       expect(stream_response_handler).to receive(:execute).with(

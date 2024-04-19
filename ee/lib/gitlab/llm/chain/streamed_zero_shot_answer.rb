@@ -35,12 +35,7 @@ module Gitlab
         def final_answer_start
           /Final Answer:(?<final_answer>.+)/m =~ full_message
 
-          clean_prefix(final_answer)
-        end
-
-        # The streamed chunks sometimes contain an additional `: ` or 'Answer: ', so this strips them out.
-        def clean_prefix(text)
-          text&.lstrip&.delete_prefix(': ')&.delete_prefix('Answer: ')
+          final_answer
         end
       end
     end

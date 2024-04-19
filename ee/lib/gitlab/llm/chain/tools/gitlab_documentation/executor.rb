@@ -42,7 +42,7 @@ module Gitlab
 
                 if chunk
                   stream_response_handler.execute(
-                    response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
+                    response: Gitlab::Llm::Chain::StreamedResponseModifier.new(content, chunk_id: chunk[:id]),
                     options: { chunk_id: chunk[:id] }
                   )
                 end

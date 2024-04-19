@@ -46,41 +46,5 @@ RSpec.describe Gitlab::Llm::Chain::StreamedZeroShotAnswer, feature_category: :du
         expect(streamed_answer.next_chunk("World")).to eq({ id: 3, content: "World" })
       end
     end
-
-    context 'when cleaning prefixes', :aggregate_failures do
-      it 'cleans a leading colon and space' do
-        expect(streamed_answer.next_chunk("Final Answer")).to be_nil
-        expect(streamed_answer.next_chunk(": ")).to be_nil
-        expect(streamed_answer.next_chunk(": Hello")).to eq({ id: 1, content: "Hello" })
-        expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
-      end
-
-      it 'cleans a leading colon and space and keeps the space of the answer' do
-        expect(streamed_answer.next_chunk("Final Answer")).to be_nil
-        expect(streamed_answer.next_chunk(": ")).to be_nil
-        expect(streamed_answer.next_chunk(": Hello ")).to eq({ id: 1, content: "Hello " })
-        expect(streamed_answer.next_chunk("World")).to eq({ id: 2, content: "World" })
-      end
-
-      it 'cleans text containing `Answer: `' do
-        expect(streamed_answer.next_chunk("Final Answer")).to be_nil
-        expect(streamed_answer.next_chunk(": ")).to be_nil
-        expect(streamed_answer.next_chunk("Answer: Hello")).to eq({ id: 1, content: "Hello" })
-        expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
-      end
-
-      it 'cleans text containing ` Answer: `' do
-        expect(streamed_answer.next_chunk("Final Answer")).to be_nil
-        expect(streamed_answer.next_chunk(": ")).to be_nil
-        expect(streamed_answer.next_chunk(" Answer: Hello")).to eq({ id: 1, content: "Hello" })
-        expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
-      end
-
-      it 'cleans text containing `Answer: ` and keeps the space' do
-        expect(streamed_answer.next_chunk("Final Answer")).to be_nil
-        expect(streamed_answer.next_chunk(": ")).to be_nil
-        expect(streamed_answer.next_chunk("Answer: Hello ")).to eq({ id: 1, content: "Hello " })
-      end
-    end
   end
 end
