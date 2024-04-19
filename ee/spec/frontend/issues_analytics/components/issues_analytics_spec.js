@@ -8,6 +8,7 @@ import TotalIssuesAnalyticsChart from 'ee/issues_analytics/components/total_issu
 import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
 import { createStore } from 'ee/issues_analytics/stores';
 import { useFakeDate } from 'helpers/fake_date';
+import { createAlert, VARIANT_WARNING } from '~/alert';
 
 const mockFilterManagerSetup = jest.fn();
 jest.mock('ee/issues_analytics/filtered_search_issues_analytics', () =>
@@ -15,6 +16,7 @@ jest.mock('ee/issues_analytics/filtered_search_issues_analytics', () =>
     setup: mockFilterManagerSetup,
   })),
 );
+jest.mock('~/alert');
 
 Vue.use(Vuex);
 
@@ -68,11 +70,15 @@ describe('IssuesAnalytics', () => {
   };
 
   describe('default', () => {
-    describe('table', () => {
-      beforeEach(() => {
-        createComponent();
-      });
+    beforeEach(() => {
+      createComponent();
+    });
 
+    it('does not render raw text search alert', () => {
+      expect(createAlert).not.toHaveBeenCalled();
+    });
+
+    describe('table', () => {
       it('renders the Issues Analytics table', () => {
         expect(findIssuesAnalyticsTable().props()).toEqual({
           endDate: TEST_END_DATE,
@@ -88,6 +94,20 @@ describe('IssuesAnalytics', () => {
         expect(findIssuesAnalyticsTable().props('filters')).toEqual({
           labelName: [],
           ...mockFilters,
+        });
+      });
+    });
+
+    describe('when raw text search is attempted', () => {
+      beforeEach(async () => {
+        await store.dispatch('issueAnalytics/setFilters', { search: 'hello' });
+      });
+
+      it('should render an alert', () => {
+        expect(createAlert).toHaveBeenCalledTimes(1);
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Raw text search is not supported. Please use the available filters.',
+          variant: VARIANT_WARNING,
         });
       });
     });

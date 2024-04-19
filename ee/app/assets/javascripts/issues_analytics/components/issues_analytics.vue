@@ -6,7 +6,8 @@ import {
   getCurrentUtcDate,
   dateAtFirstDayOfMonth,
 } from '~/lib/utils/datetime_utility';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { s__ } from '~/locale';
+import { createAlert, VARIANT_WARNING } from '~/alert';
 import FilteredSearchIssueAnalytics from '../filtered_search_issues_analytics';
 import { RENAMED_FILTER_KEYS_CHART, DEFAULT_MONTHS_BACK } from '../constants';
 import { transformFilters } from '../utils';
@@ -20,7 +21,6 @@ export default {
     IssuesAnalyticsChart,
     TotalIssuesAnalyticsChart,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: {
     hasIssuesCompletedFeature: {
       default: false,
@@ -57,6 +57,19 @@ export default {
       return transformFilters(this.appliedFilters);
     },
   },
+  watch: {
+    appliedFilters: {
+      handler(filters) {
+        if (filters?.search) {
+          createAlert({
+            message: this.$options.i18n.rawTextSearchWarning,
+            variant: VARIANT_WARNING,
+          });
+        }
+      },
+      immediate: true,
+    },
+  },
   created() {
     const { hasIssuesCompletedFeature } = this;
 
@@ -70,6 +83,11 @@ export default {
     hideFilteredSearchBar() {
       this.filterBlockEl.classList.add('hide');
     },
+  },
+  i18n: {
+    rawTextSearchWarning: s__(
+      'IssuesAnalytics|Raw text search is not supported. Please use the available filters.',
+    ),
   },
 };
 </script>

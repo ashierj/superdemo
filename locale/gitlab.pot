@@ -28362,6 +28362,9 @@ msgstr ""
 msgid "IssuesAnalytics|Overview"
 msgstr ""
 
+msgid "IssuesAnalytics|Raw text search is not supported. Please use the available filters."
+msgstr ""
+
 msgid "IssuesAnalytics|Sorry, your filter produced no results"
 msgstr ""
 
