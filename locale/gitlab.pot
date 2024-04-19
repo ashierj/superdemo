@@ -30659,6 +30659,9 @@ msgstr ""
 msgid "Loading…"
 msgstr ""
 
+msgid "Local"
+msgstr ""
+
 msgid "Localization"
 msgstr ""
 
@@ -42452,6 +42455,9 @@ msgid "Remember me"
 msgstr ""
 
 msgid "Remind later"
+msgstr ""
+
+msgid "Remote"
 msgstr ""
 
 msgid "Remote object has no absolute path."
