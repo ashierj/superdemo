@@ -34,7 +34,7 @@ module QA
 
       it 'locks a directory and tries to push as a second user',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347768' do
-        push branch: project.default_branch, file: 'directory/file', as_user: user_one
+        push as_user: user_one, max_attempts: 3, branch: project.default_branch, file: 'directory/file'
 
         Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_directory
@@ -68,7 +68,7 @@ module QA
 
       it 'creates a merge request and fails to merge', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347770' do
-        push branch: 'test', as_user: user_one
+        push as_user: user_one, max_attempts: 3, branch: 'test'
 
         merge_request = create(:merge_request,
           :no_preparation,
@@ -126,7 +126,7 @@ module QA
         create(:project_member, :developer, user: user, project: project)
       end
 
-      def push(as_user:, branch: project.default_branch, file: 'file')
+      def push(as_user:, max_attempts:, branch: project.default_branch, file: 'file')
         Resource::Repository::ProjectPush.fabricate! do |push|
           push.project = project
           push.new_branch = false unless branch != project.default_branch
@@ -134,16 +134,21 @@ module QA
           push.file_content = SecureRandom.hex(100)
           push.user = as_user
           push.branch_name = branch
+          push.max_attempts = max_attempts if max_attempts
         end
       end
 
       def expect_error_on_push(as_user:, for_file: 'file')
-        expect { push branch: project.default_branch, file: for_file, as_user: as_user }.to raise_error(
+        expect do
+          push as_user: as_user, max_attempts: 1, branch: project.default_branch, file: for_file
+        end.to raise_error(
           QA::Support::Run::CommandError)
       end
 
       def expect_no_error_on_push(as_user:, for_file: 'file')
-        expect { push branch: project.default_branch, file: for_file, as_user: as_user }.not_to raise_error
+        expect do
+          push as_user: as_user, max_attempts: 3, branch: project.default_branch, file: for_file
+        end.not_to raise_error
       end
 
       def admin_username
