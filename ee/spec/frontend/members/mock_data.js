@@ -1,5 +1,11 @@
-import { member } from 'jest/members/mock_data';
+import { member, dataAttribute as CEDataAttribute } from 'jest/members/mock_data';
+import { MEMBER_TYPES } from 'ee/members/constants';
+import {
+  data as promotionRequestsData,
+  pagination as promotionRequestsPagination,
+} from './promotion_requests/mock_data';
 
+// eslint-disable-next-line import/export
 export * from 'jest/members/mock_data';
 
 export const bannedMember = {
@@ -31,3 +37,12 @@ export const upgradedMember = {
   customPermissions,
   customRoles,
 };
+
+// eslint-disable-next-line import/export
+export const dataAttribute = JSON.stringify({
+  ...JSON.parse(CEDataAttribute),
+  [MEMBER_TYPES.promotionRequest]: {
+    data: promotionRequestsData,
+    pagination: promotionRequestsPagination,
+  },
+});
