@@ -9143,7 +9143,6 @@ Input type: `VulnerabilityCreateInput`
 | <a id="mutationvulnerabilitycreatedetectedat"></a>`detectedAt` | [`Time`](#time) | Timestamp of when the vulnerability was first detected (defaults to creation time). |
 | <a id="mutationvulnerabilitycreatedismissedat"></a>`dismissedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to dismissed (defaults to creation time if status is `dismissed`). |
 | <a id="mutationvulnerabilitycreateidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifierInput!]!`](#vulnerabilityidentifierinput) | Array of CVE or CWE identifiers for the vulnerability. |
-| <a id="mutationvulnerabilitycreatemessage"></a>`message` **{warning-solid}** | [`String`](#string) | **Deprecated:** message field has been removed from security reports schema. Deprecated in GitLab 16.1. |
 | <a id="mutationvulnerabilitycreatename"></a>`name` | [`String!`](#string) | Name of the vulnerability. |
 | <a id="mutationvulnerabilitycreateproject"></a>`project` | [`ProjectID!`](#projectid) | ID of the project to attach the vulnerability to. |
 | <a id="mutationvulnerabilitycreateresolvedat"></a>`resolvedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to resolved (defaults to creation time if status is `resolved`). |
@@ -30360,7 +30359,6 @@ Represents a vulnerability.
 | <a id="vulnerabilitylinks"></a>`links` | [`[VulnerabilityLink!]!`](#vulnerabilitylink) | List of links associated with the vulnerability. |
 | <a id="vulnerabilitylocation"></a>`location` | [`VulnerabilityLocation`](#vulnerabilitylocation) | Location metadata for the vulnerability. Its fields depend on the type of security scan that found the vulnerability. |
 | <a id="vulnerabilitymergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request that fixes the vulnerability. |
-| <a id="vulnerabilitymessage"></a>`message` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.1. message field has been removed from security reports schema. |
 | <a id="vulnerabilitypresentondefaultbranch"></a>`presentOnDefaultBranch` | [`Boolean!`](#boolean) | Indicates whether the vulnerability is present on the default branch or not. |
 | <a id="vulnerabilityprimaryidentifier"></a>`primaryIdentifier` | [`VulnerabilityIdentifier`](#vulnerabilityidentifier) | Primary identifier of the vulnerability. |
 | <a id="vulnerabilityproject"></a>`project` | [`Project`](#project) | Project on which the vulnerability was found. |

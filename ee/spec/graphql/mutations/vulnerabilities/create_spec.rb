@@ -48,8 +48,7 @@ RSpec.describe Mutations::Vulnerabilities::Create, feature_category: :vulnerabil
         state: "detected",
         severity: "unknown",
         confidence: "unknown",
-        solution: "rm -rf --no-preserve-root /",
-        message: "You can't fix this"
+        solution: "rm -rf --no-preserve-root /"
       }
     end
 
@@ -106,8 +105,7 @@ RSpec.describe Mutations::Vulnerabilities::Create, feature_category: :vulnerabil
               confirmed_at: confirmed_at,
               resolved_at: resolved_at,
               dismissed_at: dismissed_at,
-              solution: "rm -rf --no-preserve-root /",
-              message: "You can't fix this"
+              solution: "rm -rf --no-preserve-root /"
             }.compact
           end
 
