@@ -95,7 +95,7 @@ describe('Status Token component', () => {
     });
 
     it('shows the label', () => {
-      expect(findSlotView().text()).toBe('Needs triage +1 more');
+      expect(findSlotView().text()).toBe('Needs triage, Confirmed');
     });
 
     it('shows the dropdown with correct options', () => {
@@ -220,14 +220,14 @@ describe('Status Token component', () => {
       expect(findSlotView().text()).toBe('Dismissed (2 reasons)');
     });
 
-    it('shows "Confirmed +1 more" when confirmed and a dismissal reason are selected', async () => {
+    it('shows "Confirmed, False positive" when confirmed and a dismissal reason are selected', async () => {
       await clickDropdownItem('CONFIRMED', 'FALSE_POSITIVE');
-      expect(findSlotView().text()).toBe('Confirmed +1 more');
+      expect(findSlotView().text()).toBe('Confirmed, False positive');
     });
 
-    it('shows "Confirmed +1 more" when confirmed and all dismissal reasons are selected', async () => {
-      await clickDropdownItem('CONFIRMED', 'DISMISSED');
-      expect(findSlotView().text()).toBe('Confirmed +1 more');
+    it('shows "Needs triage, Confirmed +1 more" when more than 2 options are selected', async () => {
+      await clickDropdownItem('CONFIRMED', 'DETECTED', 'DISMISSED');
+      expect(findSlotView().text()).toBe('Needs triage, Confirmed +1 more');
     });
   });
 

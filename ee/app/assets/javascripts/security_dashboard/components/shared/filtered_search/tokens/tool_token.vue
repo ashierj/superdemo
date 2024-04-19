@@ -113,6 +113,7 @@ export default {
         options: this.flatItems,
         selected: this.selectedTools,
         placeholder: this.$options.i18n.allItemsText,
+        maxOptionsShown: 2,
       });
     },
   },

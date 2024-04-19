@@ -172,9 +172,14 @@ describe('Severity Token component', () => {
       expect(findSlotView().text()).toBe('All severities');
     });
 
-    it('shows "Critical +1 more" when critical and high severities are selected', async () => {
+    it('shows "Critical, High" when critical and high severities are selected', async () => {
       await clickDropdownItem('CRITICAL', 'HIGH');
-      expect(findSlotView().text()).toBe('Critical +1 more');
+      expect(findSlotView().text()).toBe('Critical, High');
+    });
+
+    it('shows "Critical, High +1 more" when more than 2 options are selected', async () => {
+      await clickDropdownItem('CRITICAL', 'HIGH', 'LOW');
+      expect(findSlotView().text()).toBe('Critical, High +1 more');
     });
 
     it('shows "Low" when only low severity is selected', async () => {

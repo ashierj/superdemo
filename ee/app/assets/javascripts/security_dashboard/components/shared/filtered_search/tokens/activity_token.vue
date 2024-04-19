@@ -101,6 +101,7 @@ export default {
         options: Object.values(ITEMS),
         selected: this.selectedActivities,
         placeholder: this.$options.i18n.allItemsText,
+        maxOptionsShown: 2,
       });
     },
   },
