@@ -19,6 +19,10 @@ module QA
             def go_to_license_compliance
               open_secure_submenu('License compliance')
             end
+
+            def go_to_on_demand_scans
+              open_secure_submenu('On-demand scans')
+            end
           end
         end
       end
