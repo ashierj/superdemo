@@ -161,6 +161,17 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
           expect(user.username).to eq('ricky.the.raccoon')
         end
 
+        context 'and there is an existing user with the sanitized username' do
+          before do
+            create(:user, :with_namespace, username: 'ricky.the.raccoon')
+          end
+
+          it 'creates new user with non-conflicting username' do
+            expect { result }.to change { User.count }.by(1)
+            expect(user.username).to eq('ricky.the.raccoon1')
+          end
+        end
+
         context 'and extra_slug_sanitization FF is disabled' do
           before do
             stub_feature_flags(extra_slug_path_sanitization: false)
