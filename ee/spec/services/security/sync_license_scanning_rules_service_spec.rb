@@ -212,6 +212,32 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           end
         end
 
+        context 'without target branch pipeline' do
+          before do
+            merge_request.latest_comparison_pipeline_with_sbom_reports.delete
+
+            allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project, nil).and_call_original
+          end
+
+          it_behaves_like 'triggers policy bot comment', :license_scanning, true
+
+          context 'when failing open' do
+            before do
+              license_finding_rule.scan_result_policy_read.update!(fallback_behavior: { fail: 'open' })
+            end
+
+            it_behaves_like 'triggers policy bot comment', :license_scanning, false
+
+            context 'with feature disabled' do
+              before do
+                stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
+              end
+
+              it_behaves_like 'triggers policy bot comment', :license_scanning, true
+            end
+          end
+        end
+
         describe 'violation data' do
           let(:dependencies) { ('A'..'Z').to_a }
 
@@ -314,7 +340,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
             )
 
             allow(service).to receive(:report).and_return(pipeline_report)
-            allow(service).to receive(:target_branch_report).and_return(target_branch_report)
+            allow(service).to receive(:target_branch_report).with(target_pipeline).and_return(target_branch_report)
           end
 
           it 'syncs approvals_required' do
