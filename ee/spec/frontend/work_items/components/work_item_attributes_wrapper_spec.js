@@ -1,14 +1,10 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-import WorkItemProgressInline from 'ee/work_items/components/work_item_progress_inline.vue';
 import WorkItemProgressWithEdit from 'ee/work_items/components/work_item_progress_with_edit.vue';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
-import WorkItemHealthStatusInline from 'ee/work_items/components/work_item_health_status_inline.vue';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
-import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inline.vue';
-import WorkItemIterationInline from 'ee/work_items/components/work_item_iteration_inline.vue';
-import WorkItemColorInline from 'ee/work_items/components/work_item_color_inline.vue';
+import WorkItemIteration from 'ee/work_items/components/work_item_iteration_with_edit.vue';
 import WorkItemColorWithEdit from 'ee/work_items/components/work_item_color_with_edit.vue';
 import WorkItemRolledupDates from 'ee/work_items/components/work_item_rolledup_dates.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -31,15 +27,11 @@ describe('EE WorkItemAttributesWrapper component', () => {
     .fn()
     .mockResolvedValue({ data: { workItemUpdated: null } });
 
-  const findWorkItemIterationInline = () => wrapper.findComponent(WorkItemIterationInline);
+  const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
-  const findWorkItemWeightInline = () => wrapper.findComponent(WorkItemWeightInline);
-  const findWorkItemProgressInline = () => wrapper.findComponent(WorkItemProgressInline);
   const findWorkItemProgressWithEdit = () => wrapper.findComponent(WorkItemProgressWithEdit);
-  const findWorkItemColorInline = () => wrapper.findComponent(WorkItemColorInline);
   const findWorkItemColorWithEdit = () => wrapper.findComponent(WorkItemColorWithEdit);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
-  const findWorkItemHealthStatusInline = () => wrapper.findComponent(WorkItemHealthStatusInline);
   const findWorkItemRolledupDates = () => wrapper.findComponent(WorkItemRolledupDates);
 
   const createComponent = ({
@@ -85,7 +77,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         });
         await waitForPromises();
 
-        expect(findWorkItemIterationInline().exists()).toBe(exists);
+        expect(findWorkItemIteration().exists()).toBe(exists);
       });
     });
 
@@ -93,7 +85,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       createComponent({ featureFlags: { workItemsBeta: false } });
       const updateError = 'Failed to update';
 
-      findWorkItemIterationInline().vm.$emit('error', updateError);
+      findWorkItemIteration().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);
@@ -116,22 +108,12 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemWeight when workItemsBeta enabled', async () => {
+    it('renders WorkItemWeight', async () => {
       createComponent();
 
       await waitForPromises();
 
       expect(findWorkItemWeight().exists()).toBe(true);
-      expect(findWorkItemWeightInline().exists()).toBe(false);
-    });
-
-    it('renders WorkItemWeightInline when workItemsBeta disabled', async () => {
-      createComponent({ featureFlags: { workItemsBeta: false } });
-
-      await waitForPromises();
-
-      expect(findWorkItemWeight().exists()).toBe(false);
-      expect(findWorkItemWeightInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -164,22 +146,12 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemHealthStatus when workItemsBeta enabled', async () => {
+    it('renders WorkItemHealthStatus', async () => {
       createComponent();
 
       await waitForPromises();
 
       expect(findWorkItemHealthStatus().exists()).toBe(true);
-      expect(findWorkItemHealthStatusInline().exists()).toBe(false);
-    });
-
-    it('renders WorkItemHealthStatusInline when workItemsBeta disabled', async () => {
-      createComponent({ featureFlags: { workItemsBeta: false } });
-
-      await waitForPromises();
-
-      expect(findWorkItemHealthStatus().exists()).toBe(false);
-      expect(findWorkItemHealthStatusInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -208,22 +180,12 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemProgressWithEdit when workItemsBeta enabled', async () => {
+    it('renders WorkItemProgressWithEdit', async () => {
       createComponent();
 
       await waitForPromises();
 
       expect(findWorkItemProgressWithEdit().exists()).toBe(true);
-      expect(findWorkItemProgressInline().exists()).toBe(false);
-    });
-
-    it('renders WorkItemProgressInline when workItemsBeta disabled', async () => {
-      createComponent({ featureFlags: { workItemsBeta: false } });
-
-      await waitForPromises();
-
-      expect(findWorkItemProgressWithEdit().exists()).toBe(false);
-      expect(findWorkItemProgressInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -253,22 +215,12 @@ describe('EE WorkItemAttributesWrapper component', () => {
       });
     });
 
-    it('renders WorkItemColorWithEdit when workItemsBeta enabled', async () => {
+    it('renders WorkItemColorWithEdit', async () => {
       createComponent();
 
       await waitForPromises();
 
       expect(findWorkItemColorWithEdit().exists()).toBe(true);
-      expect(findWorkItemColorInline().exists()).toBe(false);
-    });
-
-    it('renders WorkItemColorInline when workItemsBeta disabled', async () => {
-      createComponent({ featureFlags: { workItemsBeta: false } });
-
-      await waitForPromises();
-
-      expect(findWorkItemColorWithEdit().exists()).toBe(false);
-      expect(findWorkItemColorInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
