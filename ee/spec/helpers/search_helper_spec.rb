@@ -131,13 +131,15 @@ RSpec.describe SearchHelper, feature_category: :global_search do
 
   describe 'search_autocomplete_opts' do
     context "with a user" do
-      let(:user) { create(:user) }
+      let(:search_term) { 'the search term' }
+
+      let_it_be(:user) { create(:user) }
 
       before do
         allow(self).to receive(:current_user).and_return(user)
       end
 
-      it 'includes the users recently viewed epics' do
+      it 'includes the users recently viewed epics', :aggregate_failures do
         recent_epics = instance_double(::Gitlab::Search::RecentEpics)
         expect(::Gitlab::Search::RecentEpics).to receive(:new).with(user: user).and_return(recent_epics)
         group1 = create(:group, :public, :with_avatar)
@@ -145,9 +147,9 @@ RSpec.describe SearchHelper, feature_category: :global_search do
         epic1 = create(:epic, title: 'epic 1', group: group1)
         epic2 = create(:epic, title: 'epic 2', group: group2)
 
-        expect(recent_epics).to receive(:search).with('the search term').and_return(Epic.id_in_ordered([epic1.id, epic2.id]))
+        expect(recent_epics).to receive(:search).with(search_term).and_return(Epic.id_in_ordered([epic1.id, epic2.id]))
 
-        results = search_autocomplete_opts("the search term")
+        results = search_autocomplete_opts(search_term)
 
         expect(results.count).to eq(2)
 
@@ -166,6 +168,28 @@ RSpec.describe SearchHelper, feature_category: :global_search do
           url: Gitlab::Routing.url_helpers.group_epic_path(epic2.group, epic2),
           avatar_url: '' # This group didn't have an avatar so set this to ''
         })
+      end
+
+      it 'does not have an N+1 for recently viewed epics', :aggregate_failures do
+        recent_epics = instance_double(::Gitlab::Search::RecentEpics)
+        allow(::Gitlab::Search::RecentEpics).to receive(:new).with(user: user).and_return(recent_epics)
+
+        group1 = create(:group, :public, :with_avatar)
+        group2 = create(:group, :public)
+        epic1 = create(:epic, title: 'epic 1', group: group1)
+        epic2 = create(:epic, title: 'epic 2', group: group2)
+        epic_ids = [epic1.id, epic2.id]
+        expect(recent_epics).to receive(:search).with(search_term).and_return(Epic.id_in_ordered(epic_ids))
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: true) do
+          search_autocomplete_opts(search_term)
+        end
+
+        epic_ids += create_list(:epic, 3).map(&:id)
+        expect(recent_epics).to receive(:search).with(search_term).and_return(Epic.id_in_ordered(epic_ids))
+
+        # avatar calls group owner but only calls it once, so use exceed_all_query_limit
+        expect { search_autocomplete_opts(search_term) }.not_to exceed_all_query_limit(control)
       end
 
       context 'with the filter parameter is present' do

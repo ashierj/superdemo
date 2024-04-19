@@ -112,6 +112,7 @@ module EE
         includes(:author, :labels, :group, :start_date_sourcing_epic, :due_date_sourcing_epic,
           :start_date_sourcing_milestone, :due_date_sourcing_milestone)
       end
+      scope :preload_group_and_routables, -> { preload(group: [:route, :ip_restrictions, :saml_provider]) }
 
       scope :with_work_item, -> { preload(:work_item) }
       scope :has_work_item, -> { where.not(issue_id: nil) }

@@ -146,6 +146,21 @@ RSpec.describe Epic, feature_category: :portfolio_management do
         expect(described_class.has_work_item).to match_array(described_class.all.to_a - [epic_without_work_item])
       end
     end
+
+    describe '.preload_group_and_routables' do
+      before_all do
+        create(:epic, group: group)
+      end
+
+      subject(:preload_group_and_routables) do
+        described_class.in_selected_groups(group).preload_group_and_routables
+      end
+
+      it { expect(preload_group_and_routables.first.association(:group)).to be_loaded }
+      it { expect(preload_group_and_routables.first.group.association(:route)).to be_loaded }
+      it { expect(preload_group_and_routables.first.group.association(:saml_provider)).to be_loaded }
+      it { expect(preload_group_and_routables.first.group.association(:ip_restrictions)).to be_loaded }
+    end
   end
 
   describe 'validations' do

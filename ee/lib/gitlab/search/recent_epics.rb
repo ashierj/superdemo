@@ -6,7 +6,6 @@ module Gitlab
       extend ::Gitlab::Utils::Override
 
       override :search
-      # rubocop: disable CodeReuse/ActiveRecord
       def search(term)
         epics = Epic.full_search(term, matched_columns: 'title')
           .id_in_ordered(latest_ids).limit(::Gitlab::Search::RecentItems::SEARCH_LIMIT)
@@ -19,9 +18,8 @@ module Gitlab
 
         return epics if disallowed.empty?
 
-        epics.where.not(id: disallowed.map(&:id))
+        epics.id_not_in(id: disallowed.map(&:id))
       end
-      # rubocop: enable CodeReuse/ActiveRecord
 
       private
 
