@@ -13,8 +13,7 @@ module EE
         prepended do
           field :upgrade_status, ::Types::Ci::RunnerUpgradeStatusEnum,
             null: true,
-            description: 'Availability of upgrades for the runner manager.',
-            alpha: { milestone: '16.1' }
+            description: 'Availability of upgrades for the runner manager.'
 
           def upgrade_status
             return unless upgrade_status_available?
