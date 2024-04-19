@@ -29,129 +29,71 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     let(:form_selector) { '[data-testid="work-item-progress"]' }
     let(:input_selector) { '[data-testid="work-item-progress-input"]' }
 
-    context 'when the work_items_beta is enabled' do
-      it 'successfully sets the progress' do
-        within(progress_wrapper) do
-          click_button 'Edit'
-        end
-
-        find(input_selector).fill_in(with: '30')
-        send_keys(:tab) # Simulate blur
-
-        wait_for_requests
-
-        expect(find(progress_wrapper)).to have_content "30%"
-        expect(work_item.reload.progress.progress).to eq 30
+    it 'successfully sets the progress' do
+      within(progress_wrapper) do
+        click_button 'Edit'
       end
 
-      it 'prevents typing values outside min and max range', :aggregate_failures do
-        page_body = page.find('body')
+      find(input_selector).fill_in(with: '30')
+      send_keys(:tab) # Simulate blur
 
-        within(progress_wrapper) do
-          click_button 'Edit'
-        end
+      wait_for_requests
 
-        page.within(form_selector) do
-          progress_input = find(input_selector)
-          progress_input.native.send_keys('101')
-        end
-
-        page_body.click
-        expect(find(progress_wrapper)).to have_content "0%"
-      end
-
-      it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
-        page_body = page.find('body')
-
-        within(progress_wrapper) do
-          click_button 'Edit'
-        end
-
-        page.within(form_selector) do
-          find(input_selector).native.send_keys('+')
-        end
-
-        page_body.click
-        expect(find(progress_wrapper)).to have_content "0%"
-
-        within(progress_wrapper) do
-          click_button 'Edit'
-        end
-
-        page.within(form_selector) do
-          find(input_selector).native.send_keys('-')
-        end
-
-        page_body.click
-        expect(find(progress_wrapper)).to have_content "0%"
-
-        within(progress_wrapper) do
-          click_button 'Edit'
-        end
-
-        page.within(form_selector) do
-          find(input_selector).native.send_keys('e')
-        end
-
-        page_body.click
-        expect(find(progress_wrapper)).to have_content "0%"
-      end
+      expect(find(progress_wrapper)).to have_content "30%"
+      expect(work_item.reload.progress.progress).to eq 30
     end
 
-    context 'when the work_items_beta is disabled' do
-      before do
-        stub_feature_flags(work_items_beta: false)
+    it 'prevents typing values outside min and max range', :aggregate_failures do
+      page_body = page.find('body')
 
-        page.refresh
-        wait_for_all_requests
+      within(progress_wrapper) do
+        click_button 'Edit'
       end
 
-      it 'successfully sets the progress' do
-        find(input_selector).fill_in(with: '30')
-        send_keys(:tab) # Simulate blur
-
-        wait_for_requests
-
-        expect(find(form_selector)).to have_content "30%"
-        expect(work_item.reload.progress.progress).to eq 30
+      page.within(form_selector) do
+        progress_input = find(input_selector)
+        progress_input.native.send_keys('101')
       end
 
-      it 'prevents typing values outside min and max range', :aggregate_failures do
-        page_body = page.find('body')
-        page.within(form_selector) do
-          progress_input = find(input_selector)
-          progress_input.native.send_keys('101')
-          page_body.click
+      page_body.click
+      expect(find(progress_wrapper)).to have_content "0%"
+    end
 
-          expect(progress_input.value).to eq('0')
+    it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
+      page_body = page.find('body')
 
-          # Clear input
-          progress_input.set('')
-          progress_input.native.send_keys('-')
-          page_body.click
-
-          expect(progress_input.value).to eq('')
-        end
+      within(progress_wrapper) do
+        click_button 'Edit'
       end
 
-      it 'prevent typing special characters `+`, `-`, and `e`', :aggregate_failures do
-        page_body = page.find('body')
-        page.within(form_selector) do
-          progress_input = find(input_selector)
-
-          progress_input.native.send_keys('+')
-          page_body.click
-          expect(progress_input.value).to eq('0')
-
-          progress_input.native.send_keys('-')
-          page_body.click
-          expect(progress_input.value).to eq('0')
-
-          progress_input.native.send_keys('e')
-          page_body.click
-          expect(progress_input.value).to eq('0')
-        end
+      page.within(form_selector) do
+        find(input_selector).native.send_keys('+')
       end
+
+      page_body.click
+      expect(find(progress_wrapper)).to have_content "0%"
+
+      within(progress_wrapper) do
+        click_button 'Edit'
+      end
+
+      page.within(form_selector) do
+        find(input_selector).native.send_keys('-')
+      end
+
+      page_body.click
+      expect(find(progress_wrapper)).to have_content "0%"
+
+      within(progress_wrapper) do
+        click_button 'Edit'
+      end
+
+      page.within(form_selector) do
+        find(input_selector).native.send_keys('e')
+      end
+
+      page_body.click
+      expect(find(progress_wrapper)).to have_content "0%"
     end
   end
 
@@ -200,34 +142,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     before do
       visit work_items_path
-    end
-
-    context 'when work_items_beta is disabled' do
-      before do
-        stub_feature_flags(work_items_beta: false)
-
-        page.refresh
-        wait_for_all_requests
-      end
-
-      it 'assigns to multiple users' do
-        find_by_testid('work-item-assignees-input').fill_in(with: user.username)
-        wait_for_requests
-
-        send_keys(:enter)
-        find("body").click
-        wait_for_requests
-
-        find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
-        wait_for_requests
-
-        send_keys(:enter)
-        find("body").click
-        wait_for_requests
-
-        expect(work_item.reload.assignees).to include(user)
-        expect(work_item.reload.assignees).to include(user2)
-      end
     end
 
     it_behaves_like 'work items toggle status button'
@@ -451,34 +365,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     before do
       visit work_items_path
-    end
-
-    context 'when work_items_beta is disabled' do
-      before do
-        stub_feature_flags(work_items_beta: false)
-
-        page.refresh
-        wait_for_all_requests
-      end
-
-      it 'assigns to multiple users' do
-        find_by_testid('work-item-assignees-input').fill_in(with: user.username)
-        wait_for_requests
-
-        send_keys(:enter)
-        find("body").click
-        wait_for_requests
-
-        find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
-        wait_for_requests
-
-        send_keys(:enter)
-        find("body").click
-        wait_for_requests
-
-        expect(work_item.reload.assignees).to include(user)
-        expect(work_item.reload.assignees).to include(user2)
-      end
     end
 
     it_behaves_like 'work items toggle status button'
