@@ -259,11 +259,6 @@ module EE
       end
     end
 
-    override :usage_quotas_enabled?
-    def usage_quotas_enabled?
-      root?
-    end
-
     override :supports_saved_replies?
     def supports_saved_replies?
       ::Feature.enabled?(:group_saved_replies_flag, self, type: :beta) && licensed_feature_available?(:group_saved_replies)

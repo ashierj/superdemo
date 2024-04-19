@@ -14,7 +14,9 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
   end
 
   before do
-    stub_feature_flags(usage_quotas_for_all_editions: false)
+    stub_signing_key
+    stub_subscription_permissions_data(group.id)
+
     stub_feature_flags(limited_access_modal: false)
     stub_application_setting(check_namespace_plan: true)
 
@@ -105,7 +107,6 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
 
   context 'with limited_access_modal FF enabled' do
     before do
-      stub_signing_key
       stub_feature_flags(limited_access_modal: true)
       stub_subscription_permissions_data(group.id, can_add_seats: false)
       enforce_namespace_storage_limit(group)

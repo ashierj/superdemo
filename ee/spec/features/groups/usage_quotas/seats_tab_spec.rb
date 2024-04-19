@@ -17,7 +17,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
   before do
     stub_signing_key
-    stub_feature_flags(usage_quotas_for_all_editions: false)
     stub_application_setting(check_namespace_plan: true)
     stub_subscription_permissions_data(group.id)
 
