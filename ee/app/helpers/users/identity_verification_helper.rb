@@ -6,11 +6,26 @@ module Users
 
     RESTRICTED_COUNTRY_CODES = %w[CN HK MO].freeze
 
-    def identity_verification_data(user)
+    def signup_identity_verification_data(user)
       {
         data: {
           verification_state_path: verification_state_signup_identity_verification_path,
           offer_phone_number_exemption: user.offer_phone_number_exemption?,
+          phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
+          credit_card: credit_card_verification_data(user),
+          phone_number: phone_number_verification_data(user),
+          email: email_verification_data(user),
+          arkose: arkose_labs_data,
+          successful_verification_path: success_signup_identity_verification_path
+        }.to_json
+      }
+    end
+
+    def identity_verification_data(user)
+      {
+        data: {
+          verification_state_path: verification_state_identity_verification_path,
+          offer_phone_number_exemption: false,
           phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
           credit_card: credit_card_verification_data(user),
           phone_number: phone_number_verification_data(user),

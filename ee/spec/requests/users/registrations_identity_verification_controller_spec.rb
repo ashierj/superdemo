@@ -95,22 +95,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       end
     end
 
-    context 'when session is empty but a confirmed user is logged in' do
-      before do
-        stub_session(session_data: { verification_user_id: nil })
-        sign_in confirmed_user
-
-        do_request
-      end
-
-      it 'sets the user instance variable' do
-        expect(assigns(:user)).to eq(confirmed_user)
-      end
-
-      it 'does not redirect to root path' do
-        expect(response).not_to redirect_to(root_path)
-      end
-    end
+    it_behaves_like 'it requires a signed in user'
   end
 
   shared_examples 'it requires an unconfirmed user' do |expected_response_code|
@@ -298,57 +283,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     end
   end
 
-  shared_examples 'it loads reCAPTCHA' do
-    before do
-      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-      stub_session(session_data: { verification_user_id: unconfirmed_user.id })
-    end
-
-    context 'when reCAPTCHA is disabled' do
-      before do
-        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(false)
-      end
-
-      it 'does not load recaptcha configuration' do
-        expect(Gitlab::Recaptcha).not_to receive(:load_configurations!)
-
-        do_request
-      end
-    end
-
-    context 'when reCAPTCHA is enabled but daily limit has not been exceeded' do
-      before do
-        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(true)
-        allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:peek)
-          .with(:soft_phone_verification_transactions_limit, scope: nil)
-          .and_return(false)
-      end
-
-      it 'does not load reCAPTCHA configuration' do
-        expect(Gitlab::Recaptcha).not_to receive(:load_configurations!)
-
-        do_request
-      end
-    end
-
-    context 'when reCAPTCHA is enabled and daily limit has been exceeded' do
-      before do
-        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(true)
-        allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:peek)
-          .with(:soft_phone_verification_transactions_limit, scope: nil)
-          .and_return(true)
-      end
-
-      it 'loads reCAPTCHA configuration' do
-        expect(Gitlab::Recaptcha).to receive(:load_configurations!)
-
-        do_request
-      end
-    end
-  end
-
   shared_examples 'it verifies reCAPTCHA response' do
     before do
       stub_feature_flags(arkose_labs_phone_verification_challenge: false)
@@ -445,14 +379,16 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   describe 'GET show' do
     subject(:do_request) { get signup_identity_verification_path }
 
+    before do
+      stub_session(session_data: { verification_user_id: unconfirmed_user.id })
+    end
+
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
     it_behaves_like 'it loads reCAPTCHA'
 
     it 'renders template show with layout minimal' do
-      stub_session(session_data: { verification_user_id: unconfirmed_user.id })
-
       do_request
 
       expect(response).to render_template('show', layout: 'minimal')
@@ -539,13 +475,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         })
       end
 
-      describe 'poll interval header' do
-        it 'is added' do
-          do_request
-
-          expect(response.headers.to_h).to include(Gitlab::PollingInterval::HEADER_NAME => '10000')
-        end
-      end
+      it_behaves_like 'it sets poll interval header'
     end
 
     context 'with a verified user' do

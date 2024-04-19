@@ -3,4 +3,4 @@
 = render_if_exists 'devise/shared/delete_unconfirmed_users_flash'
 
 %div{ data: { track_action: 'render', track_label: onboarding_status.tracking_label } }
-  #js-identity-verification{ data: identity_verification_data(@user) }
+  #js-identity-verification{ data: signup_identity_verification_data(@user) }

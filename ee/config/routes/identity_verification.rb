@@ -16,3 +16,9 @@ scope :users, module: :users, as: 'signup' do
     get :restricted
   end
 end
+
+scope '-', module: :users do
+  resource :identity_verification, controller: :identity_verification, only: :show do
+    get :verification_state
+  end
+end
