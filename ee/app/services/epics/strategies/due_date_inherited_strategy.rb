@@ -5,7 +5,17 @@ module Epics
     class DueDateInheritedStrategy < BaseDatesStrategy
       # rubocop: disable CodeReuse/ActiveRecord
       def execute
-        @epics.due_date_inherited.update_all(
+        ApplicationRecord.transaction do
+          epics_with_inherited_due_date = @epics.due_date_inherited
+          update_epics(epics_with_inherited_due_date)
+          update_epic_work_items(epics_with_inherited_due_date)
+        end
+      end
+
+      private
+
+      def update_epics(epics)
+        epics.due_date_inherited.update_all(
           [
             %{ (end_date, due_date_sourcing_milestone_id, due_date_sourcing_epic_id) = (?) },
             ::Epic.from_union([max_milestone_due_date, max_child_epics_end_date], alias_as: 'max_date')
@@ -15,8 +25,6 @@ module Epics
           ]
         )
       end
-
-      private
 
       def max_milestone_due_date
         source_milestones_query

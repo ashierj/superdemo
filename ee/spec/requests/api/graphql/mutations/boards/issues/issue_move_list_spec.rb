@@ -76,6 +76,10 @@ RSpec.describe 'Reposition and move issue within board lists', feature_category:
         end
 
         it 'updates issue position and epic is unassigned' do
+          # TODO: remove threshold after epic-work item sync
+          # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(107)
+
           post_graphql_mutation(mutation(params), current_user: user)
 
           expect(response).to have_gitlab_http_status(:success)

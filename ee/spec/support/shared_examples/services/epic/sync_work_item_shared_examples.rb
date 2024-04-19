@@ -54,12 +54,14 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     end
 
     if epic.start_date_is_fixed || work_item.dates_source
-      expect(work_item.dates_source.start_date_is_fixed).to eq(epic.start_date_is_fixed)
+      # DateSource requires start_date_is_fixed to be set, while epics allow `nil` which is the equivalent to false
+      expect(work_item.dates_source.start_date_is_fixed).to eq(!!epic.start_date_is_fixed)
       expect(work_item.dates_source.start_date_fixed).to eq(epic.start_date_fixed)
     end
 
     if epic.due_date_is_fixed || work_item.dates_source
-      expect(work_item.dates_source.due_date_is_fixed).to eq(epic.due_date_is_fixed)
+      # DateSource requires due_date_is_fixed to be set, while epics allow `nil` which is the equivalent to false
+      expect(work_item.dates_source.due_date_is_fixed).to eq(!!epic.due_date_is_fixed)
       expect(work_item.dates_source.due_date_fixed).to eq(epic.due_date_fixed)
     end
 
