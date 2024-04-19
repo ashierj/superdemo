@@ -9,7 +9,7 @@ RSpec.describe 'Jira issues list', :js, feature_category: :integrations do
   let_it_be(:public_url) { 'http://jira.foo.bar' }
   let_it_be(:api_url) { "#{public_url}/api" }
   let_it_be(:jira_project_key) { 'JIRA-GL1' }
-  let_it_be(:jira_project_keys) { ['GL'] }
+  let_it_be(:jira_project_keys) { ['JIRA-GL1'] }
   let_it_be(:jira_user) { 'JiraGitlabUser' }
   let_it_be(:timestamp) { Time.current }
   let_it_be(:jira) do
