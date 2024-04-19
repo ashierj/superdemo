@@ -58339,6 +58339,9 @@ msgstr ""
 msgid "WorkItem|Mint green"
 msgstr ""
 
+msgid "WorkItem|More actions"
+msgstr ""
+
 msgid "WorkItem|Must be a valid hex code"
 msgstr ""
 
@@ -58580,6 +58583,9 @@ msgid "WorkItem|Undo"
 msgstr ""
 
 msgid "WorkItem|View current version"
+msgstr ""
+
+msgid "WorkItem|View on a roadmap"
 msgstr ""
 
 msgid "WorkItem|Work item"
