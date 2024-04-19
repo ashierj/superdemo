@@ -11,11 +11,10 @@ module Security
 
     validates :typed_content, json_schema: { filename: "approval_policy_rule_content" }
 
-    def self.attributes_from_rule_hash(rule_hash, policy_configuration)
+    def self.attributes_from_rule_hash(rule_hash)
       {
         type: rule_hash[:type],
-        content: rule_hash.without(:type),
-        security_policy_management_project_id: policy_configuration.security_policy_management_project_id
+        content: rule_hash.without(:type)
       }
     end
 
