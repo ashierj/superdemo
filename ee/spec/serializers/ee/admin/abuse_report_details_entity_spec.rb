@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threat do
   include Gitlab::Routing
 
-  let_it_be(:user) { create(:user, :with_namespace) }
-  let_it_be(:report) { create(:abuse_report, user: user) }
+  let_it_be_with_reload(:user) { create(:user, :with_namespace) }
+  let_it_be_with_reload(:report) { create(:abuse_report, user: user) }
 
   let(:entity) do
     described_class.new(report)
@@ -53,7 +53,7 @@ RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threa
     let(:phone_number_hash) { entity_hash[:user][:phone_number] }
 
     context 'when the user has no phone number validation attempts' do
-      it 'does not expose the phone number', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/441135' do
+      it 'does not expose the phone number' do
         expect(phone_number_hash).to be_nil
       end
     end
@@ -92,7 +92,7 @@ RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threa
 
     context 'when the user has a validated phone number' do
       before do
-        build_stubbed(:phone_number_validation, :validated, user: user)
+        create(:phone_number_validation, :validated, user: user)
       end
 
       it { is_expected.to eq true }
@@ -100,7 +100,7 @@ RSpec.describe Admin::AbuseReportDetailsEntity, feature_category: :insider_threa
 
     context 'when the user has an unvalidated phone number' do
       before do
-        build_stubbed(:phone_number_validation, user: user)
+        create(:phone_number_validation, user: user)
       end
 
       it { is_expected.to eq false }
