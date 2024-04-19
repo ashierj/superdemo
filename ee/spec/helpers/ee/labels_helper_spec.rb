@@ -30,7 +30,7 @@ RSpec.describe LabelsHelper do
       end
 
       it 'html-escapes the label color' do
-        expect(wrap_label_html('xss', label: xss_label, small: false)).to include(html_escape(xss_label.color))
+        expect(wrap_label_html('xss', label: xss_label)).to include(html_escape(xss_label.color))
           .and include('color:')
       end
     end
@@ -45,7 +45,7 @@ RSpec.describe LabelsHelper do
       end
 
       it 'does not include the color' do
-        expect(wrap_label_html('xss', label: xss_label, small: false)).not_to include('color:')
+        expect(wrap_label_html('xss', label: xss_label)).not_to include('color:')
       end
     end
   end

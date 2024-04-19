@@ -40,7 +40,6 @@ describe('GroupItemComponent', () => {
       expect(findComplianceFrameworkBadge().props()).toMatchObject({
         framework: mockChildren[1].complianceFramework,
         showEdit: false,
-        size: 'sm',
       });
     });
   });

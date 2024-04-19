@@ -176,7 +176,6 @@ export default {
             :title="label"
             :background-color="getLabelBackgroundColor(label)"
             :scoped="isScopedLabel(label)"
-            size="sm"
             class="gl-mt-3 gl-mr-3"
           />
         </template>

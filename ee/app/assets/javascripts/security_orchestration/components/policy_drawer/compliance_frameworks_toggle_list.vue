@@ -77,7 +77,6 @@ export default {
         :background-color="item.color"
         :description="item.description"
         :title="item.name"
-        size="sm"
       />
     </div>
 

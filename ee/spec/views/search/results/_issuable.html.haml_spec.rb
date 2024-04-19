@@ -42,8 +42,8 @@ RSpec.describe "search/results/_issuable", feature_category: :global_search do
     it "displays the label" do
       render partial: 'search/results/issuable', locals: { issuable: issue }
 
-      expect(rendered).to have_selector('.gl-label.gl-label-scoped.gl-label-sm', text: 'foobar')
-      expect(rendered).to have_selector('.gl-label.gl-label-sm', text: label.title)
+      expect(rendered).to have_selector('.gl-label.gl-label-scoped', text: 'foobar')
+      expect(rendered).to have_selector('.gl-label', text: label.title)
     end
   end
 end

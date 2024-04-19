@@ -97,7 +97,7 @@ export default {
           <gl-link class="gl-mx-3" :href="project.webUrl"> {{ project.name }} </gl-link>
 
           <span v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
-            <framework-badge :framework="framework" size="sm" :show-edit="false" />
+            <framework-badge :framework="framework" :show-edit="false" />
           </span>
         </div>
       </div>

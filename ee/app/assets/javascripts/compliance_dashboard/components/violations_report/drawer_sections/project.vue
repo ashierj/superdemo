@@ -62,7 +62,6 @@ export default {
         v-if="hasComplianceFramework"
         :framework="complianceFramework"
         :show-default="false"
-        size="sm"
         class="gl-ml-3"
       />
     </div>

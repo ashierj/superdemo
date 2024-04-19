@@ -212,7 +212,6 @@ export default {
             class="js-no-trigger gl-mt-2 gl-mr-2"
             :background-color="label.color"
             :title="label.title"
-            size="sm"
             :target="filterByLabelUrl(label)"
             :description="label.description"
             :scoped="scopedLabel(label)"

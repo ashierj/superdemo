@@ -238,7 +238,6 @@ export default {
         <template #list-item="{ item }">
           <div :id="item.value">
             <gl-label
-              size="sm"
               :background-color="item.color"
               :description="$options.i18n.editFramework"
               :title="item.text"
