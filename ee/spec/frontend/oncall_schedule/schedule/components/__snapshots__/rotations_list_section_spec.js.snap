@@ -65,7 +65,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
         style="width: calc(100% - 180px);"
       >
         <span
-          class="current-day-indicator gl-absolute gl-bg-red-500 gl-pointer-events-none gl-translate-x-n50"
+          class="-gl-translate-x-1/2 current-day-indicator gl-absolute gl-bg-red-500 gl-pointer-events-none"
           data-testid="current-day-indicator"
           style="left: 14.285714285714286%;"
         />

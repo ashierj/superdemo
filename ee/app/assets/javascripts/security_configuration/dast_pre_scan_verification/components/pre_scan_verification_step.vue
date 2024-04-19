@@ -59,7 +59,7 @@ export default {
       <div
         v-if="showDivider"
         data-testid="pre-scan-step-divider"
-        class="gl-bg-gray-100 gl-translate-x-n50 gl-h-9"
+        class="gl-bg-gray-100 -gl-translate-x-1/2 gl-h-9"
         style="width: 1px"
       ></div>
     </div>
