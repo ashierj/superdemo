@@ -7,7 +7,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
 
   let_it_be_with_reload(:user) { create(:user) }
 
-  describe '#identity_verification_data' do
+  describe '#signup_identity_verification_data' do
     let(:mock_required_identity_verification_methods) { ['email'] }
     let(:mock_offer_phone_number_exemption) { true }
 
@@ -30,7 +30,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       stub_feature_flags(arkose_labs_phone_verification_challenge: false)
     end
 
-    subject(:data) { helper.identity_verification_data(user) }
+    subject(:data) { helper.signup_identity_verification_data(user) }
 
     context 'when no phone number for user exists' do
       it 'returns the expected data' do
@@ -242,6 +242,17 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
         },
         successful_verification_path: success_signup_identity_verification_path
       }
+    end
+  end
+
+  describe '#identity_verification_data' do
+    subject(:data) { helper.identity_verification_data(user) }
+
+    it 'returns the expected data' do
+      expect(Gitlab::Json.parse(data[:data])).to include(
+        "verification_state_path" => verification_state_identity_verification_path,
+        "offer_phone_number_exemption" => false
+      )
     end
   end
 

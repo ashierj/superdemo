@@ -11,12 +11,13 @@ module IdentityVerifiable
     EMAIL: 'email'
   }.freeze
 
-  IDENTITY_VERIFICATION_EXEMPT_METHODS = %w[email].freeze
+  SIGNUP_IDENTITY_VERIFICATION_EXEMPT_METHODS = %w[email].freeze
   PHONE_NUMBER_EXEMPT_METHODS = %w[email credit_card].freeze
   ASSUMED_HIGH_RISK_USER_METHODS = %w[email credit_card phone].freeze
   HIGH_RISK_USER_METHODS = %w[email phone credit_card].freeze
   MEDIUM_RISK_USER_METHODS = %w[email phone].freeze
   LOW_RISK_USER_METHODS = %w[email].freeze
+  ACTIVE_USER_METHODS = %w[phone].freeze
 
   def identity_verification_enabled?
     return false unless ::Gitlab::Saas.feature_available?(:identity_verification)
@@ -48,7 +49,7 @@ module IdentityVerifiable
     # 4. User signs out and signs in again
     # 5. User is redirected to Identity Verification which requires them to
     # verify their credit card
-    return email_verified? if last_sign_in_at.present?
+    return email_verified? if active_user?
 
     identity_verification_state.values.all?
   end
@@ -110,24 +111,12 @@ module IdentityVerifiable
     identity_verification_exemption_attribute&.destroy
   end
 
-  def exempt_from_identity_verification?
+  def signup_identity_verification_exempt?
     return true if identity_verification_exemption_attribute.present?
     return true if enterprise_user?
     return true if belongs_to_paid_namespace?(exclude_trials: true)
 
     false
-  end
-
-  def verification_method_enabled?(method)
-    case method
-    when 'phone'
-      Feature.enabled?(:identity_verification_phone_number, self) &&
-        !PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
-    when 'credit_card'
-      Feature.enabled?(:identity_verification_credit_card, self)
-    else
-      true
-    end
   end
 
   def offer_phone_number_exemption?
@@ -167,6 +156,22 @@ module IdentityVerifiable
 
   private
 
+  def verification_method_enabled?(method)
+    case method
+    when 'phone'
+      Feature.enabled?(:identity_verification_phone_number, self) &&
+        !PhoneVerification::Users::RateLimitService.daily_transaction_hard_limit_exceeded?
+    when 'credit_card'
+      Feature.enabled?(:identity_verification_credit_card, self)
+    when 'email'
+      !active_user?
+    end
+  end
+
+  def active_user?
+    last_sign_in_at.present?
+  end
+
   def risk_profile
     @risk_profile ||= IdentityVerification::UserRiskProfile.new(self)
   end
@@ -192,7 +197,22 @@ module IdentityVerifiable
   end
 
   def determine_required_methods
-    return IDENTITY_VERIFICATION_EXEMPT_METHODS if exempt_from_identity_verification?
+    if active_user?
+      active_user_required_methods
+    else
+      new_user_required_methods
+    end
+  end
+
+  def active_user_required_methods
+    return PHONE_NUMBER_EXEMPT_METHODS if exempt_from_phone_number_verification?
+    return ASSUMED_HIGH_RISK_USER_METHODS if assumed_high_risk? || affected_by_phone_verifications_limit?
+
+    ACTIVE_USER_METHODS
+  end
+
+  def new_user_required_methods
+    return SIGNUP_IDENTITY_VERIFICATION_EXEMPT_METHODS if signup_identity_verification_exempt?
     return PHONE_NUMBER_EXEMPT_METHODS if exempt_from_phone_number_verification?
     return ASSUMED_HIGH_RISK_USER_METHODS if assumed_high_risk? || affected_by_phone_verifications_limit?
     return HIGH_RISK_USER_METHODS if high_risk?

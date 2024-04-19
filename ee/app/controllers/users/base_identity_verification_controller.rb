@@ -139,13 +139,7 @@ module Users
       redirect_to root_path
     end
 
-    def find_verification_user
-      return unless session[:verification_user_id]
-
-      verification_user_id = session[:verification_user_id]
-      load_balancer_stick_request(::User, :user, verification_user_id)
-      User.find_by_id(verification_user_id)
-    end
+    def find_verification_user; end
 
     def redirect_banned_user
       return unless @user.banned?

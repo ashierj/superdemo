@@ -20,6 +20,10 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     create(:user_custom_attribute, key: UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT, value: true, user: user)
   end
 
+  def assume_high_risk(user)
+    create(:user_custom_attribute, :assumed_high_risk_reason, user: user)
+  end
+
   describe('#identity_verification_enabled?') do
     where(
       identity_verification: [true, false],
@@ -177,6 +181,30 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       end
 
       it { is_expected.to eq(result) }
+    end
+
+    context 'when user is already active i.e. signed in at least once' do
+      let(:user) { create(:user, last_sign_in_at: Time.zone.now) }
+
+      where(:phone_exempt, :assumed_high_risk, :affected_by_phone_verifications_limit, :result) do
+        false | false | false | %w[phone]
+        true  | false | false | %w[credit_card]
+        false | true  | false | %w[credit_card phone]
+        false | false | true  | %w[credit_card]
+      end
+
+      with_them do
+        before do
+          add_phone_exemption if phone_exempt
+          assume_high_risk(user) if assumed_high_risk
+
+          # Disables phone number verification method
+          allow(PhoneVerification::Users::RateLimitService)
+            .to receive(:daily_transaction_hard_limit_exceeded?).and_return(affected_by_phone_verifications_limit)
+        end
+
+        it { is_expected.to eq(result) }
+      end
     end
 
     context 'when flag is enabled for a specific user' do
@@ -338,7 +366,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
       with_them do
         before do
-          create(:user_custom_attribute, :assumed_high_risk_reason, user: user)
+          assume_high_risk(user)
 
           add_user_risk_band(risk_band) if risk_band
           add_phone_exemption if phone_exempt
@@ -529,8 +557,8 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
-  describe '#exempt_from_identity_verification?', :saas do
-    subject(:exempt_from_identity_verification) { user.exempt_from_identity_verification? }
+  describe '#signup_identity_verification_exempt?', :saas do
+    subject(:signup_identity_verification_exempt) { user.signup_identity_verification_exempt? }
 
     let(:user) { create(:user) }
 
