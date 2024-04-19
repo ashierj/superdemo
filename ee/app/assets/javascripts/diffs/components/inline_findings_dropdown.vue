@@ -95,7 +95,7 @@ export default {
         :name="iconName"
         :class="iconClass"
         data-testid="toggle-icon"
-        class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon gl-vertical-align-baseline!"
+        class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon !gl-align-baseline"
         @mouseenter="emitMouseEnter"
         @mouseleave="emitMouseLeave"
       />

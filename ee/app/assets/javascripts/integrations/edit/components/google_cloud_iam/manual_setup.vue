@@ -53,7 +53,7 @@ export default {
           <template #link="{ content }">
             <invite-members-trigger
               :display-text="content"
-              class="gl-vertical-align-baseline"
+              class="gl-align-baseline"
               variant="link"
               trigger-source="google_cloud_artifact_registry_setup"
             />
