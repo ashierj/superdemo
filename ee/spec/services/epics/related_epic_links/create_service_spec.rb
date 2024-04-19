@@ -157,6 +157,24 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
             expect(epic_b.reload.updated_at).to eq(epic_b.work_item.updated_at)
           end
 
+          context 'when synced_epic parameter is true' do
+            let(:params) { { issuable_references: [epic_b.to_reference(full: true)], link_type: IssuableLink::TYPE_BLOCKS, synced_epic: true } }
+
+            it 'does not try to create a synced work item link' do
+              expect(WorkItems::RelatedWorkItemLinks::CreateService).not_to receive(:new)
+
+              execute
+            end
+
+            it 'bypasses permission checks' do
+              new_user = create(:user)
+              service = described_class.new(epic_a, new_user, params)
+
+              expect { service.execute }.to change { Epic::RelatedEpicLink.count }.by(1)
+                .and not_change { WorkItems::RelatedWorkItemLink.count }
+            end
+          end
+
           context 'when link type is blocking' do
             let(:params) { { issuable_references: [epic_b.to_reference(full: true)], link_type: IssuableLink::TYPE_BLOCKS } }
 
