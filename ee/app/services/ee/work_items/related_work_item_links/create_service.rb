@@ -18,7 +18,28 @@ module EE
             return error(_('Blocked work items are not available for the current subscription tier'), 403)
           end
 
-          super
+          response =
+            if sync_related_epic_link?
+              ApplicationRecord.transaction do
+                result = super
+
+                create_synced_related_epic_link! if result[:status] == :success
+
+                result
+              end
+            else
+              super
+            end
+
+          # Needs to be called outside of transaction
+          # because it spawns sidekiq jobs.
+          create_notes_async if new_links.any?
+
+          response
+        rescue ::WorkItems::SyncAsEpic::SyncAsEpicError => error
+          ::Gitlab::ErrorTracking.track_exception(error, work_item_id: issuable.id)
+
+          error(_("Couldn't create link due to an internal error."), 422)
         end
 
         private
@@ -31,6 +52,12 @@ module EE
 
           super
         end
+
+        # This override prevents calling :create_notes_async
+        # inside a transaction.
+        # Can be removed after migration of epics to work_items.
+        override :after_execute
+        def after_execute; end
 
         override :can_admin_work_item_link?
         def can_admin_work_item_link?(work_item)
@@ -50,6 +77,38 @@ module EE
           return super unless params[:link_type] == 'is_blocked_by'
 
           created_links.collect(&:source_id)
+        end
+
+        def create_synced_related_epic_link!
+          sync_params = {
+            link_type: params[:link_type],
+            target_issuable: referenced_synced_epics,
+            synced_epic: true
+          }
+
+          result =
+            ::Epics::RelatedEpicLinks::CreateService.new(issuable.synced_epic, current_user, sync_params).execute
+
+          return result if result[:status] == :success
+
+          ::Gitlab::EpicWorkItemSync::Logger.error(
+            message: "Not able to create related epic links",
+            error_message: result[:message],
+            group_id: issuable.namespace.id,
+            work_item_id: issuable.id
+          )
+          raise ::WorkItems::SyncAsEpic::SyncAsEpicError, result[:message]
+        end
+
+        def referenced_synced_epics
+          referenced_issuables.filter_map(&:synced_epic)
+        end
+
+        def sync_related_epic_link?
+          !synced_work_item &&
+            issuable.epic_work_item? &&
+            issuable.namespace.work_item_sync_to_epic_enabled? &&
+            issuable.synced_epic.present?
         end
       end
     end

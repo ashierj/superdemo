@@ -60,6 +60,10 @@ module EE
       super || epic_work_item?
     end
 
+    def epic_work_item?
+      work_item_type.epic?
+    end
+
     private
 
     override :linked_work_items_query
@@ -82,10 +86,6 @@ module EE
       linked_issues_select
         .joins("INNER JOIN issue_links ON issue_links.#{columns[0]} = issues.id")
         .where(issue_links: { columns[1] => id, link_type: link_class.link_types[link_class::TYPE_BLOCKS] })
-    end
-
-    def epic_work_item?
-      work_item_type.base_type == ::WorkItems::Type.default_by_type(:epic)&.base_type
     end
 
     override :allowed_work_item_type_change

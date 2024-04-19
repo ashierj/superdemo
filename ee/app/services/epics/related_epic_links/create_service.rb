@@ -6,9 +6,7 @@ module Epics
       include UsageDataHelper
 
       def execute
-        unless can?(current_user, :admin_epic_link_relation, issuable)
-          return error(issuables_no_permission_error_message, 403)
-        end
+        return error(issuables_no_permission_error_message, 403) unless can_admin_epic_links?
 
         ApplicationRecord.transaction do
           result = super
@@ -33,6 +31,12 @@ module Epics
       end
 
       private
+
+      def can_admin_epic_links?
+        return true if params[:synced_epic]
+
+        can?(current_user, :admin_epic_link_relation, issuable)
+      end
 
       def after_create_for(link)
         track_related_epics_event_for(link_type: params[:link_type], event_type: :added, namespace: issuable.group)
@@ -76,7 +80,8 @@ module Epics
       end
 
       def sync_to_work_item?
-        issuable.group.epic_sync_to_work_item_enabled? &&
+        !params[:synced_epic] &&
+          issuable.group.epic_sync_to_work_item_enabled? &&
           issuable.work_item && referenced_issuables.any?(&:issue_id)
       end
 
@@ -86,6 +91,10 @@ module Epics
 
       def issuables_no_permission_error_message
         _("Couldn't link epics. You must have at least the Guest role in the epic's group.")
+      end
+
+      def create_notes(issuable_link)
+        super unless params[:synced_epic]
       end
     end
   end
