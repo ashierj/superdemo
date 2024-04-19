@@ -17,10 +17,11 @@ module Security
     def initialize(security_report)
       @security_report = security_report
       @known_uuids = findings.map(&:uuid).to_set
+      @signatures_enabled = project.licensed_feature_available?(:vulnerability_finding_signatures)
     end
 
     def execute
-      return unless type.to_s == 'sast' && has_signatures?
+      return unless override_uuids?
 
       findings.each_slice(BATCH_SIZE) { |batch| OverrideInBatch.execute(project, batch, existing_scanners, known_uuids) }
 
@@ -101,7 +102,7 @@ module Security
 
       def existing_findings_by_location
         @existing_findings_by_location ||= project.vulnerability_findings
-                                                  .sast
+                                                  .by_report_types([report_type])
                                                   .by_location_fingerprints(location_fingerprints)
                                                   .eager_load_comparison_entities
                                                   .group_by(&:location_fingerprint)
@@ -110,11 +111,15 @@ module Security
       def location_fingerprints
         findings.map(&:location).compact.map(&:fingerprint)
       end
+
+      def report_type
+        findings.first&.report_type
+      end
     end
 
     private
 
-    attr_reader :security_report, :known_uuids
+    attr_reader :security_report, :known_uuids, :signatures_enabled
 
     delegate :pipeline, :findings, :type, :has_signatures?, to: :security_report, private: true
     delegate :project, to: :pipeline, private: true
@@ -122,6 +127,10 @@ module Security
     def existing_scanners
       # Reloading the scanners will make sure that the collection proxy will be up-to-date.
       @existing_scanners ||= project.vulnerability_scanners.reset.index_by(&:external_id)
+    end
+
+    def override_uuids?
+      signatures_enabled && has_signatures?
     end
   end
 end
