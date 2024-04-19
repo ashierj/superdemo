@@ -781,6 +781,14 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
         end
       end
 
+      context 'with global feature' do
+        let(:licensed_feature) { GitlabSubscriptions::Features::GLOBAL_FEATURES.first }
+
+        it 'raises ArgumentError' do
+          expect { subject }.to raise_error(ArgumentError)
+        end
+      end
+
       context "with service ping features" do
         let(:feature) { :scoped_issue_board }
 
