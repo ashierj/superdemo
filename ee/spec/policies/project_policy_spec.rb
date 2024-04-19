@@ -3502,6 +3502,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
         context 'when user is a member of the group' do
           before do
+            stub_feature_flags(duo_chat_requires_licensed_seat: false)
             group.add_guest(current_user)
           end
 

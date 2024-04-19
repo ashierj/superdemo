@@ -179,7 +179,9 @@ module EE
     end
 
     def duo_chat_free_access_was_cut_off_for_gitlab_com?
-      false # TODO: update with the hardcoded cut-off date check, https://gitlab.com/gitlab-org/gitlab/-/issues/440386
+      # TODO: update with the hardcoded cut-off date check, https://gitlab.com/gitlab-org/gitlab/-/issues/440386
+      ::Feature.enabled?(:duo_chat_requires_licensed_seat) ||
+        user.belongs_to_group_requires_licensed_seat_for_chat?
     end
 
     def duo_chat_free_access_was_cut_off_for_sm?

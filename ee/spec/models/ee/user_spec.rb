@@ -3690,9 +3690,33 @@ RSpec.describe User, feature_category: :system_access do
     end
 
     with_them do
+      context 'when duo chat requires licensed seat feature flag is enabled' do
+        before do
+          group.add_guest(user)
+          stub_feature_flags(duo_chat_requires_licensed_seat: true)
+        end
+
+        context 'when user has a duo pro seat' do
+          before do
+            allow(user).to receive(:duo_pro_add_on_available?).and_return(true)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+
+        context 'when user does not have a duo pro seat' do
+          before do
+            allow(user).to receive(:duo_pro_add_on_available?).and_return(false)
+          end
+
+          it { is_expected.to eq(false) }
+        end
+      end
+
       context 'when member of the root group' do
         before do
           group.add_guest(user)
+          stub_feature_flags(duo_chat_requires_licensed_seat: false)
         end
 
         context 'when GA feature flag is disabled' do
@@ -3907,6 +3931,42 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '#belongs_to_group_requires_licensed_seat_for_chat?', :saas, :use_clean_rails_redis_caching do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:user) { create(:user) }
+    let_it_be_with_reload(:group) { create(:group) }
+
+    subject(:group_requires_licensed_seat_for_chat) { user.belongs_to_group_requires_licensed_seat_for_chat? }
+
+    where(:member, :group_actor, :result) do
+      false | false | false
+      false | true  | false
+      true  | false | false
+      true  | true  | true
+    end
+
+    with_them do
+      context 'when member of the root group' do
+        before do
+          group.add_guest(user) if member
+
+          if group_actor
+            allow(::Feature).to receive(:group_ids_for).with(:duo_chat_requires_licensed_seat).and_return([group.id])
+          end
+        end
+
+        it { is_expected.to eq(result) }
+
+        it 'caches the result' do
+          group_requires_licensed_seat_for_chat
+
+          expect(Rails.cache.fetch(['users', user.id, 'group_requires_licensed_seat_for_chat'])).to eq(result)
+        end
+      end
+    end
+  end
+
   describe '#ai_chat_enabled_namespace_ids', :saas, :use_clean_rails_redis_caching do
     using RSpec::Parameterized::TableSyntax
 
@@ -4020,6 +4080,7 @@ RSpec.describe User, feature_category: :system_access do
       other_user.any_group_with_ai_available?
       yet_another_user.any_group_with_ai_chat_available?
       yet_another_user.ai_chat_enabled_namespace_ids
+      yet_another_user.belongs_to_group_requires_licensed_seat_for_chat?
     end
 
     it 'clears cache from users with the given ids', :aggregate_failures do
@@ -4027,6 +4088,7 @@ RSpec.describe User, feature_category: :system_access do
       expect(Rails.cache.fetch(['users', other_user.id, 'group_with_ai_enabled'])).to eq(false)
       expect(Rails.cache.fetch(['users', yet_another_user.id, 'group_with_ai_chat_enabled'])).to eq(false)
       expect(Rails.cache.fetch(['users', yet_another_user.id, 'group_ids_with_ai_chat_enabled'])).to eq([])
+      expect(Rails.cache.fetch(['users', yet_another_user.id, 'group_requires_licensed_seat_for_chat'])).to eq(false)
 
       described_class.clear_group_with_ai_available_cache([user.id, yet_another_user.id])
 
@@ -4034,6 +4096,7 @@ RSpec.describe User, feature_category: :system_access do
       expect(Rails.cache.fetch(['users', other_user.id, 'group_with_ai_enabled'])).to eq(false)
       expect(Rails.cache.fetch(['users', yet_another_user.id, 'group_with_ai_chat_enabled'])).to be_nil
       expect(Rails.cache.fetch(['users', yet_another_user.id, 'group_ids_with_ai_chat_enabled'])).to be_nil
+      expect(Rails.cache.fetch(['users', yet_another_user.id, 'group_requires_licensed_seat_for_chat'])).to be_nil
     end
 
     it 'clears cache when given a single id', :aggregate_failures do
