@@ -21,12 +21,13 @@ const pageInfo = (endCursor) => ({
   __typename: 'PageInfo',
 });
 
+const editPath = (name) => `http://fake-path/edit/${name}`;
 const makePolicy = ({ name, enabled, description, __typename, ...rest }) => ({
   name,
   enabled,
   description,
   yaml: '',
-  editPath: '',
+  editPath: editPath(name),
   source: {
     inherited: false,
     namespace: {
@@ -202,6 +203,12 @@ describe('Basic information section', () => {
         false,
         true,
       ]);
+    });
+
+    it('renders link to edit policy', () => {
+      const { items: policies } = wrapper.findComponent(GlTable).vm.$attrs;
+      const policyLink = wrapper.find('table tbody a');
+      expect(policyLink.attributes('href')).toBe(editPath(policies[0].name));
     });
 
     describe('Drawer', () => {
