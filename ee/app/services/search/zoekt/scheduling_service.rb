@@ -124,7 +124,7 @@ module Search
         return false if Feature.disabled?(:zoekt_dot_com_rollout)
         return false if EnabledNamespace.with_missing_indices.exists?
 
-        execute_every 3.hours, cache_key: :dot_com_rollout do
+        execute_every 2.hours, cache_key: :dot_com_rollout do
           Search::Zoekt::EnabledNamespace
             .where(search: false)
             .where('created_at < ?', DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago)
