@@ -27,7 +27,7 @@ class TrialRegistrationsController < RegistrationsController
     ::Gitlab::Tracking.event(
       self.class.name,
       'render_registration_page',
-      label: ::Onboarding::Status::TRACKING_LABEL[:trial]
+      label: registration_tracking_label
     )
   end
 
@@ -70,6 +70,11 @@ class TrialRegistrationsController < RegistrationsController
 
     experiment(:signup_intent_step_one, actor: user).track(:submitted_intent, label: :signup_intent,
       property: params[:signup_intent])
+  end
+
+  override :registration_tracking_label
+  def registration_tracking_label
+    ::Onboarding::Status::TRACKING_LABEL[:trial]
   end
 end
 
