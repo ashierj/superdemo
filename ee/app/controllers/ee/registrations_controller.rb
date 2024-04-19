@@ -192,8 +192,8 @@ module EE
       ::Arkose::Settings.enabled?(user: user, user_agent: request.user_agent)
     end
 
+    override :registration_tracking_label
     def registration_tracking_label
-      return ::Onboarding::Status::TRACKING_LABEL[:trial] if onboarding_status.trial?
       return ::Onboarding::Status::TRACKING_LABEL[:invite] if params[:invite_email].present?
 
       onboarding_status.tracking_label

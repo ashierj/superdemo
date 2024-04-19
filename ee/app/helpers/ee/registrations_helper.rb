@@ -24,15 +24,6 @@ module EE
       data.compact
     end
 
-    override :registration_tracking_label
-    def registration_tracking_label(trial: false)
-      return ::Onboarding::Status::TRACKING_LABEL[:trial] if trial
-
-      return ::Onboarding::Status::TRACKING_LABEL[:invite] if params[:invite_email].present?
-
-      ::Onboarding::Status::TRACKING_LABEL[:free]
-    end
-
     override :register_omniauth_params
     def register_omniauth_params(local_assigns)
       super.merge(glm_tracking_params.to_h).merge(local_assigns.slice(:trial))
