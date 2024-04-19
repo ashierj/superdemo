@@ -74,7 +74,7 @@ To enable Beta and Experimental AI-powered features for GitLab versions where Gi
   Network policy restrictions on `wss://` traffic can cause issues with some GitLab Duo Chat
   services. Consider policy updates to allow these services.
 
-### Disable GitLab Duo features
+### Disable GitLab Duo features for specific groups or projects or an entire instance
 
 DETAILS:
 **Tier:** Premium, Ultimate
