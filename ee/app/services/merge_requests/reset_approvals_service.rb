@@ -66,7 +66,7 @@ module MergeRequests
 
       filtered_approvals.delete_all
 
-      merge_request.batch_update_reviewer_state(approver_ids, :unapproved)
+      merge_request.batch_update_reviewer_state(approver_ids, 'unapproved')
 
       trigger_merge_request_merge_status_updated(merge_request)
       trigger_merge_request_approval_state_updated(merge_request)

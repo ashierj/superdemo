@@ -71,6 +71,10 @@ module EE
       has_many :compliance_violations, class_name: 'MergeRequests::ComplianceViolation'
       has_many :scan_result_policy_violations, class_name: 'Security::ScanResultPolicyViolation'
 
+      has_many :requested_changes,
+        class_name: 'MergeRequests::RequestedChange',
+        inverse_of: :merge_request
+
       delegate :sha, to: :head_pipeline, prefix: :head_pipeline, allow_nil: true
       delegate :sha, to: :base_pipeline, prefix: :base_pipeline, allow_nil: true
       delegate :wrapped_approval_rules, :invalid_approvers_rules, to: :approval_state
@@ -499,6 +503,20 @@ module EE
     def reviewer_requests_changes_feature
       ::Feature.enabled?(:mr_reviewer_requests_changes, project) &&
         project.feature_available?(:requested_changes_block_merge_request)
+    end
+
+    def has_changes_requested?
+      requested_changes.any?
+    end
+
+    override :create_requested_changes
+    def create_requested_changes(user)
+      requested_changes.find_or_create_by(project_id: project_id, user_id: user.id)
+    end
+
+    override :destroy_requested_changes
+    def destroy_requested_changes(user)
+      requested_changes.where(user_id: user.id).delete_all
     end
 
     private

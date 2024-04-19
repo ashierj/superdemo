@@ -11247,6 +11247,24 @@ CREATE SEQUENCE merge_request_predictions_merge_request_id_seq
 
 ALTER SEQUENCE merge_request_predictions_merge_request_id_seq OWNED BY merge_request_predictions.merge_request_id;
 
+CREATE TABLE merge_request_requested_changes (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE merge_request_requested_changes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE merge_request_requested_changes_id_seq OWNED BY merge_request_requested_changes.id;
+
 CREATE TABLE merge_request_review_llm_summaries (
     id bigint NOT NULL,
     user_id bigint,
@@ -19400,6 +19418,8 @@ ALTER TABLE ONLY merge_request_metrics ALTER COLUMN id SET DEFAULT nextval('merg
 
 ALTER TABLE ONLY merge_request_predictions ALTER COLUMN merge_request_id SET DEFAULT nextval('merge_request_predictions_merge_request_id_seq'::regclass);
 
+ALTER TABLE ONLY merge_request_requested_changes ALTER COLUMN id SET DEFAULT nextval('merge_request_requested_changes_id_seq'::regclass);
+
 ALTER TABLE ONLY merge_request_review_llm_summaries ALTER COLUMN id SET DEFAULT nextval('merge_request_review_llm_summaries_id_seq'::regclass);
 
 ALTER TABLE ONLY merge_request_reviewers ALTER COLUMN id SET DEFAULT nextval('merge_request_reviewers_id_seq'::regclass);
@@ -21646,6 +21666,9 @@ ALTER TABLE ONLY merge_request_metrics
 
 ALTER TABLE ONLY merge_request_predictions
     ADD CONSTRAINT merge_request_predictions_pkey PRIMARY KEY (merge_request_id);
+
+ALTER TABLE ONLY merge_request_requested_changes
+    ADD CONSTRAINT merge_request_requested_changes_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY merge_request_review_llm_summaries
     ADD CONSTRAINT merge_request_review_llm_summaries_pkey PRIMARY KEY (id);
@@ -26042,6 +26065,12 @@ CREATE INDEX index_merge_request_metrics_on_merge_request_id_and_merged_at ON me
 CREATE INDEX index_merge_request_metrics_on_merged_at ON merge_request_metrics USING btree (merged_at);
 
 CREATE INDEX index_merge_request_metrics_on_pipeline_id ON merge_request_metrics USING btree (pipeline_id);
+
+CREATE INDEX index_merge_request_requested_changes_on_merge_request_id ON merge_request_requested_changes USING btree (merge_request_id);
+
+CREATE INDEX index_merge_request_requested_changes_on_project_id ON merge_request_requested_changes USING btree (project_id);
+
+CREATE INDEX index_merge_request_requested_changes_on_user_id ON merge_request_requested_changes USING btree (user_id);
 
 CREATE INDEX index_merge_request_review_llm_summaries_on_mr_diff_id ON merge_request_review_llm_summaries USING btree (merge_request_diff_id);
 
