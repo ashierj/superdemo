@@ -51,6 +51,7 @@ export default {
     class: 'gl-w-full',
     buttonTextClasses: 'gl-font-sm',
     href: '#',
+    'data-testid': 'trial-popover-hand-raise-lead-button',
   },
   computed: {
     isTrialActive() {
@@ -139,6 +140,7 @@ export default {
     :disabled="disabled"
     :delay="{ hide: 400 } /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
     :css-classes="cssClasses"
+    data-testid="trial-status-popover"
     @shown="onShown"
   >
     <template #title>
@@ -183,6 +185,7 @@ export default {
         :data-last-name="user.lastName"
         :data-company-name="user.companyName"
         :data-glm-content="user.glmContent"
+        :data-product-interaction="user.productInteraction"
         :data-track-category="handRaiseLeadBtnTracking.category"
         :data-track-action="handRaiseLeadBtnTracking.action"
         :data-track-label="handRaiseLeadBtnTracking.label"

@@ -85,6 +85,7 @@ FactoryBot.define do
   factory :group_with_plan, parent: :group do
     transient do
       plan { :free_plan }
+      trial_starts_on { nil }
       trial_ends_on { nil }
     end
 
@@ -95,6 +96,7 @@ FactoryBot.define do
           namespace: group,
           hosted_plan: create(evaluator.plan),
           trial: evaluator.trial_ends_on.present?,
+          trial_starts_on: evaluator.trial_starts_on,
           trial_ends_on: evaluator.trial_ends_on
         )
       end

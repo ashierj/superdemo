@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :subscription_management do
   include SubscriptionPortalHelpers
-  include BillingPlansHelpers
+  include Features::HandRaiseLeadHelpers
+  include Features::BillingPlansHelpers
 
   let(:user) { create(:user, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
   let(:auditor) { create(:auditor, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
@@ -71,9 +72,11 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
     end
 
     it 'renders in-app hand raise lead for code suggestions' do
-      find_by_testid('code_suggestions_hand_raise_lead_button').click
+      find_by_testid('code-suggestions-hand-raise-lead-button').click
 
-      fill_in_and_submit_code_suggestions_hand_raise_lead
+      fill_in_and_submit_hand_raise_lead(
+        user, namespace, glm_content: 'code-suggestions', product_interaction: 'Requested Contact-Duo Pro Add-On'
+      )
     end
   end
 
@@ -328,49 +331,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
     let(:namespace) { create(:group) }
     let!(:group_member) { create(:group_member, :owner, group: namespace, user: user) }
 
-    shared_context 'hand raise lead form setup' do
-      let(:form_data) do
-        {
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone_number: '+1 23 456-78-90',
-          company_size: '1 - 99',
-          company_name: user.organization,
-          country: { id: 'US', name: 'United States of America' },
-          state: { id: 'CA', name: 'California' }
-        }
-      end
-
-      let(:hand_raise_lead_params) do
-        {
-          "first_name" => form_data[:first_name],
-          "last_name" => form_data[:last_name],
-          "company_name" => form_data[:company_name],
-          "company_size" => form_data[:company_size].delete(' '),
-          "phone_number" => form_data[:phone_number],
-          "country" => form_data.dig(:country, :id),
-          "state" => form_data.dig(:state, :name),
-          "namespace_id" => namespace.id,
-          "comment" => '',
-          "glm_content" => 'billing-group',
-          "product_interaction" => 'Hand Raise PQL',
-          "work_email" => user.email,
-          "uid" => user.id,
-          "setup_for_company" => user.setup_for_company,
-          "provider" => "gitlab",
-          "glm_source" => 'gitlab.com'
-        }
-      end
-
-      let(:lead_params) { ActionController::Parameters.new(hand_raise_lead_params).permit! }
-
-      before do
-        expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
-          expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true))
-        end
-      end
-    end
-
     context 'when a group is the top-level group' do
       let(:page_path) { group_billings_path(namespace) }
 
@@ -417,10 +377,8 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
         end
 
         context 'when submitting hand raise lead' do
-          include_context 'hand raise lead form setup'
-
           it 'displays the in-app hand raise lead' do
-            click_premium_contact_sales_button_and_submit_form(form_data)
+            click_premium_contact_sales_button_and_submit_form(user, namespace)
           end
         end
 
@@ -431,14 +389,12 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
       context 'on free' do
         let(:plan) { free_plan }
 
-        include_context 'hand raise lead form setup'
-
         it 'submits hand raise lead form' do
           visit page_path
 
           click_button 'Talk to an expert'
 
-          fill_hand_raise_lead_form_and_submit(form_data)
+          fill_in_and_submit_hand_raise_lead(user, namespace, glm_content: 'billing-group')
         end
       end
 
@@ -516,65 +472,8 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
       end
     end
 
-    def fill_in_and_submit_code_suggestions_hand_raise_lead
-      form_data = {
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone_number: '+1 23 456-78-90',
-        company_size: '1 - 99',
-        company_name: user.organization,
-        country: { id: 'US', name: 'United States of America' },
-        state: { id: 'CA', name: 'California' }
-      }
-
-      hand_raise_lead_params = {
-        "first_name" => form_data[:first_name],
-        "last_name" => form_data[:last_name],
-        "company_name" => form_data[:company_name],
-        "company_size" => form_data[:company_size].delete(' '),
-        "phone_number" => form_data[:phone_number],
-        "country" => form_data.dig(:country, :id),
-        "state" => form_data.dig(:state, :name),
-        "namespace_id" => namespace.id,
-        "comment" => '',
-        "glm_content" => 'code-suggestions',
-        "product_interaction" => 'Requested Contact-Duo Pro Add-On',
-        "work_email" => user.email,
-        "uid" => user.id,
-        "setup_for_company" => user.setup_for_company,
-        "provider" => "gitlab",
-        "glm_source" => 'gitlab.com'
-      }
-
-      lead_params = ActionController::Parameters.new(hand_raise_lead_params).permit!
-
-      expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
-        expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true))
-      end
-
-      fill_hand_raise_lead_form_and_submit(form_data)
-    end
-
     def seats_currently_in_use
       find_by_testid('seats-currently-in-use').text
-    end
-
-    def fill_hand_raise_lead_form_and_submit(form_data)
-      within_testid('hand-raise-lead-modal') do
-        aggregate_failures do
-          expect(page).to have_content('Contact our Sales team')
-          expect(page).to have_field('First Name', with: form_data[:first_name])
-          expect(page).to have_field('Last Name', with: form_data[:last_name])
-          expect(page).to have_field('Company Name', with: form_data[:company_name])
-        end
-
-        select form_data[:company_size], from: 'company-size'
-        fill_in 'phone-number', with: form_data[:phone_number]
-        select form_data.dig(:country, :name), from: 'country'
-        select form_data.dig(:state, :name), from: 'state'
-
-        click_button 'Submit information'
-      end
     end
   end
 

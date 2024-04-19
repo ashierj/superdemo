@@ -4,7 +4,8 @@
     = s_('TrialDiscoverPage|Compare all plans')
 
   .js-hand-raise-lead-button{ data: { **hand_raise_props(group, glm_content: 'trial_discover_page'),
-                                      button_attributes: { variant: 'confirm', category: 'secondary' }.to_json,
+                                      button_attributes: { variant: 'confirm', category: 'secondary',
+                                                          'data-testid': 'trial-discover-hand-raise-lead-button' }.to_json,
                                       track_action: 'click_contact_sales',
                                       track_label: group_trial_status(group),
                                       track_experiment: :trial_discover_page } }

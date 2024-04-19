@@ -3,21 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :acquisition do
-  let_it_be(:user) { create(:user) }
+  include Features::HandRaiseLeadHelpers
+
+  let_it_be(:user) { create(:user, :with_namespace, organization: 'YMCA') }
   let_it_be(:group) do
-    create(:group).tap do |record|
+    create(
+      :group_with_plan, plan: :ultimate_trial_plan, trial_starts_on: Date.current, trial_ends_on: 30.days.from_now
+    ) do |record|
       record.add_owner(user)
     end
-  end
-
-  let_it_be(:subscription) do
-    create(
-      :gitlab_subscription,
-      :active_trial,
-      namespace: group,
-      trial_starts_on: Date.current,
-      trial_ends_on: 30.days.from_now
-    )
   end
 
   before do
@@ -65,12 +59,18 @@ RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :acquisi
         visit group_path(group)
       end
 
-      it 'shows the popover for the trial status widget' do
+      it 'shows the popover for the trial status widget and submits hand raise lead' do
         expect(page).not_to have_selector('.js-sidebar-collapsed')
 
-        find('#trial-status-sidebar-widget').hover
+        find_by_testid('trial-widget-menu').hover
 
-        expect(page).to have_content("We hope you’re enjoying the features of GitLab")
+        within_testid('trial-status-popover') do
+          expect(page).to have_content("We hope you’re enjoying the features of GitLab")
+
+          find_by_testid('trial-popover-hand-raise-lead-button').click
+        end
+
+        fill_in_and_submit_hand_raise_lead(user, group, glm_content: 'trial-status-show-group')
       end
     end
 
@@ -84,9 +84,11 @@ RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :acquisi
       it 'shows the popover for the trial status widget' do
         expect(page).not_to have_selector('.js-sidebar-collapsed')
 
-        find('#trial-status-sidebar-widget').hover
+        find_by_testid('trial-widget-menu').hover
 
-        expect(page).to have_content("We hope you’re enjoying the features of GitLab")
+        within_testid('trial-status-popover') do
+          expect(page).to have_content("We hope you’re enjoying the features of GitLab")
+        end
       end
     end
   end
