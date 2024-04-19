@@ -120,7 +120,7 @@ module EE
     def recent_epics_autocomplete(term)
       return [] unless current_user
 
-      ::Gitlab::Search::RecentEpics.new(user: current_user).search(term).map do |e|
+      ::Gitlab::Search::RecentEpics.new(user: current_user).search(term).preload_group_and_routables.map do |e|
         {
           category: "Recent epics",
           id: e.id,
