@@ -22,13 +22,11 @@ module EE
       )
     end
 
-    def wrap_label_html(label_html, small:, label:)
+    def wrap_label_html(label_html, label:)
       return super unless label.scoped_label?
 
       wrapper_classes = %w[gl-label gl-label-scoped]
-      wrapper_classes << 'gl-label-sm' if small
-
-      border_width = small ? '1px' : '2px'
+      border_width = '2px'
 
       %(<span class="#{wrapper_classes.join(' ')}" style="--label-inset-border: inset 0 0 0 #{border_width} #{ERB::Util.html_escape(label.color)}; color: #{ERB::Util.html_escape(label.color)}">#{label_html}</span>).html_safe
     end

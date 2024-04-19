@@ -102,7 +102,6 @@ export default {
     >
       <template #cell(severity_number)="{ item }">
         <gl-label
-          size="sm"
           :background-color="severityLabel(item.severity_number).color"
           :title="severityLabel(item.severity_number).title"
         />

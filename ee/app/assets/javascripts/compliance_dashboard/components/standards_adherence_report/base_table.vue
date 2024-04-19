@@ -293,7 +293,7 @@ export default {
           class="gl-label"
           :title="framework.name"
         >
-          <framework-badge :framework="framework" size="sm" />
+          <framework-badge :framework="framework" />
         </div>
       </template>
 

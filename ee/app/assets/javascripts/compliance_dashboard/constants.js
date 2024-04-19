@@ -33,10 +33,6 @@ export const BRANCH_FILTER_OPTIONS = {
   allProtectedBranches: __('All protected branches'),
 };
 
-export const FRAMEWORK_BADGE_SIZE_SM = 'sm';
-export const FRAMEWORK_BADGE_SIZE_MD = 'md';
-export const FRAMEWORK_BADGE_SIZES = [FRAMEWORK_BADGE_SIZE_SM, FRAMEWORK_BADGE_SIZE_MD];
-
 export const ROUTE_STANDARDS_ADHERENCE = 'standards_adherence';
 export const ROUTE_VIOLATIONS = 'violations';
 export const ROUTE_PROJECTS = 'projects';

@@ -349,7 +349,7 @@ export default {
                 :scoped="showScopedLabel(label)"
                 :target="labelFilterUrl(label)"
                 :title="label.title"
-                class="gl-mr-2 gl-mb-1 gl-label-sm"
+                class="gl-mr-2 gl-mb-1"
                 tooltip-placement="top"
               />
             </template>

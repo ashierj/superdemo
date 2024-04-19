@@ -6,6 +6,6 @@
 - if issue.health_status
   .gl-ml-2.health-status.gl-display-inline-flex.gl-align-items-center
     &nbsp;
-    %span.gl-label.gl-label-text-dark.gl-label-sm{ data: { testid: "health-status" }, class: status_classes[issue.health_status] }
+    %span.gl-label.gl-label-text-dark{ data: { testid: "health-status" }, class: status_classes[issue.health_status] }
       %span.gl-label-text
         = status_text[issue.health_status]

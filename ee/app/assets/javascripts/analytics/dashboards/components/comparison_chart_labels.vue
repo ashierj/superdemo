@@ -72,7 +72,6 @@ export default {
         :background-color="label.color"
         :scoped="isScoped(label)"
         :target="labelTarget(label.title)"
-        size="sm"
       />
     </span>
 
@@ -94,7 +93,6 @@ export default {
               :background-color="label.color"
               :scoped="isScoped(label)"
               :target="labelTarget(label.title)"
-              size="sm"
             />
           </div>
         </div>

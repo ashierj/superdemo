@@ -101,7 +101,6 @@ export default {
             v-if="defaultFramework"
             :background-color="framework.color"
             :title="$options.i18n.defaultFramework"
-            size="sm"
           />
         </h2>
         <gl-button
