@@ -301,11 +301,9 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
   end
 
   context 'with block seat overages enabled', :saas do
-    let_it_be(:owner) { create(:user) }
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) do
-      create(:group_with_plan, plan: :premium_plan).tap { |g| g.add_owner(owner) }
-    end
+    let_it_be(:owner) { create(:user) }
+    let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
 
     let_it_be(:project) { create(:project, group: group) }
 
@@ -315,7 +313,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
 
     before do
       stub_saas_features(gitlab_com_subscriptions: true)
-      stub_feature_flags(block_seat_overages: true)
+      group.add_owner(owner)
       group.gitlab_subscription.update!(seats: 1)
     end
 
@@ -324,6 +322,20 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
         .with(owner.id, user.id, project, project_users.map(&:name)).once.and_call_original
 
       execute_service
+    end
+
+    context 'when current user is the owner' do
+      let_it_be(:owner) { user }
+      let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
+      let_it_be(:project) { create(:project, group: group) }
+
+      let(:invites) { create(:user).id.to_s }
+
+      it 'does not notify the admin about the requested membership' do
+        expect(::Notify).not_to receive(:no_more_seats)
+
+        execute_service
+      end
     end
 
     context 'with invited emails' do

@@ -70,6 +70,9 @@ module EE
 
       def notify_owners(invites)
         root_namespace = source.root_ancestor
+
+        return if root_namespace.owners.include?(current_user)
+
         invited_user_ids = invites.select { |i| i.to_i.to_s == i }
 
         return if invited_user_ids.empty?
