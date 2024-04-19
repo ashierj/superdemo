@@ -59355,10 +59355,10 @@ msgstr ""
 msgid "You have more active users than are allowed by your license. GitLab must now reconcile your subscription. To complete this process, export your license usage file and email it to %{renewal_service_email}. A new license will be emailed to the email address registered in the %{customers_dot}. You can add this license to your instance."
 msgstr ""
 
-msgid "You have no permissions"
+msgid "You have no comment templates yet."
 msgstr ""
 
-msgid "You have no saved replies yet."
+msgid "You have no permissions"
 msgstr ""
 
 msgid "You have not added any approvers. Start by adding users or groups."
