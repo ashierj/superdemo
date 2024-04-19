@@ -140,9 +140,13 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
   describe '.default_final_answer' do
     subject(:answer) { described_class.default_final_answer(context: context) }
 
+    let(:expected_response) do
+      "I'm sorry, I can't find the answer, but it's my fault, not yours. Please try something different."
+    end
+
     it 'returns final answer with the default response' do
       expect(answer.is_final?).to eq(true)
-      expect(answer.content).to eq("I don't see how I can help. Please give better instructions!")
+      expect(answer.content).to eq(expected_response)
       expect(answer.tool).to be_nil
       expect(answer.status).to eq(:ok)
     end
