@@ -11,6 +11,7 @@ import {
 } from '~/members/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import PromotionRequestsTabApp from './promotion_requests/components/app.vue';
+import promotionRequestsTabStore from './promotion_requests/store/index';
 
 // eslint-disable-next-line import/export
 export * from '~/members/constants';
@@ -83,6 +84,7 @@ export const TABS = [
     title: __('Promotions'),
     queryParamValue: TAB_QUERY_PARAM_VALUES.promotionRequest,
     component: PromotionRequestsTabApp,
+    store: promotionRequestsTabStore,
   },
   {
     namespace: MEMBER_TYPES.banned,
