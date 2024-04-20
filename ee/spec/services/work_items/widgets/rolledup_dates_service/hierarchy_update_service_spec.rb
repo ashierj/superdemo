@@ -26,7 +26,17 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
         end
       end
 
-      context "when the work_item has an epic parent" do
+      context "when previous_work_item_parent_id is given" do
+        specify do
+          expect(::WorkItems::RolledupDates::UpdateRolledupDatesWorker)
+            .to receive(:perform_async)
+              .with(1)
+
+          described_class.new(work_item, 1).execute
+        end
+      end
+
+      context "when work_item has a parent" do
         let_it_be(:parent) do
           create(:work_item, :epic, namespace: group).tap do |parent|
             create(:parent_link, work_item: work_item, work_item_parent: parent)
@@ -169,6 +179,29 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
         it_behaves_like "enqueue the parent epic update"
         it_behaves_like "when work item already have an associated dates_source"
         it_behaves_like "when work item does not have an associated dates_source"
+      end
+
+      context "when all children are removed from the hierarchy", :sidekiq_inline, :clean_gitlab_redis_shared_state do
+        let_it_be(:child_work_item) do
+          create(:work_item, :issue, namespace: group, start_date: start_date, due_date: due_date)
+            .tap do |child|
+              # Simulate that the dates were rolled up at some point
+              create(
+                :work_items_dates_source,
+                work_item: work_item,
+                start_date: start_date,
+                start_date_sourcing_work_item_id: child.id,
+                due_date: due_date,
+                due_date_sourcing_work_item_id: child.id
+              )
+            end
+        end
+
+        it "nullify the start/due date" do
+          expect { described_class.new(child_work_item, work_item.id).execute }
+            .to change { work_item.reload.dates_source&.due_date }.from(due_date).to(nil)
+            .and change { work_item.reload.dates_source&.start_date }.from(start_date).to(nil)
+        end
       end
     end
   end
