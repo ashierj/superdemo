@@ -4,8 +4,9 @@ module WorkItems
   module Widgets
     module RolledupDatesService
       class HierarchyUpdateService
-        def initialize(work_item)
+        def initialize(work_item, previous_work_item_parent_id = nil)
           @work_item = work_item
+          @previous_work_item_parent_id = previous_work_item_parent_id
         end
 
         def execute
@@ -14,18 +15,7 @@ module WorkItems
 
           work_item.build_dates_source if work_item.dates_source.blank?
 
-          attributes = {}
-
-          unless work_item.dates_source.due_date_is_fixed?
-            maximum_due_date_attributes = finder.maximum_due_date.first&.attributes
-            attributes.merge!(maximum_due_date_attributes) if maximum_due_date_attributes.present?
-          end
-
-          unless work_item.dates_source.start_date_is_fixed?
-            minimum_start_date_attributes = finder.minimum_start_date.first&.attributes
-            attributes.merge!(minimum_start_date_attributes) if minimum_start_date_attributes.present?
-          end
-
+          attributes = attributes_for(:due_date).merge(attributes_for(:start_date))
           work_item.dates_source.update!(attributes.except('issue_id')) if attributes.present?
 
           update_parent
@@ -35,15 +25,25 @@ module WorkItems
 
         attr_reader :work_item
 
+        def attributes_for(field)
+          return {} if work_item.dates_source.read_attribute(:"#{field}_is_fixed")
+
+          finder.attributes_for(field).presence || {
+            field => nil,
+            "#{field}_sourcing_milestone_id": nil,
+            "#{field}_sourcing_work_item_id": nil
+          }
+        end
+
         def finder
           @finder ||= WorkItems::Widgets::RolledupDatesFinder.new(work_item)
         end
 
         def update_parent
-          parent = work_item.work_item_parent
-          return if parent.blank?
+          parent_id = @previous_work_item_parent_id || work_item.work_item_parent&.id
+          return if parent_id.blank?
 
-          ::WorkItems::RolledupDates::UpdateRolledupDatesWorker.perform_async(parent.id)
+          ::WorkItems::RolledupDates::UpdateRolledupDatesWorker.perform_async(parent_id)
         end
       end
     end
