@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash';
 import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { isGroup, isProject } from 'ee/security_orchestration/components/utils';
 import {
   ADD_ACTION_LABEL,
@@ -22,7 +23,8 @@ import EditorLayout from '../editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import SettingsSection from './settings/settings_section.vue';
-import ActionSection from './action/action_section.vue';
+import ActionSection from './action/action_section_new.vue';
+import ApproverAction from './action/approver_action.vue';
 import RuleSection from './rule/rule_section.vue';
 
 import {
@@ -75,6 +77,7 @@ export default {
   },
   components: {
     ActionSection,
+    ApproverAction,
     DimDisableContainer,
     GlAlert,
     GlButton,
@@ -83,6 +86,7 @@ export default {
     RuleSection,
     SettingsSection,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
@@ -137,6 +141,9 @@ export default {
   computed: {
     disableUpdate() {
       return !this.hasParsingError && this.hasEmptyActions && this.hasEmptySettings;
+    },
+    isProject() {
+      return isProject(this.namespaceType);
     },
     settings() {
       return buildSettingsList({
@@ -198,6 +205,9 @@ export default {
         description: this.$options.i18n.settingWarningDescription,
       };
     },
+    showBotCommentAction() {
+      return this.isProject && this.glFeatures.approvalPolicyDisableBotComment;
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -216,9 +226,10 @@ export default {
       this.$set(this.policy, 'actions', [buildApprovalAction()]);
       this.updateYamlEditorValue(this.policy);
     },
-    removeAction() {
+    removeAction(index) {
       const { actions, ...newPolicy } = this.policy;
-      this.policy = newPolicy;
+      actions.splice(index, 1);
+      this.policy = { ...newPolicy, ...(actions.length ? { actions } : {}) };
       this.updateYamlEditorValue(this.policy);
       this.updatePolicyApprovers({});
     },
@@ -340,7 +351,7 @@ export default {
       if (this.isActiveRuleMode) {
         this.hasParsingError = this.invalidForRuleMode();
 
-        if (!this.hasEmptyRules && isProject(this.namespaceType) && this.rulesHaveBranches) {
+        if (!this.hasEmptyRules && this.isProject && this.rulesHaveBranches) {
           this.invalidBranches = await getInvalidBranches({
             branches: this.allBranches,
             projectId: this.namespaceId,
@@ -430,21 +441,37 @@ export default {
         </template>
 
         <div v-if="Boolean(policy.actions)">
-          <action-section
-            v-for="(action, index) in policy.actions"
-            :key="action.id"
-            :data-testid="`action-${index}`"
-            class="gl-mb-4"
-            :init-action="action"
-            :errors="errors.action"
-            :existing-approvers="existingApprovers"
-            @error="handleParsingError"
-            @updateApprovers="updatePolicyApprovers"
-            @changed="updateAction(index, $event)"
-            @remove="removeAction"
-          />
+          <div v-if="showBotCommentAction">
+            <action-section
+              v-for="(action, index) in policy.actions"
+              :key="action.id"
+              :data-testid="`action-${index}`"
+              class="gl-mb-4"
+              :init-action="action"
+              :errors="errors.action"
+              :existing-approvers="existingApprovers"
+              @error="handleParsingError"
+              @updateApprovers="updatePolicyApprovers"
+              @changed="updateAction(index, $event)"
+              @remove="removeAction(index)"
+            />
+          </div>
+          <div v-else>
+            <approver-action
+              v-for="(action, index) in policy.actions"
+              :key="action.id"
+              :data-testid="`action-${index}`"
+              class="gl-mb-4"
+              :init-action="action"
+              :errors="errors.action"
+              :existing-approvers="existingApprovers"
+              @error="handleParsingError"
+              @updateApprovers="updatePolicyApprovers"
+              @changed="updateAction(index, $event)"
+              @remove="removeAction(index)"
+            />
+          </div>
         </div>
-
         <div v-else class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">
             {{ $options.i18n.ADD_ACTION_LABEL }}

@@ -22,6 +22,7 @@ import {
   mockDefaultBranchesScanResultObject,
   mockDeprecatedScanResultManifest,
   mockDeprecatedScanResultObject,
+  mockBotCommentScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import {
   unsupportedManifest,
@@ -47,7 +48,8 @@ import {
   PARSING_ERROR_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
-import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
+import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section_new.vue';
+import ApproverAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_action.vue';
 import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
 
 jest.mock('lodash/uniqueId');
@@ -137,6 +139,8 @@ describe('EditorComponent', () => {
   const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
   const findActionSection = () => wrapper.findComponent(ActionSection);
   const findAllActionSections = () => wrapper.findAllComponents(ActionSection);
+  const findApproverAction = () => wrapper.findComponent(ApproverAction);
+  const findAllApproverActions = () => wrapper.findAllComponents(ApproverAction);
   const findAddActionButton = () => wrapper.findByTestId('add-action');
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
@@ -195,12 +199,6 @@ describe('EditorComponent', () => {
       expect(findAddRuleButton().exists()).toBe(true);
     });
 
-    it('displays the initial action', () => {
-      factory();
-      expect(findAllActionSections()).toHaveLength(1);
-      expect(findActionSection().props('existingApprovers')).toEqual(scanResultPolicyApprovers);
-    });
-
     describe('when a user is not an owner of the project', () => {
       it('displays the empty state with the appropriate properties', () => {
         factory({ provide: { disableScanPolicyUpdate: true } });
@@ -221,7 +219,7 @@ describe('EditorComponent', () => {
           mockDefaultBranchesScanResultManifest,
         );
         expect(findAllRuleSections()).toHaveLength(1);
-        expect(findAllActionSections()).toHaveLength(1);
+        expect(findAllApproverActions()).toHaveLength(1);
       });
 
       it('displays a scan result policy', () => {
@@ -231,7 +229,7 @@ describe('EditorComponent', () => {
           mockDeprecatedScanResultManifest,
         );
         expect(findAllRuleSections()).toHaveLength(1);
-        expect(findAllActionSections()).toHaveLength(1);
+        expect(findAllApproverActions()).toHaveLength(1);
       });
     });
   });
@@ -392,17 +390,27 @@ describe('EditorComponent', () => {
       });
     });
 
-    describe('action section', () => {
+    describe('action section  when the "approvalPolicyDisableBotComment" feature is off', () => {
+      describe('rendering', () => {
+        it('displays the approver action when the "approvalPolicyDisableBotComment" feature is off', () => {
+          factory();
+          expect(findAllApproverActions()).toHaveLength(1);
+          expect(findApproverAction().props('existingApprovers')).toEqual(
+            scanResultPolicyApprovers,
+          );
+        });
+      });
+
       describe('add', () => {
         it('hides the add button when actions exist', () => {
           factory();
-          expect(findActionSection().exists()).toBe(true);
+          expect(findApproverAction().exists()).toBe(true);
           expect(findAddActionButton().exists()).toBe(false);
         });
 
         it('shows the add button when actions do not exist', () => {
           factoryWithExistingPolicy({ hasActions: false });
-          expect(findActionSection().exists()).toBe(false);
+          expect(findApproverAction().exists()).toBe(false);
           expect(findAddActionButton().exists()).toBe(true);
         });
       });
@@ -410,6 +418,120 @@ describe('EditorComponent', () => {
       describe('remove', () => {
         it('removes the initial action', async () => {
           factory();
+          expect(findApproverAction().exists()).toBe(true);
+          expect(findPolicyEditorLayout().props('policy')).toHaveProperty('actions');
+          await findApproverAction().vm.$emit('remove');
+          expect(findApproverAction().exists()).toBe(false);
+          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('actions');
+        });
+
+        it('removes the action approvers when the action is removed', async () => {
+          factory();
+          await findApproverAction().vm.$emit(
+            'changed',
+            mockDefaultBranchesScanResultObject.actions[0],
+          );
+          await findApproverAction().vm.$emit('remove');
+          await findAddActionButton().vm.$emit('click');
+          expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+            {
+              approvals_required: 1,
+              type: 'require_approval',
+              id: 'action_0',
+            },
+          ]);
+          expect(findApproverAction().props('existingApprovers')).toEqual({});
+        });
+      });
+
+      describe('update', () => {
+        beforeEach(() => {
+          factory();
+        });
+
+        it('updates policy action when edited', async () => {
+          const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
+          await findApproverAction().vm.$emit('changed', UPDATED_ACTION);
+
+          expect(findApproverAction().props('initAction')).toEqual(UPDATED_ACTION);
+        });
+
+        it('updates the policy approvers', async () => {
+          const newApprover = ['owner'];
+
+          await findApproverAction().vm.$emit('updateApprovers', {
+            ...scanResultPolicyApprovers,
+            role: newApprover,
+          });
+
+          expect(findApproverAction().props('existingApprovers')).toMatchObject({
+            role: newApprover,
+          });
+        });
+
+        it('creates an error when the action section emits one', async () => {
+          await findApproverAction().vm.$emit('error');
+          verifiesParsingError();
+        });
+      });
+    });
+
+    describe('action section  when the "approvalPolicyDisableBotComment" feature is on', () => {
+      describe('rendering', () => {
+        afterAll(() => {
+          uniqueId.mockRestore();
+        });
+
+        it('displays the action section on the project-level when the "approvalPolicyDisableBotComment" feature is on', () => {
+          factory({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
+          });
+          expect(findActionSection().exists()).toBe(true);
+          expect(findApproverAction().exists()).toBe(false);
+        });
+
+        it('displays the approver action on the group-level when the "approvalPolicyDisableBotComment" feature is on', () => {
+          factory({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            provide: { namespaceType: NAMESPACE_TYPES.GROUP },
+          });
+          expect(findActionSection().exists()).toBe(false);
+          expect(findApproverAction().exists()).toBe(true);
+        });
+
+        it('displays multiple action sections', () => {
+          uniqueId
+            .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
+            .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
+          factoryWithExistingPolicy({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            policy: mockBotCommentScanResultObject,
+          });
+          expect(findAllActionSections()).toHaveLength(2);
+        });
+      });
+
+      describe('add', () => {
+        it('hides the add button when actions exist', () => {
+          factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
+          expect(findActionSection().exists()).toBe(true);
+          expect(findAddActionButton().exists()).toBe(false);
+        });
+
+        it('shows the add button when actions do not exist', () => {
+          factoryWithExistingPolicy({
+            hasActions: false,
+            glFeatures: { approvalPolicyDisableBotComment: true },
+          });
+          expect(findActionSection().exists()).toBe(false);
+          expect(findAddActionButton().exists()).toBe(true);
+        });
+      });
+
+      describe('remove', () => {
+        it('removes the initial action', async () => {
+          factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
           expect(findActionSection().exists()).toBe(true);
           expect(findPolicyEditorLayout().props('policy')).toHaveProperty('actions');
           await findActionSection().vm.$emit('remove');
@@ -418,7 +540,7 @@ describe('EditorComponent', () => {
         });
 
         it('removes the action approvers when the action is removed', async () => {
-          factory();
+          factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
           await findActionSection().vm.$emit(
             'changed',
             mockDefaultBranchesScanResultObject.actions[0],
@@ -438,7 +560,7 @@ describe('EditorComponent', () => {
 
       describe('update', () => {
         beforeEach(() => {
-          factory();
+          factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
         });
 
         it('updates policy action when edited', async () => {
@@ -534,7 +656,7 @@ describe('EditorComponent', () => {
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findActionSection().props('errors')).toEqual(error.cause);
+          expect(findApproverAction().props('errors')).toEqual(error.cause);
           expect(wrapper.emitted('error')).toStrictEqual([['']]);
         });
 
@@ -545,7 +667,7 @@ describe('EditorComponent', () => {
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findActionSection().props('errors')).toEqual([]);
+          expect(findApproverAction().props('errors')).toEqual([]);
           expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
         });
 
@@ -556,7 +678,7 @@ describe('EditorComponent', () => {
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findActionSection().props('errors')).toEqual([]);
+          expect(findApproverAction().props('errors')).toEqual([]);
           expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
         });
 
@@ -567,7 +689,7 @@ describe('EditorComponent', () => {
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findActionSection().props('errors')).toEqual([approverCause]);
+          expect(findApproverAction().props('errors')).toEqual([approverCause]);
           expect(wrapper.emitted('error')).toStrictEqual([[''], ['There was an error']]);
         });
       });
@@ -581,7 +703,7 @@ describe('EditorComponent', () => {
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findActionSection().props('errors')).toEqual([]);
+          expect(findApproverAction().props('errors')).toEqual([]);
           expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
         });
       });
@@ -823,8 +945,7 @@ describe('EditorComponent', () => {
       describe('displays the danger alert when there are no actions and no settings', () => {
         beforeEach(() => {
           factoryWithExistingPolicy({
-            hasActions: false,
-            policy: { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false } },
+            policy: { actions: [], approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false } },
           });
         });
 

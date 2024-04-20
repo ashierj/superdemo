@@ -3,7 +3,7 @@ import { GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
-import ActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_approvers.vue';
+import ApproverSelectionWrapper from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_selection_wrapper.vue';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result/action/group_select.vue';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result/action/user_select.vue';
 import {
@@ -18,11 +18,11 @@ const DEFAULT_ACTION = {
   type: 'require_approval',
 };
 
-describe('ActionApprovers', () => {
+describe('ApproverSelectionWrapper', () => {
   let wrapper;
 
   const factory = ({ propsData = {}, stubs = {} } = {}) => {
-    wrapper = shallowMountExtended(ActionApprovers, {
+    wrapper = shallowMountExtended(ApproverSelectionWrapper, {
       propsData: {
         availableTypes: APPROVER_TYPE_LIST_ITEMS,
         approverIndex: 0,

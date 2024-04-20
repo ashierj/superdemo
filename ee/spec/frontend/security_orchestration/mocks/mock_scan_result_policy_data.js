@@ -58,6 +58,23 @@ export const mockDefaultBranchesScanResultObject = {
   ],
 };
 
+export const mockBotCommentScanResultObject = {
+  type: 'approval_policy',
+  name: 'Add bot comment',
+  description: '',
+  enabled: true,
+  rules: [],
+  actions: [
+    {
+      type: 'require_approval',
+      approvals_required: 1,
+    },
+    {
+      type: 'send_bot_comment',
+    },
+  ],
+};
+
 export const mockDeprecatedScanResultManifest = `type: scan_result_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals
