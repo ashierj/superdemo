@@ -93,9 +93,6 @@ export default {
       default: s__('SecurityOrchestration|New policy'),
     },
     editTitles: {
-      [POLICY_TYPE_COMPONENT_OPTIONS.scanResult.value]: s__(
-        'SecurityOrchestration|Edit merge request approval policy',
-      ),
       [POLICY_TYPE_COMPONENT_OPTIONS.approval.value]: s__(
         'SecurityOrchestration|Edit merge request approval policy',
       ),

@@ -153,27 +153,6 @@ describe('App component', () => {
       });
     });
 
-    describe('scan result', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(urlUtils, 'getParameterByName')
-          .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter);
-        factory({
-          provide: {
-            namespaceType: NAMESPACE_TYPES.PROJECT,
-            existingPolicy: {
-              id: 'policy-id',
-              value: 'scanResult',
-            },
-          },
-        });
-      });
-
-      it('should display the title correctly', () => {
-        expect(findTitle()).toBe('Edit merge request approval policy');
-      });
-    });
-
     describe('invalid url parameter', () => {
       beforeEach(() => {
         jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue('invalid');

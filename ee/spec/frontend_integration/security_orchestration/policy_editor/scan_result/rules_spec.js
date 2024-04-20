@@ -9,6 +9,7 @@ import SettingsItem from 'ee/security_orchestration/components/policy_editor/sca
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
 import * as urlUtils from '~/lib/utils/url_utility';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import {
   ANY_MERGE_REQUEST,
   SCAN_FINDING,
@@ -44,7 +45,9 @@ describe('Scan result policy rules', () => {
   };
 
   beforeEach(() => {
-    jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue('scan_result_policy');
+    jest
+      .spyOn(urlUtils, 'getParameterByName')
+      .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter);
   });
 
   afterEach(() => {
