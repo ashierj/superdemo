@@ -1,7 +1,7 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import * as urlUtils from '~/lib/utils/url_utility';
 import App from 'ee/security_orchestration/components/policy_editor/app.vue';
-import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
+import ApproverAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_action.vue';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result/action/group_select.vue';
 import RoleSelect from 'ee/security_orchestration/components/policy_editor/scan_result/action/role_select.vue';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result/action/user_select.vue';
@@ -52,7 +52,7 @@ describe('Scan result policy actions', () => {
 
   const findApprovalsInput = () => wrapper.findByTestId('approvals-required-input');
   const findAvailableTypeListBox = () => wrapper.findByTestId('available-types');
-  const findActionSection = () => wrapper.findComponent(ActionSection);
+  const findApproverAction = () => wrapper.findComponent(ApproverAction);
   const findGroupSelect = () => wrapper.findComponent(GroupSelect);
   const findRoleSelect = () => wrapper.findComponent(RoleSelect);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
@@ -63,7 +63,7 @@ describe('Scan result policy actions', () => {
     });
 
     it('should render action section', () => {
-      expect(findActionSection().exists()).toBe(true);
+      expect(findApproverAction().exists()).toBe(true);
       expect(findYamlPreview(wrapper).text()).toContain(
         'actions:\n  - type: require_approval\n    approvals_required: 1',
       );
@@ -83,9 +83,9 @@ describe('Scan result policy actions', () => {
       const DEVELOPER = 'developer';
 
       const verifyRuleMode = () => {
-        expect(findActionSection().exists()).toBe(true);
+        expect(findApproverAction().exists()).toBe(true);
         expect(findRoleSelect().exists()).toBe(true);
-        expect(findActionSection().props('initAction').role_approvers).toEqual([DEVELOPER]);
+        expect(findApproverAction().props('initAction').role_approvers).toEqual([DEVELOPER]);
       };
 
       await findAvailableTypeListBox().vm.$emit('select', ROLE_TYPE);
@@ -103,9 +103,9 @@ describe('Scan result policy actions', () => {
 
     it('selects user approvers', async () => {
       const verifyRuleMode = () => {
-        expect(findActionSection().exists()).toBe(true);
+        expect(findApproverAction().exists()).toBe(true);
         expect(findUserSelect().exists()).toBe(true);
-        expect(findActionSection().props('initAction').user_approvers_ids).toEqual([USER.id]);
+        expect(findApproverAction().props('initAction').user_approvers_ids).toEqual([USER.id]);
       };
 
       await findAvailableTypeListBox().vm.$emit('select', USER_TYPE);
@@ -123,9 +123,9 @@ describe('Scan result policy actions', () => {
 
     it('selects group approvers', async () => {
       const verifyRuleMode = () => {
-        expect(findActionSection().exists()).toBe(true);
+        expect(findApproverAction().exists()).toBe(true);
         expect(findGroupSelect().exists()).toBe(true);
-        expect(findActionSection().props('initAction').group_approvers_ids).toEqual([GROUP.id]);
+        expect(findApproverAction().props('initAction').group_approvers_ids).toEqual([GROUP.id]);
       };
 
       await findAvailableTypeListBox().vm.$emit('select', GROUP_TYPE);

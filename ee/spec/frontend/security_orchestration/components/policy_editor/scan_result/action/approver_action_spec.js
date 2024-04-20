@@ -2,12 +2,12 @@ import { nextTick } from 'vue';
 import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/constants';
-import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
-import ActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_approvers.vue';
+import ApproverAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_action.vue';
+import ApproverSelectionWrapper from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_selection_wrapper.vue';
 import { APPROVER_TYPE_LIST_ITEMS } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/actions';
 import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 
-describe('ActionSection', () => {
+describe('ApproverAction', () => {
   let wrapper;
 
   const APPROVERS_IDS = [1, 2, 3];
@@ -59,7 +59,7 @@ describe('ActionSection', () => {
   };
 
   const createWrapper = (propsData = {}) => {
-    wrapper = shallowMount(ActionSection, {
+    wrapper = shallowMount(ApproverAction, {
       propsData: {
         initAction: DEFAULT_ACTION,
         existingApprovers: {},
@@ -71,8 +71,8 @@ describe('ActionSection', () => {
     });
   };
 
-  const findActionApprover = () => wrapper.findComponent(ActionApprovers);
-  const findAllActionApprovers = () => wrapper.findAllComponents(ActionApprovers);
+  const findActionApprover = () => wrapper.findComponent(ApproverSelectionWrapper);
+  const findAllApproverSelectionWrapper = () => wrapper.findAllComponents(ApproverSelectionWrapper);
   const findAllAlerts = () => wrapper.findAllComponents(GlAlert);
   const findSectionLayout = () => wrapper.findComponent(SectionLayout);
 
@@ -97,9 +97,9 @@ describe('ActionSection', () => {
     });
 
     it('creates a new approver on "addApproverType"', async () => {
-      expect(findAllActionApprovers()).toHaveLength(1);
+      expect(findAllApproverSelectionWrapper()).toHaveLength(1);
       await emit('addApproverType');
-      expect(findAllActionApprovers()).toHaveLength(2);
+      expect(findAllApproverSelectionWrapper()).toHaveLength(2);
     });
 
     it('does not render alert', () => {
@@ -237,7 +237,7 @@ describe('ActionSection', () => {
         APPROVER_TYPE_LIST_ITEMS.filter((t) => t.value !== USER_TYPE),
       );
       await emit('addApproverType');
-      findAllActionApprovers().at(0).vm.$emit('removeApproverType', USER_TYPE);
+      findAllApproverSelectionWrapper().at(0).vm.$emit('removeApproverType', USER_TYPE);
       await nextTick();
       expect(findActionApprover().props('availableTypes')).toEqual(
         expect.arrayContaining(APPROVER_TYPE_LIST_ITEMS),
@@ -281,7 +281,7 @@ describe('ActionSection', () => {
     });
 
     it('renders the user select when there are existing user approvers', () => {
-      expect(findAllActionApprovers()).toHaveLength(1);
+      expect(findAllApproverSelectionWrapper()).toHaveLength(1);
       expect(findActionApprover().props('approverType')).toBe(USER_TYPE);
     });
   });
@@ -295,7 +295,7 @@ describe('ActionSection', () => {
     });
 
     it('renders the group select when there are existing group approvers', () => {
-      expect(findAllActionApprovers()).toHaveLength(1);
+      expect(findAllApproverSelectionWrapper()).toHaveLength(1);
       expect(findActionApprover().props('approverType')).toBe(GROUP_TYPE);
     });
   });
@@ -309,9 +309,9 @@ describe('ActionSection', () => {
     });
 
     it('renders the user select with only the user approvers', () => {
-      expect(findAllActionApprovers()).toHaveLength(2);
-      expect(findAllActionApprovers().at(0).props('approverType')).toBe(GROUP_TYPE);
-      expect(findAllActionApprovers().at(1).props('approverType')).toBe(USER_TYPE);
+      expect(findAllApproverSelectionWrapper()).toHaveLength(2);
+      expect(findAllApproverSelectionWrapper().at(0).props('approverType')).toBe(GROUP_TYPE);
+      expect(findAllApproverSelectionWrapper().at(1).props('approverType')).toBe(USER_TYPE);
     });
   });
 

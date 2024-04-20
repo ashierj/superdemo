@@ -15,6 +15,7 @@ module Projects
         push_frontend_feature_flag(:compliance_pipeline_in_policies, project)
         push_frontend_feature_flag(:pipeline_execution_policy_type, project.group) if project.group
         push_frontend_feature_flag(:security_policies_breaking_changes, project)
+        push_frontend_feature_flag(:approval_policy_disable_bot_comment, project)
       end
 
       feature_category :security_policy_management

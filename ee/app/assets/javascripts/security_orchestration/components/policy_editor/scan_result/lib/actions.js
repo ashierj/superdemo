@@ -108,6 +108,10 @@ export const MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE = s__('SecurityOrchestra
 
 export const DEFAULT_APPROVER_DROPDOWN_TEXT = s__('SecurityOrchestration|Choose approver type');
 
+export const REQUIRE_APPROVAL_TYPE = 'require_approval';
+
+export const BOT_COMMENT_TYPE = 'send_bot_message';
+
 export const buildApprovalAction = () => {
-  return { type: 'require_approval', approvals_required: 1, id: uniqueId('action_') };
+  return { type: REQUIRE_APPROVAL_TYPE, approvals_required: 1, id: uniqueId('action_') };
 };
