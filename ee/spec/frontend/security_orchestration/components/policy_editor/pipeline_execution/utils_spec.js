@@ -5,7 +5,7 @@ import {
   policyToYaml,
   toYaml,
 } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/utils';
-import { customYaml, customYamlObject } from './mock_data';
+import { customYaml, customYamlObject, nonBooleanOverrideTypeManifest } from './mock_data';
 
 describe('fromYaml', () => {
   it.each`
@@ -20,9 +20,10 @@ describe('fromYaml', () => {
 
 describe('createPolicyObject', () => {
   it.each`
-    title                                                                          | input                                | output
-    ${'returns the policy object and no errors for a supported manifest'}          | ${DEFAULT_PIPELINE_EXECUTION_POLICY} | ${{ policy: fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY }), hasParsingError: false }}
-    ${'returns the error policy object and the error for an unsupported manifest'} | ${customYaml}                        | ${{ policy: { error: true }, hasParsingError: true }}
+    title                                                                              | input                                | output
+    ${'returns the policy object and no errors for a supported manifest'}              | ${DEFAULT_PIPELINE_EXECUTION_POLICY} | ${{ policy: fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY }), hasParsingError: false }}
+    ${'returns the error policy object and the error for an unsupported manifest'}     | ${customYaml}                        | ${{ policy: { error: true }, hasParsingError: true }}
+    ${'returns the error policy object and the error for a non-boolean override type'} | ${nonBooleanOverrideTypeManifest}    | ${{ policy: { error: true }, hasParsingError: true }}
   `('$title', ({ input, output }) => {
     expect(createPolicyObject(input)).toStrictEqual(output);
   });

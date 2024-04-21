@@ -1,4 +1,5 @@
 import { safeDump, safeLoad } from 'js-yaml';
+import { isBoolean } from 'lodash';
 import { hasInvalidKey } from '../utils';
 
 /*
@@ -26,7 +27,13 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
       ];
       const contentKeys = ['workflow', 'include'];
 
-      return !(hasInvalidKey(policy, primaryKeys) || hasInvalidKey(policy.content, contentKeys))
+      const hasInvalidOverrideType = (overrideType) => !isBoolean(overrideType);
+
+      return !(
+        hasInvalidKey(policy, primaryKeys) ||
+        hasInvalidKey(policy.content, contentKeys) ||
+        hasInvalidOverrideType(policy.override_project_ci)
+      )
         ? policy
         : { error: true };
     }
