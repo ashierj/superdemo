@@ -19,11 +19,21 @@ export const customYamlObject = { variable: true };
 export const configFileManifest = `name: "Ci config file"
 description: "triggers all protected branches except main"
 enabled: true
-override_project_ci: true
+override_project_ci: false
 content:
   include:
-    project: pipeline-execution-policy/security-policy-project
-    file: ci.yml
+    project: GitLab.org/GitLab
+    file: .pipeline-execution.yml
 `;
 
 export const configFileObject = fromYaml({ manifest: configFileManifest });
+
+export const nonBooleanOverrideTypeManifest = `name: "Ci config file"
+description: "triggers all protected branches except main"
+enabled: true
+override_project_ci: this_is_wrong
+content:
+  include:
+    project: GitLab.org/GitLab
+    file: .pipeline-execution.yml
+`;

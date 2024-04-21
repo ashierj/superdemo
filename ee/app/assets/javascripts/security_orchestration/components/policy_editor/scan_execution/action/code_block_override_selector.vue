@@ -5,7 +5,7 @@ import {
   CUSTOM_OVERRIDE_OPTIONS_LISTBOX_ITEMS,
   INJECT,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
-import { validateOverrideValues } from 'ee/security_orchestration/components/policy_editor/scan_execution//lib';
+import { validateOverrideValues } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 
 export default {
   CUSTOM_OVERRIDE_OPTIONS_LISTBOX_ITEMS,

@@ -83,6 +83,9 @@ export default {
     originalName() {
       return this.existingPolicy?.name;
     },
+    overrideType() {
+      return this.policy.override_project_ci;
+    },
   },
   methods: {
     changeEditorMode(mode) {
@@ -143,7 +146,12 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <action-section class="gl-mb-4 security-policies-bg-gray-10 gl-rounded-base gl-p-5" />
+        <action-section
+          class="gl-mb-4 security-policies-bg-gray-10 gl-rounded-base gl-p-5"
+          :action="policy.content"
+          :override-type="overrideType"
+          @changed="handleUpdateProperty"
+        />
       </dim-disable-container>
     </template>
   </editor-layout>

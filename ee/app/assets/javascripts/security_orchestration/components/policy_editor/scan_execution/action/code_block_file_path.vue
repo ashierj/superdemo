@@ -16,6 +16,7 @@ import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
 import { isGroup } from 'ee/security_orchestration/components/utils';
+import { validateOverrideValues } from '../lib';
 import CodeBlockSourceSelector from './code_block_source_selector.vue';
 import CodeBlockOverrideSelector from './code_block_override_selector.vue';
 
@@ -66,7 +67,8 @@ export default {
     overrideType: {
       type: String,
       required: false,
-      default: undefined,
+      default: null,
+      validator: validateOverrideValues,
     },
     selectedType: {
       type: String,
