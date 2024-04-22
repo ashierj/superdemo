@@ -71,10 +71,6 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator, featu
       'root is missing required keys: vulnerabilities'
     end
 
-    let(:expected_malformed_version_message) do
-      "property '/version' does not match pattern: ^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    end
-
     let(:expected_unsupported_message) do
       "Version #{report_data['version']} for report type #{report_type} is unsupported, supported versions for"\
       " this report type are: #{supported_versions}. GitLab will attempt to validate this report against the earliest"\
@@ -82,7 +78,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator, featu
     end
 
     let(:expected_error_messages) do
-      [expected_missing_key_message, expected_unsupported_message, expected_malformed_version_message]
+      [expected_missing_key_message, expected_unsupported_message]
     end
 
     let(:expected_missing_key_message_for_dependency_scanning) do
@@ -90,7 +86,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator, featu
     end
 
     let(:expected_error_messages_for_dependency_scanning) do
-      [expected_missing_key_message_for_dependency_scanning, expected_unsupported_message, expected_malformed_version_message]
+      [expected_missing_key_message_for_dependency_scanning, expected_unsupported_message]
     end
 
     before do
@@ -180,7 +176,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator, featu
         subject { validator.errors }
 
         let(:report_data) do
-          valid_data['version'] = "V2.1.3"
+          valid_data['version'] = "2.1.3"
           valid_data.delete('vulnerabilities')
           valid_data
         end
