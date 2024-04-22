@@ -113,7 +113,7 @@ export default {
     <div class="gl-display-flex">
       <h2 class="gl-font-lg gl-mt-0">
         {{ s__('Runners|Wait time to pick a job') }}
-        <help-popover trigger-class="gl-vertical-align-baseline">
+        <help-popover trigger-class="gl-align-baseline">
           <gl-sprintf
             :message="
               s__(
