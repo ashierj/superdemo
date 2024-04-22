@@ -97,7 +97,7 @@ describe('WorkItemNotes component', () => {
     });
 
     it('with time difference of 10 mins into one', () => {
-      const notesWidget = workItemNotesWithSystemNotesWithChangedDescription.data.workspace.workItems.nodes[0].widgets.find(
+      const notesWidget = workItemNotesWithSystemNotesWithChangedDescription.data.workspace.workItem.widgets.find(
         (widget) => widget.type === WIDGET_TYPE_NOTES,
       );
 
