@@ -110,6 +110,7 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck, feature_category: :source_code
 
       before do
         ::Gitlab::Git::HookEnv.set(project.repository.gl_repository,
+                                   project.repository.raw_repository.relative_path,
                                    "GIT_OBJECT_DIRECTORY_RELATIVE" => "objects",
                                    "GIT_ALTERNATE_OBJECT_DIRECTORIES_RELATIVE" => [])
       end

@@ -68,12 +68,11 @@ RSpec.describe Gitlab::GitAccessProject do
         create(:namespace_root_storage_statistics, namespace: namespace)
       end
 
-      context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is set' do
+      context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is set', :request_store do
         before do
-          allow(Gitlab::Git::HookEnv)
-            .to receive(:all)
-            .with(repository.gl_repository)
-            .and_return({ 'GIT_OBJECT_DIRECTORY_RELATIVE' => 'objects' })
+          ::Gitlab::Git::HookEnv.set(project.repository.gl_repository,
+                                     project.repository.raw_repository.relative_path,
+                                     'GIT_OBJECT_DIRECTORY_RELATIVE' => 'objects')
 
           simulate_quarantine_size(repository, object_directory_size)
         end

@@ -87,6 +87,8 @@ module EE
         # @param git_env [Hash] the current git environment
         # @raise [Gitlab::GitAccess::ForbiddenError]
         def parallelize(git_env)
+          relative_path = ::Gitlab::Git::HookEnv.get_relative_path
+
           @threads << Thread.new do
             Thread.current.tap do |t|
               t.name = "push_rule_check"
@@ -95,7 +97,7 @@ module EE
             end
 
             ::Gitlab::SafeRequestStore.ensure_request_store do
-              ::Gitlab::Git::HookEnv.set(project.repository.gl_repository, git_env)
+              ::Gitlab::Git::HookEnv.set(project.repository.gl_repository, relative_path, git_env)
 
               yield
             end
