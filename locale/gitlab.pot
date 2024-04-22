@@ -17905,6 +17905,9 @@ msgstr ""
 msgid "Deployment|Approved"
 msgstr ""
 
+msgid "Deployment|Approved as %{role}"
+msgstr ""
+
 msgid "Deployment|Branch"
 msgstr ""
 
@@ -17969,6 +17972,9 @@ msgid "Deployment|Reject"
 msgstr ""
 
 msgid "Deployment|Rejected"
+msgstr ""
+
+msgid "Deployment|Rejected as %{role}"
 msgstr ""
 
 msgid "Deployment|Related Tags"
