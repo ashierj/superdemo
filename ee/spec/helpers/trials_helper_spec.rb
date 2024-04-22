@@ -376,4 +376,28 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       end
     end
   end
+
+  describe '#trial_form_errors_message' do
+    let(:result) { ServiceResponse.error(message: ['some error']) }
+
+    subject { helper.trial_form_errors_message(result) }
+
+    it 'returns error message from the result directly' do
+      is_expected.to eq('some error')
+    end
+
+    context 'when the error has :generic_trial_error as reason' do
+      let(:result) do
+        ServiceResponse.error(message: ['some error'],
+          reason: GitlabSubscriptions::Trials::BaseApplyTrialService::GENERIC_TRIAL_ERROR)
+      end
+
+      it 'overrides the error message' do
+        is_expected.to include('Please try again or reach out to')
+        is_expected.to include(
+          '<a target="_blank" rel="noopener noreferrer" href="https://support.gitlab.com/hc/en-us">GitLab Support</a>'
+        )
+      end
+    end
+  end
 end

@@ -16,8 +16,9 @@ module Features
 
     def expect_to_be_on_namespace_selection_with_errors
       expect_to_be_on_namespace_selection
-      expect(page).to have_content('We have found the following errors')
-      expect(page).to have_content('_trial_fail_')
+      expect(page).to have_content('could not be created because our system did not respond successfully')
+      expect(page).to have_content('Please try again or reach out to GitLab Support.')
+      expect(page).to have_link('GitLab Support', href: 'https://support.gitlab.com/hc/en-us')
     end
 
     def expect_to_be_on_namespace_selection
@@ -34,7 +35,7 @@ module Features
     end
 
     def expect_to_be_on_lead_form_with_errors
-      expect(page).to have_content('We have found the following errors')
+      expect(page).to have_content('could not be created because our system did not respond successfully')
       expect(page).to have_content('_lead_fail_')
       expect(page).to have_content('Number of employees')
 
@@ -224,7 +225,8 @@ module Features
       trial_success = if success
                         ServiceResponse.success
                       else
-                        ServiceResponse.error(message: '_trial_fail_')
+                        ServiceResponse.error(message: '_trial_fail_',
+                          reason: GitlabSubscriptions::Trials::BaseApplyTrialService::GENERIC_TRIAL_ERROR)
                       end
 
       apply_trial_class =

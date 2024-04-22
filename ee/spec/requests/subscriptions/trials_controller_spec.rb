@@ -195,7 +195,7 @@ RSpec.describe Subscriptions::TrialsController, feature_category: :purchase do
           it 'renders lead form' do
             expect(post_create).to have_gitlab_http_status(:ok)
 
-            expect(response.body).to include(_('We have found the following errors:'))
+            expect(response.body).to include(_('your trial could not be created'))
             expect(response.body).to include(_('Start your Free Ultimate Trial'))
             expect(response.body).to include(s_('Trial|Your GitLab Ultimate trial lasts for 30 days, ' \
                                                 'but you can keep your free GitLab account forever. ' \
@@ -231,7 +231,7 @@ RSpec.describe Subscriptions::TrialsController, feature_category: :purchase do
             expect(post_create).to render_select_namespace
 
             expect(response.body).to include('data-namespace-create-errors="_error_"')
-            expect(response.body).not_to include(_('We have found the following errors:'))
+            expect(response.body).not_to include(_('your trial could not be created'))
           end
         end
 
@@ -243,7 +243,7 @@ RSpec.describe Subscriptions::TrialsController, feature_category: :purchase do
           it 'renders the select namespace form again with trial creation errors only' do
             expect(post_create).to render_select_namespace
 
-            expect(response.body).to include(_('We have found the following errors:'))
+            expect(response.body).to include(_('your trial could not be created'))
           end
         end
 
