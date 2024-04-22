@@ -122,8 +122,12 @@ export default {
   </user-callout-dismisser>
 </template>
 <style lang="scss">
-.duo-chat-callout-popover.bs-popover-bottom > .arrow::after {
-  border-bottom-color: #c4bae2;
-  top: 1px;
+.duo-chat-callout-popover {
+  z-index: 1001;
+
+  &.bs-popover-bottom > .arrow::after {
+    border-bottom-color: #c4bae2;
+    top: 1px;
+  }
 }
 </style>
