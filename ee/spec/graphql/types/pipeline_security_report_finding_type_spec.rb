@@ -51,6 +51,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
        dismissal_reason
        state_comment
        description_html
+       solution_html
        user_permissions]
   end
 
