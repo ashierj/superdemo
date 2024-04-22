@@ -1,11 +1,19 @@
 <script>
-import { GlButton, GlExperimentBadge, GlFormGroup, GlFormTextarea, GlIcon } from '@gitlab/ui';
+import {
+  GlButton,
+  GlExperimentBadge,
+  GlFormGroup,
+  GlFormTextarea,
+  GlIcon,
+  GlLink,
+} from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import { fetchPolicies } from '~/lib/graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT, TYPENAME_USER } from '~/graphql_shared/constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { InternalEvents } from '~/tracking';
@@ -20,8 +28,9 @@ export default {
     GlButton,
     GlExperimentBadge,
     GlFormGroup,
-    GlIcon,
     GlFormTextarea,
+    GlIcon,
+    GlLink,
   },
   mixins: [InternalEvents.mixin()],
   inject: {
@@ -149,6 +158,9 @@ export default {
       },
     },
   },
+  helpPageUrl: helpPagePath('user/analytics/analytics_dashboards', {
+    anchor: 'generate-a-custom-visualization-with-gitlab-duo',
+  }),
 };
 </script>
 
@@ -166,6 +178,10 @@ export default {
             'Analytics|GitLab Duo may be used to help generate your visualization. You can prompt Duo with your desired data, as well as any dimensions or additional groupings of that data. You may also edit the result as needed.',
           )
         }}
+        <gl-link data-testid="generate-cube-query-learn-more-link" :href="$options.helpPageUrl">{{
+          __('Learn more')
+        }}</gl-link
+        >.
       </p>
       <gl-form-textarea
         v-model="prompt"
