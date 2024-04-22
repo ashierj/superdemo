@@ -120,7 +120,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
             dependencies: [],
             script: ['gtcs scan'],
             variables: {
-              CS_ANALYZER_IMAGE: "$CI_TEMPLATE_REGISTRY_HOST/security-products/container-scanning:6",
+              CS_ANALYZER_IMAGE: "$CI_TEMPLATE_REGISTRY_HOST/security-products/container-scanning:7",
               GIT_STRATEGY: 'fetch',
               VARIABLE_1: 10,
               CS_SCHEMA_MODEL: 15
