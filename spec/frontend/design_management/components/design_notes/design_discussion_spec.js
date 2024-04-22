@@ -225,7 +225,7 @@ describe('Design discussions component', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0];
 
       expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
-      expect(dispatchedEvent.detail).toEqual({ diff: 0 });
+      expect(dispatchedEvent.detail).toEqual({ delta: 0 });
       expect(dispatchedEvent.type).toBe('todo:toggle');
     });
 

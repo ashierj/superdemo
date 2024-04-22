@@ -41,7 +41,7 @@ describe('Todo Button', () => {
     const dispatchedEvent = dispatchEventSpy.mock.calls[0][0];
 
     expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchedEvent.detail).toEqual({ diff: -1 });
+    expect(dispatchedEvent.detail).toEqual({ delta: -1 });
     expect(dispatchedEvent.type).toBe('todo:toggle');
   });
 

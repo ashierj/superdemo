@@ -145,7 +145,7 @@ describe('UserBar component', () => {
       it('should update todo counter when event with diff is emitted', async () => {
         createWrapper();
         expect(findTodosCounter().props('count')).toBe(3);
-        document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { diff: -2 } }));
+        document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { delta: -2 } }));
         await nextTick();
         expect(findTodosCounter().props('count')).toBe(1);
       });

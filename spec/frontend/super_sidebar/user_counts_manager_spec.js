@@ -175,19 +175,32 @@ describe('User Count Manager', () => {
 
     describe('with diff on count', () => {
       it.each([
-        { diff: 5, expected: 15 },
-        { diff: -5, expected: 5 },
-        { diff: 0, expected: 10 },
-        { diff: -100, expected: 0 },
-        { diff: NaN, expected: 10 },
-        { diff: '99+', expected: 10 },
-      ])(`with count: $diff results in $expected`, ({ diff, expected }) => {
+        { delta: 5, expected: 15 },
+        { delta: -5, expected: 5 },
+        { delta: 0, expected: 10 },
+        { delta: -100, expected: 0 },
+        { delta: NaN, expected: 10 },
+        { delta: '99+', expected: 10 },
+      ])(`with count: $diff results in $expected`, ({ delta, expected }) => {
         expect(userCounts.todos).toBe(10);
 
-        document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { diff } }));
+        document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { delta } }));
 
         expect(userCounts.todos).toBe(expected);
       });
+    });
+
+    it('updates count over delta if both are defined', () => {
+      expect(userCounts.todos).toBe(10);
+
+      const detail = {
+        count: 20,
+        delta: -5,
+      };
+
+      document.dispatchEvent(new CustomEvent('todo:toggle', { detail }));
+
+      expect(userCounts.todos).toBe(detail.count);
     });
   });
 

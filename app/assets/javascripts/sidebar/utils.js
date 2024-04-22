@@ -7,7 +7,7 @@ export const todoLabel = (hasTodo) => {
   return hasTodo ? __('Mark as done') : __('Add a to do');
 };
 
-export const updateGlobalTodoCount = (diff) => {
+export const updateGlobalTodoCount = (delta) => {
   // Optimistic update of user counts
-  document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { diff } }));
+  document.dispatchEvent(new CustomEvent('todo:toggle', { detail: { delta } }));
 };

@@ -44,8 +44,8 @@ async function retrieveUserCountsFromApi() {
 function updateTodos(e) {
   if (Number.isSafeInteger(e?.detail?.count)) {
     userCounts.todos = Math.max(e.detail.count, 0);
-  } else if (Number.isSafeInteger(e?.detail?.diff)) {
-    userCounts.todos = Math.max(userCounts.todos + e.detail.diff, 0);
+  } else if (Number.isSafeInteger(e?.detail?.delta)) {
+    userCounts.todos = Math.max(userCounts.todos + e.detail.delta, 0);
   }
 }
 
