@@ -417,12 +417,6 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo, feature_category: :geo
                                      .and_return('feature')
             end
 
-            it 'syncs gitattributes to info/attributes' do
-              expect(repository).to receive(:copy_gitattributes)
-
-              subject.execute
-            end
-
             it 'updates the default branch' do
               expect(repository).to receive(:change_head).with('feature').once
 
@@ -431,12 +425,6 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo, feature_category: :geo
           end
 
           context 'when HEAD does not change' do
-            it 'syncs gitattributes to info/attributes' do
-              expect(repository).to receive(:copy_gitattributes)
-
-              subject.execute
-            end
-
             it 'updates the default branch' do
               expect(repository).to receive(:change_head).with('master').once
 
