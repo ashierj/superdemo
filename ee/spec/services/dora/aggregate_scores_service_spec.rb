@@ -13,8 +13,8 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
   let_it_be(:project_4) { create(:project, group: group) }
   let_it_be(:project_5) { create(:project, group: group, name: "Project with no data ever") }
   let_it_be(:project_6) { create(:project, group: group, name: "Project with data in other month") }
-  let_it_be(:maintainer) { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:maintainer) { create(:user, maintainer_of: group) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
   let_it_be(:beginning_of_last_month) { Time.current.last_month.beginning_of_month }
 
   let(:service) do
@@ -32,11 +32,6 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
     freeze_time do
       example.run
     end
-  end
-
-  before_all do
-    group.add_maintainer(maintainer)
-    group.add_guest(guest)
   end
 
   before do

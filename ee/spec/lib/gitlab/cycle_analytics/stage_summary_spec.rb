@@ -4,14 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::CycleAnalytics::StageSummary, feature_category: :devops_reports do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:user) { create(:user, :admin) }
+  let_it_be(:user) { create(:user, :admin, maintainer_of: project) }
 
   let(:options) { { from: 1.day.ago } }
   let(:args) { { options: options, current_user: user } }
-
-  before_all do
-    project.add_maintainer(user)
-  end
 
   let(:stage_summary) { described_class.new(project, **args).data }
 

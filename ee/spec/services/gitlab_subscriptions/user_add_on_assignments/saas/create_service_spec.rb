@@ -6,14 +6,10 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
   let_it_be(:namespace) { create(:group) }
   let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
   let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: namespace, add_on: add_on) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: namespace) }
 
   subject(:response) do
     described_class.new(add_on_purchase: add_on_purchase, user: user).execute
-  end
-
-  before_all do
-    namespace.add_developer(user)
   end
 
   before do

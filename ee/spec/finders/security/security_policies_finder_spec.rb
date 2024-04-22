@@ -7,7 +7,7 @@ RSpec.describe Security::SecurityPoliciesFinder, feature_category: :security_pol
   let_it_be(:scan_execution_policy) { build(:scan_execution_policy, name: 'SEP 1') }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:actor) { create(:user) }
+  let_it_be(:actor) { create(:user, developer_of: [project, group]) }
   let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
   let_it_be(:group_policy_configuration) do
@@ -15,11 +15,6 @@ RSpec.describe Security::SecurityPoliciesFinder, feature_category: :security_pol
   end
 
   subject { described_class.new(actor, [policy_configuration, group_policy_configuration]).execute }
-
-  before_all do
-    project.add_developer(actor)
-    group.add_developer(actor)
-  end
 
   describe '#execute' do
     context 'when feature is not licensed' do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AutoMerge::MergeWhenPipelineSucceedsService, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository, maintainers: user) }
 
   let(:mr_merge_if_green_enabled) do
     create(:merge_request,
@@ -21,10 +21,6 @@ RSpec.describe AutoMerge::MergeWhenPipelineSucceedsService, feature_category: :c
 
   let(:service) do
     described_class.new(project, user, commit_message: 'Awesome message')
-  end
-
-  before_all do
-    project.add_maintainer(user)
   end
 
   before do

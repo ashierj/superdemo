@@ -4,12 +4,8 @@ require 'spec_helper'
 
 RSpec.describe PreviewMarkdownService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, developers: user) }
   let_it_be(:project) { create(:project, group: group) }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   context 'preview epic text with quick action' do
     let_it_be(:epic) { create(:epic, group: group) }

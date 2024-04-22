@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) do
-    create(:project, :public, creator_id: user.id, namespace: user.namespace)
+    create(:project, :public, creator_id: user.id, namespace: user.namespace, reporters: user)
   end
 
   let_it_be(:group) { create(:group) }
@@ -16,10 +16,6 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
 
   let_it_be(:author)      { create(:author) }
   let_it_be(:assignee)    { create(:assignee) }
-
-  before_all do
-    project.add_reporter(user)
-  end
 
   shared_examples 'exposes epic' do
     context 'with epics feature' do

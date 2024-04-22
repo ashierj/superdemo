@@ -10,10 +10,8 @@ RSpec.describe Emails::MergeCommits, feature_category: :compliance_management do
 
   let_it_be(:current_user, reload: true) { create(:user, email: "current@email.com", name: 'www.example.com') }
   let_it_be(:group) { create(:group, name: 'Kombucha lovers') }
-  let_it_be(:project) { create(:project, :repository, namespace: group, name: 'Starter kit') }
-
-  before_all do
-    project.add_maintainer(current_user)
+  let_it_be(:project) do
+    create(:project, :repository, namespace: group, name: 'Starter kit', maintainers: current_user)
   end
 
   describe '#merge_requests_csv_email' do

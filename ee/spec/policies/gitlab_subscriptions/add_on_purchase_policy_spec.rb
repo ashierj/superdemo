@@ -8,19 +8,11 @@ RSpec.describe GitlabSubscriptions::AddOnPurchasePolicy, feature_category: :seat
 
   let_it_be(:group) { create(:group) }
   let_it_be(:admin) { create(:admin, :without_default_org) }
-  let_it_be(:owner) { create(:user) }
-  let_it_be(:maintainer) { create(:user) }
-  let_it_be(:developer) { create(:user) }
-  let_it_be(:reporter) { create(:user) }
-  let_it_be(:guest) { create(:user) }
-
-  before_all do
-    group.add_owner(owner)
-    group.add_maintainer(maintainer)
-    group.add_developer(developer)
-    group.add_reporter(reporter)
-    group.add_guest(guest)
-  end
+  let_it_be(:owner) { create(:user, owner_of: group) }
+  let_it_be(:maintainer) { create(:user, maintainer_of: group) }
+  let_it_be(:developer) { create(:user, developer_of: group) }
+  let_it_be(:reporter) { create(:user, reporter_of: group) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
 
   describe ':admin_add_on_purchase' do
     let(:policy) { :admin_add_on_purchase }

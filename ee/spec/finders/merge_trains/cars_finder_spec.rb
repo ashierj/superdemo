@@ -4,17 +4,12 @@ require 'spec_helper'
 
 RSpec.describe MergeTrains::CarsFinder, feature_category: :merge_trains do
   let_it_be(:project) { create(:project) }
-  let_it_be(:developer) { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
+  let_it_be(:guest) { create(:user, guest_of: project) }
 
   let(:finder) { described_class.new(project, user, params) }
   let(:user) { developer }
   let(:params) { {} }
-
-  before_all do
-    project.add_developer(developer)
-    project.add_guest(guest)
-  end
 
   describe '#execute' do
     subject { finder.execute }

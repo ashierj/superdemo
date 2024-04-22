@@ -7,7 +7,7 @@ RSpec.describe Issuable::RelatedLinksCreateWorker, feature_category: :portfolio_
   let_it_be(:issuable) { create(:work_item, :task, project: project) }
   let_it_be(:item1) { create(:work_item, :task, project: project) }
   let_it_be(:item2) { create(:work_item, :task, project: project) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, reporter_of: project) }
 
   let(:params) do
     {
@@ -15,10 +15,6 @@ RSpec.describe Issuable::RelatedLinksCreateWorker, feature_category: :portfolio_
       issuable_id: issuable.id,
       user_id: user.id
     }
-  end
-
-  before_all do
-    project.add_reporter(user)
   end
 
   subject { described_class.new.perform(params) }

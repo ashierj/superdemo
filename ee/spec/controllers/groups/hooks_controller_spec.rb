@@ -5,14 +5,9 @@ require 'spec_helper'
 RSpec.describe Groups::HooksController, feature_category: :webhooks do
   let_it_be(:group_owner) { create(:user) }
   let_it_be(:group_maintainer) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, owners: group_owner, maintainers: group_maintainer) }
 
   let(:user) { group_owner }
-
-  before_all do
-    group.add_owner(group_owner)
-    group.add_maintainer(group_maintainer)
-  end
 
   before do
     sign_in(user)

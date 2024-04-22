@@ -4,15 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Llm::Internal::CategorizeChatQuestionService, :saas, feature_category: :duo_chat do
   let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be(:resource) { user }
   let_it_be(:options) { {} }
 
   subject { described_class.new(user, resource, options) }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   include_context 'with ai features enabled for group'
 

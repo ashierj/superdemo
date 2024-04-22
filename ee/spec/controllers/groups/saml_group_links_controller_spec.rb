@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::SamlGroupLinksController, feature_category: :system_access do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user)  { create(:user) }
-
-  before_all do
-    group.add_owner(user)
-  end
+  let_it_be(:user)  { create(:user, owner_of: group) }
 
   before do
     stub_licensed_features(group_saml: true, saml_group_sync: true)

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe IncidentManagement::OncallRotations::CreateService, feature_category: :incident_management do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:schedule) { create(:incident_management_oncall_schedule, project: project) }
-  let_it_be(:user_with_permissions) { create(:user) }
+  let_it_be(:user_with_permissions) { create(:user, maintainer_of: project) }
   let_it_be(:user_without_permissions) { create(:user) }
   let_it_be(:current_user) { user_with_permissions }
 
@@ -24,10 +24,6 @@ RSpec.describe IncidentManagement::OncallRotations::CreateService, feature_categ
 
   let(:params) { { name: 'On-call rotation', starts_at: starts_at, ends_at: 1.month.after(starts_at), length: '1', length_unit: 'days' }.merge(participants: participants) }
   let(:service) { described_class.new(schedule, project, current_user, params) }
-
-  before_all do
-    project.add_maintainer(user_with_permissions)
-  end
 
   before do
     stub_licensed_features(oncall_schedules: true)

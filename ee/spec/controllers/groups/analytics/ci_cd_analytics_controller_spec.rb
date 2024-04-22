@@ -6,14 +6,9 @@ RSpec.describe Groups::Analytics::CiCdAnalyticsController, feature_category: :te
   let_it_be(:non_member) { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:reporter) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, guests: guest, reporters: reporter) }
 
   let(:current_user) { reporter }
-
-  before_all do
-    group.add_guest(guest)
-    group.add_reporter(reporter)
-  end
 
   before do
     stub_licensed_features(group_ci_cd_analytics: true)

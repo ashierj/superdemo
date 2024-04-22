@@ -4,13 +4,9 @@ require 'spec_helper'
 
 RSpec.describe 'SAML provider settings', feature_category: :system_access do
   let_it_be_with_refind(:user) { create(:user) }
-  let_it_be_with_refind(:group) { create(:group) }
+  let_it_be_with_refind(:group) { create(:group, owners: user) }
 
   let(:callback_path) { "/groups/#{group.path}/-/saml/callback" }
-
-  before_all do
-    group.add_owner(user)
-  end
 
   before do
     stub_default_url_options(protocol: "https")

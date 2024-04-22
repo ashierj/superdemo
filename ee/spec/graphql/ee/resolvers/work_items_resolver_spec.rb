@@ -6,11 +6,7 @@ RSpec.describe Resolvers::WorkItemsResolver do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :public) }
-  let_it_be(:user) { create(:user) }
-
-  before_all do
-    project.add_reporter(user)
-  end
+  let_it_be(:user) { create(:user, reporter_of: project) }
 
   describe '#resolve', :aggregate_failures do
     let_it_be(:work_item1) { create(:work_item, :satisfied_status, project: project) }

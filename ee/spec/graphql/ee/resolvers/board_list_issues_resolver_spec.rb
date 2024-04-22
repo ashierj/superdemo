@@ -6,7 +6,7 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :private) }
+  let_it_be(:group) { create(:group, :private, developers: user) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:board) { create(:board, project: project) }
   let_it_be(:label) { create(:label, project: project) }
@@ -24,10 +24,6 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   let_it_be(:issue4) { create(:issue, project: project, labels: [label], iteration: current_iteration, weight: 1, health_status: 'needs_attention') }
 
   let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue1) }
-
-  before_all do
-    group.add_developer(user)
-  end
 
   shared_examples 'raises error on mutually exclusive arguments' do
     it 'generates an error if mutually exclusive arguments are present' do

@@ -4,13 +4,9 @@ require 'spec_helper'
 
 RSpec.describe RequirementsManagement::ImportRequirementsCsvWorker, feature_category: :requirements_management do
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, reporter_of: project) }
 
   let(:upload) { create(:upload, :with_file) }
-
-  before_all do
-    project.add_reporter(user)
-  end
 
   before do
     stub_licensed_features(requirements: true)

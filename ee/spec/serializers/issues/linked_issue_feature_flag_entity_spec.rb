@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Issues::LinkedIssueFeatureFlagEntity do
   let_it_be(:project) { create(:project) }
-  let_it_be(:developer) { create(:user) }
-
-  before_all do
-    project.add_developer(developer)
-  end
+  let_it_be(:developer) { create(:user, developer_of: project) }
 
   describe '#as_json' do
     it 'returns json' do
