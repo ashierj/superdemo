@@ -239,10 +239,8 @@ Array [
   },
   Object {
     "description": "Past 6 Months",
-    "end": 2020-02-29T23:59:59.000Z,
     "key": "change",
     "label": "Change (%)",
-    "start": 2019-09-01T00:00:00.000Z,
     "thClass": "gl-w-20p",
   },
 ]
@@ -299,10 +297,8 @@ Array [
   },
   Object {
     "description": "Past 6 Months",
-    "end": 2021-06-30T23:59:59.000Z,
     "key": "change",
     "label": "Change (%)",
-    "start": 2021-01-01T00:00:00.000Z,
     "thClass": "gl-w-20p",
   },
 ]
@@ -359,10 +355,8 @@ Array [
   },
   Object {
     "description": "Past 6 Months",
-    "end": 2021-02-28T23:59:59.000Z,
     "key": "change",
     "label": "Change (%)",
-    "start": 2020-09-01T00:00:00.000Z,
     "thClass": "gl-w-20p",
   },
 ]

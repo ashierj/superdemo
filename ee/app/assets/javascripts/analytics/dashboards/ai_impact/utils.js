@@ -18,8 +18,16 @@ const getStartOfMonth = (now) => dateAtFirstDayOfMonth(getStartOfDay(now));
  * @param {Date} now Current date
  * @returns {Array} Tuple of time periods
  */
-export const generateDateRanges = (now) =>
-  [1, 2, 3, 4, 5].reduce(
+export const generateDateRanges = (now) => {
+  const currentMonth = {
+    key: 'this-month',
+    label: monthInWords(now, true),
+    start: getStartOfMonth(now),
+    end: now,
+    thClass: 'gl-w-10p',
+  };
+
+  return [1, 2, 3, 4, 5].reduce(
     (acc, nMonth) => {
       const thisMonthStart = getStartOfMonth(now);
       const start = nMonthsBefore(thisMonthStart, nMonth);
@@ -35,16 +43,9 @@ export const generateDateRanges = (now) =>
         ...acc,
       ];
     },
-    [
-      {
-        key: 'this-month',
-        label: monthInWords(now, true),
-        start: getStartOfMonth(now),
-        end: now,
-        thClass: 'gl-w-10p',
-      },
-    ],
+    [currentMonth],
   );
+};
 
 /**
  * Generates all the table columns based on the given date.
@@ -63,8 +64,6 @@ export const generateTableColumns = (now) => [
     key: 'change',
     label: sprintf(__('Change (%%)')),
     description: __('Past 6 Months'),
-    start: nMonthsBefore(getStartOfMonth(now), 6),
-    end: nSecondsBefore(getStartOfMonth(now), 1),
     thClass: 'gl-w-20p',
   },
 ];
