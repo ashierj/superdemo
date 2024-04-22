@@ -33933,7 +33933,6 @@ How to format SHA strings.
 | ----- | ----------- |
 | <a id="sharedrunnerssettingdisabled_and_overridable"></a>`DISABLED_AND_OVERRIDABLE` | Sharing of runners is disabled and overridable. |
 | <a id="sharedrunnerssettingdisabled_and_unoverridable"></a>`DISABLED_AND_UNOVERRIDABLE` | Sharing of runners is disabled and unoverridable. |
-| <a id="sharedrunnerssettingdisabled_with_override"></a>`DISABLED_WITH_OVERRIDE` **{warning-solid}** | **Deprecated** in GitLab 17.0. This was renamed. Use: `disabled_and_overridable`. |
 | <a id="sharedrunnerssettingenabled"></a>`ENABLED` | Sharing of runners is enabled. |
 
 ### `SnippetBlobActionEnum`
