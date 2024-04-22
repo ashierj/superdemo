@@ -25,6 +25,7 @@ fragment ApprovalSummary on Deployment {
       approvals {
         ...DeploymentApprovalData
       }
+      canApprove
     }
   }
   userPermissions {

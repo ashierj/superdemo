@@ -45,6 +45,8 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
   const findModal = () => extendedWrapper(wrapper.findComponent(GlModal));
   const findButton = () => extendedWrapper(wrapper.findComponent(GlButton));
+  const findMultipleApprovalRulesTable = () =>
+    extendedWrapper(wrapper.findComponent(MultipleApprovalRulesTable));
 
   const setComment = (comment) =>
     wrapper
@@ -197,7 +199,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
           if (approvals.length > 0) {
             const { user } = deploymentFixture.data.project.deployment.approvals[0];
             user.username = approvals[0].user.username;
-            user.id = `${user.id}1`; // we need to bump the id, as mock appollo client maintains the proper cache inside.
+            user.id = `${user.id}1`; // we need to bump the id, as mock apollo client maintains the proper cache inside.
           }
           deploymentFixture.data.project.deployment.userPermissions.approveDeployment = canApproveDeployment;
 
@@ -229,7 +231,9 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
       it(`should ${ref} the deployment when ${text} is clicked`, async () => {
         const projectId = getIdFromGraphQLId(mockDeploymentFixture.data.project.id);
-        const deploymentId = getIdFromGraphQLId(mockDeploymentFixture.data.project.deployment.id);
+        const { deployment } = mockDeploymentFixture.data.project;
+        const deploymentId = getIdFromGraphQLId(deployment.id);
+        const representedAs = deployment.approvalSummary.rules[0].group.name;
 
         api.mockResolvedValue();
 
@@ -240,6 +244,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
         expect(api).toHaveBeenCalledWith({
           id: projectId,
           deploymentId,
+          representedAs,
           comment: 'comment',
         });
 
@@ -248,7 +253,20 @@ describe('ee/environments/components/environment_approval.vue', () => {
         expect(wrapper.emitted('change')).toEqual([[]]);
       });
 
-      it(`should toast a messsage when ${ref} is clicked`, async () => {
+      it('should use the correct `representedAs` when get `selectedRule` from the multiple approval rules table', () => {
+        const selectedRule = 'Maintainers';
+
+        findMultipleApprovalRulesTable().vm.$emit('select-rule', selectedRule);
+        button.trigger('click');
+
+        expect(api).toHaveBeenCalledWith(
+          expect.objectContaining({
+            representedAs: selectedRule,
+          }),
+        );
+      });
+
+      it(`should toast a message when ${ref} is clicked`, async () => {
         api.mockResolvedValue();
 
         await button.trigger('click');
@@ -310,7 +328,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
     });
 
     it('should pass the approval rules to the table', () => {
-      const table = wrapper.findComponent(MultipleApprovalRulesTable);
+      const table = findMultipleApprovalRulesTable();
       expect(table.props('rules')).toEqual(
         mockDeploymentFixture.data.project.deployment.approvalSummary.rules,
       );

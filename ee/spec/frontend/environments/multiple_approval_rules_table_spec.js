@@ -1,8 +1,9 @@
-import { GlTableLite, GlAvatar, GlAvatarLink } from '@gitlab/ui';
+import { GlTableLite, GlAvatar, GlAvatarLink, GlFormRadio } from '@gitlab/ui';
 import mockDeploymentFixture from 'test_fixtures/graphql/environments/graphql/queries/deployment.query.graphql.json';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MultipleApprovalRulesTable from 'ee/environments/components/multiple_approval_rules_table.vue';
 import { s__ } from '~/locale';
+import { stubComponent } from 'helpers/stub_component';
 
 describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
   let wrapper;
@@ -11,6 +12,11 @@ describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
   const createWrapper = ({ propsData = {} } = {}) =>
     mountExtended(MultipleApprovalRulesTable, {
       propsData: { rules, ...propsData },
+      stubs: {
+        GlFormRadio: stubComponent(GlFormRadio, {
+          props: ['checked'],
+        }),
+      },
     });
 
   const findTable = () => wrapper.findComponent(GlTableLite);
@@ -21,6 +27,8 @@ describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
     const [, ...rows] = table.findAll('tr').wrappers;
     return rows;
   };
+
+  const findRadioButtons = () => wrapper.findAllComponents(GlFormRadio);
 
   describe('rules', () => {
     beforeEach(() => {
@@ -82,6 +90,70 @@ describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
           href: user.webUrl,
           title: user.name,
         });
+      });
+    });
+  });
+
+  describe('approvals', () => {
+    const getRuleName = (index) => rules[index].group?.name || rules[index].user.name;
+    const firstRuleName = getRuleName(0);
+    const secondRuleName = getRuleName(1);
+
+    describe('default', () => {
+      beforeEach(() => {
+        wrapper = createWrapper();
+      });
+
+      it('should render a column for giving approval', () => {
+        const column = wrapper.findByRole('columnheader', { name: 'Give approval' });
+
+        expect(column.exists()).toBe(true);
+      });
+
+      it('should render radio button for each rule the user can approve as', () => {
+        const canApproveRules = rules.filter((rule) => rule.canApprove);
+
+        expect(findRadioButtons()).toHaveLength(canApproveRules.length);
+      });
+
+      it('should preselect first radio button if no value was selected', () => {
+        expect(findRadioButtons().at(0).props('checked')).toBe(firstRuleName);
+      });
+
+      it('should emit first applicable rule as selected by default', () => {
+        expect(wrapper.emitted('select-rule')).toEqual([[firstRuleName]]);
+      });
+    });
+
+    describe('when user selects rule', () => {
+      beforeEach(() => {
+        wrapper = createWrapper();
+        findRadioButtons().at(1).vm.$emit('input', secondRuleName);
+      });
+
+      it('should deselect first radio button if no value was selected', () => {
+        expect(findRadioButtons().at(0).props('checked')).not.toBe(firstRuleName);
+      });
+
+      it('should emit selected rule', () => {
+        expect(wrapper.emitted('select-rule').at(-1)).toEqual([secondRuleName]);
+      });
+    });
+
+    describe('when user already approved', () => {
+      beforeEach(() => {
+        gon.current_username = 'administrator';
+        wrapper = createWrapper();
+      });
+
+      it('should disable radio buttons', () => {
+        findRadioButtons().wrappers.forEach((button) => {
+          expect(button.attributes('disabled')).toBeDefined();
+        });
+      });
+
+      it('should not emit any selected rule', () => {
+        expect(wrapper.emitted('select-rule')).toBeUndefined();
       });
     });
   });

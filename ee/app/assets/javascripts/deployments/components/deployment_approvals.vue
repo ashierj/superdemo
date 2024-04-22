@@ -41,6 +41,7 @@ export default {
       errorMessage: '',
       approveLoading: false,
       rejectLoading: false,
+      selectedRule: null,
     };
   },
   computed: {
@@ -130,6 +131,7 @@ export default {
             input: {
               id: this.deployment.id,
               comment: this.comment,
+              representedAs: this.selectedRule,
               status,
             },
           },
@@ -146,6 +148,9 @@ export default {
           this.errorMessage = this.$options.i18n.genericError;
           captureException(err);
         });
+    },
+    onRuleSelected($event) {
+      this.selectedRule = $event;
     },
   },
   i18n: {
@@ -173,7 +178,7 @@ export default {
     >
       <gl-icon name="approval" class="gl-mr-2" /> <span>{{ header }}</span>
     </div>
-    <multiple-approval-rules-table :rules="approvalSummary.rules" />
+    <multiple-approval-rules-table :rules="approvalSummary.rules" @select-rule="onRuleSelected" />
 
     <template v-if="needsApproval">
       <div class="gl-display-flex gl-flex-direction-column gl-m-5">

@@ -38,6 +38,7 @@ query deployment($fullPath: ID!, $iid: ID!) {
           approvals {
             ...DeploymentApprovalData
           }
+          canApprove
         }
       }
     }
