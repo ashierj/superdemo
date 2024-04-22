@@ -364,12 +364,24 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
       create(:resource_label_event, action: :remove, issue: issue1, label: label1, created_at: start_time + 10.hours + 15.minutes)
     end
 
-    context 'when the enable_vsa_cumulative_label_duration_calculation is off' do
+    it 'calculates the sum of durations between the start - end events' do
+      described_class.new(group: group, model: Issue).execute
+
+      expect(collected_events.size).to eq(1)
+
+      event = collected_events.first
+      expect(event.issue_id).to eq(issue1.id)
+      expect(event.start_event_timestamp).to be_within(5.seconds).of(start_time)
+      expect(event.end_event_timestamp).to be_within(5.seconds).of(start_time + 10.hours + 15.minutes)
+      expect(event.duration_in_milliseconds).to eq(30.minutes.in_milliseconds.to_i)
+    end
+
+    context 'when there is a another start event without end event' do
       before do
-        stub_feature_flags(enable_vsa_cumulative_label_duration_calculation: false)
+        create(:resource_label_event, action: :add, issue: issue1, label: label1, created_at: start_time + 20.hours)
       end
 
-      it 'calculates the duration between the first event and last event' do
+      it 'does not take unfinished event pairs into the calculation' do
         described_class.new(group: group, model: Issue).execute
 
         expect(collected_events.size).to eq(1)
@@ -378,82 +390,50 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
         expect(event.issue_id).to eq(issue1.id)
         expect(event.start_event_timestamp).to be_within(5.seconds).of(start_time)
         expect(event.end_event_timestamp).to be_within(5.seconds).of(start_time + 10.hours + 15.minutes)
-        expect(event.duration_in_milliseconds).to eq((10.hours + 15.minutes).in_milliseconds.to_i)
+        expect(event.duration_in_milliseconds).to eq((10.hours + 15.minutes).in_milliseconds)
       end
     end
 
-    context 'when the enable_vsa_cumulative_label_duration_calculation feature flag is on' do
-      it 'calculates the sum of durations between the start - end events' do
+    context 'when the calculated duration is 0' do
+      before do
+        create(:resource_label_event, action: :add, issue: issue2, label: label1, created_at: start_time)
+        create(:resource_label_event, action: :remove, issue: issue2, label: label1, created_at: start_time)
+      end
+
+      it 'does not include the issue in the aggregation' do
+        expect(collected_events.pluck(:issue_id)).not_to include(issue2.id)
+      end
+    end
+
+    context 'when the start event is a non-label event' do
+      before do
+        issue1.update!(created_at: start_time)
+      end
+
+      it 'uses the last timestamp from end event timestamps' do
         described_class.new(group: group, model: Issue).execute
 
-        expect(collected_events.size).to eq(1)
+        event_for_issue = Analytics::CycleAnalytics::IssueStageEvent
+          .where(stage_event_hash_id: stage2.stage_event_hash_id, issue_id: issue1.id)
+          .first!
 
-        event = collected_events.first
-        expect(event.issue_id).to eq(issue1.id)
-        expect(event.start_event_timestamp).to be_within(5.seconds).of(start_time)
-        expect(event.end_event_timestamp).to be_within(5.seconds).of(start_time + 10.hours + 15.minutes)
-        expect(event.duration_in_milliseconds).to eq(30.minutes.in_milliseconds.to_i)
+        expect(event_for_issue.duration_in_milliseconds).to eq((10.hours + 15.minutes).in_milliseconds)
+      end
+    end
+
+    context 'when the end event is a non-label event' do
+      before do
+        issue1.update!(closed_at: start_time + 20.hours)
       end
 
-      context 'when there is a another start event without end event' do
-        before do
-          create(:resource_label_event, action: :add, issue: issue1, label: label1, created_at: start_time + 20.hours)
-        end
+      it 'uses the last timestamp from end event timestamps' do
+        described_class.new(group: group, model: Issue).execute
 
-        it 'does not take unfinished event pairs into the calculation' do
-          described_class.new(group: group, model: Issue).execute
+        event_for_issue = Analytics::CycleAnalytics::IssueStageEvent
+          .where(stage_event_hash_id: stage3.stage_event_hash_id, issue_id: issue1.id)
+          .first!
 
-          expect(collected_events.size).to eq(1)
-
-          event = collected_events.first
-          expect(event.issue_id).to eq(issue1.id)
-          expect(event.start_event_timestamp).to be_within(5.seconds).of(start_time)
-          expect(event.end_event_timestamp).to be_within(5.seconds).of(start_time + 10.hours + 15.minutes)
-          expect(event.duration_in_milliseconds).to eq((10.hours + 15.minutes).in_milliseconds)
-        end
-      end
-
-      context 'when the calculated duration is 0' do
-        before do
-          create(:resource_label_event, action: :add, issue: issue2, label: label1, created_at: start_time)
-          create(:resource_label_event, action: :remove, issue: issue2, label: label1, created_at: start_time)
-        end
-
-        it 'does not include the issue in the aggregation' do
-          expect(collected_events.pluck(:issue_id)).not_to include(issue2.id)
-        end
-      end
-
-      context 'when the start event is a non-label event' do
-        before do
-          issue1.update!(created_at: start_time)
-        end
-
-        it 'uses the last timestamp from end event timestamps' do
-          described_class.new(group: group, model: Issue).execute
-
-          event_for_issue = Analytics::CycleAnalytics::IssueStageEvent
-            .where(stage_event_hash_id: stage2.stage_event_hash_id, issue_id: issue1.id)
-            .first!
-
-          expect(event_for_issue.duration_in_milliseconds).to eq((10.hours + 15.minutes).in_milliseconds)
-        end
-      end
-
-      context 'when the end event is a non-label event' do
-        before do
-          issue1.update!(closed_at: start_time + 20.hours)
-        end
-
-        it 'uses the last timestamp from end event timestamps' do
-          described_class.new(group: group, model: Issue).execute
-
-          event_for_issue = Analytics::CycleAnalytics::IssueStageEvent
-            .where(stage_event_hash_id: stage3.stage_event_hash_id, issue_id: issue1.id)
-            .first!
-
-          expect(event_for_issue.duration_in_milliseconds).to eq(20.hours.in_milliseconds)
-        end
+        expect(event_for_issue.duration_in_milliseconds).to eq(20.hours.in_milliseconds)
       end
     end
   end
