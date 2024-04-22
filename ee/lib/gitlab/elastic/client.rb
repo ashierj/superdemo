@@ -13,6 +13,8 @@ module Gitlab
       # Takes a hash as returned by `ApplicationSetting#elasticsearch_config`,
       # and configures itself based on those parameters
       def self.build(config)
+        return unless config
+
         base_config = {
           adapter: self.adapter,
           urls: config[:url],

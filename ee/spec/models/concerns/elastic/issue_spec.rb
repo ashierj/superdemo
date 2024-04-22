@@ -110,8 +110,9 @@ RSpec.describe Issue, :elastic_delete_by_query, feature_category: :global_search
     end
 
     it 'contains the expected mappings' do
+      optional_fields = Elastic::Latest::IssueInstanceProxy::OPTIONAL_FIELDS
       issue_proxy = Elastic::Latest::ApplicationClassProxy.new(described_class, use_separate_indices: true)
-      expected_keys = issue_proxy.mappings.to_hash[:properties].keys.map(&:to_s)
+      expected_keys = issue_proxy.mappings.to_hash[:properties].keys.map(&:to_s) - optional_fields
 
       keys = issue.__elasticsearch__.as_indexed_json.keys
       expect(keys).to match_array(expected_keys)
