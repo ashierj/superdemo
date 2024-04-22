@@ -17373,7 +17373,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="cirunnerprojectspersonal"></a>`personal` | [`Boolean`](#boolean) | Return only personal projects. |
 | <a id="cirunnerprojectssearch"></a>`search` | [`String`](#string) | Search query, which can be for the project name, a path, or a description. |
 | <a id="cirunnerprojectssearchnamespaces"></a>`searchNamespaces` | [`Boolean`](#boolean) | Include namespace in project search. |
-| <a id="cirunnerprojectssort"></a>`sort` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 15.4. Default sort order will change in GitLab 17.0. Specify `"id_asc"` if you require the query results to be ordered by ascending IDs. |
+| <a id="cirunnerprojectssort"></a>`sort` | [`String`](#string) | Sort order of results. Format: `<field_name>_<sort_direction>`, for example: `id_desc` or `name_asc`. |
 | <a id="cirunnerprojectstopics"></a>`topics` | [`[String!]`](#string) | Filter projects by topics. |
 
 ##### `CiRunner.status`
