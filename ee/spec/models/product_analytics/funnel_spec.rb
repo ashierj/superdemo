@@ -86,7 +86,7 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
     let(:query) do
       <<-SQL
       SELECT
-        (SELECT max(derived_tstamp) FROM snowplow_events) as x,
+        (SELECT max(derived_tstamp) FROM gitlab_project_#{project.id}.snowplow_events) as x,
         windowFunnel(3600)(toDateTime(derived_tstamp), page_urlpath = '/page1.html', page_urlpath = '/page2.html') as step
         FROM gitlab_project_#{project.id}.snowplow_events
       SQL
