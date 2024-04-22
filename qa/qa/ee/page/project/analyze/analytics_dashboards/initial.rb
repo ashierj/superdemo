@@ -17,8 +17,8 @@ module QA
               end
 
               def wait_for_set_up_button
-                retry_until(max_attempts: 5, reload: true, sleep_interval: 1) do
-                  find_element('setup-button')
+                retry_until(sleep_interval: 2, reload: true) do
+                  has_element?('setup-button')
                 end
               end
             end
