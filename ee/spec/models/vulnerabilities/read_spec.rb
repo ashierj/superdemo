@@ -538,6 +538,44 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.order_by_params_and_traversal_ids' do
+    let_it_be(:vulnerability_1) { create(:vulnerability, :with_read, :low, project: project) }
+    let_it_be(:vulnerability_2) { create(:vulnerability, :with_read, :critical, project: project) }
+    let_it_be(:vulnerability_3) { create(:vulnerability, :with_read, :medium, project: project) }
+
+    subject { described_class.order_by_params_and_traversal_ids(method) }
+
+    context 'when method is nil' do
+      let(:method) { nil }
+
+      it { is_expected.to match_array([vulnerability_2.vulnerability_read, vulnerability_3.vulnerability_read, vulnerability_1.vulnerability_read]) }
+    end
+
+    context 'when ordered by severity_desc' do
+      let(:method) { :severity_desc }
+
+      it { is_expected.to match_array([vulnerability_2.vulnerability_read, vulnerability_3.vulnerability_read, vulnerability_1.vulnerability_read]) }
+    end
+
+    context 'when ordered by severity_asc' do
+      let(:method) { :severity_asc }
+
+      it { is_expected.to match_array([vulnerability_1.vulnerability_read, vulnerability_3.vulnerability_read, vulnerability_2.vulnerability_read]) }
+    end
+
+    context 'when ordered by detected_desc' do
+      let(:method) { :detected_desc }
+
+      it { is_expected.to match_array([vulnerability_3.vulnerability_read, vulnerability_2.vulnerability_read, vulnerability_1.vulnerability_read]) }
+    end
+
+    context 'when ordered by detected_asc' do
+      let(:method) { :detected_asc }
+
+      it { is_expected.to match_array([vulnerability_1.vulnerability_read, vulnerability_2.vulnerability_read, vulnerability_3.vulnerability_read]) }
+    end
+  end
+
   describe '.order_severity_' do
     let_it_be(:low_vulnerability) { create(:vulnerability, :with_finding, :low) }
     let_it_be(:critical_vulnerability) { create(:vulnerability, :with_finding, :critical) }

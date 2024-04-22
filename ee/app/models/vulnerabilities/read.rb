@@ -42,6 +42,9 @@ module Vulnerabilities
     scope :order_detected_at_asc, -> { reorder(vulnerability_id: :asc) }
     scope :order_detected_at_desc, -> { reorder(vulnerability_id: :desc) }
 
+    scope :order_severity_asc_traversal_ids_asc, -> { reorder(severity: :asc, traversal_ids: :asc, vulnerability_id: :asc) }
+    scope :order_severity_desc_traversal_ids_desc, -> { reorder(severity: :desc, traversal_ids: :desc, vulnerability_id: :desc) }
+
     scope :by_group, -> (group) { traversal_ids_gteq(group.traversal_ids).traversal_ids_lt(group.next_traversal_ids) }
     scope :traversal_ids_gteq, -> (traversal_ids) { where(arel_table[:traversal_ids].gteq(traversal_ids)) }
     scope :traversal_ids_lt, -> (traversal_ids) { where(arel_table[:traversal_ids].lt(traversal_ids)) }
@@ -106,6 +109,17 @@ module Vulnerabilities
       when 'detected_asc' then order_detected_at_asc
       else
         order_severity_desc
+      end
+    end
+
+    def self.order_by_params_and_traversal_ids(method)
+      case method.to_s
+      when 'severity_desc' then order_severity_desc_traversal_ids_desc
+      when 'severity_asc' then order_severity_asc_traversal_ids_asc
+      when 'detected_desc' then order_detected_at_desc
+      when 'detected_asc' then order_detected_at_asc
+      else
+        order_severity_desc_traversal_ids_desc
       end
     end
 
