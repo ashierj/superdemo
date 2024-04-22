@@ -23,9 +23,9 @@ module RemoteDevelopment
         end
       end
 
-      # @param [Hash] json_to_validate
+      # @param [Hash] hash_to_validate
       # @return [Array]
-      def self.validate_against_schema(json_to_validate)
+      def self.validate_against_schema(hash_to_validate)
         schema = {
           "required" =>
             %w[
@@ -47,7 +47,7 @@ module RemoteDevelopment
         }
 
         schemer = JSONSchemer.schema(schema)
-        errors = schemer.validate(json_to_validate)
+        errors = schemer.validate(hash_to_validate)
         errors.map { |error| JSONSchemer::Errors.pretty(error) }
       end
     end
