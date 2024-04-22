@@ -43,6 +43,7 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
   const findRejectButton = () => findButtons().wrappers.at(-1);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findCharacterCount = () => wrapper.findByTestId('approval-character-count');
+  const findMultipleApprovalRulesTable = () => wrapper.findComponent(MultipleApprovalRulesTable);
 
   it('shows a header listing how many approvals remain', () => {
     createComponent();
@@ -55,9 +56,7 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
   it('shows the approval table when deployment needs approval', () => {
     createComponent();
 
-    expect(wrapper.findComponent(MultipleApprovalRulesTable).props('rules')).toBe(
-      deployment.approvalSummary.rules,
-    );
+    expect(findMultipleApprovalRulesTable().props('rules')).toBe(deployment.approvalSummary.rules);
   });
 
   describe('has approved', () => {
@@ -118,6 +117,7 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
           input: {
             comment: '',
             id: deployment.id,
+            representedAs: null,
             status,
           },
         });
@@ -181,6 +181,21 @@ describe('ee/deployments/components/deployment_approvals.vue', () => {
         expect(countText.attributes('title')).toBe(tooltip);
       },
     );
+
+    it('uses the correct `representedAs` when get `selectedRule` from the multiple approval rules table', () => {
+      const selectedRule = 'Maintainers';
+      findMultipleApprovalRulesTable().vm.$emit('select-rule', selectedRule);
+      findApproveButton().vm.$emit('click');
+
+      expect(mockApprove).toHaveBeenCalledWith({
+        input: {
+          comment: '',
+          id: deployment.id,
+          representedAs: selectedRule,
+          status: 'APPROVED',
+        },
+      });
+    });
   });
 
   describe('can not approve', () => {

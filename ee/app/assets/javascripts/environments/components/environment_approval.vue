@@ -77,6 +77,7 @@ export default {
           approvalSummary: { rules: [] },
         },
       },
+      selectedRule: null,
     };
   },
   apollo: {
@@ -207,6 +208,7 @@ export default {
       return action({
         id: this.projectId,
         deploymentId: this.deploymentId,
+        representedAs: this.selectedRule,
         comment: this.comment,
       })
         .then(() => {
@@ -236,6 +238,9 @@ export default {
       }
 
       return this.$options.i18n.rejectedAt;
+    },
+    onRuleSelected($event) {
+      this.selectedRule = $event;
     },
   },
   i18n: {
@@ -328,6 +333,7 @@ export default {
           v-if="hasApprovalRules"
           :rules="deployment.approvalSummary.rules"
           class="gl-my-4 gl-pt-4"
+          @select-rule="onRuleSelected"
         />
         <div v-else class="gl-my-4 gl-pt-4">
           <gl-sprintf :message="$options.i18n.current">
