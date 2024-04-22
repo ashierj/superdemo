@@ -27,6 +27,7 @@ describe('EpicHeader component', () => {
   it('renders IssuableHeader component', () => {
     expect(findIssuableHeader().props()).toMatchObject({
       confidential: false,
+      isImported: false,
       createdAt: '2015-07-03T10:00:00.000Z',
       issuableState: 'opened',
       issuableType: 'epic',

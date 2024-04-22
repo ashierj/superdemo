@@ -45,6 +45,7 @@ describe('EpicApp component', () => {
       issuableRef: '',
       issuableStatus: 'opened',
       isConfidential: false,
+      isImported: false,
       initialTitleHtml: 'This is a sample epic',
       initialTitleText: 'This is a sample epic',
     });

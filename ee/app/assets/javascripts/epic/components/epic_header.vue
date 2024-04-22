@@ -19,7 +19,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['sidebarCollapsed', 'author', 'created', 'confidential', 'state']),
+    ...mapState(['sidebarCollapsed', 'author', 'created', 'confidential', 'imported', 'state']),
     ...mapGetters(['isEpicOpen']),
     statusIcon() {
       return this.isEpicOpen ? 'issue-open-m' : 'issue-close';
@@ -53,6 +53,7 @@ export default {
     class="gl-p-0 gl-mb-6 gl-mt-2 gl-md-mt-0"
     :author="formattedAuthor"
     :confidential="confidential"
+    :is-imported="imported"
     :created-at="created"
     :issuable-state="state"
     :issuable-type="$options.TYPE_EPIC"
