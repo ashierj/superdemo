@@ -172,17 +172,6 @@ export default {
       this.helpCenterState.showTanukiBotChatDrawer = true;
     },
     onTrackFeedback({ feedbackChoices, didWhat, improveWhat, message } = {}) {
-      this.track(TANUKI_BOT_TRACKING_EVENT_NAME, {
-        action: 'click_button',
-        label: 'response_feedback',
-        property: feedbackChoices,
-        extra: {
-          improveWhat,
-          didWhat,
-          prompt_location: 'after_content',
-        },
-      });
-
       if (message) {
         const { id, requestId, extras, role, content } = message;
         this.$apollo
@@ -191,6 +180,17 @@ export default {
             variables: {
               input: {
                 aiMessageId: id,
+                trackingEvent: {
+                  category: TANUKI_BOT_TRACKING_EVENT_NAME,
+                  action: 'click_button',
+                  label: 'response_feedback',
+                  property: feedbackChoices.join(','),
+                  extra: {
+                    improveWhat,
+                    didWhat,
+                    prompt_location: 'after_content',
+                  },
+                },
               },
             },
           })
