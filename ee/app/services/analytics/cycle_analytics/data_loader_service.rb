@@ -87,7 +87,7 @@ module Analytics
           current_select_columns = event_model.select_columns # default SELECT columns
           # Add the stage timestamp columns to the SELECT
           event_slice.each do |event|
-            scope = event.include_in(scope, include_all_timestamps_as_array: attempt_cumulative_duration_calculation?)
+            scope = event.include_in(scope, include_all_timestamps_as_array: true)
             current_select_columns << event.timestamp_projection.as(event_column_name(event))
           end
 
@@ -170,22 +170,6 @@ module Analytics
       end
 
       def calculate_duration(start_event_timestamp, end_event_timestamp)
-        if attempt_cumulative_duration_calculation?
-          return calculate_cumulative_duration(start_event_timestamp, end_event_timestamp)
-        end
-
-        # Avoid negative duration values
-        return if start_event_timestamp.nil?
-        return if end_event_timestamp && start_event_timestamp > end_event_timestamp
-
-        [
-          start_event_timestamp,
-          end_event_timestamp,
-          end_event_timestamp && (end_event_timestamp - start_event_timestamp).in_milliseconds
-        ]
-      end
-
-      def calculate_cumulative_duration(start_event_timestamp, end_event_timestamp)
         return if start_event_timestamp.nil?
 
         start_event_timestamps = Array.wrap(start_event_timestamp)
@@ -215,10 +199,6 @@ module Analytics
           end_event_timestamps.last,
           duration
         ]
-      end
-
-      def attempt_cumulative_duration_calculation?
-        Feature.enabled?(:enable_vsa_cumulative_label_duration_calculation, group, type: :beta)
       end
     end
   end
