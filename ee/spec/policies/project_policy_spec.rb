@@ -2839,6 +2839,14 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with `custom_compliance_frameworks` true' do
+      let(:licensed_features) { { compliance_framework: true } }
+      let(:member_role_abilities) { { admin_compliance_framework: true } }
+      let(:allowed_abilities) { [:admin_compliance_framework] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do

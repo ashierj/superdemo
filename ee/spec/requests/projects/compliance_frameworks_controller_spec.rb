@@ -9,7 +9,7 @@ RSpec.describe Projects::ComplianceFrameworksController, feature_category: :comp
   let_it_be(:framework) { create(:compliance_framework, namespace: group) }
 
   before do
-    stub_licensed_features(compliance_framework: true, custom_compliance_frameworks: true)
+    stub_licensed_features(compliance_framework: true, custom_compliance_frameworks: true, custom_roles: true)
 
     login_as(user)
   end
@@ -17,22 +17,41 @@ RSpec.describe Projects::ComplianceFrameworksController, feature_category: :comp
   describe 'POST #create' do
     let(:params) { { framework: framework.id } }
 
-    context 'when user has permissions to update the framework' do
-      before_all do
-        project.add_owner(user)
-      end
+    subject(:assign_framework) { post project_compliance_frameworks_path(project), params: params }
 
+    shared_examples 'setting compliance framework' do
       it 'redirects with notice message' do
-        post project_compliance_frameworks_path(project), params: params
+        assign_framework
 
         expect(response).to redirect_to(edit_project_path(project, anchor: 'js-general-project-settings'))
         expect(flash[:notice]).to eq("Project '#{project.name}' was successfully updated.")
       end
+
+      it 'sets the compliance framework' do
+        assign_framework
+
+        expect(project.reload.compliance_framework_setting.compliance_management_framework).to eq(framework)
+      end
+    end
+
+    context 'when user is a project owner' do
+      before_all do
+        project.add_owner(user)
+      end
+
+      it_behaves_like 'setting compliance framework'
+    end
+
+    context 'when user has the permission because of a custom role' do
+      let_it_be(:role) { create(:member_role, :guest, namespace: group, admin_compliance_framework: true) }
+      let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+
+      it_behaves_like 'setting compliance framework'
     end
 
     context 'when user does not have permissions to update the framework' do
       it 'returns a 404' do
-        post project_compliance_frameworks_path(project), params: params
+        assign_framework
 
         expect(response).to have_gitlab_http_status(:not_found)
       end

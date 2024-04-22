@@ -65,8 +65,8 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Create do
         context 'namespace does not exist' do
           let(:params) { valid_params.merge(namespace_path: 'not_a_path') }
 
-          it 'returns useful error messages' do
-            expect(subject[:errors]).to include 'Not permitted to create framework'
+          it 'raises an error' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
         end
 

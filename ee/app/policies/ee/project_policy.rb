@@ -313,6 +313,15 @@ module EE
         ).has_ability?
       end
 
+      desc "Custom role on project that enables managing compliance framework"
+      condition(:role_enables_admin_compliance_framework) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_compliance_framework
+        ).has_ability?
+      end
+
       condition(:developer_access_to_admin_vulnerability) do
         ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_namespace) &&
           can?(:developer_access)
@@ -760,7 +769,7 @@ module EE
         enable :remove_project
       end
 
-      rule { can?(:admin_project) | can?(:archive_project) | can?(:remove_project) }.policy do
+      rule { can?(:admin_project) | can?(:archive_project) | can?(:remove_project) | can?(:admin_compliance_framework) }.policy do
         enable :view_edit_page
       end
 
@@ -872,6 +881,10 @@ module EE
       rule { custom_roles_allowed & role_enables_read_dependency & dependency_scanning_enabled }.policy do
         enable :access_security_and_compliance
         enable :read_dependency
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_compliance_framework & compliance_framework_available }.policy do
+        enable :admin_compliance_framework
       end
 
       rule { can?(:create_issue) & okrs_enabled }.policy do
