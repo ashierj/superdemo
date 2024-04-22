@@ -25,7 +25,9 @@ module Registrations
       # calling this in the controller layer gives us access to request where the
       # signed cookie exist with the info we need for migration.
       experiment(:signup_intent_step_one, actor: current_user).run
-      experiment(:signup_intent_step_one, actor: current_user).track(:show, label: :welcome)
+
+      experiment(:signup_intent_step_one, actor: current_user)
+        .track(:render_welcome, label: onboarding_status.tracking_label)
 
       track_event('render')
     end

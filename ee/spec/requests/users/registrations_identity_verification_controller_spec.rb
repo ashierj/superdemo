@@ -408,7 +408,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         end
 
         expect(experiment).to receive(:run)
-        expect(experiment).to receive(:track).with(:show, label: :identity_verification)
+        expect(experiment).to receive(:track).with(:render_identity_verification, label: 'free_registration')
 
         do_request
       end

@@ -39,7 +39,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                   .and_return(experiment)
 
           expect(experiment).to receive(:run)
-          expect(experiment).to receive(:track).with(:show, label: :welcome)
+          expect(experiment).to receive(:track).with(:render_welcome, label: 'free_registration')
 
           get_show
         end

@@ -110,6 +110,11 @@ module EE
         .new(onboarding_status_params, session, resource, onboarding_first_step_path).execute
 
       log_audit_event(user)
+
+      return unless params[:signup_intent].present?
+
+      experiment(:signup_intent_step_one, actor: user)
+        .track(params[:signup_intent], label: registration_tracking_label)
     end
 
     override :set_resource_fields

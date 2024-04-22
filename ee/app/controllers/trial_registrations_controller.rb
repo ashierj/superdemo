@@ -62,16 +62,6 @@ class TrialRegistrationsController < RegistrationsController
     @resource ||= Users::AuthorizedBuildService.new(current_user, sign_up_params).execute
   end
 
-  override :after_successful_create_hook
-  def after_successful_create_hook(user)
-    super
-
-    return unless params[:signup_intent].present?
-
-    experiment(:signup_intent_step_one, actor: user).track(:submitted_intent, label: :signup_intent,
-      property: params[:signup_intent])
-  end
-
   override :registration_tracking_label
   def registration_tracking_label
     ::Onboarding::Status::TRACKING_LABEL[:trial]
