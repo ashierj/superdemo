@@ -30,7 +30,7 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
           let(:project_zoekt_enabled) { true }
 
           it 'schedules the project to be indexed and does not delete the project' do
-            expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_async)
+            expect(::Search::Zoekt).not_to receive(:delete_async)
             expect(::Search::Zoekt).to receive(:index_async).with(project.id).once
             worker.perform(project.id, old_namespace.id)
           end
@@ -41,8 +41,7 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
           let(:project_zoekt_enabled) { false }
 
           it 'schedules the project to be deleted and does not index anything' do
-            expect(Search::Zoekt::DeleteProjectWorker).to receive(:perform_async).with(old_namespace.id,
-              project.id).once
+            expect(::Search::Zoekt).to receive(:delete_async).with(project.id, root_namespace_id: old_namespace.id).once
             expect(::Search::Zoekt).not_to receive(:index_async)
             worker.perform(project.id, old_namespace.id)
           end
@@ -58,8 +57,8 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
         end
 
         it 'does nothing' do
-          expect(Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_async)
-          expect(::Search::Index).not_to receive(:index_async)
+          expect(::Search::Zoekt).not_to receive(:delete_async)
+          expect(::Search::Zoekt).not_to receive(:index_async)
           worker.perform(project.id, old_namespace.id)
         end
       end

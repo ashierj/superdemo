@@ -71,7 +71,7 @@ module EE
       def process_zoekt_project(old_root_ancestor_id, old_namespace_had_zoekt_enabled, project, idx)
         if old_namespace_had_zoekt_enabled
           interval_for_delete_worker = idx % ::Search::Zoekt::DeleteProjectWorker::MAX_JOBS_PER_HOUR
-          ::Search::Zoekt::DeleteProjectWorker.perform_in(interval_for_delete_worker, old_root_ancestor_id, project.id)
+          ::Search::Zoekt.delete_in(interval_for_delete_worker, project.id, root_namespace_id: old_root_ancestor_id)
         end
 
         interval_for_indexer_worker = idx % ::Zoekt::IndexerWorker::MAX_JOBS_PER_HOUR

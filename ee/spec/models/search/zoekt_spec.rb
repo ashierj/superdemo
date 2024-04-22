@@ -229,4 +229,56 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       end
     end
   end
+
+  describe '#delete_async' do
+    subject(:delete_async) { described_class.delete_async(*args, **keyword_args) }
+
+    let(:args) { [project.id] }
+    let(:keyword_args) { { root_namespace_id: project.root_ancestor.id, node_id: node.id } }
+    let(:worker_args) { [project.root_ancestor.id, project.id, node.id] }
+
+    it 'calls perform_async on the worker' do
+      expect(::Search::Zoekt::DeleteProjectWorker).to receive(:perform_async).with(*worker_args)
+
+      delete_async
+    end
+
+    context 'when FF is disabled' do
+      before do
+        stub_feature_flags(zoekt_legacy_indexer_worker: false)
+      end
+
+      it 'does not call perform_async on the worker' do
+        expect(::Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_async)
+
+        delete_async
+      end
+    end
+  end
+
+  describe '#delete_in' do
+    subject(:delete_in) { described_class.delete_in(*args, **keyword_args) }
+
+    let(:args) { [1.minute, project.id] }
+    let(:keyword_args) { { root_namespace_id: project.root_ancestor.id, node_id: node.id } }
+    let(:worker_args) { [1.minute, project.root_ancestor.id, project.id, node.id] }
+
+    it 'calls perform_async on the worker' do
+      expect(::Search::Zoekt::DeleteProjectWorker).to receive(:perform_in).with(*worker_args)
+
+      delete_in
+    end
+
+    context 'when FF is disabled' do
+      before do
+        stub_feature_flags(zoekt_legacy_indexer_worker: false)
+      end
+
+      it 'does not call perform_async on the worker' do
+        expect(::Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
+
+        delete_in
+      end
+    end
+  end
 end

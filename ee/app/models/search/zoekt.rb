@@ -42,6 +42,18 @@ module Search
         ::Zoekt::IndexerWorker.perform_in(delay, project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
       end
 
+      def delete_async(project_id, root_namespace_id:, node_id: nil)
+        return if Feature.disabled?(:zoekt_legacy_indexer_worker)
+
+        ::Search::Zoekt::DeleteProjectWorker.perform_async(root_namespace_id, project_id, node_id)
+      end
+
+      def delete_in(delay, project_id, root_namespace_id:, node_id: nil)
+        return if Feature.disabled?(:zoekt_legacy_indexer_worker)
+
+        ::Search::Zoekt::DeleteProjectWorker.perform_in(delay, root_namespace_id, project_id, node_id)
+      end
+
       private
 
       def fetch_root_namespace_id(container)
