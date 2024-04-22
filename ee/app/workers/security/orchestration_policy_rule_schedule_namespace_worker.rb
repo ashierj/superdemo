@@ -19,6 +19,13 @@ module Security
       security_orchestration_policy_configuration = schedule.security_orchestration_policy_configuration
       return unless should_run?(security_orchestration_policy_configuration, schedule)
 
+      namespace = security_orchestration_policy_configuration.namespace
+
+      unless valid_cadence?(schedule.cron)
+        log_invalid_cadence_error(namespace.id, schedule.cron)
+        return
+      end
+
       if Feature.enabled?(:batched_scan_execution_scheduled_pipelines, security_orchestration_policy_configuration.namespace)
         return perform_in_batches_with_delay(schedule, security_orchestration_policy_configuration)
       end
@@ -28,10 +35,6 @@ module Security
       projects_in_batches(security_orchestration_policy_configuration).each do |projects|
         bots_by_project_id = security_policy_bot_ids_by_project_ids(projects)
         projects.each do |project|
-          if Feature.enabled?(:scan_execution_policy_cadence_validation, project) && !valid_cadence?(schedule.cron)
-            next log_invalid_cadence_error(project.id, schedule.cron)
-          end
-
           user_id = bots_by_project_id[project.id]
           next prepare_security_policy_bot_user(project) unless user_id
 
@@ -117,6 +120,13 @@ module Security
         .not_aimed_for_deletion
         .select(:id)
         .find_in_batches(batch_size: batch_size) # rubocop: disable CodeReuse/ActiveRecord -- A custom batch size is needed because querying too many bot users at once is too expensive
+    end
+
+    def log_invalid_cadence_error(namespace_id, cadence)
+      Gitlab::AppJsonLogger.info(event: 'scheduled_scan_execution_policy_validation',
+        message: 'Invalid cadence',
+        namespace_id: namespace_id,
+        cadence: cadence)
     end
   end
 end
