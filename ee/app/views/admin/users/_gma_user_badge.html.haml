@@ -1,3 +1,2 @@
 - if @user.group_managed_account?
-  %span.cred
-    = s_('(Group Managed Account)')
+  = render Pajamas::BadgeComponent.new(s_('AdminUsers|Group Managed Account'), variant: :neutral)
