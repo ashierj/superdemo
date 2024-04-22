@@ -33827,6 +33827,9 @@ msgstr ""
 msgid "No %{header} for this request."
 msgstr ""
 
+msgid "No %{label}"
+msgstr ""
+
 msgid "No %{providerTitle} repositories found"
 msgstr ""
 
