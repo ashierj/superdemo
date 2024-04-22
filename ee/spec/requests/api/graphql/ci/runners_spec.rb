@@ -54,10 +54,11 @@ RSpec.describe 'Query.runners', feature_category: :fleet_visibility do
       let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
       let_it_be(:sub_group_runner) { create(:ci_runner, :group, groups: [sub_group]) }
 
-      let(:runner_ids) { graphql_data['group']['runners']['nodes'].map { |n| n['id'] } }
+      let(:actual_runner_ids) { graphql_data_at(:group, :runners, :nodes).map { |n| n['id'] } }
+      let(:expected_runner_ids) { [group_runner, sub_group_runner].map { |g| g.to_global_id.to_s } }
       let(:query) do
         %(
-           query getGroupRunners($membership: #{membership_graphql_type}) {
+           query getGroupRunners($membership: CiRunnerMembershipFilter) {
              group(fullPath: "#{group.full_path}") {
                runners(membership: $membership) {
                  nodes {
@@ -73,21 +74,7 @@ RSpec.describe 'Query.runners', feature_category: :fleet_visibility do
         post_graphql(query, current_user: current_user)
       end
 
-      context 'with deprecated RunnerMembershipFilter enum type' do
-        let(:membership_graphql_type) { 'RunnerMembershipFilter' }
-
-        it 'returns ids of expected runners' do
-          expect(runner_ids).to match_array([group_runner, sub_group_runner].map { |g| g.to_global_id.to_s })
-        end
-      end
-
-      context 'with new CiRunnerMembershipFilter enum type' do
-        let(:membership_graphql_type) { 'CiRunnerMembershipFilter' }
-
-        it 'returns ids of expected runners' do
-          expect(runner_ids).to match_array([group_runner, sub_group_runner].map { |g| g.to_global_id.to_s })
-        end
-      end
+      it { expect(actual_runner_ids).to match_array(expected_runner_ids) }
     end
 
     context 'when sorting by MOST_ACTIVE_DESC' do

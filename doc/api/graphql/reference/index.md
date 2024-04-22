@@ -32010,7 +32010,7 @@ Runner cloud provider.
 
 ### `CiRunnerMembershipFilter`
 
-Values for filtering runners in namespaces. The previous type name `RunnerMembershipFilter` was deprecated in 15.4.
+Values for filtering runners in namespaces.
 
 | Value | Description |
 | ----- | ----------- |
