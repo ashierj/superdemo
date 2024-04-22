@@ -38,6 +38,7 @@ describe('AiCubeQueryGenerator', () => {
   const findGenerateCubeQuerySubmitButton = () =>
     wrapper.findByTestId('generate-cube-query-submit-button');
   const findExperimentBadge = () => wrapper.findComponent(GlExperimentBadge);
+  const findLearnMoreLink = () => wrapper.findByTestId('generate-cube-query-learn-more-link');
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(AiCubeQueryGenerator, {
@@ -74,6 +75,15 @@ describe('AiCubeQueryGenerator', () => {
     createWrapper();
 
     expect(findExperimentBadge().exists()).toBe(true);
+  });
+
+  it('renders a "learn more" link', () => {
+    createWrapper();
+
+    expect(findLearnMoreLink().text()).toBe('Learn more');
+    expect(findLearnMoreLink().attributes('href')).toBe(
+      '/help/user/analytics/analytics_dashboards#generate-a-custom-visualization-with-gitlab-duo',
+    );
   });
 
   describe('when no prompt has been entered', () => {
