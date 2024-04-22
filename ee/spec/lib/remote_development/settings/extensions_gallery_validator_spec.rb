@@ -55,16 +55,14 @@ RSpec.describe RemoteDevelopment::Settings::ExtensionsGalleryValidator, :rd_fast
       let(:vscode_extensions_gallery) { {} }
 
       it_behaves_like "err result", expected_error_details:
-        "root is missing required keys: service_url, item_url, " \
-          "resource_url_template" # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is being changed in https://gitlab.com/gitlab-org/ruby/gems/gitlab-styles/-/merge_requests/212
+        "root is missing required keys: service_url, item_url, resource_url_template"
     end
 
     context "for service_url" do
       context "when not a string" do
         let(:service_url) { { not_a_string: true } }
 
-        it_behaves_like "err result", expected_error_details:
-          "property '/service_url' is not of type: string"
+        it_behaves_like "err result", expected_error_details: "property '/service_url' is not of type: string"
       end
     end
 
@@ -72,8 +70,7 @@ RSpec.describe RemoteDevelopment::Settings::ExtensionsGalleryValidator, :rd_fast
       context "when not a string" do
         let(:item_url) { { not_a_string: true } }
 
-        it_behaves_like "err result", expected_error_details:
-          "property '/item_url' is not of type: string"
+        it_behaves_like "err result", expected_error_details: "property '/item_url' is not of type: string"
       end
     end
 
@@ -81,8 +78,7 @@ RSpec.describe RemoteDevelopment::Settings::ExtensionsGalleryValidator, :rd_fast
       context "when not a string" do
         let(:resource_url_template) { { not_a_string: true } }
 
-        it_behaves_like "err result", expected_error_details:
-          "property '/resource_url_template' is not of type: string"
+        it_behaves_like "err result", expected_error_details: "property '/resource_url_template' is not of type: string"
       end
     end
   end

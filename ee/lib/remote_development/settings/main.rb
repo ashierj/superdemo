@@ -8,10 +8,11 @@ module RemoteDevelopment
       extend MessageSupport
       private_class_method :generate_error_response_from_message
 
+      # @param [Hash] value
       # @return [Hash]
       # @raise [UnmatchedResultError]
-      def self.get_settings
-        initial_result = Result.ok({})
+      def self.get_settings(value)
+        initial_result = Result.ok(value)
 
         # The order of the chain determines the precedence of settings. I.e., defaults are
         # overridden by env vars, and any subsequent steps override env vars.
@@ -19,10 +20,12 @@ module RemoteDevelopment
           initial_result
             .map(DefaultsInitializer.method(:init))
             .and_then(CurrentSettingsReader.method(:read))
+            .map(ExtensionsGalleryMetadataGenerator.method(:generate))
             # NOTE: EnvVarReader is kept as last step, so it can always be used to easily override any settings for
             #       local or temporary testing.
             .and_then(EnvVarReader.method(:read))
             .and_then(RemoteDevelopment::Settings::ExtensionsGalleryValidator.method(:validate))
+            .and_then(RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator.method(:validate))
             .map(
               # As the final step, return the settings in a SettingsGetSuccessful message
               ->(value) do
@@ -38,6 +41,8 @@ module RemoteDevelopment
         in { err: SettingsCurrentSettingsReadFailed => message }
           generate_error_response_from_message(message: message, reason: :internal_server_error)
         in { err: SettingsVscodeExtensionsGalleryValidationFailed => message }
+          generate_error_response_from_message(message: message, reason: :internal_server_error)
+        in { err: SettingsVscodeExtensionsGalleryMetadataValidationFailed => message }
           generate_error_response_from_message(message: message, reason: :internal_server_error)
         in { ok: SettingsGetSuccessful => message }
           { settings: message.context.fetch(:settings), status: :success }

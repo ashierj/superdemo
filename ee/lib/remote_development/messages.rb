@@ -37,9 +37,10 @@ module RemoteDevelopment
     WorkspaceReconcileParamsValidationFailed = Class.new(Message)
 
     # Settings errors
-    SettingsEnvironmentVariableReadFailed = Class.new(Message)
     SettingsCurrentSettingsReadFailed = Class.new(Message)
+    SettingsEnvironmentVariableReadFailed = Class.new(Message)
     SettingsVscodeExtensionsGalleryValidationFailed = Class.new(Message)
+    SettingsVscodeExtensionsGalleryMetadataValidationFailed = Class.new(Message)
 
     # Namespace Cluster Agent Mapping create errors
     NamespaceClusterAgentMappingAlreadyExists = Class.new(Message)
