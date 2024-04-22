@@ -17269,7 +17269,6 @@ CI/CD variables for a project.
 | <a id="cirunneraccesslevel"></a>`accessLevel` | [`CiRunnerAccessLevel!`](#cirunneraccesslevel) | Access level of the runner. |
 | <a id="cirunneractive"></a>`active` **{warning-solid}** | [`Boolean!`](#boolean) | **Deprecated** in GitLab 14.8. Use paused. |
 | <a id="cirunneradminurl"></a>`adminUrl` | [`String`](#string) | Admin URL of the runner. Only available for administrators. |
-| <a id="cirunnerarchitecturename"></a>`architectureName` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.2. Use field in `manager` object instead. |
 | <a id="cirunnercontactedat"></a>`contactedAt` | [`Time`](#time) | Timestamp of last contact from this runner. |
 | <a id="cirunnercreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of creation of this runner. |
 | <a id="cirunnercreatedby"></a>`createdBy` | [`UserCore`](#usercore) | User that created this runner. |
@@ -17277,10 +17276,8 @@ CI/CD variables for a project.
 | <a id="cirunnereditadminurl"></a>`editAdminUrl` | [`String`](#string) | Admin form URL of the runner. Only available for administrators. |
 | <a id="cirunnerephemeralauthenticationtoken"></a>`ephemeralAuthenticationToken` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 15.9. **Status**: Experiment. Ephemeral authentication token used for runner manager registration. Only available for the creator of the runner for a limited time during registration. |
 | <a id="cirunnerephemeralregisterurl"></a>`ephemeralRegisterUrl` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 15.11. **Status**: Experiment. URL of the registration page of the runner manager. Only available for the creator of the runner for a limited time during registration. |
-| <a id="cirunnerexecutorname"></a>`executorName` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.2. Use field in `manager` object instead. |
 | <a id="cirunnergroups"></a>`groups` | [`GroupConnection`](#groupconnection) | Groups the runner is associated with. For group runners only. (see [Connections](#connections)) |
 | <a id="cirunnerid"></a>`id` | [`CiRunnerID!`](#cirunnerid) | ID of the runner. |
-| <a id="cirunneripaddress"></a>`ipAddress` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.2. Use field in `manager` object instead. |
 | <a id="cirunnerjobexecutionstatus"></a>`jobExecutionStatus` **{warning-solid}** | [`CiRunnerJobExecutionStatus`](#cirunnerjobexecutionstatus) | **Introduced** in GitLab 15.7. **Status**: Experiment. Job execution status of the runner. |
 | <a id="cirunnerlocked"></a>`locked` | [`Boolean`](#boolean) | Indicates the runner is locked. |
 | <a id="cirunnermaintenancenote"></a>`maintenanceNote` | [`String`](#string) | Runner's maintenance notes. |
@@ -17288,12 +17285,10 @@ CI/CD variables for a project.
 | <a id="cirunnermaximumtimeout"></a>`maximumTimeout` | [`Int`](#int) | Maximum timeout (in seconds) for jobs processed by the runner. |
 | <a id="cirunnerownerproject"></a>`ownerProject` | [`Project`](#project) | Project that owns the runner. For project runners only. |
 | <a id="cirunnerpaused"></a>`paused` | [`Boolean!`](#boolean) | Indicates the runner is paused and not available to run jobs. |
-| <a id="cirunnerplatformname"></a>`platformName` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.2. Use field in `manager` object instead. |
 | <a id="cirunnerprivateprojectsminutescostfactor"></a>`privateProjectsMinutesCostFactor` | [`Float`](#float) | Private projects' "compute cost factor" associated with the runner (GitLab.com only). |
 | <a id="cirunnerprojectcount"></a>`projectCount` | [`Int`](#int) | Number of projects that the runner is associated with. |
 | <a id="cirunnerpublicprojectsminutescostfactor"></a>`publicProjectsMinutesCostFactor` | [`Float`](#float) | Public projects' "compute cost factor" associated with the runner (GitLab.com only). |
 | <a id="cirunnerregisteradminurl"></a>`registerAdminUrl` | [`String`](#string) | URL of the temporary registration page of the runner. Only available before the runner is registered. Only available for administrators. |
-| <a id="cirunnerrevision"></a>`revision` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.2. Use field in `manager` object instead. |
 | <a id="cirunnerrununtagged"></a>`runUntagged` | [`Boolean!`](#boolean) | Indicates the runner is able to run untagged jobs. |
 | <a id="cirunnerrunnertype"></a>`runnerType` | [`CiRunnerType!`](#cirunnertype) | Type of the runner. |
 | <a id="cirunnershortsha"></a>`shortSha` | [`String`](#string) | First eight characters of the runner's token used to authenticate new job requests. Used as the runner's unique ID. |
@@ -17301,7 +17296,6 @@ CI/CD variables for a project.
 | <a id="cirunnertokenexpiresat"></a>`tokenExpiresAt` | [`Time`](#time) | Runner token expiration time. |
 | <a id="cirunnerupgradestatus"></a>`upgradeStatus` **{warning-solid}** | [`CiRunnerUpgradeStatus`](#cirunnerupgradestatus) | **Introduced** in GitLab 14.10. **Status**: Experiment. Availability of upgrades for the runner. |
 | <a id="cirunneruserpermissions"></a>`userPermissions` | [`RunnerPermissions!`](#runnerpermissions) | Permissions for the current user on the resource. |
-| <a id="cirunnerversion"></a>`version` **{warning-solid}** | [`String`](#string) | **Deprecated** in GitLab 16.2. Use field in `manager` object instead. |
 
 #### Fields with arguments
 
