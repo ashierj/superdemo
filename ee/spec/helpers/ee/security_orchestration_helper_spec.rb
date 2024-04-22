@@ -114,9 +114,11 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           root_namespace_path: project.root_ancestor.full_path,
           timezones: timezones.to_json,
           max_active_scan_execution_policies_reached: 'false',
+          max_active_pipeline_execution_policies_reached: 'false',
           max_active_scan_result_policies_reached: 'false',
           max_scan_result_policies_allowed: Gitlab::CurrentSettings.security_approval_policies_limit,
           max_scan_execution_policies_allowed: 5,
+          max_pipeline_execution_policies_allowed: 1,
           custom_ci_toggle_enabled: 'false'
         }
       end
@@ -217,9 +219,11 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           root_namespace_path: namespace.root_ancestor.full_path,
           timezones: timezones.to_json,
           max_active_scan_execution_policies_reached: 'false',
+          max_active_pipeline_execution_policies_reached: 'false',
           max_active_scan_result_policies_reached: 'false',
           max_scan_result_policies_allowed: Gitlab::CurrentSettings.security_approval_policies_limit,
           max_scan_execution_policies_allowed: 5,
+          max_pipeline_execution_policies_allowed: 1,
           custom_ci_toggle_enabled: 'false'
         }
       end
@@ -278,6 +282,15 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
             branch: policy_management_project.default_branch_or_main
           }.to_json))
         end
+      end
+
+      context 'when feature flag "pipeline_execution_policy_type" is disabled' do
+        before do
+          stub_feature_flags(pipeline_execution_policy_type: false)
+        end
+
+        it { is_expected.not_to have_key(:max_active_pipeline_execution_policies_reached) }
+        it { is_expected.not_to have_key(:max_pipeline_execution_policies_allowed) }
       end
 
       context 'when toggle_security_policy_custom_ci is enabled' do
@@ -353,6 +366,58 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
       subject { helper.max_active_scan_execution_policies_reached?(namespace) }
 
       it_behaves_like '#max_active_scan_execution_policies_reached for source'
+    end
+  end
+
+  shared_examples '#max_active_pipeline_execution_policies_reached for source' do
+    context 'when a source does not have a security policy project' do
+      it_behaves_like 'when source does not have a security policy project'
+    end
+
+    context 'when a source did not reach the limited of active pipeline execution policies' do
+      before do
+        stub_const('::Security::PipelineExecutionPolicy::POLICY_LIMIT', 2)
+      end
+
+      it_behaves_like 'when source has active scan policies', limited_reached: false
+    end
+
+    context 'when a source reached the limited of active pipeline execution policies' do
+      it_behaves_like 'when source has active scan policies', limited_reached: true
+    end
+  end
+
+  describe '#max_active_pipeline_execution_policies_reached?' do
+    let_it_be(:policy_management_project) { create(:project, :repository) }
+
+    let(:policy_yaml) do
+      build(:orchestration_policy_yaml, pipeline_execution_policy: [build(:pipeline_execution_policy)])
+    end
+
+    context 'for project' do
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration,
+          security_policy_management_project: policy_management_project, project: project
+        )
+      end
+
+      subject { helper.max_active_pipeline_execution_policies_reached?(project) }
+
+      it_behaves_like '#max_active_pipeline_execution_policies_reached for source'
+    end
+
+    context 'for namespace' do
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration, :namespace,
+          security_policy_management_project: policy_management_project, namespace: namespace
+        )
+      end
+
+      subject { helper.max_active_pipeline_execution_policies_reached?(namespace) }
+
+      it_behaves_like '#max_active_pipeline_execution_policies_reached for source'
     end
   end
 

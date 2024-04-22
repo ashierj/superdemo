@@ -290,7 +290,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         build(:orchestration_policy_yaml,
           scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')],
           scan_result_policy: [build(:scan_result_policy, name: 'Require approvals for scan result policy')],
-          approval_policy: [build(:approval_policy, name: 'Require approvals for approval policy')]
+          approval_policy: [build(:approval_policy, name: 'Require approvals for approval policy')],
+          pipeline_execution_policy: [build(:pipeline_execution_policy, name: 'Run custom pipeline configuration')]
         )
       end
 
@@ -299,6 +300,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
         it 'retrieves policy by type' do
           expect(policies.first[:name]).to eq('Run DAST in every pipeline')
+        end
+      end
+
+      context 'when type is a string for pipeline execution' do
+        let(:type) { :pipeline_execution_policy }
+
+        it 'retrieves policy by type' do
+          expect(policies.first[:name]).to eq('Run custom pipeline configuration')
         end
       end
 
@@ -2262,6 +2271,40 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
     it 'excludes the scheduled rules' do
       expect(active_scan_actions).to contain_exactly(*dast_policy[:actions], *container_scanning_policy[:actions])
+    end
+  end
+
+  describe '#active_pipeline_execution_policies' do
+    let(:pipeline_execution_yaml) { build(:orchestration_policy_yaml, pipeline_execution_policy: [build(:pipeline_execution_policy)]) }
+    let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
+
+    subject(:active_pipeline_execution_policies) { security_orchestration_policy_configuration.active_pipeline_execution_policies }
+
+    before do
+      allow(security_policy_management_project).to receive(:repository).and_return(repository)
+      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
+    end
+
+    it 'returns only enabled policies' do
+      expect(active_pipeline_execution_policies.pluck(:enabled).uniq).to contain_exactly(true)
+    end
+
+    it 'returns only 1 from all active policies' do
+      expect(active_pipeline_execution_policies.count).to be(1)
+    end
+
+    context 'when policy configuration is configured for namespace' do
+      let(:security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, :namespace, security_policy_management_project: security_policy_management_project)
+      end
+
+      it 'returns only enabled policies' do
+        expect(active_pipeline_execution_policies.pluck(:enabled).uniq).to contain_exactly(true)
+      end
+
+      it 'returns only 1 from all active policies' do
+        expect(active_pipeline_execution_policies.count).to be(1)
+      end
     end
   end
 end

@@ -255,3 +255,19 @@ scan_result_policy:
     approvers:
     - admin
     - developer.local
+pipeline_execution_policy:
+  - name: Run custom pipeline configuration
+    description: This policy enforces to run custom pipeline configuration
+    enabled: true
+    content: {}
+    policy_scope: {}
+  - name: Disabled pipeline execution policy
+    description: This policy would run custom pipeline configuration but is disabled
+    enabled: false
+    content: {}
+    policy_scope: {}
+  - name: Second pipeline execution policy
+    description: Second enabled pipeline execution policy
+    enabled: true
+    content: {}
+    policy_scope: {}

@@ -72,6 +72,42 @@ FactoryBot.define do
     end
   end
 
+  factory :pipeline_execution_policy,
+    class: Struct.new(:name, :description, :enabled, :actions, :rules, :policy_scope) do
+    skip_create
+
+    initialize_with do
+      name = attributes[:name]
+      description = attributes[:description]
+      enabled = attributes[:enabled]
+      content = attributes[:content]
+      policy_scope = attributes[:policy_scope]
+
+      new(name, description, enabled, content, policy_scope).to_h
+    end
+
+    sequence(:name) { |n| "test-pipeline-execution-policy-#{n}" }
+    description { 'This policy enforces execution of custom CI in the pipeline' }
+    enabled { true }
+    content { {} }
+    policy_scope { {} }
+
+    trait :with_policy_scope do
+      policy_scope do
+        {
+          compliance_frameworks: [
+            { id: 1 },
+            { id: 2 }
+          ],
+          projects: {
+            including: [],
+            excluding: []
+          }
+        }
+      end
+    end
+  end
+
   factory :scan_result_policy,
     class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings, :policy_scope,
       :fallback_behavior),
@@ -206,15 +242,17 @@ FactoryBot.define do
   end
 
   factory :orchestration_policy_yaml,
-    class: Struct.new(:scan_execution_policy, :scan_result_policy, :approval_policy) do
+    class: Struct.new(:scan_execution_policy, :scan_result_policy, :approval_policy, :pipeline_execution_policy) do
     skip_create
 
     initialize_with do
       scan_execution_policy = attributes[:scan_execution_policy]
       scan_result_policy = attributes[:scan_result_policy]
       approval_policy = attributes[:approval_policy]
+      pipeline_execution_policy = attributes[:pipeline_execution_policy]
 
-      YAML.dump(new(scan_execution_policy, scan_result_policy, approval_policy).to_h.compact.deep_stringify_keys)
+      YAML.dump(new(scan_execution_policy, scan_result_policy, approval_policy,
+        pipeline_execution_policy).to_h.compact.deep_stringify_keys)
     end
   end
 end
