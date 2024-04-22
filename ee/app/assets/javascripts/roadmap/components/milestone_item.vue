@@ -136,8 +136,8 @@ export default {
         :title="milestone.title"
       >
         <div class="milestone-item-type gl-line-height-normal">
-          <gl-icon :name="typeIcon" class="gl-vertical-align-middle" />
-          <span class="d-inline-block gl-vertical-align-middle">{{ milestoneType }}</span>
+          <gl-icon :name="typeIcon" class="gl-align-middle" />
+          <span class="d-inline-block gl-align-middle">{{ milestoneType }}</span>
         </div>
         <div class="milestone-item-date">{{ timeframeString(milestone) }}</div>
       </gl-popover>

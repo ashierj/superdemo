@@ -33,12 +33,12 @@
               = s_("DomainVerification|No domains configured. Create a domain in a project in this group hierarchy.")
           - @domains.each do |domain|
             %tr.js-domain-row{ id: "domain#{domain.id}" }
-              %td{ class: 'gl-vertical-align-middle!', data: { label: _('Domain') } }
+              %td{ class: '!gl-align-middle', data: { label: _('Domain') } }
                 = domain.domain
-              %td{ class: 'gl-vertical-align-middle!', data: { label: _('Source project') } }
+              %td{ class: '!gl-align-middle', data: { label: _('Source project') } }
                 - project = domain.project
                 = link_to project.full_path, project_path(project)
-              %td{ class: 'gl-vertical-align-middle!', data: { label: _('Verifications status') } }
+              %td{ class: '!gl-align-middle', data: { label: _('Verifications status') } }
                 = domain.verified? ? _('Verified') : _('Unverified')
               %td{ data: { label: _('Actions') } }
                 .btn-group.gl-float-right.gl-mt-n2.gl-mb-n2{ class: 'gl-text-left! gl-pl-0!' }

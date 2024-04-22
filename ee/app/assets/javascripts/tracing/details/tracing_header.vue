@@ -54,7 +54,7 @@ export default {
         v-if="isTraceInProgress"
         variant="warning"
         size="md"
-        class="gl-ml-3 gl-vertical-align-middle"
+        class="gl-ml-3 gl-align-middle"
         >{{ $options.i18n.inProgress }}</gl-badge
       >
     </h1>

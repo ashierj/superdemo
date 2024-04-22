@@ -12,37 +12,38 @@ export const FIELDS = [
     key: 'disclosure',
     label: '',
     thClass: 'gl-p-0!',
-    tdClass: 'gl-p-0! gl-vertical-align-middle!',
+    tdClass: 'gl-p-0! !gl-align-middle',
   },
   {
     key: 'user',
     label: __('User'),
     thClass: `gl-w-30p gl-pl-2!`,
-    tdClass: 'gl-vertical-align-middle! gl-pl-2!',
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    tdClass: '!gl-align-middle gl-pl-2!',
   },
   {
     key: 'email',
     label: __('Email'),
     thClass: 'gl-w-20p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   {
     key: 'lastActivityTime',
     label: __('Last GitLab activity'),
     thClass: 'gl-w-20p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   {
     key: 'lastLoginAt',
     label: __('Last login'),
     thClass: 'gl-w-20p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   {
     key: 'actions',
     label: '',
     thClass: 'gl-w-10p',
-    tdClass: 'gl-vertical-align-middle! text-right',
+    tdClass: '!gl-align-middle text-right',
   },
 ];
 
@@ -54,7 +55,7 @@ export const DETAILS_FIELDS = [
 ].map((field) => ({
   ...field,
   thClass: 'gl-border-0!',
-  tdClass: 'gl-border-0! gl-vertical-align-middle!',
+  tdClass: 'gl-border-0! !gl-align-middle',
 }));
 
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID = 'cannot-remove-member-modal';

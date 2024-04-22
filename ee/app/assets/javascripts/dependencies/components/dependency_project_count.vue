@@ -144,7 +144,7 @@ export default {
         <div class="gl-display-flex">
           <gl-link :href="getUrl(item)" class="gl-hover-text-decoration-none">
             <gl-avatar
-              class="gl-mr-2 gl-vertical-align-middle"
+              class="gl-mr-2 gl-align-middle"
               :alt="item.name"
               :size="16"
               :entity-id="getEntityId(item)"

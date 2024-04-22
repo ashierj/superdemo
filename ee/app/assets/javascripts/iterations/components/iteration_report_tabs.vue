@@ -176,7 +176,7 @@ export default {
         <gl-label
           v-for="label in labelsWithoutIssues"
           :key="label.id"
-          class="gl-ml-1 gl-vertical-align-middle"
+          class="gl-ml-1 gl-align-middle"
           :background-color="label.color"
           :description="label.description"
           :scoped="shouldShowScopedLabel(label)"

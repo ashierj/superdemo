@@ -60,19 +60,19 @@ export default {
           key: 'name',
           label: this.$options.i18n.name,
           thClass: 'w-30p',
-          tdClass: 'gl-vertical-align-middle!',
+          tdClass: '!gl-align-middle',
         },
         {
           key: 'description',
           label: this.$options.i18n.description,
           thClass: 'w-60p',
-          tdClass: 'gl-vertical-align-middle!',
+          tdClass: '!gl-align-middle',
         },
         {
           key: 'actions',
           label: __('Actions'),
           thClass: 'gl-text-right',
-          tdClass: 'gl-vertical-align-middle!',
+          tdClass: '!gl-align-middle',
         },
       ],
     };

@@ -129,14 +129,14 @@ export default {
       <slot>
         <gl-collapsible-listbox
           v-model="matchType"
-          class="gl-display-inline! gl-w-auto gl-vertical-align-middle"
+          class="gl-display-inline! gl-w-auto gl-align-middle"
           :items="$options.matchTypeOptions"
           :toggle-text="matchTypeToggleText"
           data-testid="match-type-select"
         />
         <gl-collapsible-listbox
           v-model="licenseTypes"
-          class="gl-vertical-align-middle gl-display-inline!"
+          class="gl-align-middle gl-display-inline!"
           :items="filteredLicenses"
           :toggle-text="toggleText"
           :header-text="$options.i18n.licenseTypeHeader"
