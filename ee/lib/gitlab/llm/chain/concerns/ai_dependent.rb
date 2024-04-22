@@ -13,8 +13,9 @@ module Gitlab
 
           def request(&block)
             prompt_str = prompt
+            prompt_text = prompt_str[:prompt]
 
-            logger.info_or_debug(context.current_user, message: "Prompt", class: self.class.to_s, content: prompt_str)
+            logger.info_or_debug(context.current_user, message: "Prompt", class: self.class.to_s, prompt: prompt_text)
 
             ai_request.request(prompt_str, &block)
           end

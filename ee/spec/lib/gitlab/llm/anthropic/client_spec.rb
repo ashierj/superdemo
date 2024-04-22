@@ -45,6 +45,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
   let(:response_body) { expected_response.to_json }
   let(:http_status) { 200 }
   let(:response_headers) { { 'Content-Type' => 'application/json' } }
+  let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   before do
     stub_application_setting(anthropic_api_key: api_key)
@@ -58,6 +59,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         body: response_body,
         headers: response_headers
       )
+    allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
+    allow(logger).to receive(:info_or_debug)
+    allow(logger).to receive(:info)
   end
 
   describe '#complete' do
@@ -102,6 +106,15 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
     end
 
     it_behaves_like 'tracks events for AI requests', 2, 4
+
+    it 'logs the response' do
+      complete
+      expected_logging_response = expected_response["completion"]
+
+      expect(logger).to have_received(:info).with(message: "Performing request to Anthropic", options: options)
+      expect(logger).to have_received(:info_or_debug).with(user, message: "Received response from Anthropic",
+        response: expected_logging_response)
+    end
 
     context 'when feature flag and API key is set' do
       it 'returns response' do
@@ -179,6 +192,15 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
             .and_call_original
 
           expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello")
+        end
+
+        it 'logs the response' do
+          described_class.new(user).stream(prompt: 'anything', **options)
+          expected_logging_response = "Hello"
+
+          expect(logger).to have_received(:info).with(message: "Performing request to Anthropic", options: options)
+          expect(logger).to have_received(:info_or_debug).with(user, message: "Received response from Anthropic",
+            response: expected_logging_response)
         end
 
         context 'when setting a timeout' do

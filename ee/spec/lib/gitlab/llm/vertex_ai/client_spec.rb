@@ -62,6 +62,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
   end
 
   let(:client) { described_class.new(user, tracking_context: tracking_context) }
+  let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   RSpec.shared_context 'when request is successful' do
     before do
@@ -320,7 +321,22 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     context 'when measuring request success' do
       let(:client) { :vertex_ai }
 
+      before do
+        allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
+        allow(logger).to receive(:info_or_debug)
+        allow(logger).to receive(:info)
+        allow(logger).to receive(:error)
+      end
+
       it_behaves_like 'measured Llm request'
+
+      it 'logs the response' do
+        subject # rubocop: disable RSpec/NamedSubject -- We cannot name it as it is used in shared context above
+
+        expect(logger).to have_received(:info).with(message: "Performing request to Vertex", config: config)
+        expect(logger).to have_received(:info_or_debug).with(user, message: "Received response from Vertex",
+          response: successful_response.to_json)
+      end
 
       context 'when request raises an exception' do
         before do
@@ -347,8 +363,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
           )
         end
 
-        it 'does not fail' do
+        it 'does not fail and logs an error' do
           subject # rubocop: disable RSpec/NamedSubject -- We cannot name it as it is used in shared context above
+          expect(logger).to have_received(:error).with(message: "Empty response from Vertex")
         end
       end
     end

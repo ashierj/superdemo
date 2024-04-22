@@ -14,6 +14,8 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
     )
   end
 
+  let(:logger) { instance_double('Gitlab::Llm::Logger') }
+
   describe '#prompt' do
     context 'when prompt is called' do
       it 'returns provider specific prompt' do
@@ -67,6 +69,11 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
   end
 
   describe '#request' do
+    before do
+      allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
+      allow(logger).to receive(:info_or_debug)
+    end
+
     it 'passes prompt to the ai_client' do
       tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
 
@@ -82,6 +89,16 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
       expect(ai_request).to receive(:request).with(tool.prompt, &b)
 
       tool.request(&b)
+    end
+
+    it 'logs the request' do
+      tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+      expected_prompt = tool.prompt[:prompt]
+
+      tool.request
+
+      expect(logger).to have_received(:info_or_debug).with(context.current_user, message: "Prompt",
+        class: tool.class.to_s, prompt: expected_prompt)
     end
   end
 end

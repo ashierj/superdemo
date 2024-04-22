@@ -29,8 +29,11 @@ module Gitlab
             perform_completion_request(prompt: prompt, options: options.except(:stream))
           end
 
+          response_completion = response["completion"]
+          logger.info_or_debug(user, message: "Received response from Anthropic", response: response_completion)
+
           track_prompt_size(token_size(prompt))
-          track_response_size(token_size(response["completion"]))
+          track_response_size(token_size(response_completion))
 
           response
         end
@@ -45,6 +48,8 @@ module Gitlab
 
             yield parsed_event if block_given?
           end
+
+          logger.info_or_debug(user, message: "Received response from Anthropic", response: response_body)
 
           track_prompt_size(token_size(prompt))
           track_response_size(token_size(response_body))
@@ -61,7 +66,7 @@ module Gitlab
           logger.info(message: "Performing request to Anthropic", options: options)
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
-          response = Gitlab::HTTP.post(
+          Gitlab::HTTP.post(
             URI.join(URL, '/v1/complete'),
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
@@ -72,10 +77,6 @@ module Gitlab
               yield parsed_event if block_given?
             end
           end
-
-          logger.info_or_debug(user, message: "Received response from Anthropic", response: response)
-
-          response
         end
 
         def enabled?
