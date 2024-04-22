@@ -170,7 +170,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
     context 'when given project IDs' do
       let_it_be(:group) { create(:group) }
       let_it_be(:project2) { create(:project, namespace: group) }
-      let_it_be(:project2_vulnerability) { create(:vulnerability, :with_finding, :with_merge_request_links, project: project2) }
+      let_it_be(:project2_vulnerability) { create(:vulnerability, :with_read, :with_merge_request_links, project: project2) }
 
       let(:params) { { project_id: [project2.id] } }
       let(:vulnerable) { group }
