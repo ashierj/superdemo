@@ -284,6 +284,15 @@ module EE
         ).has_ability?
       end
 
+      desc "Custom role on group that enables managing compliance framework"
+      condition(:role_enables_admin_compliance_framework) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_compliance_framework
+        ).has_ability?
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -607,12 +616,22 @@ module EE
         enable :admin_cicd_variables
       end
 
+      rule { custom_roles_allowed & role_enables_admin_compliance_framework & compliance_framework_available }.policy do
+        enable :admin_compliance_framework
+        enable :admin_compliance_pipeline_configuration
+        enable :read_group_compliance_dashboard
+      end
+
       rule { custom_roles_allowed & role_enables_remove_group & has_parent }.policy do
         enable :remove_group
       end
 
       rule { custom_roles_allowed & role_enables_admin_push_rules }.policy do
         enable :admin_push_rules
+      end
+
+      rule { can?(:admin_group) | can?(:admin_compliance_framework) }.policy do
+        enable :view_edit_page
       end
 
       rule { can?(:read_group_security_dashboard) }.policy do

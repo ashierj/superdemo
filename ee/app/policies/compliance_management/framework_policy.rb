@@ -16,6 +16,23 @@ module ComplianceManagement
       @user.can?(:read_group, @subject.namespace.root_ancestor)
     end
 
+    condition(:custom_roles_allowed, scope: :subject) do
+      @subject.namespace.custom_roles_enabled?
+    end
+
+    desc "Custom role on group that enables managing compliance framework"
+    condition(:role_enables_admin_compliance_framework) do
+      ::Auth::MemberRoleAbilityLoader.new(
+        user: @user,
+        resource: @subject.namespace,
+        ability: :admin_compliance_framework
+      ).has_ability?
+    end
+
+    condition(:custom_ability_compliance_enabled) do
+      custom_roles_allowed? && role_enables_admin_compliance_framework?
+    end
+
     rule { can?(:owner_access) & custom_compliance_frameworks_enabled }.policy do
       enable :admin_compliance_framework
       enable :read_compliance_framework
@@ -26,6 +43,15 @@ module ComplianceManagement
     end
 
     rule { can?(:owner_access) & group_level_compliance_pipeline_enabled }.policy do
+      enable :admin_compliance_pipeline_configuration
+    end
+
+    rule { custom_ability_compliance_enabled & custom_compliance_frameworks_enabled }.policy do
+      enable :admin_compliance_framework
+      enable :read_compliance_framework
+    end
+
+    rule { custom_ability_compliance_enabled & group_level_compliance_pipeline_enabled }.policy do
       enable :admin_compliance_pipeline_configuration
     end
   end

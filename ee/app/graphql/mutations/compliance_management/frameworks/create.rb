@@ -20,7 +20,11 @@ module Mutations
                  description: 'Parameters to update the compliance framework with.'
 
         def resolve(**args)
-          service = ::ComplianceManagement::Frameworks::CreateService.new(namespace: namespace(args[:namespace_path]),
+          group = namespace(args[:namespace_path])
+
+          raise_resource_not_available_error! unless group
+
+          service = ::ComplianceManagement::Frameworks::CreateService.new(namespace: group,
                                                                           params: args[:params].to_h,
                                                                           current_user: current_user).execute
 

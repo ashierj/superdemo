@@ -21,18 +21,22 @@ module EE
               add_item(billing_menu_item)
               add_item(reporting_menu_item)
             else
-              add_menu_item_for_ability(general_menu_item, :remove_group)
-              add_menu_item_for_ability(access_tokens_menu_item, :read_resource_access_tokens)
-              add_menu_item_for_ability(repository_menu_item, :change_push_rules)
-              add_menu_item_for_ability(ci_cd_menu_item, :admin_cicd_variables)
-              add_menu_item_for_ability(billing_menu_item, :read_billing)
+              add_menu_item_for_abilities(general_menu_item, [:remove_group, :admin_compliance_framework])
+              add_menu_item_for_abilities(access_tokens_menu_item, :read_resource_access_tokens)
+              add_menu_item_for_abilities(repository_menu_item, :change_push_rules)
+              add_menu_item_for_abilities(ci_cd_menu_item, :admin_cicd_variables)
+              add_menu_item_for_abilities(billing_menu_item, :read_billing)
             end
           end
 
           private
 
-          def add_menu_item_for_ability(menu_item, ability)
-            add_item(menu_item) if can?(context.current_user, ability, context.group)
+          def add_menu_item_for_abilities(menu_item, abilities)
+            add_item(menu_item) if allowed_any_ability?(abilities)
+          end
+
+          def allowed_any_ability?(abilities)
+            Array(abilities).any? { |ability| can?(context.current_user, ability, context.group) }
           end
 
           def roles_and_permissions_menu_item

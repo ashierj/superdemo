@@ -2,11 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::FrameworkPolicy do
+RSpec.describe ComplianceManagement::FrameworkPolicy, feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
 
   let_it_be_with_refind(:framework) { create(:compliance_framework, namespace: group) }
+
+  let(:licensed_compliance_features) do
+    { custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: true }
+  end
 
   subject { described_class.new(user, framework) }
 
@@ -24,7 +28,7 @@ RSpec.describe ComplianceManagement::FrameworkPolicy do
 
   context 'feature is licensed' do
     before do
-      stub_licensed_features(custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: true)
+      stub_licensed_features(licensed_compliance_features)
     end
 
     context 'user is group owner' do
@@ -45,6 +49,26 @@ RSpec.describe ComplianceManagement::FrameworkPolicy do
       let(:user) { build(:admin) }
 
       it_behaves_like 'full access to compliance framework administration'
+    end
+
+    context 'when user is a guest with admin_compliance_framework custom permission' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:member_role) { create(:member_role, :guest, namespace: group, admin_compliance_framework: true) }
+      let_it_be(:member) { create(:group_member, :guest, group: group, user: user, member_role: member_role) }
+
+      context 'when custom_roles feature is disabled' do
+        it { is_expected.to be_allowed(:read_compliance_framework) }
+        it { is_expected.to be_disallowed(:admin_compliance_framework) }
+        it { is_expected.to be_disallowed(:admin_compliance_pipeline_configuration) }
+      end
+
+      context 'when custom_roles feature is enabled' do
+        before do
+          stub_licensed_features(licensed_compliance_features.merge(custom_roles: true))
+        end
+
+        it_behaves_like 'full access to compliance framework administration'
+      end
     end
 
     context 'user is subgroup member but not the owner of the root namespace' do
