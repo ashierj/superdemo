@@ -236,6 +236,14 @@ NOTE:
 The `active` attribute in the response was deprecated [in GitLab 14.8](https://gitlab.com/gitlab-org/gitlab/-/issues/347211)
 and will be removed in [a future version of the REST API](https://gitlab.com/gitlab-org/gitlab/-/issues/351109). It is replaced by the `paused` attribute.
 
+NOTE:
+The `version`, `revision`, `platform`, and `architecture` attributes in the response were deprecated
+[in GitLab 17.0](https://gitlab.com/gitlab-org/gitlab/-/issues/457128) and will be removed in
+[a future version of the REST API](https://gitlab.com/gitlab-org/gitlab/-/issues/351109).
+These attributes will start returning an empty string in GitLab 18.0.
+The same attributes can be found inside the respective runner manager, currently only available through the GraphQL
+[`CiRunnerManager` type](graphql/reference/index.md#cirunnermanager).
+
 Example response:
 
 ```json
