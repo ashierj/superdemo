@@ -15,7 +15,7 @@ module Search
       end
 
       def exact_search_query
-        exact_search_query = "\"#{keyword}\""
+        exact_search_query = "\"#{RE2::Regexp.escape(keyword)}\""
         return exact_search_query if filters.empty?
 
         "#{exact_search_query} #{filters.join(' ')}"
@@ -32,7 +32,7 @@ module Search
       end
 
       def query_matcher_regex
-        Regexp.union(SUPPORTED_SYNTAX_FILTERS.map { |filter| /#{filter}:\S+/ })
+        Regexp.union(SUPPORTED_SYNTAX_FILTERS.map { |filter| /-?#{filter}:\S+/ })
       end
       strong_memoize_attr(:query_matcher_regex)
     end
