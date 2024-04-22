@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlButton } from '@gitlab/ui';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
 import { salesLink } from 'ee/usage_quotas/code_suggestions/constants';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
@@ -10,6 +10,8 @@ describe('Code Suggestions Intro', () => {
   let wrapper;
   const emptyState = () => wrapper.findComponent(GlEmptyState);
   const handRaiseLeadButton = () => wrapper.findComponent(HandRaiseLeadButton);
+  const findButton = (category) =>
+    wrapper.findAllComponents(GlButton).filter((button) => button.props('category') === category);
 
   const createComponent = (provideProps = {}) => {
     wrapper = shallowMount(CodeSuggestionsIntro, {
@@ -27,11 +29,18 @@ describe('Code Suggestions Intro', () => {
       });
 
       it('renders gl-empty-state component', () => {
+        const purchaseButton = findButton('primary').at(0);
+        const salesButton = findButton('secondary').at(0);
+
+        expect(purchaseButton.exists()).toBe(true);
+        expect(purchaseButton.attributes('variant')).toBe('confirm');
+        expect(purchaseButton.attributes('href')).toBe(addDuoProHref);
+
+        expect(salesButton.exists()).toBe(true);
+        expect(salesButton.attributes('variant')).toBe('confirm');
+        expect(salesButton.attributes('href')).toBe(salesLink);
+
         expect(emptyState().exists()).toBe(true);
-        expect(emptyState().props('primaryButtonLink')).toBe(addDuoProHref);
-        expect(emptyState().props('primaryButtonText')).toBe('Purchase seats');
-        expect(emptyState().props('secondaryButtonLink')).toBe(salesLink);
-        expect(emptyState().props('secondaryButtonText')).toBe('Contact sales');
         expect(handRaiseLeadButton().exists()).toBe(false);
       });
     });
