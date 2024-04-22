@@ -252,7 +252,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
           expected_variables = {
             'SECURE_ANALYZERS_PREFIX' => "$CI_TEMPLATE_REGISTRY_HOST/security-products",
             'DS_EXCLUDED_PATHS' => "spec, test, tests, tmp",
-            'DS_MAJOR_VERSION' => 4
+            'DS_MAJOR_VERSION' => 5
           }
 
           expect(config[:variables]).to be_nil
