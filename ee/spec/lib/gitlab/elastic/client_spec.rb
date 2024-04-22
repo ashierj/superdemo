@@ -2,9 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::Client do
+RSpec.describe Gitlab::Elastic::Client, feature_category: :global_search do
   describe '.build' do
     let(:client) { described_class.build(params) }
+
+    context 'when params are nil' do
+      let(:params) { nil }
+
+      it 'client returns nil' do
+        expect(client).to be_nil
+      end
+    end
 
     context 'without credentials' do
       let(:params) { { url: 'http://dummy-elastic:9200' } }

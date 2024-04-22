@@ -4,6 +4,7 @@ module Elastic
   module Latest
     class IssueInstanceProxy < ApplicationInstanceProxy
       SCHEMA_VERSION = 23_12
+      OPTIONAL_FIELDS = %w[embedding embedding_version].freeze
 
       def as_indexed_json(options = {})
         data = {}

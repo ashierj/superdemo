@@ -688,6 +688,29 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     end
   end
 
+  describe '#vectors_supported?' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { helper.vectors_supported?(arg) }
+
+    where(:arg, :distribution, :version, :result) do
+      :elasticsearch  | 'elasticsearch' | '6.8.23' | false
+      :elasticsearch  | 'elasticsearch' | '7.17.0' | false
+      :elasticsearch  | 'elasticsearch' | '8.0.0'  | true
+      :opensearch     | 'elasticsearch' | '8.0.0'  | false
+      :opensearch     | 'opensearch'    | '1.3.3'  | false
+      :opensearch     | 'opensearch'    | '2.1.0'  | false
+    end
+
+    before do
+      allow(helper).to receive(:server_info).and_return(distribution: distribution, version: version)
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
   describe '#klass_to_alias_name' do
     it 'returns results for every listed class' do
       described_class::ES_SEPARATE_CLASSES.each do |klass|

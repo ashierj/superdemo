@@ -389,6 +389,13 @@ module Gitlab
         end
       end
 
+      # Vectors are only supported on Elasticsearch 8+
+      def vectors_supported?(distribution)
+        info = server_info
+
+        distribution == :elasticsearch && info[:distribution] == 'elasticsearch' && info[:version].to_f >= 8
+      end
+
       def create_index(index_name:, alias_name:, with_alias:, settings:, mappings:, options: {})
         if index_exists?(index_name: index_name)
           return if options[:skip_if_exists]
