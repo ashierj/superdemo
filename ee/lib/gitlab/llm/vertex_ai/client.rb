@@ -110,7 +110,7 @@ module Gitlab
             )
           end
 
-          logger.info_or_debug(user, message: "Received response from Vertex", response: response)
+          logger.info_or_debug(user, message: "Received response from Vertex", response: response.to_json)
 
           if response.present?
             track_token_usage(response)
