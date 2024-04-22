@@ -56,6 +56,7 @@ export default () => ({
   reference: '',
   subscribed: false,
   confidential: false,
+  imported: false,
 
   // Create Epic Props
   newEpicTitle: '',

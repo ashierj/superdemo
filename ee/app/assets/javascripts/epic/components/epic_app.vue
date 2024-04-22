@@ -35,6 +35,7 @@ export default {
       'lockVersion',
       'state',
       'confidential',
+      'imported',
     ]),
     formattedAuthor() {
       const { url, username } = this.author;
@@ -76,6 +77,7 @@ export default {
         :initial-description-text="initialDescriptionText"
         :issuable-status="state"
         :is-confidential="confidential"
+        :is-imported="imported"
         enable-autocomplete
         project-namespace
         issuable-ref
