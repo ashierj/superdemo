@@ -5,6 +5,7 @@ module Security
     include Gitlab::Git::WrapsGitalyErrors
     include Security::ScanExecutionPolicy
     include Security::ScanResultPolicy
+    include Security::PipelineExecutionPolicy
     include EachBatch
     include Gitlab::Utils::StrongMemoize
     include IgnorableColumns

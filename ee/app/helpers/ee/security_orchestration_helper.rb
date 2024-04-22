@@ -51,12 +51,27 @@ module EE::SecurityOrchestrationHelper
       custom_ci_toggle_enabled: custom_ci_toggle_enabled?(container).to_s
     }
 
+    if pipeline_execution_policy_enabled?(container)
+      policy_data.merge!(
+        max_active_pipeline_execution_policies_reached: max_active_pipeline_execution_policies_reached?(container).to_s,
+        max_pipeline_execution_policies_allowed: Security::PipelineExecutionPolicy::POLICY_LIMIT
+      )
+    end
+
     if container.is_a?(::Project)
       policy_data.merge(
         create_agent_help_path: help_page_url('user/clusters/agent/install/index')
       )
     else
       policy_data
+    end
+  end
+
+  def pipeline_execution_policy_enabled?(container)
+    if container.is_a?(::Project)
+      Feature.enabled?(:pipeline_execution_policy_type, container.group)
+    else
+      Feature.enabled?(:pipeline_execution_policy_type, container)
     end
   end
 
@@ -76,6 +91,17 @@ module EE::SecurityOrchestrationHelper
 
   def max_active_scan_execution_policies_reached?(container)
     active_scan_execution_policy_count(container) >= Security::ScanExecutionPolicy::POLICY_LIMIT
+  end
+
+  def max_active_pipeline_execution_policies_reached?(container)
+    active_pipeline_execution_policy_count(container) >= Security::PipelineExecutionPolicy::POLICY_LIMIT
+  end
+
+  def active_pipeline_execution_policy_count(container)
+    container
+      &.security_orchestration_policy_configuration
+      &.active_pipeline_execution_policies
+      &.length || 0
   end
 
   def active_scan_execution_policy_count(container)
