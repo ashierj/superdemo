@@ -42,7 +42,7 @@ export default {
     GlModalDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['addDuoProHref', 'isSaaS'],
+  inject: ['addDuoProHref', 'isSaaS', 'subscriptionName'],
   props: {
     groupId: {
       type: String,
@@ -60,7 +60,7 @@ export default {
       return parseInt(this.groupId, 10);
     },
     shouldShowAddSeatsButton() {
-      if (this.isLoading || !this.addDuoProHref) {
+      if (this.isLoading) {
         return false;
       }
       return true;
@@ -86,12 +86,12 @@ export default {
       query: getSubscriptionPermissionsData,
       client: 'customersDotClient',
       variables() {
-        return {
-          namespaceId: this.parsedGroupId,
-        };
+        return this.groupId
+          ? { namespaceId: this.parsedGroupId }
+          : { subscriptionName: this.subscriptionName };
       },
       skip() {
-        return !this.addDuoProHref || !this.groupId;
+        return !(this.groupId || this.subscriptionName);
       },
       update: (data) => ({
         canAddDuoProSeats: data.subscription.canAddDuoProSeats,

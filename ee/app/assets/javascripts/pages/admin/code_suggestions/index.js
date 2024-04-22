@@ -1,13 +1,6 @@
 import Vue from 'vue';
-import VueApollo from 'vue-apollo';
-import createDefaultClient from '~/lib/graphql';
+import apolloProvider from 'ee/usage_quotas/shared/provider';
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
-
-Vue.use(VueApollo);
-
-const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
-});
 
 function mountCodeSuggestionsUsageApp() {
   const el = document.getElementById('js-code-suggestions-page');
@@ -23,6 +16,7 @@ function mountCodeSuggestionsUsageApp() {
     provide: {
       isSaaS: false,
       addDuoProHref: el.dataset.addDuoProSeatsUrl,
+      subscriptionName: el.dataset.subscriptionName,
     },
     render: (h) => h(CodeSuggestionsUsage),
   });
