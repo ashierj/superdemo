@@ -32,8 +32,7 @@ module Gitlab
           end
 
           def parse_vulnerabilities(report)
-            vuln_findings = project.vulnerability_findings.by_report_types(%i[container_scanning dependency_scanning])
-            vuln_findings.each do |finding|
+            vulnerability_findings.each do |finding|
               dependency = finding.location.dig("dependency")
 
               next unless dependency
@@ -46,6 +45,26 @@ module Gitlab
 
               report.add_dependency(formatter.format(dependency, '', dependency_path(finding), vulnerability))
             end
+          end
+
+          def vulnerability_findings
+            if ::Feature.enabled?(:deprecate_vulnerability_occurrence_pipelines, project)
+              vulnerability_findings_from_project
+            else
+              vulnerability_findings_from_pipelines
+            end
+          end
+
+          def vulnerability_findings_from_pipelines
+            pipeline
+              .vulnerability_findings
+              .by_report_types(%i[container_scanning dependency_scanning])
+          end
+
+          def vulnerability_findings_from_project
+            project
+              .vulnerability_findings
+              .by_report_types(%i[container_scanning dependency_scanning])
           end
 
           def dependency_path(finding)
