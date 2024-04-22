@@ -39,14 +39,6 @@ RSpec.describe 'Query.runners', feature_category: :fleet_visibility do
         post_graphql(query, current_user: current_user)
       end
 
-      context 'with deprecated CiRunnerUpgradeStatusType enum type' do
-        let(:upgrade_status_graphql_type) { 'CiRunnerUpgradeStatusType' }
-
-        it 'returns nil upgradeStatus for all runners' do
-          expect(upgrade_statuses).to match_array([nil] * Ci::Runner.count)
-        end
-      end
-
       context 'with new CiRunnerUpgradeStatus enum type' do
         let(:upgrade_status_graphql_type) { 'CiRunnerUpgradeStatus' }
 
