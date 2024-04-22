@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::NotifyOverLimitService, feature_category: :measurement_and_locking do
+RSpec.describe Namespaces::FreeUserCap::NotifyOverLimitService, feature_category: :seat_cost_management do
   let_it_be(:group) { create(:group) }
 
   before_all do

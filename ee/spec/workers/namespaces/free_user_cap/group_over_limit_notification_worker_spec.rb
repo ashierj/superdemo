@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas, feature_category: :measurement_and_locking, type: :worker do
+RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas, feature_category: :seat_cost_management, type: :worker do
   describe '#perform' do
     let_it_be(:owner) { create :owner }
     let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan, owners: owner) }
