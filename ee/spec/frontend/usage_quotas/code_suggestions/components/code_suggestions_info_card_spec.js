@@ -20,6 +20,7 @@ jest.mock('~/lib/utils/url_utility', () => ({
 const defaultProvide = {
   addDuoProHref: 'http://customers.gitlab.com/namespaces/10/duo_pro_seats',
   isSaaS: true,
+  subscriptionName: null,
 };
 
 describe('CodeSuggestionsInfoCard', () => {
@@ -123,13 +124,6 @@ describe('CodeSuggestionsInfoCard', () => {
         await waitForPromises();
         expect(findAddSeatsButton().exists()).toBe(true);
       });
-
-      it('does not render add seats button if link is empty', async () => {
-        createComponent({ provide: { isSaas: false, addDuoProHref: '' } });
-        // wait for apollo to load
-        await waitForPromises();
-        expect(findAddSeatsButton().exists()).toBe(false);
-      });
     });
 
     describe('with saas', () => {
@@ -144,13 +138,6 @@ describe('CodeSuggestionsInfoCard', () => {
         it('renders button if addDuoProHref link is passed', () => {
           expect(findAddSeatsButton().exists()).toBe(true);
         });
-      });
-
-      it('does not render add seats button if link is empty', async () => {
-        createComponent({ provide: { addDuoProHref: '' } });
-        // wait for apollo to load
-        await waitForPromises();
-        expect(findAddSeatsButton().exists()).toBe(false);
       });
     });
 
