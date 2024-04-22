@@ -143,6 +143,8 @@ module Types
 
     markdown_field :description_html, null: true
 
+    markdown_field :solution_html, null: true
+
     def vulnerability
       BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
         ::Vulnerability.with_findings_by_uuid(uuids)
@@ -220,6 +222,10 @@ module Types
 
     def description_html_resolver
       ::MarkupHelper.markdown(object.description, context.to_h.dup)
+    end
+
+    def solution_html_resolver
+      ::MarkupHelper.markdown(object.solution, context.to_h.dup)
     end
 
     private
