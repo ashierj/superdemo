@@ -121,7 +121,7 @@ export default {
         return !this.workItemIid;
       },
       update(data) {
-        return data.workspace.workItems.nodes[0] ?? {};
+        return data.workspace.workItem ?? {};
       },
       error() {
         this.setEmptyState();

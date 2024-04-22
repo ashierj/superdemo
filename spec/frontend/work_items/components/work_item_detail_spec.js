@@ -66,7 +66,7 @@ describe('WorkItemDetail component', () => {
     .mockResolvedValue(workItemQueryResponseWithNoPermissions);
   const groupSuccessHandler = jest.fn().mockResolvedValue(groupWorkItemQueryResponse);
   const showModalHandler = jest.fn();
-  const { id } = workItemQueryResponse.data.workspace.workItems.nodes[0];
+  const { id } = workItemQueryResponse.data.workspace.workItem;
   const workItemUpdatedSubscriptionHandler = jest
     .fn()
     .mockResolvedValue({ data: { workItemUpdated: null } });
@@ -247,7 +247,7 @@ describe('WorkItemDetail component', () => {
     const mutationHandler = jest.fn().mockResolvedValue({
       data: {
         workItemUpdate: {
-          workItem: confidentialWorkItem.data.workspace.workItems.nodes[0],
+          workItem: confidentialWorkItem.data.workspace.workItem,
           errors: [],
         },
       },
@@ -598,7 +598,7 @@ describe('WorkItemDetail component', () => {
       createComponent();
       await waitForPromises();
 
-      const { confidential } = workItemQueryResponse.data.workspace.workItems.nodes[0];
+      const { confidential } = workItemQueryResponse.data.workspace.workItem;
 
       expect(findNotesWidget().exists()).toBe(true);
       expect(findNotesWidget().props('isWorkItemConfidential')).toBe(confidential);
