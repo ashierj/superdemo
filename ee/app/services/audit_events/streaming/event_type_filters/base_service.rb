@@ -21,6 +21,8 @@ module AuditEvents
             ::AuditEvents::Streaming::InstanceEventTypeFilter
           when AuditEvents::Group::ExternalStreamingDestination
             ::AuditEvents::Group::EventTypeFilter
+          when AuditEvents::Instance::ExternalStreamingDestination
+            ::AuditEvents::Instance::EventTypeFilter
           else
             ::AuditEvents::Streaming::EventTypeFilter
           end
@@ -39,7 +41,8 @@ module AuditEvents
         end
 
         def get_audit_scope
-          if destination.is_a?(AuditEvents::InstanceExternalAuditEventDestination)
+          if destination.is_a?(AuditEvents::InstanceExternalAuditEventDestination) ||
+              destination.is_a?(AuditEvents::Instance::ExternalStreamingDestination)
             Gitlab::Audit::InstanceScope.new
           else
             destination.group
