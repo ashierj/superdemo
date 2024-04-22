@@ -44,7 +44,8 @@ RSpec.shared_examples_for 'triggers policy bot comment' do |report_type, expecte
         before do
           policy = create(:scan_result_policy_read, :with_send_bot_message, project: merge_request.project,
             bot_message_enabled: false)
-          create(:report_approver_rule, :scan_finding, merge_request: merge_request, scan_result_policy_read: policy)
+          create(:report_approver_rule, :scan_finding, merge_request: merge_request, scan_result_policy_read: policy,
+            name: 'Rule with disabled policy bot comment')
         end
 
         it 'enqueues Security::GeneratePolicyViolationCommentWorker' do
