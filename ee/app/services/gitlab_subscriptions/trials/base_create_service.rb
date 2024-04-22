@@ -119,7 +119,9 @@ module GitlabSubscriptions
 
       def after_trial_error_hook(result)
         ServiceResponse.error(
-          message: result.message, payload: { namespace_id: trial_params[:namespace_id] }, reason: TRIAL_FAILED
+          message: result.message,
+          payload: { namespace_id: trial_params[:namespace_id] },
+          reason: result.reason || TRIAL_FAILED
         )
       end
 

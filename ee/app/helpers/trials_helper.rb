@@ -92,6 +92,20 @@ module TrialsHelper
     options
   end
 
+  def trial_form_errors_message(result)
+    unless result.reason == GitlabSubscriptions::Trials::BaseApplyTrialService::GENERIC_TRIAL_ERROR
+      return result.errors.to_sentence
+    end
+
+    support_link_url = 'https://support.gitlab.com/hc/en-us'
+    support_link = link_to('', support_link_url, target: '_blank',
+      rel: 'noopener noreferrer')
+    safe_format(
+      _('Please try again or reach out to %{support_link_start}GitLab Support%{support_link_end}.'),
+      tag_pair(support_link, :support_link_start, :support_link_end)
+    )
+  end
+
   private
 
   def current_namespaces_for_selector(namespaces)

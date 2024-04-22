@@ -53,8 +53,10 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialService, feature_category:
       context 'with error while applying the trial' do
         let(:response) { { success: false, data: { errors: ['some error'] } } }
 
-        it 'returns success: false with errors' do
-          expect(execute).to be_error.and have_attributes(message: ['some error'])
+        it 'returns success: false with errors and reason' do
+          expect(execute).to be_error.and have_attributes(
+            message: ['some error'], reason: described_class::GENERIC_TRIAL_ERROR
+          )
         end
 
         it_behaves_like 'does not record an onboarding progress action'

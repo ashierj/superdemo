@@ -4,6 +4,7 @@ module GitlabSubscriptions
   module Trials
     class BaseApplyTrialService
       include ::Gitlab::Utils::StrongMemoize
+      GENERIC_TRIAL_ERROR = :generic_trial_error
 
       def self.execute(args = {})
         instance = new(**args)
@@ -31,7 +32,7 @@ module GitlabSubscriptions
 
           ServiceResponse.success
         else
-          ServiceResponse.error(message: response.dig(:data, :errors))
+          ServiceResponse.error(message: response.dig(:data, :errors), reason: GENERIC_TRIAL_ERROR)
         end
       end
 
