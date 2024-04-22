@@ -28,9 +28,11 @@ RSpec.describe API::Repositories, feature_category: :source_code_management do
     end
 
     context 'when unauthenticated', 'and project is public' do
-      it_behaves_like 'an auditable and successful request' do
-        let_it_be(:project) { create(:project, :public, :repository) }
-        let(:current_user) { nil }
+      let_it_be(:project) { create(:project, :public, :repository) }
+      let_it_be(:user) { nil }
+
+      it 'does not log audit event' do
+        expect { request }.not_to change { AuditEvent.count }
       end
     end
 
