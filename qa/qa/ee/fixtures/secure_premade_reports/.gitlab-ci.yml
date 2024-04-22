@@ -1,9 +1,3 @@
-include:
-  template: Dependency-Scanning.gitlab-ci.yml
-  template: Container-Scanning.gitlab-ci.yml
-  template: SAST.gitlab-ci.yml
-  template: DAST.gitlab-ci.yml
-  template: License-Scanning.gitlab-ci.yml
 
 dependency_scanning:
   tags: [secure_report]
@@ -41,11 +35,3 @@ dast:
   artifacts:
     reports:
       dast: gl-dast-report.json
-
-license_scanning:
-  tags: [secure_report]
-  script:
-    - echo "Skipped"
-  artifacts:
-    reports:
-      license_scanning: gl-license-scanning-report.json
