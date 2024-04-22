@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::FreeUserCap::EnforcementAtLimitAlertComponent, :saas, :aggregate_failures, type: :component,
-  feature_category: :measurement_and_locking do
+  feature_category: :seat_cost_management do
   let(:namespace) { build_stubbed(:group) }
   let(:content_class) { '_content_class_' }
   let(:user) { build_stubbed(:user) }

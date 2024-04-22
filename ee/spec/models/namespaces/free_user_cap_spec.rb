@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap, feature_category: :measurement_and_locking do
+RSpec.describe Namespaces::FreeUserCap, feature_category: :seat_cost_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '.dashboard_limit' do

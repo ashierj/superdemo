@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCapMailer, feature_category: :measurement_and_locking do
+RSpec.describe Namespaces::FreeUserCapMailer, feature_category: :seat_cost_management do
   include EmailSpec::Matchers
 
   describe '#over_limit_email' do

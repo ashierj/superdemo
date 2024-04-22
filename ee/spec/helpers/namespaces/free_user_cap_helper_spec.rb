@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCapHelper, feature_category: :measurement_and_locking do
+RSpec.describe Namespaces::FreeUserCapHelper, feature_category: :seat_cost_management do
   describe '#over_limit_body_text' do
     it 'has expected text' do
       result = helper.over_limit_body_text('_namespace_name_')
