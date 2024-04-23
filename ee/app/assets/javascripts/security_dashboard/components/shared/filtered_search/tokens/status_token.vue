@@ -205,7 +205,7 @@ export default {
             <gl-icon
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-              :class="{ 'gl-visibility-hidden': !isStatusSelected(status.value) }"
+              :class="{ 'gl-invisible': !isStatusSelected(status.value) }"
               :data-testid="`status-icon-${status.value}`"
             />
             {{ status.text }}
@@ -224,7 +224,7 @@ export default {
             <gl-icon
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-              :class="{ 'gl-visibility-hidden': !isStatusSelected(status.value) }"
+              :class="{ 'gl-invisible': !isStatusSelected(status.value) }"
               :data-testid="`status-icon-${status.value}`"
             />
             {{ status.text }}

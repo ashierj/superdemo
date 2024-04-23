@@ -50,7 +50,7 @@ describe('Status Token component', () => {
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
   const findFilteredSearchToken = () => wrapper.findComponent(GlFilteredSearchToken);
   const findCheckedIcon = (value) => wrapper.findByTestId(`status-icon-${value}`);
-  const isOptionChecked = (v) => !findCheckedIcon(v).classes('gl-visibility-hidden');
+  const isOptionChecked = (v) => !findCheckedIcon(v).classes('gl-invisible');
 
   const clickDropdownItem = async (...ids) => {
     await Promise.all(

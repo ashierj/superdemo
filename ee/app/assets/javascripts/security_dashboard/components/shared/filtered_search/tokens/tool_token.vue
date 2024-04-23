@@ -213,7 +213,7 @@ export default {
                 <gl-icon
                   name="check"
                   class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-                  :class="{ 'gl-visibility-hidden': !isToolSelected(tool.value) }"
+                  :class="{ 'gl-invisible': !isToolSelected(tool.value) }"
                   :data-testid="`tool-icon-${tool.value}`"
                 />
                 {{ tool.text }}

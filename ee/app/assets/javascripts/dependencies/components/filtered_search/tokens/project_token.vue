@@ -153,7 +153,7 @@ export default {
               v-if="config.multiSelect"
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-              :class="{ 'gl-visibility-hidden': !isProjectSelected(project) }"
+              :class="{ 'gl-invisible': !isProjectSelected(project) }"
             />
             {{ project.name }}
           </div>

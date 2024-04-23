@@ -107,11 +107,11 @@ describe('ee/dependencies/components/filtered_search/tokens/component_token.vue'
 
     describe('when a user selects components to be filtered', () => {
       it('displays a check-icon next to the selected component', async () => {
-        expect(findFirstSearchSuggestionIcon().classes()).toContain('gl-visibility-hidden');
+        expect(findFirstSearchSuggestionIcon().classes()).toContain('gl-invisible');
 
         await selectComponent(TEST_COMPONENTS[0]);
 
-        expect(findFirstSearchSuggestionIcon().classes()).not.toContain('gl-visibility-hidden');
+        expect(findFirstSearchSuggestionIcon().classes()).not.toContain('gl-invisible');
       });
 
       it('shows a comma seperated list of selected component', async () => {
