@@ -95,7 +95,7 @@ export default {
           )
         }}
       </p>
-      <h4 class="gl-font-lg">{{ s__('ProductAnalytics|For this option:') }}</h4>
+      <h4 class="gl-font-lg gl-mt-0">{{ s__('ProductAnalytics|For this option:') }}</h4>
       <ul class="gl-mb-6">
         <li>
           {{

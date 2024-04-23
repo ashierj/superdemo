@@ -4,6 +4,7 @@ module ProductAnalyticsHelpers
   extend ActiveSupport::Concern
 
   EVENTS_PER_ADD_ON_PURCHASE = 1_000_000
+  GITLAB_PRODUCT_ANALYTICS_DOMAIN = 'gl-product-analytics.com'
 
   def product_analytics_enabled?
     return false unless ::Gitlab::CurrentSettings.product_analytics_enabled?
@@ -111,6 +112,10 @@ module ProductAnalyticsHelpers
     self_managed_product_analytics_cluster? || product_analytics_add_on_purchased?
   end
 
+  def has_self_managed_collector?(collector_host)
+    collector_host.present? && collector_host.exclude?(GITLAB_PRODUCT_ANALYTICS_DOMAIN)
+  end
+
   private
 
   def product_analytics_add_on_purchased?
@@ -118,7 +123,7 @@ module ProductAnalyticsHelpers
   end
 
   def self_managed_product_analytics_cluster?
-    collector_host.present? && collector_host.exclude?('gl-product-analytics.com')
+    collector_host.present? && has_self_managed_collector?(collector_host)
   end
 
   def collector_host

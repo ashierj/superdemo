@@ -39108,6 +39108,9 @@ msgstr ""
 msgid "ProductAnalytics|This table excludes projects that do not have product analytics onboarded."
 msgstr ""
 
+msgid "ProductAnalytics|To connect to your instance-level provider, you must first remove project-level provider configuration. You'll be redirected to the %{analyticsSettingsLink} page, which shows your provider's configuration settings and setup instructions."
+msgstr ""
+
 msgid "ProductAnalytics|To connect your own provider, you'll be redirected to the %{analyticsSettingsLink} page, which shows your provider's configuration settings and setup instructions."
 msgstr ""
 
@@ -39118,6 +39121,9 @@ msgid "ProductAnalytics|To instrument your application, select one of the option
 msgstr ""
 
 msgid "ProductAnalytics|Track your product's performance, and optimize your product and development processes."
+msgstr ""
+
+msgid "ProductAnalytics|Uncheck if you would like to configure a different provider for this project."
 msgstr ""
 
 msgid "ProductAnalytics|Unique Users"
@@ -39133,6 +39139,9 @@ msgid "ProductAnalytics|Use GitLab-managed provider"
 msgstr ""
 
 msgid "ProductAnalytics|Use a GitLab-managed infrastructure to process, store, and query analytics events data."
+msgstr ""
+
+msgid "ProductAnalytics|Use instance-level settings"
 msgstr ""
 
 msgid "ProductAnalytics|Used to retrieve dashboard data from the Cube instance."
@@ -39160,6 +39169,9 @@ msgid "ProductAnalytics|What metric do you want to visualize?"
 msgstr ""
 
 msgid "ProductAnalytics|You can instrument your application using a JS module or an HTML script. Follow the instructions below for the option you prefer."
+msgstr ""
+
+msgid "ProductAnalytics|Your instance will be created on the provider configured in your instance settings."
 msgstr ""
 
 msgid "ProductAnalytics|Your instance will be created on this provider:"
