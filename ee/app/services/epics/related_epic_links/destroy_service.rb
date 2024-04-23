@@ -6,19 +6,20 @@ module Epics
       include UsageDataHelper
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :epic, :link_type
+      attr_reader :epic, :link_type, :synced_epic
 
-      def initialize(link, epic, user)
+      def initialize(link, epic, user, synced_epic: false)
         @link = link
         @current_user = user
         @source = link.source
         @target = link.target
         @link_type = link.link_type
         @epic = epic
+        @synced_epic = synced_epic
       end
 
       def execute
-        return super unless epic.work_item
+        return super unless epic.work_item && !synced_epic
 
         ApplicationRecord.transaction do
           result = super
@@ -35,6 +36,8 @@ module Epics
       private
 
       def permission_to_remove_relation?
+        return true if synced_epic
+
         source_epic, target_epic = epic_is_link_source? ? [source, target] : [target, source]
 
         can?(current_user, :admin_epic_link_relation, source_epic) &&
@@ -96,6 +99,10 @@ module Epics
 
       def not_found_message
         'No Related Epic Link found'
+      end
+
+      def create_notes
+        super unless synced_epic
       end
     end
   end
