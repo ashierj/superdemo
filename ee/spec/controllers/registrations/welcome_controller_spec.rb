@@ -63,71 +63,109 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
       end
 
       context 'when in invitation flow' do
-        context 'when invitation detected via user memberships' do
-          before do
-            create(:group_member, source: group, user: user)
-          end
+        it 'tracks render event' do
+          user.update!(onboarding_status_registration_type: 'invite')
 
-          it 'tracks render event' do
-            get_show
+          get_show
 
-            expect_snowplow_event(
-              category: 'registrations:welcome:show',
-              action: 'render',
-              user: user,
-              label: 'invite_registration'
-            )
-          end
+          expect_snowplow_event(
+            category: 'registrations:welcome:show',
+            action: 'render',
+            user: user,
+            label: 'invite_registration'
+          )
         end
 
-        context 'when invitation detected via onboarding_status' do
+        context 'when feature flag use_only_onboarding_status_db_value is disabled' do
           before do
-            user.update!(onboarding_status_registration_type: 'invite')
+            stub_feature_flags(use_only_onboarding_status_db_value: false)
           end
 
-          it 'tracks render event' do
-            get_show
+          context 'when invitation detected via user memberships' do
+            before do
+              create(:group_member, source: group, user: user)
+            end
 
-            expect_snowplow_event(
-              category: 'registrations:welcome:show',
-              action: 'render',
-              user: user,
-              label: 'invite_registration'
-            )
+            it 'tracks render event' do
+              get_show
+
+              expect_snowplow_event(
+                category: 'registrations:welcome:show',
+                action: 'render',
+                user: user,
+                label: 'invite_registration'
+              )
+            end
+          end
+
+          context 'when invitation detected via onboarding_status' do
+            before do
+              user.update!(onboarding_status_registration_type: 'invite')
+            end
+
+            it 'tracks render event' do
+              get_show
+
+              expect_snowplow_event(
+                category: 'registrations:welcome:show',
+                action: 'render',
+                user: user,
+                label: 'invite_registration'
+              )
+            end
           end
         end
       end
 
       context 'when in trial flow' do
-        context 'when trial detected via params' do
-          let(:show_params) { { trial: 'true' } }
+        it 'tracks render event' do
+          user.update!(onboarding_status_registration_type: 'trial')
 
-          it 'tracks render event' do
-            get_show
+          get_show
 
-            expect_snowplow_event(
-              category: 'registrations:welcome:show',
-              action: 'render',
-              user: user,
-              label: 'trial_registration'
-            )
-          end
+          expect_snowplow_event(
+            category: 'registrations:welcome:show',
+            action: 'render',
+            user: user,
+            label: 'trial_registration'
+          )
         end
 
-        context 'when trial detected via onboarding_status' do
+        context 'when feature flag use_only_onboarding_status_db_value is disabled' do
           before do
-            user.update!(onboarding_status_registration_type: 'trial')
+            stub_feature_flags(use_only_onboarding_status_db_value: false)
           end
 
-          it 'tracks render event' do
-            get_show
+          context 'when trial detected via params' do
+            let(:show_params) { { trial: 'true' } }
 
-            expect_snowplow_event(
-              category: 'registrations:welcome:show',
-              action: 'render',
-              user: user,
-              label: 'trial_registration'
-            )
+            it 'tracks render event' do
+              get_show
+
+              expect_snowplow_event(
+                category: 'registrations:welcome:show',
+                action: 'render',
+                user: user,
+                label: 'trial_registration'
+              )
+            end
+          end
+
+          context 'when trial detected via onboarding_status' do
+            before do
+              user.update!(onboarding_status_registration_type: 'trial')
+            end
+
+            it 'tracks render event' do
+              get_show
+
+              expect_snowplow_event(
+                category: 'registrations:welcome:show',
+                action: 'render',
+                user: user,
+                label: 'trial_registration'
+              )
+            end
           end
         end
       end
@@ -472,68 +510,146 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
               }.merge(trial_concerns)
             end
 
-            it 'redirects to the company path and stores the url' do
-              patch_update
-              user.reset
+            context 'when it is a trial registration' do
+              let(:trial_concerns) { { trial: true } }
 
-              expect(user.onboarding_in_progress).to be(true)
-              expect(user.onboarding_status_step_url).to eq(redirect_path)
-              expect(user.onboarding_status_email_opt_in).to eq(true)
-              expect(user.onboarding_status_registration_type)
-                .to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
-              expect(response).to redirect_to redirect_path
+              before do
+                user.update!(onboarding_status_initial_registration_type: 'trial')
+              end
+
+              it 'redirects to the company path and stores the url' do
+                patch_update
+                user.reset
+
+                expect(user.onboarding_in_progress).to be(true)
+                expect(user.onboarding_status_step_url).to eq(redirect_path)
+                expect(user.onboarding_status_email_opt_in).to eq(true)
+                expect(user.onboarding_status_registration_type)
+                  .to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
+                expect(response).to redirect_to redirect_path
+              end
+            end
+
+            context 'when it is not a trial registration' do
+              before do
+                user.update!(onboarding_status_initial_registration_type: 'free')
+              end
+
+              it 'redirects to the company path and stores the url' do
+                patch_update
+                user.reset
+
+                expect(user.onboarding_in_progress).to be(true)
+                expect(user.onboarding_status_step_url).to eq(redirect_path)
+                expect(user.onboarding_status_email_opt_in).to eq(true)
+                expect(user.onboarding_status_registration_type)
+                  .to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
+                expect(response).to redirect_to redirect_path
+              end
+            end
+
+            context 'when feature flag use_only_onboarding_status_db_value is disabled' do
+              before do
+                stub_feature_flags(use_only_onboarding_status_db_value: false)
+              end
+
+              it 'redirects to the company path and stores the url' do
+                patch_update
+                user.reset
+
+                expect(user.onboarding_in_progress).to be(true)
+                expect(user.onboarding_status_step_url).to eq(redirect_path)
+                expect(user.onboarding_status_email_opt_in).to eq(true)
+                expect(user.onboarding_status_registration_type)
+                  .to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
+                expect(response).to redirect_to redirect_path
+              end
             end
 
             context 'with trial param sent with update' do
-              let(:trial_concerns) { extra_params }
+              context 'when trial is sent in the redirect_path due to onboarding_status' do
+                let(:trial_concerns) { { trial: true } }
 
-              before do
-                patch_update
-              end
+                before do
+                  user.update!(onboarding_status_initial_registration_type: 'trial')
 
-              context 'with trial as true' do
-                let(:extra_params) { { trial: 'true' } }
+                  patch_update
+                end
 
                 it 'redirects to the company path with trial param' do
                   expect(response).to redirect_to redirect_path
                 end
               end
 
-              context 'with trial as not true' do
-                let(:extra_params) { { trial: 'false' } }
+              context 'when feature flag use_only_onboarding_status_db_value is disabled' do
+                let(:trial_concerns) { extra_params }
 
-                it 'does not include the trial param in the redirect path' do
-                  expect(response).to redirect_to redirect_path
+                before do
+                  stub_feature_flags(use_only_onboarding_status_db_value: false)
+
+                  patch_update
+                end
+
+                context 'with trial as true' do
+                  let(:extra_params) { { trial: 'true' } }
+
+                  it 'redirects to the company path with trial param' do
+                    expect(response).to redirect_to redirect_path
+                  end
+                end
+
+                context 'with trial as not true' do
+                  let(:extra_params) { { trial: 'false' } }
+
+                  it 'does not include the trial param in the redirect path' do
+                    expect(response).to redirect_to redirect_path
+                  end
                 end
               end
             end
 
             context 'when user is an invite registration' do
-              context 'when detected from user memberships' do
-                before do
-                  create(:group_member, source: group, user: user)
-                end
+              it 'does not convert to a trial' do
+                user.update!(onboarding_status_registration_type: 'invite')
 
-                it 'does not convert to a trial' do
-                  patch_update
-                  user.reset
+                patch_update
+                user.reset
 
-                  expect(user.onboarding_status_registration_type)
-                    .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
-                end
+                expect(user.onboarding_status_registration_type)
+                  .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
               end
 
-              context 'when detected from onboarding_status' do
+              context 'when feature flag use_only_onboarding_status_db_value is disabled' do
                 before do
-                  user.update!(onboarding_status_registration_type: 'invite')
+                  stub_feature_flags(use_only_onboarding_status_db_value: false)
                 end
 
-                it 'does not convert to a trial' do
-                  patch_update
-                  user.reset
+                context 'when detected from user memberships' do
+                  before do
+                    create(:group_member, source: group, user: user)
+                  end
 
-                  expect(user.onboarding_status_registration_type)
-                    .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                  it 'does not convert to a trial' do
+                    patch_update
+                    user.reset
+
+                    expect(user.onboarding_status_registration_type)
+                      .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                  end
+                end
+
+                context 'when detected from onboarding_status' do
+                  before do
+                    user.update!(onboarding_status_registration_type: 'invite')
+                  end
+
+                  it 'does not convert to a trial' do
+                    patch_update
+                    user.reset
+
+                    expect(user.onboarding_status_registration_type)
+                      .not_to eq(::Onboarding::Status::REGISTRATION_TYPE[:trial])
+                  end
                 end
               end
             end
@@ -572,42 +688,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
 
             context 'when it is a trial registration' do
               using RSpec::Parameterized::TableSyntax
-
-              context 'when trial detected via params' do
-                let(:extra_params) { { trial: 'true' } }
-
-                where(:extra_user_params, :opt_in) do
-                  { onboarding_status_email_opt_in: 'true' }  | true
-                  { onboarding_status_email_opt_in: 'false' } | false
-                  { onboarding_status_email_opt_in: nil }     | false
-                  { onboarding_status_email_opt_in: '1' }     | true
-                  { onboarding_status_email_opt_in: '0' }     | false
-                  { onboarding_status_email_opt_in: '' }      | false
-                  {}                                          | false
-                end
-
-                with_them do
-                  specify do
-                    expected_params = {
-                      registration_objective: 'code_storage',
-                      role: 'software_developer',
-                      jobs_to_be_done_other: '_jobs_to_be_done_other_',
-                      glm_source: 'some_source',
-                      glm_content: 'some_content',
-                      trial: 'true'
-                    }
-
-                    patch_update
-                    user.reset
-                    path = new_users_sign_up_company_path(expected_params)
-
-                    expect(user.onboarding_in_progress).to be(true)
-                    expect(user.onboarding_status_step_url).to eq(path)
-                    expect(user.onboarding_status_email_opt_in).to eq(opt_in)
-                    expect(response).to redirect_to path
-                  end
-                end
-              end
 
               context 'when trial detected via onboarding_status' do
                 before do
@@ -648,6 +728,88 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                   end
                 end
               end
+
+              context 'when feature flag use_only_onboarding_status_db_value is disabled' do
+                before do
+                  stub_feature_flags(use_only_onboarding_status_db_value: false)
+                end
+
+                context 'when trial detected via params' do
+                  let(:extra_params) { { trial: 'true' } }
+
+                  where(:extra_user_params, :opt_in) do
+                    { onboarding_status_email_opt_in: 'true' }  | true
+                    { onboarding_status_email_opt_in: 'false' } | false
+                    { onboarding_status_email_opt_in: nil }     | false
+                    { onboarding_status_email_opt_in: '1' }     | true
+                    { onboarding_status_email_opt_in: '0' }     | false
+                    { onboarding_status_email_opt_in: '' }      | false
+                    {}                                          | false
+                  end
+
+                  with_them do
+                    specify do
+                      expected_params = {
+                        registration_objective: 'code_storage',
+                        role: 'software_developer',
+                        jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                        glm_source: 'some_source',
+                        glm_content: 'some_content',
+                        trial: 'true'
+                      }
+
+                      patch_update
+                      user.reset
+                      path = new_users_sign_up_company_path(expected_params)
+
+                      expect(user.onboarding_in_progress).to be(true)
+                      expect(user.onboarding_status_step_url).to eq(path)
+                      expect(user.onboarding_status_email_opt_in).to eq(opt_in)
+                      expect(response).to redirect_to path
+                    end
+                  end
+                end
+
+                context 'when trial detected via onboarding_status' do
+                  before do
+                    user.update!(
+                      onboarding_status_initial_registration_type: 'trial', onboarding_status_registration_type: 'trial'
+                    )
+                  end
+
+                  where(:extra_user_params, :opt_in) do
+                    { onboarding_status_email_opt_in: 'true' }  | true
+                    { onboarding_status_email_opt_in: 'false' } | false
+                    { onboarding_status_email_opt_in: nil }     | false
+                    { onboarding_status_email_opt_in: '1' }     | true
+                    { onboarding_status_email_opt_in: '0' }     | false
+                    { onboarding_status_email_opt_in: '' }      | false
+                    {}                                          | false
+                  end
+
+                  with_them do
+                    specify do
+                      expected_params = {
+                        registration_objective: 'code_storage',
+                        role: 'software_developer',
+                        jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                        glm_source: 'some_source',
+                        glm_content: 'some_content',
+                        trial: 'true'
+                      }
+
+                      patch_update
+                      user.reset
+                      path = new_users_sign_up_company_path(expected_params)
+
+                      expect(user.onboarding_in_progress).to be(true)
+                      expect(user.onboarding_status_step_url).to eq(path)
+                      expect(user.onboarding_status_email_opt_in).to eq(opt_in)
+                      expect(response).to redirect_to path
+                    end
+                  end
+                end
+              end
             end
 
             context 'when trial is false' do
@@ -676,14 +838,18 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
           end
 
           context 'when in subscription flow' do
-            subject { patch :update, params: update_params, session: { user_return_to: new_subscriptions_path } }
+            before do
+              user.update!(onboarding_status_registration_type: 'subscription')
+            end
+
+            subject { patch :update, params: update_params }
 
             it { is_expected.not_to redirect_to new_users_sign_up_group_path }
           end
 
           context 'when in invitation flow' do
             before do
-              create(:group_member, source: group, user: user)
+              user.update!(onboarding_status_registration_type: 'invite')
             end
 
             it { is_expected.not_to redirect_to new_users_sign_up_group_path }
@@ -701,7 +867,9 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
           end
 
           context 'when in trial flow' do
-            let(:extra_params) { { trial: 'true' } }
+            before do
+              user.update!(onboarding_status_registration_type: 'trial')
+            end
 
             it { is_expected.not_to redirect_to new_users_sign_up_group_path }
 
@@ -716,11 +884,9 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
               )
             end
 
-            context 'when stored company path' do
-              let(:stored_path) { new_users_sign_up_company_path }
-
+            context 'when trial from beginning and we want to pass the trial param' do
               before do
-                controller.store_location_for(:user, stored_path)
+                user.update!(onboarding_status_initial_registration_type: 'trial')
               end
 
               specify do
@@ -728,18 +894,50 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                 user.reset
 
                 path = ::Gitlab::Utils.add_url_parameters(
-                  stored_path, {
+                  new_users_sign_up_company_path,
+                  {
                     glm_content: 'some_content',
                     glm_source: 'some_source',
                     jobs_to_be_done_other: '_jobs_to_be_done_other_',
                     registration_objective: 'code_storage',
-                    role: 'software_developer'
-                  }.merge(extra_params)
+                    role: 'software_developer',
+                    trial: 'true'
+                  }
                 )
 
                 expect(user.onboarding_in_progress).to be(true)
                 expect(user.onboarding_status_step_url).to eq(path)
                 expect(response).to redirect_to path
+              end
+            end
+
+            context 'when feature flag use_only_onboarding_status_db_value is disabled' do
+              before do
+                stub_feature_flags(use_only_onboarding_status_db_value: false)
+              end
+
+              context 'when trial pass from update params' do
+                let(:extra_params) { { trial: 'true' } }
+
+                specify do
+                  patch_update
+                  user.reset
+
+                  path = ::Gitlab::Utils.add_url_parameters(
+                    new_users_sign_up_company_path,
+                    {
+                      glm_content: 'some_content',
+                      glm_source: 'some_source',
+                      jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                      registration_objective: 'code_storage',
+                      role: 'software_developer'
+                    }.merge(extra_params)
+                  )
+
+                  expect(user.onboarding_in_progress).to be(true)
+                  expect(user.onboarding_status_step_url).to eq(path)
+                  expect(response).to redirect_to path
+                end
               end
             end
           end

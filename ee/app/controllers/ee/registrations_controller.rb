@@ -27,7 +27,7 @@ module EE
       ::Gitlab::Tracking.event(
         self.class.name,
         'render_registration_page',
-        label: registration_tracking_label
+        label: onboarding_status.preregistration_tracking_label
       )
     end
 
@@ -110,6 +110,13 @@ module EE
         .new(onboarding_status_params, session, resource, onboarding_first_step_path).execute
 
       log_audit_event(user)
+      # This must come after user has been onboarding to properly detect the label from the onboarded user.
+      ::Gitlab::Tracking.event(
+        self.class.name,
+        'successfully_submitted_form',
+        label: registration_tracking_label,
+        user: user
+      )
 
       return unless params[:signup_intent].present?
 
@@ -172,16 +179,6 @@ module EE
       glm_tracking_params.to_h
     end
 
-    override :track_successful_user_creation
-    def track_successful_user_creation(user)
-      ::Gitlab::Tracking.event(
-        self.class.name,
-        'successfully_submitted_form',
-        label: registration_tracking_label,
-        user: user
-      )
-    end
-
     def record_arkose_data(user)
       return unless arkose_labs_enabled?(user: user)
       return unless arkose_labs_verify_response
@@ -199,8 +196,6 @@ module EE
 
     override :registration_tracking_label
     def registration_tracking_label
-      return ::Onboarding::Status::TRACKING_LABEL[:invite] if params[:invite_email].present?
-
       onboarding_status.tracking_label
     end
 

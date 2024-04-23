@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Company Information', :js, feature_category: :activation do
   include SaasRegistrationHelpers
 
-  let_it_be(:user) { create(:user, onboarding_in_progress: true) }
+  let_it_be(:user) { create(:user, onboarding_in_progress: true, onboarding_status_initial_registration_type: 'free') }
   let_it_be(:fields) do
     [
       'First Name',

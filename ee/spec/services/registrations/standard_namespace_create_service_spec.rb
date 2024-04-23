@@ -123,6 +123,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
         before do
           stub_saas_features(onboarding: true)
+          user.update!(onboarding_status_initial_registration_type: 'free')
         end
 
         it 'does not call the experiment DSL' do
@@ -247,6 +248,8 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         allow_next_instance_of(::Groups::CreateService) do |service|
           allow(service).to receive(:execute).and_return(ServiceResponse.success(payload: { group: group }))
         end
+
+        user.update!(onboarding_status_initial_registration_type: 'trial', onboarding_status_registration_type: 'trial')
       end
 
       it 'applies a trial' do
