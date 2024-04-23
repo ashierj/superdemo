@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlCollapsibleListbox, GlAvatarLabeled } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlAvatarLabeled, GlFormSelect } from '@gitlab/ui';
 import Api from 'ee/api';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
@@ -17,9 +17,9 @@ function addType(type) {
 
 export default {
   components: {
-    GlIcon,
     GlCollapsibleListbox,
     GlAvatarLabeled,
+    GlSelect: GlFormSelect,
   },
   i18n: {
     toggleText: SEARCH_PLACEHOLDER,
@@ -146,9 +146,7 @@ export default {
 
       this.listboxItems = this.listboxItems.filter((item) => item.value !== selected);
     },
-    selectGroupOption(inputEvent) {
-      const option = inputEvent.target.value;
-
+    selectGroupOption(option) {
       if (option === this.selectedGroupOption) {
         return;
       }
@@ -160,7 +158,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex">
+  <div class="gl-display-flex gl-gap-4">
     <gl-collapsible-listbox
       :items="listboxItems"
       :toggle-text="$options.i18n.toggleText"
@@ -185,17 +183,11 @@ export default {
         />
       </template>
     </gl-collapsible-listbox>
-    <div class="gl-relative gl-ml-4 gl-flex-grow-1">
-      <select class="gl-pr-6 form-control select-control" @input="selectGroupOption">
-        <option v-for="opt in $options.groupOptions" :key="opt" :value="opt">
-          {{ $options.i18n.dropdownItemLabel }} {{ opt }}
-        </option>
-      </select>
-      <gl-icon
-        name="chevron-down"
-        data-hidden="true"
-        class="gl-absolute gl-top-3 gl-right-3 gl-text-gray-500"
-      />
-    </div>
+
+    <gl-select :value="selectedGroupOption" @input="selectGroupOption">
+      <option v-for="opt in $options.groupOptions" :key="opt" :value="opt">
+        {{ $options.i18n.dropdownItemLabel }} {{ opt }}
+      </option>
+    </gl-select>
   </div>
 </template>

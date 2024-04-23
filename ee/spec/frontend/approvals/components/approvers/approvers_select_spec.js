@@ -1,4 +1,4 @@
-import { GlCollapsibleListbox, GlListboxItem, GlAvatarLabeled } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem, GlAvatarLabeled, GlFormSelect } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
 import { shallowMount } from '@vue/test-utils';
@@ -34,7 +34,7 @@ describe('Approvers Selector', () => {
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findAllListboxItems = () => wrapper.findAllComponents(GlListboxItem);
   const findAvatar = (index) => findAllListboxItems().at(index).findComponent(GlAvatarLabeled);
-  const findGroupOptionsDropdown = () => wrapper.find('select');
+  const findGroupOptionsDropdown = () => wrapper.findComponent(GlFormSelect);
   const findGroupOptions = () => wrapper.findAll('option');
   const search = (searchString) => findListbox().vm.$emit('search', searchString);
 
@@ -232,8 +232,7 @@ describe('Approvers Selector', () => {
 
         const groupOptions = findGroupOptionsDropdown();
 
-        groupOptions.element.value = 'project groups';
-        groupOptions.trigger('input');
+        groupOptions.vm.$emit('input', 'project groups');
         await waitForPromises();
 
         expect(Api.projectGroups).toHaveBeenCalledWith('17', {
