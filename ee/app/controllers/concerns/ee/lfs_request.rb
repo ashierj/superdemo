@@ -7,22 +7,27 @@ module EE
     include ::Gitlab::Utils::StrongMemoize
 
     LfsForbiddenError = Class.new(StandardError)
+    OverSeatLimitError = Class.new(StandardError)
 
     private
 
     override :lfs_forbidden!
     def lfs_forbidden!
       check_free_user_cap_over_limit!
+      check_seat_overage!
 
       limit_exceeded? ? render_size_error : super
     rescue LfsForbiddenError => e
-      render_over_limit_error(e.message)
+      render_over_limit_error(e.message, 'user/free_user_limit')
+    rescue OverSeatLimitError => e
+      render_over_limit_error(e.message, 'user/read_only_namespaces')
     end
 
     override :limit_exceeded?
     def limit_exceeded?
       size_checker.changes_will_exceed_size_limit?(lfs_objects_change_size, project) ||
-        ::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor).over_limit?
+        ::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor).over_limit? ||
+        seat_limit_exceeded?
     end
     strong_memoize_attr :limit_exceeded?
 
@@ -42,11 +47,22 @@ module EE
                                             .git_check_over_limit!(::LfsRequest::LfsForbiddenError)
     end
 
-    def render_over_limit_error(message)
+    def check_seat_overage!
+      ::Namespaces::BlockSeatOverages::Enforcement.new(project.root_ancestor)
+        .git_check_seat_overage!(::LfsRequest::OverSeatLimitError)
+    end
+
+    def seat_limit_exceeded?
+      root_namespace = project.root_ancestor
+
+      root_namespace.block_seat_overages? && root_namespace.seat_overage?
+    end
+
+    def render_over_limit_error(message, help_path)
       render(
         json: {
           message: message,
-          documentation_url: help_url('user/free_user_limit')
+          documentation_url: help_url(help_path)
         },
         content_type: ::LfsRequest::CONTENT_TYPE,
         status: :not_acceptable
