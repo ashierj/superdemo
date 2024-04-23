@@ -114,7 +114,7 @@ export default {
     data-testid="milestones-list-wrapper"
   >
     <div
-      class="milestones-list-title gl-display-table-cell border-bottom gl-vertical-align-top position-sticky gl-pl-2 gl-pr-3 gl-pt-2"
+      class="milestones-list-title gl-display-table-cell border-bottom gl-align-top position-sticky gl-pl-2 gl-pr-3 gl-pt-2"
     >
       <div class="gl-display-flex gl-align-items-center">
         <span
