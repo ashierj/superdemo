@@ -6,6 +6,7 @@ import { mapState, mapActions } from 'vuex';
 import { updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import setLocalRoadmapSettingsMutation from '../queries/set_local_roadmap_settings.mutation.graphql';
 
 import EpicsFilteredSearchMixin from '../mixins/filtered_search_mixin';
 
@@ -33,12 +34,17 @@ export default {
     FilteredSearchBar,
   },
   mixins: [EpicsFilteredSearchMixin],
+  props: {
+    filterParams: {
+      type: Object,
+      required: true,
+    },
+  },
   computed: {
     ...mapState([
       'presetType',
       'epicsState',
       'sortedBy',
-      'filterParams',
       'timeframeRangeType',
       'isProgressTrackingActive',
       'progressTracking',
@@ -63,7 +69,17 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setFilterParams', 'setSortedBy']),
+    ...mapActions(['setSortedBy']),
+    setFilterParams(filterParams) {
+      this.$apollo.mutate({
+        mutation: setLocalRoadmapSettingsMutation,
+        variables: {
+          input: {
+            filterParams,
+          },
+        },
+      });
+    },
     handleFilterEpics(filters, cleared) {
       if (filters.length || cleared) {
         this.setFilterParams(this.getFilterParams(filters));

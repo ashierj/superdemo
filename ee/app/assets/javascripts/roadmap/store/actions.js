@@ -9,9 +9,6 @@ export const setEpicsState = ({ commit }, epicsState) => commit(types.SET_EPICS_
 export const setDaterange = ({ commit }, { timeframeRangeType, presetType }) =>
   commit(types.SET_DATERANGE, { timeframeRangeType, presetType });
 
-export const setFilterParams = ({ commit }, filterParams) =>
-  commit(types.SET_FILTER_PARAMS, filterParams);
-
 export const setSortedBy = ({ commit }, sortedBy) => commit(types.SET_SORTED_BY, sortedBy);
 
 export const setProgressTracking = ({ commit }, progressTracking) =>

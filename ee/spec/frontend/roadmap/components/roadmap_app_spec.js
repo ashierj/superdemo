@@ -21,6 +21,7 @@ import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
 import groupEpicsQuery from 'ee/roadmap/queries/group_epics.query.graphql';
 import groupEpicsWithColorQuery from 'ee/roadmap/queries/group_epics_with_color.query.graphql';
+import localRoadmapSettingsQuery from 'ee/roadmap/queries/local_roadmap_settings.query.graphql';
 
 import {
   basePath,
@@ -56,7 +57,23 @@ describe('RoadmapApp', () => {
     initialDate: mockTimeframeInitialDate,
   });
 
-  const createComponent = ({ epicIid, epicColorHighlight = false } = {}) => {
+  const createComponent = ({ epicIid, epicColorHighlight = false, filterParams = {} } = {}) => {
+    const apolloProvider = createMockApollo([
+      [epicChildEpicsQuery, childEpicsQueryHandler],
+      [groupEpicsQuery, groupEpicsQueryHandler],
+      [groupEpicsWithColorQuery, groupEpicsWithColorQueryHandler],
+    ]);
+
+    apolloProvider.clients.defaultClient.cache.writeQuery({
+      query: localRoadmapSettingsQuery,
+      data: {
+        localRoadmapSettings: {
+          __typename: 'LocalRoadmapSettings',
+          filterParams,
+        },
+      },
+    });
+
     wrapper = shallowMountExtended(RoadmapApp, {
       propsData: {
         emptyStateIllustrationPath,
@@ -70,11 +87,7 @@ describe('RoadmapApp', () => {
           epicColorHighlight,
         },
       },
-      apolloProvider: createMockApollo([
-        [epicChildEpicsQuery, childEpicsQueryHandler],
-        [groupEpicsQuery, groupEpicsQueryHandler],
-        [groupEpicsWithColorQuery, groupEpicsWithColorQueryHandler],
-      ]),
+      apolloProvider,
       store,
     });
   };
@@ -146,7 +159,7 @@ describe('RoadmapApp', () => {
     });
 
     it('shows roadmap filters UI when epicIid is not present', () => {
-      createComponent();
+      createComponent({ filterParams: { groupPath: 'test-group' } });
 
       expect(findRoadmapFilters().exists()).toBe(true);
     });
@@ -167,8 +180,9 @@ describe('RoadmapApp', () => {
     });
   });
 
-  it('calls group epic query with correct variables if epicIid is not present', () => {
+  it('calls group epic query with correct variables if epicIid is not present', async () => {
     createComponent();
+    await waitForPromises();
 
     expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -180,14 +194,12 @@ describe('RoadmapApp', () => {
     expect(childEpicsQueryHandler).not.toHaveBeenCalled();
   });
 
-  it('calls group epic query with correct variables from filterParams', () => {
+  it('calls group epic query with correct variables from filterParams', async () => {
     const groupPath = 'test-group';
     const epicIid = '1::&Epic 1';
-    store.state.filterParams = {
-      groupPath,
-      epicIid,
-    };
-    createComponent();
+
+    createComponent({ filterParams: { groupPath, epicIid } });
+    await waitForPromises();
 
     expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -197,9 +209,10 @@ describe('RoadmapApp', () => {
     );
   });
 
-  it('calls child epics query with correct variables when epicIid is present', () => {
+  it('calls child epics query with correct variables when epicIid is present', async () => {
     const epicIid = '1';
     createComponent({ epicIid });
+    await waitForPromises();
 
     expect(childEpicsQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -225,15 +238,17 @@ describe('RoadmapApp', () => {
   });
 
   describe('when epicColorHighlight feature flag is enabled', () => {
-    it('calls group epic with color query if epic iid is not present', () => {
+    it('calls group epic with color query if epic iid is not present', async () => {
       createComponent({ epicColorHighlight: true });
+      await waitForPromises();
 
       expect(groupEpicsWithColorQueryHandler).toHaveBeenCalled();
     });
 
-    it('calles child epics query with `withColor` variable if epic iid is present', () => {
+    it('calles child epics query with `withColor` variable if epic iid is present', async () => {
       const epicIid = '1';
       createComponent({ epicIid, epicColorHighlight: true });
+      await waitForPromises();
 
       expect(childEpicsQueryHandler).toHaveBeenCalledWith(
         expect.objectContaining({

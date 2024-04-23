@@ -15,12 +15,6 @@ export default {
     state.bufferSize = bufferSize;
   },
 
-  [types.SET_FILTER_PARAMS](state, filterParams) {
-    state.filterParams = filterParams;
-    state.hasFiltersApplied = Boolean(filterParams);
-    resetEpics(state);
-  },
-
   [types.SET_EPICS_STATE](state, epicsState) {
     state.epicsState = epicsState;
     resetEpics(state);

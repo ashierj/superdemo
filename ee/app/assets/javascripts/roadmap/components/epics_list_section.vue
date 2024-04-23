@@ -38,10 +38,6 @@ export default {
       type: Array,
       required: true,
     },
-    hasFiltersApplied: {
-      type: Boolean,
-      required: true,
-    },
     epicsFetchNextPageInProgress: {
       type: Boolean,
       required: true,
@@ -178,7 +174,6 @@ export default {
       :timeframe="timeframe"
       :client-width="clientWidth"
       :child-level="0"
-      :has-filters-applied="hasFiltersApplied"
     />
     <div v-if="emptyRowContainerVisible" class="epic-item-container">
       <div
