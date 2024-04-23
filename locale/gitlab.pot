@@ -29283,6 +29283,9 @@ msgstr ""
 msgid "Job|%{boldStart}Pipeline%{boldEnd} %{id} for %{mrId} with %{source} into %{target}"
 msgstr ""
 
+msgid "Job|%{rawLinkStart}View raw%{rawLinkEnd} or %{fullLinkStart}view full log%{fullLinkEnd}."
+msgstr ""
+
 msgid "Job|%{searchLength} results found for %{searchTerm}"
 msgstr ""
 
@@ -29319,7 +29322,13 @@ msgstr ""
 msgid "Job|Failed"
 msgstr ""
 
+msgid "Job|Feedback issue"
+msgstr ""
+
 msgid "Job|Finished at"
+msgstr ""
+
+msgid "Job|Full log viewer"
 msgstr ""
 
 msgid "Job|Full screen mode is not available"
@@ -29404,6 +29413,9 @@ msgid "Job|Showing last %{size} of log."
 msgstr ""
 
 msgid "Job|Skipped"
+msgstr ""
+
+msgid "Job|Something went wrong while loading the log."
 msgstr ""
 
 msgid "Job|Status"
