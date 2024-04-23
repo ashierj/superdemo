@@ -17396,7 +17396,7 @@ CREATE TABLE vulnerability_feedback (
     category smallint NOT NULL,
     project_id integer NOT NULL,
     author_id integer NOT NULL,
-    pipeline_id integer,
+    pipeline_id_convert_to_bigint integer,
     issue_id integer,
     project_fingerprint character varying(40) NOT NULL,
     merge_request_id integer,
@@ -17406,7 +17406,7 @@ CREATE TABLE vulnerability_feedback (
     finding_uuid uuid,
     dismissal_reason smallint,
     migrated_to_state_transition boolean DEFAULT false,
-    pipeline_id_convert_to_bigint bigint
+    pipeline_id bigint
 );
 
 CREATE SEQUENCE vulnerability_feedback_id_seq
