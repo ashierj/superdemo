@@ -71,7 +71,7 @@ export default {
 <template>
   <gl-link :id="containerId" :title="widgetTitle" :href="widgetLink">
     <div
-      data-testid="widget-menu"
+      data-testid="trial-widget-menu"
       class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
       @click="onWidgetClick"
     >

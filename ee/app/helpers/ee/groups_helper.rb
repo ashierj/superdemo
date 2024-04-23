@@ -140,7 +140,7 @@ module EE
         .merge(track_action: 'click_button', track_label: 'code_suggestions_hand_raise_lead_form')
         .merge(
           button_attributes: {
-            'data-testid': 'code_suggestions_hand_raise_lead_button',
+            'data-testid': 'code-suggestions-hand-raise-lead-button',
             category: 'tertiary',
             variant: 'confirm',
             class: 'gl-w-full'

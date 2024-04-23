@@ -566,7 +566,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         track_label: 'code_suggestions_hand_raise_lead_form',
         button_attributes:
           {
-            'data-testid': 'code_suggestions_hand_raise_lead_button',
+            'data-testid': 'code-suggestions-hand-raise-lead-button',
             category: 'tertiary',
             variant: 'confirm',
             class: 'gl-w-full'

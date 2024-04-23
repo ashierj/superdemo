@@ -7,7 +7,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
 >
   <div
     class="gl-align-items-stretch gl-display-flex gl-flex-direction-column gl-w-full"
-    data-testid="widget-menu"
+    data-testid="trial-widget-menu"
   >
     <div>
       <div
@@ -55,7 +55,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
 >
   <div
     class="gl-align-items-stretch gl-display-flex gl-flex-direction-column gl-w-full"
-    data-testid="widget-menu"
+    data-testid="trial-widget-menu"
   >
     <div
       class="gl-display-flex gl-gap-5 gl-px-2 gl-w-full"
