@@ -2,6 +2,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
+import { isEmpty } from 'lodash';
 
 import RoadmapShell from 'jh_else_ee/roadmap/components/roadmap_shell.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -20,6 +21,7 @@ import {
 import epicChildEpics from '../queries/epic_child_epics.query.graphql';
 import groupEpics from '../queries/group_epics.query.graphql';
 import groupEpicsWithColor from '../queries/group_epics_with_color.query.graphql';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
 
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
@@ -42,6 +44,7 @@ export default {
       rawEpics: {},
       epicsFetchFailure: false,
       epicsFetchNextPageInProgress: false,
+      localRoadmapSettings: null,
     };
   },
   apollo: {
@@ -55,6 +58,9 @@ export default {
       update(data) {
         return this.epicIid ? data?.group?.epic?.children : data?.group?.epics;
       },
+      skip() {
+        return !this.localRoadmapSettings;
+      },
       error() {
         this.epicsFetchFailure = true;
         createAlert({
@@ -62,17 +68,15 @@ export default {
         });
       },
     },
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
   },
   computed: {
-    ...mapState([
-      'timeframe',
-      'hasFiltersApplied',
-      'filterParams',
-      'presetType',
-      'timeframeRangeType',
-      'epicsState',
-      'sortedBy',
-    ]),
+    ...mapState(['timeframe', 'presetType', 'timeframeRangeType', 'epicsState', 'sortedBy']),
+    filterParams() {
+      return this.localRoadmapSettings?.filterParams;
+    },
     epicColorHighlightEnabled() {
       return Boolean(this.glFeatures.epicColorHighlight);
     },
@@ -117,7 +121,6 @@ export default {
 
       return variables;
     },
-
     epics() {
       const epics = this.rawEpics.nodes || [];
       return epics.reduce((filteredEpics, epic) => {
@@ -144,6 +147,9 @@ export default {
     },
     epicsFetchInProgress() {
       return this.$apollo.queries.rawEpics.loading && !this.epicsFetchNextPageInProgress;
+    },
+    hasFiltersApplied() {
+      return !isEmpty(this.filterParams);
     },
     hasNextPage() {
       return Boolean(this.rawEpics.pageInfo?.hasNextPage);
@@ -200,6 +206,7 @@ export default {
     <roadmap-filters
       v-if="showFilteredSearchbar && !epicIid"
       ref="roadmapFilters"
+      :filter-params="filterParams"
       @toggleSettings="toggleSettings"
     />
     <div
@@ -222,7 +229,7 @@ export default {
         :timeframe="timeframe"
         :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
         :has-next-page="hasNextPage"
-        :has-filters-applied="hasFiltersApplied"
+        :filter-params="filterParams"
         :is-settings-sidebar-open="isSettingsSidebarOpen"
         @scrolledToEnd="fetchNextPage"
       />

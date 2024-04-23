@@ -45,22 +45,6 @@ describe('Roadmap Store Mutations', () => {
     });
   });
 
-  describe('SET_FILTER_PARAMS', () => {
-    it('Should set `filterParams` and `hasFiltersApplied` to the state and reset existing epics', () => {
-      const filterParams = [{ foo: 'bar' }, { bar: 'baz' }];
-      setEpicMockData(state);
-
-      mutations[types.SET_FILTER_PARAMS](state, filterParams);
-
-      expect(state).toMatchObject({
-        filterParams,
-        hasFiltersApplied: true,
-        epics: [],
-        epicIds: [],
-      });
-    });
-  });
-
   describe('SET_EPICS_STATE', () => {
     it('Should set `epicsState` to the state and reset existing epics', () => {
       const epicsState = 'all';

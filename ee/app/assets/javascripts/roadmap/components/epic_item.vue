@@ -1,6 +1,7 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
+import { isEmpty } from 'lodash';
 
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
@@ -12,6 +13,7 @@ import QuartersPresetMixin from '../mixins/quarters_preset_mixin';
 import WeeksPresetMixin from '../mixins/weeks_preset_mixin';
 
 import epicChildEpics from '../queries/epic_child_epics.query.graphql';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
 import {
   formatRoadmapItemDetails,
   timeframeStartDate,
@@ -63,10 +65,6 @@ export default {
       type: Number,
       required: true,
     },
-    hasFiltersApplied: {
-      type: Boolean,
-      required: true,
-    },
   },
   data() {
     const currentDate = new Date();
@@ -76,6 +74,7 @@ export default {
       currentDate,
       isExpanded: false,
       childEpics: [],
+      localRoadmapSettings: null,
     };
   },
   apollo: {
@@ -112,7 +111,7 @@ export default {
         }, []);
       },
       skip() {
-        return !this.isExpanded;
+        return !this.isExpanded || !this.localRoadmapSettings;
       },
       error() {
         createAlert({
@@ -120,9 +119,15 @@ export default {
         });
       },
     },
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
   },
   computed: {
-    ...mapState(['epicsState', 'sortedBy', 'filterParams']),
+    ...mapState(['epicsState', 'sortedBy']),
+    filterParams() {
+      return this.localRoadmapSettings?.filterParams;
+    },
     epicColorHighlightEnabled() {
       return Boolean(this.glFeatures.epicColorHighlight);
     },
@@ -156,6 +161,9 @@ export default {
     isFetchingChildren() {
       return this.$apollo.queries.childEpics.loading;
     },
+    hasFiltersApplied() {
+      return !isEmpty(this.filterParams);
+    },
   },
   methods: {
     toggleEpic() {
@@ -178,6 +186,7 @@ export default {
         :is-fetching-children="isFetchingChildren"
         :has-filters-applied="hasFiltersApplied"
         :is-children-empty="isChildrenEmpty"
+        :filter-params="filterParams"
         @toggleEpic="toggleEpic"
       />
       <span
@@ -215,7 +224,6 @@ export default {
       :client-width="clientWidth"
       :children="childEpics"
       :child-level="childLevel + 1"
-      :has-filters-applied="hasFiltersApplied"
     />
   </div>
 </template>

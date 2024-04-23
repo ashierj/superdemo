@@ -39,16 +39,16 @@ export default {
       type: Array,
       required: true,
     },
-    hasFiltersApplied: {
-      type: Boolean,
-      required: true,
-    },
     epicsFetchNextPageInProgress: {
       type: Boolean,
       required: true,
     },
     hasNextPage: {
       type: Boolean,
+      required: true,
+    },
+    filterParams: {
+      type: Object,
       required: true,
     },
   },
@@ -102,7 +102,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['isShowingMilestones', 'milestonesType', 'filterParams']),
+    ...mapState(['isShowingMilestones', 'milestonesType']),
     isScopedRoadmap() {
       return Boolean(this.epicIid);
     },
@@ -174,7 +174,6 @@ export default {
       :preset-type="presetType"
       :epics="epics"
       :timeframe="timeframe"
-      :has-filters-applied="hasFiltersApplied"
       :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
       :has-next-page="hasNextPage"
       @scrolledToEnd="$emit('scrolledToEnd')"

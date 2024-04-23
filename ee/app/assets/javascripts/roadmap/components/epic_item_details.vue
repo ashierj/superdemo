@@ -1,13 +1,14 @@
 <script>
 import { GlButton, GlIcon, GlLabel, GlTooltip } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import { getIdFromGraphQLId, getNodesOrDefault } from '~/graphql_shared/utils';
 import { convertObjectPropsToCamelCase, isScopedLabel } from '~/lib/utils/common_utils';
 import { queryToObject, updateHistory } from '~/lib/utils/url_utility';
 import { __, n__ } from '~/locale';
 import IssuableBlockedIcon from '~/vue_shared/components/issuable_blocked_icon/issuable_blocked_icon.vue';
 import { EPIC_LEVEL_MARGIN, UNSUPPORTED_ROADMAP_PARAMS } from '../constants';
+import setLocalRoadmapSettingsMutation from '../queries/set_local_roadmap_settings.mutation.graphql';
 
 export default {
   components: {
@@ -48,9 +49,13 @@ export default {
       type: Boolean,
       required: true,
     },
+    filterParams: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
-    ...mapState(['isShowingLabels', 'filterParams']),
+    ...mapState(['isShowingLabels']),
     itemId() {
       return this.epic.id;
     },
@@ -107,7 +112,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setFilterParams']),
     toggleEpic() {
       if (!this.isEmptyChildrenWithFilter) {
         this.$emit('toggleEpic');
@@ -135,6 +139,16 @@ export default {
     },
     scopedLabel(label) {
       return this.allowScopedLabels && isScopedLabel(label);
+    },
+    setFilterParams(filterParams) {
+      this.$apollo.mutate({
+        mutation: setLocalRoadmapSettingsMutation,
+        variables: {
+          input: {
+            filterParams,
+          },
+        },
+      });
     },
   },
 };

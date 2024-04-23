@@ -59,7 +59,6 @@ describe('EpicsListSectionComponent', () => {
       propsData: {
         presetType: PRESET_TYPES.MONTHS,
         timeframe: mockTimeframeMonths,
-        hasFiltersApplied: false,
         epics,
         epicsFetchNextPageInProgress,
         hasNextPage,
