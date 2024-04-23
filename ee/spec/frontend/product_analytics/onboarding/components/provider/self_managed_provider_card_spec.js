@@ -21,6 +21,8 @@ describe('SelfManagedProviderCard', () => {
   const findProviderSettingsPreview = () => wrapper.findComponent(ProviderSettingsPreview);
   const findConnectSelfManagedProviderBtn = () =>
     wrapper.findByTestId('connect-your-own-provider-btn');
+  const findUseInstanceConfigurationCheckbox = () =>
+    wrapper.findByTestId('use-instance-configuration-checkbox');
 
   const mockConfirmAction = (confirmed) => confirmAction.mockResolvedValueOnce(confirmed);
 
@@ -31,6 +33,7 @@ describe('SelfManagedProviderCard', () => {
       },
       provide: {
         projectLevelAnalyticsProviderSettings: getProjectLevelAnalyticsProviderSettings(),
+        isInstanceConfiguredWithSelfManagedAnalyticsProvider: true,
         ...provide,
       },
       stubs: {
@@ -44,30 +47,11 @@ describe('SelfManagedProviderCard', () => {
     return waitForPromises();
   };
 
-  describe('default behaviour', () => {
-    beforeEach(() => createWrapper());
+  const checkUseInstanceConfiguration = (checked) => {
+    findUseInstanceConfigurationCheckbox().vm.$emit('input', checked);
+  };
 
-    it('should render a title and description', () => {
-      expect(wrapper.text()).toContain('Self-managed provider');
-      expect(wrapper.text()).toContain(
-        'Manage your own analytics provider to process, store, and query analytics data.',
-      );
-    });
-  });
-
-  describe.each`
-    scenario                                                | projectSettings
-    ${'when no project provider settings are configured'}   | ${getEmptyProjectLevelAnalyticsProviderSettings()}
-    ${'when some project provider settings are configured'} | ${getPartialProjectLevelAnalyticsProviderSettings()}
-  `('$scenario', ({ projectSettings }) => {
-    beforeEach(() => {
-      return createWrapper({ projectLevelAnalyticsProviderSettings: projectSettings });
-    });
-
-    it('should not show summary of existing settings', () => {
-      expect(findProviderSettingsPreview().exists()).toBe(false);
-    });
-
+  const itShouldRedirectToSettings = (expectedConfirmationMessage) => {
     describe('when clicking setup', () => {
       it('should confirm with user that redirect to settings is required', async () => {
         mockConfirmAction(false);
@@ -78,9 +62,7 @@ describe('SelfManagedProviderCard', () => {
           expect.objectContaining({
             primaryBtnText: 'Go to analytics settings',
             title: 'Connect your own provider',
-            modalHtmlMessage: expect.stringContaining(
-              `To connect your own provider, you'll be redirected`,
-            ),
+            modalHtmlMessage: expect.stringContaining(expectedConfirmationMessage),
           }),
         );
       });
@@ -99,15 +81,129 @@ describe('SelfManagedProviderCard', () => {
         expect(wrapper.emitted('open-settings')).toHaveLength(1);
       });
     });
+  };
 
-    describe('when project settings are configured correctly', () => {
-      beforeEach(() =>
-        createWrapper({
-          projectLevelAnalyticsProviderSettings: getProjectLevelAnalyticsProviderSettings(),
-        }),
+  describe('default behaviour', () => {
+    beforeEach(() => createWrapper());
+
+    it('should render a title and description', () => {
+      expect(wrapper.text()).toContain('Self-managed provider');
+      expect(wrapper.text()).toContain(
+        'Manage your own analytics provider to process, store, and query analytics data.',
       );
+    });
 
-      it('should show summary of existing settings', () => {
+    it('should show "Use instance-level settings" checkbox', () => {
+      expect(findUseInstanceConfigurationCheckbox().exists()).toBe(true);
+    });
+  });
+
+  describe('when instance config is a GitLab-managed provider', () => {
+    it('should not show "Use instance-level settings" checkbox', () => {
+      createWrapper({
+        isInstanceConfiguredWithSelfManagedAnalyticsProvider: false,
+      });
+
+      expect(findUseInstanceConfigurationCheckbox().exists()).toBe(false);
+    });
+  });
+
+  describe('"Use instance-level settings" checkbox default state', () => {
+    it.each`
+      defaultUseInstanceConfiguration | expectedCheckedState
+      ${true}                         | ${'true'}
+      ${false}                        | ${undefined}
+    `(
+      'when state is $defaultUseInstanceConfiguration',
+      ({ defaultUseInstanceConfiguration, expectedCheckedState }) => {
+        createWrapper({
+          defaultUseInstanceConfiguration,
+        });
+
+        expect(findUseInstanceConfigurationCheckbox().attributes('checked')).toBe(
+          expectedCheckedState,
+        );
+      },
+    );
+  });
+
+  describe('when no project provider settings are configured', () => {
+    beforeEach(() => {
+      return createWrapper({
+        projectLevelAnalyticsProviderSettings: getEmptyProjectLevelAnalyticsProviderSettings(),
+      });
+    });
+
+    describe('when "Use instance-level settings" is checked', () => {
+      beforeEach(() => checkUseInstanceConfiguration(true));
+
+      it('should inform user instance-settings will be used', () => {
+        expect(wrapper.text()).toContain(
+          'Your instance will be created on the provider configured in your instance settings.',
+        );
+      });
+
+      describe('when selecting provider', () => {
+        beforeEach(() => initProvider());
+
+        it('should emit "confirm" event', () => {
+          expect(wrapper.emitted('confirm')).toHaveLength(1);
+        });
+      });
+    });
+
+    describe('when "Use instance-level settings" is unchecked', () => {
+      beforeEach(() => checkUseInstanceConfiguration(false));
+
+      itShouldRedirectToSettings(`To connect your own provider, you'll be redirected`);
+    });
+  });
+
+  describe('when some project provider settings are configured', () => {
+    beforeEach(() => {
+      return createWrapper({
+        projectLevelAnalyticsProviderSettings: getPartialProjectLevelAnalyticsProviderSettings(),
+      });
+    });
+
+    describe.each`
+      scenario                                            | checked  | confirmMessage
+      ${'when "Use instance-level settings" is checked'}  | ${true}  | ${'To connect to your instance-level provider, you must first remove project-level provider configuration'}
+      ${'hen "Use instance-level settings" is unchecked'} | ${false} | ${"To connect your own provider, you'll be redirected"}
+    `('$scenario', ({ checked, confirmMessage }) => {
+      beforeEach(() => checkUseInstanceConfiguration(checked));
+
+      it('should not show summary of existing project-level settings', () => {
+        expect(findProviderSettingsPreview().exists()).toBe(false);
+      });
+
+      itShouldRedirectToSettings(confirmMessage);
+    });
+  });
+
+  describe('when all project provider settings are configured', () => {
+    beforeEach(() => {
+      return createWrapper({
+        projectLevelAnalyticsProviderSettings: getProjectLevelAnalyticsProviderSettings(),
+      });
+    });
+
+    describe('when "Use instance-level settings" is checked', () => {
+      beforeEach(() => checkUseInstanceConfiguration(true));
+
+      it('should not show summary of existing project-level settings', () => {
+        expect(findProviderSettingsPreview().exists()).toBe(false);
+      });
+
+      itShouldRedirectToSettings(
+        `To connect to your instance-level provider, you must first remove project-level provider configuration.`,
+      );
+    });
+
+    describe('when "Use instance-level settings" is unchecked', () => {
+      beforeEach(() => checkUseInstanceConfiguration(false));
+
+      it('should show summary of existing project-level settings', () => {
         expect(findProviderSettingsPreview().props()).toMatchObject({
           configuratorConnectionString: 'https://configurator.example.com',
           collectorHost: 'https://collector.example.com',

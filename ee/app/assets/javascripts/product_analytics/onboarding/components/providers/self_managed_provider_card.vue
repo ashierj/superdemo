@@ -1,5 +1,5 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlFormCheckbox } from '@gitlab/ui';
 
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import { s__ } from '~/locale';
@@ -9,9 +9,15 @@ import { getRedirectConfirmationMessage } from './utils';
 
 export default {
   name: 'SelfManagedProviderCard',
-  components: { GlButton, ProviderSettingsPreview },
+  components: { GlButton, GlFormCheckbox, ProviderSettingsPreview },
   inject: {
     projectLevelAnalyticsProviderSettings: {},
+    isInstanceConfiguredWithSelfManagedAnalyticsProvider: {
+      default: false,
+    },
+    defaultUseInstanceConfiguration: {
+      default: false,
+    },
   },
   props: {
     projectAnalyticsSettingsPath: {
@@ -19,14 +25,32 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      useInstanceConfiguration: this.defaultUseInstanceConfiguration,
+    };
+  },
   computed: {
-    hasCompleteProjectLevelProviderConfig() {
+    hasAllProjectLevelSettings() {
       return Object.values(this.projectLevelAnalyticsProviderSettings).every(Boolean);
+    },
+    hasEmptyProjectLevelSettings() {
+      return !Object.values(this.projectLevelAnalyticsProviderSettings).some(Boolean);
+    },
+    hasValidProviderConfig() {
+      if (this.useInstanceConfiguration) {
+        return (
+          this.hasEmptyProjectLevelSettings &&
+          this.isInstanceConfiguredWithSelfManagedAnalyticsProvider
+        );
+      }
+
+      return this.hasAllProjectLevelSettings;
     },
   },
   methods: {
     async onSelected() {
-      if (!this.hasCompleteProjectLevelProviderConfig) {
+      if (!this.hasValidProviderConfig) {
         await this.promptToSetSettings();
         return;
       }
@@ -34,13 +58,19 @@ export default {
       this.$emit('confirm');
     },
     async promptToSetSettings() {
+      const redirectMessage = this.useInstanceConfiguration
+        ? s__(
+            `ProductAnalytics|To connect to your instance-level provider, you must first remove project-level provider configuration. You'll be redirected to the %{analyticsSettingsLink} page, which shows your provider's configuration settings and setup instructions.`,
+          )
+        : s__(
+            `ProductAnalytics|To connect your own provider, you'll be redirected to the %{analyticsSettingsLink} page, which shows your provider's configuration settings and setup instructions.`,
+          );
+
       const confirmed = await confirmAction('', {
         title: s__('ProductAnalytics|Connect your own provider'),
         primaryBtnText: s__('ProductAnalytics|Go to analytics settings'),
         modalHtmlMessage: getRedirectConfirmationMessage(
-          s__(
-            `ProductAnalytics|To connect your own provider, you'll be redirected to the %{analyticsSettingsLink} page, which shows your provider's configuration settings and setup instructions.`,
-          ),
+          redirectMessage,
           this.projectAnalyticsSettingsPath,
         ),
       });
@@ -67,7 +97,26 @@ export default {
           )
         }}
       </p>
-      <div v-if="hasCompleteProjectLevelProviderConfig">
+      <gl-form-checkbox
+        v-if="isInstanceConfiguredWithSelfManagedAnalyticsProvider"
+        v-model="useInstanceConfiguration"
+        class="gl-mb-6"
+        data-testid="use-instance-configuration-checkbox"
+        >{{ s__('ProductAnalytics|Use instance-level settings') }}
+        <template #help>{{
+          s__(
+            'ProductAnalytics|Uncheck if you would like to configure a different provider for this project.',
+          )
+        }}</template>
+      </gl-form-checkbox>
+      <p v-if="useInstanceConfiguration">
+        {{
+          s__(
+            'ProductAnalytics|Your instance will be created on the provider configured in your instance settings.',
+          )
+        }}
+      </p>
+      <template v-else-if="hasValidProviderConfig">
         <p>{{ s__('ProductAnalytics|Your instance will be created on this provider:') }}</p>
         <provider-settings-preview
           :configurator-connection-string="
@@ -77,9 +126,9 @@ export default {
           :cube-api-base-url="projectLevelAnalyticsProviderSettings.cubeApiBaseUrl"
           :cube-api-key="projectLevelAnalyticsProviderSettings.cubeApiKey"
         />
-      </div>
+      </template>
       <template v-else>
-        <h4 class="gl-font-lg">{{ s__('ProductAnalytics|For this option, you need:') }}</h4>
+        <h4 class="gl-font-lg gl-mt-0">{{ s__('ProductAnalytics|For this option, you need:') }}</h4>
         <ul class="gl-mb-6">
           <li>
             {{ s__('ProductAnalytics|A deployed instance of the analytics-stack project.') }}

@@ -48,6 +48,8 @@ export default () => {
     aiGenerateCubeQueryEnabled,
     topicsExploreProjectsPath,
     projectLevelAnalyticsProviderSettings,
+    isInstanceConfiguredWithSelfManagedAnalyticsProvider,
+    defaultUseInstanceConfiguration,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -132,6 +134,10 @@ export default () => {
       projectLevelAnalyticsProviderSettings: convertObjectPropsToCamelCase(
         JSON.parse(projectLevelAnalyticsProviderSettings || '{}'),
       ),
+      isInstanceConfiguredWithSelfManagedAnalyticsProvider: parseBoolean(
+        isInstanceConfiguredWithSelfManagedAnalyticsProvider,
+      ),
+      defaultUseInstanceConfiguration: parseBoolean(defaultUseInstanceConfiguration),
     },
     render(h) {
       return h(DashboardsApp);
