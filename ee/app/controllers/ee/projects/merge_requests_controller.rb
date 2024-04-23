@@ -11,7 +11,6 @@ module EE
         include IframeYoutubeVideoCSP
 
         before_action only: [:show] do
-          push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:merge_trains_skip_train, @project)
         end
 
