@@ -182,10 +182,10 @@ export default {
       </template>
     </gl-collapsible-listbox>
 
-    <gl-select :value="selectedGroupOption" @input="selectGroupOption">
-      <option v-for="opt in $options.groupOptions" :key="opt" :value="opt">
-        {{ opt }}
-      </option>
-    </gl-select>
+    <gl-select
+      :options="$options.groupOptions"
+      :value="selectedGroupOption"
+      @input="selectGroupOption"
+    />
   </div>
 </template>

@@ -1,7 +1,8 @@
 import { GlCollapsibleListbox, GlListboxItem, GlAvatarLabeled, GlFormSelect } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import stubChildren from 'helpers/stub_children';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
@@ -39,12 +40,16 @@ describe('Approvers Selector', () => {
   const search = (searchString) => findListbox().vm.$emit('search', searchString);
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(ApproversSelect, {
+    wrapper = mount(ApproversSelect, {
       propsData: {
         namespaceId: TEST_PROJECT_ID,
         ...props,
       },
-      stubs: { GlCollapsibleListbox },
+      stubs: {
+        ...stubChildren(ApproversSelect),
+        GlCollapsibleListbox,
+        GlSelect: GlFormSelect,
+      },
     });
   };
   const openListbox = () => findListbox().vm.$emit('shown');
