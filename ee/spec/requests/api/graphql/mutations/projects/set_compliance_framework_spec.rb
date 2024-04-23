@@ -8,11 +8,7 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
   let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project, namespace: namespace) }
   let_it_be(:framework) { create(:compliance_framework, namespace: namespace) }
-  let_it_be(:current_user) { create(:user) }
-
-  before do
-    namespace.add_owner(current_user)
-  end
+  let_it_be(:current_user) { create(:user, owner_of: namespace) }
 
   let(:variables) { { project_id: GitlabSchema.id_from_object(project).to_s, compliance_framework_id: GitlabSchema.id_from_object(framework).to_s } }
 

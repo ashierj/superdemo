@@ -6,7 +6,7 @@ RSpec.describe API::EpicBoards, feature_category: :portfolio_management do
   let_it_be(:non_member) { create(:user) }
   let_it_be(:guest) { create(:user) }
 
-  let_it_be(:group, reload: true) { create(:group, :private) }
+  let_it_be(:group, reload: true) { create(:group, :private, guests: guest) }
   let_it_be(:development) { create(:group_label, group: group, name: 'Development') }
   let_it_be(:testing) { create(:group_label, group: group, name: 'Testing') }
   let_it_be(:feature) { create(:group_label, group: group, name: 'Feature') }
@@ -25,10 +25,6 @@ RSpec.describe API::EpicBoards, feature_category: :portfolio_management do
   let_it_be(:list4) { create(:epic_list, epic_board: board4) }
 
   let(:params) { nil }
-
-  before do
-    group.add_guest(guest)
-  end
 
   shared_examples 'request with epics unavailable' do
     it 'returns 403 forbidden error' do

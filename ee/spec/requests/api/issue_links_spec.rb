@@ -4,13 +4,9 @@ require 'spec_helper'
 
 RSpec.describe API::IssueLinks, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, reporters: user) }
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:target_issue) { create(:issue, project: project) }
-
-  before do
-    project.add_reporter(user)
-  end
 
   describe 'POST /links' do
     context 'when creating a blocked relationship' do

@@ -7,14 +7,10 @@ RSpec.describe Repositories::GitHttpController, type: :request, feature_category
   include ::EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository, :private) }
+  let_it_be(:project) { create(:project, :repository, :private, developers: user) }
 
   let(:env) { { user: user.username, password: user.password } }
   let(:path) { "#{project.full_path}.git" }
-
-  before do
-    project.add_developer(user)
-  end
 
   describe 'POST #git_upload_pack' do
     context 'geo pulls a personal snippet' do

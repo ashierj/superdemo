@@ -7,14 +7,10 @@ RSpec.describe 'getting iterations', feature_category: :team_planning do
 
   let_it_be(:now) { Time.now }
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, developers: user) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 2, title: 'two week iterations') }
-
-  before do
-    group.add_developer(user)
-  end
 
   describe 'query for iteration cadence' do
     shared_examples 'returns cadence by id' do
