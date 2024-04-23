@@ -14968,6 +14968,9 @@ msgstr ""
 msgid "Couldn't delete link due to an internal error."
 msgstr ""
 
+msgid "Couldn't delete work item link due to an internal error."
+msgstr ""
+
 msgid "Couldn't fetch the pinned file."
 msgstr ""
 

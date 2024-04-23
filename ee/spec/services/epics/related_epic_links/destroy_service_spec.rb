@@ -227,5 +227,28 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
         end
       end
     end
+
+    context 'when synced_epic is true' do
+      subject(:execute) do
+        described_class.new(
+          issuable_link,
+          issuable_link.source,
+          user,
+          synced_epic: true
+        ).execute
+      end
+
+      it 'does not create system notes' do
+        expect { execute }.not_to change { Note.count }
+      end
+
+      context 'and user does not have permissions' do
+        let(:user) { create(:user) }
+
+        it 'skips permission checks and destroys the link' do
+          expect { execute }.to change { issuable_link.class.count }.by(-1)
+        end
+      end
+    end
   end
 end

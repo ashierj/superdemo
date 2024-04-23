@@ -16,9 +16,9 @@ RSpec.describe ::Applications::CreateService do
     using RSpec::Parameterized::TableSyntax
 
     where(:case_name, :owner, :entity_type) do
-      'instance application' | nil   | 'User'
-      'group application'    | group | 'Group'
-      'user application'     | user  | 'User'
+      'instance application' | nil         | 'User'
+      'group application'    | ref(:group) | 'Group'
+      'user application'     | ref(:user)  | 'User'
     end
 
     with_them do

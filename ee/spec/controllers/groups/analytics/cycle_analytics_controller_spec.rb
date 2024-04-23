@@ -23,12 +23,10 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController, feature_category: :t
         expect(response).to be_successful
       end
 
-      it 'increments usage counter' do
-        expect(Gitlab::UsageDataCounters::CycleAnalyticsCounter).to receive(:count).with(:views)
-
-        get(:show, params: { group_id: group })
-
-        expect(response).to be_successful
+      it_behaves_like 'internal event tracking' do
+        let(:event) { 'view_cycle_analytics' }
+        let(:namespace) { group }
+        subject(:request) { get(:show, params: { group_id: group }) }
       end
 
       it 'renders `show` template when feature flag is enabled' do

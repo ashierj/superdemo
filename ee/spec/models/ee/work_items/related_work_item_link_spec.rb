@@ -137,4 +137,39 @@ RSpec.describe ::WorkItems::RelatedWorkItemLink, feature_category: :portfolio_ma
       end
     end
   end
+
+  describe '#synced_related_epic_link' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:epic_a) { create(:epic, :with_synced_work_item, group: group) }
+    let_it_be(:epic_b) { create(:epic, :with_synced_work_item, group: group) }
+    let_it_be(:work_item_a) { epic_a.work_item }
+    let_it_be(:work_item_b) { epic_b.work_item }
+    let_it_be_with_refind(:link) { create(:work_item_link, source: work_item_a, target: work_item_b) }
+
+    subject(:related_epic_link) { link.synced_related_epic_link }
+
+    it { is_expected.to be_nil }
+
+    context 'when there is a synced related epic record' do
+      let_it_be(:related_epic_link) { create(:related_epic_link, source: epic_a, target: epic_b) }
+
+      it { is_expected.to eq(related_epic_link) }
+
+      context 'and source work item does not have a synced epic' do
+        before do
+          epic_a.update!(issue_id: nil)
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+      context 'and target work item does not have a synced epic' do
+        before do
+          epic_b.update!(issue_id: nil)
+        end
+
+        it { is_expected.to be_nil }
+      end
+    end
+  end
 end
