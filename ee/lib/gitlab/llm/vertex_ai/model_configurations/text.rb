@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module ModelConfigurations
         class Text < Base
-          NAME = 'text-bison'
+          NAME = ::Gitlab::Llm::Concerns::AvailableModels::VERTEX_MODEL_TEXT
 
           def payload(content)
             {
