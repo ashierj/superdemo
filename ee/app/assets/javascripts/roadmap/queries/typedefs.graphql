@@ -1,0 +1,15 @@
+type LocalRoadmapSettings {
+  filterParams: String
+}
+
+input LocalRoadmapSettingsInput {
+  filterParams: String
+}
+
+extend type Query {
+  localRoadmapSettings: LocalRoadmapSettings
+}
+
+extend type Mutation {
+  setLocalRoadmapSettings(input: LocalRoadmapSettingsInput!): LocalRoadmapSettings
+}

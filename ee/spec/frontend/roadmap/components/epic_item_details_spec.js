@@ -1,7 +1,11 @@
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+
 import { GlButton, GlLabel } from '@gitlab/ui';
-import { updateHistory } from '~/lib/utils/url_utility';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+
+import { updateHistory } from '~/lib/utils/url_utility';
 import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
 import createStore from 'ee/roadmap/store';
 import {
@@ -12,6 +16,16 @@ import {
 } from 'ee_jest/roadmap/mock_data';
 
 jest.mock('~/lib/utils/url_utility');
+
+Vue.use(VueApollo);
+
+const setLocalSettingsMutationMock = jest.fn();
+
+const resolvers = {
+  Mutation: {
+    setLocalRoadmapSettings: setLocalSettingsMutationMock,
+  },
+};
 
 describe('EpicItemDetails', () => {
   let wrapper;
@@ -31,6 +45,7 @@ describe('EpicItemDetails', () => {
     isChildrenEmpty = false,
     isExpanded = false,
     isFetchingChildren = false,
+    filterParams = {},
   } = {}) => {
     wrapper = shallowMountExtended(EpicItemDetails, {
       store,
@@ -43,12 +58,14 @@ describe('EpicItemDetails', () => {
         isChildrenEmpty,
         isExpanded,
         isFetchingChildren,
+        filterParams,
       },
       provide: {
         allowSubEpics,
         allowScopedLabels,
         currentGroupId,
       },
+      apolloProvider: createMockApollo([], resolvers),
     });
   };
 
@@ -376,18 +393,24 @@ describe('EpicItemDetails', () => {
           expect(updateHistory).toHaveBeenCalledTimes(1);
         });
 
-        it('dispatches setFilterParams vuex action', () => {
-          expect(store.dispatch.mock.calls[0]).toEqual(['setFilterParams', {}]);
+        it('calls setLocalRoadmapSettings mutation', () => {
+          expect(setLocalSettingsMutationMock).toHaveBeenCalledWith(
+            {},
+            expect.objectContaining({ input: { filterParams: {} } }),
+            expect.any(Object),
+            expect.any(Object),
+          );
         });
       });
 
       describe('when selected label is already in the filter', () => {
         beforeEach(() => {
           // setWindowLocation('?label_name[]=Aquanix');
-          store.state.filterParams = {
-            labelName: ['Aquanix'],
-          };
-          createWrapper();
+          createWrapper({
+            filterParams: {
+              labelName: ['Aquanix'],
+            },
+          });
 
           wrapper.findComponent(GlLabel).vm.$emit('click', {
             preventDefault: jest.fn(),

@@ -8,6 +8,7 @@ import { queryToObject } from '~/lib/utils/url_utility';
 import Translate from '~/vue_shared/translate';
 
 import RoadmapApp from './components/roadmap_app.vue';
+import localRoadmapSettingsQuery from './queries/local_roadmap_settings.query.graphql';
 import { defaultClient } from './graphql';
 import {
   DATE_RANGES,
@@ -35,6 +36,35 @@ export default () => {
 
   const { dataset } = el;
 
+  const rawFilterParams = queryToObject(window.location.search, {
+    gatherArrays: true,
+  });
+
+  const filterParams = {
+    ...convertObjectPropsToCamelCase(rawFilterParams, {
+      dropKeys: UNSUPPORTED_ROADMAP_PARAMS,
+    }),
+    // We shall put parsed value of `confidential` only
+    // when it is defined.
+    ...(rawFilterParams.confidential && {
+      confidential: parseBoolean(rawFilterParams.confidential),
+    }),
+
+    ...(rawFilterParams.epicIid && {
+      epicIid: rawFilterParams.epicIid,
+    }),
+  };
+
+  defaultClient.cache.writeQuery({
+    query: localRoadmapSettingsQuery,
+    data: {
+      localRoadmapSettings: {
+        __typename: 'LocalRoadmapSettings',
+        filterParams,
+      },
+    },
+  });
+
   const apolloProvider = new VueApollo({
     defaultClient,
   });
@@ -61,6 +91,7 @@ export default () => {
         epicIid: dataset.iid,
         allowSubEpics: parseBoolean(dataset.allowSubEpics),
         allowScopedLabels: dataset.allowScopedLabels,
+        hasScopedLabelsFeature: dataset.allowScopedLabels,
         isChildEpics: parseBoolean(dataset.childEpics),
         currentGroupId: parseInt(dataset.groupId, 10),
       };
@@ -76,31 +107,11 @@ export default () => {
         presetType,
       });
 
-      const rawFilterParams = queryToObject(window.location.search, {
-        gatherArrays: true,
-      });
-      const filterParams = {
-        ...convertObjectPropsToCamelCase(rawFilterParams, {
-          dropKeys: UNSUPPORTED_ROADMAP_PARAMS,
-        }),
-        // We shall put parsed value of `confidential` only
-        // when it is defined.
-        ...(rawFilterParams.confidential && {
-          confidential: parseBoolean(rawFilterParams.confidential),
-        }),
-
-        ...(rawFilterParams.epicIid && {
-          epicIid: rawFilterParams.epicIid,
-        }),
-      };
-
       return {
-        hasFiltersApplied: parseBoolean(dataset.hasFiltersApplied),
         epicsState: dataset.epicsState,
         sortedBy: ALLOWED_SORT_VALUES.includes(dataset.sortedBy)
           ? dataset.sortedBy
           : ALLOWED_SORT_VALUES[0],
-        filterParams,
         timeframeRangeType,
         presetType,
         timeframe,
@@ -124,8 +135,6 @@ export default () => {
         presetType: this.presetType,
         epicsState: this.epicsState,
         timeframe: this.timeframe,
-        filterParams: this.filterParams,
-        hasFiltersApplied: this.hasFiltersApplied,
         isProgressTrackingActive: this.isProgressTrackingActive,
         progressTracking: this.progressTracking,
         isShowingMilestones: this.isShowingMilestones,

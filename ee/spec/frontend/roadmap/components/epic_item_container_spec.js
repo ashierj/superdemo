@@ -27,7 +27,6 @@ const createComponent = ({
   currentGroupId = mockGroupId,
   children = [],
   childLevel = 0,
-  hasFiltersApplied = false,
 } = {}) => {
   return shallowMount(EpicItemContainer, {
     store,
@@ -43,7 +42,7 @@ const createComponent = ({
       currentGroupId,
       children,
       childLevel,
-      hasFiltersApplied,
+      filterParams: {},
     },
   });
 };

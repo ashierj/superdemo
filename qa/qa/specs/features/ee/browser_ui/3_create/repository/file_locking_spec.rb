@@ -32,7 +32,7 @@ module QA
         end
       end
 
-      it 'locks a directory and tries to push as a second user',
+      it 'locks a directory and tries to push as a second user', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347768' do
         push as_user: user_one, max_attempts: 3, branch: project.default_branch, file: 'directory/file'
 
@@ -88,7 +88,7 @@ module QA
         end
       end
 
-      it 'locks a file and unlocks in list',
+      it 'locks a file and unlocks in list', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347766' do
         Flow::Login.sign_in(as: user_one, skip_page_validation: true)
         go_to_file

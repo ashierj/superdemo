@@ -28,10 +28,6 @@ export default {
       type: Number,
       required: true,
     },
-    hasFiltersApplied: {
-      type: Boolean,
-      required: true,
-    },
   },
   methods: {
     generateKey,
@@ -49,7 +45,6 @@ export default {
       :timeframe="timeframe"
       :client-width="clientWidth"
       :child-level="childLevel"
-      :has-filters-applied="hasFiltersApplied"
     />
   </div>
 </template>

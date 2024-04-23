@@ -60,11 +60,7 @@ describe('RoadmapShell', () => {
     });
   };
 
-  const createComponent = ({
-    epics = [mockEpic],
-    timeframe = mockTimeframeMonths,
-    hasFiltersApplied = false,
-  } = {}) => {
+  const createComponent = ({ epics = [mockEpic], timeframe = mockTimeframeMonths } = {}) => {
     wrapper = shallowMountExtended(RoadmapShell, {
       store,
       attachTo: document.body,
@@ -72,7 +68,9 @@ describe('RoadmapShell', () => {
         presetType: PRESET_TYPES.MONTHS,
         epics,
         timeframe,
-        hasFiltersApplied,
+        filterParams: {},
+        epicsFetchNextPageInProgress: false,
+        hasNextPage: false,
       },
       provide: {
         fullPath: 'gitlab-org',

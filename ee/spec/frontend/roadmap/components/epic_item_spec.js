@@ -14,6 +14,7 @@ import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
 import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
 
 import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
+import localRoadmapSettingsQuery from 'ee/roadmap/queries/local_roadmap_settings.query.graphql';
 
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
@@ -42,16 +43,30 @@ describe('EpicItemComponent', () => {
   const findEpicItemDetails = () => wrapper.findComponent(EpicItemDetails);
   const findEpicItemTimeline = () => wrapper.findComponent(EpicItemTimeline);
 
-  const createComponent = ({ epic = mockEpic, timeframe = mockTimeframeMonths } = {}) => {
+  const createComponent = ({
+    epic = mockEpic,
+    timeframe = mockTimeframeMonths,
+    filterParams = {},
+  } = {}) => {
+    const apolloProvider = createMockApollo([[epicChildEpicsQuery, childEpicsQueryHandler]]);
+    apolloProvider.clients.defaultClient.cache.writeQuery({
+      query: localRoadmapSettingsQuery,
+      data: {
+        localRoadmapSettings: {
+          __typename: 'LocalRoadmapSettings',
+          filterParams,
+        },
+      },
+    });
+
     wrapper = shallowMountExtended(EpicItemComponent, {
       store,
-      apolloProvider: createMockApollo([[epicChildEpicsQuery, childEpicsQueryHandler]]),
+      apolloProvider,
       propsData: {
         presetType: PRESET_TYPES.MONTHS,
         epic,
         timeframe,
         childLevel: 0,
-        hasFiltersApplied: false,
       },
       provide: {
         currentGroupId: mockGroupId,
@@ -67,6 +82,23 @@ describe('EpicItemComponent', () => {
 
   beforeEach(() => {
     store = createStore();
+  });
+
+  it('passes correct props to EpicItemDetails component when filter params are empty', () => {
+    createComponent();
+
+    expect(findEpicItemDetails().props()).toMatchObject(
+      expect.objectContaining({ hasFiltersApplied: false, filterParams: {} }),
+    );
+  });
+
+  it('passes correct props to EpicItemDetails component when filter params are present', () => {
+    const filterParams = { authorUsername: 'author', labelName: ['label'], search: 'search' };
+    createComponent({ filterParams });
+
+    expect(findEpicItemDetails().props()).toMatchObject(
+      expect.objectContaining({ hasFiltersApplied: true, filterParams }),
+    );
   });
 
   describe('start date', () => {
