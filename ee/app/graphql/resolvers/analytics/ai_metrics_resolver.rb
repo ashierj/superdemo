@@ -36,9 +36,9 @@ module Resolvers
 
         return unless service_response.success?
 
-        {
-          code_suggestions_usage_rate: percentage(service_response.payload)
-        }
+        service_response.payload.tap do |data|
+          data[:code_suggestions_usage_rate] = percentage(data[:code_suggestions_usage_rate])
+        end
       end
 
       private

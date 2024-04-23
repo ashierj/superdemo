@@ -4,6 +4,12 @@ module Types
   module Analytics
     # rubocop: disable Graphql/AuthorizeTypes -- always authorized by Resolver
     class AiMetrics < BaseObject
+      field :code_contributors_count, GraphQL::Types::Int,
+        description: 'Number of code contributors.',
+        null: false
+      field :code_suggestions_contributors_count, GraphQL::Types::Int,
+        description: 'Number of code contributors who used GitLab Duo Code Suggestions features.',
+        null: false
       field :code_suggestions_usage_rate, GraphQL::Types::Float,
         description: 'Percentage of contributors who used GitLab Duo Code Suggestions features.',
         null: false

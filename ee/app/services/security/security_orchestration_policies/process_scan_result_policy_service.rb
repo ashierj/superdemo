@@ -84,7 +84,7 @@ module Security
         rule[:license_types].map do |license_type|
           {
             name: license_type,
-            approval_status: rule[:match_on_inclusion_license] || rule[:match_on_inclusion] ? 'denied' : 'allowed',
+            approval_status: rule[:match_on_inclusion_license] ? 'denied' : 'allowed',
             scan_result_policy_read: scan_result_policy_read
           }
         end
@@ -95,7 +95,7 @@ module Security
           orchestration_policy_idx: policy_index,
           rule_idx: rule_index,
           license_states: rule[:license_states],
-          match_on_inclusion: rule.fetch(:match_on_inclusion_license, rule[:match_on_inclusion]) || false,
+          match_on_inclusion_license: rule[:match_on_inclusion_license] || false,
           role_approvers: role_access_levels(approval_action&.dig(:role_approvers)),
           vulnerability_attributes: rule[:vulnerability_attributes],
           project_id: project.id,

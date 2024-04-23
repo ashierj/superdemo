@@ -1363,55 +1363,15 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
         it_behaves_like 'rule has branches or branch_type'
 
-        shared_examples 'missing required_property on one_of' do |missing_property, alternative_property|
-          before do
-            rule.delete(missing_property)
-          end
-
-          specify do
-            expect(errors).to include(
-              "property '/#{type}/0/rules/0' is missing required keys: #{alternative_property}, #{missing_property}",
-              "property '/#{type}/0/rules/0' is missing required keys: #{missing_property}"
-            )
-          end
-        end
-
-        context "without match_on_inclusion or match_on_inclusion_license" do
+        context "without match_on_inclusion_license" do
           before do
             rule.delete(:match_on_inclusion_license)
           end
 
           specify do
             expect(errors).to include(
-              "property '/#{type}/0/rules/0' is missing required keys: match_on_inclusion",
               "property '/#{type}/0/rules/0' is missing required keys: match_on_inclusion_license"
             )
-          end
-        end
-
-        context "with match_on_inclusion_license" do
-          it_behaves_like 'missing required_property on one_of', :license_types, :match_on_inclusion
-          it_behaves_like 'missing required_property on one_of', :license_states, :match_on_inclusion
-        end
-
-        context "with match_on_inclusion" do
-          before do
-            rule[:match_on_inclusion] = true
-          end
-
-          context "with match_on_inclusion_license" do
-            specify do
-              expect(errors).to include("property '/#{type}/0/rules/0' is invalid: error_type=oneOf")
-            end
-          end
-
-          context "without match_on_inclusion_license" do
-            before do
-              rule.delete(:match_on_inclusion_license)
-            end
-
-            it_behaves_like 'missing required_property on one_of', :license_types, :match_on_inclusion_license
-            it_behaves_like 'missing required_property on one_of', :license_states, :match_on_inclusion_license
           end
         end
 

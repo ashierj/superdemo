@@ -35,7 +35,19 @@ module Analytics
       def execute
         return feature_unavailable_error unless Gitlab::ClickHouse.enabled_for_analytics?(namespace)
 
-        ServiceResponse.success(payload: usage_rate)
+        data = usage_data
+
+        usage_rate = if data['code_contributors_count'] > 0
+                       data['code_contributors_with_ai'] / data['code_contributors_count'].to_f
+                     else
+                       0
+                     end
+
+        ServiceResponse.success(payload: {
+          code_suggestions_usage_rate: usage_rate,
+          code_contributors_count: data['code_contributors_count'],
+          code_suggestions_contributors_count: data['code_contributors_with_ai']
+        })
       end
 
       private
@@ -48,14 +60,9 @@ module Analytics
         )
       end
 
-      def usage_rate
+      def usage_data
         query = ClickHouse::Client::Query.new(raw_query: QUERY, placeholders: placeholders)
-
-        data = ClickHouse::Client.select(query, :main).first
-
-        return 0 unless data['code_contributors_count'] > 0 && data['code_contributors_with_ai'] > 0
-
-        data['code_contributors_with_ai'] / data['code_contributors_count'].to_f
+        ClickHouse::Client.select(query, :main).first
       end
 
       def placeholders

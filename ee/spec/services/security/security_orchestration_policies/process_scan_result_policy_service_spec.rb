@@ -658,12 +658,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       context 'when the policy has the YAML has the match_on_inclusion_license attribute' do
         it_behaves_like 'license_finding_rule_type'
       end
-
-      context 'when the policy has the YAML has the match_on_inclusion attribute' do
-        let(:policy) { build(:scan_result_policy, :license_finding_with_match_on_inclusion) }
-
-        it_behaves_like 'license_finding_rule_type'
-      end
     end
 
     context 'with any_merge_request rule_type' do

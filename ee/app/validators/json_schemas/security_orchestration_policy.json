@@ -661,10 +661,6 @@
                   ],
                   "additionalProperties": false
                 },
-                "match_on_inclusion": {
-                  "type": "boolean",
-                  "description": "Specifies whether to match licenses on inclusion or exclusion."
-                },
                 "match_on_inclusion_license": {
                   "type": "boolean",
                   "description": "Specifies whether to match licenses on inclusion or exclusion."
@@ -745,23 +741,11 @@
                     }
                   },
                   "then": {
-                    "oneOf": [
-                      {
-                        "required": [
-                          "type",
-                          "match_on_inclusion",
-                          "license_types",
-                          "license_states"
-                        ]
-                      },
-                      {
-                        "required": [
-                          "type",
-                          "match_on_inclusion_license",
-                          "license_types",
-                          "license_states"
-                        ]
-                      }
+                    "required": [
+                      "type",
+                      "match_on_inclusion_license",
+                      "license_types",
+                      "license_states"
                     ]
                   }
                 },
