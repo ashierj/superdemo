@@ -3,9 +3,8 @@
 module Profiles
   class UsageQuotasController < Profiles::ApplicationController
     include OneTrustCSP
-    include GoogleAnalyticsCSP
 
-    feature_category :purchase
+    feature_category :consumables_cost_management
     urgency :low
 
     def index
@@ -14,3 +13,5 @@ module Profiles
     end
   end
 end
+
+Profiles::UsageQuotasController.prepend_mod

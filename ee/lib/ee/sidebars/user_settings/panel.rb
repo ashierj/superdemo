@@ -14,10 +14,6 @@ module EE
             ::Sidebars::UserSettings::Menus::AccountMenu,
             ::Sidebars::UserSettings::Menus::ProfileBillingMenu.new(context)
           )
-          insert_menu_after(
-            ::Sidebars::UserSettings::Menus::AuthenticationLogMenu,
-            ::Sidebars::UserSettings::Menus::UsageQuotasMenu.new(context)
-          )
         end
       end
     end
