@@ -12432,8 +12432,8 @@ ALTER SEQUENCE p_ci_job_annotations_id_seq OWNED BY p_ci_job_annotations.id;
 CREATE TABLE packages_build_infos (
     id bigint NOT NULL,
     package_id integer NOT NULL,
-    pipeline_id integer,
-    pipeline_id_convert_to_bigint bigint
+    pipeline_id_convert_to_bigint integer,
+    pipeline_id bigint
 );
 
 CREATE SEQUENCE packages_build_infos_id_seq
