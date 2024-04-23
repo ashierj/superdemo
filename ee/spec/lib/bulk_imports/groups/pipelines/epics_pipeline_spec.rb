@@ -25,13 +25,13 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
 
   before do
     FileUtils.copy_file(filepath, File.join(tmpdir, 'epics.ndjson.gz'))
-    stub_licensed_features(epics: true)
+    stub_licensed_features(epics: true, subepics: true)
     group.add_owner(user)
   end
 
   subject { described_class.new(context) }
 
-  describe '#run', :clean_gitlab_redis_cache do
+  describe '#run', :clean_gitlab_redis_shared_state, :aggregate_failures do
     before do
       allow(Dir).to receive(:mktmpdir).and_return(tmpdir)
       allow_next_instance_of(BulkImports::FileDownloadService) do |service|
@@ -39,38 +39,68 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
       end
 
       allow(subject).to receive(:set_source_objects_counter)
-
-      subject.run
     end
 
-    it 'imports group epics into destination group' do
-      expect(group.epics.count).to eq(6)
+    context 'when sync_epic_to_work_item disabled' do
+      before do
+        stub_feature_flags(sync_epic_to_work_item: false)
+
+        subject.run
+      end
+
+      it 'imports group epics into destination group' do
+        expect(group.epics.count).to eq(6)
+        expect(group.work_items.count).to eq(0)
+
+        group.epics.each do |epic|
+          expect(epic.work_item).to be_nil
+        end
+      end
     end
 
-    it 'imports epic award emoji' do
-      expect(group.epics.first.award_emoji.first.name).to eq('thumbsup')
-    end
+    context 'when epic work item is created along epic object' do
+      before do
+        subject.run
+        group.reload
+      end
 
-    it 'imports epic notes' do
-      expect(group.epics.first.state).to eq('opened')
-      expect(group.epics.first.notes.count).to eq(4)
-      expect(group.epics.first.notes.first.award_emoji.first.name).to eq('drum')
-    end
+      it 'imports group epics into destination group' do
+        expect(group.epics.count).to eq(6)
+        expect(group.work_items.count).to eq(6)
 
-    it 'imports epic labels' do
-      label = group.epics.first.labels.first
+        group.epics.each do |epic|
+          expect(epic.work_item).not_to be_nil
 
-      expect(group.epics.first.labels.count).to eq(1)
-      expect(label.title).to eq('title')
-      expect(label.description).to eq('description')
-      expect(label.color).to be_color('#cd2c5c')
-    end
+          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+          expect(diff.attributes).to be_empty
+        end
+      end
 
-    it 'imports epic system note metadata' do
-      note = group.epics.find_by_title('system notes').notes.first
+      it 'imports epic award emoji' do
+        expect(group.epics.first.award_emoji.first.name).to eq('thumbsup')
+      end
 
-      expect(note.system).to eq(true)
-      expect(note.system_note_metadata.action).to eq('relate_epic')
+      it 'imports epic notes' do
+        expect(group.epics.first.state).to eq('opened')
+        expect(group.epics.first.notes.count).to eq(4)
+        expect(group.epics.first.notes.first.award_emoji.first.name).to eq('drum')
+      end
+
+      it 'imports epic labels' do
+        label = group.epics.first.labels.first
+
+        expect(group.epics.first.labels.count).to eq(1)
+        expect(label.title).to eq('title')
+        expect(label.description).to eq('description')
+        expect(label.color).to be_color('#cd2c5c')
+      end
+
+      it 'imports epic system note metadata' do
+        note = group.epics.find_by_title('system notes').notes.first
+
+        expect(note.system).to eq(true)
+        expect(note.system_note_metadata.action).to eq('relate_epic')
+      end
     end
   end
 
@@ -79,7 +109,7 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
       it 'saves the epic' do
         epic = build(:epic, group: group)
 
-        expect(epic).to receive(:save!)
+        expect(epic).to receive(:save)
 
         subject.load(context, epic)
       end

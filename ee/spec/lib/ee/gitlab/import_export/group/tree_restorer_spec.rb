@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
+RSpec.describe Gitlab::ImportExport::Group::TreeRestorer, feature_category: :importers do
   include ImportExport::CommonUtil
 
   let(:user) { create(:user) }
@@ -11,17 +11,45 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
   let(:group_tree_restorer) { described_class.new(user: user, shared: shared, group: group) }
 
   before do
-    stub_licensed_features(board_assignee_lists: true, board_milestone_lists: true)
+    stub_licensed_features(epics: true, board_assignee_lists: true, board_milestone_lists: true)
 
     setup_import_export_config('group_exports/light', 'ee')
     group.add_owner(user)
-    group_tree_restorer.restore
+  end
+
+  context 'when sync_epic_to_work_item disabled' do
+    before do
+      stub_feature_flags(sync_epic_to_work_item: false)
+
+      group_tree_restorer.restore
+    end
+
+    it 'imports group epics into destination group' do
+      expect(group.epics.count).to eq(3)
+      expect(group.work_items.count).to eq(0)
+
+      group.epics.each do |epic|
+        expect(epic.work_item).to be_nil
+      end
+    end
   end
 
   describe 'restore group tree' do
+    before do
+      group_tree_restorer.restore
+    end
+
     context 'epics' do
       it 'has group epics' do
         expect(group.epics.count).to eq(3)
+        expect(group.work_items.count).to eq(3)
+
+        group.epics.each do |epic|
+          expect(epic.work_item).not_to be_nil
+
+          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+          expect(diff.attributes).to be_empty
+        end
       end
 
       it 'has award emoji' do

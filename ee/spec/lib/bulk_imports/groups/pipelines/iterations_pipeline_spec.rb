@@ -31,7 +31,7 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsPipeline, feature_categ
     allow(subject).to receive(:set_source_objects_counter)
   end
 
-  describe '#run', :clean_gitlab_redis_cache do
+  describe '#run', :clean_gitlab_redis_shared_state do
     it 'imports group iterations' do
       first_page = extracted_data(title: 'iteration1', has_next_page: true)
       last_page = extracted_data(title: 'iteration2', start_date: Date.today + 2.days)

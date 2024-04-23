@@ -44,8 +44,10 @@ RSpec.describe BulkImports::Projects::Pipelines::IssuesPipeline, feature_categor
 
   subject(:pipeline) { described_class.new(context) }
 
-  describe '#run', :clean_gitlab_redis_cache do
+  describe '#run', :clean_gitlab_redis_shared_state do
     before do
+      stub_licensed_features(epics: true)
+
       group.add_owner(user)
       issue_with_index = [issue, 0]
 
@@ -65,6 +67,13 @@ RSpec.describe BulkImports::Projects::Pipelines::IssuesPipeline, feature_categor
         expect(group.epics.count).to eq(1)
         expect(project.issues.first.epic).to eq(epic)
         expect(project.issues.first.epic_issue.relative_position).not_to be_nil
+
+        group.epics.each do |epic|
+          expect(epic.work_item).not_to be_nil
+
+          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+          expect(diff.attributes).to be_empty
+        end
       end
     end
 
@@ -77,6 +86,32 @@ RSpec.describe BulkImports::Projects::Pipelines::IssuesPipeline, feature_categor
 
         expect(project.issues.first.epic).not_to be_nil
         expect(project.issues.first.epic_issue.relative_position).not_to be_nil
+
+        group.epics.each do |epic|
+          expect(epic.work_item).not_to be_nil
+
+          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+          expect(diff.attributes).to be_empty
+        end
+      end
+
+      context 'when sync_epic_to_work_item disabled' do
+        before do
+          stub_feature_flags(sync_epic_to_work_item: false)
+        end
+
+        it 'imports group epics into destination group' do
+          group.epics.delete_all
+
+          expect { pipeline.run }.to change { Epic.count }.from(0).to(1)
+
+          expect(group.epics.count).to eq(1)
+          expect(group.work_items.count).to eq(0)
+
+          group.epics.each do |epic|
+            expect(epic.work_item).to be_nil
+          end
+        end
       end
     end
   end
