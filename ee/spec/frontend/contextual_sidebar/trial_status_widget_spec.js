@@ -72,7 +72,7 @@ describe('TrialStatusWidget component', () => {
     describe('tracks when the widget menu is clicked', () => {
       it('tracks with correct information when namespace is in an active trial', async () => {
         const { category, label } = trackingEvents.activeTrialOptions;
-        await wrapper.findByTestId('widget-menu').trigger('click');
+        await wrapper.findByTestId('trial-widget-menu').trigger('click');
 
         expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
           category,
@@ -84,7 +84,7 @@ describe('TrialStatusWidget component', () => {
         wrapper = createComponent({ percentageComplete: 110 });
 
         const { category, label } = trackingEvents.trialEndedOptions;
-        await wrapper.findByTestId('widget-menu').trigger('click');
+        await wrapper.findByTestId('trial-widget-menu').trigger('click');
 
         expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
           category,
