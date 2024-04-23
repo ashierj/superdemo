@@ -58,6 +58,22 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
     end
   end
 
+  describe 'reopen_issue for group level issue' do
+    let(:non_member) { user }
+
+    let_it_be_with_reload(:group_issue) { create(:issue, :group_level, namespace: group) }
+
+    it 'does not allow non members' do
+      expect(permissions(non_member, group_issue)).to be_disallowed(:reopen_issue)
+    end
+
+    it 'allows it for members', :aggregate_failures do
+      expect(permissions(guest, group_issue)).to be_disallowed(:reopen_issue)
+      expect(permissions(reporter, group_issue)).to be_allowed(:reopen_issue)
+      expect(permissions(owner, group_issue)).to be_allowed(:reopen_issue)
+    end
+  end
+
   describe 'admin_issue_relation' do
     let(:non_member) { user }
     let_it_be_with_reload(:group_issue) { create(:issue, :group_level, namespace: group) }
@@ -200,7 +216,7 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
 
           # these permissions are either not yet defined for group level issues or not allowed
           expect(permissions(owner, group_issue)).to be_disallowed(
-            :admin_issue_link, :create_requirement_test_report, :reopen_issue, :resolve_note, :admin_note,
+            :admin_issue_link, :create_requirement_test_report, :resolve_note, :admin_note,
             :reposition_note, :create_design, :update_design, :destroy_design, :move_design,
             :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image,
             :admin_issuable_resource_link, :admin_timelog, :admin_issue_metrics, :admin_issue_metrics_list
