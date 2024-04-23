@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AlertManagement::HttpIntegrations::UpdateService, feature_category: :incident_management do
   let_it_be(:user) { create(:user) }
-  let_it_be_with_reload(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project, maintainers: user) }
   let_it_be_with_reload(:integration) { create(:alert_management_http_integration, :inactive, project: project, name: 'Old Name') }
   let_it_be(:other_integration) { create(:alert_management_prometheus_integration, project: project) }
 
@@ -32,10 +32,6 @@ RSpec.describe AlertManagement::HttpIntegrations::UpdateService, feature_categor
   end
 
   let(:service) { described_class.new(integration, user, params) }
-
-  before do
-    project.add_maintainer(user)
-  end
 
   describe '#execute' do
     subject(:response) { service.execute }

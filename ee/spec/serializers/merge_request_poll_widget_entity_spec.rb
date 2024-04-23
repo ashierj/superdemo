@@ -6,14 +6,10 @@ RSpec.describe MergeRequestPollWidgetEntity, feature_category: :merge_trains do
   include ProjectForksHelper
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create :project, :repository }
+  let_it_be(:project) { create(:project, :repository, developers: user) }
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
 
   let(:request) { double('request', current_user: user) }
-
-  before do
-    project.add_developer(user)
-  end
 
   subject(:entity) do
     described_class.new(merge_request, current_user: user, request: request).as_json

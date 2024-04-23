@@ -8,15 +8,9 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
   let_it_be(:group) { create(:group) }
   let_it_be(:current_user) { create(:user) }
   let_it_be(:another_user) { create(:user) }
-  let_it_be(:subgroup) { create(:group, parent: group) }
-  let_it_be(:project) { create(:project, group: subgroup) }
+  let_it_be(:subgroup) { create(:group, parent: group, developers: [current_user, another_user]) }
+  let_it_be(:project) { create(:project, group: subgroup, developers: current_user) }
   let_it_be(:secret_project) { create(:project, group: create(:group, parent: group)) }
-
-  before do
-    subgroup.add_developer(current_user)
-    subgroup.add_developer(another_user)
-    project.add_developer(current_user)
-  end
 
   context 'with issues' do
     before_all do

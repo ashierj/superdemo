@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
   let_it_be(:project) { create(:project, :repository, namespace: group) }
   let_it_be(:project_2) { create(:project, :repository, namespace: group) }
   let_it_be(:project_3) { create(:project, :repository, namespace: group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, owner_of: group) }
 
   let(:from) { 1.day.ago }
   let(:to) { nil }
@@ -19,10 +19,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
   around do |example|
     freeze_time { example.run }
-  end
-
-  before do
-    group.add_owner(user)
   end
 
   context 'when the use_aggregated_data_collector option is given' do

@@ -8,7 +8,7 @@ RSpec.describe ApprovalRules::GroupFinder, feature_category: :source_code_manage
 
   let_it_be(:public_group) { create(:group, name: 'public_group') }
   let_it_be(:private_inaccessible_group) { create(:group, :private, name: 'private_inaccessible_group') }
-  let_it_be(:private_accessible_group) { create(:group, :private, name: 'private_accessible_group') }
+  let_it_be(:private_accessible_group) { create(:group, :private, name: 'private_accessible_group', owners: user) }
   let_it_be(:private_accessible_subgroup) do
     create(:group, :private, parent: private_accessible_group, name: 'private_accessible_subgroup')
   end
@@ -24,10 +24,6 @@ RSpec.describe ApprovalRules::GroupFinder, feature_category: :source_code_manage
   end
 
   subject { described_class.new(rule, user) }
-
-  before do
-    private_accessible_group.add_owner(user)
-  end
 
   context 'when with inaccessible groups' do
     before do

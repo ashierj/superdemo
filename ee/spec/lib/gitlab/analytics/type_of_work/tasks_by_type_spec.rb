@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, reporters: user) }
   let_it_be(:other_group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:label) { create(:group_label, group: group) }
@@ -13,7 +13,7 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
   let_it_be(:label_for_subgroup) { create(:group_label, group: group) }
   let_it_be(:other_label) { create(:group_label, group: other_group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:assignee) { create(:user) }
+  let_it_be(:assignee) { create(:user, developer_of: group) }
   let_it_be(:milestone) { create(:milestone, group: group) }
 
   let(:params) do
@@ -34,11 +34,6 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
 
   around do |example|
     freeze_time { example.run }
-  end
-
-  before do
-    group.add_reporter(user)
-    group.add_developer(assignee)
   end
 
   shared_examples '#counts_by_labels' do

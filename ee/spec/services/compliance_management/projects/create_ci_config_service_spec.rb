@@ -4,13 +4,9 @@ require "spec_helper"
 
 RSpec.describe ComplianceManagement::Projects::CreateCiConfigService, feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository, developers: user) }
 
   subject(:service) { described_class.new(project, user) }
-
-  before do
-    project.add_developer(user)
-  end
 
   shared_examples "service response is error" do
     it "returns error message", :aggregate_failures do

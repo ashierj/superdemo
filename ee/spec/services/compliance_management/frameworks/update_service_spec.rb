@@ -5,11 +5,7 @@ require 'spec_helper'
 RSpec.describe ComplianceManagement::Frameworks::UpdateService, feature_category: :compliance_management do
   let_it_be_with_refind(:namespace) { create(:group) }
   let_it_be_with_refind(:framework) { create(:compliance_framework, namespace: namespace) }
-  let_it_be(:current_user) { create(:user) }
-
-  before do
-    namespace.add_owner(current_user)
-  end
+  let_it_be(:current_user) { create(:user, owner_of: namespace) }
 
   let(:params) { { color: '#000001', description: 'New Description', name: 'New Name' } }
 

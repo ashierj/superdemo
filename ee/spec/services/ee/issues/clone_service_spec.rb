@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Issues::CloneService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, reporters: user) }
   let_it_be(:old_project) { create(:project, group: group) }
   let_it_be(:new_project) { create(:project, group: group) }
   let_it_be(:old_issue, reload: true) { create(:issue, project: old_project, author: user) }
@@ -12,10 +12,6 @@ RSpec.describe Issues::CloneService, feature_category: :team_planning do
   let(:clone_service) { described_class.new(container: old_project, current_user: user) }
 
   subject { clone_service.execute(old_issue, new_project) }
-
-  before do
-    group.add_reporter(user)
-  end
 
   describe '#execute' do
     context 'group issue hooks' do

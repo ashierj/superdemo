@@ -6,14 +6,10 @@ RSpec.describe Projects::TransferService, feature_category: :groups_and_projects
   include EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:group) { create(:group, :public, owners: user) }
   let_it_be_with_refind(:project) { create(:project, :repository, :public, :legacy_storage, namespace: user.namespace) }
 
   subject { described_class.new(project, user) }
-
-  before do
-    group.add_owner(user)
-  end
 
   context 'audit events' do
     include_examples 'audit event logging' do

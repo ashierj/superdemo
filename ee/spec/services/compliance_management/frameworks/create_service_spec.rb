@@ -4,11 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ComplianceManagement::Frameworks::CreateService, feature_category: :compliance_management do
   let_it_be_with_refind(:namespace) { create(:group) }
-  let_it_be(:current_user) { create(:user) }
-
-  before do
-    namespace.add_owner(current_user)
-  end
+  let_it_be(:current_user) { create(:user, owner_of: namespace) }
 
   let(:params) do
     {

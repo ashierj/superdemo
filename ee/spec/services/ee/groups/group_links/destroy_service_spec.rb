@@ -7,12 +7,7 @@ RSpec.describe Groups::GroupLinks::DestroyService, '#execute', feature_category:
 
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:shared_group) { create(:group, :private) }
-  let_it_be(:owner) { create(:user) }
-
-  before do
-    group.add_developer(owner)
-    shared_group.add_owner(owner)
-  end
+  let_it_be(:owner) { create(:user, developer_of: group, owner_of: shared_group) }
 
   context 'with a single link' do
     let!(:link) { create(:group_group_link, shared_group: shared_group, shared_with_group: group) }

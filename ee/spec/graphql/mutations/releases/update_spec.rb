@@ -8,7 +8,7 @@ RSpec.describe Mutations::Releases::Update do
   let_it_be(:milestone_12_3) { create(:milestone, project: project, title: '12.3') }
   let_it_be(:milestone_12_4) { create(:milestone, project: project, title: '12.4') }
   let_it_be(:group_milestone) { create(:milestone, group: group, title: '13.1') }
-  let_it_be(:developer) { create(:user) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
 
   let_it_be(:tag) { 'v1.1.0' }
 
@@ -30,10 +30,6 @@ RSpec.describe Mutations::Releases::Update do
 
   around do |example|
     freeze_time { example.run }
-  end
-
-  before do
-    project.add_developer(developer)
   end
 
   describe '#resolve' do
