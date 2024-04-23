@@ -151,14 +151,6 @@ PATH
       oauth2 (>= 1.4.4, < 3)
 
 PATH
-  remote: vendor/gems/omniauth-azure-oauth2
-  specs:
-    omniauth-azure-oauth2 (0.0.10)
-      jwt (>= 1.0, < 3.0)
-      omniauth (~> 2.0)
-      omniauth-oauth2 (~> 1.4)
-
-PATH
   remote: vendor/gems/omniauth-gitlab
   specs:
     omniauth-gitlab (4.0.0)
@@ -2132,7 +2124,6 @@ DEPENDENCIES
   omniauth-atlassian-oauth2 (~> 0.2.0)
   omniauth-auth0 (~> 3.1)
   omniauth-azure-activedirectory-v2 (~> 2.0)
-  omniauth-azure-oauth2 (~> 0.0.9)!
   omniauth-dingtalk-oauth2 (~> 1.0)
   omniauth-facebook (~> 4.0.0)
   omniauth-github (= 2.0.1)
