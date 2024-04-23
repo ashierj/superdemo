@@ -3,16 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe DraftNotes::PublishService, feature_category: :code_review_workflow do
-  let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request) }
   let_it_be(:project) { merge_request.target_project }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
 
   def publish
     DraftNotes::PublishService.new(merge_request, user).execute
-  end
-
-  before_all do
-    project.add_maintainer(user)
   end
 
   shared_examples 'does not execute Llm::SummarizeSubmittedReviewService' do

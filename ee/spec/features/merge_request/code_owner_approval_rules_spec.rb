@@ -10,7 +10,9 @@ RSpec.describe 'Code owner approval rules', :js, :sidekiq_inline, feature_catego
     create(
       :project,
       :custom_repo,
-      files: { 'CODEOWNERS' => "*.rb @#{codeowner.username}" }
+      files: { 'CODEOWNERS' => "*.rb @#{codeowner.username}" },
+      developers: user,
+      maintainers: codeowner
     )
   end
 
@@ -61,11 +63,6 @@ RSpec.describe 'Code owner approval rules', :js, :sidekiq_inline, feature_catego
       target_branch: 'master',
       merge_status: 'unchecked'
     )
-  end
-
-  before_all do
-    project.add_developer(user)
-    project.add_maintainer(codeowner)
   end
 
   before do

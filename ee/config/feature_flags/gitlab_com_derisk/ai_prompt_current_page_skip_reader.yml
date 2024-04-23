@@ -1,9 +1,0 @@
----
-name: ai_prompt_current_page_skip_reader
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/450915
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147474
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451084
-milestone: '16.10'
-group: group::duo chat
-type: gitlab_com_derisk
-default_enabled: false

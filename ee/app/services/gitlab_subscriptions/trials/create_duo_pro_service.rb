@@ -5,6 +5,12 @@ module GitlabSubscriptions
     class CreateDuoProService < ::GitlabSubscriptions::Trials::BaseCreateService
       private
 
+      def trial_flow
+        return not_found if trial_params[:namespace_id].blank?
+
+        existing_namespace_flow
+      end
+
       def after_lead_success_hook
         track_event('duo_pro_lead_creation_success')
 

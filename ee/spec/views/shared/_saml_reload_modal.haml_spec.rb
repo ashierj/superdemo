@@ -9,11 +9,7 @@ RSpec.describe 'shared/saml_reload_modal', feature_category: :system_access do
   let_it_be(:root_group) { saml_provider.group }
   let_it_be(:nested_group) { create_default(:group, :private, parent: root_group) }
   let_it_be(:project) { create_default(:project, :private, group: root_group) }
-  let_it_be(:user) { create_default(:user) }
-
-  before_all do
-    root_group.add_developer(user)
-  end
+  let_it_be(:user) { create_default(:user, developer_of: root_group) }
 
   before do
     allow(view).to receive(:current_user).and_return(user)

@@ -4,11 +4,11 @@ require 'spec_helper'
 
 RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateService,
   feature_category: :incident_management do
-  let_it_be(:current_user) { create(:user) }
   let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status) }
   let_it_be(:issue, reload: true) { escalation_status.issue }
   let_it_be(:project) { issue.project }
   let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
 
   let(:status_event) { :acknowledge }
   let(:policy) { escalation_policy }
@@ -16,10 +16,6 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
   let(:service) { described_class.new(issue, current_user) }
 
   subject(:result) { service.execute }
-
-  before_all do
-    project.add_developer(current_user)
-  end
 
   before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
