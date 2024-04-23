@@ -291,6 +291,10 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     let(:requested_by) { create(:user) }
     let(:member_namespace) { member.member_namespace }
 
+    let(:billable_member_role) do
+      create(:member_role, :guest, namespace: nil, read_vulnerability: true)
+    end
+
     context 'when record does not exist' do
       it 'creates a member approval with the correct attributes' do
         expect do
@@ -303,6 +307,18 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
           expect(approval.old_access_level).to eq(member.access_level)
           expect(approval.requested_by).to eq(requested_by)
           expect(approval.user_id).to eq(member.user_id)
+          expect(result.member_role_id).to be_nil
+        end.to change(member.member_approvals, :count).by(1)
+      end
+    end
+
+    context 'with member_role_id' do
+      it 'creates a new approval' do
+        approval = member.queue_for_approval(new_access_level, requested_by)
+        expect do
+          result = member.queue_for_approval(new_access_level, requested_by, billable_member_role.id)
+          expect(result).not_to eq(approval)
+          expect(result.member_role_id).to eq(billable_member_role.id)
         end.to change(member.member_approvals, :count).by(1)
       end
     end
