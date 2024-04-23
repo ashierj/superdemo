@@ -19,5 +19,5 @@ export const TABLE_COLUMNS = [
 ].map((col) => ({
   ...col,
   sortable: true,
-  thClass: 'gl-vertical-align-middle!',
+  thClass: '!gl-align-middle',
 }));

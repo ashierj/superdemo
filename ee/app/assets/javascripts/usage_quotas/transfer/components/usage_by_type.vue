@@ -31,7 +31,7 @@ export default {
     {
       key: 'dataUsed',
       label: s__('UsageQuota|Transfer data used'),
-      tdClass: ['gl-white-space-nowrap gl-vertical-align-middle!'],
+      tdClass: ['gl-white-space-nowrap !gl-align-middle'],
       thClass: ['gl-white-space-nowrap'],
     },
   ],

@@ -211,7 +211,7 @@ export default {
         rel="noopener noreferrer"
         variant="tier"
         icon="license"
-        class="gl-vertical-align-middle gl-mt-n2 gl-ml-2"
+        class="gl-align-middle gl-mt-n2 gl-ml-2"
       >
         {{ ultimateBadgeText }}
       </gl-badge>

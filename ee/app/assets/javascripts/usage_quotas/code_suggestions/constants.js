@@ -10,50 +10,52 @@ export const addOnEligibleUserListTableFields = {
     key: 'codeSuggestionsAddon',
     label: s__('CodeSuggestions|GitLab Duo Pro add-on'),
     thClass: 'gl-w-25p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   email: {
     key: 'email',
     label: __('Email'),
     thClass: 'gl-w-15p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   emailWide: {
     key: 'email',
     label: __('Email'),
     thClass: 'gl-w-20p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   lastActivityTime: {
     key: 'lastActivityTime',
     label: __('Last GitLab activity'),
     thClass: 'gl-w-15p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   lastActivityTimeWide: {
     key: 'lastActivityTime',
     label: __('Last GitLab activity'),
     thClass: 'gl-w-25p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   maxRole: {
     key: 'maxRole',
     label: __('Max role'),
     thClass: 'gl-w-15p',
-    tdClass: 'gl-vertical-align-middle!',
+    tdClass: '!gl-align-middle',
   },
   user: {
     key: 'user',
     label: __('User'),
     thClass: `gl-pl-2! gl-w-25p`,
-    tdClass: 'gl-vertical-align-middle! gl-pl-2!',
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    tdClass: '!gl-align-middle gl-pl-2!',
   },
   checkbox: {
     key: 'checkbox',
     label: '',
     headerTitle: __('Checkbox'),
     thClass: 'gl-w-5p gl-pl-2!',
-    tdClass: 'gl-vertical-align-middle! gl-pl-2!',
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    tdClass: '!gl-align-middle gl-pl-2!',
   },
 };
 

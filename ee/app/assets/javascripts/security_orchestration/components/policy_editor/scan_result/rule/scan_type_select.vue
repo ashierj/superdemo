@@ -48,7 +48,7 @@ export default {
 <template>
   <gl-collapsible-listbox
     id="scanType"
-    class="gl-display-inline! gl-w-auto gl-vertical-align-middle"
+    class="gl-display-inline! gl-w-auto gl-align-middle"
     :items="$options.scanTypeOptions"
     :selected="scanType"
     :toggle-text="scanRuleTypeToggleText"

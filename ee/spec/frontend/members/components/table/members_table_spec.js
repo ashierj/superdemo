@@ -109,11 +109,11 @@ describe('MemberList', () => {
             'col-actions',
             'gl-display-none!',
             'gl-lg-display-table-cell!',
-            'gl-vertical-align-middle!',
+            '!gl-align-middle',
           ]);
           expect(
             findTableCellByMemberId('Actions', memberWithPermission.id).classes(),
-          ).toStrictEqual(['col-actions', 'gl-vertical-align-middle!']);
+          ).toStrictEqual(['col-actions', '!gl-align-middle']);
         });
       });
 
