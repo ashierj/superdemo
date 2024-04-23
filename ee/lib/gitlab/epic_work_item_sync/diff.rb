@@ -39,7 +39,8 @@ module Gitlab
         check_updated_at
         check_namespace
         check_color
-        check_hierarchy
+        check_parent
+        check_child_issues
         check_relative_position
         check_start_date_is_fixed
         check_start_date_fixed
@@ -77,11 +78,21 @@ module Gitlab
         mismatched_attributes.push("color")
       end
 
-      def check_hierarchy
+      def check_parent
         return if epic.parent.nil? && work_item.work_item_parent.nil?
         return if epic.parent&.issue_id == work_item.work_item_parent&.id
 
         mismatched_attributes.push("parent_id")
+      end
+
+      def check_child_issues
+        return if epic.epic_issues.blank? && work_item.child_links.blank?
+
+        epic.epic_issues.each do |epic_issue|
+          unless work_item.child_links.for_children(epic_issue.issue_id).exists?
+            mismatched_attributes.push("epic_issue")
+          end
+        end
       end
 
       def check_relative_position
@@ -94,6 +105,7 @@ module Gitlab
 
       def check_start_date_is_fixed
         return if epic.start_date_is_fixed == work_item.dates_source&.start_date_is_fixed
+        return if epic.start_date_is_fixed.nil? && work_item.dates_source.start_date_is_fixed == false
 
         mismatched_attributes.push("start_date_is_fixed")
       end
@@ -106,6 +118,7 @@ module Gitlab
 
       def check_due_date_is_fixed
         return if epic.due_date_is_fixed == work_item.dates_source&.due_date_is_fixed
+        return if epic.due_date_is_fixed.nil? && work_item.dates_source.due_date_is_fixed == false
 
         mismatched_attributes.push("due_date_is_fixed")
       end

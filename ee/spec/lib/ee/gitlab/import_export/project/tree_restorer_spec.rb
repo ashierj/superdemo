@@ -14,6 +14,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
 
     before do
       setup_import_export_config('group')
+      stub_licensed_features(epics: true)
     end
 
     context 'with group' do
@@ -40,6 +41,11 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
           expect(project.group.epics.count).to eq(1)
           expect(issue.epic).to eq(epic)
           expect(issue.epic_issue.relative_position).not_to be_nil
+          expect(project.group.work_items.count).to eq(1)
+
+          epic = project.group.epics.first
+          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+          expect(diff.attributes).to be_empty
         end
       end
 
@@ -52,6 +58,31 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
 
           expect(issue.epic).not_to be_nil
           expect(issue.epic_issue.relative_position).not_to be_nil
+          expect(project.group.work_items.count).to eq(1)
+
+          epic = project.group.epics.first
+          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+          expect(diff.attributes).to be_empty
+        end
+
+        context 'when sync_epic_to_work_item disabled' do
+          before do
+            stub_feature_flags(sync_epic_to_work_item: false)
+          end
+
+          it 'imports group epics into destination group' do
+            group = project.group
+            group.epics.delete_all
+
+            expect { restored_project_json }.to change { Epic.count }.from(0).to(1)
+
+            expect(group.epics.count).to eq(1)
+            expect(group.work_items.count).to eq(0)
+
+            group.epics.each do |epic|
+              expect(epic.work_item).to be_nil
+            end
+          end
         end
       end
     end

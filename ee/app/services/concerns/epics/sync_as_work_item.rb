@@ -2,12 +2,14 @@
 
 module Epics
   module SyncAsWorkItem
+    extend ActiveSupport::Concern
+
     SyncAsWorkItemError = Class.new(StandardError)
 
     # Note: we do not need to sync `lock_version`.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/439716
     ALLOWED_PARAMS = %i[
-      title description confidential author created_at updated_at updated_by_id
+      iid title description confidential author created_at updated_at updated_by_id
       last_edited_by_id last_edited_at closed_by_id closed_at state_id external_key
     ].freeze
 
@@ -74,7 +76,7 @@ module Epics
     end
 
     def sync_dates!(epic, work_item)
-      return unless params.values_at(:start_date, :due_date, :start_date_is_fixed, :due_date_is_fixed).any?(&:present?)
+      return unless (params.keys.map(&:to_s) & %w[start_date due_date start_date_is_fixed due_date_is_fixed]).present?
 
       dates_source = work_item.dates_source || work_item.build_dates_source
 

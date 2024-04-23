@@ -16,7 +16,7 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
     )
   end
 
-  context 'epics' do
+  context 'for epics' do
     it 'finds the existing epic' do
       epic = create(:epic, title: 'epic', group: project.group)
 
@@ -50,7 +50,7 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
         'author_id' => project.creator.id
       )
 
-      expect(epic.persisted?).to be true
+      expect(epic.persisted?).to be false
     end
   end
 
