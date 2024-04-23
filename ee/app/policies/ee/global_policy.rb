@@ -80,7 +80,7 @@ module EE
         next false unless @user
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
-        if ::Feature.enabled?(:purchase_code_suggestions) && duo_chat_free_access_was_cut_off?
+        if duo_chat_free_access_was_cut_off?
           @user.duo_pro_add_on_available?
         else
           @user.any_group_with_ai_chat_available?
