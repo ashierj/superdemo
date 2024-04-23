@@ -3755,6 +3755,12 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
         expect(group.seats_available_for?([])).to eq(true)
       end
+
+      it 'accepts an array of integers' do
+        user_ids = [1, 2, 3]
+
+        expect(group.seats_available_for?(user_ids)).to eq(true)
+      end
     end
 
     context 'without a subscription' do

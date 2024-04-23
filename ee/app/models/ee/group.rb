@@ -555,7 +555,7 @@ module EE
 
       billable_ids = billed_user_ids[:user_ids].map(&:to_s)
 
-      new_invites = invites - billable_ids
+      new_invites = invites.map(&:to_s) - billable_ids
 
       gitlab_subscription.seats >= (billable_ids.count + new_invites.count)
     end
