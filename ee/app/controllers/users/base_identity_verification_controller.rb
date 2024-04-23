@@ -33,7 +33,7 @@ module Users
     end
 
     def restricted
-      render_404
+      not_found unless Feature.enabled?(:prevent_registration_from_china)
     end
 
     def verification_state
