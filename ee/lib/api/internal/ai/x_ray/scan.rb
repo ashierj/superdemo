@@ -39,7 +39,7 @@ module API
             def gitlab_duo_pro_add_on?
               ::GitlabSubscriptions::AddOnPurchase
                 .for_gitlab_duo_pro
-                .by_namespace_id(current_namespace.id)
+                .by_namespace_id(current_namespace.self_and_ancestor_ids)
                 .active
                 .any?
             end

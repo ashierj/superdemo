@@ -5,8 +5,10 @@ require 'spec_helper'
 RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestions do
   describe 'POST /internal/jobs/:id/x_ray/scan' do
     let_it_be(:namespace) { create(:group) }
+    let_it_be(:sub_namespace) { create(:group, parent: namespace) }
     let_it_be(:user) { create(:user) }
     let_it_be(:job) { create(:ci_build, :running, namespace: namespace, user: user) }
+    let_it_be(:sub_job) { create(:ci_build, :running, namespace: sub_namespace, user: user) }
 
     let(:ai_gateway_token) { 'ai gateway token' }
     let(:instance_uuid) { "uuid-not-set" }
@@ -194,6 +196,25 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
               "X-Gitlab-Saas-Namespace-Ids" => [namespace.id.to_s]
             }
           end
+
+          it_behaves_like 'successful send request via workhorse'
+        end
+
+        context 'with code suggestions enabled on parent namespace level' do
+          let(:namespace_workhorse_headers) do
+            {
+              "X-Gitlab-Saas-Namespace-Ids" => [sub_namespace.id.to_s]
+            }
+          end
+
+          let(:params) do
+            {
+              token: sub_job.token,
+              prompt_components: [{ payload: "test" }]
+            }
+          end
+
+          let(:api_url) { "/internal/jobs/#{sub_job.id}/x_ray/scan" }
 
           it_behaves_like 'successful send request via workhorse'
         end
