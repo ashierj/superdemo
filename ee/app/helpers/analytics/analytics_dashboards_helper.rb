@@ -28,7 +28,10 @@ module Analytics
         root_namespace_name: namespace.root_ancestor.name,
         root_namespace_full_path: namespace.root_ancestor.full_path,
         ai_generate_cube_query_enabled: ai_generate_cube_query_enabled.to_s,
-        project_level_analytics_provider_settings: project_level_analytics_provider_settings_json(namespace)
+        project_level_analytics_provider_settings: project_level_analytics_provider_settings_json(namespace),
+        is_instance_configured_with_self_managed_analytics_provider:
+          instance_configured_with_self_managed_analytics_provider?(namespace).to_s,
+        default_use_instance_configuration: default_use_instance_configuration?(namespace).to_s
       }
     end
 
@@ -148,6 +151,30 @@ module Analytics
         cube_api_base_url: namespace.project_setting.cube_api_base_url,
         cube_api_key: namespace.project_setting.cube_api_key
       }.to_json
+    end
+
+    def instance_configured_with_self_managed_analytics_provider?(namespace)
+      instance_collector_host = ::Gitlab::CurrentSettings.product_analytics_data_collector_host
+
+      instance_collector_host.present? && namespace.has_self_managed_collector?(instance_collector_host)
+    end
+
+    def default_use_instance_configuration?(namespace)
+      return true unless project?(namespace)
+
+      empty_project_analytics_provider_settings?(namespace) &&
+        instance_configured_with_self_managed_analytics_provider?(namespace)
+    end
+
+    def empty_project_analytics_provider_settings?(namespace)
+      analytics_settings = namespace.project_setting.slice(
+        :product_analytics_configurator_connection_string,
+        :product_analytics_data_collector_host,
+        :cube_api_base_url,
+        :cube_api_key
+      )
+
+      analytics_settings.values.all?(&:blank?)
     end
   end
 end

@@ -89,7 +89,9 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
               product_analytics_data_collector_host: nil,
               cube_api_base_url: nil,
               cube_api_key: nil
-            }.to_json
+            }.to_json,
+            is_instance_configured_with_self_managed_analytics_provider: 'true',
+            default_use_instance_configuration: 'true'
           }
         end
 
@@ -131,7 +133,9 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           features: [].to_json,
           router_base: "/groups/#{sub_group.full_path}/-/analytics/dashboards",
           ai_generate_cube_query_enabled: 'false',
-          project_level_analytics_provider_settings: nil
+          project_level_analytics_provider_settings: nil,
+          is_instance_configured_with_self_managed_analytics_provider: 'true',
+          default_use_instance_configuration: 'true'
         }
       end
 
@@ -184,7 +188,9 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           features: [].to_json,
           router_base: "/groups/#{group.full_path}/-/analytics/dashboards",
           ai_generate_cube_query_enabled: 'false',
-          project_level_analytics_provider_settings: nil
+          project_level_analytics_provider_settings: nil,
+          is_instance_configured_with_self_managed_analytics_provider: 'true',
+          default_use_instance_configuration: 'true'
         }
       end
 
@@ -336,6 +342,79 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         it 'returns the expected value' do
           expect(data[:managed_cluster_purchased]).to eq(expected_value)
+        end
+      end
+    end
+
+    describe '#is_instance_configured_with_self_managed_analytics_provider?' do
+      where(
+        :is_project,
+        :collector_host,
+        :expected_value
+      ) do
+        true | nil | 'false'
+        true | '' | 'false'
+        true | 'self-managed.example.com' | 'true'
+        true | 'collector.gl-product-analytics.com' | 'false'
+        false | nil | 'false'
+        false | '' | 'false'
+        false | 'self-managed.example.com' | 'true'
+        false | 'collector.gl-product-analytics.com' | 'false'
+      end
+
+      with_them do
+        before do
+          stub_application_setting(product_analytics_data_collector_host: collector_host)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
+
+        it 'returns the expected value' do
+          expect(data[:is_instance_configured_with_self_managed_analytics_provider]).to eq(expected_value)
+        end
+      end
+    end
+
+    describe '#default_use_instance_configuration?' do
+      where(
+        :is_project,
+        :instance_collector_host,
+        :project_configurator_connection_string,
+        :project_collector_host,
+        :project_cube_api_base_url,
+        :project_cube_api_key,
+        :expected_value
+      ) do
+        true | 'https://self-managed.collector.example.com' | nil | nil | nil | nil | 'true'
+        true | 'https://gitlab-managed.collector.gl-product-analytics.com' | nil | nil | nil | nil | 'false'
+        true | 'self-managed.collector.example.com' | 'https://configurator.example.com' | nil | nil | nil | 'false'
+        true | 'self-managed.collector.example.com' | nil | 'https://collector.example.com' | nil | nil | 'false'
+        true | 'self-managed.collector.example.com' | nil | nil | 'https://cube.example.com' | nil | 'false'
+        true | 'self-managed.collector.example.com' | nil | nil | nil | '123-apikey' | 'false'
+
+        false | 'https://self-managed.collector.example.com' | nil | nil | nil | nil | 'true'
+        false | 'https://gitlab-managed.collector.gl-product-analytics.com' | nil | nil | nil | nil | 'true'
+        false | 'self-managed.collector.example.com' | 'https://configurator.example.com' | nil | nil | nil | 'true'
+        false | 'self-managed.collector.example.com' | nil | 'https://collector.example.com' | nil | nil | 'true'
+        false | 'self-managed.collector.example.com' | nil | nil | 'https://cube.example.com' | nil | 'true'
+        false | 'self-managed.collector.example.com' | nil | nil | nil | '123-apikey' | 'true'
+      end
+
+      with_them do
+        before do
+          stub_application_setting(product_analytics_data_collector_host: instance_collector_host)
+
+          project.project_setting.update!(product_analytics_configurator_connection_string:
+                                            project_configurator_connection_string)
+          project.project_setting.update!(product_analytics_data_collector_host: project_collector_host)
+          project.project_setting.update!(cube_api_base_url: project_cube_api_base_url)
+          project.project_setting.update!(cube_api_key: project_cube_api_key)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
+
+        it 'returns the expected value' do
+          expect(data[:default_use_instance_configuration]).to eq(expected_value)
         end
       end
     end

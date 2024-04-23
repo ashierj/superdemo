@@ -52,6 +52,10 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
 
           include_examples 'returning response status', :ok
 
+          it_behaves_like 'tracks govern usage event', 'users_visiting_dependencies' do
+            let(:request) { subject }
+          end
+
           context 'when loading a specific page of results' do
             let_it_be(:per_page) { 1 }
             let_it_be(:group) { create(:group, organization: organization) }

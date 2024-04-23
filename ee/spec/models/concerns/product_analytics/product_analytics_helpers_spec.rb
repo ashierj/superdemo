@@ -313,4 +313,22 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       end
     end
   end
+
+  describe '#is_instance_configured_with_self_managed_analytics_provider' do
+    subject { project.has_self_managed_collector?(collector_host) }
+
+    describe 'with different collector host values' do
+      where(:collector_host, :expected_result) do
+        'self-managed.example.com'            | true
+        'gl-product-analytics.com'            | false
+        'subdomain.gl-product-analytics.com'  | false
+        nil                                   | false
+        ''                                    | false
+      end
+
+      with_them do
+        it { is_expected.to eq(expected_result) }
+      end
+    end
+  end
 end
