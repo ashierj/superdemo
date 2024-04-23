@@ -66,7 +66,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def payment_form
-    response = client.payment_form_params(params[:id])
+    response = client.payment_form_params(params[:id], current_user&.id)
     render json: response[:data]
   end
 

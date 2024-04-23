@@ -27,7 +27,7 @@ RSpec.describe SubscriptionsController, :clean_gitlab_redis_sessions, feature_ca
       it 'skips authentication' do
         expect(Gitlab::SubscriptionPortal::Client)
           .to receive(:payment_form_params)
-          .with('payment-form-id')
+          .with('payment-form-id', nil)
           .and_return({ data: {} })
 
         request
