@@ -164,7 +164,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :sub
 
   describe '#payment_form_params' do
     subject do
-      client.payment_form_params('cc')
+      client.payment_form_params('cc', 123)
     end
 
     let(:http_method) { :get }

@@ -35,8 +35,8 @@ module Gitlab
             http_post("subscriptions", customer_headers(email, token), params)
           end
 
-          def payment_form_params(payment_type)
-            http_get("payment_forms/#{payment_type}", admin_headers)
+          def payment_form_params(payment_type, user_id)
+            http_get("payment_forms/#{payment_type}", admin_headers, { user_id: user_id }.compact)
           end
 
           def payment_method(id)
@@ -65,8 +65,8 @@ module Gitlab
             ::Gitlab::Routing.url_helpers.subscription_portal_url
           end
 
-          def http_get(path, headers)
-            process_http_call { Gitlab::HTTP.get("#{base_url}/#{path}", headers: headers) }
+          def http_get(path, headers, query = {})
+            process_http_call { Gitlab::HTTP.get("#{base_url}/#{path}", query: query, headers: headers) }
           end
 
           def http_post(path, headers, params = {})

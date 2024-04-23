@@ -224,7 +224,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
   end
 
   describe 'GET #payment_form' do
-    subject { get :payment_form, params: { id: 'cc' } }
+    subject { get :payment_form, params: { id: 'cc', user_id: 5 } }
 
     context 'with unauthorized user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -235,7 +235,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
       before do
         sign_in(user)
         client_response = { success: true, data: { signature: 'x', token: 'y' } }
-        allow(Gitlab::SubscriptionPortal::Client).to receive(:payment_form_params).with('cc').and_return(client_response)
+        allow(Gitlab::SubscriptionPortal::Client).to receive(:payment_form_params).with('cc', user.id).and_return(client_response)
       end
 
       it { is_expected.to have_gitlab_http_status(:ok) }
