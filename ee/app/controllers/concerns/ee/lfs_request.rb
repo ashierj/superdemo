@@ -21,7 +21,8 @@ module EE
 
     override :limit_exceeded?
     def limit_exceeded?
-      size_checker.changes_will_exceed_size_limit?(lfs_objects_change_size, project)
+      size_checker.changes_will_exceed_size_limit?(lfs_objects_change_size, project) ||
+        ::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor).over_limit?
     end
     strong_memoize_attr :limit_exceeded?
 
