@@ -15502,6 +15502,9 @@ msgstr ""
 msgid "Creates a branch and a merge request to resolve this issue."
 msgstr ""
 
+msgid "Creates a reminder to-do item after the specified time period."
+msgstr ""
+
 msgid "Creates a summary of all comments"
 msgstr ""
 
@@ -42451,6 +42454,9 @@ msgstr ""
 msgid "Remind later"
 msgstr ""
 
+msgid "Reminder set."
+msgstr ""
+
 msgid "Remote"
 msgstr ""
 
@@ -48099,6 +48105,9 @@ msgid "Set to 0 to disable timeout."
 msgstr ""
 
 msgid "Set to auto-merge"
+msgstr ""
+
+msgid "Set to-do reminder"
 msgstr ""
 
 msgid "Set up"
