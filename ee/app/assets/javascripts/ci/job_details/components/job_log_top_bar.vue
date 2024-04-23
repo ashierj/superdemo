@@ -121,6 +121,7 @@ export default {
       :job-log="jobLog"
       :full-screen-mode-available="fullScreenModeAvailable"
       :full-screen-enabled="fullScreenEnabled"
+      v-bind="$attrs"
       @scrollJobLogTop="handleScrollTop"
       @scrollJobLogBottom="handleScrollBottom"
       @searchResults="handleSearchResults"
