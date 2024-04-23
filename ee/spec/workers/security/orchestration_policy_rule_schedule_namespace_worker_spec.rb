@@ -158,13 +158,11 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
         end
 
         it 'logs the error' do
-          [project_1, project_2].each do |project|
-            expect(::Gitlab::AppJsonLogger).to receive(:info).once.with(
-              event: 'scheduled_scan_execution_policy_validation',
-              message: 'Invalid cadence',
-              project_id: project.id,
-              cadence: schedule.cron).and_call_original
-          end
+          expect(::Gitlab::AppJsonLogger).to receive(:info).once.with(
+            event: 'scheduled_scan_execution_policy_validation',
+            message: 'Invalid cadence',
+            namespace_id: namespace.id,
+            cadence: schedule.cron).and_call_original
 
           worker.perform(schedule_id)
         end

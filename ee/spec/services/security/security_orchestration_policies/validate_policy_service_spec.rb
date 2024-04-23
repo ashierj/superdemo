@@ -497,14 +497,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
 
           it { expect(result[:status]).to eq(:error) }
           it { expect(result[:details]).to match_array(['Cadence is invalid']) }
-
-          context 'when the feature flag scan_execution_policy_cadence_validation is disabled' do
-            before do
-              stub_feature_flags(scan_execution_policy_cadence_validation: false)
-            end
-
-            it { expect(result[:status]).to eq(:success) }
-          end
         end
       end
     end
@@ -573,18 +565,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if timezone is valid'
       it_behaves_like 'checks if vulnerability_age is valid'
-
-      context 'when cadence is valid' do
-        let(:cadence) { '0 0 * * *' }
-
-        it { expect(result[:status]).to eq(:success) }
-      end
-
-      context 'when cadence is invalid' do
-        let(:cadence) { '* * * * *' }
-
-        it { expect(result[:status]).to eq(:success) }
-      end
+      it_behaves_like 'checks if cadence is valid'
     end
 
     context 'when project is provided' do

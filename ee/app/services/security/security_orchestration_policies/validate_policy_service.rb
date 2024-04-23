@@ -24,19 +24,12 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Invalid Compliance Framework ID(s)'), field: :compliance_frameworks) if invalid_compliance_framework_ids?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers.'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
-
-        if should_validate_cadence? && invalid_cadence?
-          return error_with_title(s_('SecurityOrchestration|Cadence is invalid'), field: :cadence)
-        end
+        return error_with_title(s_('SecurityOrchestration|Cadence is invalid'), field: :cadence) if invalid_cadence?
 
         success
       end
 
       private
-
-      def should_validate_cadence?
-        container.present? && Feature.enabled?(:scan_execution_policy_cadence_validation, container)
-      end
 
       def error_with_title(message, field: DEFAULT_VALIDATION_ERROR_FIELD, title: nil, level: :error)
         pass_back = {

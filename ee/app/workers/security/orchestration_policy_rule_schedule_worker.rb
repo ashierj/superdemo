@@ -35,7 +35,7 @@ module Security
 
       user = project.security_policy_bot
 
-      if Feature.enabled?(:scan_execution_policy_cadence_validation, project) && !valid_cadence?(schedule.cron)
+      unless valid_cadence?(schedule.cron)
         log_invalid_cadence_error(project.id, schedule.cron)
         return
       end
