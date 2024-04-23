@@ -110,7 +110,7 @@ module ProductAnalytics
     def to_sql
       <<-SQL
       SELECT
-        (SELECT max(derived_tstamp) FROM snowplow_events) as x,
+        (SELECT max(derived_tstamp) FROM gitlab_project_#{project.id}.snowplow_events) as x,
         windowFunnel(#{@seconds_to_convert})(toDateTime(derived_tstamp), #{steps.filter_map(&:step_definition).join(', ')}) as step
         FROM gitlab_project_#{project.id}.snowplow_events
       SQL
