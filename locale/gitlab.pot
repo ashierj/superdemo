@@ -15280,15 +15280,6 @@ msgstr ""
 msgid "CreateTimelogForm|Time spent"
 msgstr ""
 
-msgid "CreateTimelogForm|Track time spent on this %{issuableTypeNameStart}%{issuableTypeNameEnd}. %{timeTrackingDocsLinkStart}%{timeTrackingDocsLinkEnd}"
-msgstr ""
-
-msgid "CreateTimelogForm|issue"
-msgstr ""
-
-msgid "CreateTimelogForm|merge request"
-msgstr ""
-
 msgid "CreateValueStreamForm|%{name} (default)"
 msgstr ""
 
@@ -49564,9 +49555,6 @@ msgstr ""
 msgid "Speed up your pipelines with Needs relationships"
 msgstr ""
 
-msgid "Spent at"
-msgstr ""
-
 msgid "Spent at can't be a future date and time."
 msgstr ""
 
@@ -50401,9 +50389,6 @@ msgid "Summarize my pending comments"
 msgstr ""
 
 msgid "Summary"
-msgstr ""
-
-msgid "Summary / note"
 msgstr ""
 
 msgid "Summary comment (optional)"
@@ -53251,6 +53236,9 @@ msgid "TimeTracking|Time remaining: %{timeRemainingHumanReadable}"
 msgstr ""
 
 msgid "TimeTracking|To manage time, use /spend or /estimate."
+msgstr ""
+
+msgid "TimeTracking|Track time spent on this %{issuableTypeName}."
 msgstr ""
 
 msgid "Timeago|%s days ago"
