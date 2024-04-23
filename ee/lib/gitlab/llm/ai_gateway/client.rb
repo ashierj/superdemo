@@ -6,14 +6,11 @@ module Gitlab
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
+        include ::Gitlab::Llm::Concerns::AvailableModels
         include ::Gitlab::Utils::StrongMemoize
         include ::API::Helpers::CloudConnector
         include Langsmith::RunHelpers
 
-        CLAUDE_3_SONNET = 'claude-3-sonnet-20240229'
-        DEFAULT_PROVIDER = 'anthropic'
-        DEFAULT_MODEL = 'claude-2.1'
-        DEFAULT_INSTANT_MODEL = 'claude-instant-1.2'
         DEFAULT_TIMEOUT = 30.seconds
         DEFAULT_TYPE = 'prompt'
         DEFAULT_SOURCE = 'GitLab EE'
@@ -36,7 +33,7 @@ module Gitlab
         end
 
         def complete(prompt:, **options)
-          return unless enabled?
+          return unless enabled? && model_provider_valid?(options)
 
           # We do not allow to set `stream` because the separate `#stream` method should be used for streaming.
           # The reason is that streaming the response would not work with the exponential backoff mechanism.
@@ -53,7 +50,7 @@ module Gitlab
         end
 
         def stream(prompt:, **options)
-          return unless enabled?
+          return unless enabled? && model_provider_valid?(options)
 
           response_body = ""
 
@@ -102,6 +99,10 @@ module Gitlab
           chat_access_token.present?
         end
 
+        def model_provider_valid?(options)
+          provider(options)
+        end
+
         def request_headers
           {
             'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
@@ -127,8 +128,8 @@ module Gitlab
               },
               payload: {
                 content: prompt,
-                provider: DEFAULT_PROVIDER,
-                model: options.fetch(:model, model)
+                provider: provider(options),
+                model: model(options)
               }.merge(payload_params(options))
             }],
             stream: options.fetch(:stream, false)
@@ -154,12 +155,20 @@ module Gitlab
           options.fetch(:endpoint_url, CHAT_ENDPOINT)
         end
 
-        def model
+        def model(options)
+          return options[:model] if options[:model].present?
+
           if Feature.enabled?(:ai_claude_3_sonnet, user)
             CLAUDE_3_SONNET
           else
             DEFAULT_MODEL
           end
+        end
+
+        def provider(options)
+          AVAILABLE_MODELS.find do |_, models|
+            models.include?(model(options))
+          end&.first
         end
       end
     end

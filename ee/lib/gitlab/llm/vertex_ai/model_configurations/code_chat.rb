@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module ModelConfigurations
         class CodeChat < Base
-          NAME = 'codechat-bison'
+          NAME = ::Gitlab::Llm::Concerns::AvailableModels::VERTEX_MODEL_CODECHAT
           MAX_OUTPUT_TOKENS = 2048
 
           def payload(content)

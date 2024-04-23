@@ -31,6 +31,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
   end
 
   let(:model) { described_class::DEFAULT_MODEL }
+  let(:provider) { 'anthropic' }
 
   let(:default_body_params) do
     {
@@ -42,7 +43,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         },
         payload: {
           content: "anything",
-          provider: described_class::DEFAULT_PROVIDER,
+          provider: provider,
           model: model
         }
       }],
@@ -183,6 +184,31 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
                                   .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
                                   .and_call_original
         expect(complete.parsed_response).to eq(expected_response)
+      end
+    end
+
+    context 'when other model is passed' do
+      let(:model) { ::Gitlab::Llm::Concerns::AvailableModels::VERTEX_MODEL_CHAT }
+      let(:provider) { 'vertex' }
+      let(:options) { { model: model } }
+
+      it 'returns expected response' do
+        expect(Gitlab::HTTP).to receive(:post)
+                                  .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+                                  .and_call_original
+        expect(complete.parsed_response).to eq(expected_response)
+      end
+    end
+
+    context 'when invalid model is passed' do
+      let(:model) { 'test' }
+      let(:options) { { model: model } }
+
+      it 'returns nothing' do
+        expect(Gitlab::HTTP).not_to receive(:post)
+                                  .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+                                  .and_call_original
+        expect(complete).to eq(nil)
       end
     end
   end
