@@ -62,7 +62,11 @@ module EE
         # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
         # invited_registration_type? from this logic as we will be fully driving off the db value.
 
-        user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite] || invited_registration_type?
+        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
+          return user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite] || invited_registration_type?
+        end
+
+        user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite]
       end
 
       def trial?
@@ -70,8 +74,12 @@ module EE
         # the params and stored location considerations as we will be fully driving off the db registration_type.
         return false unless enabled?
 
-        user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial] ||
-          trial_from_params? || trial_from_stored_location?
+        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
+          return user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial] ||
+              trial_from_params? || trial_from_stored_location?
+        end
+
+        user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial]
       end
 
       def oauth?
@@ -85,6 +93,14 @@ module EE
         return TRACKING_LABEL[:trial] if trial?
         return TRACKING_LABEL[:invite] if invite?
         return TRACKING_LABEL[:subscription] if subscription?
+
+        TRACKING_LABEL[:free]
+      end
+
+      def preregistration_tracking_label
+        # Trial registrations do not call this right now, so we'll omit it here from consideration.
+        return TRACKING_LABEL[:invite] if params[:invite_email]
+        return TRACKING_LABEL[:subscription] if subscription_from_stored_location?
 
         TRACKING_LABEL[:free]
       end
@@ -121,8 +137,12 @@ module EE
       def subscription?
         return false unless enabled?
 
-        user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription] ||
-          subscription_from_stored_location?
+        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
+          return user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription] ||
+              subscription_from_stored_location?
+        end
+
+        user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription]
       end
 
       def iterable_product_interaction
@@ -137,6 +157,8 @@ module EE
         if trial? && initial_trial?
           PRODUCT_INTERACTION[:trial]
         else
+          # Due to this only being called in an area where only trials reach,
+          # we can assume and not check for free/invite/subscription/etc here.
           PRODUCT_INTERACTION[:automatic_trial]
         end
       end
@@ -147,7 +169,11 @@ module EE
         # TODO: We can simplify/remove this method once we cutover to DB only solution as the next step in
         # https://gitlab.com/gitlab-org/gitlab/-/issues/435746.
 
-        trial_from_params? || (user.onboarding_status_initial_registration_type.present? && initial_trial?)
+        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
+          return trial_from_params? || (user.onboarding_status_initial_registration_type.present? && initial_trial?)
+        end
+
+        initial_trial?
       end
 
       def eligible_for_iterable_trigger?
