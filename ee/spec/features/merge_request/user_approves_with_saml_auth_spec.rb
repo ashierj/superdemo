@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge request > User approves with SAML auth', :js, feature_category: :code_review_workflow do
-  let_it_be(:user) { create :user }
-  let_it_be(:group) { create :group }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group, developers: user) }
   let_it_be(:setting) do
     create(
       :group_merge_request_approval_setting,
@@ -21,7 +21,8 @@ RSpec.describe 'Merge request > User approves with SAML auth', :js, feature_cate
       :repository,
       group: sub_group,
       approvals_before_merge: 1,
-      merge_requests_author_approval: true
+      merge_requests_author_approval: true,
+      maintainers: user
   end
 
   let_it_be(:owner) { project.first_owner }
@@ -30,11 +31,6 @@ RSpec.describe 'Merge request > User approves with SAML auth', :js, feature_cate
   # This emulates a successful response by the SAML provider
   around do |example|
     with_omniauth_full_host { example.run }
-  end
-
-  before_all do
-    group.add_developer(user)
-    project.add_maintainer(user)
   end
 
   before do
