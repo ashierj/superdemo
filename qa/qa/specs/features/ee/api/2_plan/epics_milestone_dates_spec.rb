@@ -4,7 +4,7 @@ require 'airborne'
 
 module QA
   RSpec.describe 'Plan', product_group: :product_planning do
-    # TODO: Convert back to reliable once proved to be stable. Related issue: https://gitlab.com/gitlab-org/gitlab/-/issues/219495
+    # TODO: Convert back to blocking once proved to be stable. Related issue: https://gitlab.com/gitlab-org/gitlab/-/issues/219495
     describe 'Epics milestone dates API' do
       let(:milestone_start_date) { (Date.today + 100).iso8601 }
       let(:milestone_due_date) { (Date.today + 120).iso8601 }
