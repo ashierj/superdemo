@@ -5,7 +5,6 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   TYPE_USER,
   TYPE_GROUP,
-  DROPDOWN_ITEM_LABEL,
   SEARCH_PLACEHOLDER,
   GROUP_OPTIONS,
   DROPDOWN_OPTION_ALL_GROUPS,
@@ -23,7 +22,6 @@ export default {
   },
   i18n: {
     toggleText: SEARCH_PLACEHOLDER,
-    dropdownItemLabel: DROPDOWN_ITEM_LABEL,
   },
   groupOptions: GROUP_OPTIONS,
   props: {
@@ -186,7 +184,7 @@ export default {
 
     <gl-select :value="selectedGroupOption" @input="selectGroupOption">
       <option v-for="opt in $options.groupOptions" :key="opt" :value="opt">
-        {{ $options.i18n.dropdownItemLabel }} {{ opt }}
+        {{ opt }}
       </option>
     </gl-select>
   </div>
