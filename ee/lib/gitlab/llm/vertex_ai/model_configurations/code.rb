@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module ModelConfigurations
         class Code < Base
-          NAME = 'code-bison'
+          NAME = ::Gitlab::Llm::Concerns::AvailableModels::VERTEX_MODEL_CODE
           MAX_OUTPUT_TOKENS = 2048
 
           def payload(content)

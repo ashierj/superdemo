@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module ModelConfigurations
         class Chat < Base
-          NAME = 'chat-bison'
+          NAME = ::Gitlab::Llm::Concerns::AvailableModels::VERTEX_MODEL_CHAT
 
           def payload(content)
             {
