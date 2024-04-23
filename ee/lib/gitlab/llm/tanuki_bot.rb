@@ -41,6 +41,14 @@ module Gitlab
         return empty_response unless question.present?
         return empty_response unless self.class.enabled_for?(user: current_user)
 
+        if ::Feature.enabled?(:ai_gateway_docs_search)
+          search_documents = get_search_results(question)
+
+          return empty_response if search_documents.blank?
+
+          return get_completions_ai_gateway(search_documents, &block)
+        end
+
         unless ::Embedding::Vertex::GitlabDocumentation.table_exists?
           logger.info_or_debug(current_user, message: "Embeddings database does not exist")
 
@@ -94,6 +102,13 @@ module Gitlab
       end
       traceable :get_nearest_neighbors, name: 'Retrieve GitLab documents', run_type: 'retriever'
 
+      def get_search_results(question)
+        response = Gitlab::Llm::AiGateway::DocsClient.new(current_user)
+          .search(query: question) || {}
+
+        response.dig('response', 'results')&.map(&:with_indifferent_access)
+      end
+
       private
 
       attr_reader :current_user, :question, :logger, :correlation_id, :tracking_context
@@ -104,6 +119,10 @@ module Gitlab
 
       def anthropic_client
         @anthropic_client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user, tracking_context: tracking_context)
+      end
+
+      def ai_gateway_client
+        @ai_gateway_client ||= ::Gitlab::Llm::AiGateway::Client.new(current_user, tracking_context: tracking_context)
       end
 
       def get_completions(search_documents)
@@ -123,6 +142,26 @@ module Gitlab
 
         Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(
           { completion: final_prompt_result }.to_json, current_user
+        )
+      end
+
+      def get_completions_ai_gateway(search_documents)
+        final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
+          .final_prompt(question: question, documents: search_documents)
+
+        final_prompt_result = ai_gateway_client.stream(
+          prompt: final_prompt[:prompt]
+        ) do |data|
+          yield data if block_given?
+        end
+
+        logger.info_or_debug(current_user,
+          message: "Got Final Result", prompt: final_prompt[:prompt], response: final_prompt_result)
+
+        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(
+          { completion: final_prompt_result }.to_json,
+          current_user,
+          search_documents: search_documents
         )
       end
 
