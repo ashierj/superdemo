@@ -169,7 +169,7 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       it('displays a check-icon next to the selected license', async () => {
         const findFirstSearchSuggestionIcon = () =>
           wrapper.findAllComponents(GlFilteredSearchSuggestion).at(0).findComponent(GlIcon);
-        const hiddenClassName = 'gl-visibility-hidden';
+        const hiddenClassName = 'gl-invisible';
 
         expect(findFirstSearchSuggestionIcon().classes()).toContain(hiddenClassName);
 

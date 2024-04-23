@@ -50,7 +50,7 @@ describe('ScimToken', () => {
 
   const expectLoadingIconExists = () => {
     expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-    expect(wrapper.findByTestId('content-container').classes()).toContain('gl-visibility-hidden');
+    expect(wrapper.findByTestId('content-container').classes()).toContain('gl-invisible');
   };
   const expectInputRenderedWithProps = (input, props) => {
     const {

@@ -92,7 +92,7 @@ describe('Zuora', () => {
     });
 
     it('does not show zuora_payment', () => {
-      expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(true);
+      expect(findZuoraPayment().classes('gl-invisible')).toBe(true);
     });
 
     it('applies the default height', () => {
@@ -159,7 +159,7 @@ describe('Zuora', () => {
         });
 
         it('shows zuora_payment', () => {
-          expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(false);
+          expect(findZuoraPayment().classes('gl-invisible')).toBe(false);
         });
 
         it('applies the correct style', () => {
@@ -485,7 +485,7 @@ describe('Zuora', () => {
         it('shows zuora_payment', () => {
           wrapper.vm.zuoraScriptEl.onload();
 
-          expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(true);
+          expect(findZuoraPayment().classes('gl-invisible')).toBe(true);
         });
       });
 
@@ -500,7 +500,7 @@ describe('Zuora', () => {
         });
 
         it('shows zuora_payment', () => {
-          expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(false);
+          expect(findZuoraPayment().classes('gl-invisible')).toBe(false);
         });
 
         it('applies the correct style', () => {
@@ -621,7 +621,7 @@ describe('Zuora', () => {
         });
 
         it('does not show zuora_payment', () => {
-          expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(true);
+          expect(findZuoraPayment().classes('gl-invisible')).toBe(true);
         });
 
         it('applies the default height', () => {
@@ -662,7 +662,7 @@ describe('Zuora', () => {
         });
 
         it('shows zuora_payment', () => {
-          expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(true);
+          expect(findZuoraPayment().classes('gl-invisible')).toBe(true);
         });
       });
 
@@ -764,7 +764,7 @@ describe('Zuora', () => {
         });
 
         it('does not show zuora_payment', () => {
-          expect(findZuoraPayment().classes('gl-visibility-hidden')).toBe(false);
+          expect(findZuoraPayment().classes('gl-invisible')).toBe(false);
         });
 
         it('applies the correct style', () => {

@@ -9,7 +9,7 @@ export const INVALID_INPUT_CLASS = 'password-complexity-error-outline';
 export const PASSWORD_REQUIREMENTS_ID = 'password-requirements';
 export const RED_TEXT_CLASS = 'gl-text-red-500';
 export const GREEN_TEXT_CLASS = 'gl-text-green-500';
-export const HIDDEN_ELEMENT_CLASS = 'gl-visibility-hidden';
+export const HIDDEN_ELEMENT_CLASS = 'gl-invisible';
 
 export const I18N = {
   PASSWORD_SATISFIED: s__('Password|Satisfied'),

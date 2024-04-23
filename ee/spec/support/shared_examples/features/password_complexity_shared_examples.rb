@@ -45,11 +45,11 @@ RSpec.shared_examples 'password complexity validations' do
 
       it 'shows two rules' do
         expect(page).to have_selector(
-          '[data-testid="password-number-status-icon"].gl-visibility-hidden',
+          '[data-testid="password-number-status-icon"].gl-invisible',
           visible: false, count: 1
         )
         expect(page).to have_selector(
-          '[data-testid="password-lowercase-status-icon"].gl-visibility-hidden',
+          '[data-testid="password-lowercase-status-icon"].gl-invisible',
           visible: false, count: 1
         )
         expect(page).to have_selector('[data-testid="password-rule-text"]', count: 2)
@@ -69,7 +69,7 @@ RSpec.shared_examples 'password complexity validations' do
           let(:password) { 'aA!' }
 
           it 'does not show check circle' do
-            expect(page).to have_selector('[data-testid="password-number-status-icon"].gl-visibility-hidden',
+            expect(page).to have_selector('[data-testid="password-number-status-icon"].gl-invisible',
               visible: false, count: 1)
           end
         end
