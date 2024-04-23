@@ -281,6 +281,10 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
     end
 
     context 'with tracking' do
+      before do
+        stub_saas_features(onboarding: true)
+      end
+
       it 'tracks successful form submission' do
         create_user
 
@@ -293,8 +297,18 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
       end
 
       context 'when invite' do
+        before do
+          # We are doing this here so that invites are accepted as this is a guard for
+          # that happening and not a focus of this test in general.
+          allow_next_instance_of(User) do |user|
+            allow(user).to receive(:active_for_authentication?).and_return(true)
+          end
+
+          create(:group_member, :invited, invite_email: user_attrs[:email])
+        end
+
         subject(:create_user) do
-          post user_registration_path, params: { user: user_attrs, invite_email: 'new@email.com' }
+          post user_registration_path, params: { user: user_attrs, invite_email: user_attrs[:email] }
         end
 
         it 'tracks successful form submission' do

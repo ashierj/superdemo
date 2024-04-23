@@ -3,7 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: :subscription_management do
-  let(:user) { build(:user, last_name: 'Jones', onboarding_status_email_opt_in: true) }
+  let_it_be(:user, reload: true) do
+    create(
+      :user,
+      last_name: 'Jones',
+      onboarding_status_email_opt_in: true,
+      onboarding_status_initial_registration_type: 'trial',
+      onboarding_status_registration_type: 'trial'
+    )
+  end
 
   describe '#execute' do
     using RSpec::Parameterized::TableSyntax
@@ -55,6 +63,10 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
     context 'when creating an automatic trial' do
       let(:path) { '' }
       let(:trial_registration) { false }
+
+      before do
+        user.update!(onboarding_status_initial_registration_type: 'free')
+      end
 
       it_behaves_like 'correct client attributes' do
         let(:client_params) do
