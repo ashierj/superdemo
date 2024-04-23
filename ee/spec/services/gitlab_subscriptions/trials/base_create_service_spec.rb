@@ -47,6 +47,13 @@ RSpec.describe GitlabSubscriptions::Trials::BaseCreateService, feature_category:
     it_behaves_like 'raises NoMethodError', 'Subclasses must implement the namespaces_eligible_for_trial method'
   end
 
+  context 'when trial_flow is not implemented' do
+    let(:step) { 'trial' }
+    let(:test_class) { described_class }
+
+    it_behaves_like 'raises NoMethodError', 'Subclasses must implement the trial_flow method'
+  end
+
   context 'when apply_trial_service_class is not implemented' do
     let(:step) { 'trial' }
 
@@ -54,6 +61,10 @@ RSpec.describe GitlabSubscriptions::Trials::BaseCreateService, feature_category:
       Class.new(described_class) do
         def namespaces_eligible_for_trial
           Group
+        end
+
+        def trial_flow
+          existing_namespace_flow
         end
       end
     end

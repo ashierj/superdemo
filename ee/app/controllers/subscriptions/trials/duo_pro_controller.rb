@@ -48,11 +48,6 @@ module Subscriptions
           render_404
         elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::LEAD_FAILED
           render :step_lead_failed
-        elsif @result.reason == GitlabSubscriptions::Trials::CreateDuoProService::NAMESPACE_CREATE_FAILED
-          # namespace creation failed
-          params[:namespace_id] = @result.payload[:namespace_id]
-
-          render :step_namespace_failed
         else
           # trial creation failed
           params[:namespace_id] = @result.payload[:namespace_id]
@@ -94,7 +89,7 @@ module Subscriptions
       end
 
       def trial_params
-        params.permit(:new_group_name, :namespace_id, :trial_entity, :glm_source, :glm_content).to_h
+        params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).to_h
       end
 
       def success_flash_message
