@@ -5,7 +5,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   include ProductAnalyticsTracking
   extend ::Gitlab::Utils::Override
 
-  increment_usage_counter Gitlab::UsageDataCounters::CycleAnalyticsCounter, :views, only: :show
+  track_internal_event :show, name: 'view_cycle_analytics'
 
   before_action :load_project, only: :show
   before_action :load_value_stream, only: :show
