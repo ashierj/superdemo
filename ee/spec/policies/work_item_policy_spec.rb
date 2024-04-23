@@ -60,7 +60,7 @@ RSpec.describe WorkItemPolicy, feature_category: :team_planning do
         expect(permissions(reporter, work_item)).to be_allowed(
           :read_cross_project, :read_issue, :read_incident_management_timeline_event, :read_issuable,
           :read_issuable_participables, :read_issuable_metric_image, :read_note, :read_internal_note,
-          :read_work_item, :read_crm_contacts
+          :read_work_item, :read_crm_contacts, :reopen_issue
         )
 
         # allows some permissions that modify the issue
@@ -79,7 +79,7 @@ RSpec.describe WorkItemPolicy, feature_category: :team_planning do
 
         # these permissions are either not yet defined for group level issues or not allowed
         expect(permissions(owner, work_item)).to be_disallowed(
-          :admin_issue_link, :create_requirement_test_report, :reopen_issue, :resolve_note, :admin_note,
+          :admin_issue_link, :create_requirement_test_report, :resolve_note, :admin_note,
           :reposition_note, :create_design, :update_design, :destroy_design, :move_design,
           :upload_issuable_metric_image, :update_issuable_metric_image, :destroy_issuable_metric_image,
           :admin_issuable_resource_link, :admin_timelog, :admin_issue_metrics, :admin_issue_metrics_list

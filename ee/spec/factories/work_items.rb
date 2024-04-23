@@ -18,8 +18,43 @@ FactoryBot.modify do
       association :work_item_type, :default, :key_result
     end
 
-    trait :epic do
+    trait :epic_with_legacy_epic do
+      project { nil }
       association :work_item_type, :default, :epic
+      association :namespace, factory: :group
+      association :author, factory: :user
+
+      synced_epic do
+        association(:epic,
+          :without_synced_work_item,
+          group: instance.namespace,
+          title: title,
+          description: description,
+          created_at: created_at,
+          updated_at: updated_at,
+          author: author,
+          iid: iid,
+          updated_by: updated_by,
+          state: state,
+          closed_at: closed_at,
+          confidential: confidential,
+          work_item: instance
+        )
+      end
+
+      after(:create) do |work_item|
+        if work_item.synced_epic
+          work_item.synced_epic.update_columns(
+            created_at: work_item.created_at,
+            updated_at: work_item.updated_at,
+            relative_position: work_item.synced_epic.id
+          )
+
+          work_item.update_columns(
+            relative_position: work_item.synced_epic.id
+          )
+        end
+      end
     end
 
     trait :satisfied_status do
