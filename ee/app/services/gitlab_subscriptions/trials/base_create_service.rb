@@ -8,7 +8,6 @@ module GitlabSubscriptions
       LEAD_FAILED = :lead_failed
       TRIAL_FAILED = :trial_failed
       NOT_FOUND = :not_found
-      NAMESPACE_CREATE_FAILED = :namespace_create_failed
       NO_SINGLE_NAMESPACE = :no_single_namespace
 
       def initialize(step:, lead_params:, trial_params:, user:)
@@ -130,16 +129,7 @@ module GitlabSubscriptions
       end
 
       def trial_flow
-        # The value of 0 is the option in the select for creating a new group
-        create_new_group_selected = trial_params[:namespace_id] == '0'
-
-        if trial_params[:namespace_id].present? && !create_new_group_selected
-          existing_namespace_flow
-        elsif trial_params.key?(:new_group_name)
-          create_group_flow
-        else
-          not_found
-        end
+        raise NoMethodError, 'Subclasses must implement the trial_flow method'
       end
 
       def existing_namespace_flow
@@ -149,27 +139,6 @@ module GitlabSubscriptions
           apply_trial_flow
         else
           not_found
-        end
-      end
-
-      def create_group_flow
-        # Instance admins can disable user's ability to create top level groups.
-        # See https://docs.gitlab.com/ee/administration/admin_area.html#prevent-a-user-from-creating-groups
-        return not_found unless user.can_create_group?
-
-        name = ActionController::Base.helpers.sanitize(trial_params[:new_group_name])
-        path = Namespace.clean_path(name.parameterize)
-        response = Groups::CreateService.new(user, name: name, path: path).execute
-        @namespace = response[:group]
-
-        if response.success?
-          apply_trial_flow
-        else
-          ServiceResponse.error(
-            message: namespace.errors.full_messages,
-            payload: { namespace_id: trial_params[:namespace_id] },
-            reason: NAMESPACE_CREATE_FAILED
-          )
         end
       end
 
