@@ -85,7 +85,7 @@ export default {
       return { id: this.$options.endpointUrlInputId, class: 'gl-form-input-xl' };
     },
     contentContainerClasses() {
-      return { 'gl-visibility-hidden': this.loading };
+      return { 'gl-invisible': this.loading };
     },
   },
   methods: {

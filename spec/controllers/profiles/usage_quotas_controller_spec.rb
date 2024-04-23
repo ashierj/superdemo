@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::UsageQuotasController, feature_category: :purchase do
+RSpec.describe Profiles::UsageQuotasController, feature_category: :consumables_cost_management do
   let_it_be(:user) { create(:user) }
 
   context 'when signed in' do
@@ -14,7 +14,7 @@ RSpec.describe Profiles::UsageQuotasController, feature_category: :purchase do
       it 'renders usage quota page' do
         get :index
 
-        expect(subject).to render_template(:index)
+        expect(response).to render_template(:index)
       end
     end
   end
@@ -23,7 +23,7 @@ RSpec.describe Profiles::UsageQuotasController, feature_category: :purchase do
     it 'does not render the usage quota page' do
       get :index
 
-      expect(subject).not_to render_template(:index)
+      expect(response).not_to render_template(:index)
     end
   end
 end

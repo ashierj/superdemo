@@ -224,7 +224,7 @@ export default {
               <gl-icon
                 name="check"
                 class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-                :class="{ 'gl-visibility-hidden': !isActivitySelected(activity.value) }"
+                :class="{ 'gl-invisible': !isActivitySelected(activity.value) }"
                 :data-testid="`status-icon-${activity.value}`"
               />
               {{ activity.text }}

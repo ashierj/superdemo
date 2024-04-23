@@ -141,7 +141,7 @@ export default {
             <gl-icon
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-              :class="{ 'gl-visibility-hidden': !isSeveritySelected(severity.value) }"
+              :class="{ 'gl-invisible': !isSeveritySelected(severity.value) }"
               :data-testid="`severity-icon-${severity.value}`"
             />
             {{ severity.text }}

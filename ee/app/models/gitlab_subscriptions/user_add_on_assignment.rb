@@ -29,6 +29,8 @@ module GitlabSubscriptions
       for_active_add_on_purchases(::GitlabSubscriptions::AddOnPurchase.where(id: add_on_purchase_ids))
     end
 
+    scope :order_by_id_desc, -> { order(id: :desc) }
+
     def self.pluck_user_ids
       pluck(:user_id)
     end

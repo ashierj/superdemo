@@ -336,7 +336,7 @@ export default {
     <div
       id="zuora_payment"
       :style="iFrameStyle"
-      :class="{ 'gl-visibility-hidden': !shouldShowZuoraFrame }"
+      :class="{ 'gl-invisible': !shouldShowZuoraFrame }"
     ></div>
   </div>
 </template>

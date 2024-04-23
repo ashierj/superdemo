@@ -156,7 +156,7 @@ export default {
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
               :class="{
-                'gl-visibility-hidden': !selectedComponentNames.includes(component.name),
+                'gl-invisible': !selectedComponentNames.includes(component.name),
               }"
             />
             {{ component.name }}

@@ -58,6 +58,8 @@ module Epics
       end
 
       def create_notes(referenced_epic, previous_parent_epic)
+        return if importing?(referenced_epic, issuable)
+
         SystemNoteService.change_epics_relation(issuable, referenced_epic, current_user, 'relate_epic')
 
         return unless previous_parent_epic
@@ -77,6 +79,7 @@ module Epics
           child_epic.move_to_start
 
           if child_epic.save
+            child_epic.sync_work_item_updated_at if importing?(child_epic, issuable)
             create_synced_work_item_link!(child_epic)
           else
             false
@@ -147,6 +150,10 @@ module Epics
           parent_id: issuable.id, child_id: child_epic.id
         )
         raise ActiveRecord::Rollback
+      end
+
+      def importing?(epic, issuable)
+        epic.importing? || issuable.try(:importing?)
       end
     end
   end

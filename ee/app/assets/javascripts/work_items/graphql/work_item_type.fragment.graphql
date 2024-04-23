@@ -1,0 +1,14 @@
+fragment WorkItemTypeFragment on WorkItemType {
+  id
+  name
+  widgetDefinitions {
+    type
+    ... on WorkItemWidgetDefinitionAssignees {
+      allowsMultipleAssignees
+      canInviteMembers
+    }
+    ... on WorkItemWidgetDefinitionLabels {
+      allowsScopedLabels
+    }
+  }
+}
