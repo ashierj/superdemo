@@ -185,6 +185,17 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
         end
       end
     end
+
+    describe '.order_by_id_desc' do
+      it 'returns assignments ordered by :id in descending order' do
+        add_on_purchase = create(:gitlab_subscription_add_on_purchase)
+
+        user_assignment_1 = create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase)
+        user_assignment_2 = create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase)
+
+        expect(described_class.order_by_id_desc).to eq([user_assignment_2, user_assignment_1])
+      end
+    end
   end
 
   describe 'callbacks' do
