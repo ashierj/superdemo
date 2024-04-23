@@ -54,7 +54,7 @@ export default {
       <div class="gl-mb-3">{{ text }}</div>
       <gl-link v-if="documentationLink" target="_blank" :href="documentationLink">
         <span class="vertical-align-middle">{{ documentationText }}</span>
-        <gl-icon name="external-link" class="gl-vertical-align-middle" />
+        <gl-icon name="external-link" class="gl-align-middle" />
       </gl-link>
     </gl-popover>
   </span>

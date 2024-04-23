@@ -77,7 +77,7 @@ export default {
       {{ tooltip.description }}
       <gl-link :href="tooltip.docsLink" class="gl-display-block gl-mt-2 gl-font-sm" target="_blank">
         {{ $options.i18n.docsLabel }}
-        <gl-icon name="external-link" class="gl-vertical-align-middle" />
+        <gl-icon name="external-link" class="gl-align-middle" />
       </gl-link>
     </gl-popover>
   </div>

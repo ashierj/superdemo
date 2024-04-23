@@ -58,8 +58,8 @@ export default {
       v-if="downloadLink"
       class="gl-display-inline-block gl-bg-gray-50 gl-my-3 gl-pl-3 gl-pr-7 gl-py-5"
     >
-      <gl-icon name="bulb" class="gl-vertical-align-middle gl-mr-5" />
-      <b class="gl-vertical-align-middle">
+      <gl-icon name="bulb" class="gl-align-middle gl-mr-5" />
+      <b class="gl-align-middle">
         <gl-sprintf
           :message="
             __(

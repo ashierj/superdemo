@@ -66,7 +66,7 @@ export default {
     tableField({
       key: 'runningJobCount',
       label: s__('Runners|Running Jobs'),
-      tdClass: 'gl-vertical-align-middle!',
+      tdClass: '!gl-align-middle',
     }),
   ],
   CI_ICON_STATUS: { group: 'running', icon: 'status_running' },

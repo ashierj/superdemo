@@ -14,13 +14,13 @@ export default {
       key: 'project',
       label: __('Project'),
       columnClass: 'gl-w-60p',
-      tdClass: 'gl-vertical-align-middle!',
+      tdClass: '!gl-align-middle',
     },
     {
       key: 'namespace',
       label: __('Namespace'),
       columnClass: 'gl-w-30p',
-      tdClass: 'gl-vertical-align-middle!',
+      tdClass: '!gl-align-middle',
     },
     {
       key: 'actions',
