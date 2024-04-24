@@ -206,6 +206,14 @@ RSpec.describe Explore::DependenciesController, feature_category: :dependency_ma
               }
             ])
           end
+
+          it 'loads data using the InOperatorOptimization query' do
+            control = ActiveRecord::QueryRecorder.new do
+              get explore_dependencies_path, as: :json
+            end
+
+            expect(control.log_message).to include('FROM "recursive_keyset_cte" AS "sbom_occurrences"')
+          end
         end
 
         context 'when the user is not a member of the default organization' do
