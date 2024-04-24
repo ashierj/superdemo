@@ -1,6 +1,6 @@
 ---
 name: zoekt_exact_search
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/389745
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/434417
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140346
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/436457
 milestone: '16.8'
