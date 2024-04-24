@@ -4,7 +4,7 @@ description: license finding
 enabled: true
 rules:
   - type: license_finding
-    match_on_inclusion: true
+    match_on_inclusion_license: true
     license_types:
       - MIT License
       - Apache License 2.0
