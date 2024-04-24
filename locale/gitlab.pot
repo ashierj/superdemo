@@ -47019,6 +47019,9 @@ msgstr ""
 msgid "SecurityReports|Confirm dismissal"
 msgstr ""
 
+msgid "SecurityReports|Container registry vulnerabilities"
+msgstr ""
+
 msgid "SecurityReports|Create Jira issue"
 msgstr ""
 
