@@ -693,16 +693,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           it_behaves_like 'an endpoint authenticated with token', :ok
         end
       end
-
-      context 'when purchase_code_suggestions feature flag is disabled' do
-        let(:current_user) { authorized_user }
-
-        before do
-          stub_feature_flags(purchase_code_suggestions: false)
-        end
-
-        it_behaves_like 'code completions endpoint'
-      end
     end
 
     context 'when the instance is Gitlab self-managed' do

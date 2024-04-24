@@ -587,22 +587,16 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:current_user) { create(:user) }
 
     context 'when on .org or .com', :saas do
-      where(:group_with_ai_membership, :duo_pro_seat_assigned, :requires_licensed_seat, :purchase_code_suggestions_ff,
+      where(:group_with_ai_membership, :duo_pro_seat_assigned, :requires_licensed_seat,
         :duo_chat_enabled_for_user) do
-        false | false  | false | false | be_disallowed(policy)
-        false | false  | false | true  | be_disallowed(policy)
-        false | true   | false | false | be_disallowed(policy)
-        false | true   | false | true  | be_disallowed(policy)
-        true  | false  | false | false | be_allowed(policy)
-        true  | false  | false | true  | be_allowed(policy)
-        true  | true   | false | false | be_allowed(policy)
-        true  | true   | false | true  | be_allowed(policy)
+        false | false  | false | be_disallowed(policy)
+        false | true   | false | be_disallowed(policy)
+        true  | false  | false | be_allowed(policy)
+        true  | true   | false | be_allowed(policy)
 
         # When Group actor is enabled on `duo_chat_requires_licensed_seat` feature flag.
-        true  | false  | true | false | be_allowed(policy)
-        true  | false  | true | true  | be_disallowed(policy)
-        true  | true   | true | false | be_allowed(policy)
-        true  | true   | true | true  | be_allowed(policy)
+        true  | false  | true | be_disallowed(policy)
+        true  | true   | true | be_allowed(policy)
       end
 
       with_them do
@@ -611,7 +605,6 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
           allow(current_user)
             .to receive(:belongs_to_group_requires_licensed_seat_for_chat?).and_return(requires_licensed_seat)
-          stub_feature_flags(purchase_code_suggestions: purchase_code_suggestions_ff)
         end
 
         it { is_expected.to duo_chat_enabled_for_user }
