@@ -2579,7 +2579,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         enable_admin_mode!(current_user) if role == :admin
       end
 
-      context 'when custom_roles feature flag is enabled' do
+      context 'when custom_roles feature is enabled' do
         before do
           stub_licensed_features(custom_roles: true)
         end
@@ -2589,9 +2589,9 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         end
       end
 
-      context 'when custom_roles feature flag is disabled' do
+      context 'when custom_roles feature is disabled' do
         before do
-          stub_feature_flags(custom_roles: false)
+          stub_licensed_features(custom_roles: false)
         end
 
         it { is_expected.to be_disallowed(permission) }
