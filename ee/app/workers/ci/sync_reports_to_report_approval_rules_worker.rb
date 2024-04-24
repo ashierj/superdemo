@@ -18,6 +18,10 @@ module Ci
       return unless pipeline
 
       ::Ci::SyncReportsToApprovalRulesService.new(pipeline).execute
+
+      return unless ::Feature.enabled?(:update_approval_rules_for_related_mrs, pipeline.project)
+
+      ::Ci::UpdateApprovalRulesForRelatedMrsWorker.perform_async(pipeline.id)
     end
   end
 end

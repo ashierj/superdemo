@@ -518,9 +518,7 @@ describe('Subscriptions Actions', () => {
         [
           {
             type: 'confirmOrderError',
-            payload: new Error(
-              'Submitting the credit card form failed with code codeFromResponse: messageFromResponse',
-            ),
+            payload: new Error('messageFromResponse', { cause: 'codeFromResponse' }),
           },
         ],
       );

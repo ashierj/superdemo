@@ -57,6 +57,14 @@ module EE
           alpha: { milestone: '16.1' },
           description: 'Vulnerability finding reports comparison reported on the merge request.',
           resolver: ::Resolvers::SecurityReport::FindingReportsComparerResolver
+
+        field :policy_violations,
+          type: ::Types::SecurityOrchestration::PolicyViolationDetailsType,
+          null: true,
+          alpha: { milestone: '17.0' },
+          description: 'Policy violations reported on the merge request. ' \
+                       'Returns `null` if `save_policy_violation_data` feature flag is disabled.',
+          resolver: ::Resolvers::SecurityOrchestration::PolicyViolationsResolver
       end
 
       def merge_trains_count

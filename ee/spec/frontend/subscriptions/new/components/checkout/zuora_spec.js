@@ -51,7 +51,7 @@ describe('Zuora', () => {
       runAfterRender(fn) {
         return Promise.resolve().then(fn);
       },
-      render() {},
+      renderWithErrorHandler() {},
     };
   });
 
@@ -81,10 +81,10 @@ describe('Zuora', () => {
     });
 
     describe('when toggling the loading indicator', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         store.commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, true);
 
-        return nextTick();
+        await nextTick();
       });
 
       it('shows the loading icon', () => {
@@ -112,10 +112,10 @@ describe('Zuora', () => {
   });
 
   describe('when rendering', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
       store.commit(types.UPDATE_PAYMENT_FORM_PARAMS, {});
-      return nextTick();
+      await nextTick();
     });
 
     it('renderZuoraIframe is called when the paymentFormParams are updated', () => {
@@ -131,30 +131,113 @@ describe('Zuora', () => {
     });
   });
 
-  describe('tracking', () => {
-    it('emits success event on correct response', async () => {
-      wrapper.vm.handleZuoraCallback({ success: 'true' });
-      await nextTick();
-      expect(wrapper.emitted().success.length).toEqual(1);
-    });
-
-    describe('with an error response', () => {
-      beforeEach(() => {
+  describe('Zuora form', () => {
+    describe('when successful', () => {
+      beforeEach(async () => {
         createComponent();
-        wrapper.vm.handleZuoraCallback({ errorMessage: '1337' });
-        return nextTick();
+
+        wrapper.vm.handleZuoraCallback({ success: 'true' });
+        await nextTick();
       });
 
-      it('emits error with message', () => {
+      it('emits success event on correct response for tracking', () => {
+        expect(wrapper.emitted().success.length).toEqual(1);
+      });
+    });
+
+    describe('with an error when setting up Zuora iframe', () => {
+      beforeEach(async () => {
+        createComponent();
+
+        wrapper.vm.handleZuoraCallback({
+          errorCode: 'Invalid_Security',
+          errorMessage:
+            'Request with protocol [http://localhost:3000] is not allowed for page xyz[https://localhost:3001]',
+        });
+        await nextTick();
+      });
+
+      it('emits error with message for tracking', () => {
         expect(wrapper.emitted().error.length).toEqual(1);
-        expect(wrapper.emitted().error[0]).toEqual(['1337']);
+        expect(wrapper.emitted().error[0]).toEqual([
+          'Request with protocol [http://localhost:3000] is not allowed for page xyz[https://localhost:3001]',
+        ]);
       });
 
       it('tracks Zuora error', () => {
         expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
           label: 'payment_form_submitted',
-          property: '1337',
+          property:
+            'Request with protocol [http://localhost:3000] is not allowed for page xyz[https://localhost:3001]',
           category: 'Zuora_cc',
+        });
+      });
+    });
+
+    describe('with an error when submitting a credit card', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      describe('with a message with a known error code', () => {
+        beforeEach(async () => {
+          wrapper.vm.handleErrorMessage(
+            null,
+            'unknown',
+            '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.',
+          );
+          await nextTick();
+        });
+
+        it('submits payment form action with error details', () => {
+          expect(actionMocks.paymentFormSubmitted).toHaveBeenCalledWith(expect.any(Object), {
+            errorMessage:
+              '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.',
+            errorCode: '[card_error/authentication_required/authentication_required]',
+          });
+        });
+
+        it('emits error with message for tracking', () => {
+          expect(wrapper.emitted().error.length).toEqual(1);
+          expect(wrapper.emitted().error[0]).toEqual([
+            '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.',
+          ]);
+        });
+
+        it('tracks Zuora error', () => {
+          expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+            label: 'payment_form_submitted',
+            property:
+              '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.',
+            category: 'Zuora_cc',
+          });
+        });
+      });
+
+      describe('with an unknown error type', () => {
+        beforeEach(async () => {
+          wrapper.vm.handleErrorMessage(null, 'unknown', 'An error occured');
+          await nextTick();
+        });
+
+        it('submits payment form action with error details', () => {
+          expect(actionMocks.paymentFormSubmitted).toHaveBeenCalledWith(expect.any(Object), {
+            errorMessage: 'An error occured',
+            errorCode: 'unknown',
+          });
+        });
+
+        it('emits error with message for tracking', () => {
+          expect(wrapper.emitted().error.length).toEqual(1);
+          expect(wrapper.emitted().error[0]).toEqual(['An error occured']);
+        });
+
+        it('tracks Zuora error', () => {
+          expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+            label: 'payment_form_submitted',
+            property: 'An error occured',
+            category: 'Zuora_cc',
+          });
         });
       });
     });

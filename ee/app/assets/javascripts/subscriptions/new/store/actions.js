@@ -167,12 +167,7 @@ export const paymentFormSubmittedSuccess = ({ commit, dispatch }, paymentMethodI
 };
 
 export const paymentFormSubmittedError = ({ dispatch }, response) => {
-  const message = sprintf(
-    s__('Checkout|Submitting the credit card form failed with code %{errorCode}: %{errorMessage}'),
-    response,
-    false,
-  );
-  dispatch('confirmOrderError', new Error(message));
+  dispatch('confirmOrderError', new Error(response?.errorMessage, { cause: response?.errorCode }));
 };
 
 export const fetchPaymentMethodDetails = ({ state, dispatch, commit }) =>

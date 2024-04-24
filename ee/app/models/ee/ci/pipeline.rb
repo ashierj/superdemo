@@ -288,6 +288,11 @@ module EE
         all_merge_requests.opened.select { |merge_request| merge_request.diff_head_pipeline?(self) }
       end
 
+      def merge_requests_as_base_pipeline
+        merge_request_diffs = ::MergeRequestDiff.where(project_id: project_id, base_commit_sha: sha)
+        project.merge_requests.opened.where(id: merge_request_diffs.select(:merge_request_id))
+      end
+
       private
 
       def project_has_subscriptions?

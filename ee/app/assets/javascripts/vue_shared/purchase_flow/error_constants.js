@@ -61,6 +61,17 @@ export const UNLINKED_ACCOUNT_ERROR = {
   },
 };
 
+export const AUTHENTICATION_3DS_ERROR = {
+  title: s__('Purchase|Authentication required for this transaction'),
+  message: s__(
+    'Purchase|%{stripe3dsLinkStart}3D Secure authentication%{stripe3dsLinkEnd} is not supported. Please %{salesLinkStart}contact our sales team%{salesLinkEnd} to purchase, or try a different credit card.',
+  ),
+  links: {
+    stripe3dsLink: 'https://docs.stripe.com/payments/3d-secure',
+    salesLink,
+  },
+};
+
 /* eslint-disable @gitlab/require-i18n-strings */
 const cannotBeBlank = "can't be blank";
 const alreadyTaken = 'has already been taken';
@@ -82,6 +93,10 @@ export const LAST_NAME_BLANK_ERROR_VARIATION_1 = JSON.stringify({ last_name: [ca
 export const LAST_NAME_BLANK_ERROR_VARIATION_2 = `{${LAST_NAME_BLANK_ERROR}}`;
 /* eslint-enable @gitlab/require-i18n-strings */
 
+// Stripe errors
+const AUTHENTICATION_3DS_STRIPE_ERROR =
+  '[card_error/authentication_required/authentication_required]';
+
 export const PURCHASE_ERROR_DICTIONARY = convertObjectPropsToLowerCase({
   [CONTRACT_EFFECTIVE_ERROR]: EXPIRED_SUBSCRIPTION_ERROR,
   [GENERIC_DECLINE_ERROR]: DECLINED_CARD_GENERIC_ERROR,
@@ -93,4 +108,5 @@ export const PURCHASE_ERROR_DICTIONARY = convertObjectPropsToLowerCase({
   [LAST_NAME_BLANK_ERROR]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR_VARIATION_1]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR_VARIATION_2]: FULL_NAME_REQUIRED_ERROR,
+  [AUTHENTICATION_3DS_STRIPE_ERROR]: AUTHENTICATION_3DS_ERROR,
 });
