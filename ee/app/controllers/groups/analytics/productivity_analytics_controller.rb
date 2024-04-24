@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::ApplicationController
-  increment_usage_counter Gitlab::UsageDataCounters::ProductivityAnalyticsCounter,
-    :views, only: :show, if: -> { request.format.html? }
-
   layout 'group'
 
   before_action :load_project
@@ -20,6 +17,8 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
 
   include IssuableCollections
   include ProductAnalyticsTracking
+
+  track_internal_event :show, name: 'view_productivity_analytics'
 
   track_event :show,
     name: 'g_analytics_productivity',

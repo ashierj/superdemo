@@ -13,24 +13,22 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController, feature_categ
   end
 
   describe 'usage counter' do
+    let(:event) { 'view_productivity_analytics' }
+    let(:namespace) { group }
+    let(:user) { current_user }
+
     before do
       group.add_owner(current_user)
     end
 
-    it 'increments usage counter' do
-      expect(Gitlab::UsageDataCounters::ProductivityAnalyticsCounter).to receive(:count).with(:views)
-
-      get :show, format: :html, params: { group_id: group }
-
-      expect(response).to be_successful
+    it_behaves_like 'internal event tracking' do
+      subject(:request) { get :show, format: :html, params: { group_id: group } }
     end
 
-    it "doesn't increment the usage counter when JSON request is sent" do
-      expect(Gitlab::UsageDataCounters::ProductivityAnalyticsCounter).not_to receive(:count).with(:views)
+    context "with a JSON request" do
+      subject(:request) { get :show, format: :json, params: { group_id: group } }
 
-      get :show, format: :json, params: { group_id: group }
-
-      expect(response).to be_successful
+      it_behaves_like 'internal event not tracked'
     end
   end
 
