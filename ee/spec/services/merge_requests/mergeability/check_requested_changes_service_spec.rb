@@ -50,7 +50,8 @@ RSpec.describe MergeRequests::Mergeability::CheckRequestedChangesService, featur
 
     describe 'when a reviewer has requested changes' do
       before_all do
-        merge_request.merge_request_reviewers.first.update!(state: :requested_changes)
+        create(:merge_request_requested_changes, merge_request: merge_request, project: merge_request.project,
+          user: create(:user))
       end
 
       it { expect(result.status).to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS }

@@ -2649,4 +2649,36 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       merge_request.notify_approvers
     end
   end
+
+  describe '#has_changes_requested?' do
+    it { expect(merge_request.has_changes_requested?).to be_falsey }
+
+    describe 'when merge request has changes requested' do
+      before do
+        create(:merge_request_requested_changes, merge_request: merge_request, project: merge_request.project, user: create(:user))
+      end
+
+      it { expect(merge_request.has_changes_requested?).to be_truthy }
+    end
+  end
+
+  describe '#create_requested_changes' do
+    let_it_be(:user) { create(:user) }
+
+    it 'creates a merge request requested changes' do
+      expect { merge_request.create_requested_changes(user) }.to change { merge_request.requested_changes.count }.from(0).to(1)
+    end
+  end
+
+  describe '#destroy_requested_changes' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      create(:merge_request_requested_changes, merge_request: merge_request, project: merge_request.project, user: user)
+    end
+
+    it 'destroys a merge request requested changes' do
+      expect { merge_request.destroy_requested_changes(user) }.to change { merge_request.requested_changes.count }.from(1).to(0)
+    end
+  end
 end
