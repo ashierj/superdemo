@@ -3,57 +3,67 @@
 module API
   class MemberRoles < ::API::Base
     before { authenticate! }
-    before { authorize_admin_member_role! }
 
     feature_category :system_access
 
-    params do
-      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'
-    end
+    helpers do
+      include ::Gitlab::Utils::StrongMemoize
 
-    resource :groups do
-      desc 'Get Member Roles for a group' do
-        success EE::API::Entities::MemberRole
-        is_array true
-        tags ["group_member_roles"]
+      def member_role_name
+        declared_params[:name].presence || "#{Gitlab::Access.human_access(params[:base_access_level])} - custom"
       end
 
-      get ":id/member_roles" do
-        group = find_group(params[:id])
-        member_roles = group.member_roles
+      def authorize_access_roles!
+        return authorize_admin_member_role_on_group! if params[:id]
+
+        authorize_admin_member_role_on_instance!
+      end
+
+      def group
+        return unless params[:id]
+
+        user_group
+      end
+      strong_memoize_attr :group
+
+      def member_roles
+        filter_params = group ? { parent: group } : { instance_roles: true }
+
+        ::MemberRoles::RolesFinder.new(current_user, filter_params).execute
+      end
+
+      def member_role
+        return group.member_roles.find_by_id(params[:member_role_id]) if group
+
+        MemberRole.find_by_id(params[:member_role_id])
+      end
+      strong_memoize_attr :member_role
+
+      def get_roles
+        authorize_access_roles!
+
         present member_roles, with: EE::API::Entities::MemberRole
       end
 
-      desc 'Create Member Role for a group' do
-        success EE::API::Entities::MemberRole
-        failure [
-          code: 400
-        ]
-        tags ["group_member_roles"]
-      end
-
-      params do
-        requires(
-          'base_access_level',
-          type: Integer,
-          values: Gitlab::Access.all_values,
-          desc: 'Base Access Level for the configured role',
-          documentation: { example: 10 }
-        )
+      params :create_role_params do
+        requires 'base_access_level', type: Integer, values: Gitlab::Access.all_values,
+          desc: 'Base Access Level for the configured role', documentation: { example: 10 }
 
         optional :name, type: String, desc: "Name for role (default: 'Custom')"
-        optional :description, type: String, desc: "Description of role usage"
+        optional :description, type: String, desc: "Description for role"
 
         ::MemberRole.all_customizable_permissions.each do |permission_name, permission_params|
           optional permission_name.to_s, type: Boolean, desc: permission_params[:description], default: false
         end
       end
 
-      post ":id/member_roles" do
-        group = find_group(params[:id])
-        name = declared_params[:name].presence || "#{Gitlab::Access.human_access(params[:base_access_level])} - custom"
+      def create_role
+        authorize_access_roles!
 
-        service = ::MemberRoles::CreateService.new(current_user, declared_params.merge(name: name, namespace: group))
+        name = member_role_name
+        create_params = declared_params.merge(name: name, namespace: group)
+
+        service = ::MemberRoles::CreateService.new(current_user, create_params)
         response = service.execute
 
         if response.success?
@@ -63,36 +73,103 @@ module API
         end
       end
 
-      desc 'Delete Member Role for a group' do
-        success [
-          code: 204
-        ]
-        failure [
-          code: 404, message: 'Member Role not found'
-        ]
-        tags ["group_member_roles"]
+      def delete_role
+        authorize_access_roles!
+
+        not_found!('Member Role') unless member_role
+
+        response = ::MemberRoles::DeleteService.new(current_user).execute(member_role)
+
+        if response.success?
+          no_content!
+        else
+          render_api_error!(response.message, 400)
+        end
+      end
+    end
+
+    params do
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'
+    end
+
+    resource :groups do
+      desc 'Get Member Roles for a group' do
+        success EE::API::Entities::MemberRole
+        is_array true
+        tags %w[group_member_roles]
+      end
+
+      get ":id/member_roles" do
+        get_roles
+      end
+
+      desc 'Create Member Role for a group' do
+        success EE::API::Entities::MemberRole
+        failure [[400, 'Bad Request'], [401, 'Unauthorized']]
+        tags %w[group_member_roles]
       end
 
       params do
-        requires(
-          'member_role_id',
-          type: Integer,
-          desc: 'The ID of the Member Role to be deleted',
-          documentation: { example: 2 }
-        )
+        use :create_role_params
+      end
+
+      post ":id/member_roles" do
+        create_role
+      end
+
+      desc 'Delete Member Role for a group' do
+        success code: 204, message: '204 No Content'
+        failure [[400, 'Bad Request'], [401, 'Unauthorized'], [404, '404 Member Role Not Found']]
+        tags %w[group_member_roles]
+      end
+
+      params do
+        requires :member_role_id, type: Integer, desc: 'The ID of the Group-Member Role to be deleted'
       end
 
       delete ":id/member_roles/:member_role_id" do
-        group = find_group(params[:id])
+        delete_role
+      end
+    end
 
-        member_role = group.member_roles.find_by_id(params[:member_role_id])
+    resource :member_roles do
+      desc 'Get Member Roles for this GitLab instance' do
+        success EE::API::Entities::MemberRole
+        failure [[401, 'Unauthorized']]
+        is_array true
+        tags %w[member_roles]
+      end
 
-        if member_role
-          member_role.destroy
-          no_content!
-        else
-          render_api_error!('Member Role not found', 404)
-        end
+      get do
+        get_roles
+      end
+
+      desc 'Create Member Role on the GitLab instance' do
+        success EE::API::Entities::MemberRole
+        failure [[400, 'Bad Request'], [401, 'Unauthorized']]
+        tags %w[member_roles]
+      end
+
+      params do
+        use :create_role_params
+      end
+
+      post do
+        create_role
+      end
+
+      desc 'Delete Member Role' do
+        success code: 204, message: '204 No Content'
+        failure [[400, 'Bad Request'], [401, 'Unauthorized'], [404, '404 Member Role Not Found']]
+        tags %w[member_roles]
+      end
+
+      params do
+        requires :member_role_id, type: Integer, desc: 'ID of the member role'
+      end
+
+      delete ':member_role_id' do
+        delete_role
       end
     end
   end
