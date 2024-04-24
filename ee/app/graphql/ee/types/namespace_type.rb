@@ -104,6 +104,13 @@ module EE
               resolver: ::Resolvers::ComplianceManagement::FrameworkResolver,
               authorize: :read_namespace_via_membership
 
+        field :pipeline_execution_policies,
+              ::Types::SecurityOrchestration::PipelineExecutionPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Pipeline Execution Policies of the namespace.',
+              resolver: ::Resolvers::SecurityOrchestration::PipelineExecutionPolicyResolver
+
         field :scan_execution_policies,
               ::Types::SecurityOrchestration::ScanExecutionPolicyType.connection_type,
               calls_gitaly: true,

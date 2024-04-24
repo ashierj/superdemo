@@ -73,7 +73,7 @@ FactoryBot.define do
   end
 
   factory :pipeline_execution_policy,
-    class: Struct.new(:name, :description, :enabled, :actions, :rules, :policy_scope) do
+    class: Struct.new(:name, :description, :enabled, :content, :policy_scope) do
     skip_create
 
     initialize_with do

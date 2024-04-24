@@ -567,7 +567,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       specify do
         expect(errors).to contain_exactly("root is missing required keys: scan_execution_policy",
           "root is missing required keys: scan_result_policy",
-          "root is missing required keys: approval_policy")
+          "root is missing required keys: approval_policy",
+          "root is missing required keys: pipeline_execution_policy")
       end
     end
 

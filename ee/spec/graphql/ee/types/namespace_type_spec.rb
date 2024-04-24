@@ -18,6 +18,7 @@ RSpec.describe GitlabSchema.types['Namespace'], feature_category: :groups_and_pr
       is_temporary_storage_increase_enabled
       temporary_storage_increase_ends_on
       compliance_frameworks
+      pipeline_execution_policies
       scan_execution_policies
       approval_policies
       security_policy_project

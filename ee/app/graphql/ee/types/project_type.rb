@@ -173,6 +173,13 @@ module EE
               extras: [:lookahead],
               resolver: ::Resolvers::PathLocksResolver
 
+        field :pipeline_execution_policies,
+              ::Types::SecurityOrchestration::PipelineExecutionPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Pipeline Execution Policies of the project.',
+              resolver: ::Resolvers::SecurityOrchestration::PipelineExecutionPolicyResolver
+
         field :scan_execution_policies,
               ::Types::SecurityOrchestration::ScanExecutionPolicyType.connection_type,
               calls_gitaly: true,
