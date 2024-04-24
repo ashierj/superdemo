@@ -16,3 +16,5 @@ class BackfillHashedRootNamespaceIdOnNotes < Elastic::Migration
     'hashed_root_namespace_id'
   end
 end
+
+BackfillHashedRootNamespaceIdOnNotes.prepend ::Elastic::MigrationObsolete
