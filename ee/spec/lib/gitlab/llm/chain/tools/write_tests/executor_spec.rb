@@ -44,6 +44,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Executor, feature_category
 
   describe '#execute' do
     context 'when context is authorized' do
+      before do
+        stub_feature_flags(ai_claude_3_sonnet: false)
+      end
+
       include_context 'with stubbed LLM authorizer', allowed: true
 
       it_behaves_like 'slash command tool' do
