@@ -233,7 +233,7 @@ export default {
           <template #minutes>
             <gl-form-input
               v-model="elapsedTimeMinutes"
-              class="gl-mx-3 gl-inset-border-1-gray-200! gl-w-12"
+              class="gl-mx-3 !gl-shadow-inner-1-gray-200 gl-w-12"
               number
               min="0"
               @input="emitUpdate"

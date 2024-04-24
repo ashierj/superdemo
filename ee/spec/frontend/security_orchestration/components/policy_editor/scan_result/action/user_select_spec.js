@@ -118,7 +118,7 @@ describe('UserSelect component', () => {
     it('displays the correct listbox toggle class', () => {
       expect(findListbox().props('toggleClass')).toEqual([
         'gl-max-w-15',
-        { 'gl-inset-border-1-red-500!': false },
+        { '!gl-shadow-inner-1-red-500': false },
       ]);
     });
 
@@ -187,7 +187,7 @@ describe('UserSelect component', () => {
     it('displays the correct listbox toggle class', () => {
       expect(findListbox().props('toggleClass')).toEqual([
         'gl-max-w-15',
-        { 'gl-inset-border-1-red-500!': true },
+        { '!gl-shadow-inner-1-red-500': true },
       ]);
     });
   });

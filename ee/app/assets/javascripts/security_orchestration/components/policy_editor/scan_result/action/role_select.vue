@@ -55,7 +55,7 @@ export default {
     :items="roles"
     is-check-centered
     multiple
-    :toggle-class="['gl-max-w-26', { 'gl-inset-border-1-red-500!': !state }]"
+    :toggle-class="['gl-max-w-26', { '!gl-shadow-inner-1-red-500': !state }]"
     :selected="existingApprovers"
     :toggle-text="toggleText"
     @select="handleSelectedRoles"

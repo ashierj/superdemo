@@ -11,7 +11,7 @@
     height: auto;
     text-align: left;
     border-style: none;
-    @include gl-inset-border-1-gray-200;
+    @apply gl-shadow-inner-1-gray-200;
     border-radius: $gl-border-radius-base;
     white-space: nowrap;
 
@@ -29,7 +29,7 @@
 
   .labels-select-wrapper.is-embedded {
     left: 0;
-    @include gl-shadow-x0-y2-b4-s0;
+    @apply gl-shadow-x0-y2-b4-s0;
 
     width: 300px !important;
     min-height: none;
