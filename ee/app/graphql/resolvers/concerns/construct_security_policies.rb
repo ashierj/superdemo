@@ -7,6 +7,25 @@ module ConstructSecurityPolicies
   POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules approval_settings policy_scope
     fallback_behavior].freeze
 
+  def construct_pipeline_execution_policies(policies)
+    policies.map do |policy|
+      {
+        name: policy[:name],
+        description: policy[:description],
+        edit_path: edit_path(policy, :pipeline_execution_policy),
+        enabled: policy[:enabled],
+        policy_scope: policy_scope(policy[:policy_scope]),
+        yaml: YAML.dump(policy.slice(:name, :description, :enabled, :content, :policy_scope).deep_stringify_keys),
+        updated_at: policy[:config].policy_last_updated_at,
+        source: {
+          project: policy[:project],
+          namespace: policy[:namespace],
+          inherited: policy[:inherited]
+        }
+      }
+    end
+  end
+
   def construct_scan_execution_policies(policies)
     policies.map do |policy|
       {

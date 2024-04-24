@@ -25,7 +25,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       vulnerability_severities_count packages compliance_frameworks vulnerabilities_count_by_day
       security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
-      incident_management_escalation_policy scan_execution_policies approval_policies
+      incident_management_escalation_policy scan_execution_policies pipeline_execution_policies approval_policies
       security_policy_project security_training_urls vulnerability_images only_allow_merge_if_all_status_checks_passed
       security_policy_project_linked_projects security_policy_project_linked_namespaces
       dependencies merge_requests_disable_committers_approval has_jira_vulnerability_issue_creation_enabled
@@ -288,6 +288,34 @@ RSpec.describe GitlabSchema.types['Project'] do
       policies = subject.dig('data', 'project', 'approvalPolicies', 'nodes')
 
       expect(policies.count).to be(8)
+    end
+  end
+
+  describe 'pipeline_execution_policies', feature_category: :security_policy_management do
+    let(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            pipelineExecutionPolicies {
+              nodes {
+                name
+                description
+                enabled
+                yaml
+                updatedAt
+              }
+            }
+          }
+        }
+      )
+    end
+
+    include_context 'is an orchestration policy'
+
+    it 'returns associated approval policies' do
+      policies = subject.dig('data', 'project', 'pipelineExecutionPolicies', 'nodes')
+
+      expect(policies.count).to be(3)
     end
   end
 
