@@ -3742,9 +3742,6 @@ msgstr ""
 msgid "AdminSettings|Git abuse rate limit"
 msgstr ""
 
-msgid "AdminSettings|GitLab uses the %{bold_start}Rails%{bold_end} and %{bold_start}Browser JavaScript%{bold_end} Sentry SDKs to send events to Sentry. For changes to Rails integration settings to take effect, enable the %{code_start}enable_new_sentry_integration%{code_end} feature flag and restart GitLab."
-msgstr ""
-
 msgid "AdminSettings|GitLab uses the %{bold_start}Rails%{bold_end} and %{bold_start}Browser JavaScript%{bold_end} Sentry SDKs to send events to Sentry. For changes to Rails integration settings to take effect, restart GitLab."
 msgstr ""
 
@@ -10002,9 +9999,6 @@ msgstr ""
 msgid "Can't find HEAD commit for this branch"
 msgstr ""
 
-msgid "Can't find variable: ZiteReader"
-msgstr ""
-
 msgid "Can't scan the code?"
 msgstr ""
 
@@ -12685,9 +12679,6 @@ msgid "ColorWidget|Error fetching epic color."
 msgstr ""
 
 msgid "Colorize messages"
-msgstr ""
-
-msgid "ComboSearch is not defined"
 msgstr ""
 
 msgid "Comma-separated list of branches to be automatically inspected. Leave blank to include all branches."
@@ -54919,9 +54910,6 @@ msgstr ""
 msgid "Unknown format"
 msgstr ""
 
-msgid "Unknown response text"
-msgstr ""
-
 msgid "Unknown user"
 msgstr ""
 
@@ -61147,9 +61135,6 @@ msgid "it is stored in LFS"
 msgstr ""
 
 msgid "it is too large"
-msgstr ""
-
-msgid "jigsaw is not defined"
 msgstr ""
 
 msgid "key result"
