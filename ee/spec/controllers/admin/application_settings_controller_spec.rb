@@ -601,6 +601,49 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
   end
 
+  describe 'GET #analytics', feature_category: :product_analytics_data_management do
+    before do
+      sign_in(admin)
+    end
+
+    context 'when licensed' do
+      before do
+        stub_licensed_features(product_analytics: true)
+      end
+
+      it 'renders correct template' do
+        get :analytics
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to render_template('admin/application_settings/analytics')
+      end
+
+      context 'when flag is disabled' do
+        before do
+          stub_feature_flags(product_analytics_admin_settings: false)
+        end
+
+        it 'returns not found' do
+          get :analytics
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+    end
+
+    context 'when not licensed' do
+      before do
+        stub_licensed_features(product_analytics: false)
+      end
+
+      it 'returns not found' do
+        get :analytics
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
   describe 'GET #seat_link_payload', feature_category: :sm_provisioning do
     context 'when a non-admin user attempts a request' do
       before do

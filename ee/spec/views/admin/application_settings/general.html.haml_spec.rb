@@ -123,44 +123,6 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
   end
 
-  describe 'product analytics settings' do
-    shared_examples 'renders nothing' do
-      it do
-        render
-
-        expect(rendered).not_to have_css '#js-product-analytics-settings'
-      end
-    end
-
-    shared_examples 'renders the settings' do
-      it do
-        render
-
-        expect(rendered).to have_css '#js-product-analytics-settings'
-        expect(rendered).to have_css "[data-name='application_setting[product_analytics_configurator_connection_string]']"
-        expect(rendered).to have_field s_('AdminSettings|Collector host')
-        expect(rendered).to have_field s_('AdminSettings|Cube API URL')
-        expect(rendered).to have_css "[data-name='application_setting[cube_api_key]']"
-      end
-    end
-
-    where(:licensed, :flag_enabled, :examples_to_run) do
-      true    | true  | 'renders the settings'
-      false   | true  | 'renders nothing'
-      true    | false | 'renders nothing'
-      false   | false | 'renders nothing'
-    end
-
-    with_them do
-      before do
-        stub_licensed_features(product_analytics: licensed)
-        stub_feature_flags(product_analytics_admin_settings: flag_enabled)
-      end
-
-      it_behaves_like params[:examples_to_run]
-    end
-  end
-
   describe 'instance-level ai-powered beta features settings', feature_category: :duo_chat do
     before do
       allow(::Gitlab).to receive(:org_or_com?).and_return(gitlab_org_or_com?)
