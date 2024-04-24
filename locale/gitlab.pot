@@ -56590,10 +56590,10 @@ msgstr ""
 msgid "VersionCheck|Additionally, there is an available stable patch for your current GitLab minor version: %{latestStableVersionOfMinor}"
 msgstr ""
 
-msgid "VersionCheck|Important notice - Critical security release"
+msgid "VersionCheck|Important notice - Critical patch release"
 msgstr ""
 
-msgid "VersionCheck|Learn more about this critical security release."
+msgid "VersionCheck|Learn more about this critical patch release."
 msgstr ""
 
 msgid "VersionCheck|Remind me again in 3 days"
