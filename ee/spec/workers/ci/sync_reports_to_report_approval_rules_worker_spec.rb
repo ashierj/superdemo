@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Ci::SyncReportsToReportApprovalRulesWorker, feature_category: :source_code_management do
   describe '#perform' do
-    let(:pipeline) { double(:pipeline, id: 42) }
+    let(:pipeline) { double(:pipeline, id: 42, project: project) }
     let(:sync_service) { double(:service, execute: true) }
+    let_it_be(:project) { create(:project) }
 
     context 'when pipeline exists' do
       before do
@@ -17,6 +18,30 @@ RSpec.describe Ci::SyncReportsToReportApprovalRulesWorker, feature_category: :so
           .with(pipeline).once.and_return(sync_service)
 
         described_class.new.perform(pipeline.id)
+      end
+
+      it "enqueues UpdateApprovalRulesForRelatedMrsWorker" do
+        expect(Ci::SyncReportsToApprovalRulesService).to receive(:new)
+          .with(pipeline).once.and_return(sync_service)
+
+        expect(Ci::UpdateApprovalRulesForRelatedMrsWorker).to receive(:perform_async).with(pipeline.id)
+
+        described_class.new.perform(pipeline.id)
+      end
+
+      context "when feature flag is disabled" do
+        before do
+          stub_feature_flags(update_approval_rules_for_related_mrs: false)
+        end
+
+        it "does not enqueue UpdateApprovalRulesForRelatedMrsWorker" do
+          expect(Ci::SyncReportsToApprovalRulesService).to receive(:new)
+            .with(pipeline).once.and_return(sync_service)
+
+          expect(Ci::UpdateApprovalRulesForRelatedMrsWorker).not_to receive(:perform_async)
+
+          described_class.new.perform(pipeline.id)
+        end
       end
     end
 

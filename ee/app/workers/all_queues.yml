@@ -1065,6 +1065,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: ci_update_approval_rules_for_related_mrs
+  :worker_name: Ci::UpdateApprovalRulesForRelatedMrsWorker
+  :feature_category: :code_review_workflow
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: ci_upstream_projects_subscriptions_cleanup
   :worker_name: Ci::UpstreamProjectsSubscriptionsCleanupWorker
   :feature_category: :continuous_integration
