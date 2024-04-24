@@ -63,6 +63,7 @@ export const initMembersApp = (el, options) => {
 
   return new Vue({
     el,
+    name: 'MembersRoot',
     components: { MembersTabs },
     store,
     apolloProvider: new VueApollo({ defaultClient: createDefaultClient() }),
