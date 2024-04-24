@@ -24,6 +24,7 @@ describe('Zuora', () => {
   let trackingSpy;
 
   const fakePaymentMethodId = '000000000';
+  const fakeRefId = '1234';
 
   const createComponent = (props = {}, data = {}, apolloLocalState = {}, resolvers = {}) => {
     const apolloProvider = createMockApolloProvider(STEPS, 1, resolvers);
@@ -52,9 +53,9 @@ describe('Zuora', () => {
   beforeEach(() => {
     window.Z = {
       runAfterRender(fn) {
-        return Promise.resolve().then(fn);
+        Promise.resolve().then(fn).catch(fn);
       },
-      render: jest.fn(),
+      renderWithErrorHandler: jest.fn(),
     };
 
     axiosMock = new AxiosMockAdapter(axios);
@@ -104,11 +105,154 @@ describe('Zuora', () => {
     });
   });
 
-  describe('when fetch payment params is successful', () => {
-    beforeEach(() => {
+  describe('when Zuora callback is successful', () => {
+    beforeEach(async () => {
+      window.Z = {
+        runAfterRender(fn) {
+          Promise.resolve().then(fn).catch(fn);
+        },
+        renderWithErrorHandler(_params, _object, fn) {
+          Promise.resolve({ success: 'true', refId: fakeRefId }).then(fn).catch(fn);
+        },
+      };
+
       createComponent();
       wrapper.vm.zuoraScriptEl.onload();
-      return waitForPromises();
+      await waitForPromises();
+    });
+
+    it('tracks success event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(2);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'success', {
+        category: 'Zuora_cc',
+        label: 'payment_form_submitted',
+      });
+    });
+  });
+
+  describe('when Zuora callback is not successful', () => {
+    const errorMessage =
+      'Request with protocol [http://localhost:3000] is not allowed for page xyz[https://localhost:3001]';
+
+    beforeEach(async () => {
+      window.Z = {
+        runAfterRender(fn) {
+          Promise.resolve().then(fn).catch(fn);
+        },
+        renderWithErrorHandler(_params, _object, fn) {
+          Promise.resolve({ errorMessage }).then(fn).catch(fn);
+        },
+      };
+
+      createComponent({}, { isLoading: false });
+      wrapper.vm.zuoraScriptEl.onload();
+      await waitForPromises();
+    });
+
+    it('tracks the error event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(2);
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+        label: 'payment_form_submitted',
+        property: errorMessage,
+        category: 'Zuora_cc',
+      });
+    });
+
+    it('emits an `error` event', () => {
+      expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[new Error(errorMessage)]]);
+    });
+  });
+
+  describe('when Zuora handleErrorMessage is called', () => {
+    describe('with known error code', () => {
+      const errorCode = 'unknown';
+      const errorMessage =
+        '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.';
+
+      beforeEach(async () => {
+        window.Z = {
+          runAfterRender(fn) {
+            Promise.resolve().then(fn).catch(fn);
+          },
+          renderWithErrorHandler(_params, _object, callback, handleErrorMessage) {
+            Promise.resolve({ success: 'true', refId: fakeRefId })
+              .then(callback)
+              .then(() => {
+                handleErrorMessage(null, errorCode, errorMessage);
+              })
+              .catch(callback);
+          },
+        };
+
+        createComponent({}, { isLoading: false });
+        wrapper.vm.zuoraScriptEl.onload();
+        await waitForPromises();
+      });
+
+      it('tracks the error event', () => {
+        expect(trackingSpy).toHaveBeenCalledTimes(3);
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+          label: 'payment_form_submitted',
+          property: errorMessage,
+          category: 'Zuora_cc',
+        });
+      });
+
+      it('emits an `error` event', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([
+          [
+            new Error(errorMessage, {
+              cause: '[card_error/authentication_required/authentication_required]',
+            }),
+          ],
+        ]);
+      });
+    });
+
+    describe('with an `unknown` error code', () => {
+      const errorCode = 'unknown';
+      const errorMessage = 'An error occured';
+
+      beforeEach(async () => {
+        window.Z = {
+          runAfterRender(fn) {
+            Promise.resolve().then(fn).catch(fn);
+          },
+          renderWithErrorHandler(_params, _object, callback, handleErrorMessage) {
+            Promise.resolve({ success: 'true', refId: fakeRefId })
+              .then(callback)
+              .then(() => {
+                handleErrorMessage(null, errorCode, errorMessage);
+              })
+              .catch(callback);
+          },
+        };
+
+        createComponent({}, { isLoading: false });
+        wrapper.vm.zuoraScriptEl.onload();
+        await waitForPromises();
+      });
+
+      it('tracks the error event', () => {
+        expect(trackingSpy).toHaveBeenCalledTimes(3);
+        expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'error', {
+          label: 'payment_form_submitted',
+          property: errorMessage,
+          category: 'Zuora_cc',
+        });
+      });
+
+      it('emits an `error` event', () => {
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[new Error(errorMessage)]]);
+      });
+    });
+  });
+
+  describe('when fetch payment params is successful', () => {
+    beforeEach(async () => {
+      createComponent();
+      wrapper.vm.zuoraScriptEl.onload();
+      await waitForPromises();
     });
 
     it('tracks frame_loaded event', () => {
@@ -119,11 +263,11 @@ describe('Zuora', () => {
   });
 
   describe('when fetch payment params is not successful', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
       axiosMock.onGet(Api.paymentFormPath).reply(HTTP_STATUS_UNAUTHORIZED, {});
-      return waitForPromises();
+      await waitForPromises();
     });
 
     it('tracks the error event', () => {
@@ -143,44 +287,47 @@ describe('Zuora', () => {
   });
 
   describe('when fetch payment details is successful', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       window.Z = {
         runAfterRender(fn) {
-          return Promise.resolve().then(fn);
+          Promise.resolve().then(fn).catch(fn);
         },
-        render(params, object, fn) {
-          return Promise.resolve().then(fn);
+        renderWithErrorHandler(params, object, fn) {
+          Promise.resolve({ success: 'true', refId: fakeRefId }).then(fn).catch(fn);
         },
       };
 
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      return waitForPromises();
+      await waitForPromises();
     });
 
     it('tracks success event', () => {
       expect(trackingSpy).toHaveBeenCalledTimes(2);
-      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'success', { category: 'Zuora_cc' });
+      expect(trackingSpy).toHaveBeenCalledWith('Zuora_cc', 'success', {
+        category: 'Zuora_cc',
+        label: 'payment_form_submitted',
+      });
     });
   });
 
   describe('when fetch payment details is not successful', () => {
     const error = new Error('Request failed with status code 401');
 
-    beforeEach(() => {
+    beforeEach(async () => {
       window.Z = {
         runAfterRender(fn) {
-          return Promise.resolve().then(fn);
+          Promise.resolve().then(fn).catch(fn);
         },
-        render(params, object, fn) {
-          return Promise.resolve().then(fn);
+        renderWithErrorHandler(params, object, fn) {
+          Promise.resolve({ success: 'true', refId: fakeRefId }).then(fn).catch(fn);
         },
       };
 
       createComponent({}, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
       axiosMock.onGet(Api.paymentMethodPath).reply(HTTP_STATUS_UNAUTHORIZED, {});
-      return waitForPromises();
+      await waitForPromises();
     });
 
     it('tracks the error event', () => {
@@ -202,13 +349,13 @@ describe('Zuora', () => {
     const updateState = jest.fn().mockRejectedValue(error);
     const activateNextStep = jest.fn();
 
-    beforeEach(() => {
+    beforeEach(async () => {
       window.Z = {
         runAfterRender(fn) {
-          return Promise.resolve().then(fn);
+          Promise.resolve().then(fn).catch(fn);
         },
-        render(params, object, fn) {
-          return Promise.resolve().then(fn);
+        renderWithErrorHandler(params, object, fn) {
+          Promise.resolve({ success: 'true', refId: fakeRefId }).then(fn).catch(fn);
         },
       };
 
@@ -219,7 +366,7 @@ describe('Zuora', () => {
         { Mutation: { activateNextStep, updateState } },
       );
       wrapper.vm.zuoraScriptEl.onload();
-      return waitForPromises();
+      await waitForPromises();
     });
 
     it('tracks the error event', () => {
@@ -255,13 +402,13 @@ describe('Zuora', () => {
     const updateState = jest.fn().mockResolvedValue('');
     const activateNextStep = jest.fn().mockRejectedValue(error);
 
-    beforeEach(() => {
+    beforeEach(async () => {
       window.Z = {
         runAfterRender(fn) {
-          return Promise.resolve().then(fn);
+          Promise.resolve().then(fn).catch(fn);
         },
-        render(params, object, fn) {
-          return Promise.resolve().then(fn);
+        renderWithErrorHandler(params, object, fn) {
+          Promise.resolve({ success: 'true', refId: fakeRefId }).then(fn).catch(fn);
         },
       };
 
@@ -272,7 +419,7 @@ describe('Zuora', () => {
         { Mutation: { activateNextStep, updateState } },
       );
       wrapper.vm.zuoraScriptEl.onload();
-      return waitForPromises();
+      await waitForPromises();
     });
 
     it('tracks the error event', () => {
@@ -304,14 +451,14 @@ describe('Zuora', () => {
   });
 
   describe.each(['', '111111'])('when rendering the iframe with account id: %s', (id) => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent({ accountId: id }, { isLoading: false });
       wrapper.vm.zuoraScriptEl.onload();
-      return waitForPromises();
+      await waitForPromises();
     });
 
     it(`calls render with ${id}`, () => {
-      expect(window.Z.render).toHaveBeenCalledWith(
+      expect(window.Z.renderWithErrorHandler).toHaveBeenCalledWith(
         {
           field_accountId: id,
           retainValues: 'true',
@@ -319,6 +466,7 @@ describe('Zuora', () => {
           submitEnabled: 'true',
         },
         {},
+        expect.any(Function),
         expect.any(Function),
       );
     });
