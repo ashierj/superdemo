@@ -155,4 +155,18 @@ RSpec.describe DependencyProxy::Packages::Setting, type: :model, feature_categor
 
     it { is_expected.to contain_exactly(enabled_setting) }
   end
+
+  describe '#from_maven_upstream' do
+    let(:setting) { build_stubbed(:dependency_proxy_packages_setting, :maven) }
+
+    subject { setting.from_maven_upstream(path: 'path', file_name: 'file.pom') }
+
+    it { is_expected.to eq('http://user:password@local.test/maven/path/file.pom') }
+
+    context 'when maven_external_registry_url ends with a slash' do
+      let(:setting) { super().tap { |s| s.maven_external_registry_url = 'http://local.test/maven/' } }
+
+      it { is_expected.to eq('http://user:password@local.test/maven/path/file.pom') }
+    end
+  end
 end
