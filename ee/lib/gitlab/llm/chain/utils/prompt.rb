@@ -51,6 +51,13 @@ module Gitlab
             end
           end
 
+          # only use with pre-defined messages, not user content
+          def self.format_conversation(prompt, variables)
+            prompt.map do |message|
+              [message[0], format(message[1], variables)]
+            end
+          end
+
           def self.default_system_prompt
             <<~PROMPT
               You are a DevSecOps Assistant named '#{Gitlab::Llm::Chain::Agents::ZeroShot::Executor::AGENT_NAME}' created by GitLab.

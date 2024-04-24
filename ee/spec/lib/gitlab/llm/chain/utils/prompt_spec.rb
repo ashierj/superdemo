@@ -115,6 +115,24 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Prompt, feature_category: :duo_chat do
     end
   end
 
+  describe '#format_conversation' do
+    let(:content) { %w[multi line message] }
+    let(:variables) { {} }
+
+    subject(:formatted_conversation) { described_class.format_conversation(prompt, variables) }
+
+    context 'when provided variables' do
+      let(:content) { 'hello %<provided_string>s' }
+      let(:variables) { { provided_string: 'test' } }
+      let(:prompt) { [described_class.as_assistant(content)] }
+
+      it 'will substitute provided variables' do
+        expect(formatted_conversation)
+          .to eq([[:assistant, "hello test"]])
+      end
+    end
+  end
+
   describe "#default_system_prompt" do
     it 'includes the prompt to explain code directly' do
       prompt = "You can explain code if the user provided a code snippet and answer directly."

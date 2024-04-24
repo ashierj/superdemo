@@ -37,17 +37,18 @@ module Gitlab
                   %<language_info>s
                 PROMPT
               ),
-              Utils::Prompt.as_user("%<file_content>s"),
               Utils::Prompt.as_user(
-                <<~PROMPT
+                <<~PROMPT.chomp
+                  %<file_content>s
                   In the file user selected this code:
                   <selected_code>
                     %<selected_text>s
                   </selected_code>
+
+                  %<input>s
+                  Any code blocks in response should be formatted in markdown.
                 PROMPT
-              ),
-              Utils::Prompt.as_user("%<input>s"),
-              Utils::Prompt.as_user('Any code blocks in response should be formatted in markdown.')
+              )
             ].freeze
 
             SLASH_COMMANDS = {
