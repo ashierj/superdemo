@@ -1,31 +1,35 @@
 import { GlButton } from '@gitlab/ui';
-import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
-import HandRaiseLeadModal from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_modal.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
-import { PQL_BUTTON_TEXT } from 'ee/hand_raise_leads/hand_raise_lead/constants';
-import { USER, CREATE_HAND_RAISE_LEAD_PATH } from './mock_data';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 
 describe('HandRaiseLeadButton', () => {
   let wrapper;
   let trackingSpy;
   const ctaTracking = {};
+  const buttonAttributes = {
+    href: '#',
+    buttonTextClasses: 'gl-font-sm',
+  };
 
-  const createComponent = (providers = {}) => {
+  const createComponent = (props = {}) => {
     return shallowMountExtended(HandRaiseLeadButton, {
-      provide: {
-        small: false,
-        createHandRaiseLeadPath: CREATE_HAND_RAISE_LEAD_PATH,
-        user: USER,
+      propsData: {
+        modalId: '_some_id_',
+        buttonText: '_button_text_',
+        isLoading: false,
+        buttonAttributes,
         ctaTracking,
-        ...providers,
+        ...props,
+      },
+      directives: {
+        glModal: createMockDirective('gl-modal'),
       },
     });
   };
 
   const findButton = () => wrapper.findComponent(GlButton);
-  const findModal = () => wrapper.findComponent(HandRaiseLeadModal);
 
   describe('rendering', () => {
     beforeEach(() => {
@@ -37,43 +41,39 @@ describe('HandRaiseLeadButton', () => {
       expect(findButton().props('loading')).toBe(false);
     });
 
-    it('has default medium button and the "Contact sales" text on the button', () => {
+    it('has default medium button', () => {
       const button = findButton();
 
       expect(button.props('variant')).toBe('default');
       expect(button.props('size')).toBe('medium');
-      expect(button.text()).toBe(PQL_BUTTON_TEXT);
+      expect(button.text()).toBe('_button_text_');
     });
 
-    it('renders the hand raise lead modal', () => {
-      expect(findModal().exists()).toBe(true);
-    });
+    it('button is bound to the modal', () => {
+      const { value } = getBinding(findButton().element, 'gl-modal');
 
-    it('has the correct modal props', () => {
-      expect(findModal().props('user')).toStrictEqual(USER);
-      expect(findModal().props('submitPath')).toStrictEqual(CREATE_HAND_RAISE_LEAD_PATH);
-      expect(findModal().props('ctaTracking')).toStrictEqual(ctaTracking);
+      expect(value).toBe('_some_id_');
     });
 
     describe('sets button attributes', () => {
       it('has all the set properties on the button', () => {
-        const provide = {
+        const props = {
           buttonAttributes: {
             href: '#',
             size: 'small',
             variant: 'confirm',
             buttonTextClasses: 'gl-font-sm',
           },
-          buttonText: '_button_text_',
+          buttonText: '_other_button_text_',
         };
-        wrapper = createComponent(provide);
+        wrapper = createComponent(props);
         const button = findButton();
 
-        expect(button.props('variant')).toBe(provide.buttonAttributes.variant);
-        expect(button.props('size')).toBe(provide.buttonAttributes.size);
-        expect(button.props('buttonTextClasses')).toBe(provide.buttonAttributes.buttonTextClasses);
-        expect(button.attributes('href')).toBe(provide.buttonAttributes.href);
-        expect(button.text()).toBe(provide.buttonText);
+        expect(button.props('variant')).toBe(props.buttonAttributes.variant);
+        expect(button.props('size')).toBe(props.buttonAttributes.size);
+        expect(button.props('buttonTextClasses')).toBe(props.buttonAttributes.buttonTextClasses);
+        expect(button.attributes('href')).toBe(props.buttonAttributes.href);
+        expect(button.text()).toBe(props.buttonText);
       });
     });
   });
@@ -108,10 +108,6 @@ describe('HandRaiseLeadButton', () => {
           value,
           experiment,
         });
-      });
-
-      it('passes the ctaTracking to the modal', () => {
-        expect(findModal().props('ctaTracking')).toStrictEqual(localCtaTracking);
       });
     });
 
@@ -151,18 +147,14 @@ describe('HandRaiseLeadButton', () => {
   });
 
   describe('loading', () => {
-    it('changes the state of loading', async () => {
+    it('changes the state of loading', () => {
       wrapper = createComponent();
 
-      findModal().vm.$emit('loading', true);
-      await nextTick();
+      expect(findButton().props('loading')).toBe(false);
+
+      wrapper = createComponent({ isLoading: true });
 
       expect(findButton().props('loading')).toBe(true);
-
-      findModal().vm.$emit('loading', false);
-      await nextTick();
-
-      expect(findButton().props('loading')).toBe(false);
     });
   });
 });
