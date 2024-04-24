@@ -4,6 +4,7 @@ import { GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import Tracking from '~/tracking';
+import { extractErrorCode } from 'ee/vue_shared/purchase_flow/zuora_utils';
 import { ZUORA_SCRIPT_URL, ZUORA_IFRAME_OVERRIDE_PARAMS } from 'ee/subscriptions/constants';
 
 export default {
@@ -42,6 +43,16 @@ export default {
       'zuoraIframeRendered',
       'paymentFormSubmitted',
     ]),
+    trackError(errorMessage) {
+      this.$emit('error', errorMessage);
+      this.track('error', {
+        label: 'payment_form_submitted',
+        property: errorMessage,
+      });
+    },
+    trackSuccess() {
+      this.$emit('success');
+    },
     loadZuoraScript() {
       this.startLoadingZuoraScript();
 
@@ -56,16 +67,28 @@ export default {
         this.fetchPaymentFormParams();
       }
     },
+    /*
+      For error handling, refer to below Zuora documentation:
+      https://knowledgecenter.zuora.com/Billing/Billing_and_Payments/LA_Hosted_Payment_Pages/B_Payment_Pages_2.0/N_Error_Handling_for_Payment_Pages_2.0/Customize_Error_Messages_for_Payment_Pages_2.0#Define_Custom_Error_Message_Handling_Function
+      https://knowledgecenter.zuora.com/Billing/Billing_and_Payments/LA_Hosted_Payment_Pages/B_Payment_Pages_2.0/H_Integrate_Payment_Pages_2.0/A_Advanced_Integration_of_Payment_Pages_2.0#Customize_Error_Messages_in_Advanced_Integration
+    */
+    handleErrorMessage(_key, code, errorMessage) {
+      let errorCode = code;
+      const extractedCode = extractErrorCode(errorMessage);
+      if (extractedCode) {
+        errorCode = extractedCode;
+      }
+      // Success/error is handled in the store actions
+      // Use same response format as in `handleZuoraCallback`
+      this.paymentFormSubmitted({ errorMessage, errorCode });
+      this.trackError(errorMessage);
+    },
     handleZuoraCallback(response) {
       this.paymentFormSubmitted(response);
       if (response?.success === 'true') {
-        this.$emit('success');
+        this.trackSuccess();
       } else {
-        this.$emit('error', response?.errorMessage);
-        this.track('error', {
-          label: 'payment_form_submitted',
-          property: response?.errorMessage,
-        });
+        this.trackError(response?.errorMessage);
       }
     },
     renderZuoraIframe() {
@@ -74,7 +97,12 @@ export default {
         this.zuoraIframeRendered();
         this.track('iframe_loaded');
       });
-      window.Z.render(params, {}, this.handleZuoraCallback);
+      window.Z.renderWithErrorHandler(
+        params,
+        {},
+        this.handleZuoraCallback,
+        this.handleErrorMessage,
+      );
     },
   },
 };
