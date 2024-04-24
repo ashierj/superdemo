@@ -23301,6 +23301,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequestmergedat"></a>`mergedAt` | [`Time`](#time) | Timestamp of when the merge request was merged, null if not merged. |
 | <a id="mergerequestmilestone"></a>`milestone` | [`Milestone`](#milestone) | Milestone of the merge request. |
 | <a id="mergerequestparticipants"></a>`participants` | [`MergeRequestParticipantConnection`](#mergerequestparticipantconnection) | Participants in the merge request. This includes the author, assignees, reviewers, and users mentioned in notes. (see [Connections](#connections)) |
+| <a id="mergerequestpolicyviolations"></a>`policyViolations` **{warning-solid}** | [`PolicyViolationDetails`](#policyviolationdetails) | **Introduced** in GitLab 17.0. **Status**: Experiment. Policy violations reported on the merge request. Returns `null` if `save_policy_violation_data` feature flag is disabled. |
 | <a id="mergerequestpreparedat"></a>`preparedAt` | [`Time`](#time) | Timestamp of when the merge request was prepared. |
 | <a id="mergerequestproject"></a>`project` | [`Project!`](#project) | Alias for target_project. |
 | <a id="mergerequestprojectid"></a>`projectId` | [`Int!`](#int) | ID of the merge request project. |
@@ -26170,6 +26171,17 @@ Check permissions for the current user on a vulnerability finding.
 | <a id="pipelinetriggerowner"></a>`owner` | [`UserCore!`](#usercore) | Owner of the pipeline trigger token. |
 | <a id="pipelinetriggertoken"></a>`token` | [`String!`](#string) | Value of the pipeline trigger token. |
 
+### `PolicyAnyMergeRequestViolation`
+
+Represents policy violation for `any_merge_request` report_type.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policyanymergerequestviolationcommits"></a>`commits` | [`JSON`](#json) | List of unsigned commits causing the violation. If policy targets any commits, it returns `true`. |
+| <a id="policyanymergerequestviolationname"></a>`name` | [`String!`](#string) | Represents the policy name. |
+
 ### `PolicyApprovalGroup`
 
 #### Fields
@@ -26181,6 +26193,57 @@ Check permissions for the current user on a vulnerability finding.
 | <a id="policyapprovalgroupid"></a>`id` | [`ID!`](#id) | ID of the namespace. |
 | <a id="policyapprovalgroupweburl"></a>`webUrl` | [`String!`](#string) | Web URL of the group. |
 
+### `PolicyComparisonPipeline`
+
+Represents the source and target pipelines used for comparison in the policy evaluation.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policycomparisonpipelinereporttype"></a>`reportType` | [`ApprovalReportType!`](#approvalreporttype) | Represents the report_type for which the pipeline IDs were evaluated. |
+| <a id="policycomparisonpipelinesource"></a>`source` | [`[CiPipelineID!]`](#cipipelineid) | Represents the list of pipeline GIDs for the source branch. |
+| <a id="policycomparisonpipelinetarget"></a>`target` | [`[CiPipelineID!]`](#cipipelineid) | Represents the list of pipeline GIDs for the target branch. |
+
+### `PolicyError`
+
+Represents an error that can occur during policy evaluation.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policyerrordata"></a>`data` | [`JSON`](#json) | Represents the error-specific data. |
+| <a id="policyerrorerror"></a>`error` | [`PolicyViolationErrorType!`](#policyviolationerrortype) | Represents error code. |
+| <a id="policyerrormessage"></a>`message` | [`String!`](#string) | Represents the error message. |
+| <a id="policyerrorreporttype"></a>`reportType` | [`ApprovalReportType!`](#approvalreporttype) | Represents the report type. |
+
+### `PolicyLicenseScanningViolation`
+
+Represents policy violation for `license_scanning` report_type.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policylicensescanningviolationdependencies"></a>`dependencies` | [`[String!]!`](#string) | List of dependencies using the violated license. |
+| <a id="policylicensescanningviolationlicense"></a>`license` | [`String!`](#string) | License name. |
+| <a id="policylicensescanningviolationurl"></a>`url` | [`String`](#string) | URL of the license. |
+
+### `PolicyScanFindingViolation`
+
+Represents policy violation for `scan_finding` report_type.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policyscanfindingviolationlocation"></a>`location` | [`JSON`](#json) | Location of the finding determined by the scanner. |
+| <a id="policyscanfindingviolationname"></a>`name` | [`String`](#string) | Represents the name of the finding. |
+| <a id="policyscanfindingviolationpath"></a>`path` | [`String`](#string) | Represents the URL path to the finding. |
+| <a id="policyscanfindingviolationreporttype"></a>`reportType` | [`VulnerabilityReportType!`](#vulnerabilityreporttype) | Represents the report type. |
+| <a id="policyscanfindingviolationseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the finding. |
+
 ### `PolicyScope`
 
 #### Fields
@@ -26190,6 +26253,33 @@ Check permissions for the current user on a vulnerability finding.
 | <a id="policyscopecomplianceframeworks"></a>`complianceFrameworks` | [`ComplianceFrameworkConnection!`](#complianceframeworkconnection) | Compliance Frameworks linked to the policy. (see [Connections](#connections)) |
 | <a id="policyscopeexcludingprojects"></a>`excludingProjects` | [`ProjectConnection!`](#projectconnection) | Projects to which the policy should not be applied to. (see [Connections](#connections)) |
 | <a id="policyscopeincludingprojects"></a>`includingProjects` | [`ProjectConnection!`](#projectconnection) | Projects to which the policy should be applied to. (see [Connections](#connections)) |
+
+### `PolicyViolationDetails`
+
+Represents the details of merge request approval policy violations.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policyviolationdetailsanymergerequest"></a>`anyMergeRequest` | [`[PolicyAnyMergeRequestViolation!]!`](#policyanymergerequestviolation) | Represents the violations of `any_merge_request` rules. |
+| <a id="policyviolationdetailscomparisonpipelines"></a>`comparisonPipelines` | [`[PolicyComparisonPipeline!]!`](#policycomparisonpipeline) | Represents the pipelines used for comparison in the policy evaluation. |
+| <a id="policyviolationdetailserrors"></a>`errors` | [`[PolicyError!]!`](#policyerror) | Represents the policy errors. |
+| <a id="policyviolationdetailslicensescanning"></a>`licenseScanning` | [`[PolicyLicenseScanningViolation!]!`](#policylicensescanningviolation) | Represents the violations of `license_scanning` rules. |
+| <a id="policyviolationdetailsnewscanfinding"></a>`newScanFinding` | [`[PolicyScanFindingViolation!]!`](#policyscanfindingviolation) | Represents the newly detected violations of `scan_finding` rules. |
+| <a id="policyviolationdetailspolicies"></a>`policies` | [`[PolicyViolationInfo!]!`](#policyviolationinfo) | Information about policies that were violated. |
+| <a id="policyviolationdetailspreviousscanfinding"></a>`previousScanFinding` | [`[PolicyScanFindingViolation!]!`](#policyscanfindingviolation) | Represents the violations of `scan_finding` rules for previously existing vulnerabilities. |
+
+### `PolicyViolationInfo`
+
+Represents generic policy violation information.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policyviolationinfoname"></a>`name` | [`String!`](#string) | Represents the name of the violated policy. |
+| <a id="policyviolationinforeporttype"></a>`reportType` | [`ApprovalReportType!`](#approvalreporttype) | Represents the report type. |
 
 ### `PreviewBillableUserChange`
 
@@ -33647,6 +33737,14 @@ Pipeline security report finding sort values.
 | <a id="pipelinestatusenumsuccess"></a>`SUCCESS` | Pipeline completed successfully. |
 | <a id="pipelinestatusenumwaiting_for_callback"></a>`WAITING_FOR_CALLBACK` | Pipeline is waiting for an external action. |
 | <a id="pipelinestatusenumwaiting_for_resource"></a>`WAITING_FOR_RESOURCE` | A resource (for example, a runner) that the pipeline requires to run is unavailable. |
+
+### `PolicyViolationErrorType`
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="policyviolationerrortypeartifacts_missing"></a>`ARTIFACTS_MISSING` | Represents error which occurs when pipeline is misconfigured and does not include necessary artifacts to evaluate a policy. |
+| <a id="policyviolationerrortypescan_removed"></a>`SCAN_REMOVED` | Represents mismatch between the scans of the source and target pipelines. |
+| <a id="policyviolationerrortypeunknown"></a>`UNKNOWN` | Represents unknown error. |
 
 ### `ProductAnalyticsState`
 

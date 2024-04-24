@@ -12,6 +12,7 @@ module Security
       LicenseScanningViolation = Struct.new(:license, :dependencies, :url, keyword_init: true)
       ComparisonPipelines = Struct.new(:report_type, :source, :target, keyword_init: true)
 
+      ERROR_UNKNOWN = 'UNKNOWN'
       ERROR_MESSAGES = {
         'UNKNOWN' => 'Unknown error: %{error}',
         'SCAN_REMOVED' => 'There is a mismatch between the scans of the source and target pipelines. ' \
@@ -96,7 +97,7 @@ module Security
           errors.map do |error|
             ViolationError.new(
               report_type: violation.report_type,
-              error: error['error'],
+              error: ERROR_MESSAGES.key?(error['error']) ? error['error'] : ERROR_UNKNOWN,
               data: error.except('error'),
               message: error_message(violation, error)
             )
@@ -180,17 +181,15 @@ module Security
 
       def error_message(violation, error)
         error_key = error['error']
-        error_key = 'UNKNOWN' unless ERROR_MESSAGES[error_key]
-
         params = case error_key
                  when 'SCAN_REMOVED'
                    { scans: error['missing_scans']&.map(&:humanize)&.join(', ') }
                  when 'ARTIFACTS_MISSING'
                    { policy: violation.name, report_type: violation.report_type.humanize }
                  else
-                   { error: error['error'] }
+                   { error: error_key }
                  end
-        format(ERROR_MESSAGES[error_key], **params)
+        format(ERROR_MESSAGES[error_key] || ERROR_MESSAGES[ERROR_UNKNOWN], **params)
       end
 
       # Extract data for given keys from violations
