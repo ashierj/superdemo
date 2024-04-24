@@ -213,8 +213,6 @@ export default {
     noViolationsFoundWithBranchFilter: s__(
       'ComplianceReport|No violations found. Change search options and try again',
     ),
-    prev: __('Prev'),
-    next: __('Next'),
     viewDetailsBtn: __('View details'),
   },
   DRAWER_Z_INDEX,
@@ -280,8 +278,6 @@ export default {
       <gl-keyset-pagination
         v-bind="violations.pageInfo"
         :disabled="isLoading"
-        :prev-text="$options.i18n.prev"
-        :next-text="$options.i18n.next"
         @prev="loadPrevPage"
         @next="loadNextPage"
       />

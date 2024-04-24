@@ -170,8 +170,6 @@ export default {
       <gl-keyset-pagination
         v-bind="frameworks.pageInfo"
         class="gl-align-self-center gl-mt-6"
-        :prev-text="__('Prev')"
-        :next-text="__('Next')"
         @prev="onPrevPage"
         @next="onNextPage"
       />

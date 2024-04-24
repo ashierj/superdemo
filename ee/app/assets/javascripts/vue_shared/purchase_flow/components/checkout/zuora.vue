@@ -11,6 +11,7 @@ import {
 } from 'ee/subscriptions/constants';
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
+import { extractErrorCode } from 'ee/vue_shared/purchase_flow/zuora_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import Tracking from '~/tracking';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
@@ -89,38 +90,63 @@ export default {
         document.head.appendChild(this.zuoraScriptEl);
       }
     },
-    paymentFormSubmitted({ refId } = {}) {
+    /*
+      For error handling, refer to below Zuora documentation:
+      https://knowledgecenter.zuora.com/Billing/Billing_and_Payments/LA_Hosted_Payment_Pages/B_Payment_Pages_2.0/N_Error_Handling_for_Payment_Pages_2.0/Customize_Error_Messages_for_Payment_Pages_2.0#Define_Custom_Error_Message_Handling_Function
+      https://knowledgecenter.zuora.com/Billing/Billing_and_Payments/LA_Hosted_Payment_Pages/B_Payment_Pages_2.0/H_Integrate_Payment_Pages_2.0/A_Advanced_Integration_of_Payment_Pages_2.0#Customize_Error_Messages_in_Advanced_Integration
+    */
+    handleErrorMessage(_key, code, errorMessage) {
+      let errorCode = code;
+      const extractedCode = extractErrorCode(errorMessage);
+      if (extractedCode) {
+        errorCode = extractedCode;
+      }
+      this.$emit(PurchaseEvent.ERROR, new Error(errorMessage, { cause: errorCode }));
+      this.track('error', {
+        label: 'payment_form_submitted',
+        property: errorMessage,
+      });
+    },
+    async handleZuoraCallback(response = {}) {
       this.isLoading = true;
-
-      return Api.fetchPaymentMethodDetails(refId)
-        .then(({ data }) => {
-          return pick(
-            data,
-            'id',
-            'credit_card_expiration_month',
-            'credit_card_expiration_year',
-            'credit_card_type',
-            'credit_card_mask_number',
-          );
-        })
-        .then((paymentMethod) => convertObjectPropsToCamelCase(paymentMethod))
-        .then((paymentMethod) => this.updateState({ paymentMethod }))
-        .then(() => this.track('success'))
-        .then(() => this.activateNextStep())
-        .catch((error) => {
-          this.$emit(PurchaseEvent.ERROR, error);
-          this.track('error', {
-            label: 'payment_form_submitted',
-            property: error?.message,
-          });
-        })
-        .finally(() => {
-          this.isLoading = false;
+      try {
+        const { refId, success, errorMessage } = response;
+        if (success !== 'true') {
+          throw new Error(errorMessage);
+        }
+        const { data } = await Api.fetchPaymentMethodDetails(refId);
+        const paymentMethodData = pick(
+          data,
+          'id',
+          'credit_card_expiration_month',
+          'credit_card_expiration_year',
+          'credit_card_type',
+          'credit_card_mask_number',
+        );
+        const paymentMethod = convertObjectPropsToCamelCase(paymentMethodData);
+        await this.updateState({ paymentMethod });
+        this.track('success', {
+          label: 'payment_form_submitted',
         });
+        await this.activateNextStep();
+      } catch (error) {
+        this.$emit(PurchaseEvent.ERROR, error);
+        this.track('error', {
+          label: 'payment_form_submitted',
+          property: error?.message,
+        });
+      } finally {
+        this.isLoading = false;
+      }
     },
     renderZuoraIframe() {
       window.Z.runAfterRender(this.zuoraIframeRendered);
-      window.Z.render(this.renderParams, {}, this.paymentFormSubmitted);
+      window.Z.renderWithErrorHandler(
+        this.renderParams,
+        {},
+        this.handleZuoraCallback,
+        this.handleErrorMessage,
+      );
     },
     activateNextStep() {
       return this.$apollo.mutate({
