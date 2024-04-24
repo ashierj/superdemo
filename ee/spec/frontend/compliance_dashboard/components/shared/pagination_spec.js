@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import PageSizeSelector from '~/vue_shared/components/page_size_selector.vue';
-import { NEXT, PREV } from '~/vue_shared/components/pagination/constants';
 
 import Pagination from 'ee/compliance_dashboard/components/shared/pagination.vue';
 
@@ -19,8 +18,8 @@ describe('Pagination component', () => {
   };
 
   const findKeysetPagination = () => wrapper.findComponent(GlKeysetPagination);
-  const findNextButton = () => wrapper.findByText(NEXT);
-  const findPrevButton = () => wrapper.findByText(PREV);
+  const findNextButton = () => wrapper.findByText('Next');
+  const findPrevButton = () => wrapper.findByText('Prev');
   const findPageSizeSelector = () => wrapper.findComponent(PageSizeSelector);
 
   const createComponent = (props = {}) => {
@@ -51,8 +50,8 @@ describe('Pagination component', () => {
           hasPreviousPage: true,
           startCursor: 'abc',
           disabled: false,
-          nextText: NEXT,
-          prevText: PREV,
+          nextText: 'Next',
+          prevText: 'Prev',
         }),
       );
     });
