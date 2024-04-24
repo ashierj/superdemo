@@ -3,7 +3,7 @@ import { GlButton, GlPopover, GlSprintf } from '@gitlab/ui';
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
-import { shouldHandRaiseLeadButtonMount } from 'ee/hand_raise_leads/hand_raise_lead';
+import { shouldHandRaiseLeadMount } from 'ee/hand_raise_leads/hand_raise_lead';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
@@ -124,7 +124,7 @@ export default {
     },
     onShown() {
       this.trackPageAction('popoverShown');
-      shouldHandRaiseLeadButtonMount();
+      shouldHandRaiseLeadMount();
     },
   },
 };

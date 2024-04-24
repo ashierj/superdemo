@@ -1,9 +1,9 @@
 import Vue from 'vue';
-import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 import { PQL_BUTTON_TEXT } from './constants';
 
-export const initHandRaiseLeadButton = (el) => {
+export const initHandRaiseLead = (el) => {
   const {
     namespaceId,
     userName,
@@ -49,7 +49,7 @@ export const initHandRaiseLeadButton = (el) => {
       },
     },
     render(createElement) {
-      return createElement(HandRaiseLeadButton);
+      return createElement(HandRaiseLead);
     },
   });
 };

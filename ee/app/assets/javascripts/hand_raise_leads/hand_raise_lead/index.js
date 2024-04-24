@@ -1,12 +1,12 @@
-export const shouldHandRaiseLeadButtonMount = async () => {
+export const shouldHandRaiseLeadMount = async () => {
   const elements = document.querySelectorAll('.js-hand-raise-lead-button');
   if (elements.length > 0) {
-    const { initHandRaiseLeadButton } = await import(
-      /* webpackChunkName: 'init_hand_raise_lead_button' */ './init_hand_raise_lead_button'
+    const { initHandRaiseLead } = await import(
+      /* webpackChunkName: 'init_hand_raise_lead' */ './init_hand_raise_lead'
     );
 
     elements.forEach(async (el) => {
-      initHandRaiseLeadButton(el);
+      initHandRaiseLead(el);
     });
   }
 };

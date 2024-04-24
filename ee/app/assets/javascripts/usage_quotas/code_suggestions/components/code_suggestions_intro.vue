@@ -7,7 +7,7 @@ import {
   codeSuggestionsLearnMoreLink,
   salesLink,
 } from 'ee/usage_quotas/code_suggestions/constants';
-import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
 export default {
@@ -28,7 +28,7 @@ export default {
     SafeHtml,
   },
   components: {
-    HandRaiseLeadButton,
+    HandRaiseLead,
     GlEmptyState,
     GlLink,
     GlSprintf,
@@ -63,10 +63,7 @@ export default {
       <gl-button :href="addDuoProHref" variant="confirm" category="primary">
         {{ $options.i18n.purchaseSeats }}
       </gl-button>
-      <hand-raise-lead-button
-        v-if="createHandRaiseLeadPath"
-        class="gl-sm-ml-3 gl-ml-3 gl-sm-ml-0"
-      />
+      <hand-raise-lead v-if="createHandRaiseLeadPath" class="gl-sm-ml-3 gl-ml-3 gl-sm-ml-0" />
       <gl-button
         v-else
         :href="$options.helpLinks.salesLink"

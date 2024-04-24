@@ -2,14 +2,14 @@ import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
 import { salesLink } from 'ee/usage_quotas/code_suggestions/constants';
-import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
 
 const addDuoProHref = 'http://customers.gitlab.com/namespaces/10/duo_pro_seats';
 
 describe('Code Suggestions Intro', () => {
   let wrapper;
   const emptyState = () => wrapper.findComponent(GlEmptyState);
-  const handRaiseLeadButton = () => wrapper.findComponent(HandRaiseLeadButton);
+  const handRaiseLeadButton = () => wrapper.findComponent(HandRaiseLead);
   const findButton = (category) =>
     wrapper.findAllComponents(GlButton).filter((button) => button.props('category') === category);
 
@@ -45,12 +45,12 @@ describe('Code Suggestions Intro', () => {
       });
     });
 
-    describe('when showing hand raise lead button', () => {
+    describe('when showing hand raise lead', () => {
       beforeEach(() => {
         return createComponent({ createHandRaiseLeadPath: 'some-path' });
       });
 
-      it('renders gl-empty-state component without default button, but with hand raise lead button', () => {
+      it('renders gl-empty-state component without default button, but with hand raise lead', () => {
         const defaultButton = wrapper.find(`a[href="${salesLink}"`);
         expect(emptyState().exists()).toBe(true);
         expect(handRaiseLeadButton().exists()).toBe(true);

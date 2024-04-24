@@ -1,37 +1,38 @@
 <script>
 import { GlButton, GlModalDirective } from '@gitlab/ui';
-import { uniqueId } from 'lodash';
 import Tracking from '~/tracking';
-import { PQL_BUTTON_TEXT } from '../constants';
-import HandRaiseLeadModal from './hand_raise_lead_modal.vue';
 
 export default {
   name: 'HandRaiseLeadButton',
   components: {
     GlButton,
-    HandRaiseLeadModal,
   },
   directives: {
     GlModal: GlModalDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: {
-    createHandRaiseLeadPath: {},
-    user: {
-      default: {},
+  props: {
+    ctaTracking: {
+      type: Object,
+      required: false,
+      default: () => ({}),
     },
-    buttonAttributes: {
-      default: {},
+    modalId: {
+      type: String,
+      required: true,
     },
     buttonText: {
-      default: PQL_BUTTON_TEXT,
+      type: String,
+      required: true,
     },
-    ctaTracking: {
-      default: {},
+    isLoading: {
+      type: Boolean,
+      required: true,
     },
-  },
-  data() {
-    return { isLoading: false, modalId: uniqueId('hand-raise-lead-modal-') };
+    buttonAttributes: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     tracking() {
@@ -48,30 +49,17 @@ export default {
         this.track(action, options);
       }
     },
-    updateLoading(value) {
-      this.isLoading = value;
-    },
   },
 };
 </script>
 
 <template>
-  <div>
-    <gl-button
-      v-gl-modal="modalId"
-      v-bind="buttonAttributes"
-      :loading="isLoading"
-      @click="trackBtnClick"
-    >
-      {{ buttonText }}
-    </gl-button>
-
-    <hand-raise-lead-modal
-      :user="user"
-      :submit-path="createHandRaiseLeadPath"
-      :cta-tracking="ctaTracking"
-      :modal-id="modalId"
-      @loading="updateLoading"
-    />
-  </div>
+  <gl-button
+    v-gl-modal="modalId"
+    v-bind="buttonAttributes"
+    :loading="isLoading"
+    @click="trackBtnClick"
+  >
+    {{ buttonText }}
+  </gl-button>
 </template>
