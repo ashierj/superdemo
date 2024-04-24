@@ -55,25 +55,6 @@ module EE
         node.container_repositories.primary_key_in(primary_key_in)
       end
 
-      override :with_target_import_tier
-      def with_target_import_tier
-        # self-managed instances are singlular plans, so they do not need
-        # these filters
-        return all unless ::Gitlab.com_except_jh?
-        return all if ::ContainerRegistry::Migration.all_plans?
-
-        if ::ContainerRegistry::Migration.limit_gitlab_org?
-          gitlab_org_namespace = ::Namespace.top_most.by_path(GITLAB_ORG_NAMESPACE)
-          return none unless gitlab_org_namespace
-
-          project_scope = ::Project.for_group_and_its_subgroups(gitlab_org_namespace)
-                            .select(:id)
-          where(project_id: project_scope)
-        else
-          where(migration_plan: ::ContainerRegistry::Migration.target_plans)
-        end
-      end
-
       override :verification_state_table_class
       def verification_state_table_class
         ::Geo::ContainerRepositoryState

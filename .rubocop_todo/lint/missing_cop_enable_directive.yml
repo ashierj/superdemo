@@ -116,7 +116,6 @@ Lint/MissingCopEnableDirective:
     - 'ee/app/workers/ci/runners/stale_group_runners_prune_cron_worker.rb'
     - 'ee/app/workers/groups/export_memberships_worker.rb'
     - 'ee/lib/api/ldap_group_links.rb'
-    - 'ee/lib/ee/gitlab/background_migration/backfill_project_statistics_container_repository_size.rb'
     - 'ee/lib/ee/gitlab/background_migration/migrate_approver_to_approval_rules.rb'
     - 'ee/lib/gitlab/spdx/license.rb'
     - 'ee/spec/helpers/groups/security_features_helper_spec.rb'

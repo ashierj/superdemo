@@ -1736,7 +1736,6 @@ RSpec/NamedSubject:
     - 'spec/lib/constraints/user_url_constrainer_spec.rb'
     - 'spec/lib/container_registry/client_spec.rb'
     - 'spec/lib/container_registry/gitlab_api_client_spec.rb'
-    - 'spec/lib/container_registry/migration_spec.rb'
     - 'spec/lib/container_registry/path_spec.rb'
     - 'spec/lib/container_registry/registry_spec.rb'
     - 'spec/lib/container_registry/tag_spec.rb'
