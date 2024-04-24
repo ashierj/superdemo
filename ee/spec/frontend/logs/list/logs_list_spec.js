@@ -167,7 +167,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: 'page-2',
-          filters: { dateRange: { value: '1h' } },
+          filters: { dateRange: { value: '1h' }, attributes: {} },
         });
 
         expect(findInfiniteScrolling().props('fetchedItems')).toBe(
@@ -182,7 +182,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: null,
-          filters: { dateRange: { value: '1h' } },
+          filters: { dateRange: { value: '1h' }, attributes: {} },
         });
 
         // hit last page (no logs, no page token)
@@ -195,7 +195,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: 'page-2',
-          filters: { dateRange: { value: '1h' } },
+          filters: { dateRange: { value: '1h' }, attributes: {} },
         });
 
         await bottomReached();
@@ -204,7 +204,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: 'page-2',
-          filters: { dateRange: { value: '1h' } },
+          filters: { dateRange: { value: '1h' }, attributes: {} },
         });
       });
 
@@ -257,6 +257,7 @@ describe('LogsList', () => {
           dateRange: {
             value: '1h',
           },
+          attributes: {},
         },
         pageSize: 100,
         pageToken: null,
@@ -267,7 +268,10 @@ describe('LogsList', () => {
       beforeEach(async () => {
         observabilityClientMock.fetchLogs.mockReset();
 
-        await findFilteredSearch().vm.$emit('filter', { dateRange: { value: '7d' } });
+        await findFilteredSearch().vm.$emit('filter', {
+          dateRange: { value: '7d' },
+          attributes: { search: [{ value: 'some-log' }] },
+        });
         await waitForPromises();
       });
 
@@ -278,14 +282,18 @@ describe('LogsList', () => {
             dateRange: {
               value: '7d',
             },
+            attributes: { search: [{ value: 'some-log' }] },
           },
           pageSize: 100,
           pageToken: null,
         });
       });
 
-      it('updates the filtered searc props', () => {
+      it('updates the filtered search props', () => {
         expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '7d' });
+        expect(findFilteredSearch().props('attributesFilters')).toEqual({
+          search: [{ value: 'some-log' }],
+        });
       });
     });
   });
