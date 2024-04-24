@@ -49,6 +49,14 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             .and change { add_on_purchase.trial }.from(false).to(true)
         end
 
+        it 'enqueues RefreshUserAssignmentsWorker' do
+          expect(
+            GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
+          ).to receive(:perform_async).with(add_on_purchase.namespace_id)
+
+          result
+        end
+
         context 'when passing in the add-on purchase record' do
           let(:params) do
             super().merge(add_on_purchase: add_on_purchase)
@@ -72,6 +80,14 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             expect(result[:message]).to eq('Add-on purchase could not be saved')
             expect(result[:add_on_purchase]).to be_an_instance_of(GitlabSubscriptions::AddOnPurchase)
             expect(result[:add_on_purchase]).to eq(add_on_purchase)
+          end
+
+          it 'does not enqueue RefreshUserAssignmentsWorker' do
+            expect(
+              GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
+            ).not_to receive(:perform_async)
+
+            result
           end
         end
       end
