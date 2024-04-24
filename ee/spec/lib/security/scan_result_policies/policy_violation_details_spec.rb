@@ -430,6 +430,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
 
       it 'results in unknown error message' do
         expect(errors.size).to eq 2
+        expect(errors.pluck(:error)).to contain_exactly('UNKNOWN', 'ARTIFACTS_MISSING')
         expect(errors.pluck(:message)).to contain_exactly(
           'Unknown error: unsupported',
           'Pipeline configuration error: Artifacts required by policy `Policy` could not be found (License scanning).'
