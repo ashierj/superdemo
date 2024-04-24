@@ -63,14 +63,16 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
 
     subject { get :show, params: { namespace_id: public_project.namespace.path, id: public_project.path } }
 
-    context 'additional repo storage by namespace' do
-      let(:namespace) { public_project.namespace }
-
+    context 'additional repo storage by namespace', feature_category: :consumables_cost_management do
       before do
         stub_saas_features(namespaces_storage_limit: true)
         stub_feature_flags(namespace_storage_limit: false)
 
-        namespace.add_owner(user)
+        allow_next_instance_of(ProjectPresenter) do |presenter|
+          allow(presenter).to receive(:repository_size_excess).and_return(1)
+        end
+
+        public_project.namespace.add_owner(user)
       end
 
       context 'when automatic_purchased_storage_allocation setting is enabled' do
@@ -122,7 +124,7 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       end
     end
 
-    context 'with automatic_purchased_storage_allocation set to true' do
+    context 'with automatic_purchased_storage_allocation set to true', feature_category: :consumables_cost_management do
       before do
         stub_ee_application_setting(automatic_purchased_storage_allocation: true)
       end
@@ -138,7 +140,7 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       end
     end
 
-    context 'with automatic_purchased_storage_allocation set to false' do
+    context 'with automatic_purchased_storage_allocation set to false', feature_category: :consumables_cost_management do
       before do
         stub_ee_application_setting(automatic_purchased_storage_allocation: false)
       end
@@ -160,7 +162,7 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       end
     end
 
-    context 'namespace storage limit' do
+    context 'namespace storage limit', feature_category: :consumables_cost_management do
       let(:namespace) { public_project.namespace }
 
       it_behaves_like 'namespace storage limit alert'
