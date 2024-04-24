@@ -86,7 +86,7 @@ describe('FrameworkInfoDrawer component', () => {
         expect(findPoliciesLinks().exists()).toBe(true);
         expect(findPoliciesLinks().wrappers).toHaveLength(policiesCount);
         expect(findPoliciesLinks().at(0).attributes('href')).toBe(
-          `/group-policies/${defaultFramework.scanResultPolicies.nodes[0].name}/edit?type=scan_result_policy`,
+          `/group-policies/${defaultFramework.scanResultPolicies.nodes[0].name}/edit?type=approval_policy`,
         );
       });
     });

@@ -219,8 +219,7 @@ export default {
     },
     shouldShowRuntimeMessage() {
       return (
-        (this.policy.type === POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter ||
-          this.policy.type === POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter) &&
+        this.policy.type === POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter &&
         this.namespaceType !== NAMESPACE_TYPES.PROJECT
       );
     },

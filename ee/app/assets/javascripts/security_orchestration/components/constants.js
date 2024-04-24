@@ -10,13 +10,6 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
     urlParameter: 'scan_execution_policy',
     value: 'scanExecution',
   },
-  scanResult: {
-    component: 'scan-result-policy-editor',
-    text: s__('SecurityOrchestration|Merge request approval'),
-    typeName: 'ScanResultPolicy',
-    urlParameter: 'scan_result_policy',
-    value: 'scanResult',
-  },
   approval: {
     component: 'scan-result-policy-editor',
     text: s__('SecurityOrchestration|Merge request approval'),

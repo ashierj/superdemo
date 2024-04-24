@@ -11,7 +11,7 @@ import projectScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql
 import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_result_policies.query.graphql';
 import groupScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_result_policies.query.graphql';
-
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -319,8 +319,8 @@ describe('List component', () => {
 
   describe.each`
     description         | policy                                  | policyType
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'}
-    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}
+    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
+    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}
   `('given there is a $description policy selected', ({ policy, policyType }) => {
     beforeEach(() => {
       mountShallowWrapper();
