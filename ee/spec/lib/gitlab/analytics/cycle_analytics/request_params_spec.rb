@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:root_group) { create(:group) }
+  let_it_be(:root_group) { create(:group, owners: user) }
   let_it_be(:sub_group) { create(:group, parent: root_group) }
   let_it_be(:sub_group_project) { create(:project, id: 1, group: sub_group) }
   let_it_be(:root_group_projects) do
@@ -19,10 +19,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
   let(:namespace) { root_group }
 
   subject { request_params }
-
-  before do
-    root_group.add_owner(user)
-  end
 
   context 'when Namespaces::ProjectNamespace is given' do
     it_behaves_like 'unlicensed cycle analytics request params' do

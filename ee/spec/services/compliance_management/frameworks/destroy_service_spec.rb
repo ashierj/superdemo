@@ -5,11 +5,7 @@ require 'spec_helper'
 RSpec.describe ComplianceManagement::Frameworks::DestroyService, feature_category: :compliance_management do
   let_it_be_with_refind(:namespace) { create(:group) }
   let_it_be_with_refind(:framework) { create(:compliance_framework, namespace: namespace) }
-  let_it_be(:user) { create(:user) }
-
-  before do
-    namespace.add_owner(user)
-  end
+  let_it_be(:user) { create(:user, owner_of: namespace) }
 
   context 'when feature is disabled' do
     before do

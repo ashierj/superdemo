@@ -6,14 +6,10 @@ RSpec.describe Groups::AutocompleteService, feature_category: :groups_and_projec
   let_it_be(:group, refind: true) { create(:group, :nested, :private, avatar: fixture_file_upload('spec/fixtures/dk.png')) }
   let_it_be(:sub_group) { create(:group, :private, parent: group) }
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: group) }
   let_it_be_with_reload(:epic) { create(:epic, group: group, author: user) }
 
   subject { described_class.new(group, user) }
-
-  before do
-    group.add_developer(user)
-  end
 
   def expect_labels_to_equal(labels, expected_labels)
     extract_title = lambda { |label| label['title'] }

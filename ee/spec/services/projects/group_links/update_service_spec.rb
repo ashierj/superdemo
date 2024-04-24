@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Projects::GroupLinks::UpdateService, feature_category: :groups_and_projects do
-  let_it_be(:user) { create :user }
+  let_it_be(:user) { create(:user) }
   let_it_be(:group) { create :group }
-  let_it_be(:project) { create :project }
+  let_it_be(:project) { create(:project, maintainers: user) }
 
   let!(:link) { create(:project_group_link, project: project, group: group, group_access: Gitlab::Access::DEVELOPER) }
 
@@ -16,10 +16,6 @@ RSpec.describe Projects::GroupLinks::UpdateService, feature_category: :groups_an
   end
 
   subject(:execute_update_service) { described_class.new(link, user).execute(group_link_params) }
-
-  before do
-    project.add_maintainer(user)
-  end
 
   context 'audit events' do
     it 'sends the audit streaming event' do

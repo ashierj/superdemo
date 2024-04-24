@@ -8,12 +8,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::BaseQueryBuilder do
   let_it_be(:project_in_group) { create(:project, :repository, group: group) }
   let_it_be(:project_in_subgroup) { create(:project, :repository, group: subgroup) }
   let_it_be(:project_outside_group) { create(:project, :repository, group: create(:group)) }
-  let_it_be(:user) { create(:user) }
-
-  before do
-    group.add_maintainer(user)
-    project_outside_group.add_maintainer(user)
-  end
+  let_it_be(:user) { create(:user, maintainer_of: [group, project_outside_group]) }
 
   context 'when the subject is `Issue`' do
     let(:issue_in_project) { create(:issue, project: project_in_group, created_at: 5.days.ago) }

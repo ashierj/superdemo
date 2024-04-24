@@ -7,7 +7,7 @@ RSpec.describe Groups::GroupLinks::UpdateService, '#execute', feature_category: 
 
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:shared_group) { create(:group, :private) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: group) }
 
   let(:link) { create(:group_group_link, shared_group: shared_group, shared_with_group: group) }
   let(:expiry_date) { 1.month.from_now.to_date }
@@ -32,10 +32,6 @@ RSpec.describe Groups::GroupLinks::UpdateService, '#execute', feature_category: 
         ]
       }
     }
-  end
-
-  before do
-    group.add_developer(user)
   end
 
   it 'sends an audit event' do

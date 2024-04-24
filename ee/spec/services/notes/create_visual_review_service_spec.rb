@@ -4,12 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Notes::CreateVisualReviewService, feature_category: :review_apps do
   let_it_be(:project) { create(:project, :public, :repository) }
-  let_it_be(:current_user) { create(:user) }
+  let_it_be(:current_user) { create(:user, developer_of: project) }
   let(:body) { 'BODY' }
-
-  before do
-    project.add_developer(current_user)
-  end
 
   subject { described_class.new(merge_request, current_user, body: body).execute }
 

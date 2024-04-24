@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Ci::ProcessPipelineService, '#execute', feature_category: :continuous_integration do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:downstream) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository, maintainers: user) }
+  let_it_be(:downstream) { create(:project, :repository, developers: user) }
 
   let_it_be(:pipeline) do
     create(:ci_empty_pipeline, ref: 'master', project: project, user: user)
@@ -16,11 +16,6 @@ RSpec.describe Ci::ProcessPipelineService, '#execute', feature_category: :contin
   let_it_be(:deploy_stage) { create(:ci_stage, name: 'deploy', pipeline: pipeline, position: 2) }
 
   let(:service) { described_class.new(pipeline) }
-
-  before do
-    project.add_maintainer(user)
-    downstream.add_developer(user)
-  end
 
   describe 'cross-project pipelines' do
     before do
