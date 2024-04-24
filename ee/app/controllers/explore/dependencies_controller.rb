@@ -26,7 +26,8 @@ module Explore
     def index
       paginator = dependencies.keyset_paginate(
         cursor: finder_params[:cursor],
-        per_page: per_page
+        per_page: per_page,
+        keyset_order_options: keyset_order_options
       )
       respond_to do |format|
         format.html do
@@ -99,6 +100,28 @@ module Explore
 
     def formatted_page_info(paginator)
       Gitlab::Json.generate(page_info(paginator))
+    end
+
+    def keyset_order_options(relation = ::Sbom::Occurrence)
+      return {} if current_user.can_read_all_resources?
+
+      # rubocop: disable CodeReuse/ActiveRecord -- where clause
+      {
+        in_operator_optimization_options: in_operator_optimization_options(
+          current_user.project_authorizations.select(:project_id),
+          ->(id) { relation.where(relation.arel_table[:project_id].eq(id)) },
+          ->(id) { relation.where(relation.arel_table[:id].eq(id)) }
+        )
+      }
+      # rubocop: enable CodeReuse/ActiveRecord -- where clause
+    end
+
+    def in_operator_optimization_options(array_scope, array_mapping_scope, finder_query)
+      {
+        array_scope: array_scope,
+        array_mapping_scope: array_mapping_scope,
+        finder_query: finder_query
+      }
     end
 
     def tracking_namespace_source
