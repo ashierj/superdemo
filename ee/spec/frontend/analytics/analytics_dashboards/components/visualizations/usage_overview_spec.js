@@ -8,6 +8,7 @@ import { mockUsageOverviewData, mockUsageMetrics, mockUsageMetricsNoData } from 
 describe('Usage Overview Visualization', () => {
   let wrapper;
   const defaultProps = { data: mockUsageOverviewData, options: {} };
+  const defaultProvide = { overviewCountsAggregationEnabled: true };
 
   const findNamespaceTile = () => wrapper.findByTestId('usage-overview-namespace');
   const findNamespaceAvatar = () => findNamespaceTile().findComponent(GlAvatar);
@@ -20,10 +21,14 @@ describe('Usage Overview Visualization', () => {
   const findMetricIcon = (idx) => findMetricProperty('title-icon', idx);
   const findMetricValue = (idx) => findMetricProperty('displayValue', idx);
 
-  const createWrapper = (props = defaultProps) => {
+  const createWrapper = ({ props = defaultProps, provide = defaultProvide } = {}) => {
     wrapper = mountExtended(UsageOverview, {
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
+      },
+      provide: {
+        overviewCountsAggregationEnabled: true,
+        ...provide,
       },
       propsData: {
         data: props.data,
@@ -93,15 +98,19 @@ describe('Usage Overview Visualization', () => {
 
   describe('with no data', () => {
     beforeEach(() => {
-      createWrapper({ data: { metrics: mockUsageMetricsNoData } });
+      createWrapper({ props: { data: { metrics: mockUsageMetricsNoData } } });
     });
 
     it('should not render namespace tile', () => {
       expect(findNamespaceTile().exists()).toBe(false);
     });
 
-    it('should render each metric', () => {
+    it('should render each metric a `0` for each metric', () => {
       expect(findMetrics()).toHaveLength(mockUsageMetrics.length);
+
+      findMetrics().wrappers.forEach((v) => {
+        expect(v.text()).toContain('0');
+      });
     });
 
     it('should render each metric as a single stat with value 0', () => {
@@ -115,6 +124,21 @@ describe('Usage Overview Visualization', () => {
       expect(wrapper.emitted('showTooltip')[0][0]).toEqual(
         'Statistics on top-level namespace usage. Usage data is a cumulative count, and updated monthly.',
       );
+    });
+  });
+
+  describe('with `overviewCountsAggregationEnabled=false`', () => {
+    it('with no data should render `-` for each metric', () => {
+      createWrapper({
+        props: { data: { metrics: mockUsageMetricsNoData } },
+        provide: { overviewCountsAggregationEnabled: false },
+      });
+
+      expect(findMetrics()).toHaveLength(mockUsageMetrics.length);
+
+      findMetrics().wrappers.forEach((v) => {
+        expect(v.text()).toContain('-');
+      });
     });
   });
 });

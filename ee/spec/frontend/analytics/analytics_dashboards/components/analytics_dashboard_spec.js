@@ -170,6 +170,7 @@ describe('AnalyticsDashboard', () => {
         breadcrumbState,
         isGroup: false,
         isProject: true,
+        overviewCountsAggregationEnabled: true,
         ...provide,
       },
     });

@@ -78,6 +78,9 @@ export default {
     breadcrumbState: {
       type: Object,
     },
+    overviewCountsAggregationEnabled: {
+      type: Boolean,
+    },
   },
   async beforeRouteLeave(to, from, next) {
     const confirmed = await this.$refs.dashboard.confirmDiscardIfChanged();
@@ -357,6 +360,7 @@ export default {
         :show-anon-users-filter="showDashboardFilters"
         :changes-saved="changesSaved"
         :title-validation-error="titleValidationError"
+        :overview-counts-aggregation-enabled="overviewCountsAggregationEnabled"
         @save="saveDashboard"
         @title-input="validateDashboardTitle"
       />

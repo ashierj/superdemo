@@ -9,6 +9,7 @@ import { InternalEvents } from '~/tracking';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
+import UsageOverviewBackgroundAggregationWarning from 'ee/analytics/dashboards/components/usage_overview_background_aggregation_warning.vue';
 import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
@@ -39,6 +40,7 @@ export default {
     UrlSync,
     AvailableVisualizationsDrawer,
     GridstackWrapper,
+    UsageOverviewBackgroundAggregationWarning,
   },
   mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   props: {
@@ -98,6 +100,11 @@ export default {
       required: false,
       default: null,
     },
+    overviewCountsAggregationEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -126,6 +133,14 @@ export default {
     },
     showEditDashboardButton() {
       return this.editingEnabled && !this.editing;
+    },
+    dashboardHasUsageOverviewPanel() {
+      return this.dashboard.panels
+        .map(({ visualization: { slug } }) => slug)
+        .includes('usage_overview');
+    },
+    showEnableAggregationWarning() {
+      return this.dashboardHasUsageOverviewPanel && !this.overviewCountsAggregationEnabled;
     },
     dashboardDescription() {
       return this.dashboard.description;
@@ -460,6 +475,9 @@ export default {
             </div>
           </button>
 
+          <div v-if="showEnableAggregationWarning" class="gl-mx-3">
+            <usage-overview-background-aggregation-warning />
+          </div>
           <gridstack-wrapper v-model="dashboard" :editing="editing">
             <template #panel="{ panel }">
               <panels-base

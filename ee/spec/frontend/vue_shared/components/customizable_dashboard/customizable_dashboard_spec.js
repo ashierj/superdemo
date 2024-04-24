@@ -21,13 +21,19 @@ import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
 } from 'ee/analytics/analytics_dashboards/constants';
+import UsageOverviewBackgroundAggregationWarning from 'ee/analytics/dashboards/components/usage_overview_background_aggregation_warning.vue';
 import {
   TEST_VISUALIZATION,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { stubComponent } from 'helpers/stub_component';
-import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
+import {
+  dashboard,
+  builtinDashboard,
+  mockDateRangeFilterChangePayload,
+  mockUsageOverviewPanel,
+} from './mock_data';
 
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
 
@@ -66,6 +72,7 @@ describe('CustomizableDashboard', () => {
           hasError: false,
           visualizations: [],
         },
+        overviewCountsAggregationEnabled: true,
         ...props,
       },
       stubs: {
@@ -116,6 +123,8 @@ describe('CustomizableDashboard', () => {
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
   const findDashboardHelpLink = () => wrapper.findByTestId('dashboard-help-link');
   const findGridstackWrapper = () => wrapper.findComponent(GridstackWrapper);
+  const findUsageOverviewAggregationWarning = () =>
+    wrapper.findComponent(UsageOverviewBackgroundAggregationWarning);
 
   const enterDashboardTitle = async (title, titleValidationError = '') => {
     await findTitleInput().vm.$emit('input', title);
@@ -210,6 +219,26 @@ describe('CustomizableDashboard', () => {
 
     it('does not show a dashboard documentation link', () => {
       expect(findDashboardDescription().findComponent(GlLink).exists()).toBe(false);
+    });
+
+    it('does not show the usage overview aggregation warning', () => {
+      expect(findUsageOverviewAggregationWarning().exists()).toBe(false);
+    });
+  });
+
+  describe('when usage overview aggregation is not enabled', () => {
+    beforeEach(() => {
+      createWrapper(
+        { overviewCountsAggregationEnabled: false },
+        {
+          ...dashboard,
+          panels: [...dashboard.panels, mockUsageOverviewPanel],
+        },
+      );
+    });
+
+    it('show the usage overview aggregation warning', () => {
+      expect(findUsageOverviewAggregationWarning().exists()).toBe(true);
     });
   });
 
