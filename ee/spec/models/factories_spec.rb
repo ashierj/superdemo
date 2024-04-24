@@ -74,6 +74,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:pages_deployment, :verification_failed],
     [:pages_deployment, :verification_succeeded],
     [:project, :with_vulnerabilities],
+    [:project, :fork_repository],
     [:scan_execution_policy, :with_schedule_and_agent],
     [:vulnerability, :with_cluster_image_scanning_finding],
     [:vulnerability, :with_findings],
