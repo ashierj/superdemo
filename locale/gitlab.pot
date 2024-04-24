@@ -46773,6 +46773,9 @@ msgstr ""
 msgid "SecurityOrchestration|Update scan policies"
 msgstr ""
 
+msgid "SecurityOrchestration|Update via merge request"
+msgstr ""
+
 msgid "SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
 msgstr ""
 
