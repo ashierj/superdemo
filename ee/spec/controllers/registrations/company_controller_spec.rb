@@ -315,6 +315,23 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           end
         end
       end
+
+      context 'when no entries exist in onboarding_status for registration_types' do
+        before do
+          user.update!(onboarding_status: {})
+        end
+
+        it 'redirects to the next step in the path' do
+          expect_next_instance_of(GitlabSubscriptions::CreateCompanyLeadService) do |service|
+            expect(service).to receive(:execute).and_return(ServiceResponse.success)
+          end
+
+          post :create, params: params
+
+          expect(response).to have_gitlab_http_status(:redirect)
+          expect(response).to redirect_to(new_users_sign_up_group_path(redirect_params))
+        end
+      end
     end
 
     context 'on failure' do
