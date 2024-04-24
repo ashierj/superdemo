@@ -10,11 +10,6 @@ DETAILS:
 **Tier:** Free, Premium, Ultimate
 **Offering:** GitLab.com, Self-managed, GitLab Dedicated
 
-> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/273655) from GitLab Premium to GitLab Free in 13.6.
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) support for private groups in GitLab 13.7.
-> - Anonymous access to images in public groups is no longer available starting in GitLab 13.7.
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/290944) support for pull-by-digest and Docker version 20.x in GitLab 13.10.
-
 The GitLab Dependency Proxy is a local proxy you can use for your frequently-accessed
 upstream images.
 
@@ -32,7 +27,7 @@ The following images and packages are supported.
 
 | Image/Package    | GitLab version |
 | ---------------- | -------------- |
-| Docker           | 11.11+         |
+| Docker           | 14.0+         |
 
 For a list of planned additions, view the
 [direction page](https://about.gitlab.com/direction/package/#dependency-proxy).
