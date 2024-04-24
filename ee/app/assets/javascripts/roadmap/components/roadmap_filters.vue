@@ -115,7 +115,7 @@ export default {
       />
       <gl-button
         icon="settings"
-        class="gl-xl-ml-3 gl-lg-mt-0 gl-mt-3 gl-inset-border-1-gray-400!"
+        class="gl-xl-ml-3 gl-lg-mt-0 gl-mt-3 !gl-shadow-inner-1-gray-400"
         :aria-label="$options.i18n.settings"
         data-testid="settings-button"
         @click="$emit('toggleSettings', $event)"

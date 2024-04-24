@@ -259,7 +259,7 @@ export default {
         :items="filteredCountries"
         fluid-width
         :toggle-text="countryDropdownToggleText"
-        toggle-class="gl-inset-border-1-gray-400!"
+        toggle-class="!gl-shadow-inner-1-gray-400"
         data-testid="country-form-select"
         searchable
         block
