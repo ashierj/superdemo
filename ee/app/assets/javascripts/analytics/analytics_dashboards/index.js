@@ -50,6 +50,7 @@ export default () => {
     projectLevelAnalyticsProviderSettings,
     isInstanceConfiguredWithSelfManagedAnalyticsProvider,
     defaultUseInstanceConfiguration,
+    overviewCountsAggregationEnabled,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -138,6 +139,7 @@ export default () => {
         isInstanceConfiguredWithSelfManagedAnalyticsProvider,
       ),
       defaultUseInstanceConfiguration: parseBoolean(defaultUseInstanceConfiguration),
+      overviewCountsAggregationEnabled: parseBoolean(overviewCountsAggregationEnabled),
     },
     render(h) {
       return h(DashboardsApp);

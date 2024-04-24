@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_analytics_data_management do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
-  let_it_be(:project) { create(:project, group: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+  let_it_be_with_refind(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+  let_it_be_with_refind(:project) { create(:project, group: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:group_pointer) { create(:analytics_dashboards_pointer, namespace: group, target_project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
@@ -91,7 +91,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
               cube_api_key: nil
             }.to_json,
             is_instance_configured_with_self_managed_analytics_provider: 'true',
-            default_use_instance_configuration: 'true'
+            default_use_instance_configuration: 'true',
+            overview_counts_aggregation_enabled: "false"
           }
         end
 
@@ -104,11 +105,21 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             expect(data).to eq(expected_data(true))
           end
         end
+
+        context 'with value stream aggregation enabled' do
+          before do
+            create_value_stream_aggregation(project.root_ancestor)
+          end
+
+          it 'returns the expected data' do
+            expect(data).to include({ overview_counts_aggregation_enabled: "true" })
+          end
+        end
       end
     end
 
     context 'for sub group' do
-      let_it_be(:sub_group) { create(:group, parent: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+      let_it_be_with_refind(:sub_group) { create(:group, parent: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
       subject(:data) { helper.analytics_dashboards_list_app_data(sub_group) }
 
@@ -135,8 +146,19 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           ai_generate_cube_query_enabled: 'false',
           project_level_analytics_provider_settings: nil,
           is_instance_configured_with_self_managed_analytics_provider: 'true',
-          default_use_instance_configuration: 'true'
+          default_use_instance_configuration: 'true',
+          overview_counts_aggregation_enabled: "false"
         }
+      end
+
+      context 'with value stream aggregation enabled' do
+        before do
+          create_value_stream_aggregation(sub_group.root_ancestor)
+        end
+
+        it 'returns the expected data' do
+          expect(data).to include({ overview_counts_aggregation_enabled: "true" })
+        end
       end
 
       context 'when user does not have permission' do
@@ -190,8 +212,19 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           ai_generate_cube_query_enabled: 'false',
           project_level_analytics_provider_settings: nil,
           is_instance_configured_with_self_managed_analytics_provider: 'true',
-          default_use_instance_configuration: 'true'
+          default_use_instance_configuration: 'true',
+          overview_counts_aggregation_enabled: "false"
         }
+      end
+
+      context 'with value stream aggregation enabled' do
+        before do
+          create_value_stream_aggregation(group)
+        end
+
+        it 'returns the expected data' do
+          expect(data).to include({ overview_counts_aggregation_enabled: "true" })
+        end
       end
 
       context 'when user does not have permission' do
@@ -462,5 +495,9 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
         })
       end
     end
+  end
+
+  def create_value_stream_aggregation(namespace)
+    create(:value_stream_dashboard_aggregation, namespace: namespace, enabled: true) # rubocop:disable RSpec/FactoryBot/AvoidCreate
   end
 end

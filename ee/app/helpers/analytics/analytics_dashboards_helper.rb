@@ -31,7 +31,8 @@ module Analytics
         project_level_analytics_provider_settings: project_level_analytics_provider_settings_json(namespace),
         is_instance_configured_with_self_managed_analytics_provider:
           instance_configured_with_self_managed_analytics_provider?(namespace).to_s,
-        default_use_instance_configuration: default_use_instance_configuration?(namespace).to_s
+        default_use_instance_configuration: default_use_instance_configuration?(namespace).to_s,
+        overview_counts_aggregation_enabled: overview_counts_aggregation_enabled?(namespace).to_s
       }
     end
 
@@ -78,6 +79,13 @@ module Analytics
         ::Feature.enabled?(:product_analytics_dashboards, project) &&
         project.licensed_feature_available?(:product_analytics) &&
         can?(current_user, :read_product_analytics, project)
+    end
+
+    def overview_counts_aggregation_enabled?(namespace)
+      root_namespace = namespace.root_ancestor
+      return true if root_namespace.value_stream_dashboard_aggregation&.enabled
+
+      false
     end
 
     def can_configure_dashboards_project?(namespace)
