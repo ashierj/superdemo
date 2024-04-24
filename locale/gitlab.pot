@@ -13687,6 +13687,9 @@ msgstr ""
 msgid "Configure specific limits for Files API requests that supersede the general user and IP rate limits."
 msgstr ""
 
+msgid "Configure specific limits for Git HTTP requests."
+msgstr ""
+
 msgid "Configure specific limits for Git LFS requests that supersede the general user and IP rate limits."
 msgstr ""
 
@@ -19707,6 +19710,9 @@ msgstr ""
 msgid "Enable unauthenticated API request rate limit"
 msgstr ""
 
+msgid "Enable unauthenticated Git HTTP request rate limit"
+msgstr ""
+
 msgid "Enable unauthenticated web request rate limit"
 msgstr ""
 
@@ -23079,6 +23085,9 @@ msgstr ""
 msgid "Git"
 msgstr ""
 
+msgid "Git HTTP rate limits"
+msgstr ""
+
 msgid "Git LFS is not enabled on this GitLab server, contact your admin."
 msgstr ""
 
@@ -25672,6 +25681,9 @@ msgid "Helps reduce request volume (for example, from crawlers or abusive bots)"
 msgstr ""
 
 msgid "Helps reduce request volume for protected paths."
+msgstr ""
+
+msgid "Helps reduce unauthenticated Git HTTP request volume for git paths."
 msgstr ""
 
 msgid "Hi %{recipient_name},"
@@ -31392,6 +31404,9 @@ msgid "Maximum time, in seconds, for a web terminal websocket connection. 0 for 
 msgstr ""
 
 msgid "Maximum unauthenticated API requests per rate limit period per IP"
+msgstr ""
+
+msgid "Maximum unauthenticated Git HTTP requests per period per IP"
 msgstr ""
 
 msgid "Maximum unauthenticated web requests per rate limit period per IP"
@@ -54809,6 +54824,12 @@ msgid "Unassigned"
 msgstr ""
 
 msgid "Unauthenticated API rate limit period in seconds"
+msgstr ""
+
+msgid "Unauthenticated Git HTTP rate limit period in seconds"
+msgstr ""
+
+msgid "Unauthenticated Git HTTP request rate limit"
 msgstr ""
 
 msgid "Unauthenticated requests"
