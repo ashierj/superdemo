@@ -121,8 +121,6 @@ The **Deploy > Container Registry** entry is removed from the project's sidebar.
 
 ## Change visibility of the container registry
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/18792) in GitLab 14.2.
-
 By default, the container registry is visible to everyone with access to the project.
 You can, however, change the visibility of the container registry for a project.
 
