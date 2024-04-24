@@ -12630,6 +12630,9 @@ msgstr ""
 msgid "Collapse"
 msgstr ""
 
+msgid "Collapse %{section} merge requests"
+msgstr ""
+
 msgid "Collapse eligible approvers"
 msgstr ""
 
@@ -21071,6 +21074,9 @@ msgid "Existing projects will be able to use cleanup policies. Avoid enabling th
 msgstr ""
 
 msgid "Expand"
+msgstr ""
+
+msgid "Expand %{section} merge requests"
 msgstr ""
 
 msgid "Expand Readme"
