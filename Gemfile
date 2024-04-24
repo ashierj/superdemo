@@ -359,7 +359,6 @@ gem 'gitlab-license', '~> 2.4', feature_category: :shared
 gem 'rack-attack', '~> 6.7.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Sentry integration
-gem 'sentry-raven', '~> 3.1', feature_category: :error_tracking
 gem 'sentry-ruby', '~> 5.10.0', feature_category: :error_tracking
 gem 'sentry-rails', '~> 5.10.0', feature_category: :error_tracking
 gem 'sentry-sidekiq', '~> 5.10.0', feature_category: :error_tracking
