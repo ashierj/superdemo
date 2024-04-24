@@ -411,7 +411,6 @@ group :opentelemetry do
   gem 'opentelemetry-instrumentation-action_view', feature_category: :tooling
   gem 'opentelemetry-instrumentation-aws_sdk', feature_category: :tooling
   gem 'opentelemetry-instrumentation-http', feature_category: :tooling
-  gem 'opentelemetry-instrumentation-active_model_serializers', feature_category: :tooling
   gem 'opentelemetry-instrumentation-concurrent_ruby', feature_category: :tooling
   gem 'opentelemetry-instrumentation-ethon', feature_category: :tooling
   gem 'opentelemetry-instrumentation-excon', feature_category: :tooling
