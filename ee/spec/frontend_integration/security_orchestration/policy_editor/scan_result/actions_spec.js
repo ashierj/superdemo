@@ -11,6 +11,7 @@ import {
   USER_TYPE,
   DEFAULT_ASSIGNED_POLICY_PROJECT,
 } from 'ee/security_orchestration/constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import {
   mockGroupApproversApprovalManifest,
   mockRoleApproversApprovalManifest,
@@ -43,7 +44,9 @@ describe('Scan result policy actions', () => {
   };
 
   beforeEach(() => {
-    jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue('scan_result_policy');
+    jest
+      .spyOn(urlUtils, 'getParameterByName')
+      .mockReturnValue(POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter);
   });
 
   afterEach(() => {

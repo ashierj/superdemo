@@ -64,7 +64,7 @@ export default {
     policies() {
       const policies = [
         {
-          text: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.text.toLowerCase(),
+          text: POLICY_TYPE_COMPONENT_OPTIONS.approval.text.toLowerCase(),
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
           title: i18n.scanResultPolicyTitle,
           description: i18n.scanResultPolicyDesc,
