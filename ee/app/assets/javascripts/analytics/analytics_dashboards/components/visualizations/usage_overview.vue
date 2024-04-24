@@ -1,7 +1,7 @@
 <script>
 import { compact } from 'lodash';
 import { GlAvatar, GlIcon, GlTooltipDirective } from '@gitlab/ui';
-import { s__, sprintf } from '~/locale';
+import { s__, __, sprintf } from '~/locale';
 import dateFormat, { masks } from '~/lib/dateformat';
 import SingleStat from './single_stat.vue';
 
@@ -14,6 +14,11 @@ export default {
     GlAvatar,
     GlIcon,
     SingleStat,
+  },
+  inject: {
+    overviewCountsAggregationEnabled: {
+      type: Boolean,
+    },
   },
   props: {
     data: {
@@ -35,12 +40,22 @@ export default {
 
       return dateFormat(mostRecentRecordedAt, `${masks.isoDate} ${masks.shortTime}`);
     },
+    avatarAltText() {
+      const { fullName } = this.data.namespace;
+      return sprintf(__("%{name}'s avatar"), { name: fullName });
+    },
   },
   mounted() {
     const { recordedAt } = this;
     const { tooltip, lastUpdated } = this.$options.i18n;
     const text = `${tooltip}${recordedAt ? sprintf(lastUpdated, { recordedAt }) : ''}`;
     this.$emit('showTooltip', text);
+  },
+  methods: {
+    displayValue(value) {
+      if (value > 0) return value;
+      return this.overviewCountsAggregationEnabled ? 0 : '-';
+    },
   },
   i18n: {
     tooltip: s__(
@@ -64,6 +79,7 @@ export default {
         :entity-name="data.namespace.fullName"
         :entity-id="data.namespace.id"
         :fallback-on-error="true"
+        :alt="avatarAltText"
       />
 
       <div class="gl-line-height-20">
@@ -91,7 +107,7 @@ export default {
       class="gl-pr-9"
       :data-testid="`usage-overview-metric-${metric.identifier}`"
     >
-      <single-stat :data="metric.value" :options="metric.options" />
+      <single-stat :data="displayValue(metric.value)" :options="metric.options" />
     </div>
   </div>
 </template>

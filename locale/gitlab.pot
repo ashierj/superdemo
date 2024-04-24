@@ -12630,6 +12630,9 @@ msgstr ""
 msgid "Collapse"
 msgstr ""
 
+msgid "Collapse %{section} merge requests"
+msgstr ""
+
 msgid "Collapse eligible approvers"
 msgstr ""
 
@@ -16237,6 +16240,9 @@ msgid "DORA4Metrics|To help us improve the Show forecast feature, please share f
 msgstr ""
 
 msgid "DORA4Metrics|To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this %{linkStart}survey%{linkEnd}."
+msgstr ""
+
+msgid "DORA4Metrics|To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}"
 msgstr ""
 
 msgid "DORA4Metrics|Took 1 day or less to restore service when a service incident or a defect that impacts users occurs."
@@ -21071,6 +21077,9 @@ msgid "Existing projects will be able to use cleanup policies. Avoid enabling th
 msgstr ""
 
 msgid "Expand"
+msgstr ""
+
+msgid "Expand %{section} merge requests"
 msgstr ""
 
 msgid "Expand Readme"

@@ -179,6 +179,15 @@ export const ALERT_TEXT = s__(
   'DORA4Metrics|To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this %{linkStart}survey%{linkEnd}.',
 );
 
+export const ENABLE_BACKGROUND_AGGREGATION_WARNING_TEXT = s__(
+  'DORA4Metrics|To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}',
+);
+
+export const BACKGROUND_AGGREGATION_DOCS_LINK = helpPagePath(
+  'user/analytics/value_streams_dashboard.html',
+  { anchor: 'enable-or-disable-overview-background-aggregation' },
+);
+
 export const DORA_PERFORMERS_SCORE_CATEGORY_TYPES = {
   HIGH: 'highProjectsCount',
   MEDIUM: 'mediumProjectsCount',

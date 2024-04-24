@@ -2,7 +2,7 @@
 
 module WorkItems
   module Callbacks
-    class Color < ::WorkItems::Callbacks::Base
+    class Color < Base
       ALLOWED_PARAMS = %i[color skip_system_notes].freeze
 
       def after_initialize
