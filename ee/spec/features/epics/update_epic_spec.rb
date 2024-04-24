@@ -5,9 +5,11 @@ require 'spec_helper'
 RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
   include DropzoneHelper
 
-  let(:user) { create(:user) }
+  let_it_be(:non_member) { create(:user) }
+  let_it_be(:developer) { create(:user) }
+  let_it_be(:public_group) { create(:group, :public).tap { |g| g.add_developer(developer) } }
 
-  let(:markdown) do
+  let_it_be(:markdown) do
     <<-MARKDOWN.strip_heredoc
     This is a task list:
 
@@ -18,13 +20,15 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
 
   before do
     stub_licensed_features(epics: true)
-
-    sign_in(user)
   end
 
   context 'when user who is not a group member displays the epic' do
-    let(:group) { create(:group, :public) }
-    let(:epic) { create(:epic, group: group, description: markdown) }
+    let_it_be(:group) { public_group }
+    let_it_be(:epic) { create(:epic, group: group, description: markdown) }
+
+    before do
+      sign_in(non_member)
+    end
 
     it 'does not show the Edit button' do
       visit group_epic_path(group, epic)
@@ -35,7 +39,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
 
   shared_examples 'updates epic' do
     before do
-      group.add_developer(user)
+      sign_in(developer)
       visit group_epic_path(group, epic)
       wait_for_requests
     end
@@ -103,7 +107,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         end
         expect(page).to have_selector('.todos-list .todo', count: 1)
         within first('.todo') do
-          expect(page).to have_content "#{epic.title} · #{epic.group.name} #{epic.to_reference}"
+          expect(page).to have_content "#{epic.reload.title} · #{epic.group.name} #{epic.to_reference}"
         end
       end
 
@@ -139,8 +143,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
 
       describe 'autocomplete enabled' do
         it 'opens atwho container' do
-          find('#issue-description').native.send_keys('@')
-          wait_for_all_requests
+          find('#issue-description').native.send_keys("\n\n@")
           expect(page).to have_selector('.atwho-container')
         end
       end
@@ -177,23 +180,22 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
 
   context 'when user with developer access displays the epic' do
     it_behaves_like 'updates epic' do
-      let!(:group) { create(:group, :public) }
-      let(:epic) { create(:epic, group: group, description: markdown) }
+      let_it_be(:group) { public_group }
+      let_it_be(:epic) { create(:epic, group: group, description: markdown) }
     end
   end
 
   context 'when user with developer access displays the epic when group name has dot(.)' do
     it_behaves_like 'updates epic' do
-      let!(:group) { create(:group, :public, name: 'test.group') }
-      let!(:epic) { create(:epic, group: group, description: markdown) }
+      let_it_be(:group) { create(:group, :public, name: 'test.group').tap { |g| g.add_developer(developer) } }
+      let_it_be(:epic) { create(:epic, group: group, description: markdown) }
     end
   end
 
   context 'when user with developer access displays the epic when sub-group has dot(.)' do
     it_behaves_like 'updates epic' do
-      let!(:parent) { create(:group, :public) }
-      let!(:group) { create(:group, :public, parent: parent, name: 'test.subgroup') }
-      let!(:epic) { create(:epic, group: group, description: markdown) }
+      let_it_be(:group) { create(:group, :public, parent: public_group, name: 'test.subgroup') }
+      let_it_be(:epic) { create(:epic, group: group, description: markdown) }
     end
   end
 
@@ -201,18 +203,18 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
   # tested 2 level subgroup here
   context 'when user with developer access displays the epic when 2 level subgroup name has dot(.)' do
     it_behaves_like 'updates epic' do
-      let!(:parent) { create(:group, :public) }
-      let!(:parent1) { create(:group, :public, parent: parent) }
-      let!(:group) { create(:group, :public, parent: parent1, name: 'test.subgroup2') }
-      let!(:epic) { create(:epic, group: group, description: markdown) }
+      let_it_be(:group) do
+        create(:group, :public, parent: create(:group, :public, parent: public_group), name: 'test.subgroup2')
+      end
+
+      let_it_be(:epic) { create(:epic, group: group, description: markdown) }
     end
   end
 
   context 'when user with developer access displays the epic from a subgroup' do
     it_behaves_like 'updates epic' do
-      let!(:parent_group) { create(:group, :public) }
-      let!(:group) { create(:group, parent: parent_group) }
-      let!(:epic) { create(:epic, group: group, description: markdown) }
+      let_it_be(:group) { create(:group, parent: public_group) }
+      let_it_be(:epic) { create(:epic, group: group, description: markdown) }
     end
   end
 end
