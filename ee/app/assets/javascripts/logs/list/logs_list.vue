@@ -38,6 +38,7 @@ export default {
         dateRange: {
           value: DEFAULT_TIME_RANGE,
         },
+        attributes: {},
       },
       isDrawerOpen: false,
       selectedLog: null,
@@ -87,12 +88,14 @@ export default {
     bottomReached() {
       this.fetchLogs();
     },
-    onFilter({ dateRange }) {
+    onFilter({ dateRange, attributes }) {
       this.nextPageToken = null;
       this.logs = [];
       this.filters = {
         dateRange,
+        attributes,
       };
+      this.closeDrawer();
       this.fetchLogs();
     },
   },
@@ -106,7 +109,11 @@ export default {
     </div>
 
     <div v-else class="gl-px-4">
-      <logs-filtered-search :date-range-filter="filters.dateRange" @filter="onFilter" />
+      <logs-filtered-search
+        :date-range-filter="filters.dateRange"
+        :attributes-filters="filters.attributes"
+        @filter="onFilter"
+      />
 
       <gl-infinite-scroll
         :max-list-height="listHeight"

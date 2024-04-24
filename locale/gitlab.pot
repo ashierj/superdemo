@@ -34917,6 +34917,9 @@ msgstr ""
 msgid "Object does not exist on the server or you don't have permissions to access it"
 msgstr ""
 
+msgid "ObservabilityLogs|Attribute"
+msgstr ""
+
 msgid "ObservabilityLogs|Attributes"
 msgstr ""
 
@@ -34938,6 +34941,9 @@ msgstr ""
 msgid "ObservabilityLogs|Fatal"
 msgstr ""
 
+msgid "ObservabilityLogs|Fingerprint"
+msgstr ""
+
 msgid "ObservabilityLogs|Info"
 msgstr ""
 
@@ -34956,19 +34962,43 @@ msgstr ""
 msgid "ObservabilityLogs|No logs to display."
 msgstr ""
 
+msgid "ObservabilityLogs|Resource Attribute"
+msgstr ""
+
 msgid "ObservabilityLogs|Resource attributes"
+msgstr ""
+
+msgid "ObservabilityLogs|Search logs..."
 msgstr ""
 
 msgid "ObservabilityLogs|Service"
 msgstr ""
 
+msgid "ObservabilityLogs|Severity"
+msgstr ""
+
 msgid "ObservabilityLogs|Showing %{count} logs"
+msgstr ""
+
+msgid "ObservabilityLogs|Span ID"
 msgstr ""
 
 msgid "ObservabilityLogs|Trace"
 msgstr ""
 
+msgid "ObservabilityLogs|Trace Flags"
+msgstr ""
+
+msgid "ObservabilityLogs|Trace ID"
+msgstr ""
+
 msgid "ObservabilityLogs|Warning"
+msgstr ""
+
+msgid "ObservabilityLogs|name"
+msgstr ""
+
+msgid "ObservabilityLogs|value"
 msgstr ""
 
 msgid "ObservabilityMetrics|+%{count} more"
