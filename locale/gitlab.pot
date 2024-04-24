@@ -39588,7 +39588,7 @@ msgstr ""
 msgid "Profiles|The ideal image size is 192 x 192 pixels."
 msgstr ""
 
-msgid "Profiles|The maximum file size allowed is 200KB."
+msgid "Profiles|The maximum file size allowed is 200 KiB."
 msgstr ""
 
 msgid "Profiles|This email will be displayed on your public profile."
