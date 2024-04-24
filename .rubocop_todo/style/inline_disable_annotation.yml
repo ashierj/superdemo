@@ -1304,7 +1304,6 @@ Style/InlineDisableAnnotation:
     - 'ee/app/graphql/types/incident_management/oncall_shift_type.rb'
     - 'ee/app/graphql/types/member_roles/customizable_permission_type.rb'
     - 'ee/app/graphql/types/namespaces/namespace_ban_type.rb'
-    - 'ee/app/graphql/types/network_policy_type.rb'
     - 'ee/app/graphql/types/path_lock_type.rb'
     - 'ee/app/graphql/types/product_analytics/category_enum.rb'
     - 'ee/app/graphql/types/product_analytics/panel_type.rb'

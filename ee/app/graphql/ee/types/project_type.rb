@@ -217,17 +217,6 @@ module EE
           description: 'Security policy project suggestions',
           resolver: ::Resolvers::SecurityOrchestration::SecurityPolicyProjectSuggestionsResolver
 
-        field :network_policies,
-              ::Types::NetworkPolicyType.connection_type,
-              null: true,
-              deprecated: {
-                reason: 'Network policies are deprecated and will be removed in GitLab 17.0. This field returns ' \
-                        'no data in GitLab 15.0 and later',
-                milestone: '14.8'
-              },
-              description: 'Network Policies of the project',
-              resolver: ::Resolvers::NetworkPolicyResolver
-
         field :dora,
               ::Types::DoraType,
               null: true,
