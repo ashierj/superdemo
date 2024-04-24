@@ -11,37 +11,6 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
     allow(view).to receive(:current_user).and_return(build(:user))
   end
 
-  context 'for code suggestions' do
-    before do
-      stub_feature_flags(purchase_code_suggestions: false)
-    end
-
-    context 'when add on not purchased' do
-      it 'renders alert to contact sales' do
-        allow(group).to receive(:code_suggestions_purchased?).and_return(false)
-
-        render
-
-        expect(rendered).to render_template('groups/settings/_code_suggestions')
-        expect(rendered).to have_content(
-          'Code Suggestions free access has ended ' \
-          'Purchase the Duo Pro add-on to use Code Suggestions.'
-        )
-      end
-    end
-
-    context 'when add on purchased ' do
-      it 'renders alert with link to settings' do
-        allow(group).to receive(:code_suggestions_purchased?).and_return(true)
-
-        render
-
-        expect(rendered).to render_template('groups/settings/_code_suggestions')
-        expect(rendered).to have_content('Manage user access for Code Suggestions on the usage quotas page.')
-      end
-    end
-  end
-
   context 'for duo features enabled' do
     before do
       allow(group).to receive(:licensed_ai_features_available?).and_call_original

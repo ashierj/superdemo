@@ -3,6 +3,13 @@
 module Namespaces
   module Storage
     class RepositoryLimitAlertComponent < LimitAlertComponent
+      def render?
+        return false if context.is_a?(Group) && !current_page?(group_usage_quotas_path(context))
+        return false if context.is_a?(Project) && context.repository_size_excess == 0
+
+        super
+      end
+
       def usage_percentage_alert_title
         text_args = {
           usage_in_percent: used_storage_percentage(root_storage_size.usage_ratio),

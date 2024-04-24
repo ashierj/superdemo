@@ -185,19 +185,33 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(ai_gateway_token)
       end
 
-      context 'with purchase_code_suggestions feature disabled' do
-        before do
-          stub_feature_flags(purchase_code_suggestions: false)
+      it_behaves_like 'successful send request via workhorse'
+
+      context 'when add on subscription is expired' do
+        let(:namespace_without_expired_ai_access) { create(:group) }
+        let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_expired_ai_access) }
+        let(:api_url) { "/internal/jobs/#{job_without_ai_access.id}/x_ray/scan" }
+
+        let(:params) do
+          {
+            token: job_without_ai_access.token,
+            prompt_components: [{ payload: "test" }]
+          }
         end
 
-        context 'with code suggestions enabled on namespace level' do
-          let(:namespace_workhorse_headers) do
-            {
-              "X-Gitlab-Saas-Namespace-Ids" => [namespace.id.to_s]
-            }
-          end
+        before do
+          create(
+            :gitlab_subscription_add_on_purchase,
+            :expired,
+            add_on: code_suggestion_add_on,
+            namespace: namespace_without_expired_ai_access
+          )
+        end
 
-          it_behaves_like 'successful send request via workhorse'
+        it 'returns UNAUTHORIZED status' do
+          post_api
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
         end
 
         context 'with code suggestions enabled on parent namespace level' do
@@ -220,50 +234,39 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         end
       end
 
-      context 'with purchase_code_suggestions feature enabled' do
-        before do
-          stub_feature_flags(purchase_code_suggestions: true)
+      context 'when job does not have AI access' do
+        let(:namespace_without_ai_access) { create(:group) }
+        let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_ai_access) }
+        let(:api_url) { "/internal/jobs/#{job_without_ai_access.id}/x_ray/scan" }
+
+        let(:params) do
+          {
+            token: job_without_ai_access.token,
+            prompt_components: [{ payload: "test" }]
+          }
         end
 
-        it_behaves_like 'successful send request via workhorse'
+        it 'returns UNAUTHORIZED status' do
+          post_api
 
-        context 'when add on subscription is expired' do
-          let(:namespace_without_expired_ai_access) { create(:group) }
-          let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_expired_ai_access) }
-          let(:api_url) { "/internal/jobs/#{job_without_ai_access.id}/x_ray/scan" }
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+
+        context 'with personal namespace' do
+          let(:user_namespace) { create(:user).namespace }
+          let(:job_in_user_namespace) { create(:ci_build, :running, namespace: user_namespace) }
+          let(:api_url) { "/internal/jobs/#{job_in_user_namespace.id}/x_ray/scan" }
 
           let(:params) do
             {
-              token: job_without_ai_access.token,
+              token: job_in_user_namespace.token,
               prompt_components: [{ payload: "test" }]
             }
           end
 
-          before do
-            create(
-              :gitlab_subscription_add_on_purchase,
-              :expired,
-              add_on: code_suggestion_add_on,
-              namespace: namespace_without_expired_ai_access
-            )
-          end
-
-          it 'returns UNAUTHORIZED status' do
-            post_api
-
-            expect(response).to have_gitlab_http_status(:unauthorized)
-          end
-        end
-
-        context 'when job does not have AI access' do
-          let(:namespace_without_ai_access) { create(:group) }
-          let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_ai_access) }
-          let(:api_url) { "/internal/jobs/#{job_without_ai_access.id}/x_ray/scan" }
-
-          let(:params) do
+          let(:namespace_workhorse_headers) do
             {
-              token: job_without_ai_access.token,
-              prompt_components: [{ payload: "test" }]
+              "X-Gitlab-Saas-Namespace-Ids" => [user_namespace.id.to_s]
             }
           end
 
@@ -271,31 +274,6 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
             post_api
 
             expect(response).to have_gitlab_http_status(:unauthorized)
-          end
-
-          context 'with personal namespace' do
-            let(:user_namespace) { create(:user).namespace }
-            let(:job_in_user_namespace) { create(:ci_build, :running, namespace: user_namespace) }
-            let(:api_url) { "/internal/jobs/#{job_in_user_namespace.id}/x_ray/scan" }
-
-            let(:params) do
-              {
-                token: job_in_user_namespace.token,
-                prompt_components: [{ payload: "test" }]
-              }
-            end
-
-            let(:namespace_workhorse_headers) do
-              {
-                "X-Gitlab-Saas-Namespace-Ids" => [user_namespace.id.to_s]
-              }
-            end
-
-            it 'returns UNAUTHORIZED status' do
-              post_api
-
-              expect(response).to have_gitlab_http_status(:unauthorized)
-            end
           end
         end
       end
