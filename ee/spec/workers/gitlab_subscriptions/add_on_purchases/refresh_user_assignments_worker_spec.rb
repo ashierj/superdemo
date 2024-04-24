@@ -6,7 +6,10 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
   describe '#perform' do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
-    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: namespace, add_on: add_on) }
+    let_it_be(:add_on_purchase) do
+      create(:gitlab_subscription_add_on_purchase, namespace: namespace, quantity: 2, add_on: add_on)
+    end
+
     let_it_be(:other_add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: add_on) }
 
     let(:root_namespace_id) { namespace.id }
@@ -37,12 +40,6 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
           end.to change { add_on_purchase.reload.last_assigned_users_refreshed_at }.from(nil).to(Time.current)
         end
       end
-    end
-
-    context 'when root_namespace_id does not exists' do
-      let(:root_namespace_id) { nil }
-
-      it_behaves_like 'does not remove seat assignment'
     end
 
     context 'when root namespace does not have related purchase' do
@@ -78,6 +75,34 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
             expect(add_on_purchase.assigned_users.by_user(user_1).count).to eq(1)
           end
         end
+
+        context 'when there is a seat overage' do
+          let_it_be(:user_3) { create(:user) }
+
+          before_all do
+            GitlabSubscriptions::UserAddOnAssignment.delete_all
+
+            # user_2 is not added as a group member; thus is inelligble
+            add_on_purchase.reload.namespace.add_guest(user_1)
+            add_on_purchase.namespace.add_developer(user_3)
+
+            # user_3 is assigned last; thus will be prioritzed for overage cleanup
+            add_on_purchase.assigned_users.create!(user: user_1)
+            add_on_purchase.assigned_users.create!(user: user_2)
+            add_on_purchase.assigned_users.create!(user: user_3)
+
+            # decrease the quantity to create overage
+            add_on_purchase.update!(quantity: 1)
+          end
+
+          it 'removes ineligible users and reconciles any seat overage' do
+            expect do
+              subject
+            end.to change { GitlabSubscriptions::UserAddOnAssignment.count }.by(-2)
+
+            expect(add_on_purchase.assigned_users.map(&:user)).to eq([user_1])
+          end
+        end
       end
     end
 
@@ -88,10 +113,40 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
         message: 'AddOnPurchase user assignments refreshed in bulk',
         deleted_assignments_count: 2,
         add_on: add_on_purchase.add_on.name,
-        namespace: namespace.path
+        add_on_purchase_id: add_on_purchase.id,
+        namespace_id: namespace.id
       )
 
       subject.perform(root_namespace_id)
+    end
+
+    context 'when root_namespace_id is nil' do
+      let(:root_namespace_id) { nil }
+
+      context 'when there is no associated add_on_purchase' do
+        it_behaves_like 'does not remove seat assignment'
+      end
+
+      context 'when there is an associated add_on_purchase' do
+        let(:add_on_purchase) do
+          create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: add_on)
+        end
+
+        before do
+          add_on_purchase.assigned_users.create!(user: user_1)
+          add_on_purchase.assigned_users.create!(user: user_2)
+        end
+
+        it 'refreshes users seat assignments' do
+          expect do
+            subject.perform(root_namespace_id)
+          end.to change { add_on_purchase.reload.assigned_users.count }.from(2).to(1)
+
+          expect(add_on_purchase.assigned_users.map(&:user)).to eq([user_1])
+        end
+
+        it_behaves_like 'updates last_assigned_users_refreshed_at attribute'
+      end
     end
 
     context 'when no assignments were deleted' do
@@ -112,7 +167,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
     context 'with exclusive lease' do
       include ExclusiveLeaseHelpers
 
-      let(:lock_key) { "#{described_class.name.underscore}:#{root_namespace_id}" }
+      let(:lock_key) { "#{described_class.name.underscore}:#{add_on_purchase.id}" }
       let(:timeout) { described_class::LEASE_TTL }
 
       context 'when exclusive lease has not been taken' do

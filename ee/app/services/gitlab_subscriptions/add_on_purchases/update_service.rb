@@ -15,7 +15,13 @@ module GitlabSubscriptions
       def execute
         return error_response unless add_on_purchase
 
-        update_add_on_purchase ? successful_response : error_response
+        if update_add_on_purchase
+          perform_after_update_actions
+
+          successful_response
+        else
+          error_response
+        end
       end
 
       private
@@ -39,6 +45,12 @@ module GitlabSubscriptions
         }.compact
 
         add_on_purchase.update(attributes)
+      end
+
+      def perform_after_update_actions
+        GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker.perform_async(
+          add_on_purchase.namespace_id
+        )
       end
 
       override :error_response

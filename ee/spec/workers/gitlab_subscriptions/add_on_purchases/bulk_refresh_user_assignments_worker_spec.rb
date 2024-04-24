@@ -44,6 +44,34 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWo
 
             expect(add_on_purchase_fresh.assigned_users.count).to eq(1)
           end
+
+          context 'when there is a seat overage' do
+            let_it_be(:user_1) { create(:user) }
+            let_it_be(:user_2) { create(:user) }
+            let_it_be(:user_3) { create(:user) }
+
+            before_all do
+              GitlabSubscriptions::UserAddOnAssignment.delete_all
+
+              # user_3 is not added as a group member; thus is ineligible
+              add_on_purchase_stale.namespace.add_developer(user_1)
+              add_on_purchase_stale.namespace.add_developer(user_2)
+
+              # user_2 is assigned last; thus will be prioritzed for overage cleanup
+              add_on_purchase_stale.assigned_users.create!(user: user_3)
+              add_on_purchase_stale.assigned_users.create!(user: user_1)
+              add_on_purchase_stale.assigned_users.create!(user: user_2)
+            end
+
+            it 'reconciles any seat overage' do
+              expect do
+                perform_work
+              end.to change { add_on_purchase_stale.reload.assigned_users.count }.by(-2)
+                .and change { add_on_purchase_stale.reload.last_assigned_users_refreshed_at }
+
+              expect(add_on_purchase_stale.assigned_users.map(&:user)).to eq([user_1])
+            end
+          end
         end
       end
 

@@ -6,7 +6,7 @@ module GitlabSubscriptions
       include ::ApplicationWorker
       include Gitlab::ExclusiveLeaseHelpers
 
-      LEASE_TTL = 1.minute
+      LEASE_TTL = 3.minutes
 
       feature_category :seat_cost_management
 
@@ -19,10 +19,16 @@ module GitlabSubscriptions
       def perform(root_namespace_id)
         @root_namespace_id = root_namespace_id
 
-        return unless root_namespace && add_on_purchase
+        return unless add_on_purchase
 
-        deleted_assignments_count = in_lock(lock_key, ttl: LEASE_TTL) do
-          add_on_purchase.delete_ineligible_user_assignments_in_batches!
+        deleted_assignments_count = 0
+        in_lock(lock_key, ttl: LEASE_TTL, retries: 0) do
+          deleted_assignments_count += add_on_purchase.delete_ineligible_user_assignments_in_batches!
+
+          reconcile_response = GitlabSubscriptions::AddOnPurchases::ReconcileSeatOverageService.new(
+            add_on_purchase: add_on_purchase.reset
+          ).execute
+          deleted_assignments_count += reconcile_response.payload[:removed_seats_count]
         end
 
         # #update_column used to skip validations and callbacks.
@@ -38,16 +44,15 @@ module GitlabSubscriptions
 
       attr_reader :root_namespace_id
 
-      def root_namespace
-        @root_namespace ||= Group.find_by_id(root_namespace_id)
-      end
-
       def add_on_purchase
-        @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_gitlab_duo_pro.first
+        @add_on_purchase ||= ::GitlabSubscriptions::AddOnPurchase
+          .for_gitlab_duo_pro
+          .by_namespace_id(root_namespace_id)
+          .first
       end
 
       def lock_key
-        "#{self.class.name.underscore}:#{root_namespace.id}"
+        "#{self.class.name.underscore}:#{add_on_purchase.id}"
       end
 
       def log_event(deleted_count)
@@ -55,7 +60,8 @@ module GitlabSubscriptions
           message: 'AddOnPurchase user assignments refreshed in bulk',
           deleted_assignments_count: deleted_count,
           add_on: add_on_purchase.add_on.name,
-          namespace: root_namespace.path
+          add_on_purchase_id: add_on_purchase.id,
+          namespace_id: root_namespace_id
         )
       end
     end

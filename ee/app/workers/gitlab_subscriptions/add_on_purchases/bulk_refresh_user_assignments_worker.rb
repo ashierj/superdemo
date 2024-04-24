@@ -19,6 +19,12 @@ module GitlabSubscriptions
 
         deleted_assignments_count = add_on_purchase.delete_ineligible_user_assignments_in_batches!
 
+        reconcile_response = GitlabSubscriptions::AddOnPurchases::ReconcileSeatOverageService.new(
+          add_on_purchase: add_on_purchase
+        ).execute
+
+        deleted_assignments_count += reconcile_response.payload[:removed_seats_count]
+
         log_event(deleted_assignments_count) if deleted_assignments_count > 0
       end
 
