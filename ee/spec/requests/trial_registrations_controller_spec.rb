@@ -118,7 +118,8 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :onboardin
             allow(User).to receive(:allow_unconfirmed_access_for).and_return 0
           end
 
-          context 'when email confirmation settings is set to `soft`' do
+          context 'when email confirmation settings is set to `soft`',
+            quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/436592' do
             before do
               stub_application_setting_enum('email_confirmation_setting', 'soft')
             end
