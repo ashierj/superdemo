@@ -13,7 +13,8 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
       admin_audit_log: true,
       custom_file_templates: true,
       elastic_search: true,
-      license_scanning: true
+      license_scanning: true,
+      product_analytics: true
     )
     stub_application_setting(grafana_enabled: true)
   end
