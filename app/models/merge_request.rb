@@ -682,9 +682,13 @@ class MergeRequest < ApplicationRecord
     [:assignees, :reviewers] + super
   end
 
-  def committers(with_merge_commits: false, lazy: false)
-    strong_memoize_with(:committers, with_merge_commits, lazy) do
-      commits.committers(with_merge_commits: with_merge_commits, lazy: lazy)
+  def committers(with_merge_commits: false, lazy: false, include_author_when_signed: false)
+    strong_memoize_with(:committers, with_merge_commits, lazy, include_author_when_signed) do
+      commits.committers(
+        with_merge_commits: with_merge_commits,
+        lazy: lazy,
+        include_author_when_signed: include_author_when_signed
+      )
     end
   end
 
