@@ -732,27 +732,6 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
             )
           end
         end
-
-        context 'when `linked_work_items` feature flag is disabled' do
-          before do
-            stub_feature_flags(linked_work_items: false)
-          end
-
-          it 'returns null fields' do
-            post_graphql(query, current_user: current_user)
-            expect(work_item_data).to include(
-              'widgets' => include(
-                hash_including(
-                  'type' => 'LINKED_ITEMS',
-                  'blocked' => nil,
-                  'blockedByCount' => nil,
-                  'blockingCount' => nil,
-                  'linkedItems' => { 'nodes' => [] }
-                )
-              )
-            )
-          end
-        end
       end
 
       describe 'hierarchy widget' do

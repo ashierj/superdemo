@@ -10,32 +10,23 @@ module EE
 
           prepended do
             field :blocked, GraphQL::Types::Boolean, null: true,
-              description: 'Indicates the work item is blocked. Returns `null`' \
-                           'if `linked_work_items` feature flag is disabled.'
+              description: 'Indicates the work item is blocked.'
 
             field :blocking_count, GraphQL::Types::Int, null: true,
-              description: 'Count of items the work item is blocking. Returns `null`' \
-                           'if `linked_work_items` feature flag is disabled.'
+              description: 'Count of items the work item is blocking.'
 
             field :blocked_by_count, GraphQL::Types::Int, null: true,
-              description: 'Count of items blocking the work item. Returns `null`' \
-                           'if `linked_work_items` feature flag is disabled.'
+              description: 'Count of items blocking the work item.'
 
             def blocked
-              return unless linked_items_enabled?
-
               aggregator_class.new(context, object.work_item.id) { |count| (count || 0) > 0 }
             end
 
             def blocked_by_count
-              return unless linked_items_enabled?
-
               aggregator_class.new(context, object.work_item.id) { |count| count || 0 }
             end
 
             def blocking_count
-              return unless linked_items_enabled?
-
               object.work_item.blocking_issues_count
             end
 
@@ -43,10 +34,6 @@ module EE
 
             def aggregator_class
               ::Gitlab::Graphql::Aggregations::WorkItems::LazyLinksAggregate
-            end
-
-            def linked_items_enabled?
-              object.work_item.resource_parent.linked_work_items_feature_flag_enabled?
             end
           end
         end
