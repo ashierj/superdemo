@@ -141,27 +141,13 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
         end
       end
 
-      describe 'totalWeight and totalIssueWeight fields with very large total weight values' do
+      describe 'totalIssueWeight field with very large total weight values' do
         let!(:label3) { create(:group_label, group: group) }
         let!(:label_list) { create(:list, board: board, label: label3, position: 10) }
 
         before do
           create(:issue, project: project, labels: [label3], weight: GraphQL::Types::Int::MAX)
           create(:issue, project: project, labels: [label3], weight: 1)
-        end
-
-        context 'when requesting totalWeight field' do
-          let(:fields) do
-            <<~GQL
-            totalWeight
-            GQL
-          end
-
-          it 'returns error' do
-            post_graphql(query(id: global_id_of(label_list), issueFilters: { labelName: label3.title }), current_user: current_user)
-
-            expect_graphql_errors_to_include(/Integer out of bounds/)
-          end
         end
 
         context 'when requesting totalIssueWeight field' do
