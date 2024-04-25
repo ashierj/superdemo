@@ -14,6 +14,7 @@ module EE
             stages = persisted_stages
             stages = filter_by_value_stream(stages)
             stages = filter_by_value_stream_ids(stages)
+            stages = filter_by_stage_ids(stages)
 
             success(stages.for_list)
           end
@@ -33,7 +34,13 @@ module EE
           def filter_by_value_stream_ids(stages)
             return stages unless filter_by_value_stream_ids?
 
-            stages.by_value_streams_ids(params[:value_streams_ids])
+            stages.by_value_streams_ids(params[:value_stream_ids])
+          end
+
+          def filter_by_stage_ids(stages)
+            return stages unless filter_by_stage_ids?
+
+            stages.id_in(params[:stage_ids])
           end
 
           def filter_by_value_stream?
@@ -41,7 +48,7 @@ module EE
           end
 
           def filter_by_value_stream_ids?
-            params[:value_streams_ids].present?
+            params[:value_stream_ids].present?
           end
 
           def allowed?
