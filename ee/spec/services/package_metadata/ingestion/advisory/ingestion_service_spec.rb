@@ -12,76 +12,51 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
     let(:old_advisories) { build_list(:pm_advisory_data_object, 5, published_date: Time.zone.now - 14.days - 1.second) }
     let(:import_data) { recent_advisories + old_advisories }
 
-    where(:cs_ff_enabled) do
-      [
-        true,
-        false
-      ]
+    let(:ds_advisories) do
+      build_list(:pm_advisory_data_object, 5, source_xid: 'glad',
+        published_date: Time.zone.now - 13.days)
     end
 
-    with_them do
-      let(:ds_advisories) do
-        build_list(:pm_advisory_data_object, 5, source_xid: 'glad',
-          published_date: Time.zone.now - 13.days)
+    let(:cs_advisories) do
+      build_list(:pm_advisory_data_object, 5, source_xid: 'trivy-db',
+        published_date: Time.zone.now - 13.days)
+    end
+
+    before do
+      allow(Gitlab::AppJsonLogger).to receive(:info).and_call_original
+    end
+
+    it 'publishes only recently ingested advisories to the event store' do
+      received_events = []
+      allow(Gitlab::EventStore).to receive(:publish) do |event|
+        received_events << event
       end
 
-      let(:cs_advisories) do
-        build_list(:pm_advisory_data_object, 5, source_xid: 'trivy-db',
-          published_date: Time.zone.now - 13.days)
-      end
+      execute
 
-      before do
-        value = cs_ff_enabled ? 100 : 0
-        Feature.enable_percentage_of_actors(:container_scanning_continuous_vulnerability_scans, value)
-        allow(Gitlab::AppJsonLogger).to receive(:warn).and_call_original
-        allow(Gitlab::AppJsonLogger).to receive(:info).and_call_original
-      end
+      received_advisory_ids = received_events.map { |event| event.data[:advisory_id] }
+      received_advisories = PackageMetadata::Advisory.where(id: received_advisory_ids)
+                                                     .pluck(:source_xid, :advisory_xid)
+      expected = recent_advisories.map { |obj| [obj.source_xid, obj.advisory_xid] }
 
-      it 'publishes only recently ingested advisories to the event store' do
-        received_events = []
-        allow(Gitlab::EventStore).to receive(:publish) do |event|
-          received_events << event
-        end
+      expect(received_advisories).to match_array(expected)
 
-        execute
+      expect(Gitlab::AppJsonLogger).to have_received(:info)
+        .with(message: 'Queued scan for advisory', source_xid: be_present, advisory_xid: be_present)
+        .at_least(:once)
+    end
 
-        received_advisory_ids = received_events.map { |event| event.data[:advisory_id] }
-        received_advisories = PackageMetadata::Advisory.where(id: received_advisory_ids)
-                                                       .pluck(:source_xid, :advisory_xid)
+    it 'uses package metadata application record transactions' do
+      expect(PackageMetadata::ApplicationRecord).to receive(:transaction)
+      execute
+    end
 
-        expected = recent_advisories.filter_map do |obj|
-          if (obj.source_xid == 'glad') || (obj.source_xid == 'trivy-db' && cs_ff_enabled)
-            [obj.source_xid, obj.advisory_xid]
-          end
-        end
-
-        expect(received_advisories).to match_array(expected)
-
-        if cs_ff_enabled
-          expect(Gitlab::AppJsonLogger).to have_received(:info)
-            .with(message: 'Queued scan for advisory', source_xid: be_present, advisory_xid: be_present)
-            .at_least(:once)
-        end
-
-        unless cs_ff_enabled
-          expect(Gitlab::AppJsonLogger).to have_received(:warn)
-            .with(message: 'Skipped scan for advisory', source_xid: be_present, advisory_xid: be_present)
-            .at_least(:once)
-        end
-      end
-
-      it 'uses package metadata application record transactions' do
-        expect(PackageMetadata::ApplicationRecord).to receive(:transaction)
-        execute
-      end
-
-      it 'adds new advisories and affected packages' do
-        expect { execute }
-          .to change { PackageMetadata::Advisory.count }.by(import_data.size)
-                                                        .and change {
-                                                          PackageMetadata::AffectedPackage.count
-                                                        }.by(import_data.size)
-      end
+    it 'adds new advisories and affected packages' do
+      expect { execute }
+        .to change { PackageMetadata::Advisory.count }.by(import_data.size)
+                                                      .and change {
+                                                        PackageMetadata::AffectedPackage.count
+                                                      }.by(import_data.size)
     end
 
     context 'when error occurs' do
