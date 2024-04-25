@@ -36,3 +36,11 @@ approval_settings:
   block_branch_modification: true
   prevent_pushing_and_force_pushing: true
 `;
+
+export const DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY.concat(
+  'fallback_behavior:\n  fail: closed',
+);
+
+export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE.concat(
+  'fallback_behavior:\n  fail: closed',
+);

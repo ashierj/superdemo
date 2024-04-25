@@ -32,7 +32,9 @@ import {
   buildSettingsList,
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK,
   DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK,
   getInvalidBranches,
   fromYaml,
   policyToYaml,
@@ -113,9 +115,21 @@ export default {
     },
   },
   data() {
-    const newPolicyYaml = isGroup(this.namespaceType)
-      ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE
-      : DEFAULT_SCAN_RESULT_POLICY;
+    let newPolicyYaml;
+
+    const includeFallback =
+      this.glFeatures.mergeRequestApprovalPoliciesFallbackBehavior ||
+      this.glFeatures.mergeRequestApprovalPoliciesFallbackBehaviorGroup;
+
+    if (isGroup(this.namespaceType)) {
+      newPolicyYaml = includeFallback
+        ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK
+        : DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE;
+    } else {
+      newPolicyYaml = includeFallback
+        ? DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK
+        : DEFAULT_SCAN_RESULT_POLICY;
+    }
 
     const yamlEditorValue = this.existingPolicy ? policyToYaml(this.existingPolicy) : newPolicyYaml;
 
