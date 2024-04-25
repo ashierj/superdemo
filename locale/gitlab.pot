@@ -46141,6 +46141,9 @@ msgstr ""
 msgid "SecurityOrchestration|%{boldStart}Add branches%{boldEnd} first before selection."
 msgstr ""
 
+msgid "SecurityOrchestration|%{boldStart}Send a bot message%{boldEnd} as comment to merge request creator."
+msgstr ""
+
 msgid "SecurityOrchestration|%{branchName}"
 msgstr ""
 
@@ -46569,6 +46572,9 @@ msgstr ""
 msgid "SecurityOrchestration|Require %{approvals} %{plural} from %{approvers} if any of the following occur:"
 msgstr ""
 
+msgid "SecurityOrchestration|Require Approvers"
+msgstr ""
+
 msgid "SecurityOrchestration|Required approvals exceed eligible approvers."
 msgstr ""
 
@@ -46651,6 +46657,9 @@ msgid "SecurityOrchestration|Select security policy project"
 msgstr ""
 
 msgid "SecurityOrchestration|Select users"
+msgstr ""
+
+msgid "SecurityOrchestration|Send bot message"
 msgstr ""
 
 msgid "SecurityOrchestration|Several merge result policy criteria have been deprecated. Policies using these elements will not work after GitLab 17.0 (May 10, 2024). You must edit these policies to remove the deprecated criteria."

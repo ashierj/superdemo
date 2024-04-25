@@ -60,6 +60,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'group_approvers_ids',
         'role_approvers',
         'id',
+        'enabled',
       ];
 
       const { approval_settings: settings = {} } = policy;

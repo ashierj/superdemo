@@ -22,20 +22,20 @@ import {
 import EditorLayout from '../editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
+import ScanFilterSelector from '../scan_filter_selector.vue';
 import SettingsSection from './settings/settings_section.vue';
-import ActionSection from './action/action_section_new.vue';
+import ActionSection from './action/action_section.vue';
 import ApproverAction from './action/approver_action.vue';
 import RuleSection from './rule/rule_section.vue';
 
 import {
+  ACTION_LISTBOX_ITEMS,
   ANY_MERGE_REQUEST,
+  buildAction,
   buildSettingsList,
   createPolicyObject,
-  DEFAULT_SCAN_RESULT_POLICY,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK,
   getInvalidBranches,
+  getPolicyYaml,
   fromYaml,
   policyToYaml,
   approversOutOfSync,
@@ -48,10 +48,10 @@ import {
   invalidVulnerabilityAttributes,
   humanizeInvalidBranchesError,
   invalidBranchType,
-  buildApprovalAction,
 } from './lib';
 
 export default {
+  ACTION_LISTBOX_ITEMS,
   ADD_RULE_LABEL,
   RULES_LABEL,
   SECURITY_POLICY_ACTIONS,
@@ -60,7 +60,9 @@ export default {
   i18n: {
     ADD_ACTION_LABEL,
     PARSING_ERROR_MESSAGE,
+    buttonText: s__('SecurityOrchestration|Add new action'),
     createMergeRequest: __('Configure with a merge request'),
+    filterHeaderText: s__('SecurityOrchestration|Choose an action'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
       'SecurityOrchestration|Merge request approval policies can only be created by project owners.',
@@ -86,6 +88,7 @@ export default {
     GlEmptyState,
     EditorLayout,
     RuleSection,
+    ScanFilterSelector,
     SettingsSection,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -115,21 +118,16 @@ export default {
     },
   },
   data() {
-    let newPolicyYaml;
-
+    const includeBotComment = this.glFeatures.approvalPolicyDisableBotComment;
     const includeFallback =
       this.glFeatures.mergeRequestApprovalPoliciesFallbackBehavior ||
       this.glFeatures.mergeRequestApprovalPoliciesFallbackBehaviorGroup;
 
-    if (isGroup(this.namespaceType)) {
-      newPolicyYaml = includeFallback
-        ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK
-        : DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE;
-    } else {
-      newPolicyYaml = includeFallback
-        ? DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK
-        : DEFAULT_SCAN_RESULT_POLICY;
-    }
+    const newPolicyYaml = getPolicyYaml({
+      includeBotComment,
+      includeFallback,
+      isGroup: isGroup(this.namespaceType),
+    });
 
     const yamlEditorValue = this.existingPolicy ? policyToYaml(this.existingPolicy) : newPolicyYaml;
 
@@ -153,6 +151,10 @@ export default {
     };
   },
   computed: {
+    availableActionListboxItems() {
+      const usedActionTypes = (this.policy.actions || []).map((action) => action.type);
+      return ACTION_LISTBOX_ITEMS.filter((item) => !usedActionTypes.includes(item.value));
+    },
     disableUpdate() {
       return !this.hasParsingError && this.hasEmptyActions && this.hasEmptySettings;
     },
@@ -219,7 +221,7 @@ export default {
         description: this.$options.i18n.settingWarningDescription,
       };
     },
-    showBotCommentAction() {
+    showBotMessageAction() {
       return this.isProject && this.glFeatures.approvalPolicyDisableBotComment;
     },
   },
@@ -236,8 +238,12 @@ export default {
     ruleHasBranchesProperty(rule) {
       return BRANCHES_KEY in rule;
     },
-    addAction() {
-      this.$set(this.policy, 'actions', [buildApprovalAction()]);
+    addAction(type) {
+      const newAction = buildAction(type);
+      this.policy = {
+        ...this.policy,
+        actions: this.policy.actions ? [...this.policy.actions, newAction] : [newAction],
+      };
       this.updateYamlEditorValue(this.policy);
     },
     removeAction(index) {
@@ -454,37 +460,45 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <div v-if="Boolean(policy.actions)">
-          <div v-if="showBotCommentAction">
-            <action-section
-              v-for="(action, index) in policy.actions"
-              :key="action.id"
-              :data-testid="`action-${index}`"
-              class="gl-mb-4"
-              :init-action="action"
-              :errors="errors.action"
-              :existing-approvers="existingApprovers"
-              @error="handleParsingError"
-              @updateApprovers="updatePolicyApprovers"
-              @changed="updateAction(index, $event)"
-              @remove="removeAction(index)"
-            />
-          </div>
-          <div v-else>
-            <approver-action
-              v-for="(action, index) in policy.actions"
-              :key="action.id"
-              :data-testid="`action-${index}`"
-              class="gl-mb-4"
-              :init-action="action"
-              :errors="errors.action"
-              :existing-approvers="existingApprovers"
-              @error="handleParsingError"
-              @updateApprovers="updatePolicyApprovers"
-              @changed="updateAction(index, $event)"
-              @remove="removeAction(index)"
-            />
-          </div>
+        <div v-if="showBotMessageAction">
+          <action-section
+            v-for="(action, index) in policy.actions"
+            :key="action.id"
+            :data-testid="`action-${index}`"
+            class="gl-mb-4"
+            :action-index="index"
+            :init-action="action"
+            :errors="errors.action"
+            :existing-approvers="existingApprovers"
+            @error="handleParsingError"
+            @updateApprovers="updatePolicyApprovers"
+            @changed="updateAction(index, $event)"
+            @remove="removeAction(index)"
+          />
+
+          <scan-filter-selector
+            v-if="availableActionListboxItems.length"
+            class="gl-w-full"
+            :button-text="$options.i18n.buttonText"
+            :header="$options.i18n.filterHeaderText"
+            :filters="availableActionListboxItems"
+            @select="addAction"
+          />
+        </div>
+        <div v-else-if="Boolean(policy.actions)">
+          <approver-action
+            v-for="(action, index) in policy.actions"
+            :key="action.id"
+            :data-testid="`action-${index}`"
+            class="gl-mb-4"
+            :init-action="action"
+            :errors="errors.action"
+            :existing-approvers="existingApprovers"
+            @error="handleParsingError"
+            @updateApprovers="updatePolicyApprovers"
+            @changed="updateAction(index, $event)"
+            @remove="removeAction(index)"
+          />
         </div>
         <div v-else class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">

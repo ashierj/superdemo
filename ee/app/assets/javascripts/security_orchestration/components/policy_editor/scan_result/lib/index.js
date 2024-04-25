@@ -20,6 +20,22 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
+export const DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE = `type: approval_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+  - type: send_bot_message
+    enabled: true
+approval_settings:
+  block_branch_modification: true
+  prevent_pushing_and_force_pushing: true
+`;
+
 export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE = `type: approval_policy
 name: ''
 description: ''
@@ -41,6 +57,26 @@ export const DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLI
   'fallback_behavior:\n  fail: closed',
 );
 
+export const DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE.concat(
+  'fallback_behavior:\n  fail: closed',
+);
+
 export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE.concat(
   'fallback_behavior:\n  fail: closed',
 );
+
+export const getPolicyYaml = ({ includeBotComment, includeFallback, isGroup }) => {
+  if (isGroup) {
+    return includeFallback
+      ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK
+      : DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE;
+  }
+
+  if (includeBotComment) {
+    return includeFallback
+      ? DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE_WITH_FALLBACK
+      : DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE;
+  }
+
+  return includeFallback ? DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK : DEFAULT_SCAN_RESULT_POLICY;
+};
