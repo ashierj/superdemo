@@ -15144,6 +15144,29 @@ The edge type for [`WorkItem`](#workitem).
 | <a id="workitemedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="workitemedgenode"></a>`node` | [`WorkItem`](#workitem) | The item at the end of the edge. |
 
+#### `WorkItemRelatedMergeRequestConnection`
+
+The connection type for [`WorkItemRelatedMergeRequest`](#workitemrelatedmergerequest).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemrelatedmergerequestconnectionedges"></a>`edges` | [`[WorkItemRelatedMergeRequestEdge]`](#workitemrelatedmergerequestedge) | A list of edges. |
+| <a id="workitemrelatedmergerequestconnectionnodes"></a>`nodes` | [`[WorkItemRelatedMergeRequest]`](#workitemrelatedmergerequest) | A list of nodes. |
+| <a id="workitemrelatedmergerequestconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `WorkItemRelatedMergeRequestEdge`
+
+The edge type for [`WorkItemRelatedMergeRequest`](#workitemrelatedmergerequest).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemrelatedmergerequestedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="workitemrelatedmergerequestedgenode"></a>`node` | [`WorkItemRelatedMergeRequest`](#workitemrelatedmergerequest) | The item at the end of the edge. |
+
 #### `WorkItemTimelogConnection`
 
 The connection type for [`WorkItemTimelog`](#workitemtimelog).
@@ -31364,6 +31387,15 @@ Check permissions for the current user on a work item.
 | <a id="workitempermissionssetworkitemmetadata"></a>`setWorkItemMetadata` | [`Boolean!`](#boolean) | If `true`, the user can perform `set_work_item_metadata` on this resource. |
 | <a id="workitempermissionsupdateworkitem"></a>`updateWorkItem` | [`Boolean!`](#boolean) | If `true`, the user can perform `update_work_item` on this resource. |
 
+### `WorkItemRelatedMergeRequest`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemrelatedmergerequestclosesworkitem"></a>`closesWorkItem` | [`Boolean!`](#boolean) | Whether the related merge request will close the work item when it is merged. |
+| <a id="workitemrelatedmergerequestmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Related merge request. |
+
 ### `WorkItemStateCountsType`
 
 Represents total number of work items for the represented states.
@@ -31546,6 +31578,7 @@ Represents a development widget.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetdevelopmentfeatureflags"></a>`featureFlags` | [`FeatureFlagConnection`](#featureflagconnection) | Feature flags associated with the work item. (see [Connections](#connections)) |
+| <a id="workitemwidgetdevelopmentrelatedmergerequests"></a>`relatedMergeRequests` | [`WorkItemRelatedMergeRequestConnection`](#workitemrelatedmergerequestconnection) | Merge requests related to the work item. (see [Connections](#connections)) |
 | <a id="workitemwidgetdevelopmenttype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
 ### `WorkItemWidgetHealthStatus`
