@@ -9,9 +9,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
   let_it_be(:user) { create(:user, :low_risk) }
 
   before do
-    allow(::Gitlab::ApplicationRateLimiter).to receive(:peek).and_call_original
-    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_call_original
-
     allow(user).to receive(:verification_method_allowed?).and_return(true)
 
     stub_saas_features(identity_verification: true)
@@ -72,6 +69,98 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         'verification_methods' => ["phone"],
         'verification_state' => { "phone" => false }
       })
+    end
+  end
+
+  describe 'POST send_phone_verification_code' do
+    let_it_be(:params) do
+      {
+        arkose_labs_token: 'verification-token',
+        identity_verification: { country: 'US', international_dial_code: '1', phone_number: '555' }
+      }
+    end
+
+    subject(:do_request) { post send_phone_verification_code_identity_verification_path(params) }
+
+    describe 'before action hooks' do
+      before do
+        mock_send_phone_number_verification_code(success: true)
+      end
+
+      it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+      it_behaves_like 'it verifies arkose token before phone verification'
+      it_behaves_like 'it verifies reCAPTCHA response'
+
+      it_behaves_like 'it ensures verification attempt is allowed', 'phone' do
+        let(:target_user) { user }
+      end
+    end
+
+    it_behaves_like 'it successfully sends phone number verification code'
+    it_behaves_like 'it handles failed phone number verification code send'
+  end
+
+  describe 'POST verify_phone_verification_code' do
+    let_it_be(:params) do
+      { arkose_labs_token: 'verification-token', identity_verification: { verification_code: '999' } }
+    end
+
+    subject(:do_request) { post verify_phone_verification_code_identity_verification_path(params) }
+
+    describe 'before action hooks' do
+      before do
+        mock_verify_phone_number_verification_code(success: true)
+      end
+
+      it_behaves_like 'it ensures verification attempt is allowed', 'phone' do
+        let(:target_user) { user }
+      end
+
+      it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+      it_behaves_like 'it verifies arkose token before phone verification'
+      it_behaves_like 'it verifies reCAPTCHA response'
+    end
+
+    it_behaves_like 'it successfully verifies a phone number verification code'
+    it_behaves_like 'it handles failed phone number code verification'
+  end
+
+  describe 'GET verify_credit_card' do
+    let_it_be_with_reload(:user) { create(:user, :low_risk) }
+
+    let(:params) { { format: :json } }
+
+    subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
+
+    it_behaves_like 'it ensures verification attempt is allowed', 'credit_card' do
+      let_it_be(:cc) { create(:credit_card_validation, user: user) }
+      let(:target_user) { user }
+    end
+
+    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+    it_behaves_like 'it verifies presence of credit_card_validation record for the user'
+  end
+
+  describe 'PATCH toggle_phone_exemption' do
+    let(:user) { create(:user, :low_risk) }
+
+    subject(:do_request) { patch toggle_phone_exemption_identity_verification_path(format: :json) }
+
+    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+    it_behaves_like 'toggles phone number verification exemption for the user' do
+      let(:target_user) { user }
+    end
+  end
+
+  describe 'GET success' do
+    subject(:do_request) { get success_identity_verification_path }
+
+    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+
+    it 'redirects to root_path' do
+      do_request
+
+      expect(response).to redirect_to(root_path)
     end
   end
 end

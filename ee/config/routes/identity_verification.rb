@@ -20,5 +20,10 @@ end
 scope '-', module: :users do
   resource :identity_verification, controller: :identity_verification, only: :show do
     get :verification_state
+    post :send_phone_verification_code
+    post :verify_phone_verification_code
+    patch :toggle_phone_exemption
+    get :verify_credit_card
+    get :success
   end
 end

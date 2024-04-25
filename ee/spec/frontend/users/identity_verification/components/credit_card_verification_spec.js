@@ -41,12 +41,12 @@ describe('CreditCardVerification', () => {
   const createComponent = (providedProps = {}) => {
     wrapper = shallowMountExtended(CreditCardVerification, {
       provide: {
+        creditCardChallengeOnVerify: true,
+        creditCardVerifyPath: MOCK_VERIFY_CREDIT_CARD_PATH,
+        creditCardVerifyCaptchaPath: MOCK_VERIFY_CAPTCHA_PATH,
         creditCard: {
           formId: 'form_id',
           userId: 927,
-          verifyCreditCardPath: MOCK_VERIFY_CREDIT_CARD_PATH,
-          verifyCaptchaPath: MOCK_VERIFY_CAPTCHA_PATH,
-          showRecaptchaChallenge: true,
         },
         offerPhoneNumberExemption: true,
         ...providedProps,
@@ -234,6 +234,19 @@ describe('CreditCardVerification', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: 'Complete verification',
         });
+      });
+    });
+
+    describe('when creditCardChallengeOnVerify is false', () => {
+      beforeEach(() => {
+        jest.spyOn(axios, 'post');
+
+        createComponent({ creditCardChallengeOnVerify: false });
+        findSubmitButton().vm.$emit('click');
+      });
+
+      it('does not send a captcha verification request', () => {
+        expect(axios.post.mock.calls).toHaveLength(0);
       });
     });
   });

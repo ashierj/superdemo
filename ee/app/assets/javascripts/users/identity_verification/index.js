@@ -15,7 +15,12 @@ export const initIdentityVerification = () => {
     phoneNumber,
     offerPhoneNumberExemption,
     verificationStatePath,
+    phoneSendCodePath,
+    phoneVerifyCodePath,
     phoneExemptionPath,
+    creditCardChallengeOnVerify,
+    creditCardVerifyPath,
+    creditCardVerifyCaptchaPath,
     arkose,
     successfulVerificationPath,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
@@ -25,22 +30,22 @@ export const initIdentityVerification = () => {
     booleanAttributes: ['enableArkoseChallenge', 'showArkoseChallenge', 'showRecaptchaChallenge'],
   });
 
-  const creditCardParsedData = getParsedDataset({
-    dataset: creditCard,
-    booleanAttributes: ['showRecaptchaChallenge'],
-  });
-
   return new Vue({
     el,
     apolloProvider,
     name: 'IdentityVerificationRoot',
     provide: {
       email,
-      creditCard: creditCardParsedData,
+      creditCard,
       phoneNumber: phoneNumberParsedData,
       offerPhoneNumberExemption,
       verificationStatePath,
+      phoneSendCodePath,
+      phoneVerifyCodePath,
       phoneExemptionPath,
+      creditCardChallengeOnVerify,
+      creditCardVerifyPath,
+      creditCardVerifyCaptchaPath,
       arkoseConfiguration: arkose,
       successfulVerificationPath,
     },

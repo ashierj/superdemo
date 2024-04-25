@@ -7,49 +7,112 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
 
   let_it_be_with_reload(:user) { create(:user) }
 
-  describe '#signup_identity_verification_data' do
-    let(:mock_required_identity_verification_methods) { ['email'] }
-    let(:mock_offer_phone_number_exemption) { true }
-
-    let(:mock_identity_verification_state) do
-      { credit_card: false, email: true }
+  describe '#*identity_verification_data' do
+    let(:signup_identity_verification_data) do
+      {
+        credit_card_challenge_on_verify: true,
+        successful_verification_path: success_signup_identity_verification_path,
+        verification_state_path: verification_state_signup_identity_verification_path,
+        phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
+        phone_send_code_path: send_phone_verification_code_signup_identity_verification_path,
+        phone_verify_code_path: verify_phone_verification_code_signup_identity_verification_path,
+        credit_card_verify_path: verify_credit_card_signup_identity_verification_path,
+        credit_card_verify_captcha_path: verify_credit_card_captcha_signup_identity_verification_path
+      }
     end
 
-    before do
-      allow(user).to receive(:required_identity_verification_methods).and_return(
-        mock_required_identity_verification_methods
-      )
-      allow(user).to receive(:identity_verification_state).and_return(
-        mock_identity_verification_state
-      )
-      allow(user).to receive(:offer_phone_number_exemption?).and_return(
-        mock_offer_phone_number_exemption
-      )
-      allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
-      allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
-      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
+    let(:identity_verification_data) do
+      {
+        credit_card_challenge_on_verify: false,
+        successful_verification_path: success_identity_verification_path,
+        verification_state_path: verification_state_identity_verification_path,
+        phone_exemption_path: toggle_phone_exemption_identity_verification_path,
+        phone_send_code_path: send_phone_verification_code_identity_verification_path,
+        phone_verify_code_path: verify_phone_verification_code_identity_verification_path,
+        credit_card_verify_path: verify_credit_card_identity_verification_path
+      }
     end
 
-    subject(:data) { helper.signup_identity_verification_data(user) }
+    let(:common_data) do
+      {
+        offer_phone_number_exemption: mock_offer_phone_number_exemption,
+        credit_card: {
+          user_id: user.id,
+          form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
+        },
+        phone_number: {
+          enable_arkose_challenge: 'false',
+          show_arkose_challenge: 'false',
+          show_recaptcha_challenge: 'true'
+        },
+        email: {
+          obfuscated: helper.obfuscated_email(user.email),
+          verify_path: verify_email_code_signup_identity_verification_path,
+          resend_path: resend_email_code_signup_identity_verification_path
+        },
+        arkose: {
+          api_key: 'api-key',
+          domain: 'domain'
+        }
+      }
+    end
 
-    context 'when no phone number for user exists' do
-      it 'returns the expected data' do
-        expect(data[:data]).to eq(expected_data.to_json)
+    let(:signup_identity_verification_data_result) { common_data.merge(signup_identity_verification_data) }
+    let(:identity_verification_data_result) { common_data.merge(identity_verification_data) }
+
+    where(:method, :expected_data) do
+      :signup_identity_verification_data | ref(:signup_identity_verification_data_result)
+      :identity_verification_data        | ref(:identity_verification_data_result)
+    end
+
+    with_them do
+      let(:mock_identity_verification_state) do
+        { credit_card: false, email: true }
       end
-    end
 
-    context 'when phone number for user exists' do
-      let_it_be(:record) { create(:phone_number_validation, user: user) }
+      let(:mock_required_identity_verification_methods) { ['email'] }
+      let(:mock_offer_phone_number_exemption) { true }
 
-      it 'returns the expected data' do
-        phone_number_data = expected_data[:phone_number].merge({
-          country: record.country,
-          international_dial_code: record.international_dial_code,
-          number: record.phone_number,
-          send_allowed_after: record.sms_send_allowed_after
-        })
+      before do
+        allow(user).to receive(:required_identity_verification_methods).and_return(
+          mock_required_identity_verification_methods
+        )
+        allow(user).to receive(:identity_verification_state).and_return(
+          mock_identity_verification_state
+        )
+        allow(user).to receive(:offer_phone_number_exemption?).and_return(
+          mock_offer_phone_number_exemption
+        )
 
-        expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
+        allow(helper).to receive(:show_recaptcha_challenge?).and_return(true)
+
+        allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
+        allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
+        stub_feature_flags(arkose_labs_phone_verification_challenge: false)
+      end
+
+      subject(:data) { helper.send(method, user) }
+
+      context 'when no phone number for user exists' do
+        it 'returns the expected data' do
+          expect(Gitlab::Json.parse(data[:data])).to eq(expected_data.deep_stringify_keys)
+        end
+      end
+
+      context 'when phone number for user exists' do
+        let_it_be(:record) { create(:phone_number_validation, user: user) }
+
+        it 'returns the expected data' do
+          phone_number_data = expected_data[:phone_number].merge({
+            country: record.country,
+            international_dial_code: record.international_dial_code,
+            number: record.phone_number,
+            send_allowed_after: record.sms_send_allowed_after
+          })
+
+          json_result = Gitlab::Json.parse(data[:data])
+          expect(json_result).to eq(expected_data.merge({ phone_number: phone_number_data }).deep_stringify_keys)
+        end
       end
     end
 
@@ -184,64 +247,6 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
           it { is_expected.to be_truthy }
         end
       end
-    end
-
-    describe '#restricted_country?' do
-      let(:country_code) { 'CN' }
-
-      subject(:restricted_country?) { helper.restricted_country?(country_code) }
-
-      context 'when the country is restricted' do
-        it { is_expected.to eq(true) }
-
-        context 'when the feature is disabled' do
-          before do
-            stub_feature_flags(prevent_registration_from_china: false)
-          end
-
-          it { is_expected.to eq(false) }
-        end
-      end
-
-      context 'when the country is not restricted' do
-        let(:country_code) { 'US' }
-
-        it { is_expected.to eq(false) }
-      end
-    end
-
-    private
-
-    def expected_data
-      {
-        verification_state_path: verification_state_signup_identity_verification_path,
-        offer_phone_number_exemption: mock_offer_phone_number_exemption,
-        phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
-        credit_card: {
-          user_id: user.id,
-          form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
-          verify_credit_card_path: verify_credit_card_signup_identity_verification_path,
-          verify_captcha_path: verify_credit_card_captcha_signup_identity_verification_path,
-          show_recaptcha_challenge: 'false'
-        },
-        phone_number: {
-          send_code_path: send_phone_verification_code_signup_identity_verification_path,
-          verify_code_path: verify_phone_verification_code_signup_identity_verification_path,
-          enable_arkose_challenge: 'false',
-          show_arkose_challenge: 'false',
-          show_recaptcha_challenge: 'false'
-        },
-        email: {
-          obfuscated: helper.obfuscated_email(user.email),
-          verify_path: verify_email_code_signup_identity_verification_path,
-          resend_path: resend_email_code_signup_identity_verification_path
-        },
-        arkose: {
-          api_key: 'api-key',
-          domain: 'domain'
-        },
-        successful_verification_path: success_signup_identity_verification_path
-      }
     end
   end
 

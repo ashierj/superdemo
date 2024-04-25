@@ -40,6 +40,10 @@ export default {
     GlCountdown,
   },
   inject: {
+    phoneSendCodePath: {
+      type: String,
+      required: true,
+    },
     phoneNumber: {
       default: {
         country: DEFAULT_COUNTRY,
@@ -170,7 +174,7 @@ export default {
       const { countryId, internationalDialCode, inputPhoneNumber } = this;
 
       axios
-        .post(this.phoneNumber.sendCodePath, {
+        .post(this.phoneSendCodePath, {
           country: countryId,
           international_dial_code: internationalDialCode,
           phone_number: inputPhoneNumber,

@@ -7,33 +7,17 @@ module Users
     RESTRICTED_COUNTRY_CODES = %w[CN HK MO].freeze
 
     def signup_identity_verification_data(user)
-      {
-        data: {
-          verification_state_path: verification_state_signup_identity_verification_path,
-          offer_phone_number_exemption: user.offer_phone_number_exemption?,
-          phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
-          credit_card: credit_card_verification_data(user),
-          phone_number: phone_number_verification_data(user),
-          email: email_verification_data(user),
-          arkose: arkose_labs_data,
-          successful_verification_path: success_signup_identity_verification_path
-        }.to_json
+      overrides = {
+        credit_card_challenge_on_verify: show_recaptcha_challenge?,
+        credit_card_verify_captcha_path: signup_iv_action_path(:verify_credit_card_captcha)
       }
+
+      build_data(user, path_helper: method(:signup_iv_action_path), overrides: overrides)
     end
 
     def identity_verification_data(user)
-      {
-        data: {
-          verification_state_path: verification_state_identity_verification_path,
-          offer_phone_number_exemption: false,
-          phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
-          credit_card: credit_card_verification_data(user),
-          phone_number: phone_number_verification_data(user),
-          email: email_verification_data(user),
-          arkose: arkose_labs_data,
-          successful_verification_path: success_signup_identity_verification_path
-        }.to_json
-      }
+      overrides = { credit_card_challenge_on_verify: false }
+      build_data(user, path_helper: method(:iv_action_path), overrides: overrides)
     end
 
     def user_banned_error_message
@@ -86,6 +70,24 @@ module Users
 
     private
 
+    def build_data(user, path_helper:, overrides: {})
+      {
+        data: {
+          verification_state_path: path_helper.call(:verification_state),
+          phone_exemption_path: path_helper.call(:toggle_phone_exemption),
+          phone_send_code_path: path_helper.call(:send_phone_verification_code),
+          phone_verify_code_path: path_helper.call(:verify_phone_verification_code),
+          credit_card_verify_path: path_helper.call(:verify_credit_card),
+          successful_verification_path: path_helper.call(:success),
+          offer_phone_number_exemption: user.offer_phone_number_exemption?,
+          credit_card: credit_card_verification_data(user),
+          phone_number: phone_number_verification_data(user),
+          email: email_verification_data(user),
+          arkose: arkose_labs_data
+        }.merge(overrides).to_json
+      }
+    end
+
     def email_verification_data(user)
       {
         obfuscated: obfuscated_email(user.email),
@@ -96,8 +98,6 @@ module Users
 
     def phone_number_verification_data(user)
       data = {
-        send_code_path: send_phone_verification_code_signup_identity_verification_path,
-        verify_code_path: verify_phone_verification_code_signup_identity_verification_path,
         enable_arkose_challenge: enable_arkose_challenge?(:phone).to_s,
         show_arkose_challenge: show_arkose_challenge?(user, :phone).to_s,
         show_recaptcha_challenge: show_recaptcha_challenge?.to_s
@@ -119,11 +119,24 @@ module Users
     def credit_card_verification_data(user)
       {
         user_id: user.id,
-        form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
-        verify_credit_card_path: verify_credit_card_signup_identity_verification_path,
-        verify_captcha_path: verify_credit_card_captcha_signup_identity_verification_path,
-        show_recaptcha_challenge: show_recaptcha_challenge?.to_s
+        form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
       }
+    end
+
+    def signup_iv_action_path(action)
+      iv_action_path(action, signup: true)
+    end
+
+    def iv_action_path(action, signup: false)
+      # Paths for RegistrationsIdentityVerificationController actions are named
+      # *signup_identity_verification_path while those for
+      # IdentityVerificationController are named *identity_verification_path.
+      # Since both controllers have the same action names this method makes it
+      # easier to call a route helper method that points to either by providing
+      # the action name and (optionally) a `sign_up` argument.
+      route_helper_prefix = signup ? 'signup' : ''
+      route_helper_name = [action.to_s, route_helper_prefix, 'identity_verification_path'].reject(&:blank?).join('_')
+      public_send(route_helper_name) # rubocop:disable GitlabSecurity/PublicSend -- Call either *signup_identity_verification_path and *identity_verification_path route helpers
     end
   end
 end

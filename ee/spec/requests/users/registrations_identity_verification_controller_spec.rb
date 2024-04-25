@@ -11,24 +11,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   let_it_be(:confirmed_user, reload: true) { create(:user, :low_risk) }
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
 
-  let(:successful_verification_response) do
-    json = Gitlab::Json.parse(
-      File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json'))
-    )
-    response = Arkose::VerifyResponse.new(json)
-    ServiceResponse.success(payload: { response: response })
-  end
-
-  let(:failed_verification_response) do
-    json = Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/invalid_token.json')))
-    response = Arkose::VerifyResponse.new(json)
-    ServiceResponse.error(message: response.error)
-  end
-
-  let(:verification_service_response) { successful_verification_response }
-  let(:status_service_response) { ServiceResponse.success }
-  let(:is_arkose_enabled) { true }
-
   before do
     stub_saas_features(identity_verification: true)
     stub_application_setting_enum('email_confirmation_setting', 'hard')
@@ -36,12 +18,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     allow(::Gitlab::ApplicationRateLimiter).to receive(:peek).and_call_original
     allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_call_original
-
-    allow(::Arkose::Settings).to receive(:enabled?).and_return(is_arkose_enabled)
-
-    allow_next_instance_of(::Arkose::StatusService) do |instance|
-      allow(instance).to receive(:execute).and_return(status_service_response)
-    end
 
     allow_next_found_instance_of(User) do |instance|
       allow(instance).to receive(:verification_method_allowed?).and_return(true)
@@ -122,35 +98,13 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     end
   end
 
-  shared_examples 'it ensures verification attempt is allowed' do |method|
-    subject { response }
-
-    before do
-      allow_next_found_instance_of(User) do |instance|
-        allow(instance).to receive(:verification_method_allowed?)
-          .with(method: method).and_return(allowed)
-      end
-
-      do_request
-    end
-
-    context 'when verification is allowed' do
-      let(:allowed) { true }
-
-      it { is_expected.to have_gitlab_http_status(:ok) }
-    end
-
-    context 'when verification is not allowed' do
-      let(:allowed) { false }
-
-      it { is_expected.to have_gitlab_http_status(:bad_request) }
-    end
-  end
-
   shared_examples 'it requires oauth users to go through ArkoseLabs challenge' do
     let(:user) { create(:omniauth_user, :unconfirmed) }
+    let(:arkose_enabled) { true }
 
     before do
+      allow(::Arkose::Settings).to receive(:enabled?).and_return(arkose_enabled)
+
       stub_session(session_data: { verification_user_id: user.id })
 
       do_request
@@ -167,212 +121,9 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     end
 
     context 'when arkose is disabled' do
-      let(:is_arkose_enabled) { false }
+      let(:arkose_enabled) { false }
 
       it { is_expected.not_to redirect_to(arkose_labs_challenge_signup_identity_verification_path) }
-    end
-  end
-
-  shared_examples 'logs and tracks the event' do |category, event, reason = nil|
-    it 'logs and tracks the event' do
-      message = "IdentityVerification::#{category.to_s.classify}"
-
-      logger_args = {
-        message: message,
-        event: event.to_s.titlecase,
-        username: user.username
-      }
-      logger_args[:reason] = reason.to_s if reason
-
-      allow(Gitlab::AppLogger).to receive(:info).and_call_original
-
-      do_request
-
-      expect(Gitlab::AppLogger).to have_received(:info).with(a_hash_including(logger_args))
-
-      tracking_args = {
-        category: message,
-        action: event.to_s,
-        property: '',
-        user: user
-      }
-      tracking_args[:property] = reason.to_s if reason
-
-      expect_snowplow_event(**tracking_args)
-    end
-  end
-
-  shared_examples 'it verifies arkose token before phone verification' do
-    before do
-      stub_feature_flags(soft_limit_daily_phone_verifications: false)
-    end
-
-    context 'when feature flag arkose_labs_phone_verification_challenge is disabled' do
-      before do
-        stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-      end
-
-      it 'returns 200' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:ok)
-      end
-    end
-
-    context 'when arkose is enabled' do
-      before do
-        allow(::Gitlab::ApplicationRateLimiter)
-        .to receive(:peek)
-        .with(:phone_verification_challenge, scope: user)
-        .and_return(false)
-      end
-
-      it 'increases verification attempts' do
-        expect(::Gitlab::ApplicationRateLimiter)
-          .to receive(:throttled?)
-          .with(:phone_verification_challenge, scope: user)
-
-        do_request
-      end
-
-      it 'returns 200' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:ok)
-      end
-
-      context 'when phone verification challenge rate-limit has been reached' do
-        let(:params) do
-          { arkose_labs_token: 'verification-token', registrations_identity_verification: { phone_number: '555' } }
-        end
-
-        before do
-          allow(::Gitlab::ApplicationRateLimiter)
-            .to receive(:peek)
-            .with(:phone_verification_challenge, scope: user)
-            .and_return(true)
-
-          verification_params = { session_token: params[:arkose_labs_token], user: nil }
-          allow_next_instance_of(Arkose::TokenVerificationService, verification_params) do |instance|
-            allow(instance).to receive(:execute).and_return(verification_service_response)
-          end
-        end
-
-        it_behaves_like 'logs and tracks the event', :phone, :arkose_challenge_shown
-
-        context 'when token verification fails' do
-          let(:verification_service_response) { failed_verification_response }
-
-          it 'returns a 400 with an error message', :aggregate_failures do
-            do_request
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(response.body).to eq(
-              { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
-          end
-        end
-
-        context 'when token verification succeeds' do
-          it 'returns a 200' do
-            do_request
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-        end
-      end
-    end
-  end
-
-  shared_examples 'it verifies reCAPTCHA response' do
-    before do
-      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-    end
-
-    context 'when feature flag soft_limit_daily_phone_verifications is disabled' do
-      before do
-        stub_feature_flags(soft_limit_daily_phone_verifications: false)
-      end
-
-      it 'returns 200' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:ok)
-      end
-    end
-
-    context 'when reCAPTCHA is enabled' do
-      before do
-        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(true)
-
-        allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:peek)
-          .with(:soft_phone_verification_transactions_limit, scope: nil)
-          .and_return(false)
-      end
-
-      it 'returns 200' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:ok)
-      end
-
-      context 'when daily limit has been reached' do
-        before do
-          allow(::Gitlab::ApplicationRateLimiter)
-          .to receive(:peek)
-          .with(:soft_phone_verification_transactions_limit, scope: nil)
-          .and_return(true)
-        end
-
-        it_behaves_like 'logs and tracks the event', :phone, :recaptcha_shown
-
-        context 'and when reCAPTCHA has not been solved' do
-          before do
-            allow_next_instance_of(described_class) do |instance|
-              allow(instance).to receive(:verify_recaptcha).and_return(false)
-            end
-          end
-
-          it 'returns a 400 with an error message', :aggregate_failures do
-            do_request
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(response.body).to eq(
-              { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
-          end
-        end
-
-        context 'and when reCAPTCHA is solved' do
-          before do
-            allow_next_instance_of(described_class) do |instance|
-              allow(instance).to receive(:verify_recaptcha).and_return(true)
-            end
-          end
-
-          it 'returns 200' do
-            do_request
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-
-          context 'when arkose challenge is also enabled' do
-            before do
-              stub_feature_flags(arkose_labs_phone_verification_challenge: true)
-
-              allow(::Gitlab::ApplicationRateLimiter)
-                .to receive(:peek)
-                .with(:phone_verification_challenge, scope: user)
-                .and_return(true)
-            end
-
-            it 'does not expect an arkose token and returns a 200' do
-              do_request
-
-              expect(response).to have_gitlab_http_status(:ok)
-            end
-          end
-        end
-      end
     end
   end
 
@@ -567,11 +318,8 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     context 'when rate limited' do
       before do
-        allow(::Gitlab::ApplicationRateLimiter).to receive(:peek)
-          .with(:soft_phone_verification_transactions_limit, scope: nil).and_return(false)
-
-        allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-          .with(:email_verification_code_send, scope: user).and_return(true)
+        mock_rate_limit(:soft_phone_verification_transactions_limit, :peek, false)
+        mock_rate_limit(:email_verification_code_send, :throttled?, true, scope: user)
 
         stub_session(session_data: { verification_user_id: user.id })
 
@@ -626,7 +374,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   describe 'POST send_phone_verification_code' do
     let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
-    let_it_be(:service_response) { ServiceResponse.success(payload: { container: 'contents' }) }
     let_it_be(:params) do
       { registrations_identity_verification: { country: 'US', international_dial_code: '1', phone_number: '555' } }
     end
@@ -634,58 +381,29 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     subject(:do_request) { post send_phone_verification_code_signup_identity_verification_path(params) }
 
     before do
-      allow_next_instance_of(::PhoneVerification::Users::SendVerificationCodeService) do |service|
-        allow(service).to receive(:execute).and_return(service_response)
-      end
       stub_session(session_data: { verification_user_id: user.id })
     end
 
-    it_behaves_like 'it requires a valid verification_user_id'
-    it_behaves_like 'it requires an unconfirmed user'
-    it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
-    it_behaves_like 'it ensures verification attempt is allowed', 'phone'
-    it_behaves_like 'it verifies arkose token before phone verification'
-    it_behaves_like 'it verifies reCAPTCHA response'
-
-    context 'when sending the code is successful' do
-      it 'responds with status 200 OK' do
-        do_request
-
-        expected_json = { status: :success }.merge(service_response.payload).to_json
-        expect(response.body).to eq(expected_json)
+    describe 'before action hooks' do
+      before do
+        mock_send_phone_number_verification_code(success: true)
       end
 
-      it_behaves_like 'logs and tracks the event', :phone, :sent_phone_verification_code
+      it_behaves_like 'it requires a valid verification_user_id'
+      it_behaves_like 'it requires an unconfirmed user'
+      it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
+      it_behaves_like 'it ensures verification attempt is allowed', 'phone'
+      it_behaves_like 'it verifies arkose token before phone verification'
+      it_behaves_like 'it verifies reCAPTCHA response'
     end
 
-    context 'when sending the code is unsuccessful' do
-      let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: :related_to_banned_user) }
-
-      it_behaves_like 'logs and tracks the event', :phone, :failed_attempt, :related_to_banned_user
-
-      it 'responds with error message', :aggregate_failures do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(response.body).to eq({ message: service_response.message, reason: service_response.reason }.to_json)
-      end
-
-      context 'when the error is related to a high risk user' do
-        let(:service_response) { ServiceResponse.error(message: 'message', reason: :related_to_high_risk_user) }
-
-        it 'does not log an error' do
-          expect(Gitlab::AppLogger).not_to receive(:info)
-
-          do_request
-        end
-      end
-    end
+    it_behaves_like 'it successfully sends phone number verification code'
+    it_behaves_like 'it handles failed phone number verification code send'
   end
 
   describe 'POST verify_phone_verification_code' do
     let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
-    let_it_be(:service_response) { ServiceResponse.success }
     let_it_be(:params) do
       { registrations_identity_verification: { verification_code: '999' } }
     end
@@ -693,52 +411,24 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     subject(:do_request) { post verify_phone_verification_code_signup_identity_verification_path(params) }
 
     before do
-      allow_next_instance_of(::PhoneVerification::Users::VerifyCodeService) do |service|
-        allow(service).to receive(:execute).and_return(service_response)
-      end
       stub_session(session_data: { verification_user_id: user.id })
     end
 
-    it_behaves_like 'it requires a valid verification_user_id'
-    it_behaves_like 'it requires an unconfirmed user'
-    it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
-    it_behaves_like 'it ensures verification attempt is allowed', 'phone'
-    it_behaves_like 'it verifies arkose token before phone verification'
-    it_behaves_like 'it verifies reCAPTCHA response'
-
-    context 'when code verification is successful' do
-      it 'responds with status 200 OK' do
-        do_request
-
-        expect(response.body).to eq({ status: :success }.to_json)
+    describe 'before action hooks' do
+      before do
+        mock_verify_phone_number_verification_code(success: true)
       end
 
-      it_behaves_like 'logs and tracks the event', :phone, :success
+      it_behaves_like 'it requires a valid verification_user_id'
+      it_behaves_like 'it requires an unconfirmed user'
+      it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
+      it_behaves_like 'it ensures verification attempt is allowed', 'phone'
+      it_behaves_like 'it verifies arkose token before phone verification'
+      it_behaves_like 'it verifies reCAPTCHA response'
     end
 
-    context 'when code verification is unsuccessful' do
-      let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: 'reason') }
-
-      it_behaves_like 'logs and tracks the event', :phone, :failed_attempt, :reason
-
-      it 'responds with error message' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(response.body).to eq({ message: service_response.message, reason: service_response.reason }.to_json)
-      end
-    end
-
-    context 'when multiple codes are attempted' do
-      let_it_be(:params) do
-        { registrations_identity_verification: { verification_code: %w[998 999] } }
-      end
-
-      it 'passes no params to VerifyCodeService' do
-        do_request
-        expect(::PhoneVerification::Users::VerifyCodeService).to have_received(:new).with(user, {})
-      end
-    end
+    it_behaves_like 'it successfully verifies a phone number verification code'
+    it_behaves_like 'it handles failed phone number code verification'
   end
 
   shared_examples 'it requires a user without an arkose risk_band' do
@@ -790,17 +480,10 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     it_behaves_like 'it requires an unconfirmed user', :redirect
 
     describe 'token verification' do
-      before do
-        init_params = { session_token: params[:arkose_labs_token], user: user }
-        allow_next_instance_of(Arkose::TokenVerificationService, init_params) do |instance|
-          allow(instance).to receive(:execute).and_return(service_response)
-        end
-      end
-
       context 'when it fails' do
-        let(:service_response) { ServiceResponse.error(message: 'Captcha was not solved') }
-
         it 'renders arkose_labs_challenge with the correct alert flash' do
+          mock_arkose_token_verification(success: false)
+
           do_request
 
           expect(flash[:alert]).to include(s_('IdentityVerification|Complete verification to sign up.'))
@@ -808,9 +491,9 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         end
 
         context 'when Arkose is down' do
-          let(:status_service_response) { ServiceResponse.error(message: 'Arkose outage') }
-
           it 'marks the user as Arkose-verified' do
+            mock_arkose_token_verification(success: false, service_down: true)
+
             expect { do_request }.to change { user.arkose_verified? }.from(false).to(true)
 
             expect(response).to redirect_to(signup_identity_verification_path)
@@ -819,6 +502,10 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       end
 
       context 'when it succeeds' do
+        before do
+          mock_arkose_token_verification(success: true)
+        end
+
         it 'redirects to show action' do
           do_request
 
@@ -960,132 +647,21 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
   end
 
   describe 'GET verify_credit_card' do
+    let_it_be(:user) { unconfirmed_user }
+
     let(:params) { { format: :json } }
 
-    let_it_be(:user) { unconfirmed_user }
+    subject(:do_request) { get verify_credit_card_signup_identity_verification_path(params) }
 
     before do
       stub_session(session_data: { verification_user_id: user.id })
     end
 
-    subject(:do_request) { get verify_credit_card_signup_identity_verification_path(params) }
-
-    context 'when request format is html' do
-      let(:params) { { format: :html } }
-
-      it 'returns 404' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
+    it_behaves_like 'it ensures verification attempt is allowed', 'credit_card' do
+      let_it_be(:cc) { create(:credit_card_validation, user: user) }
     end
 
-    context 'when no credit_card_validation record exist for the user' do
-      let(:params) { { format: :json } }
-
-      it 'returns 404' do
-        do_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when request format is json' do
-      let(:params) { { format: :json } }
-      let(:rate_limited) { false }
-      let(:ip) { '1.2.3.4' }
-      let(:used_by_banned_user) { false }
-
-      let_it_be(:credit_card_validation) { create(:credit_card_validation, user: user) }
-
-      before do
-        allow_next_found_instance_of(::Users::CreditCardValidation) do |cc|
-          allow(cc).to receive(:used_by_banned_user?).and_return(used_by_banned_user)
-        end
-
-        allow_next_instance_of(ActionDispatch::Request) do |request|
-          allow(request).to receive(:ip).and_return(ip)
-        end
-
-        allow_next_instance_of(described_class) do |controller|
-          allow(controller).to receive(:check_rate_limit!)
-            .with(:credit_card_verification_check_for_reuse, scope: ip)
-            .and_return(rate_limited)
-        end
-      end
-
-      it_behaves_like 'it requires a valid verification_user_id'
-
-      context 'when the user\'s credit card has not been used by a banned user' do
-        it 'returns HTTP status 200 and an empty json', :aggregate_failures do
-          do_request
-
-          expect(json_response).to be_empty
-          expect(response).to have_gitlab_http_status(:ok)
-        end
-
-        it_behaves_like 'logs and tracks the event', :credit_card, :success
-      end
-
-      shared_examples 'returns HTTP status 400 and a message' do
-        it 'returns HTTP status 400 and a message', :aggregate_failures do
-          do_request
-
-          expect(json_response).to include({
-            'message' => format(s_("IdentityVerification|You've reached the maximum amount of tries. " \
-                                   'Wait %{interval} and try again.'), { interval: 'about 1 hour' })
-          })
-          expect(response).to have_gitlab_http_status(:bad_request)
-        end
-      end
-
-      context 'when the user\'s credit card has been used by a banned user' do
-        let(:used_by_banned_user) { true }
-
-        it_behaves_like 'logs and tracks the event', :credit_card, :failed_attempt, :related_to_banned_user
-
-        it 'bans the user' do
-          expect_next_instance_of(::Users::AutoBanService, user: user, reason: :banned_credit_card) do |instance|
-            expect(instance).to receive(:execute).and_call_original
-          end
-
-          expect { do_request }.to change { user.reload.banned? }.from(false).to(true)
-        end
-
-        describe 'returned error message' do
-          where(:dot_com, :error_message) do
-            true  | "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance."
-            false | "Your account has been blocked. Contact your GitLab administrator for assistance."
-          end
-
-          with_them do
-            before do
-              allow(Gitlab).to receive(:com?).and_return(dot_com)
-            end
-
-            it 'returns HTTP status 400 and a message', :aggregate_failures do
-              do_request
-
-              expect(json_response).to include({
-                'message' => error_message,
-                'reason' => 'related_to_banned_user'
-              })
-              expect(response).to have_gitlab_http_status(:bad_request)
-            end
-          end
-        end
-      end
-
-      context 'when rate limited' do
-        let(:used_by_banned_user) { false }
-        let(:rate_limited) { true }
-
-        it_behaves_like 'returns HTTP status 400 and a message'
-        it_behaves_like 'logs and tracks the event', :credit_card, :failed_attempt, :rate_limited
-      end
-
-      it_behaves_like 'it ensures verification attempt is allowed', 'credit_card'
-    end
+    it_behaves_like 'it verifies presence of credit_card_validation record for the user'
   end
 
   describe 'POST verify_credit_card_captcha' do
@@ -1112,36 +688,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires a valid verification_user_id'
-
-    context 'when offering phone exemption' do
-      it 'toggles phone exemption' do
-        expect { do_request }.to change { User.find(user.id).exempt_from_phone_number_verification? }.to(true)
-      end
-
-      it 'returns verification methods and state' do
-        do_request
-
-        expect(json_response).to eq({
-          'verification_methods' => %w[email credit_card],
-          'verification_state' => { "credit_card" => false, "email" => false }
-        })
-      end
-
-      it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :success
-    end
-
-    context 'when not offering phone exemption' do
-      let_it_be(:user) { create(:user, :unconfirmed, :low_risk) }
-
-      it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :failed
-
-      it 'returns an empty response with a bad request status', :aggregate_failures do
-        do_request
-
-        expect(json_response).to be_empty
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-      end
-    end
+    it_behaves_like 'toggles phone number verification exemption for the user'
   end
 end
