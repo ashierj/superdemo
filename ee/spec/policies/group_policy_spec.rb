@@ -3684,4 +3684,18 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       it { is_expected.to match_expected_result }
     end
   end
+
+  describe 'admin_licensed_seat' do
+    context 'when user is an owner' do
+      let(:current_user) { owner }
+
+      it { is_expected.to be_allowed(:admin_licensed_seat) }
+    end
+
+    context 'when user is not an owner' do
+      let(:current_user) { maintainer }
+
+      it { is_expected.to be_disallowed(:admin_licensed_seat) }
+    end
+  end
 end

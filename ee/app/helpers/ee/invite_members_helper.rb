@@ -31,10 +31,13 @@ module EE
         )
       end
 
+      if can?(current_user, :admin_licensed_seat, source.root_ancestor)
+        dataset[:add_seats_href] = add_seats_url(source.root_ancestor)
+      end
+
       dataset[:manage_member_roles_path] = manage_member_roles_path(source)
       dataset[:overage_members_modal_available] = overage_members_modal_available.to_s
       dataset[:has_gitlab_subscription] = gitlab_com_subscription?.to_s
-      dataset[:add_seats_href] = add_seats_url(source.root_ancestor)
 
       dataset
     end
