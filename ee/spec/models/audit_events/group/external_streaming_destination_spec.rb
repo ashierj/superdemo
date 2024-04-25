@@ -11,6 +11,7 @@ RSpec.describe AuditEvents::Group::ExternalStreamingDestination, feature_categor
     end
 
     it { is_expected.to have_many(:event_type_filters) }
+    it { is_expected.to have_many(:namespace_filters).class_name('AuditEvents::Group::NamespaceFilter') }
   end
 
   describe 'Validations' do
@@ -22,6 +23,28 @@ RSpec.describe AuditEvents::Group::ExternalStreamingDestination, feature_categor
 
       expect(destination).not_to be_valid
       expect(destination.errors.full_messages).to include('Name has already been taken')
+    end
+
+    describe '#no_more_than_5_namespace_filters?' do
+      it 'can have 5 namespace filters' do
+        5.times do
+          create(:audit_events_streaming_group_namespace_filters, external_streaming_destination: destination,
+            namespace: create(:group, parent: destination.group))
+        end
+
+        expect(destination).to be_valid
+      end
+
+      it 'cannot have more than 5 namespace filters' do
+        6.times do
+          create(:audit_events_streaming_group_namespace_filters, external_streaming_destination: destination,
+            namespace: create(:group, parent: destination.group))
+        end
+
+        expect(destination).not_to be_valid
+        expect(destination.errors.full_messages)
+          .to contain_exactly(_('Namespace filters are limited to 5 per destination'))
+      end
     end
 
     context 'when group' do
