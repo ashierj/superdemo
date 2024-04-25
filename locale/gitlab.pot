@@ -821,6 +821,9 @@ msgstr ""
 msgid "%{group_name}&%{epic_iid} &middot; created %{epic_created} by %{author}"
 msgstr ""
 
+msgid "%{group} is a top level group and cannot be immediately deleted from here.  Please visit the %{linkStart}Group Settings%{linkEnd} to immediately delete this group."
+msgstr ""
+
 msgid "%{host} sign-in from new location"
 msgstr ""
 
@@ -17083,6 +17086,9 @@ msgid "Delete epic"
 msgstr ""
 
 msgid "Delete file"
+msgstr ""
+
+msgid "Delete group immediately?"
 msgstr ""
 
 msgid "Delete identity"
@@ -52699,6 +52705,9 @@ msgstr ""
 msgid "This group and its subgroups and projects will be placed in a 'pending deletion' state for %{deletion_delayed_period} days, then permanently deleted on %{date}. The group can be fully restored before that date."
 msgstr ""
 
+msgid "This group can be restored until %{date}. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "This group can't be removed because it is linked to a subscription. To remove this group, %{linkStart}link the subscription%{linkEnd} with a different group."
 msgstr ""
 
@@ -52724,6 +52733,9 @@ msgid "This group is linked to a subscription"
 msgstr ""
 
 msgid "This group is not permitted to create compliance violations"
+msgstr ""
+
+msgid "This group is scheduled to be deleted on %{date}. You are about to delete this group, including its subgroups and projects, immediately. This action cannot be undone."
 msgstr ""
 
 msgid "This group, its subgroups and projects has been scheduled for removal on %{date}."
