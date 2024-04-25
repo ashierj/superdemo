@@ -41,7 +41,7 @@ module Gitlab
         return empty_response unless question.present?
         return empty_response unless self.class.enabled_for?(user: current_user)
 
-        if ::Feature.enabled?(:ai_gateway_docs_search)
+        if ::Feature.enabled?(:ai_gateway_docs_search, current_user)
           search_documents = get_search_results(question)
 
           return empty_response if search_documents.blank?
