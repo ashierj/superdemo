@@ -3,7 +3,7 @@ name: BackfillEpics
 version: '20230724070100'
 description: Backfills all epics into Elasticsearch
 group: group::global search
-milestone: 16.3
+milestone: '16.3'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125663
 obsolete: false
 marked_obsolete_by_url:
