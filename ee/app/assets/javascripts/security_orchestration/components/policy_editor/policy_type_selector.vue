@@ -5,7 +5,7 @@ import pipelineIllustrationUrl from '@gitlab/svgs/dist/illustrations/milestone-s
 import { GlButton, GlCard, GlIcon, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { s__, __ } from '~/locale';
+import { s__, __, n__ } from '~/locale';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 
 const i18n = {
@@ -27,7 +27,7 @@ const i18n = {
     'SecurityOrchestration|Run a DAST scan with Scan Profile A and Site Profile A when a pipeline run against the main branch.',
   ),
   maximumReachedWarning: s__(
-    'SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} policies.',
+    'SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} %{instance}.',
   ),
   pipelineExecutionPolicyTitle: s__('SecurityOrchestration|Pipeline execution policy'),
   pipelineExecutionPolicyDesc: s__(
@@ -53,8 +53,10 @@ export default {
     'customCiToggleEnabled',
     'maxActiveScanExecutionPoliciesReached',
     'maxActiveScanResultPoliciesReached',
+    'maxActivePipelineExecutionPoliciesReached',
     'maxScanExecutionPoliciesAllowed',
     'maxScanResultPoliciesAllowed',
+    'maxPipelineExecutionPoliciesAllowed',
     'policiesPath',
   ],
   computed: {
@@ -93,15 +95,17 @@ export default {
           description: i18n.pipelineExecutionPolicyDesc,
           example: i18n.pipelineExecutionPolicyExample,
           imageSrc: pipelineIllustrationUrl,
-          /**
-           * TODO
-           * Add hasMax and maxPoliciesAllowed when new policy type
-           * added on backend
-           */
+          hasMax: this.maxActivePipelineExecutionPoliciesReached,
+          maxPoliciesAllowed: this.maxPipelineExecutionPoliciesAllowed,
         });
       }
 
       return policies;
+    },
+  },
+  methods: {
+    instanceCountText(policyCount) {
+      return n__('policy', 'policies', policyCount);
     },
   },
   i18n,
@@ -147,6 +151,7 @@ export default {
               <gl-sprintf :message="$options.i18n.maximumReachedWarning">
                 <template #maximumAllowed>{{ option.maxPoliciesAllowed }}</template>
                 <template #policyType>{{ option.text }}</template>
+                <template #instance>{{ instanceCountText(option.maxPoliciesAllowed) }}</template>
               </gl-sprintf>
             </span>
           </div>
