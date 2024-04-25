@@ -38,12 +38,6 @@ module PackageMetadata
             source_xid = data_object.source_xid
             advisory_xid = data_object.advisory_xid
 
-            if source_xid == 'trivy-db' && Feature.disabled?(:container_scanning_continuous_vulnerability_scans,
-              Feature.current_request, type: :beta)
-              log_skipped_advisory_scan(source_xid, advisory_xid)
-              next
-            end
-
             log_queued_advisory_scan(source_xid, advisory_xid)
 
             Gitlab::EventStore.publish(
@@ -66,11 +60,6 @@ module PackageMetadata
 
         def log_queued_advisory_scan(source_xid, advisory_xid)
           Gitlab::AppJsonLogger.info(message: 'Queued scan for advisory',
-            source_xid: source_xid, advisory_xid: advisory_xid)
-        end
-
-        def log_skipped_advisory_scan(source_xid, advisory_xid)
-          Gitlab::AppJsonLogger.warn(message: 'Skipped scan for advisory',
             source_xid: source_xid, advisory_xid: advisory_xid)
         end
       end
