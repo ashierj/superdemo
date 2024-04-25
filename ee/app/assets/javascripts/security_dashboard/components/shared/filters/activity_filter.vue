@@ -48,12 +48,6 @@ export const GROUPS_MR = {
   icon: 'git-merge',
 };
 
-export const GROUPS_SOLUTION = {
-  text: s__('SecurityReports|Solution available'),
-  options: [ITEMS.HAS_SOLUTION, ITEMS.DOES_NOT_HAVE_SOLUTION],
-  icon: 'bulb',
-};
-
 export const GROUPS = [
   {
     text: '',
@@ -75,6 +69,11 @@ export const GROUPS = [
     text: s__('SecurityReports|Issue'),
     options: [ITEMS.HAS_ISSUE, ITEMS.DOES_NOT_HAVE_ISSUE],
     icon: 'issues',
+  },
+  {
+    text: s__('SecurityReports|Solution available'),
+    options: [ITEMS.HAS_SOLUTION, ITEMS.DOES_NOT_HAVE_SOLUTION],
+    icon: 'bulb',
   },
 ];
 
@@ -109,9 +108,6 @@ export default {
       const groups = [...GROUPS];
       if (this.glFeatures.activityFilterHasMr) {
         groups.push(GROUPS_MR);
-      }
-      if (this.glFeatures.activityFilterHasRemediations) {
-        groups.push(GROUPS_SOLUTION);
       }
       return groups;
     },

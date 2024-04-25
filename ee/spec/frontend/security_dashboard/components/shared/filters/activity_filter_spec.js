@@ -4,7 +4,6 @@ import ActivityFilter, {
   ITEMS,
   GROUPS,
   GROUPS_MR,
-  GROUPS_SOLUTION,
 } from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -39,7 +38,6 @@ describe('Activity Filter component', () => {
       provide: {
         glFeatures: {
           activityFilterHasMr: true,
-          activityFilterHasRemediations: true,
           ...glFeatures,
         },
       },
@@ -70,7 +68,7 @@ describe('Activity Filter component', () => {
   });
 
   it('passes GROUPS with MR to listbox items', () => {
-    expect(findListbox().props('items')).toEqual([...GROUPS, GROUPS_MR, GROUPS_SOLUTION]);
+    expect(findListbox().props('items')).toEqual([...GROUPS, GROUPS_MR]);
   });
 
   it('selects and unselects an item when clicked on', async () => {
@@ -232,7 +230,7 @@ describe('Activity Filter component', () => {
   describe('when feature flags are disabled', () => {
     beforeEach(() => {
       createWrapper({
-        glFeatures: { activityFilterHasMr: false, activityFilterHasRemediations: false },
+        glFeatures: { activityFilterHasMr: false },
       });
     });
 
