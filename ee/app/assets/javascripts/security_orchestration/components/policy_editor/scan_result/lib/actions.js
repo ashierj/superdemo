@@ -110,8 +110,30 @@ export const DEFAULT_APPROVER_DROPDOWN_TEXT = s__('SecurityOrchestration|Choose 
 
 export const REQUIRE_APPROVAL_TYPE = 'require_approval';
 
-export const BOT_COMMENT_TYPE = 'send_bot_message';
+export const BOT_MESSAGE_TYPE = 'send_bot_message';
 
 export const buildApprovalAction = () => {
   return { type: REQUIRE_APPROVAL_TYPE, approvals_required: 1, id: uniqueId('action_') };
 };
+
+export const buildBotMessageAction = () => {
+  return { type: BOT_MESSAGE_TYPE, enabled: true, id: uniqueId('action_') };
+};
+
+export const buildAction = (type) => {
+  if (type === BOT_MESSAGE_TYPE) {
+    return buildBotMessageAction();
+  }
+
+  return buildApprovalAction();
+};
+
+export const ACTION_OPTIONS = {
+  [REQUIRE_APPROVAL_TYPE]: s__('SecurityOrchestration|Require Approvers'),
+  [BOT_MESSAGE_TYPE]: s__('SecurityOrchestration|Send bot message'),
+};
+
+export const ACTION_LISTBOX_ITEMS = Object.entries(ACTION_OPTIONS).map(([value, text]) => ({
+  value,
+  text,
+}));

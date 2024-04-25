@@ -3,16 +3,17 @@ import { uniqueId } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
   DEFAULT_SCAN_RESULT_POLICY,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE,
   DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
-  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK,
   getInvalidBranches,
   fromYaml,
+  REQUIRE_APPROVAL_TYPE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
 import EditorComponent from 'ee/security_orchestration/components/policy_editor/scan_result/editor_component.vue';
 import {
@@ -25,12 +26,13 @@ import {
   mockDefaultBranchesScanResultObject,
   mockDeprecatedScanResultManifest,
   mockDeprecatedScanResultObject,
-  mockBotCommentScanResultObject,
+  mockBotMessageScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import {
   unsupportedManifest,
   APPROVAL_POLICY_DEFAULT_POLICY,
   APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE,
+  APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
@@ -51,7 +53,7 @@ import {
   PARSING_ERROR_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
-import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section_new.vue';
+import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
 import ApproverAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_action.vue';
 import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
 
@@ -150,6 +152,7 @@ describe('EditorComponent', () => {
   const findAllRuleSections = () => wrapper.findAllComponents(RuleSection);
   const findSettingsSection = () => wrapper.findComponent(SettingsSection);
   const findEmptyActionsAlert = () => wrapper.findByTestId('empty-actions-alert');
+  const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
 
   const changesToRuleMode = () =>
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
@@ -169,33 +172,23 @@ describe('EditorComponent', () => {
 
   describe('rendering', () => {
     it.each`
-      namespaceType              | manifest
+      namespaceType              | policy
       ${NAMESPACE_TYPES.GROUP}   | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE}
       ${NAMESPACE_TYPES.PROJECT} | ${APPROVAL_POLICY_DEFAULT_POLICY}
-    `('should render default policy for a $namespaceType', ({ namespaceType, manifest }) => {
+    `('should render default policy for a $namespaceType', ({ namespaceType, policy }) => {
       factory({ provide: { namespaceType } });
-      expect(findPolicyEditorLayout().props('policy')).toEqual(manifest);
+      expect(findPolicyEditorLayout().props('policy')).toEqual(policy);
       expect(findPolicyEditorLayout().props('hasParsingError')).toBe(false);
     });
 
     it.each`
-      namespaceType              | projectFeatureFlag | groupFeatureFlag | manifest
-      ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${false}         | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE}
-      ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${true}          | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK}
-      ${NAMESPACE_TYPES.PROJECT} | ${false}           | ${false}         | ${DEFAULT_SCAN_RESULT_POLICY}
-      ${NAMESPACE_TYPES.PROJECT} | ${true}            | ${false}         | ${DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK}
+      namespaceType              | manifest
+      ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE}
+      ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_SCAN_RESULT_POLICY}
     `(
-      'sets the correct default policy yaml for $namespaceType namespace and project feature flag $projectFeatureFlag and group feature flag $groupFeatureFlag',
-      ({ namespaceType, projectFeatureFlag, groupFeatureFlag, manifest }) => {
-        factory({
-          provide: {
-            namespaceType,
-            glFeatures: {
-              mergeRequestApprovalPoliciesFallbackBehavior: projectFeatureFlag,
-              mergeRequestApprovalPoliciesFallbackBehaviorGroup: groupFeatureFlag,
-            },
-          },
-        });
+      'should use the correct default policy yaml for a $namespaceType',
+      ({ namespaceType, manifest }) => {
+        factory({ provide: { namespaceType } });
         expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(manifest);
       },
     );
@@ -484,12 +477,44 @@ describe('EditorComponent', () => {
     });
 
     describe('action section  when the "approvalPolicyDisableBotComment" feature is on', () => {
+      beforeEach(() => {
+        uniqueId
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
+      });
+
+      afterEach(() => {
+        uniqueId.mockRestore();
+      });
+
       describe('rendering', () => {
-        afterAll(() => {
-          uniqueId.mockRestore();
+        it.each`
+          namespaceType              | policy
+          ${NAMESPACE_TYPES.PROJECT} | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE}
+        `('should render default policy for a $namespaceType', ({ namespaceType, policy }) => {
+          factory({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            provide: { namespaceType },
+          });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(policy);
         });
 
-        it('displays the action section on the project-level when the "approvalPolicyDisableBotComment" feature is on', () => {
+        it.each`
+          namespaceType              | manifest
+          ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE}
+          ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE}
+        `(
+          'should use the correct default policy yaml for a $namespaceType',
+          ({ namespaceType, manifest }) => {
+            factory({
+              glFeatures: { approvalPolicyDisableBotComment: true },
+              provide: { namespaceType },
+            });
+            expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(manifest);
+          },
+        );
+
+        it('displays the action section and scan filter selector on the project-level', () => {
           factory({
             glFeatures: { approvalPolicyDisableBotComment: true },
             provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
@@ -498,7 +523,7 @@ describe('EditorComponent', () => {
           expect(findApproverAction().exists()).toBe(false);
         });
 
-        it('displays the approver action on the group-level when the "approvalPolicyDisableBotComment" feature is on', () => {
+        it('displays the approver action and the add action button on the group-level', () => {
           factory({
             glFeatures: { approvalPolicyDisableBotComment: true },
             provide: { namespaceType: NAMESPACE_TYPES.GROUP },
@@ -508,31 +533,33 @@ describe('EditorComponent', () => {
         });
 
         it('displays multiple action sections', () => {
-          uniqueId
-            .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
-            .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
           factoryWithExistingPolicy({
             glFeatures: { approvalPolicyDisableBotComment: true },
-            policy: mockBotCommentScanResultObject,
+            policy: mockBotMessageScanResultObject,
           });
           expect(findAllActionSections()).toHaveLength(2);
         });
       });
 
       describe('add', () => {
-        it('hides the add button when actions exist', () => {
-          factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
-          expect(findActionSection().exists()).toBe(true);
-          expect(findAddActionButton().exists()).toBe(false);
+        it('hides the scan filter selector by default, when all action types are used', () => {
+          factoryWithExistingPolicy({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            policy: mockBotMessageScanResultObject,
+          });
+          expect(findScanFilterSelector().exists()).toBe(false);
         });
 
-        it('shows the add button when actions do not exist', () => {
+        it('shows the scan filter selector if there are action types not shown', async () => {
           factoryWithExistingPolicy({
-            hasActions: false,
             glFeatures: { approvalPolicyDisableBotComment: true },
+            policy: mockBotMessageScanResultObject,
           });
-          expect(findActionSection().exists()).toBe(false);
-          expect(findAddActionButton().exists()).toBe(true);
+          await findAllActionSections().at(0).vm.$emit('remove');
+          expect(findScanFilterSelector().exists()).toBe(true);
+          expect(findScanFilterSelector().props('filters')).toEqual([
+            { text: 'Require Approvers', value: 'require_approval' },
+          ]);
         });
       });
 
@@ -541,6 +568,7 @@ describe('EditorComponent', () => {
           factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
           expect(findActionSection().exists()).toBe(true);
           expect(findPolicyEditorLayout().props('policy')).toHaveProperty('actions');
+          await findActionSection().vm.$emit('remove');
           await findActionSection().vm.$emit('remove');
           expect(findActionSection().exists()).toBe(false);
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('actions');
@@ -552,14 +580,11 @@ describe('EditorComponent', () => {
             'changed',
             mockDefaultBranchesScanResultObject.actions[0],
           );
-          await findActionSection().vm.$emit('remove');
-          await findAddActionButton().vm.$emit('click');
+          await findAllActionSections().at(0).vm.$emit('remove');
+          await findScanFilterSelector().vm.$emit('select', REQUIRE_APPROVAL_TYPE);
           expect(findPolicyEditorLayout().props('policy').actions).toEqual([
-            {
-              approvals_required: 1,
-              type: 'require_approval',
-              id: 'action_0',
-            },
+            { type: 'send_bot_message', enabled: true, id: 'action_1' },
+            { approvals_required: 1, type: 'require_approval', id: 'action_0' },
           ]);
           expect(findActionSection().props('existingApprovers')).toEqual({});
         });

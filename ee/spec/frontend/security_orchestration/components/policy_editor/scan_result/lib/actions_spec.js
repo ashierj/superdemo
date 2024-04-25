@@ -2,7 +2,9 @@ import {
   APPROVER_TYPE_DICT,
   approversOutOfSync,
   actionHasType,
-  buildApprovalAction,
+  BOT_MESSAGE_TYPE,
+  buildAction,
+  REQUIRE_APPROVAL_TYPE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/actions';
 import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/constants';
 
@@ -221,12 +223,20 @@ describe('actionHasType', () => {
   });
 });
 
-describe('buildApprovalAction', () => {
+describe('buildAction', () => {
   it('builds an approval action', () => {
-    expect(buildApprovalAction()).toEqual({
+    expect(buildAction(REQUIRE_APPROVAL_TYPE)).toEqual({
       approvals_required: 1,
       id: actionId,
-      type: 'require_approval',
+      type: REQUIRE_APPROVAL_TYPE,
+    });
+  });
+
+  it('builds a bot message action', () => {
+    expect(buildAction(BOT_MESSAGE_TYPE)).toEqual({
+      enabled: true,
+      id: actionId,
+      type: BOT_MESSAGE_TYPE,
     });
   });
 });

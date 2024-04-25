@@ -47,6 +47,14 @@ export const APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE = {
   policy_scope: { projects: { excluding: [] } },
 };
 
+export const APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE = {
+  ...APPROVAL_POLICY_DEFAULT_POLICY,
+  actions: [
+    ...APPROVAL_POLICY_DEFAULT_POLICY.actions,
+    { type: 'send_bot_message', enabled: true, id: 'action_1' },
+  ],
+};
+
 export const SCAN_EXECUTION_DEFAULT_POLICY = {
   type: 'scan_execution_policy',
   name: '',

@@ -1,9 +1,9 @@
-import { shallowMount } from '@vue/test-utils';
-import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section_new.vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
 import ApproverAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/approver_action.vue';
-import BotCommentAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/bot_comment_action.vue';
+import BotCommentAction from 'ee/security_orchestration/components/policy_editor/scan_result/action/bot_message_action.vue';
 import {
-  BOT_COMMENT_TYPE,
+  BOT_MESSAGE_TYPE,
   REQUIRE_APPROVAL_TYPE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
 
@@ -11,11 +11,12 @@ describe('ActionSection', () => {
   let wrapper;
 
   const defaultProps = {
+    actionIndex: 0,
     initAction: { type: REQUIRE_APPROVAL_TYPE },
     existingApprovers: {},
   };
   const factory = ({ props = {} } = {}) => {
-    wrapper = shallowMount(ActionSection, {
+    wrapper = shallowMountExtended(ActionSection, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -23,8 +24,16 @@ describe('ActionSection', () => {
     });
   };
 
+  const findActionSeperator = () => wrapper.findByTestId('action-and-label');
   const findApproverAction = () => wrapper.findComponent(ApproverAction);
   const findBotCommentAction = () => wrapper.findComponent(BotCommentAction);
+
+  describe('general behavior', () => {
+    it('renders the action seperator when the action index is > 0', () => {
+      factory({ props: { actionIndex: 1 } });
+      expect(findActionSeperator().exists()).toBe(true);
+    });
+  });
 
   describe('Approval Action', () => {
     beforeEach(() => {
@@ -34,6 +43,7 @@ describe('ActionSection', () => {
     it('renders an approver action for that type of action', () => {
       expect(findApproverAction().exists()).toBe(true);
       expect(findBotCommentAction().exists()).toBe(false);
+      expect(findActionSeperator().exists()).toBe(false);
     });
 
     describe('events', () => {
@@ -63,9 +73,10 @@ describe('ActionSection', () => {
 
   describe('Bot Comment Action', () => {
     it('renders a bot comment action for that type of action', () => {
-      factory({ props: { initAction: { type: BOT_COMMENT_TYPE } } });
+      factory({ props: { initAction: { type: BOT_MESSAGE_TYPE } } });
       expect(findBotCommentAction().exists()).toBe(true);
       expect(findApproverAction().exists()).toBe(false);
+      expect(findActionSeperator().exists()).toBe(false);
     });
   });
 });

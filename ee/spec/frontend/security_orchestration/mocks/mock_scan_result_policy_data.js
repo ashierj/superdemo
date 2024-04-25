@@ -58,20 +58,15 @@ export const mockDefaultBranchesScanResultObject = {
   ],
 };
 
-export const mockBotCommentScanResultObject = {
+export const mockBotMessageScanResultObject = {
   type: 'approval_policy',
-  name: 'Add bot comment',
+  name: 'Add bot message',
   description: '',
   enabled: true,
   rules: [],
   actions: [
-    {
-      type: 'require_approval',
-      approvals_required: 1,
-    },
-    {
-      type: 'send_bot_comment',
-    },
+    { type: 'require_approval', approvals_required: 1 },
+    { type: 'send_bot_message', enabled: true },
   ],
 };
 
