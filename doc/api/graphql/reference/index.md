@@ -16793,7 +16793,6 @@ Represents a list for an issue board.
 | <a id="boardlistposition"></a>`position` | [`Int`](#int) | Position of list within the board. |
 | <a id="boardlisttitle"></a>`title` | [`String!`](#string) | Title of the list. |
 | <a id="boardlisttotalissueweight"></a>`totalIssueWeight` | [`BigInt`](#bigint) | Total weight of all issues in the list, encoded as a string. |
-| <a id="boardlisttotalweight"></a>`totalWeight` **{warning-solid}** | [`Int`](#int) | **Deprecated** in GitLab 16.2. Use `totalIssueWeight`. |
 
 #### Fields with arguments
 
