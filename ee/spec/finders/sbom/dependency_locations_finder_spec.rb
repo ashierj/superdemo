@@ -43,7 +43,7 @@ RSpec.describe Sbom::DependencyLocationsFinder, feature_category: :dependency_ma
   end
 
   context 'with unrelated component' do
-    let(:params) { { search: 'file', component_id: create(:sbom_component).id } }
+    let(:params) { { search: 'file', component_id: create(:sbom_component_version).id } }
 
     it 'returns empty array' do
       expect(dependencies).to be_empty
