@@ -8,6 +8,9 @@ import {
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
   DEFAULT_SCAN_RESULT_POLICY,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK,
   getInvalidBranches,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
@@ -172,24 +175,28 @@ describe('EditorComponent', () => {
     `('should render default policy for a $namespaceType', ({ namespaceType, manifest }) => {
       factory({ provide: { namespaceType } });
       expect(findPolicyEditorLayout().props('policy')).toEqual(manifest);
-    });
-
-    it('passes the default yamlEditorValue prop to the PolicyEditorLayout component', () => {
-      factory();
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_RESULT_POLICY);
+      expect(findPolicyEditorLayout().props('hasParsingError')).toBe(false);
     });
 
     it.each`
-      prop                 | compareFn          | expected
-      ${'yamlEditorValue'} | ${'toBe'}          | ${DEFAULT_SCAN_RESULT_POLICY}
-      ${'hasParsingError'} | ${'toBe'}          | ${false}
-      ${'policy'}          | ${'toStrictEqual'} | ${fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY })}
+      namespaceType              | projectFeatureFlag | groupFeatureFlag | manifest
+      ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${false}         | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}           | ${true}          | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK}
+      ${NAMESPACE_TYPES.PROJECT} | ${false}           | ${false}         | ${DEFAULT_SCAN_RESULT_POLICY}
+      ${NAMESPACE_TYPES.PROJECT} | ${true}            | ${false}         | ${DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK}
     `(
-      'passes the correct $prop prop to the PolicyEditorLayout component',
-      ({ prop, compareFn, expected }) => {
-        uniqueId.mockRestore();
-        factory();
-        expect(findPolicyEditorLayout().props(prop))[compareFn](expected);
+      'sets the correct default policy yaml for $namespaceType namespace and project feature flag $projectFeatureFlag and group feature flag $groupFeatureFlag',
+      ({ namespaceType, projectFeatureFlag, groupFeatureFlag, manifest }) => {
+        factory({
+          provide: {
+            namespaceType,
+            glFeatures: {
+              mergeRequestApprovalPoliciesFallbackBehavior: projectFeatureFlag,
+              mergeRequestApprovalPoliciesFallbackBehaviorGroup: groupFeatureFlag,
+            },
+          },
+        });
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(manifest);
       },
     );
 
