@@ -21,21 +21,31 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
   end
 
   describe '#common_invite_modal_dataset', :saas do
-    let(:project) { build(:project) }
+    let(:current_user) { build(:user) }
+    let(:group) { build(:group) }
+    let(:project) { build(:project, namespace: group) }
 
     before do
       stub_ee_application_setting(dashboard_limit_enabled: true)
+
+      allow(helper).to receive(:current_user).and_return(current_user)
     end
 
-    it 'includes add_seats_href' do
+    it 'includes add_seats_href for an owner' do
+      stub_member_access_level(group, owner: current_user)
+
       expect(helper.common_invite_modal_dataset(project)[:add_seats_href])
         .to eq(::Gitlab::Routing.url_helpers.subscription_portal_add_extra_seats_url(project.root_ancestor.id))
     end
 
+    it 'does not include add_seats_href for non-owners' do
+      stub_member_access_level(group, maintainer: current_user)
+
+      expect(helper.common_invite_modal_dataset(project)[:add_seats_href]).to be_nil
+    end
+
     context 'when applying the free user cap is not valid' do
-      let!(:group) do
-        create(:group_with_plan, :private, projects: [project], plan: :default_plan)
-      end
+      let!(:group) { create(:group_with_plan, :private, plan: :default_plan) }
 
       it 'does not include users limit notification data' do
         expect(helper.common_invite_modal_dataset(project)).not_to have_key(:users_limit_dataset)
@@ -43,9 +53,7 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
     end
 
     context 'when applying the free user cap is valid' do
-      let!(:group) do
-        create(:group_with_plan, :private, projects: [project], plan: :free_plan)
-      end
+      let!(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       let(:expected_alert_data) do
         {

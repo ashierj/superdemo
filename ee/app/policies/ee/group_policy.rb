@@ -389,8 +389,10 @@ module EE
         enable :read_group_compliance_dashboard
       end
 
-      rule { owner }
-        .enable :admin_protected_environment
+      rule { owner }.policy do
+        enable :admin_protected_environment
+        enable :admin_licensed_seat
+      end
 
       rule { can?(:owner_access) }.policy do
         enable :set_epic_created_at
