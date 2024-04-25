@@ -21851,6 +21851,22 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="groupreleasessort"></a>`sort` | [`GroupReleaseSort`](#groupreleasesort) | Sort group releases by given criteria. |
 
+##### `Group.remoteDevelopmentClusterAgents`
+
+Cluster agents in the namespace with remote development capabilities.
+
+Returns [`ClusterAgentConnection`](#clusteragentconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupremotedevelopmentclusteragentsfilter"></a>`filter` | [`NamespaceClusterAgentFilter!`](#namespaceclusteragentfilter) | Filter the types of cluster agents to return. |
+
 ##### `Group.runnerCloudProvisioning`
 
 Information used for provisioning the runner on a cloud provider. Returns `null` if `:google_cloud_support_feature_flag` feature flag is disabled, or the GitLab instance is not a SaaS instance.
@@ -25215,6 +25231,22 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="namespaceprojectssort"></a>`sort` | [`NamespaceProjectSort`](#namespaceprojectsort) | Sort projects by this criteria. |
 | <a id="namespaceprojectswithissuesenabled"></a>`withIssuesEnabled` | [`Boolean`](#boolean) | Return only projects with issues enabled. |
 | <a id="namespaceprojectswithmergerequestsenabled"></a>`withMergeRequestsEnabled` | [`Boolean`](#boolean) | Return only projects with merge requests enabled. |
+
+##### `Namespace.remoteDevelopmentClusterAgents`
+
+Cluster agents in the namespace with remote development capabilities.
+
+Returns [`ClusterAgentConnection`](#clusteragentconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespaceremotedevelopmentclusteragentsfilter"></a>`filter` | [`NamespaceClusterAgentFilter!`](#namespaceclusteragentfilter) | Filter the types of cluster agents to return. |
 
 ##### `Namespace.scanExecutionPolicies`
 
@@ -33625,6 +33657,14 @@ Different toggles for changing mutator behavior.
 | <a id="mutationoperationmodeappend"></a>`APPEND` | Performs an append operation. |
 | <a id="mutationoperationmoderemove"></a>`REMOVE` | Performs a removal operation. |
 | <a id="mutationoperationmodereplace"></a>`REPLACE` | Performs a replace operation. |
+
+### `NamespaceClusterAgentFilter`
+
+Possible filter types for remote development cluster agents in a namespace.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="namespaceclusteragentfilteravailable"></a>`AVAILABLE` | Cluster agents in the namespace that can be used for hosting workspaces. |
 
 ### `NamespaceProjectSort`
 

@@ -15,5 +15,7 @@ module RemoteDevelopment
     validates :namespace, presence: true
     validates :agent, presence: true
     validates :user, presence: true
+
+    scope :for_namespaces, ->(namespace_ids) { where(namespace_id: namespace_ids) }
   end
 end
