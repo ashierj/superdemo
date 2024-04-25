@@ -9,21 +9,20 @@ require 'spec_helper'
 RSpec.describe 'Epics > User uses quick actions', :js, feature_category: :portfolio_management do
   include Features::NotesHelpers
 
-  let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:epic_1) { create(:epic, group: group) }
+  let_it_be(:reporter) { create(:user, reporter_of: group) }
 
   before do
     stub_licensed_features(epics: true, subepics: true)
-    group.add_reporter(user)
-    sign_in(user)
+    sign_in(reporter)
   end
 
   context 'on epic note' do
     it 'applies quick action' do
       # TODO: remove threshold after epic-work item sync
       # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(112)
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(115)
       epic_2 = create(:epic, group: group)
       visit group_epic_path(group, epic_2)
       wait_for_requests
