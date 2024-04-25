@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Groups::SyncService, feature_category: :system_access do
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
 
   describe '#execute' do
     let_it_be(:top_level_group) { create(:group) }
@@ -55,6 +55,23 @@ RSpec.describe Groups::SyncService, feature_category: :system_access do
 
     it 'returns sync stats as payload' do
       expect(sync.payload).to include({ added: 2, removed: 0, updated: 0 })
+    end
+
+    context 'when a subgroup has no group links' do
+      let_it_be(:subgroup) { create(:group, parent: group2, maintainers: user) }
+
+      context 'when the user is a member to be removed from a parent group' do
+        before_all do
+          group2.add_developer(user)
+        end
+
+        it 'does not affect the subgroup member' do
+          sync
+
+          expect(subgroup.members.reload.find_by(user_id: user.id).access_level)
+            .to eq(::Gitlab::Access::MAINTAINER)
+        end
+      end
     end
 
     describe 'custom roles', feature_category: :permissions do

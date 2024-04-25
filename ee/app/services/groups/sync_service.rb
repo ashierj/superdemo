@@ -50,7 +50,7 @@ module Groups
 
     def remove_old_memberships
       members_to_remove.each do |member|
-        Members::DestroyService.new(current_user).execute(member, skip_authorization: true)
+        Members::DestroyService.new(current_user).execute(member, skip_authorization: true, skip_subresources: true)
 
         next unless member.destroyed?
 
