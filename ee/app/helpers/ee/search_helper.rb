@@ -77,8 +77,8 @@ module EE
       # pre/post tags from Elasticsearch with highlighting, truncate, and mark as html_safe. HTML tags are not
       # counted towards the character limit.
       text = search_sanitize(search_highlight[issuable.id].description.first)
-      text.gsub!(::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG, '<span class="gl-text-gray-900 gl-font-weight-bold">')
-      text.gsub!(::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG, '</span>')
+      text.gsub!(::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG, '<mark>')
+      text.gsub!(::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG, '</mark>')
       search_truncate(text).html_safe
     end
 
