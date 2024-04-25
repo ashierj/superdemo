@@ -12,7 +12,7 @@ module EE
       WEIGHT_NONE = 'None'
       ELASTICSEARCH_PERMISSION_TRACKED_FIELDS = %w[assignee_ids author_id confidential].freeze
 
-      include Elastic::ApplicationVersionedSearch
+      include ::Search::Elastic::IssuesSearch
       include UsageStatistics
       include IterationEventable
       include HealthStatus
@@ -181,8 +181,8 @@ module EE
       super if weight_available?
     end
 
-    # override
-    def maintain_elasticsearch_update
+    override :maintain_elasticsearch_update
+    def maintain_elasticsearch_update(updated_attributes: previous_changes.keys)
       super
 
       maintain_elasticsearch_issue_notes_update if elasticsearch_issue_notes_need_updating?
