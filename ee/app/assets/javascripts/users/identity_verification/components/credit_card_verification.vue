@@ -20,7 +20,13 @@ export default {
     Captcha,
   },
   mixins: [Tracking.mixin({ category: EVENT_CATEGORY })],
-  inject: ['creditCard', 'offerPhoneNumberExemption'],
+  inject: [
+    'creditCardChallengeOnVerify',
+    'creditCardVerifyPath',
+    'creditCardVerifyCaptchaPath',
+    'creditCard',
+    'offerPhoneNumberExemption',
+  ],
   data() {
     return {
       currentUserId: this.creditCard.userId,
@@ -82,7 +88,7 @@ export default {
       this.isLoading = true;
 
       axios
-        .get(this.creditCard.verifyCreditCardPath)
+        .get(this.creditCardVerifyPath)
         .then(this.handleCheckForReuseResponse)
         .catch(this.handleCheckForReuseError)
         .finally(() => {
@@ -101,19 +107,24 @@ export default {
       this.captchaData = {};
     },
     submit() {
-      this.isLoading = true;
-      axios
-        .post(this.creditCard.verifyCaptchaPath, this.captchaData)
-        .then(() => {
-          this.alert?.dismiss();
-          this.$refs.zuora.submit();
-        })
-        .catch((error) => {
-          createAlert({ message: error.response?.data?.message || I18N_GENERIC_ERROR });
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+      if (this.creditCardChallengeOnVerify) {
+        this.isLoading = true;
+        axios
+          .post(this.creditCardVerifyCaptchaPath, this.captchaData)
+          .then(() => {
+            this.alert?.dismiss();
+            this.$refs.zuora.submit();
+          })
+          .catch((error) => {
+            createAlert({ message: error.response?.data?.message || I18N_GENERIC_ERROR });
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      } else {
+        this.alert?.dismiss();
+        this.$refs.zuora.submit();
+      }
     },
   },
   i18n: {
@@ -146,7 +157,7 @@ export default {
     </div>
 
     <captcha
-      :show-recaptcha-challenge="creditCard.showRecaptchaChallenge"
+      :show-recaptcha-challenge="creditCardChallengeOnVerify"
       @captcha-shown="onCaptchaShown"
       @captcha-solved="onCaptchaSolved"
       @captcha-reset="onCaptchaReset"

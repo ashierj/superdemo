@@ -77,8 +77,8 @@ describe('International Phone input component', () => {
         ...props,
       },
       provide: {
+        phoneSendCodePath: SEND_CODE_PATH,
         phoneNumber: {
-          sendCodePath: SEND_CODE_PATH,
           ...provide,
         },
       },

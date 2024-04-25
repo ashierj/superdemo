@@ -32,7 +32,7 @@ export default {
     resendSuccess: s__('IdentityVerification|We sent a new code to +%{phoneNumber}'),
     verifyButton: s__('IdentityVerification|Verify phone number'),
   },
-  inject: ['phoneNumber'],
+  inject: ['phoneSendCodePath', 'phoneVerifyCodePath', 'phoneNumber'],
   props: {
     latestPhoneNumber: {
       type: Object,
@@ -94,7 +94,7 @@ export default {
       this.alert?.dismiss();
 
       axios
-        .post(this.phoneNumber.verifyCodePath, {
+        .post(this.phoneVerifyCodePath, {
           verification_code: this.form.fields.verificationCode.value,
           ...this.additionalRequestParams,
         })
@@ -112,7 +112,7 @@ export default {
       this.alert?.dismiss();
 
       axios
-        .post(this.phoneNumber.sendCodePath, {
+        .post(this.phoneSendCodePath, {
           country: this.latestPhoneNumber.country,
           international_dial_code: this.latestPhoneNumber.internationalDialCode,
           phone_number: this.latestPhoneNumber.number,

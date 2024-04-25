@@ -60,10 +60,9 @@ describe('Verify phone verification code input component', () => {
         ...props,
       },
       provide: {
-        phoneNumber: {
-          sendCodePath: SEND_CODE_PATH,
-          verifyCodePath: VERIFY_CODE_PATH,
-        },
+        phoneSendCodePath: SEND_CODE_PATH,
+        phoneVerifyCodePath: VERIFY_CODE_PATH,
+        phoneNumber: {},
       },
       stubs: {
         GlSprintf,
