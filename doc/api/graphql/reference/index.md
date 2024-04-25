@@ -33232,7 +33232,7 @@ Member role permission.
 | Value | Description |
 | ----- | ----------- |
 | <a id="memberrolepermissionadmin_cicd_variables"></a>`ADMIN_CICD_VARIABLES` | Create, read, update, and delete CI/CD variables. |
-| <a id="memberrolepermissionadmin_compliance_framework"></a>`ADMIN_COMPLIANCE_FRAMEWORK` | Enables administrator access to the compliance framework. |
+| <a id="memberrolepermissionadmin_compliance_framework"></a>`ADMIN_COMPLIANCE_FRAMEWORK` | Create, read, update, and delete compliance frameworks. Users with this permission can also assign a compliance framework label to a project, and set the default framework of a group. |
 | <a id="memberrolepermissionadmin_group_member"></a>`ADMIN_GROUP_MEMBER` | Add or remove users in a group, and assign roles to users. When assigning a role, users with this custom permission must select a role that has the same or fewer permissions as the default role used as the base for their custom role. |
 | <a id="memberrolepermissionadmin_merge_request"></a>`ADMIN_MERGE_REQUEST` | Allows approval of merge requests. |
 | <a id="memberrolepermissionadmin_push_rules"></a>`ADMIN_PUSH_RULES` | Configure push rules for repositories at the group or project level. |
@@ -33241,7 +33241,7 @@ Member role permission.
 | <a id="memberrolepermissionarchive_project"></a>`ARCHIVE_PROJECT` | Allows archiving of projects. |
 | <a id="memberrolepermissionmanage_group_access_tokens"></a>`MANAGE_GROUP_ACCESS_TOKENS` | Create, read, update, and delete group access tokens. When creating a token, users with this custom permission must select a role for that token that has the same or fewer permissions as the default role used as the base for the custom role. |
 | <a id="memberrolepermissionmanage_project_access_tokens"></a>`MANAGE_PROJECT_ACCESS_TOKENS` | Create, read, update, and delete project access tokens. When creating a token, users with this custom permission must select a role for that token that has the same or fewer permissions as the default role used as the base for the custom role. |
-| <a id="memberrolepermissionmanage_security_policy_link"></a>`MANAGE_SECURITY_POLICY_LINK` | Allows assigning security policy projects. |
+| <a id="memberrolepermissionmanage_security_policy_link"></a>`MANAGE_SECURITY_POLICY_LINK` | Allows linking security policy projects. |
 | <a id="memberrolepermissionread_code"></a>`READ_CODE` | Allows read-only access to the source code. |
 | <a id="memberrolepermissionread_dependency"></a>`READ_DEPENDENCY` | Allows read-only access to the dependencies and licenses. |
 | <a id="memberrolepermissionread_vulnerability"></a>`READ_VULNERABILITY` | Read vulnerability reports and security dashboards. |
