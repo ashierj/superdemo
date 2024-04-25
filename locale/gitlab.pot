@@ -9924,6 +9924,15 @@ msgstr ""
 msgid "CVE|Why Request a CVE ID?"
 msgstr ""
 
+msgid "CVS|Continuous Container Scanning"
+msgstr ""
+
+msgid "CVS|Scan for vulnerabilities when a container image or the advisory database is updated."
+msgstr ""
+
+msgid "CVS|Toggle CVS"
+msgstr ""
+
 msgid "Cadence is not automated"
 msgstr ""
 
