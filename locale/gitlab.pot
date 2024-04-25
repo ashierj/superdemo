@@ -38256,12 +38256,6 @@ msgstr ""
 msgid "PlantUML diagram"
 msgstr ""
 
-msgid "Play"
-msgstr ""
-
-msgid "Play all manual"
-msgstr ""
-
 msgid "Please %{link_to_register} or %{link_to_sign_in} to comment"
 msgstr ""
 
@@ -43771,6 +43765,9 @@ msgstr ""
 msgid "Rules that define what git pushes are accepted for a project. All newly created projects will use these settings."
 msgstr ""
 
+msgid "Run"
+msgstr ""
+
 msgid "Run %{code_start}git fsck%{code_end} periodically in all project and wiki repositories to look for silent disk corruption issues."
 msgstr ""
 
@@ -43784,6 +43781,9 @@ msgid "Run CI/CD pipelines with Jenkins."
 msgstr ""
 
 msgid "Run again"
+msgstr ""
+
+msgid "Run all manual"
 msgstr ""
 
 msgid "Run housekeeping"
