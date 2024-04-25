@@ -58798,6 +58798,9 @@ msgstr ""
 msgid "Workspaces|Workspaces"
 msgstr ""
 
+msgid "Workspaces|Workspaces Settings"
+msgstr ""
+
 msgid "Workspaces|You can't create a workspace for this project"
 msgstr ""
 
