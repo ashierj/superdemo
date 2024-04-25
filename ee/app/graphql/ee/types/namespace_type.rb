@@ -146,6 +146,13 @@ module EE
               alpha: { milestone: '16.9' },
               authorize: :modify_product_analytics_settings
 
+        field :remote_development_cluster_agents,
+          ::Types::Clusters::AgentType.connection_type,
+          extras: [:lookahead],
+          null: true,
+          description: 'Cluster agents in the namespace with remote development capabilities',
+          resolver: ::Resolvers::RemoteDevelopment::AgentsForNamespaceResolver
+
         def product_analytics_stored_events_limit
           object.root_ancestor.product_analytics_stored_events_limit
         end
