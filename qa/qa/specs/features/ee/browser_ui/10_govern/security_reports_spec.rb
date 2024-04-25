@@ -232,7 +232,12 @@ module QA
       context 'for dependency scanning' do
         it(
           'displays the Dependency List',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035'
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035',
+          quarantine: {
+            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/457496',
+            type: :stale,
+            only: { subdomain: /(staging.)?/, domain: 'gitlab' }
+          }
         ) do
           commit_scan_files(fixture_json: dependency_report_json, ci_yaml_content: dependency_scan_yaml)
           project.visit!
