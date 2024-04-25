@@ -6,7 +6,7 @@ RSpec.describe API::ComposerPackages, feature_category: :package_registry do
   include HttpBasicAuthHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, maintainers: user) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let_it_be(:package_name) { 'package-name' }
   let_it_be(:project) do
@@ -20,10 +20,6 @@ RSpec.describe API::ComposerPackages, feature_category: :package_registry do
   let(:params) { {} }
 
   subject { get api(url), headers: headers, params: params }
-
-  before do
-    group.add_maintainer(user)
-  end
 
   describe 'GET /api/v4/projects/:id/packages/composer/archives/*package_name?sha=:sha' do
     let(:url) { "/projects/#{project.id}/packages/composer/archives/#{package_name}.zip" }

@@ -5,17 +5,13 @@ require 'spec_helper'
 RSpec.describe API::GroupHooks, :aggregate_failures, feature_category: :webhooks do
   let_it_be(:group_admin) { create(:user) }
   let_it_be(:non_admin_user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, owners: group_admin) }
   let_it_be_with_refind(:hook) do
     create(:group_hook,
       :all_events_enabled,
       group: group,
       url: 'http://example.com',
       enable_ssl_verification: true)
-  end
-
-  before do
-    group.add_owner(group_admin)
   end
 
   it_behaves_like 'web-hook API endpoints', '/groups/:id' do

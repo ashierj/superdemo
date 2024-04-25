@@ -11,7 +11,7 @@ RSpec.describe 'Creation of a new release', feature_category: :release_orchestra
   let_it_be(:milestone_12_3) { create(:milestone, project: project, title: '12.3') }
   let_it_be(:milestone_12_4) { create(:milestone, project: project, title: '12.4') }
   let_it_be(:group_milestone) { create(:milestone, group: group, title: '13.1') }
-  let_it_be(:developer) { create(:user) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
 
   let(:mutation_name) { :release_create }
 
@@ -43,10 +43,6 @@ RSpec.describe 'Creation of a new release', feature_category: :release_orchestra
 
   let(:create_release) { post_graphql_mutation(mutation, current_user: developer) }
   let(:mutation_response) { graphql_mutation_response(mutation_name)&.with_indifferent_access }
-
-  before do
-    project.add_developer(developer)
-  end
 
   context 'when the provided milestones include a group milestone' do
     context 'when the group milestone association feature is licensed' do

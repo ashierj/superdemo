@@ -13,7 +13,7 @@ RSpec.describe 'Query.group(fullPath).projects', feature_category: :compliance_m
   end
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:namespace) { create(:group) }
+  let_it_be(:namespace) { create(:group, owners: user) }
 
   let_it_be(:project_with_framework_1) { create(:project, group: namespace) }
   let_it_be(:project_with_framework_2) { create(:project, group: namespace) }
@@ -30,10 +30,6 @@ RSpec.describe 'Query.group(fullPath).projects', feature_category: :compliance_m
   let_it_be(:compliance_framework_2_setting) do
     create(:compliance_framework_project_setting, project: project_with_framework_2,
       compliance_management_framework: compliance_framework_2)
-  end
-
-  before do
-    namespace.add_owner(user)
   end
 
   subject(:execute_query) { post_graphql(query, current_user: user) }

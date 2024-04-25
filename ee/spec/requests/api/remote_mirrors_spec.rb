@@ -4,12 +4,8 @@ require 'spec_helper'
 
 RSpec.describe API::RemoteMirrors, feature_category: :source_code_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository, :remote_mirror) }
+  let_it_be(:project) { create(:project, :repository, :remote_mirror, maintainers: user) }
   let_it_be(:project_setting) { create(:project_setting, project: project) }
-
-  before do
-    project.add_maintainer(user)
-  end
 
   describe 'POST /projects/:id/remote_mirrors' do
     let(:route) { "/projects/#{project.id}/remote_mirrors" }

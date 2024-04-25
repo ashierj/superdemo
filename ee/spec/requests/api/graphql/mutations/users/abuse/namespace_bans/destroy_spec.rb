@@ -6,7 +6,7 @@ RSpec.describe 'Removing a namespace ban', feature_category: :user_profile do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:namespace) { create(:group) }
+  let_it_be(:namespace) { create(:group, owners: user) }
   let_it_be(:namespace_ban) { create(:namespace_ban, namespace: namespace) }
 
   let(:mutation) do
@@ -32,10 +32,6 @@ RSpec.describe 'Removing a namespace ban', feature_category: :user_profile do
 
   def mutation_response
     graphql_mutation_response(:namespace_ban_destroy)
-  end
-
-  before do
-    namespace.add_owner(user)
   end
 
   it 'removes the ban' do

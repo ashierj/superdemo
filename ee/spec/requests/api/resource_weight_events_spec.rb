@@ -4,12 +4,8 @@ require 'spec_helper'
 
 RSpec.describe ::API::ResourceWeightEvents, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project, reload: true) { create(:project, :public, namespace: user.namespace) }
+  let_it_be(:project, reload: true) { create(:project, :public, namespace: user.namespace, developers: user) }
   let_it_be(:issue) { create(:issue, project: project, author: user) }
-
-  before do
-    project.add_developer(user)
-  end
 
   describe "GET /projects/:id/issues/:noteable_id/resource_weight_events" do
     let!(:event) { create_event }
