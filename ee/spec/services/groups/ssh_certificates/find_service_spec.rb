@@ -84,5 +84,41 @@ RSpec.describe Groups::SshCertificates::FindService, feature_category: :source_c
         expect(response.reason).to eq(:forbidden)
       end
     end
+
+    context 'when user is an invited member of a group' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:invited_member) { create(:group_member, :invited, group: group, user: user) }
+
+      it 'returns not found error' do
+        response = service.execute
+
+        expect(response).to be_error
+        expect(response.message).to eq('User Not Found')
+        expect(response.reason).to eq(:not_found)
+      end
+    end
+
+    context 'when user has minimal group access and developer project access' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:project) { create(:project, group: group) }
+      let_it_be(:group_member) { create(:group_member, :minimal_access, group: group, user: user) }
+
+      before_all do
+        project.add_developer(user)
+        user.user_detail.update!(enterprise_group: group)
+      end
+
+      it 'returns successful response with payload' do
+        response = service.execute
+
+        # verify context is correct
+        expect(user.project_members.find_by(source: project).access_level).to eq(Gitlab::Access::DEVELOPER)
+        expect(group.all_group_members.with_user(user)).to be_one
+        expect(group.all_group_members.with_user(user).first.access_level).to eq(Gitlab::Access::MINIMAL_ACCESS)
+
+        expect(response).to be_success
+        expect(response.payload).to eq({ user: user, group: group })
+      end
+    end
   end
 end
