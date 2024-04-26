@@ -11387,7 +11387,7 @@ CREATE TABLE merge_trains (
     id bigint NOT NULL,
     merge_request_id integer NOT NULL,
     user_id integer NOT NULL,
-    pipeline_id integer,
+    pipeline_id_convert_to_bigint integer,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     target_project_id integer NOT NULL,
@@ -11395,7 +11395,7 @@ CREATE TABLE merge_trains (
     status smallint DEFAULT 0 NOT NULL,
     merged_at timestamp with time zone,
     duration integer,
-    pipeline_id_convert_to_bigint bigint
+    pipeline_id bigint
 );
 
 CREATE SEQUENCE merge_trains_id_seq
