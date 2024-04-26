@@ -140,6 +140,8 @@ variables:
   registry-root: registry.gitlab.com
 components:
   - name: tooling-container
+    attributes:
+      gl/inject-editor: true
     container:
       image: "{{registry-root}}/gitlab-org/remote-development/gitlab-remote-development-docs/ubuntu:22.04"
       env:
