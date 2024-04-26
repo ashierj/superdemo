@@ -17158,7 +17158,7 @@ msgstr ""
 msgid "Delete this attachment"
 msgstr ""
 
-msgid "Delete this epic and all descendants?"
+msgid "Delete this epic and release all child items?"
 msgstr ""
 
 msgid "Delete this project"
@@ -58455,6 +58455,9 @@ msgid "WorkItem|Dates"
 msgstr ""
 
 msgid "WorkItem|Delete %{workItemType}"
+msgstr ""
+
+msgid "WorkItem|Delete this %{workItemType} and release all child items? This action cannot be reversed."
 msgstr ""
 
 msgid "WorkItem|Discard changes"
