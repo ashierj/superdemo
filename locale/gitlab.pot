@@ -36415,6 +36415,9 @@ msgstr ""
 msgid "PackageRegistry|Debian"
 msgstr ""
 
+msgid "PackageRegistry|Default"
+msgstr ""
+
 msgid "PackageRegistry|Delete %{count} assets"
 msgstr ""
 
@@ -36461,6 +36464,9 @@ msgid "PackageRegistry|Enforce %{packageType} setting for all subgroups"
 msgstr ""
 
 msgid "PackageRegistry|Enforce %{package_type} setting for all subgroups"
+msgstr ""
+
+msgid "PackageRegistry|Error"
 msgstr ""
 
 msgid "PackageRegistry|Error publishing"
@@ -36518,6 +36524,9 @@ msgid "PackageRegistry|Gradle Kotlin DSL install command"
 msgstr ""
 
 msgid "PackageRegistry|Helm"
+msgstr ""
+
+msgid "PackageRegistry|Hidden"
 msgstr ""
 
 msgid "PackageRegistry|If you haven't already done so, you will need to add the below to your %{codeStart}.pypirc%{codeEnd} file."
@@ -36621,6 +36630,9 @@ msgstr ""
 msgid "PackageRegistry|Packages deleted successfully"
 msgstr ""
 
+msgid "PackageRegistry|Pending deletion"
+msgstr ""
+
 msgid "PackageRegistry|Permanently delete"
 msgstr ""
 
@@ -36628,6 +36640,9 @@ msgid "PackageRegistry|Permanently delete assets"
 msgstr ""
 
 msgid "PackageRegistry|Pip Command"
+msgstr ""
+
+msgid "PackageRegistry|Processing"
 msgstr ""
 
 msgid "PackageRegistry|Project-level"
