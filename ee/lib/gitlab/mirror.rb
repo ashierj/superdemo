@@ -22,14 +22,11 @@ module Gitlab
         destroy_cron_job!
         return if Gitlab::Geo.connected? && Gitlab::Geo.secondary?
 
-        # TODO: make shard-aware. See https://gitlab.com/gitlab-com/gl-infra/scalability/-/issues/3430
-        SidekiqSharding::Validator.allow_unrouted_sidekiq_calls do
-          Sidekiq::Cron::Job.create(
-            name: 'update_all_mirrors_worker',
-            cron: SCHEDULER_CRON,
-            class: 'UpdateAllMirrorsWorker'
-          )
-        end
+        Sidekiq::Cron::Job.create(
+          name: 'update_all_mirrors_worker',
+          cron: SCHEDULER_CRON,
+          class: 'UpdateAllMirrorsWorker'
+        )
       end
 
       def max_mirror_capacity_reached?
@@ -100,9 +97,7 @@ module Gitlab
       private
 
       def update_all_mirrors_cron_job
-        SidekiqSharding::Validator.allow_unrouted_sidekiq_calls do
-          Sidekiq::Cron::Job.find("update_all_mirrors_worker")
-        end
+        Sidekiq::Cron::Job.find("update_all_mirrors_worker")
       end
 
       def destroy_cron_job!
