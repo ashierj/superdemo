@@ -8,7 +8,6 @@ import graphql from '@rollup/plugin-graphql';
 import globby from 'globby';
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 import webpackConfig from './config/webpack.config';
-import { generateEntries } from './config/webpack.helpers';
 import {
   IS_EE,
   IS_JH,
@@ -20,6 +19,10 @@ import {
 import { viteCSSCompilerPlugin } from './scripts/frontend/lib/compile_css.mjs';
 import { viteTailwindCompilerPlugin } from './scripts/frontend/tailwindcss.mjs';
 import { AutoStopPlugin } from './config/helpers/vite_plugin_auto_stop.mjs';
+import {
+  PageEntrypointsPlugin,
+  virtualEntrypoints,
+} from './config/helpers/vite_plugin_page_entrypoints.mjs';
 import { FixedRubyPlugin } from './config/helpers/vite_plugin_ruby_fixed.mjs';
 /* eslint-enable import/extensions */
 
@@ -41,15 +44,6 @@ const assetsPath = path.resolve(__dirname, 'app/assets');
 const javascriptsPath = path.resolve(assetsPath, 'javascripts');
 
 const emptyComponent = path.resolve(javascriptsPath, 'vue_shared/components/empty_component.js');
-
-const comment = '/* this is a virtual module used by Vite, it exists only in dev mode */\n';
-
-const virtualEntrypoints = Object.entries(generateEntries()).reduce((acc, [entryName, imports]) => {
-  const modulePath = imports[imports.length - 1];
-  const importPath = modulePath.startsWith('./') ? `~/${modulePath.substring(2)}` : modulePath;
-  acc[`${entryName}.js`] = `${comment}/* ${modulePath} */ import '${importPath}';\n`;
-  return acc;
-}, {});
 
 const EE_ALIAS_FALLBACK = [
   {
@@ -135,22 +129,6 @@ function viteCopyPlugin({ patterns }) {
   };
 }
 
-const entrypointsDir = '/javascripts/entrypoints/';
-const pageEntrypointsPlugin = {
-  name: 'page-entrypoints',
-  load(id) {
-    if (!id.startsWith('pages.')) {
-      return undefined;
-    }
-    return virtualEntrypoints[id] ?? `/* doesn't exist */`;
-  },
-  resolveId(source) {
-    const fixedSource = source.replace(entrypointsDir, '');
-    if (fixedSource.startsWith('pages.')) return { id: fixedSource };
-    return undefined;
-  },
-};
-
 export default defineConfig({
   cacheDir: path.resolve(__dirname, 'tmp/cache/vite'),
   resolve: {
@@ -169,7 +147,7 @@ export default defineConfig({
     ],
   },
   plugins: [
-    pageEntrypointsPlugin,
+    PageEntrypointsPlugin(),
     viteCSSCompilerPlugin({ shouldWatch: viteGDKConfig.hmr !== null }),
     viteTailwindCompilerPlugin({ shouldWatch: viteGDKConfig.hmr !== null }),
     viteCopyPlugin({
