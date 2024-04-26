@@ -5,7 +5,6 @@ import path from 'node:path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue2';
 import graphql from '@rollup/plugin-graphql';
-import chokidar from 'chokidar';
 import globby from 'globby';
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 import webpackConfig from './config/webpack.config';
@@ -20,6 +19,7 @@ import {
 /* eslint-disable import/extensions */
 import { viteCSSCompilerPlugin } from './scripts/frontend/lib/compile_css.mjs';
 import { viteTailwindCompilerPlugin } from './scripts/frontend/tailwindcss.mjs';
+import { AutoStopPlugin } from './config/helpers/vite_plugin_auto_stop.mjs';
 import { FixedRubyPlugin } from './config/helpers/vite_plugin_ruby_fixed.mjs';
 /* eslint-enable import/extensions */
 
@@ -64,38 +64,6 @@ const JH_ALIAS_FALLBACK = [
     replacement: emptyComponent,
   },
 ];
-
-const autoRestartPlugin = {
-  configureServer(server) {
-    const nodeModulesWatcher = chokidar.watch(['node_modules/.yarn-integrity'], {
-      ignoreInitial: true,
-    });
-    const pageEntrypointsWatcher = chokidar.watch(
-      [
-        'app/assets/javascripts/pages/**/*.js',
-        'ee/app/assets/javascripts/pages/**/*.js',
-        'jh/app/assets/javascripts/pages/**/*.js',
-      ],
-      {
-        ignoreInitial: true,
-      },
-    );
-
-    // GDK will restart Vite server for us
-    const stop = () => process.kill(process.pid);
-
-    pageEntrypointsWatcher.on('add', stop);
-    pageEntrypointsWatcher.on('unlink', stop);
-    nodeModulesWatcher.on('add', stop);
-    nodeModulesWatcher.on('change', stop);
-    nodeModulesWatcher.on('unlink', stop);
-
-    server.httpServer?.addListener?.('close', () => {
-      pageEntrypointsWatcher.close();
-      nodeModulesWatcher.close();
-    });
-  },
-};
 
 /**
  * This is a simple-reimplementation of the copy-webpack-plugin
@@ -207,7 +175,7 @@ export default defineConfig({
     viteCopyPlugin({
       patterns: copyFilesPatterns,
     }),
-    viteGDKConfig.enabled ? autoRestartPlugin : null,
+    viteGDKConfig.enabled ? AutoStopPlugin() : null,
     FixedRubyPlugin(),
     vue({
       template: {
