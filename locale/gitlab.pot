@@ -43904,6 +43904,9 @@ msgstr ""
 msgid "Runners|%{linkStart}Create a new runner%{linkEnd} to get started."
 msgstr ""
 
+msgid "Runners|%{linkStart}View available zones%{linkEnd}. Must have the format %{format}. Example: %{example}."
+msgstr ""
+
 msgid "Runners|%{link_start}These runners%{link_end} are available to all groups and projects."
 msgstr ""
 
@@ -44198,7 +44201,7 @@ msgstr ""
 msgid "Runners|Fleet dashboard"
 msgstr ""
 
-msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type%{linkEnd}."
+msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type%{linkEnd}. Must have the format %{format}. Example: %{example}."
 msgstr ""
 
 msgid "Runners|Get started with runners"
@@ -44300,7 +44303,7 @@ msgstr ""
 msgid "Runners|Machine type is required."
 msgstr ""
 
-msgid "Runners|Machine type must have the format `family-series-size`. Example: n2d-standard-2"
+msgid "Runners|Machine type must have the right format."
 msgstr ""
 
 msgid "Runners|Machine type with preset amounts of virtual machines processors (vCPUs) and memory"
@@ -44334,6 +44337,9 @@ msgid "Runners|Most recent failures"
 msgstr ""
 
 msgid "Runners|Most used instance runners"
+msgstr ""
+
+msgid "Runners|Must have the format %{format}. Example: %{example}."
 msgstr ""
 
 msgid "Runners|Never contacted"
@@ -44436,7 +44442,7 @@ msgstr ""
 msgid "Runners|Project ID is required."
 msgstr ""
 
-msgid "Runners|Project ID must be 6 to 30 lowercase letters, digits, or hyphens. It needs to start with a lowercase letter and end with a letter or number."
+msgid "Runners|Project ID must have the right format."
 msgstr ""
 
 msgid "Runners|Project runners"
@@ -44463,7 +44469,7 @@ msgstr ""
 msgid "Runners|Region is required."
 msgstr ""
 
-msgid "Runners|Region must have the correct format. Example: us-central1"
+msgid "Runners|Region must have the right format."
 msgstr ""
 
 msgid "Runners|Register"
@@ -44779,7 +44785,7 @@ msgstr ""
 msgid "Runners|To follow the setup instructions, %{gcloudLinkStart}install the Google Cloud CLI%{gcloudLinkEnd} and %{terraformLinkStart}install Terraform%{terraformLinkEnd}."
 msgstr ""
 
-msgid "Runners|To improve security, use a dedicated project for CI/CD, separate from resources and identity management projects. %{linkStart}Where’s my project ID in Google Cloud?%{linkEnd}"
+msgid "Runners|To improve security, use a project just for CI/CD. %{linkStart}Where's my project ID?%{linkEnd} Can be 6 to 30 lowercase letters, digits, or hyphens. Must start with a letter and end with a letter or number. Example: %{example}."
 msgstr ""
 
 msgid "Runners|To install Runner in Kubernetes follow the instructions described in the GitLab documentation."
@@ -44866,9 +44872,6 @@ msgstr ""
 msgid "Runners|Version starts with"
 msgstr ""
 
-msgid "Runners|View available zones"
-msgstr ""
-
 msgid "Runners|View installation instructions"
 msgstr ""
 
@@ -44923,7 +44926,7 @@ msgstr ""
 msgid "Runners|Zone is required."
 msgstr ""
 
-msgid "Runners|Zone must have the correct format. Example: us-central1-a"
+msgid "Runners|Zone must have the right format."
 msgstr ""
 
 msgid "Runners|active"
