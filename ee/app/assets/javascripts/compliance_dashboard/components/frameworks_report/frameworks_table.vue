@@ -63,8 +63,8 @@ export default {
     newFramework() {
       this.$router.push({ name: ROUTE_NEW_FRAMEWORK });
     },
-    editFramework(framework) {
-      this.$router.push({ name: ROUTE_EDIT_FRAMEWORK, params: { id: framework.id } });
+    editFramework({ id }) {
+      this.$router.push({ name: ROUTE_EDIT_FRAMEWORK, params: { id } });
     },
     getPoliciesList(item) {
       const { scanExecutionPolicies, scanResultPolicies } = item;
