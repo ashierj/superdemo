@@ -13,8 +13,8 @@ module QA
       let(:secret_detection_vuln) { "Typeform API token" }
 
       let!(:gitlab_ci_yaml_path) { File.join(EE::Runtime::Path.fixture('secure_premade_reports'), '.gitlab-ci.yml') }
-      let!(:dependency_report_json) do
-        File.join(EE::Runtime::Path.fixture('secure_premade_reports'), 'gl-dependency-scanning-report.json')
+      let!(:cyclonedx_json) do
+        File.join(EE::Runtime::Path.fixture('secure_premade_reports'), 'gl-sbom.json')
       end
 
       let!(:ci_yaml_content) do
@@ -40,7 +40,7 @@ module QA
               - echo "Skipped"
             artifacts:
               reports:
-                dependency_scanning: gl-dependency-scanning-report.json
+                cyclonedx: gl-sbom.json
         YAML
       end
 
@@ -239,7 +239,7 @@ module QA
             only: { subdomain: /(staging.)?/, domain: 'gitlab' }
           }
         ) do
-          commit_scan_files(fixture_json: dependency_report_json, ci_yaml_content: dependency_scan_yaml)
+          commit_scan_files(fixture_json: cyclonedx_json, ci_yaml_content: dependency_scan_yaml)
           project.visit!
           wait_for_pipeline_success
           Page::Project::Menu.perform(&:go_to_dependency_list)
