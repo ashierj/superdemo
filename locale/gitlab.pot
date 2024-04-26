@@ -41718,6 +41718,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Only specified users can execute deployments in a protected environment."
 msgstr ""
 
+msgid "ProtectedEnvironment|Parameter 'required_approval_count' is deprecated and shouldn't be used. See https://gitlab.com/groups/gitlab-org/-/epics/9662"
+msgstr ""
+
 msgid "ProtectedEnvironment|Parent group"
 msgstr ""
 
