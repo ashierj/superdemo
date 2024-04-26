@@ -11240,7 +11240,7 @@ CREATE TABLE merge_request_metrics (
     merged_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    pipeline_id integer,
+    pipeline_id_convert_to_bigint integer,
     merged_by_id integer,
     latest_closed_by_id integer,
     latest_closed_at timestamp with time zone,
@@ -11257,7 +11257,7 @@ CREATE TABLE merge_request_metrics (
     target_project_id integer,
     id bigint NOT NULL,
     first_contribution boolean DEFAULT false NOT NULL,
-    pipeline_id_convert_to_bigint bigint,
+    pipeline_id bigint,
     CONSTRAINT check_e03d0900bf CHECK ((target_project_id IS NOT NULL))
 );
 
