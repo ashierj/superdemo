@@ -11495,6 +11495,11 @@ msgstr ""
 msgid "Closed date"
 msgstr ""
 
+msgid "Closed issue"
+msgid_plural "Closed issues"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Closed issues"
 msgstr ""
 
@@ -32587,7 +32592,13 @@ msgstr ""
 msgid "Milestones|Group Milestone"
 msgstr ""
 
+msgid "Milestones|Labels from issues in this milestone will appear here."
+msgstr ""
+
 msgid "Milestones|Milestone %{milestoneTitle} was not found"
+msgstr ""
+
+msgid "Milestones|No labels found"
 msgstr ""
 
 msgid "Milestones|Ongoing Issues (open and assigned)"
@@ -35748,6 +35759,11 @@ msgstr ""
 
 msgid "Open in your IDE"
 msgstr ""
+
+msgid "Open issue"
+msgid_plural "Open issues"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Open new window"
 msgstr ""
@@ -60774,11 +60790,6 @@ msgstr ""
 msgid "closed %{timeago}"
 msgstr ""
 
-msgid "closed issue"
-msgid_plural "closed issues"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "comment"
 msgstr ""
 
@@ -61938,11 +61949,6 @@ msgstr ""
 
 msgid "only supports valid HTTP(S) URLs"
 msgstr ""
-
-msgid "open issue"
-msgid_plural "open issues"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "or"
 msgstr ""
