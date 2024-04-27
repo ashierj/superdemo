@@ -46,8 +46,8 @@ import (
 	"k8s.io/kubernetes/pkg/scheduler/framework"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/feature"
 	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/names"
-	"k8s.io/kubernetes/pkg/scheduler/framework/plugins/volumebinding"
 	schedutil "k8s.io/kubernetes/pkg/scheduler/util"
+	"k8s.io/kubernetes/pkg/scheduler/util/assumecache"
 	"k8s.io/utils/ptr"
 )
 
@@ -302,7 +302,7 @@ type dynamicResources struct {
 	// When implementing cluster autoscaler support, this assume cache or
 	// something like it (see https://github.com/kubernetes/kubernetes/pull/112202)
 	// might have to be managed by the cluster autoscaler.
-	claimAssumeCache volumebinding.AssumeCache
+	claimAssumeCache *assumecache.AssumeCache
 
 	// inFlightAllocations is map from claim UUIDs to claim objects for those claims
 	// for which allocation was triggered during a scheduling cycle and the
@@ -355,7 +355,7 @@ func New(ctx context.Context, plArgs runtime.Object, fh framework.Handle, fts fe
 		classParametersLister:      fh.SharedInformerFactory().Resource().V1alpha2().ResourceClassParameters().Lister(),
 		resourceSliceLister:        fh.SharedInformerFactory().Resource().V1alpha2().ResourceSlices().Lister(),
 		claimNameLookup:            resourceclaim.NewNameLookup(fh.ClientSet()),
-		claimAssumeCache:           volumebinding.NewAssumeCache(logger, fh.SharedInformerFactory().Resource().V1alpha2().ResourceClaims().Informer(), "claim", "", nil),
+		claimAssumeCache:           assumecache.NewAssumeCache(logger, fh.SharedInformerFactory().Resource().V1alpha2().ResourceClaims().Informer(), "claim", "", nil),
 	}
 
 	return pl, nil
@@ -1218,7 +1218,7 @@ func (pl *dynamicResources) PostFilter(ctx context.Context, cs *framework.CycleS
 			// Then we can simply clear the allocation. Once the
 			// claim informer catches up, the controllers will
 			// be notified about this change.
-			clearAllocation := state.informationsForClaim[index].controller != nil
+			clearAllocation := state.informationsForClaim[index].structuredParameters
 
 			// Before we tell a driver to deallocate a claim, we
 			// have to stop telling it to allocate. Otherwise,
@@ -1237,6 +1237,7 @@ func (pl *dynamicResources) PostFilter(ctx context.Context, cs *framework.CycleS
 			claim := claim.DeepCopy()
 			claim.Status.ReservedFor = nil
 			if clearAllocation {
+				claim.Status.DriverName = ""
 				claim.Status.Allocation = nil
 			} else {
 				claim.Status.DeallocationRequested = true
@@ -1419,7 +1420,11 @@ func (pl *dynamicResources) Reserve(ctx context.Context, cs *framework.CycleStat
 		}
 		state.informationsForClaim[index].allocation = allocation
 		state.informationsForClaim[index].allocationDriverName = driverName
+		// Strictly speaking, we don't need to store the full modified object.
+		// The allocation would be enough. The full object is useful for
+		// debugging and testing, so let's make it realistic.
 		claim = claim.DeepCopy()
+		claim.Finalizers = append(claim.Finalizers, resourcev1alpha2.Finalizer)
 		claim.Status.DriverName = driverName
 		claim.Status.Allocation = allocation
 		pl.inFlightAllocations.Store(claim.UID, claim)

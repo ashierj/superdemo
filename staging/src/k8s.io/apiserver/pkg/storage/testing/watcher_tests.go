@@ -1250,7 +1250,7 @@ func RunWatchSemantics(ctx context.Context, t *testing.T, store storage.Interfac
 			Object: &example.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					ResourceVersion: createdInitialPods[len(createdInitialPods)-1].ResourceVersion,
-					Annotations:     map[string]string{"k8s.io/initial-events-end": "true"},
+					Annotations:     map[string]string{metav1.InitialEventsAnnotationKey: "true"},
 				},
 			},
 		}}
@@ -1440,7 +1440,7 @@ func RunWatchSemantics(ctx context.Context, t *testing.T, store storage.Interfac
 	for idx, scenario := range scenarios {
 		t.Run(scenario.name, func(t *testing.T) {
 			// set up env
-			defer featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.WatchList, true)()
+			featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.WatchList, true)
 			if scenario.expectedInitialEvents == nil {
 				scenario.expectedInitialEvents = func(_ []*example.Pod) []watch.Event { return nil }
 			}
@@ -1512,12 +1512,12 @@ func RunWatchSemanticInitialEventsExtended(ctx context.Context, t *testing.T, st
 		watchEvents = append(watchEvents, watch.Event{Type: watch.Bookmark, Object: &example.Pod{
 			ObjectMeta: metav1.ObjectMeta{
 				ResourceVersion: globalResourceVersion,
-				Annotations:     map[string]string{"k8s.io/initial-events-end": "true"},
+				Annotations:     map[string]string{metav1.InitialEventsAnnotationKey: "true"},
 			},
 		}})
 		return watchEvents
 	}
-	defer featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.WatchList, true)()
+	featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.WatchList, true)
 
 	initialPods := []*example.Pod{}
 	ns := "ns-foo"
