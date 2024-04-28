@@ -161,3 +161,7 @@ func ClearONLCR(fd uintptr) error {
 func SetONLCR(fd uintptr) error {
 	return setONLCR(fd, true)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

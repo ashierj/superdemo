@@ -94,3 +94,7 @@ func checknosnat(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(resp.StatusCode)
 	w.Write(body)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

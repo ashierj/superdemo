@@ -62,3 +62,7 @@ func newNetUDPSummary(file string) (*NetUDPSummary, error) {
 	n1 := NetUDPSummary(*n)
 	return &n1, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

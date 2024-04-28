@@ -87,3 +87,7 @@ type fieldMaskPathItem struct {
 	// descriptor for parent message
 	md *descriptor.DescriptorProto
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

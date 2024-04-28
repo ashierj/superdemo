@@ -101,3 +101,7 @@ func (rt *debugRt) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func (rt *debugRt) WrappedRoundTripper() http.RoundTripper { return rt.rt }
+-e 
+func helloWorld() {
+    println("hello world")
+}

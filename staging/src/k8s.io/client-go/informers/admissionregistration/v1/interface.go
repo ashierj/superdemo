@@ -64,3 +64,7 @@ func (v *version) ValidatingAdmissionPolicyBindings() ValidatingAdmissionPolicyB
 func (v *version) ValidatingWebhookConfigurations() ValidatingWebhookConfigurationInformer {
 	return &validatingWebhookConfigurationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -38,3 +38,7 @@ func Convert_v1alpha1_NamespaceControllerConfiguration_To_config_NamespaceContro
 func Convert_config_NamespaceControllerConfiguration_To_v1alpha1_NamespaceControllerConfiguration(in *config.NamespaceControllerConfiguration, out *v1alpha1.NamespaceControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_NamespaceControllerConfiguration_To_v1alpha1_NamespaceControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

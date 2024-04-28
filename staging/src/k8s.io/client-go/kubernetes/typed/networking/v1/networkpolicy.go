@@ -206,3 +206,7 @@ func (c *networkPolicies) Apply(ctx context.Context, networkPolicy *networkingv1
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

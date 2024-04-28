@@ -99,3 +99,7 @@ func (s EndpointSet) PopAny() (*discovery.Endpoint, bool) {
 func (s EndpointSet) Len() int {
 	return len(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

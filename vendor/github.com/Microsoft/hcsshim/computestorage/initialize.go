@@ -36,3 +36,7 @@ func InitializeWritableLayer(ctx context.Context, layerPath string, layerData La
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

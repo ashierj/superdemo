@@ -65,3 +65,7 @@ func MetricPartialSuccessError(itemsRejected int64, errorMessage string) error {
 		RejectedKind:  "metric data points",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ type Runner interface {
 	// test code.
 	Run(logger *log.Logger, options interface{}) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

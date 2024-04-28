@@ -90,3 +90,7 @@ func Convert_discovery_Endpoint_To_v1beta1_Endpoint(in *discovery.Endpoint, out 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

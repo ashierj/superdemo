@@ -200,3 +200,7 @@ func TestEtcdStatusUpdate(t *testing.T) {
 		t.Errorf("objects differ: %v", cmp.Diff(attachmentOut.Status, attachmentIn.Status))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

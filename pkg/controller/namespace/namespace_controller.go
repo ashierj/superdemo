@@ -207,3 +207,7 @@ func (nm *NamespaceController) Run(ctx context.Context, workers int) {
 	}
 	<-ctx.Done()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

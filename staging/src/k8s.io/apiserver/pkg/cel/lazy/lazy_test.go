@@ -159,3 +159,7 @@ func (a *testActivation) ResolveName(name string) (any, bool) {
 func (a *testActivation) Parent() interpreter.Activation {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

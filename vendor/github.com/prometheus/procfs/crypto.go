@@ -152,3 +152,7 @@ func (c *Crypto) parseKV(k, v string) error {
 
 	return vp.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

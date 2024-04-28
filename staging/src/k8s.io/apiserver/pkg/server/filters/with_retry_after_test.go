@@ -205,3 +205,7 @@ func newChannel(closed bool) <-chan struct{} {
 	}
 	return ch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

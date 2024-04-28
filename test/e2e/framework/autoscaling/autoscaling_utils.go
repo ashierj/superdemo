@@ -1007,3 +1007,7 @@ func CreateCustomSubresourceInstance(ctx context.Context, namespace, name string
 	ginkgo.By(fmt.Sprintf("Successfully created instance of CRD of kind %v: %v", definition.Kind, instance))
 	return instance, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

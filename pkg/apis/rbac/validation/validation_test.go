@@ -519,3 +519,7 @@ func TestValidateRoleNoResources(t *testing.T) {
 		field:   "rules[0].resources",
 	}.test(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

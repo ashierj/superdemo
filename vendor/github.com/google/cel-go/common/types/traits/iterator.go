@@ -34,3 +34,7 @@ type Iterator interface {
 	// Next returns the next element.
 	Next() ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

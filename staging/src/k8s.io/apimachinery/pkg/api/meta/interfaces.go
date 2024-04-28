@@ -141,3 +141,7 @@ type ResettableRESTMapper interface {
 	RESTMapper
 	Reset()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

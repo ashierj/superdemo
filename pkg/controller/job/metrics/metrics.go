@@ -212,3 +212,7 @@ func Register() {
 		legacyregistry.MustRegister(JobByExternalControllerTotal)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

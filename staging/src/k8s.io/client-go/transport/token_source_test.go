@@ -306,3 +306,7 @@ func (rt *testTransport) CancelRequest(req *http.Request) {
 		tryCancelRequest(rt.base, req)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

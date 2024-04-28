@@ -212,3 +212,7 @@ func HighLatencyKubeletOperations(ctx context.Context, c clientset.Interface, th
 	}
 	return badMetrics, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

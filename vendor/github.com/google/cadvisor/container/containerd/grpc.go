@@ -47,3 +47,7 @@ func newNSInterceptors(ns string) (grpc.UnaryClientInterceptor, grpc.StreamClien
 	}
 	return grpc.UnaryClientInterceptor(ni.unary), grpc.StreamClientInterceptor(ni.stream)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

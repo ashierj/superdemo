@@ -126,3 +126,7 @@ func RemoveAllOneFilesystem(mounter mount.Interface, path string) error {
 func RemoveDirsOneFilesystem(mounter mount.Interface, path string) error {
 	return RemoveAllOneFilesystemCommon(mounter, path, syscall.Rmdir)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

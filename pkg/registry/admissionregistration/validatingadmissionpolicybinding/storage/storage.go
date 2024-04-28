@@ -92,3 +92,7 @@ func (g *DefaultPolicyGetter) GetValidatingAdmissionPolicy(ctx context.Context, 
 	}
 	return p.(*admissionregistration.ValidatingAdmissionPolicy), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

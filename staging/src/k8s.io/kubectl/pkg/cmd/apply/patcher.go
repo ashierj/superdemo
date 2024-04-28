@@ -428,3 +428,7 @@ func addResourceVersion(patch []byte, rv string) ([]byte, error) {
 
 	return json.Marshal(patchMap)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

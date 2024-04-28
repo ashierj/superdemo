@@ -198,3 +198,7 @@ func parseRequest(r *http.Request) (*admissionv1.AdmissionReview, error) {
 
 	return review, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

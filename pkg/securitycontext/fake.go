@@ -44,3 +44,7 @@ func ValidInternalSecurityContextWithContainerDefaults() *api.SecurityContext {
 		ProcMount:    &dpm,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

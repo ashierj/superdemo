@@ -139,3 +139,7 @@ String generates an unstyled report that includes a table of the rank-ordered St
 func (c Ranking) String() string {
 	return c.report(false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1436,3 +1436,7 @@ func createPVCWithNilStorageClass(name, namespace, cap string, mode []v1.Persist
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

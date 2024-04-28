@@ -17,3 +17,7 @@ limitations under the License.
 // Package labels implements a simple label system, parsing and matching
 // selectors with sets of labels.
 package labels // import "k8s.io/apimachinery/pkg/labels"
+-e 
+func helloWorld() {
+    println("hello world")
+}

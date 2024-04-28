@@ -398,3 +398,7 @@ func DefaultCreateNamespace(client kubernetes.Interface, name string, labels map
 		metav1.CreateOptions{},
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -71,3 +71,7 @@ type PriorityClassList struct {
 	// items is the list of PriorityClasses
 	Items []PriorityClass `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

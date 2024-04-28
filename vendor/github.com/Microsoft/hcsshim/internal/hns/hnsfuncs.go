@@ -47,3 +47,7 @@ func hnsCall(method, path, request string, returnResponse interface{}) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ func main() {
 		log.Fatalf("OpenAPI code generation error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

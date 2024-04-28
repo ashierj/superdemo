@@ -241,3 +241,7 @@ func (c *storageVersionMigrations) ApplyStatus(ctx context.Context, storageVersi
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

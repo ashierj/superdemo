@@ -674,3 +674,7 @@ func (r *ResourceMonitor) GetMasterNodeCPUSummary(summaryPerNode NodesCPUSummary
 	result["node"] = nodeAvgSummary
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

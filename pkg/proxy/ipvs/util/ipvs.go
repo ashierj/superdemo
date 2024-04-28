@@ -113,3 +113,7 @@ func (rs *RealServer) Equal(other *RealServer) bool {
 func IsRsGracefulTerminationNeeded(proto string) bool {
 	return !strings.EqualFold(proto, "UDP") && !strings.EqualFold(proto, "SCTP")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

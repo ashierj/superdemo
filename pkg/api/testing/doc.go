@@ -18,3 +18,7 @@ limitations under the License.
 // - all generic API tests which depend on Kubernetes API types
 // - all cross-Kubernetes-API tests.
 package testing
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func (r *ClusterRoleBindingBuilder) Binding() (rbacv1alpha1.ClusterRoleBinding, 
 
 	return r.ClusterRoleBinding, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -113,3 +113,7 @@ func FormatMountLabelByType(src, mountLabel, contextType string) string {
 	}
 	return src
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

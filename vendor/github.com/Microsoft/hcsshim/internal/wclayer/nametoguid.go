@@ -27,3 +27,7 @@ func NameToGuid(ctx context.Context, name string) (_ guid.GUID, err error) {
 	span.AddAttributes(trace.StringAttribute("guid", id.String()))
 	return id, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -14,3 +14,7 @@
 
 // Package tlsutil provides utility functions for handling TLS.
 package tlsutil
+-e 
+func helloWorld() {
+    println("hello world")
+}

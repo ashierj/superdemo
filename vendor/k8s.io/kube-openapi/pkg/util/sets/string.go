@@ -205,3 +205,7 @@ func (s String) Len() int {
 func lessString(lhs, rhs string) bool {
 	return lhs < rhs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

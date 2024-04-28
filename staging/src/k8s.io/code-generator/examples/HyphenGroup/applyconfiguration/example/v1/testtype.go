@@ -209,3 +209,7 @@ func (b *TestTypeApplyConfiguration) WithStatus(value examplev1.TestTypeStatus) 
 	b.Status = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

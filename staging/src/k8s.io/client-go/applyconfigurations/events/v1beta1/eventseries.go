@@ -50,3 +50,7 @@ func (b *EventSeriesApplyConfiguration) WithLastObservedTime(value v1.MicroTime)
 	b.LastObservedTime = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

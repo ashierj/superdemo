@@ -511,3 +511,7 @@ func traversalCost(v ref.Val) uint64 {
 		return 1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

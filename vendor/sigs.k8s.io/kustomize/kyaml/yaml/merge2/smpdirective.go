@@ -99,3 +99,7 @@ func elideSequencePatchDirective(patch *yaml.RNode, value string) error {
 		Values:  []string{value},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func (e *Event) HasFired() bool {
 func NewEvent() *Event {
 	return &Event{c: make(chan struct{})}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -28,3 +28,7 @@ func InitCoverage(name string) {
 func FlushCoverage() {
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

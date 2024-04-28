@@ -8,3 +8,7 @@ package bpf
 type Setter interface {
 	SetBPF(filter []RawInstruction) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

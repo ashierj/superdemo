@@ -912,3 +912,7 @@ func Difference(fullArray []string, subArray []string) []string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

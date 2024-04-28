@@ -97,3 +97,7 @@ func WithMarshalerOption(mime string, marshaler Marshaler) ServeMuxOption {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

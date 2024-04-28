@@ -77,3 +77,7 @@ func convertExampleCRD(Object *unstructured.Unstructured, toVersion string) (*un
 	}
 	return convertedObject, statusSucceed()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

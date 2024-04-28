@@ -525,3 +525,7 @@ func contains(s string, c byte) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

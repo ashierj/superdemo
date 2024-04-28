@@ -50,3 +50,7 @@ func BuildBrokenLinearFunction(shape FunctionShape) func(int64) int64 {
 		return shape[len(shape)-1].Score
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

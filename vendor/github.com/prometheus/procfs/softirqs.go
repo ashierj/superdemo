@@ -158,3 +158,7 @@ func parseSoftirqs(r io.Reader) (Softirqs, error) {
 
 	return softirqs, scanner.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

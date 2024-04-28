@@ -65,3 +65,7 @@ func (p *PreparedMsg) Encode(s Stream, msg any) error {
 	p.hdr, p.payload = msgHeader(data, compData)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

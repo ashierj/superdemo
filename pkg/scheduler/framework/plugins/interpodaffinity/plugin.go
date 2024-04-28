@@ -242,3 +242,7 @@ func (pl *InterPodAffinity) isSchedulableAfterNodeChange(logger klog.Logger, pod
 		"pod", klog.KObj(pod), "node", klog.KObj(modifiedNode))
 	return framework.QueueSkip, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

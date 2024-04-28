@@ -71,3 +71,7 @@ func (d *Format) Type() ref.Type {
 func (d *Format) Value() interface{} {
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

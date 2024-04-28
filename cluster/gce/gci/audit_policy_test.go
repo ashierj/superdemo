@@ -263,3 +263,7 @@ func resource(kind string, nsGroupSub ...string) Resource {
 	}
 	return res
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

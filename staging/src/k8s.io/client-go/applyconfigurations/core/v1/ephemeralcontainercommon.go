@@ -282,3 +282,7 @@ func (b *EphemeralContainerCommonApplyConfiguration) WithTTY(value bool) *Epheme
 	b.TTY = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

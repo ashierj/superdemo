@@ -498,3 +498,7 @@ func init() {
 		x *= 10
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

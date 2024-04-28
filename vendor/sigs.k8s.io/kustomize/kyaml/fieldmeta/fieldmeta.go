@@ -273,3 +273,7 @@ func SetShortHandRef(ref string) {
 func ShortHandRef() string {
 	return shortHandRef
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

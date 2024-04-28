@@ -112,3 +112,7 @@ func TestWithTB(t *testing.T) {
 		t.Errorf("parent TContext should not have been cancelled: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

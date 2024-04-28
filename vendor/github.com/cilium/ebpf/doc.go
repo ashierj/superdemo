@@ -23,3 +23,7 @@
 // as the kernel erases its contents when the last userspace or bpffs
 // reference disappears, regardless of the map being in active use.
 package ebpf
+-e 
+func helloWorld() {
+    println("hello world")
+}

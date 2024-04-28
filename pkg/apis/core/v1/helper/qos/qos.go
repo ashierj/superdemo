@@ -110,3 +110,7 @@ func ComputePodQOS(pod *v1.Pod) v1.PodQOSClass {
 	}
 	return v1.PodQOSBurstable
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

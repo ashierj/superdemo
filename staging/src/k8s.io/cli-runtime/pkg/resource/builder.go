@@ -1257,3 +1257,7 @@ func (c *cachingCategoryExpanderFunc) ToCategoryExpander() (restmapper.CategoryE
 	c.cached = ret
 	return c.cached, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

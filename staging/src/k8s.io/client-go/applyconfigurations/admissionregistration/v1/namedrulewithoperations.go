@@ -92,3 +92,7 @@ func (b *NamedRuleWithOperationsApplyConfiguration) WithScope(value admissionreg
 	b.Scope = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

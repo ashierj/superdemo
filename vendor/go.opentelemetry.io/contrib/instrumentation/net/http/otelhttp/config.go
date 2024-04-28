@@ -206,3 +206,7 @@ func WithServerName(server string) Option {
 		c.ServerName = server
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

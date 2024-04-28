@@ -113,3 +113,7 @@ func TestUnionRun(t *testing.T) {
 		t.Errorf("union backend run: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

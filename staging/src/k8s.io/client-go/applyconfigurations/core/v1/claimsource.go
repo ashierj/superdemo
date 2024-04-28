@@ -46,3 +46,7 @@ func (b *ClaimSourceApplyConfiguration) WithResourceClaimTemplateName(value stri
 	b.ResourceClaimTemplateName = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -304,3 +304,7 @@ func (w *tlsHandshakeErrorWriter) Write(p []byte) (int, error) {
 	// for non tls handshake error, log it as usual
 	return w.out.Write(p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

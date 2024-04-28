@@ -93,3 +93,7 @@ func (g *remote) Pause() {
 func (g *remote) Resume() {
 	g.pipeline.start()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

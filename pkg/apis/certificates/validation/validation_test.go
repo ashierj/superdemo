@@ -1610,3 +1610,7 @@ MnVCuBwfwDXCAiEAw/1TA+CjPq9JC5ek1ifR0FybTURjeQqYkKpve1dveps=
 Trailing non-PEM content
 `)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

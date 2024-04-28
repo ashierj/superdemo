@@ -21,3 +21,7 @@ func TimedCall(description string, d time.Duration, fn func() error) error {
 		return NewErrTimeOut(d, description)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

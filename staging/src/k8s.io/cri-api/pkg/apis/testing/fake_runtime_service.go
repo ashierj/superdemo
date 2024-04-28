@@ -794,3 +794,7 @@ func (r *FakeRuntimeService) RuntimeConfig(_ context.Context) (*runtimeapi.Runti
 
 	return &runtimeapi.RuntimeConfigResponse{Linux: r.FakeLinuxConfiguration}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

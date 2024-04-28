@@ -145,3 +145,7 @@ func readAllTar(tarPath string) (map[string]string, error) {
 	}
 	return fileData, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

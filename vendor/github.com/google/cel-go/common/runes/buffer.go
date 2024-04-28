@@ -192,3 +192,7 @@ copy32:
 		arr: buf32,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

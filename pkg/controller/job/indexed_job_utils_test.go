@@ -964,3 +964,7 @@ func toIndexPhases(pods []*v1.Pod) []indexPhase {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -214,3 +214,7 @@ func getPodInfoAttrs(pod *api.Pod, volumeMode storage.VolumeLifecycleMode) map[s
 	}
 	return attrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

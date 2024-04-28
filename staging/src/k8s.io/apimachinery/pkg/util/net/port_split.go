@@ -76,3 +76,7 @@ func JoinSchemeNamePort(scheme, name, port string) string {
 	// Return name alone
 	return name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

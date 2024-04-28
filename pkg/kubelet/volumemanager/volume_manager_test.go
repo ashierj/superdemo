@@ -546,3 +546,7 @@ func runVolumeManager(manager VolumeManager) chan struct{} {
 	go manager.Run(sourcesReady, stopCh)
 	return stopCh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

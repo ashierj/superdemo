@@ -169,3 +169,7 @@ func (s *genericNamespaceLister) Get(name string) (runtime.Object, error) {
 	}
 	return obj.(runtime.Object), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

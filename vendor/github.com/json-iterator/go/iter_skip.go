@@ -128,3 +128,7 @@ func (iter *Iterator) skipThreeBytes(b1, b2, b3 byte) {
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

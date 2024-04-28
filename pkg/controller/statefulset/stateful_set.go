@@ -502,3 +502,7 @@ func (ssc *StatefulSetController) syncStatefulSet(ctx context.Context, set *apps
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

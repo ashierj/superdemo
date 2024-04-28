@@ -110,3 +110,7 @@ func fsType(path string) error {
 	// only NTFS is supported at the moment.
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

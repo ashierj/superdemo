@@ -1698,3 +1698,7 @@ func testDeploymentSubresources(ctx context.Context, f *framework.Framework) {
 	framework.ExpectNoError(err, "Failed to get deployment resource: %v", err)
 	gomega.Expect(*(deployment.Spec.Replicas)).To(gomega.Equal(int32(4)), "deployment should have 4 replicas")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

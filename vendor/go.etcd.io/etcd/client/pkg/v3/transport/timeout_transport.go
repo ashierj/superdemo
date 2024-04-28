@@ -49,3 +49,7 @@ func NewTimeoutTransport(info TLSInfo, dialtimeoutd, rdtimeoutd, wtimeoutd time.
 	}).Dial
 	return tr, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -70,3 +70,7 @@ var _ = SIGDescribe("ImageID", nodefeature.ImageID, func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

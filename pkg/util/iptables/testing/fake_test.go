@@ -346,3 +346,7 @@ func TestFakeIPTables(t *testing.T) {
 		t.Fatalf("bad post-restore-all dump. expected:\n%s\n\ngot:\n%s\n", expected, buf.Bytes())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func (b *ObjectFieldSelectorApplyConfiguration) WithFieldPath(value string) *Obj
 	b.FieldPath = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

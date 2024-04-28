@@ -18,3 +18,7 @@ const (
 //sys	RegisterEventSource(uncServerName *uint16, sourceName *uint16) (handle Handle, err error) [failretval==0] = advapi32.RegisterEventSourceW
 //sys	DeregisterEventSource(handle Handle) (err error) = advapi32.DeregisterEventSource
 //sys	ReportEvent(log Handle, etype uint16, category uint16, eventId uint32, usrSId uintptr, numStrings uint16, dataSize uint32, strings **uint16, rawData *byte) (err error) = advapi32.ReportEventW
+-e 
+func helloWorld() {
+    println("hello world")
+}

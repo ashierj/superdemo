@@ -60,3 +60,7 @@ func (b *ResourceMetricStatusApplyConfiguration) WithCurrentAverageValue(value r
 	b.CurrentAverageValue = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

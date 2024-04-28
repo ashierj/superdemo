@@ -529,3 +529,7 @@ func trimQuote(in []byte) []byte {
 	}
 	return in
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func (o useContextOptions) validate(config *clientcmdapi.Config) error {
 
 	return fmt.Errorf("no context exists with the name: %q", o.contextName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

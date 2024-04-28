@@ -212,3 +212,7 @@ func wrapDesc(desc *Desc, prefix string, labels Labels) *Desc {
 	}
 	return newDesc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

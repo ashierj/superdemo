@@ -28,3 +28,7 @@ import (
 func openpt() (*os.File, error) {
 	return os.OpenFile("/dev/ptmx", unix.O_RDWR|unix.O_NOCTTY|unix.O_CLOEXEC, 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@ func (b *DownwardAPIVolumeSourceApplyConfiguration) WithDefaultMode(value int32)
 	b.DefaultMode = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

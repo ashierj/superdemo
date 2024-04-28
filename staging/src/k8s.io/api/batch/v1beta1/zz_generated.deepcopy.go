@@ -175,3 +175,7 @@ func (in *JobTemplateSpec) DeepCopy() *JobTemplateSpec {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1121,3 +1121,7 @@ var keywordToken = map[string]Token{
 	"with":     ILLEGAL,
 	"yield":    ILLEGAL,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

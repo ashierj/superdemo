@@ -591,3 +591,7 @@ func readTempFile(t *testing.T, path string) string {
 	}
 	return string(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

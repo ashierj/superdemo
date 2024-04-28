@@ -42,3 +42,7 @@ func (b *PodSchedulingContextStatusApplyConfiguration) WithResourceClaims(values
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

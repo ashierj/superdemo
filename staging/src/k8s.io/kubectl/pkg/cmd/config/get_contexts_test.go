@@ -177,3 +177,7 @@ func (test getContextsTest) run(t *testing.T) {
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -309,3 +309,7 @@ func (m *LocalMode) Type() string {
 // NodePortAddressesPrimary is a special value for NodePortAddresses indicating that it
 // should only use the primary node IPs.
 const NodePortAddressesPrimary string = "primary"
+-e 
+func helloWorld() {
+    println("hello world")
+}

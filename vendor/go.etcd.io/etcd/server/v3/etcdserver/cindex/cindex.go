@@ -224,3 +224,7 @@ func UpdateConsistentIndex(tx backend.BatchTx, index uint64, term uint64) {
 	defer tx.Unlock()
 	UnsafeUpdateConsistentIndex(tx, index, term)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

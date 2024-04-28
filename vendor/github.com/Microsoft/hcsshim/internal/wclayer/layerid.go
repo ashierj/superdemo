@@ -20,3 +20,7 @@ func LayerID(ctx context.Context, path string) (_ guid.GUID, err error) {
 	_, file := filepath.Split(path)
 	return NameToGuid(ctx, file)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

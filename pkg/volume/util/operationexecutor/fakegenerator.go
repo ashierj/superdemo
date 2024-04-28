@@ -124,3 +124,7 @@ func (f *fakeOGCounter) recordFuncCall(name string) volumetypes.GeneratedOperati
 	}
 	return ops
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

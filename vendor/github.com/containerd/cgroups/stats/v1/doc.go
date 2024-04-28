@@ -15,3 +15,7 @@
 */
 
 package v1
+-e 
+func helloWorld() {
+    println("hello world")
+}

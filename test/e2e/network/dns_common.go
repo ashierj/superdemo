@@ -551,3 +551,7 @@ func validateTargetedProbeOutput(ctx context.Context, f *framework.Framework, po
 
 	framework.Logf("DNS probes using %s succeeded\n", pod.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ import "google.golang.org/grpc/internal/channelz"
 // Identifier is an opaque identifier which uniquely identifies an entity in the
 // channelz database.
 type Identifier = channelz.Identifier
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -181,3 +181,7 @@ func WithTimeout(duration time.Duration) Option {
 func WithRetry(settings RetryConfig) Option {
 	return wrappedOption{otlpconfig.WithRetry(retry.Config(settings))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

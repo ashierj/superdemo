@@ -471,3 +471,7 @@ func (s *proxy_socks5) connect(conn net.Conn, target string) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

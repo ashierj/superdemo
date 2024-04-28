@@ -561,3 +561,7 @@ func isImageUsed(imageID string, imagesInUse sets.String) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

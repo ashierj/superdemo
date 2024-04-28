@@ -441,3 +441,7 @@ func (pf *PortForwarder) GetPorts() ([]ForwardedPort, error) {
 		return nil, fmt.Errorf("listeners not ready")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

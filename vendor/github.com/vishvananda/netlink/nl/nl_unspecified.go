@@ -9,3 +9,7 @@ var SupportedNlFamilies = []int{}
 func NativeEndian() binary.ByteOrder {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

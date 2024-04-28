@@ -96,3 +96,7 @@ func (test deleteContextTest) run(t *testing.T) {
 		t.Errorf("expected contexts %v, but found %v in kubeconfig", test.expectedContexts, contexts)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

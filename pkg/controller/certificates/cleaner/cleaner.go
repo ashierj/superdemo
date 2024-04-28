@@ -210,3 +210,7 @@ func isExpired(csr *capi.CertificateSigningRequest) bool {
 	}
 	return time.Now().After(certs[0].NotAfter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

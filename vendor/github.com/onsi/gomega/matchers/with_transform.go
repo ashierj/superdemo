@@ -88,3 +88,7 @@ func (m *WithTransformMatcher) MatchMayChangeInTheFuture(_ interface{}) bool {
 	// is no point in querying the next matcher, since it can only comment on the last transformed value.
 	return types.MatchMayChangeInTheFuture(m.Matcher, m.transformedValue)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

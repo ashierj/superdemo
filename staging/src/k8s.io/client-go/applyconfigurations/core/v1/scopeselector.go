@@ -42,3 +42,7 @@ func (b *ScopeSelectorApplyConfiguration) WithMatchExpressions(values ...*Scoped
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

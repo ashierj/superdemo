@@ -453,3 +453,7 @@ func (h *HTTPExtender) hasManagedResources(containers []v1.Container) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

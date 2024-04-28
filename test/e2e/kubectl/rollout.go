@@ -140,3 +140,7 @@ var _ = SIGDescribe("Kubectl rollout", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

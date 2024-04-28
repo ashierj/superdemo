@@ -42,3 +42,7 @@ func (ep EnumParser) Parse(s string) (interface{}, error) {
 	}
 	return v, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

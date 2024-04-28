@@ -29,3 +29,7 @@ func InexactOverlap(x, y []byte) bool {
 	}
 	return AnyOverlap(x, y)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

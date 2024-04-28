@@ -69,3 +69,7 @@ func (p *promise) Set(value interface{}) bool {
 	})
 	return ans
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

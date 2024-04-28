@@ -29,3 +29,7 @@ const (
 func ContextWithCallTimeout() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), defaultCallTimeout)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

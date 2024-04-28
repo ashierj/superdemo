@@ -221,3 +221,7 @@ func AdmissionToValidateObjectFunc(admit admission.Interface, staticAttributes a
 		return validatingAdmission.Validate(ctx, finalAttributes, o)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

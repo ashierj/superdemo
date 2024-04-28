@@ -47,3 +47,7 @@ func (p *bestEffortPolicy) Merge(providersHints []map[string][]TopologyHint) (To
 	admit := p.canAdmitPodResult(&bestHint)
 	return bestHint, admit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

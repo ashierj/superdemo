@@ -55,3 +55,7 @@ type MetricsClient interface {
 	// that match the specified selector.
 	GetExternalMetric(metricName string, namespace string, selector labels.Selector) ([]int64, time.Time, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

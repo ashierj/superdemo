@@ -658,3 +658,7 @@ func (s *snapshot) Close() error {
 	<-s.donec
 	return s.Tx.Rollback()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

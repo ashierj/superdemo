@@ -88,3 +88,7 @@ func (uuid UUID) NodeID() []byte {
 	copy(node[:], uuid[10:])
 	return node[:]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

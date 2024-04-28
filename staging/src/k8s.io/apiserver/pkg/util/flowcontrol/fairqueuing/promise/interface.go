@@ -32,3 +32,7 @@ type WriteOnce interface {
 	// variable's value.
 	Set(interface{}) bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

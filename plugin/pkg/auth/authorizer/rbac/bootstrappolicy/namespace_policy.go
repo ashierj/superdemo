@@ -160,3 +160,7 @@ func NamespaceRoles() map[string][]rbacv1.Role {
 func NamespaceRoleBindings() map[string][]rbacv1.RoleBinding {
 	return namespaceRoleBindings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

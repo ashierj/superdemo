@@ -73,3 +73,7 @@ func buildWildcardAttributes(info user.Info, verb, signerName string) authorizer
 	domain := parts[0]
 	return buildAttributes(info, verb, domain+"/*")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

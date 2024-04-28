@@ -46,3 +46,7 @@ type mutatingWebhookConfigurationLister struct {
 func NewMutatingWebhookConfigurationLister(indexer cache.Indexer) MutatingWebhookConfigurationLister {
 	return &mutatingWebhookConfigurationLister{listers.New[*v1.MutatingWebhookConfiguration](indexer, v1.Resource("mutatingwebhookconfiguration"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

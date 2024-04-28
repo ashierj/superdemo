@@ -125,3 +125,7 @@ func writeKubeletFlagBytesToDisk(b []byte, kubeletDir string) error {
 func buildKubeletArgs(opts kubeletFlagsOpts) []kubeadmapi.Arg {
 	return buildKubeletArgsCommon(opts)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

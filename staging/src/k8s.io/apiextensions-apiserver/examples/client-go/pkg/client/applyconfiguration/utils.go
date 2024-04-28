@@ -39,3 +39,7 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

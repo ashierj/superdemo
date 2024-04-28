@@ -22,3 +22,7 @@ limitations under the License.
 // easy to modify the structures you use in memory without affecting the format
 // you store on disk or respond to in your external API calls.
 package conversion // import "k8s.io/apimachinery/pkg/conversion"
+-e 
+func helloWorld() {
+    println("hello world")
+}

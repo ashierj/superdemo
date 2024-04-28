@@ -96,3 +96,7 @@ func (fake *FakeInterface) ClearEntriesForPortNAT(dest string, port int, protoco
 	fake.ClearedPortNATs[port] = dest
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

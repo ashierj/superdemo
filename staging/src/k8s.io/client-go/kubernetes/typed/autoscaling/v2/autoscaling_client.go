@@ -105,3 +105,7 @@ func (c *AutoscalingV2Client) RESTClient() rest.Interface {
 	}
 	return c.restClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

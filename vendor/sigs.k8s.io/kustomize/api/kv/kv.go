@@ -195,3 +195,7 @@ func removeQuotes(str string) string {
 	}
 	return str
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func isSimpleResourceRule(rule *rbacv1.PolicyRule) (simpleResource, bool) {
 
 	return resource, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

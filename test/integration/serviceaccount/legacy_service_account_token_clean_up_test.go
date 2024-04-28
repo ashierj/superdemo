@@ -410,3 +410,7 @@ func createAutotokenMountedPod(ctx context.Context, t *testing.T, c clientset.In
 	}
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

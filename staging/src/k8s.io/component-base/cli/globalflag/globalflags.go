@@ -48,3 +48,7 @@ func Register(local *pflag.FlagSet, globalName string) {
 		panic(fmt.Sprintf("failed to find flag in global flagset (flag): %s", globalName))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

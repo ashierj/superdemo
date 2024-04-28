@@ -234,3 +234,7 @@ func (pw *pickerWrapper) exitIdleMode() {
 type dropError struct {
 	error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

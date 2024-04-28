@@ -440,3 +440,7 @@ type ProducerBuilder interface {
 // other methods to provide additional functionality, e.g. configuration or
 // subscription registration.
 type Producer any
+-e 
+func helloWorld() {
+    println("hello world")
+}

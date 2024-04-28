@@ -21,3 +21,7 @@ package v1beta2
 type FlowSchemaExpansion interface{}
 
 type PriorityLevelConfigurationExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

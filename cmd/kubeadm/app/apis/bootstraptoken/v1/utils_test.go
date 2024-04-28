@@ -680,3 +680,7 @@ func jsonMarshal(bt *BootstrapToken) string {
 	b, _ := json.Marshal(*bt)
 	return string(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

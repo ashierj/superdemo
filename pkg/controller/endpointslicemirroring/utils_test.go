@@ -245,3 +245,7 @@ func newClientset() *fake.Clientset {
 
 	return client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

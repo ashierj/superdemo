@@ -76,3 +76,7 @@ func InternalError(w http.ResponseWriter, req *http.Request, err error) {
 		http.StatusInternalServerError)
 	utilruntime.HandleError(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

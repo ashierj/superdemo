@@ -79,3 +79,7 @@ func (c *chacha20poly1305) openGeneric(dst, nonce, ciphertext, additionalData []
 	s.XORKeyStream(out, ciphertext)
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

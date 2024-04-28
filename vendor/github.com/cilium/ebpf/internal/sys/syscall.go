@@ -124,3 +124,7 @@ func (se *syscallError) Is(target error) bool {
 func (se *syscallError) Unwrap() error {
 	return se.errno
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

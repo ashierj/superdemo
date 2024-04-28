@@ -110,3 +110,7 @@ func purgeFile(lg *zap.Logger, dirname string, suffix string, max uint, interval
 	}()
 	return errC
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -188,3 +188,7 @@ func (m mapUnstructuredString) ZipUsing(a Allocator, other Map, order MapTravers
 func (m mapUnstructuredString) Empty() bool {
 	return len(m) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

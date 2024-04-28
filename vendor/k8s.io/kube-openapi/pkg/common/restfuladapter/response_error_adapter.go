@@ -23,3 +23,7 @@ func (r *ResponseErrorAdapter) Model() interface{} {
 func (r *ResponseErrorAdapter) Code() int {
 	return r.Err.Code
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

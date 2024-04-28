@@ -396,3 +396,7 @@ while true; do sleep 1; done
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

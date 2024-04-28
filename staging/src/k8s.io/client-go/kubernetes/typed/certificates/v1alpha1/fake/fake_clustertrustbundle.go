@@ -149,3 +149,7 @@ func (c *FakeClusterTrustBundles) Apply(ctx context.Context, clusterTrustBundle 
 	}
 	return obj.(*v1alpha1.ClusterTrustBundle), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

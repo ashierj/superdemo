@@ -217,3 +217,7 @@ func checkEndpointSubsetFormat(e *corev1.Endpoints, ip string, ports []corev1.En
 	}
 	return true, ipCorrect, portsCorrect
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -145,3 +145,7 @@ func handleWarnings(headers http.Header, handler WarningHandler) []net.WarningHe
 	}
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

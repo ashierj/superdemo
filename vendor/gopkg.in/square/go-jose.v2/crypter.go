@@ -540,3 +540,7 @@ func (obj JSONWebEncryption) DecryptMulti(decryptionKey interface{}) (int, Heade
 
 	return index, sanitized, plaintext, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -178,3 +178,7 @@ func (o *objectValidator) validatePatternProperty(key string, value interface{},
 
 	return matched, succeededOnce, patterns
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -146,3 +146,7 @@ func initFileDescFromFeatureSet(fd *filedesc.File, fs *descriptorpb.FeatureSet) 
 	// overwrite any options explicitly specified
 	fd.L1.EditionFeatures = mergeEditionFeatures(fd, fs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

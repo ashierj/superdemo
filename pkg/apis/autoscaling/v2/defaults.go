@@ -131,3 +131,7 @@ func copyHPAScalingRules(from, to *autoscalingv2.HPAScalingRules) *autoscalingv2
 	}
 	return to
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

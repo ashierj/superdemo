@@ -115,3 +115,7 @@ var _ = SIGDescribe("ImageGarbageCollect", framework.WithSerial(), framework.Wit
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

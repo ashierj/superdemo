@@ -258,3 +258,7 @@ func GetNodesHealthCheckPort() int32 {
 func GetNodesHealthCheckPath() string {
 	return nodesHealthCheckPath
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

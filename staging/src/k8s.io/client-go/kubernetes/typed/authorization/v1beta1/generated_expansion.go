@@ -25,3 +25,7 @@ type SelfSubjectAccessReviewExpansion interface{}
 type SelfSubjectRulesReviewExpansion interface{}
 
 type SubjectAccessReviewExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -142,3 +142,7 @@ func getObjectKind(object interface{}) (schema.GroupVersionKind, []error) {
 
 	return schema.GroupVersionKind{Group: group, Version: version, Kind: kind.(string)}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

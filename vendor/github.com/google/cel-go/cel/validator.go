@@ -373,3 +373,7 @@ func (v nestingLimitValidator) Validate(e *Env, _ ValidatorConfig, a *ast.AST, i
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

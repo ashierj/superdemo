@@ -19,3 +19,7 @@ func init() {
 		return &urlfetch.Transport{Context: ctx}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

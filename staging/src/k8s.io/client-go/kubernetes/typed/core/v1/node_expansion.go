@@ -43,3 +43,7 @@ func (c *nodes) PatchStatus(ctx context.Context, nodeName string, data []byte) (
 		Into(result)
 	return result, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

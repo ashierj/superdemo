@@ -23,3 +23,7 @@ func addDefaultingFuncs(scheme *kruntime.Scheme) error {
 }
 
 func SetDefaults_Configuration(obj *Configuration) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

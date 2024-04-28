@@ -351,3 +351,7 @@ func getPodReadyCondition(status *v1.PodStatus) *v1.PodCondition {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

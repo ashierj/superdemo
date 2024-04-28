@@ -25,3 +25,7 @@ type IngressExpansion interface{}
 type NetworkPolicyExpansion interface{}
 
 type ReplicaSetExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

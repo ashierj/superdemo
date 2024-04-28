@@ -31,3 +31,7 @@ func SetDefaults_ServiceReference(obj *ServiceReference) {
 		obj.Port = utilpointer.Int32Ptr(443)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -768,3 +768,7 @@ func (infos InfoListVisitor) Visit(fn VisitorFunc) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

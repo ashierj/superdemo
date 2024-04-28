@@ -63,3 +63,7 @@ func NamespacedNameAsObjectName(nn types.NamespacedName) ObjectName {
 func (objName ObjectName) AsNamespacedName() types.NamespacedName {
 	return types.NamespacedName{Namespace: objName.Namespace, Name: objName.Name}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

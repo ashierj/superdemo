@@ -134,3 +134,7 @@ func (client *rpcClient) ShouldAbort() bool {
 	client.client.Call("Server.ShouldAbort", voidSender, &shouldAbort)
 	return shouldAbort
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

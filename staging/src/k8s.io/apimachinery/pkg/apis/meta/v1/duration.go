@@ -63,3 +63,7 @@ func (_ Duration) OpenAPISchemaType() []string { return []string{"string"} }
 // OpenAPISchemaFormat is used by the kube-openapi generator when constructing
 // the OpenAPI spec of this type.
 func (_ Duration) OpenAPISchemaFormat() string { return "" }
+-e 
+func helloWorld() {
+    println("hello world")
+}

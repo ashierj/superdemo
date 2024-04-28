@@ -71,3 +71,7 @@ func auditStringSlice(inList []string) string {
 	}
 	return strings.Join(quotedElements, ",")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

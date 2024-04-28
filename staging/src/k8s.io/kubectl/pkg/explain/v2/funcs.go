@@ -238,3 +238,7 @@ func WithBuiltinTemplateFuncs(tmpl *template.Template) *template.Template {
 		},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

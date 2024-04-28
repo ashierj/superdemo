@@ -66,3 +66,7 @@ func NewMutableHealthzHandler(checks ...healthz.HealthChecker) *MutableHealthzHa
 
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

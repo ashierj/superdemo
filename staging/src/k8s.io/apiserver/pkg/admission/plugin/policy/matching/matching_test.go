@@ -815,3 +815,7 @@ func BenchmarkShouldCallHookWithComplexSelectorAndRule(b *testing.B) {
 		matcher.Matches(attrs, interfaces, criteria)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (f *mutatingWebhookConfigurationInformer) Informer() cache.SharedIndexInfor
 func (f *mutatingWebhookConfigurationInformer) Lister() v1beta1.MutatingWebhookConfigurationLister {
 	return v1beta1.NewMutatingWebhookConfigurationLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

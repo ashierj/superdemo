@@ -52,3 +52,7 @@ func preallocExtendTrunc(f *os.File, sizeInBytes int64) error {
 	}
 	return f.Truncate(sizeInBytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

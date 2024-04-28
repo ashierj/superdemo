@@ -117,3 +117,7 @@ func (ws *roundRobinWriteScheduler) Pop() (FrameWriteRequest, bool) {
 	}
 	return FrameWriteRequest{}, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

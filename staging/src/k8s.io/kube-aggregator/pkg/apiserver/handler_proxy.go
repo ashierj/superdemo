@@ -232,3 +232,7 @@ func (r *proxyHandler) updateAPIService(apiService *apiregistrationv1api.APIServ
 	}
 	r.handlingInfo.Store(newInfo)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

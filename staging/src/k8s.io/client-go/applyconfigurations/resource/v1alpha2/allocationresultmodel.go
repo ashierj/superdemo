@@ -37,3 +37,7 @@ func (b *AllocationResultModelApplyConfiguration) WithNamedResources(value *Name
 	b.NamedResources = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

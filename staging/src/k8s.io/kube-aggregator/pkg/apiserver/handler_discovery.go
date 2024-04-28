@@ -659,3 +659,7 @@ func (r *inMemoryResponseWriter) String() string {
 	}
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

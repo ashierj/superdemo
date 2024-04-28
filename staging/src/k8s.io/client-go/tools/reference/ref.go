@@ -107,3 +107,7 @@ func GetPartialReference(scheme *runtime.Scheme, obj runtime.Object, fieldPath s
 	ref.FieldPath = fieldPath
 	return ref, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

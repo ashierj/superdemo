@@ -120,3 +120,7 @@ func DecodeKubeletConfigurationIntoJSON(kubeletCodecs *serializer.CodecFactory, 
 
 	return json.Marshal(objT.Object)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

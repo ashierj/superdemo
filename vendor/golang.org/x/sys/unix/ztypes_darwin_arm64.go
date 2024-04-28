@@ -803,3 +803,7 @@ const (
 	SHM_RDONLY = 0x1000
 	SHM_RND    = 0x2000
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

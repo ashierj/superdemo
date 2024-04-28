@@ -79,3 +79,7 @@ const (
 	// MacintoshCyrillic is the code for x-mac-cyrillic.
 	MacintoshCyrillic
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -170,3 +170,7 @@ func doinit() {
 		S390X.HasSHA3 = kimd.Has(sha3...) && klmd.Has(sha3...)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

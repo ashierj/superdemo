@@ -470,3 +470,7 @@ func QuotaV1Pod(pod *corev1.Pod, clock clock.Clock) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

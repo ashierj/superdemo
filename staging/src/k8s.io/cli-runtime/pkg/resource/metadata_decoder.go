@@ -54,3 +54,7 @@ type metadataOnlyObject struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

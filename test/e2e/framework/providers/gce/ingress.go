@@ -686,3 +686,7 @@ func GcloudComputeResourceDelete(resource, name, project string, args ...string)
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

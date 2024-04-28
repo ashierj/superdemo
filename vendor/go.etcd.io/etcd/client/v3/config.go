@@ -99,3 +99,7 @@ type Config struct {
 
 	// TODO: support custom balancer picker
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

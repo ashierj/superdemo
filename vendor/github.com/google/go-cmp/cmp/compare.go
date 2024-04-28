@@ -669,3 +669,7 @@ func makeAddressable(v reflect.Value) reflect.Value {
 	vc.Set(v)
 	return vc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

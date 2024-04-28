@@ -103,3 +103,7 @@ func checkFieldNameAndDoc(structName, fieldName, doc string, typesMap kubeTypesM
 
 	return rc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

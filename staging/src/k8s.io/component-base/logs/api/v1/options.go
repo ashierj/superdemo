@@ -447,3 +447,7 @@ func unsupportedLoggingFlags(normalizeFunc func(f *pflag.FlagSet, name string) p
 	})
 	return allFlags
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

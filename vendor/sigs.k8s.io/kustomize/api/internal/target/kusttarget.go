@@ -572,3 +572,7 @@ func (kt *KustTarget) configureBuiltinPlugin(
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

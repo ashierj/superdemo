@@ -135,3 +135,7 @@ func (s Int64) PopAny() (int64, bool) {
 func (s Int64) Len() int {
 	return len(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

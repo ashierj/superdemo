@@ -443,3 +443,7 @@ func generateResourcePolicyRules(mapper meta.RESTMapper, verbs []string, resourc
 
 	return rules, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

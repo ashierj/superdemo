@@ -3729,3 +3729,7 @@ func Test_isPodWorthRequeuing(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

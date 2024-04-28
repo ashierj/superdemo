@@ -331,3 +331,7 @@ func (c *Conn) sendPropertiesUpdate(unitPath dbus.ObjectPath, changedProps map[s
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

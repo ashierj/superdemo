@@ -224,3 +224,7 @@ func (_ hexKvStringer) KeyToString(key []byte) string {
 func (_ hexKvStringer) ValueToString(value []byte) string {
 	return hex.EncodeToString(value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ func SetObjectDefaults_KubeletConfiguration(in *v1beta1.KubeletConfiguration) {
 		v1.SetDefaults_ResourceList(&a.Limits)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -99,3 +99,7 @@ func (s *stepReporter) AttachProgressReporter(reporter func() string) func() {
 		return s.what + ": " + report
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

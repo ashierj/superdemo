@@ -302,3 +302,7 @@ func (k UnionDockerKeyring) Lookup(image string) ([]AuthConfig, bool) {
 
 	return authConfigs, (len(authConfigs) > 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

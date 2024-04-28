@@ -4,3 +4,7 @@
 
 // Package internal contains support packages for oauth2 package.
 package internal
+-e 
+func helloWorld() {
+    println("hello world")
+}

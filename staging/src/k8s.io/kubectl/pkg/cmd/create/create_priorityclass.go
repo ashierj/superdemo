@@ -196,3 +196,7 @@ func (o *PriorityClassOptions) createPriorityClass() (*schedulingv1.PriorityClas
 		PreemptionPolicy: &preemptionPolicy,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

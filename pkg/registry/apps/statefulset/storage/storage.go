@@ -367,3 +367,7 @@ func (i *scaleUpdatedObjectInfo) UpdatedObject(ctx context.Context, oldObj runti
 
 	return statefulset, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

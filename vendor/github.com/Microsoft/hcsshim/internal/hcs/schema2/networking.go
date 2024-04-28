@@ -21,3 +21,7 @@ type Networking struct {
 
 	NetworkAdapters []string `json:"NetworkAdapters,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -112,3 +112,7 @@ type ResolvedPodUID types.UID
 
 // MirrorPodUID is a pod UID for a mirror pod.
 type MirrorPodUID types.UID
+-e 
+func helloWorld() {
+    println("hello world")
+}

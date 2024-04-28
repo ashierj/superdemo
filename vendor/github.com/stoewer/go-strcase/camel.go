@@ -35,3 +35,7 @@ func camelCase(s string, upper bool) string {
 
 	return string(buffer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

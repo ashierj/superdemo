@@ -290,3 +290,7 @@ func (c *Command) GenFishCompletionFile(filename string, includeDesc bool) error
 
 	return c.GenFishCompletion(outFile, includeDesc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

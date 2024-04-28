@@ -53,3 +53,7 @@ func (o MarshalOptions) sizeSingular(num protowire.Number, kind protoreflect.Kin
 		return 0
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

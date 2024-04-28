@@ -100,3 +100,7 @@ func createNodeAuthTestPod(ctx context.Context, f *framework.Framework) *v1.Pod 
 	pod.ObjectMeta.GenerateName = "test-node-authn-"
 	return e2epod.NewPodClient(f).CreateSync(ctx, pod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

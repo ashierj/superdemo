@@ -149,3 +149,7 @@ func (c *FakeValidatingAdmissionPolicyBindings) Apply(ctx context.Context, valid
 	}
 	return obj.(*v1alpha1.ValidatingAdmissionPolicyBinding), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

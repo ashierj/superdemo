@@ -40,3 +40,7 @@ func GetDefaultFieldSpecsAsMap() map[string]string {
 	result["replicas"] = replicasFieldSpecs
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

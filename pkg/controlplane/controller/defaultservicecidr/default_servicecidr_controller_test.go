@@ -175,3 +175,7 @@ func expectAction(t *testing.T, actions []k8stesting.Action, expected [][]string
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

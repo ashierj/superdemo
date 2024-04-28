@@ -372,3 +372,7 @@ func (qm *QuotaMonitor) processResourceChanges(ctx context.Context) bool {
 	qm.replenishmentFunc(ctx, event.gvr.GroupResource(), accessor.GetNamespace())
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -74,3 +74,7 @@ func header() string {
 	return fmt.Sprintf("I%02d%02d %02d:%02d:%02d.%06d] ",
 		month, day, hour, minute, second, now.Nanosecond()/1000)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

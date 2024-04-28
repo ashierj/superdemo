@@ -42,3 +42,7 @@ func wrappedBody(wrapper io.ReadCloser, body io.ReadCloser) io.ReadCloser {
 		}{wrapper}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

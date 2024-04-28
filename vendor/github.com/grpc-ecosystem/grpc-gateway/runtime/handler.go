@@ -210,3 +210,7 @@ func streamError(ctx context.Context, errHandler StreamErrorHandlerFunc, err err
 func errorChunk(err *StreamError) map[string]proto.Message {
 	return map[string]proto.Message{"error": (*internal.StreamError)(err)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -369,3 +369,7 @@ const (
 func mremap(oldaddr uintptr, oldlength uintptr, newlength uintptr, flags int, newaddr uintptr) (uintptr, error) {
 	return mremapNetBSD(oldaddr, oldlength, newaddr, newlength, flags)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

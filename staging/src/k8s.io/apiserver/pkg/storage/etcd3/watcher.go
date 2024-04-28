@@ -619,3 +619,7 @@ func decodeObj(codec runtime.Codec, versioner storage.Versioner, data []byte, re
 	}
 	return obj, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

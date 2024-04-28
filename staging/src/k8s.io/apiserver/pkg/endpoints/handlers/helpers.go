@@ -229,3 +229,7 @@ func (lazy *lazyScope) String() string {
 
 	return "unknown"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

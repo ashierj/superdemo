@@ -159,3 +159,7 @@ func (r *realTicker) C() <-chan time.Time {
 func (r *realTicker) Stop() {
 	r.ticker.Stop()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

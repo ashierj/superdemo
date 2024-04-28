@@ -55,3 +55,7 @@ func (g *GroupAdder) AuthenticateRequest(req *http.Request) (*authenticator.Resp
 	}
 	return &ret, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

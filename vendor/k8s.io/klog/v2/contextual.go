@@ -210,3 +210,7 @@ func NewContext(ctx context.Context, logger Logger) context.Context {
 	}
 	return ctx
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

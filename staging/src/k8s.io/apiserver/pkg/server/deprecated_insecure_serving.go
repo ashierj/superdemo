@@ -95,3 +95,7 @@ func (InsecureSuperuser) AuthenticateRequest(req *http.Request) (*authenticator.
 		Audiences: auds,
 	}, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

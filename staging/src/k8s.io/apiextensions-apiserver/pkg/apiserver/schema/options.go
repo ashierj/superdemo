@@ -65,3 +65,7 @@ func (o *UnknownFieldPathOptions) AppendIndex(index int) {
 	}
 	o.ParentPath = append(o.ParentPath, "[", strconv.Itoa(index), "]")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

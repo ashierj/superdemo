@@ -169,3 +169,7 @@ func (b *ObjectMetaApplyConfiguration) WithFinalizers(values ...string) *ObjectM
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

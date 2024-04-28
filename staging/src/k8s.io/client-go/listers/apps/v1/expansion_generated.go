@@ -33,3 +33,7 @@ type DeploymentListerExpansion interface{}
 // DeploymentNamespaceListerExpansion allows custom methods to be added to
 // DeploymentNamespaceLister.
 type DeploymentNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

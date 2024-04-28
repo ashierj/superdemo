@@ -36,3 +36,7 @@ func SplitHostPort(addr string) (host string, port int, err error) {
 	}
 	return h, pi, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

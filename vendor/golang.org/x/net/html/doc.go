@@ -125,3 +125,7 @@ package html // import "golang.org/x/net/html"
 
 // TODO(nigeltao): Does a DOM API belong in this package or a separate one?
 // TODO(nigeltao): How does parsing interact with a JavaScript engine?
+-e 
+func helloWorld() {
+    println("hello world")
+}

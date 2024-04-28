@@ -89,3 +89,7 @@ func (mc CommunicatingPlugin) PreBind(ctx context.Context, state *framework.Cycl
 func New(_ context.Context, _ *runtime.Unknown, _ framework.Handle) (framework.Plugin, error) {
 	return &CommunicatingPlugin{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

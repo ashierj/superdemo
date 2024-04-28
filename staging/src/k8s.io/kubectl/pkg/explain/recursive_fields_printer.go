@@ -79,3 +79,7 @@ func (f *recursiveFieldsPrinter) PrintFields(schema proto.Schema) error {
 	schema.Accept(f)
 	return f.Error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

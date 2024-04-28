@@ -100,3 +100,7 @@ func TestAdmission(t *testing.T) {
 		t.Fatalf("unexpected tolerations: %v\n", updatedPod.Spec.Tolerations)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

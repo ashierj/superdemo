@@ -45,3 +45,7 @@ func (fltr Filter) Filter(obj *yaml.RNode) (*yaml.RNode, error) {
 	}
 	return obj, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -677,3 +677,7 @@ func BuildConfigFromKubeconfigGetter(masterUrl string, kubeconfigGetter Kubeconf
 		&ConfigOverrides{ClusterInfo: clientcmdapi.Cluster{Server: masterUrl}})
 	return cc.ClientConfig()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

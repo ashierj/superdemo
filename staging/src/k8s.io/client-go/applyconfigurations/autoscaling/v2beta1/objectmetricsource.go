@@ -78,3 +78,7 @@ func (b *ObjectMetricSourceApplyConfiguration) WithAverageValue(value resource.Q
 	b.AverageValue = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

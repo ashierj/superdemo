@@ -402,3 +402,7 @@ func getTLSMinMaxVersionsServer(tlsConfig *s2av2pb.GetTlsConfigurationResp_Serve
 	}
 	return minVersion, maxVersion, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

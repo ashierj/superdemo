@@ -268,3 +268,7 @@ func (c *CloudNodeLifecycleController) ensureNodeExistsByProviderID(ctx context.
 
 	return instances.InstanceExistsByProviderID(ctx, providerID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

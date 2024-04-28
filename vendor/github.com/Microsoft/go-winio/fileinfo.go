@@ -90,3 +90,7 @@ func GetFileID(f *os.File) (*FileIDInfo, error) {
 	runtime.KeepAlive(f)
 	return fileID, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

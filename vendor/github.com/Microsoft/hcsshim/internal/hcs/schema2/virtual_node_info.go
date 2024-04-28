@@ -18,3 +18,7 @@ type VirtualNodeInfo struct {
 
 	MemoryUsageInPages int32 `json:"MemoryUsageInPages,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ func (f *IgnoredFlag) Set(s string) error {
 func (f *IgnoredFlag) String() string {
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

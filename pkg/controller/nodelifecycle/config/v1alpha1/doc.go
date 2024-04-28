@@ -19,3 +19,7 @@ limitations under the License.
 // +k8s:conversion-gen-external-types=k8s.io/kube-controller-manager/config/v1alpha1
 
 package v1alpha1 // import "k8s.io/kubernetes/pkg/controller/nodelifecycle/config/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

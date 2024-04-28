@@ -70,3 +70,7 @@ func (b *VolumeAttachmentStatusApplyConfiguration) WithDetachError(value *Volume
 	b.DetachError = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

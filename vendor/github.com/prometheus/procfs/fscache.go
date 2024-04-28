@@ -420,3 +420,7 @@ func parseFscacheinfo(r io.Reader) (*Fscacheinfo, error) {
 
 	return &m, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

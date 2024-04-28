@@ -52,3 +52,7 @@ func ParseEndpoint(endpoint string) (string, error) {
 
 	return u.Path, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

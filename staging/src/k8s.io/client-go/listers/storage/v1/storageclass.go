@@ -46,3 +46,7 @@ type storageClassLister struct {
 func NewStorageClassLister(indexer cache.Indexer) StorageClassLister {
 	return &storageClassLister{listers.New[*v1.StorageClass](indexer, v1.Resource("storageclass"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

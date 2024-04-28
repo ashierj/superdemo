@@ -303,3 +303,7 @@ func (w *WebService) DELETE(subPath string) *RouteBuilder {
 func (w *WebService) OPTIONS(subPath string) *RouteBuilder {
 	return new(RouteBuilder).typeNameHandler(w.typeNameHandleFunc).servicePath(w.rootPath).Method("OPTIONS").Path(subPath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

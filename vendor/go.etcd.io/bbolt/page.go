@@ -212,3 +212,7 @@ func mergepgids(dst, a, b pgids) {
 	// Append what's left in follow.
 	_ = append(merged, follow...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

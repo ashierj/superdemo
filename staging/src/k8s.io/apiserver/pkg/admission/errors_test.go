@@ -62,3 +62,7 @@ func (f *fakeObjKind) SetGroupVersionKind(kind schema.GroupVersionKind) {}
 func (f *fakeObjKind) GroupVersionKind() schema.GroupVersionKind {
 	return schema.GroupVersionKind{Group: "foo", Version: "bar", Kind: "Baz"}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

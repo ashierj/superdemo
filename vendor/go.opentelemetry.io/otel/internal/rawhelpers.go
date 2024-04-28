@@ -53,3 +53,7 @@ func RawPtrToFloat64Ptr(r *uint64) *float64 {
 func RawPtrToInt64Ptr(r *uint64) *int64 {
 	return (*int64)(unsafe.Pointer(r))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

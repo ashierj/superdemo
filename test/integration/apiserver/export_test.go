@@ -55,3 +55,7 @@ func TestExportRejection(t *testing.T) {
 		t.Errorf("expected %v, got %v", http.StatusOK, statusCode)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

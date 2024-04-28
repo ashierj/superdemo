@@ -119,3 +119,7 @@ func loadHTTPBytes(timeout time.Duration) func(path string) ([]byte, error) {
 		return io.ReadAll(resp.Body)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

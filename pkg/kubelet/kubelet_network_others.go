@@ -21,3 +21,7 @@ package kubelet
 
 // Do nothing.
 func (kl *Kubelet) initNetworkUtil() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

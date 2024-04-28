@@ -29,3 +29,7 @@ var (
 	// have SIGUSR1, then we need to add another exception for it.
 	progressSignals = []os.Signal{syscall.SIGUSR1}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

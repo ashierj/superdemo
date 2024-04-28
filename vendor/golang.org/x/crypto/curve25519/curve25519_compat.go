@@ -103,3 +103,7 @@ func checkBasepoint() {
 		panic("curve25519: global Basepoint value was modified")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

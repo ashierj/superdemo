@@ -368,3 +368,7 @@ func TestDirectCodec(t *testing.T) {
 		t.Fatalf("expect %v, got %v", e, a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

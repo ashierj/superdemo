@@ -99,3 +99,7 @@ func ValidateLocalSubjectAccessReview(sar *authorizationapi.LocalSubjectAccessRe
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

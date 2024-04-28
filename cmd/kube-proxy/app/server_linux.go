@@ -560,3 +560,7 @@ func platformCleanup(ctx context.Context, mode proxyconfigapi.ProxyMode, cleanup
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

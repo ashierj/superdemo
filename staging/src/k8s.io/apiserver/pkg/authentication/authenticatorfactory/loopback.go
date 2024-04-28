@@ -27,3 +27,7 @@ import (
 func NewFromTokens(tokens map[string]*user.DefaultInfo, audiences authenticator.Audiences) authenticator.Request {
 	return bearertoken.New(authenticator.WrapAudienceAgnosticToken(audiences, tokenfile.New(tokens)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

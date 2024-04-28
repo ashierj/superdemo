@@ -46,3 +46,7 @@ func (b *PodDNSConfigOptionApplyConfiguration) WithValue(value string) *PodDNSCo
 	b.Value = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

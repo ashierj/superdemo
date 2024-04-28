@@ -40,3 +40,7 @@ func (matcher *EqualMatcher) FailureMessage(actual interface{}) (message string)
 func (matcher *EqualMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to equal", matcher.Expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

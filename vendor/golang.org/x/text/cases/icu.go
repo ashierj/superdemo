@@ -59,3 +59,7 @@ func doICU(tag, caser, input string) string {
 	}
 	return string(buf[:cn])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -297,3 +297,7 @@ func logPods(ctx context.Context, c clientset.Interface) {
 	}
 	framework.Logf("%d pods are running on node %v", len(podList.Items), nodeName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

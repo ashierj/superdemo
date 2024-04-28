@@ -365,3 +365,7 @@ func file_internal_proto_v2_common_common_proto_init() {
 	file_internal_proto_v2_common_common_proto_goTypes = nil
 	file_internal_proto_v2_common_common_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

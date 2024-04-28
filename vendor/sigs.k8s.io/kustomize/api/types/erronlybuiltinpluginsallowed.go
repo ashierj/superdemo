@@ -27,3 +27,7 @@ func IsErrOnlyBuiltinPluginsAllowed(err error) bool {
 	e := &errOnlyBuiltinPluginsAllowed{}
 	return errors.As(err, &e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

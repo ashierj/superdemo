@@ -88,3 +88,7 @@ func WrapAudienceAgnosticToken(implicit Audiences, delegate Token) Token {
 		delegate: delegate,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

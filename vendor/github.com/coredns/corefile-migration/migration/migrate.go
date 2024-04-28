@@ -508,3 +508,7 @@ func matchOption(oName string, p plugin) (*option, bool) {
 	}
 	return nil, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

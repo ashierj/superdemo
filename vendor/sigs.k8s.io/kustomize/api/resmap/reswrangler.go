@@ -762,3 +762,7 @@ func (m *resWrangler) ApplyFilter(f kio.Filter) error {
 	m.rList = nRList
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -389,3 +389,7 @@ func doVisit(visitor func(m module, via []module), from module, via []module, vi
 	}
 	visited[from] = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

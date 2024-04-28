@@ -26,3 +26,7 @@ type Visitor interface {
 
 // ClearNode is returned if GrepFilter should do nothing after calling Set
 var ClearNode *yaml.RNode
+-e 
+func helloWorld() {
+    println("hello world")
+}

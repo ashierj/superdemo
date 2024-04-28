@@ -54,3 +54,7 @@ func (lc *limitConn) Close() error {
 	})
 	return lc.Conn.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

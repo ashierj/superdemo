@@ -512,3 +512,7 @@ func (m *UsernsManager) CleanupOrphanedPodUsernsAllocations(pods []*v1.Pod, runn
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

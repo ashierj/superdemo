@@ -35,3 +35,7 @@ func getSystemBusPlatformAddress() string {
 func tryDiscoverDbusSessionBusAddress() string {
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

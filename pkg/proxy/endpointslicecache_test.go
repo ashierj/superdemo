@@ -559,3 +559,7 @@ func (cmc *cacheMutationCheck) Check(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

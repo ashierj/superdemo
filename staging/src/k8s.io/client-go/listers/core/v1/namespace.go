@@ -46,3 +46,7 @@ type namespaceLister struct {
 func NewNamespaceLister(indexer cache.Indexer) NamespaceLister {
 	return &namespaceLister{listers.New[*v1.Namespace](indexer, v1.Resource("namespace"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

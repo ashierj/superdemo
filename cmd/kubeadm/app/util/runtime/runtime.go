@@ -238,3 +238,7 @@ func (runtime *CRIRuntime) SandboxImage() (string, error) {
 
 	return "", errors.Errorf("the detected sandbox image is empty")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

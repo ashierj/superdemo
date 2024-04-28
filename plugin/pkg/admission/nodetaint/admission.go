@@ -93,3 +93,7 @@ func addNotReadyTaint(node *api.Node) {
 	}
 	node.Spec.Taints = append(node.Spec.Taints, notReadyTaint)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

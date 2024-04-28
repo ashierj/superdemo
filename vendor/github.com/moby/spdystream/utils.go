@@ -30,3 +30,7 @@ func debugMessage(fmt string, args ...interface{}) {
 		log.Printf(fmt, args...)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

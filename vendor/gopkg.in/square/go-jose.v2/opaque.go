@@ -142,3 +142,7 @@ func (okd *opaqueKeyDecrypter) decryptKey(headers rawHeader, recipient *recipien
 
 	return okd.decrypter.DecryptKey(recipient.encryptedKey, header)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

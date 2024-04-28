@@ -312,3 +312,7 @@ func oldTransformToStorage(ctx context.Context, t *envelopeTransformer, data []b
 	prefixedData = append(prefixedData, result...)
 	return prefixedData, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

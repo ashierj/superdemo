@@ -112,3 +112,7 @@ var FuzzerFuncs = fuzzer.MergeFuzzerFuncs(
 	discoveryfuzzer.Funcs,
 	flowcontrolfuzzer.Funcs,
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

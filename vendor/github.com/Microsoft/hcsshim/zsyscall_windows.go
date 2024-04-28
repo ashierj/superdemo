@@ -52,3 +52,7 @@ func SetCurrentThreadCompartmentId(compartmentId uint32) (hr error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

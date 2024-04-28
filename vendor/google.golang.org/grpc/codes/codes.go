@@ -242,3 +242,7 @@ func (c *Code) UnmarshalJSON(b []byte) error {
 	}
 	return fmt.Errorf("invalid code: %q", string(b))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -363,3 +363,7 @@ func singleServiceLatency(ctx context.Context, f *framework.Framework, name stri
 	framework.Logf("Got endpoints: %v [%v]", gotSvc.Name, d)
 	return d, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

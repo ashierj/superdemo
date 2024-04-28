@@ -184,3 +184,7 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 func DefaultOtherErrorHandler(w http.ResponseWriter, _ *http.Request, msg string, code int) {
 	http.Error(w, msg, code)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

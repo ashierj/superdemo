@@ -26,3 +26,7 @@ func CanonicalAddr(url *url.URL) string {
 	}
 	return addr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

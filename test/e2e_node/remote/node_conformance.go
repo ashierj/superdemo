@@ -321,3 +321,7 @@ func generateSecureToken(tokenLen int) (string, error) {
 	token := encoded[:tokenLen]
 	return token, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

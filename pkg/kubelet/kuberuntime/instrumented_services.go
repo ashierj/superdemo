@@ -370,3 +370,7 @@ func (in instrumentedRuntimeService) RuntimeConfig(ctx context.Context) (*runtim
 	recordError(operation, err)
 	return out, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

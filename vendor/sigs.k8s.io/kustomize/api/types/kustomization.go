@@ -349,3 +349,7 @@ func (k *Kustomization) Unmarshal(y []byte) error {
 	*k = nk
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

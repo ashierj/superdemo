@@ -108,3 +108,7 @@ type FILE_ID_INFO struct {
 	VolumeSerialNumber uint64
 	FileID             [16]byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

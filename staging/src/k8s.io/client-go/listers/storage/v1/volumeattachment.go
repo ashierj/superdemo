@@ -46,3 +46,7 @@ type volumeAttachmentLister struct {
 func NewVolumeAttachmentLister(indexer cache.Indexer) VolumeAttachmentLister {
 	return &volumeAttachmentLister{listers.New[*v1.VolumeAttachment](indexer, v1.Resource("volumeattachment"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

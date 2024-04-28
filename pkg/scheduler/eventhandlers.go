@@ -661,3 +661,7 @@ type AdmissionResult struct {
 	Reason               string
 	InsufficientResource *noderesources.InsufficientResource
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

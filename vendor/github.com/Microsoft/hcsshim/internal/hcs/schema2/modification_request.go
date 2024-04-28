@@ -13,3 +13,7 @@ type ModificationRequest struct {
 	PropertyType PropertyType `json:"PropertyType,omitempty"`
 	Settings     interface{}  `json:"Settings,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

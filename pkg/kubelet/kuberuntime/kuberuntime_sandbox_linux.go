@@ -64,3 +64,7 @@ func (m *kubeGenericRuntimeManager) applySandboxResources(pod *v1.Pod, config *r
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

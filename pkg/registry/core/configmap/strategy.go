@@ -119,3 +119,7 @@ func Matcher(label labels.Selector, field fields.Selector) pkgstorage.SelectionP
 func SelectableFields(obj *api.ConfigMap) fields.Set {
 	return generic.ObjectMetaFieldsSet(&obj.ObjectMeta, true)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

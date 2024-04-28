@@ -84,3 +84,7 @@ var _ = Describe("Getting the Resources", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

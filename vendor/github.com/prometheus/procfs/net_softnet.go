@@ -153,3 +153,7 @@ func parseHexUint32s(ss []string) ([]uint32, error) {
 
 	return us, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

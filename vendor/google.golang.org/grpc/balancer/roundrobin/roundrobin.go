@@ -79,3 +79,7 @@ func (p *rrPicker) Pick(balancer.PickInfo) (balancer.PickResult, error) {
 	sc := p.subConns[nextIndex%subConnsLen]
 	return balancer.PickResult{SubConn: sc}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

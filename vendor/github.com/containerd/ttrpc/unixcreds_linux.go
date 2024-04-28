@@ -103,3 +103,7 @@ func requireUnixSocket(conn net.Conn) (*net.UnixConn, error) {
 
 	return uc, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

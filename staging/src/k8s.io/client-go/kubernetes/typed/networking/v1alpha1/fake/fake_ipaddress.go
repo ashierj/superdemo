@@ -149,3 +149,7 @@ func (c *FakeIPAddresses) Apply(ctx context.Context, iPAddress *networkingv1alph
 	}
 	return obj.(*v1alpha1.IPAddress), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

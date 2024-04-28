@@ -160,3 +160,7 @@ type PolicyGetterFunc func(ctx context.Context, name string) (*admissionregistra
 func (f PolicyGetterFunc) GetValidatingAdmissionPolicy(ctx context.Context, name string) (*admissionregistration.ValidatingAdmissionPolicy, error) {
 	return f(ctx, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

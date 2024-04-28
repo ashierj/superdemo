@@ -43,3 +43,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

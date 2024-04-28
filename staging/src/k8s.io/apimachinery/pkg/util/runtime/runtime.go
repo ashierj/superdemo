@@ -258,3 +258,7 @@ func Must(err error) {
 		panic(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

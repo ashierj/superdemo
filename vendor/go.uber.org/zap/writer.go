@@ -96,3 +96,7 @@ func CombineWriteSyncers(writers ...zapcore.WriteSyncer) zapcore.WriteSyncer {
 	}
 	return zapcore.Lock(zapcore.NewMultiWriteSyncer(writers...))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -32,3 +32,7 @@ func getLoggingCmd(n *nodeLogQuery, services []string) (string, []string, error)
 func checkForNativeLogger(ctx context.Context, service string) bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

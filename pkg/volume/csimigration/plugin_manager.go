@@ -167,3 +167,7 @@ func CheckMigrationFeatureFlags(f featuregate.FeatureGate, pluginMigration,
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

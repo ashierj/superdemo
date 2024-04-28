@@ -87,3 +87,7 @@ func (f *fischerInformer) Informer() cache.SharedIndexInformer {
 func (f *fischerInformer) Lister() v1alpha1.FischerLister {
 	return v1alpha1.NewFischerLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

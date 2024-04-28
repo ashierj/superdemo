@@ -140,3 +140,7 @@ func InitRegistryAndConfig(t *testing.T, factory func(plugin framework.Plugin) f
 	cfg := configtesting.V1ToInternalWithDefaults(t, versionedCfg)
 	return registry, cfg.Profiles[0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

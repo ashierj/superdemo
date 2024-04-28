@@ -448,3 +448,7 @@ func autoConvert_rbac_Subject_To_v1beta1_Subject(in *rbac.Subject, out *v1beta1.
 func Convert_rbac_Subject_To_v1beta1_Subject(in *rbac.Subject, out *v1beta1.Subject, s conversion.Scope) error {
 	return autoConvert_rbac_Subject_To_v1beta1_Subject(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

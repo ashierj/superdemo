@@ -416,3 +416,7 @@ func clearMetrics() {
 	metrics.NodeStartupPostRegistrationDuration.Set(0)
 	metrics.NodeStartupDuration.Set(0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

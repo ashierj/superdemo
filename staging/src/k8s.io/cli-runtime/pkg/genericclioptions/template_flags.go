@@ -134,3 +134,7 @@ func NewGoTemplatePrintFlags() *GoTemplatePrintFlags {
 		AllowMissingKeys: &allowMissingKeysPtr,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

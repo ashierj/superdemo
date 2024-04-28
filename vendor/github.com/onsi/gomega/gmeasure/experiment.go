@@ -525,3 +525,7 @@ func (e *Experiment) GetStats(name string) Stats {
 	defer e.lock.Unlock()
 	return measurement.Stats()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

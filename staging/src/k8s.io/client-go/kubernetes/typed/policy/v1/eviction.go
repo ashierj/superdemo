@@ -46,3 +46,7 @@ func newEvictions(c *PolicyV1Client, namespace string) *evictions {
 		ns:     namespace,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

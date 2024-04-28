@@ -479,3 +479,7 @@ func asPartialObjectMetadataList(result runtime.Object, groupVersion schema.Grou
 		return nil, newNotAcceptableError(fmt.Sprintf("no PartialObjectMetadataList exists in group version %s", groupVersion))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

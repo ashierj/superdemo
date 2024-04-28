@@ -70,3 +70,7 @@ type ResourceResolverFunc func(gvk schema.GroupVersionKind) (schema.GroupVersion
 func (f ResourceResolverFunc) Resolve(gvk schema.GroupVersionKind) (schema.GroupVersionResource, error) {
 	return f(gvk)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

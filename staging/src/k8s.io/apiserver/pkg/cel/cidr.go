@@ -85,3 +85,7 @@ func (d CIDR) Value() any {
 func (d CIDR) Size() ref.Val {
 	return types.Int(int(math.Ceil(float64(d.Prefix.Bits()) / 8)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func (v typeWithGomegaStringer) GomegaString() string {
 type myStruct struct {
 	a, b int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

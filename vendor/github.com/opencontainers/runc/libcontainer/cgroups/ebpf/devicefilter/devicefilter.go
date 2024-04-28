@@ -206,3 +206,7 @@ func acceptBlock(accept bool) asm.Instructions {
 		asm.Return(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

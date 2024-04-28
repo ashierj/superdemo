@@ -377,3 +377,7 @@ func parseEnvs(envArray []string) ([]v1.EnvVar, error) {
 	}
 	return envs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

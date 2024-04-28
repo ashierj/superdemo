@@ -46,3 +46,7 @@ func filterInLabels(filter, labels map[string]string) bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

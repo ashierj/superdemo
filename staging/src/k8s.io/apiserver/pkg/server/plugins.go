@@ -32,3 +32,7 @@ func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
 	mutatingwebhook.Register(plugins)
 	validatingadmissionpolicy.Register(plugins)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

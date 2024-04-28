@@ -44,3 +44,7 @@ func WriteJUnitReport(report ginkgo.Report, filename string) error {
 
 	return reporters.GenerateJUnitReportWithConfig(report, filename, config)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -992,3 +992,7 @@ func isNUMAAffinitiesEqual(numaAffinity1, numaAffinity2 []int) bool {
 
 	return bitMask1.IsEqual(bitMask2)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -38,3 +38,7 @@ func RecommendedDefaultAttachDetachControllerConfiguration(obj *kubectrlmgrconfi
 		obj.ReconcilerSyncLoopPeriod = metav1.Duration{Duration: 60 * time.Second}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -65,3 +65,7 @@ func (p *JsonPath) HasPrefix(o JsonPath) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

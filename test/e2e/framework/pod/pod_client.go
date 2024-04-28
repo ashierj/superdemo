@@ -335,3 +335,7 @@ func (c *PodClient) RemoveFinalizer(ctx context.Context, podName string, finaliz
 		pod.ObjectMeta.Finalizers = removeString(pod.ObjectMeta.Finalizers, finalizerName)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

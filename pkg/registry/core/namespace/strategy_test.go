@@ -160,3 +160,7 @@ func TestSelectableFieldLabelConversions(t *testing.T) {
 		map[string]string{"name": "metadata.name"},
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

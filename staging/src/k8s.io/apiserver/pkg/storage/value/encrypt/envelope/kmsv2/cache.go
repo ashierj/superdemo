@@ -110,3 +110,7 @@ func toString(b []byte) string {
 	// https://github.com/golang/go/blob/202a1a57064127c3f19d96df57b9f9586145e21c/src/strings/builder.go#L48
 	return unsafe.String(unsafe.SliceData(b), len(b))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

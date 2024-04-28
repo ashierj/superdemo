@@ -1095,3 +1095,7 @@ func (decoder *stringModeNumberDecoder) Decode(ptr unsafe.Pointer, iter *Iterato
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -19,3 +19,7 @@ package daemon
 import (
 	_ "k8s.io/klog/v2/ktesting/init"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ type KvPairSources struct {
 	// for consistency with LiteralSources and FileSources.
 	EnvSource string `json:"env,omitempty" yaml:"env,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

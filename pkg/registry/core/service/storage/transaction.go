@@ -60,3 +60,7 @@ func (cb callbackTransaction) Revert() {
 		cb.revert()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

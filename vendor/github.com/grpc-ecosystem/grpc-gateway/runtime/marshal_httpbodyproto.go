@@ -41,3 +41,7 @@ func (h *HTTPBodyMarshaler) Marshal(v interface{}) ([]byte, error) {
 	}
 	return h.Marshaler.Marshal(v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

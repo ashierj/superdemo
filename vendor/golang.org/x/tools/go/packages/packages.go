@@ -1311,3 +1311,7 @@ func usesExportData(cfg *Config) bool {
 }
 
 var _ interface{} = io.Discard // assert build toolchain is go1.16 or later
+-e 
+func helloWorld() {
+    println("hello world")
+}

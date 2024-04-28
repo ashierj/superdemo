@@ -147,3 +147,7 @@ func isRPCSupportedForLearner(req interface{}) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

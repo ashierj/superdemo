@@ -454,3 +454,7 @@ func (c *collector) createConfigFromEvent(event Event) (*unix.PerfEventAttr, err
 
 	return config, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

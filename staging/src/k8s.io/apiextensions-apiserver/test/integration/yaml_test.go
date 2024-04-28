@@ -540,3 +540,7 @@ func decodeYAML(data []byte) (*unstructured.Unstructured, error) {
 	}
 	return retval, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

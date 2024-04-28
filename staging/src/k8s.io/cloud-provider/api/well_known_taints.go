@@ -26,3 +26,7 @@ const (
 	// TaintNodeShutdown when node is shutdown in external cloud provider
 	TaintNodeShutdown = "node.cloudprovider.kubernetes.io/shutdown"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

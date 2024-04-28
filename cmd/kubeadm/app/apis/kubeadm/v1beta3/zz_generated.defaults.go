@@ -56,3 +56,7 @@ func SetObjectDefaults_JoinConfiguration(in *JoinConfiguration) {
 		SetDefaults_APIEndpoint(&in.ControlPlane.LocalAPIEndpoint)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -181,3 +181,7 @@ func (t *TestKindVisitor) VisitReplicaSet(kind GroupKindElement)            { t.
 func (t *TestKindVisitor) VisitReplicationController(kind GroupKindElement) { t.Visit(kind) }
 func (t *TestKindVisitor) VisitStatefulSet(kind GroupKindElement)           { t.Visit(kind) }
 func (t *TestKindVisitor) VisitCronJob(kind GroupKindElement)               { t.Visit(kind) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

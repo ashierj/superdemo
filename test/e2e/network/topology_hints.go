@@ -230,3 +230,7 @@ var _ = common.SIGDescribe(feature.TopologyHints, func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

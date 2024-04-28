@@ -395,3 +395,7 @@ func hasPrefix(buf []byte, prefix []byte) bool {
 	trim := bytes.TrimLeftFunc(buf, unicode.IsSpace)
 	return bytes.HasPrefix(trim, prefix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

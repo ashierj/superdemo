@@ -118,3 +118,7 @@ func newCmdUserKubeConfig(out io.Writer) *cobra.Command {
 	cmd.MarkFlagRequired("client-name")
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

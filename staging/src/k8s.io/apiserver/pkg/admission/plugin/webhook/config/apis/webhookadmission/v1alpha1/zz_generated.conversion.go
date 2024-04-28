@@ -66,3 +66,7 @@ func autoConvert_webhookadmission_WebhookAdmission_To_v1alpha1_WebhookAdmission(
 func Convert_webhookadmission_WebhookAdmission_To_v1alpha1_WebhookAdmission(in *webhookadmission.WebhookAdmission, out *WebhookAdmission, s conversion.Scope) error {
 	return autoConvert_webhookadmission_WebhookAdmission_To_v1alpha1_WebhookAdmission(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

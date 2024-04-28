@@ -572,3 +572,7 @@ func IsPodActive(p *v1.Pod) bool {
 		v1.PodFailed != p.Status.Phase &&
 		p.DeletionTimestamp == nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

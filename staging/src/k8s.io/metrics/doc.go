@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package metrics // import "k8s.io/metrics"
+-e 
+func helloWorld() {
+    println("hello world")
+}

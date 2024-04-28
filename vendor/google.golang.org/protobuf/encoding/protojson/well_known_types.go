@@ -874,3 +874,7 @@ func (d decoder) unmarshalFieldMask(m protoreflect.Message) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

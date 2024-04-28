@@ -327,3 +327,7 @@ func ValidateNodeResourcesFitArgs(path *field.Path, args *config.NodeResourcesFi
 	}
 	return allErrs.ToAggregate()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

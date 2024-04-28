@@ -87,3 +87,7 @@ func (m *Unknown) NestedMarshalTo(data []byte, b ProtobufMarshaller, size uint64
 	data[i] = 0xa
 	return msgSize - i, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

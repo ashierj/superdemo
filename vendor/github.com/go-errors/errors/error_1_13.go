@@ -29,3 +29,7 @@ func Is(e error, original error) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

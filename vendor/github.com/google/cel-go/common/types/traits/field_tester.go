@@ -28,3 +28,7 @@ type FieldTester interface {
 	// if the field is not defined.
 	IsSet(field ref.Val) ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

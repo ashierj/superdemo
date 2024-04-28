@@ -2539,3 +2539,7 @@ var (
 	ErrIntOverflowV3Election          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupV3Election = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

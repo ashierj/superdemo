@@ -39,3 +39,7 @@ func RegisterDefaults(scheme *runtime.Scheme) error {
 func SetObjectDefaults_KubeProxyConfiguration(in *v1alpha1.KubeProxyConfiguration) {
 	SetDefaults_KubeProxyConfiguration(in)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

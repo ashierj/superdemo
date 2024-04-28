@@ -53,3 +53,7 @@ const (
 	// LogTagDelimiter is the delimiter for different log tags.
 	LogTagDelimiter = ":"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

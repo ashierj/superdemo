@@ -160,3 +160,7 @@ func HTTPBodyNotContains(t TestingT, handler http.HandlerFunc, method, url strin
 
 	return !contains
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

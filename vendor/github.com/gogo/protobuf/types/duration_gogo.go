@@ -98,3 +98,7 @@ func StdDurationUnmarshal(d *time.Duration, data []byte) error {
 	*d = dd
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

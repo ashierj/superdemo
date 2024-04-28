@@ -97,3 +97,7 @@ func (iter *Iterator) skipArray() {
 		return true
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

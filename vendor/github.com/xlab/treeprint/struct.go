@@ -320,3 +320,7 @@ func checkType(v interface{}) (reflect.Type, *reflect.Value, error) {
 	}
 	return typ, &val, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

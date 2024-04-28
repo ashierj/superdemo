@@ -287,3 +287,7 @@ func (c *replicationControllers) UpdateScale(ctx context.Context, replicationCon
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

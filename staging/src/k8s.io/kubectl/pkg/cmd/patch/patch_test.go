@@ -240,3 +240,7 @@ func TestPatchSubresource(t *testing.T) {
 		t.Errorf("unexpected pod status to be set to %s got: %s", expectedStatus, actualStatus)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -195,3 +195,7 @@ func (c *FakeDaemonSets) ApplyStatus(ctx context.Context, daemonSet *appsv1.Daem
 	}
 	return obj.(*v1.DaemonSet), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

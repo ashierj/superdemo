@@ -174,3 +174,7 @@ const (
 	// ConnFwdBypass denotes forwarding while bypassing the cache
 	ConnFwdBypass = 0x0004
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

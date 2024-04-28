@@ -34,3 +34,7 @@ func (m *kubeGenericRuntimeManager) ReadLogs(ctx context.Context, path, containe
 
 	return logs.ReadLogs(ctx, path, containerID, opts, m.runtimeService, stdout, stderr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

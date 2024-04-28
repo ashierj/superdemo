@@ -68,3 +68,7 @@ var cloudPublicFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
 	CloudDualStackNodeIPs:         {Default: true, PreRelease: featuregate.GA, LockToDefault: true}, // remove in 1.32
 	StableLoadBalancerNodeSet:     {Default: true, PreRelease: featuregate.GA, LockToDefault: true}, // GA in 1.30, remove in 1.31
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

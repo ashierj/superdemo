@@ -165,3 +165,7 @@ func platformize(linux, windows string) string {
 	}
 	return linux
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

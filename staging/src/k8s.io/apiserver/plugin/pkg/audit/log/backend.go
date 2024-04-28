@@ -102,3 +102,7 @@ func (b *backend) Shutdown() {
 func (b *backend) String() string {
 	return PluginName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

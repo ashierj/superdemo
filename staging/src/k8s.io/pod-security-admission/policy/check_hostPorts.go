@@ -89,3 +89,7 @@ func hostPorts_1_0(podMetadata *metav1.ObjectMeta, podSpec *corev1.PodSpec) Chec
 	}
 	return CheckResult{Allowed: true}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

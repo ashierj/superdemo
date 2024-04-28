@@ -198,3 +198,7 @@ func isHidden(watchPath, keyPath string) bool {
 	afterPath := path.Clean("/" + keyPath[len(watchPath):])
 	return strings.Contains(afterPath, "/_")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

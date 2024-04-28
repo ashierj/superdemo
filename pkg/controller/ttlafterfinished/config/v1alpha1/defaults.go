@@ -34,3 +34,7 @@ func RecommendedDefaultTTLAfterFinishedControllerConfiguration(obj *kubectrlmgrc
 		obj.ConcurrentTTLSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

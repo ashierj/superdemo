@@ -298,3 +298,7 @@ type handler struct {
 	pat Pattern
 	h   HandlerFunc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1718,3 +1718,7 @@ func (p *podWorkers) requeueLastPodUpdate(podUID types.UID, status *podSyncStatu
 	default:
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -45,3 +45,7 @@ type MetadataOnlyObjectList struct {
 
 	Items []MetadataOnlyObject `json:"items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

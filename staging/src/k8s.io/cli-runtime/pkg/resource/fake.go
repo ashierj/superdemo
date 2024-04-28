@@ -38,3 +38,7 @@ var FakeCategoryExpander restmapper.CategoryExpander = restmapper.SimpleCategory
 		},
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

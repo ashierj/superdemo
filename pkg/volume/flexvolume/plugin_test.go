@@ -61,3 +61,7 @@ func TestGetVolumeName(tt *testing.T) {
 		t.Errorf("GetVolumeName() returned %v instead of %v", name, expectedName)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

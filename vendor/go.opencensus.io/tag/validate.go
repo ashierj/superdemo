@@ -54,3 +54,7 @@ func checkValue(v string) bool {
 	}
 	return isASCII(v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -200,3 +200,7 @@ func BuildAndRegisterOpenAPIVersionedServiceFromRoutes(servePath string, routeCo
 	o.RegisterOpenAPIVersionedService(servePath, handler)
 	return o, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

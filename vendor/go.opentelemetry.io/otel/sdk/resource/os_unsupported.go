@@ -32,3 +32,7 @@ package resource // import "go.opentelemetry.io/otel/sdk/resource"
 func platformOSDescription() (string, error) {
 	return "<unknown>", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

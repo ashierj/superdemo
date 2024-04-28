@@ -71,3 +71,7 @@ func (v Semver) Type() ref.Type {
 func (v Semver) Value() interface{} {
 	return v.Version
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

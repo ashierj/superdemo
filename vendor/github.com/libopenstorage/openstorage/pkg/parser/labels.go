@@ -72,3 +72,7 @@ func HasLabels(set map[string]string, subset map[string]string) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

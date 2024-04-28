@@ -128,3 +128,7 @@ func compileRegexps(regexpStrings []string) ([]*regexp.Regexp, error) {
 	}
 	return regexps, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

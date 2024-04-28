@@ -35,3 +35,7 @@ func (in *ComponentStatusList) APILifecycleIntroduced() (major, minor int) {
 func (in *ComponentStatusList) APILifecycleDeprecated() (major, minor int) {
 	return 1, 19
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

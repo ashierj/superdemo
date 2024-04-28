@@ -56,3 +56,7 @@ var interestingClusterAutoscalerMetrics = []string{
 	"errors_total",
 	"evicted_pods_total",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

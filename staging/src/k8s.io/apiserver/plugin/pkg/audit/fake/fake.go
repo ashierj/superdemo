@@ -49,3 +49,7 @@ func (b *Backend) ProcessEvents(ev ...*auditinternal.Event) bool {
 func (b *Backend) String() string {
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

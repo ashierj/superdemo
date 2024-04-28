@@ -146,3 +146,7 @@ func invalidEphemeralSource(suffix string) []ephemeralTestInfo {
 	}
 	return testInfo
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

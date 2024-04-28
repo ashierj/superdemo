@@ -44,3 +44,7 @@ func NewNoneScope() Scope {
 func (s *noneScope) Admit(pod *v1.Pod) lifecycle.PodAdmitResult {
 	return s.admitPolicyNone(pod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

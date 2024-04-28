@@ -257,3 +257,7 @@ func NewParseCancellationException() *ParseCancellationException {
 	//	Error.captureStackTrace(this, ParseCancellationException)
 	return new(ParseCancellationException)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

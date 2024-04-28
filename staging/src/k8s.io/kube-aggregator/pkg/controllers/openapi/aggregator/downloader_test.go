@@ -112,3 +112,7 @@ func TestDownloadOpenAPISpec(t *testing.T) {
 		handlerTest{data: []byte("{\"id\": \"test\"}"), etag: "etag_test1"}, "etag_test2")
 	assert.NoError(t, assertDownloadedSpec(actualSpec, actualEtag, err, "test", "etag_test1"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

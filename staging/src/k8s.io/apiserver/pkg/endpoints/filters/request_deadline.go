@@ -175,3 +175,7 @@ func handleError(w http.ResponseWriter, r *http.Request, code int, innerErr erro
 	http.Error(w, msg, code)
 	klog.ErrorSDepth(1, innerErr, msg, "method", r.Method, "URI", r.RequestURI, "auditID", audit.GetAuditIDTruncated(r.Context()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

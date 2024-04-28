@@ -250,3 +250,7 @@ func getFieldValue(v reflect.Value, idx []int, f embeddedFieldNullPtrFunc) (fv r
 	}
 	return fv, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

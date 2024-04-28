@@ -24,3 +24,7 @@ import (
 func main() {
 	fmt.Printf("Effective uid: %d\n", os.Geteuid())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -56,3 +56,7 @@ func importPath(s *ast.ImportSpec) string {
 	}
 	return t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

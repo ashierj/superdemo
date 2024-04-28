@@ -310,3 +310,7 @@ type ObjectReference struct {
 	// +optional
 	Subresource string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

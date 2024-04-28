@@ -473,3 +473,7 @@ type stubMetaFactory struct {
 func (mf stubMetaFactory) Interpret([]byte) (*schema.GroupVersionKind, error) {
 	return mf.gvk, mf.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

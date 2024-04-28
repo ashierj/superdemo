@@ -131,3 +131,7 @@ func NewFile(path string) (Capabilities, error) {
 func NewFile2(path string) (Capabilities, error) {
 	return newFile(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

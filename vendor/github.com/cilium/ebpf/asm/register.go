@@ -48,3 +48,7 @@ func (r Register) String() string {
 	}
 	return fmt.Sprintf("r%d", v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

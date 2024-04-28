@@ -68,3 +68,7 @@ func (s *aesgcm) Decrypt(dst, ciphertext, nonce, aad []byte) ([]byte, error) {
 func (s *aesgcm) TagSize() int {
 	return TagSize
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

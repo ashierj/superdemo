@@ -27,3 +27,7 @@ import (
 func SuggestAPIResources(parent string) string {
 	return templates.LongDesc(fmt.Sprintf("Use \"%s api-resources\" for a complete list of supported resources.", parent))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

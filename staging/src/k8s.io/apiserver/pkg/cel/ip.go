@@ -84,3 +84,7 @@ func (d IP) Value() any {
 func (d IP) Size() ref.Val {
 	return types.Int(int(math.Ceil(float64(d.Addr.BitLen()) / 8)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

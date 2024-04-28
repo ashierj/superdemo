@@ -153,3 +153,7 @@ func (c *Config) TransportConfig() (*transport.Config, error) {
 func (c *Config) Wrap(fn transport.WrapperFunc) {
 	c.WrapTransport = transport.Wrappers(c.WrapTransport, fn)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

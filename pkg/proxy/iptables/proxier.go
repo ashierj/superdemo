@@ -1628,3 +1628,7 @@ func (proxier *Proxier) writeServiceToEndpointRules(natRules proxyutil.LineBuffe
 		natRules.Write(args, "-j", string(epInfo.ChainName))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -169,3 +169,7 @@ func (tt *TruthTable) PrettyPrint(indent string) string {
 	}
 	return strings.Join(lines, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

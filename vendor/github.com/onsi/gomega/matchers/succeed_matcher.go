@@ -40,3 +40,7 @@ func (matcher *SucceedMatcher) FailureMessage(actual interface{}) (message strin
 func (matcher *SucceedMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return "Expected failure, but got no error."
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

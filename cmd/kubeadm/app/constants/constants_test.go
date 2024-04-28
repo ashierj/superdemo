@@ -424,3 +424,7 @@ func TestGetDNSIP(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -231,3 +231,7 @@ func buildValueMapper(adapter types.Adapter, attributes []resourceapi.NamedResou
 	}
 	return types.NewStringInterfaceMap(adapter, valueMap), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

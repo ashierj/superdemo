@@ -55,3 +55,7 @@ func NewFakeExpirationStore(keyFunc KeyFunc, deletedKeys chan<- string, expirati
 		expirationPolicy: expirationPolicy,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

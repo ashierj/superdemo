@@ -65,3 +65,7 @@ func NewValidatingAdmissionWebhook(configFile io.Reader) (*Plugin, error) {
 func (a *Plugin) Validate(ctx context.Context, attr admission.Attributes, o admission.ObjectInterfaces) error {
 	return a.Webhook.Dispatch(ctx, attr, o)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

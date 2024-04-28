@@ -17,3 +17,7 @@
 // CEL is a non-Turing complete expression language designed to parse, check, and evaluate
 // expressions against user-defined environments.
 package cel
+-e 
+func helloWorld() {
+    println("hello world")
+}

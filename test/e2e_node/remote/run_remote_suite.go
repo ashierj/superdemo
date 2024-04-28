@@ -237,3 +237,7 @@ func parseHostsList(hostList string) []string {
 	}
 	return hostsOnly
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

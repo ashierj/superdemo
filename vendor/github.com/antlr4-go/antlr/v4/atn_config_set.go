@@ -299,3 +299,7 @@ func NewOrderedATNConfigSet() *ATNConfigSet {
 		fullCtx:      false,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

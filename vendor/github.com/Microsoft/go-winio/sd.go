@@ -142,3 +142,7 @@ func SecurityDescriptorToSddl(sd []byte) (string, error) {
 	defer localFree(uintptr(unsafe.Pointer(sddl)))
 	return syscall.UTF16ToString((*[0xffff]uint16)(unsafe.Pointer(sddl))[:]), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

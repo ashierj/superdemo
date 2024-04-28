@@ -19,3 +19,7 @@ limitations under the License.
 // the sibling schema package). Functions for reading and writing the objects
 // are also provided.
 package value
+-e 
+func helloWorld() {
+    println("hello world")
+}

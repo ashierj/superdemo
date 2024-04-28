@@ -56,3 +56,7 @@ type sliceHeader struct {
 	s   string
 	cap int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

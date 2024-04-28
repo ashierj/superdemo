@@ -31,3 +31,7 @@ func newProblem(mf *dto.MetricFamily, text string) Problem {
 		Text:   text,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

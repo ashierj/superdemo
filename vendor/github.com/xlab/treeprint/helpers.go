@@ -45,3 +45,7 @@ func filterTags(tag reflect.StructTag) string {
 	}
 	return strings.Join(filtered, " ")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

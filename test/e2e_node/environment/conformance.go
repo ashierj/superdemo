@@ -224,3 +224,7 @@ func appendNotNil(errs []error, err error) []error {
 	}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

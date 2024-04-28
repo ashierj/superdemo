@@ -46,3 +46,7 @@ func (b *SysctlApplyConfiguration) WithValue(value string) *SysctlApplyConfigura
 	b.Value = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

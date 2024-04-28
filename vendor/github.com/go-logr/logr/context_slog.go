@@ -81,3 +81,7 @@ func NewContext(ctx context.Context, logger Logger) context.Context {
 func NewContextWithSlogLogger(ctx context.Context, logger *slog.Logger) context.Context {
 	return context.WithValue(ctx, contextKey{}, logger)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

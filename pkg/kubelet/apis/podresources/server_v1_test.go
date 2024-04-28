@@ -1495,3 +1495,7 @@ func equalGetResponse(ResA, ResB *podresourcesapi.GetPodResourcesResponse) bool 
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

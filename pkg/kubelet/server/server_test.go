@@ -1528,3 +1528,7 @@ func TestTrimURLPath(t *testing.T) {
 		assert.Equal(t, test.expected, getURLRootPath(test.path), fmt.Sprintf("path is: %s", test.path))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

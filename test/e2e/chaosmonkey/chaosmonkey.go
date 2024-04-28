@@ -160,3 +160,7 @@ func (sem *Semaphore) waitForReadyOrDone() {
 func (sem *Semaphore) waitForDone() {
 	<-sem.doneCh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

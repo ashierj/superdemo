@@ -31,3 +31,7 @@ type ProcessDetails struct {
 
 	MemoryWorkingSetSharedBytes int32 `json:"MemoryWorkingSetSharedBytes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

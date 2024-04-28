@@ -78,3 +78,7 @@ func (b *FlowSchemaConditionApplyConfiguration) WithMessage(value string) *FlowS
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

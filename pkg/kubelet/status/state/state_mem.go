@@ -150,3 +150,7 @@ func (s *stateMemory) ClearState() error {
 	klog.V(3).InfoS("Cleared state")
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

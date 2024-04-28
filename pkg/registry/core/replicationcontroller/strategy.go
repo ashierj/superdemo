@@ -253,3 +253,7 @@ func (rcStatusStrategy) ValidateUpdate(ctx context.Context, obj, old runtime.Obj
 func (rcStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -75,3 +75,7 @@ func Tracepoint(group, name string, prog *ebpf.Program, opts *TracepointOptions)
 
 	return lnk, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -237,3 +237,7 @@ func WriteStringAndCheck(b io.StringWriter, s string) {
 	_, err := b.WriteString(s)
 	CheckErr(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -262,3 +262,7 @@ func (h *Handle) RdmaLinkSetNsFd(link *RdmaLink, fd uint32) error {
 
 	return execRdmaSetLink(req)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

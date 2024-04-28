@@ -46,3 +46,7 @@ type ingressClassLister struct {
 func NewIngressClassLister(indexer cache.Indexer) IngressClassLister {
 	return &ingressClassLister{listers.New[*v1.IngressClass](indexer, v1.Resource("ingressclass"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

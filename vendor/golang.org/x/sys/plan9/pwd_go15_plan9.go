@@ -19,3 +19,7 @@ func Getwd() (wd string, err error) {
 func Chdir(path string) error {
 	return syscall.Chdir(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

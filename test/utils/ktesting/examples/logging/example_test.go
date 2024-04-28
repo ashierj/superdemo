@@ -72,3 +72,7 @@ func heatOven(tCtx ktesting.TContext) {
 	tCtx.Logger().Info("Logger().Info()")
 	tCtx.Fatal("oven not found")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ func (d *detacherDefaults) UnmountDevice(deviceMountPath string) error {
 	klog.Warning(logPrefix(d.plugin.flexVolumePlugin), "using default UnmountDevice for device mount path ", deviceMountPath)
 	return mount.CleanupMountPoint(deviceMountPath, d.plugin.host.GetMounter(d.plugin.GetPluginName()), false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

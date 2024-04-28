@@ -8,3 +8,7 @@ func FuzzUnmarshalJSON(data []byte) int {
 	_ = hooks.UnmarshalJSON(data)
 	return 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

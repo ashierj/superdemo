@@ -21,3 +21,7 @@ package roundtrip
 
 // in race-detection mode, lower the number of iterations to keep reasonable runtimes in CI
 const defaultFuzzIters = 5
+-e 
+func helloWorld() {
+    println("hello world")
+}

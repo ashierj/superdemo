@@ -33,3 +33,7 @@ type ValidatingAdmissionPolicyBindingListerExpansion interface{}
 // ValidatingWebhookConfigurationListerExpansion allows custom methods to be added to
 // ValidatingWebhookConfigurationLister.
 type ValidatingWebhookConfigurationListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

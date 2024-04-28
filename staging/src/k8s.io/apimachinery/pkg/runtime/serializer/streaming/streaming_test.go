@@ -82,3 +82,7 @@ func TestDecoder(t *testing.T) {
 		t.Fatalf("unexpected %v %v", err, len(d.got))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

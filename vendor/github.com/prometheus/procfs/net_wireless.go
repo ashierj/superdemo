@@ -180,3 +180,7 @@ func parseWireless(r io.Reader) ([]*Wireless, error) {
 
 	return interfaces, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

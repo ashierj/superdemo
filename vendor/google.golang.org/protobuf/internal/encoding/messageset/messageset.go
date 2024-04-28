@@ -240,3 +240,7 @@ func AppendUnknown(b, unknown []byte) ([]byte, error) {
 	}
 	return b, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

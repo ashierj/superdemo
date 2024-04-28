@@ -170,3 +170,7 @@ func (r *REST) ResourceLocation(ctx context.Context, id string) (*url.URL, http.
 func (r *REST) ShortNames() []string {
 	return []string{"no"}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

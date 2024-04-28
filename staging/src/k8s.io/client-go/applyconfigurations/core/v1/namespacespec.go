@@ -43,3 +43,7 @@ func (b *NamespaceSpecApplyConfiguration) WithFinalizers(values ...v1.FinalizerN
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

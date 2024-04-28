@@ -84,3 +84,7 @@ func TestWriteError(t *testing.T) {
 		t.Errorf("Did not get expected error. Got: %#v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

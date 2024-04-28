@@ -449,3 +449,7 @@ func (ws *priorityWriteScheduler) removeNode(n *priorityNode) {
 	n.setParent(nil)
 	delete(ws.nodes, n.id)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

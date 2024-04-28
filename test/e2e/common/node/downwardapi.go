@@ -423,3 +423,7 @@ func testDownwardAPI(ctx context.Context, f *framework.Framework, podName string
 func testDownwardAPIUsingPod(ctx context.Context, f *framework.Framework, pod *v1.Pod, env []v1.EnvVar, expectations []string) {
 	e2epodoutput.TestContainerOutputRegexp(ctx, f, "downward api env vars", pod, 0, expectations)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

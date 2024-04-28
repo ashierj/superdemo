@@ -50,3 +50,7 @@ func addCRIPodCPUStats(ps *statsapi.PodStats, criPodStat *runtimeapi.PodSandboxS
 
 func addCRIPodProcessStats(ps *statsapi.PodStats, criPodStat *runtimeapi.PodSandboxStats) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

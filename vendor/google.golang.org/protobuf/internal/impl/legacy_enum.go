@@ -216,3 +216,7 @@ func AberrantDeriveFullName(t reflect.Type) protoreflect.FullName {
 	}
 	return protoreflect.FullName(strings.Join(ss, "."))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

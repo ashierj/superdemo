@@ -24,3 +24,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

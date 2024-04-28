@@ -132,3 +132,7 @@ func Interpret(ep string) (address string, serverName string) {
 	addr, serverName, _ := translateEndpoint(ep)
 	return addr, serverName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

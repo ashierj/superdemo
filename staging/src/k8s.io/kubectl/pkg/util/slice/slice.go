@@ -55,3 +55,7 @@ func ToSet[T comparable](slices ...[]T) []T {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

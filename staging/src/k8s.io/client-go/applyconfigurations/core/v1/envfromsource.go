@@ -55,3 +55,7 @@ func (b *EnvFromSourceApplyConfiguration) WithSecretRef(value *SecretEnvSourceAp
 	b.SecretRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

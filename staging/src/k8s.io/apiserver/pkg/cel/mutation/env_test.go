@@ -49,3 +49,7 @@ func mustCreateEnv(t testing.TB, envOptions ...cel.EnvOption) *cel.Env {
 func mustCreateEnvWithOptional(t testing.TB, envOptions ...cel.EnvOption) *cel.Env {
 	return mustCreateEnv(t, append(envOptions, cel.OptionalTypes())...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

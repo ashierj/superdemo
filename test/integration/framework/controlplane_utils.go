@@ -98,3 +98,7 @@ func SharedEtcd() *storagebackend.Config {
 	cfg.Transport.ServerList = []string{GetEtcdURL()}
 	return cfg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

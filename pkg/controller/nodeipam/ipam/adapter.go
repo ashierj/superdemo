@@ -145,3 +145,7 @@ func (a *adapter) EmitNodeWarningEvent(nodeName, reason, fmt string, args ...int
 	ref := &v1.ObjectReference{Kind: "Node", Name: nodeName}
 	a.recorder.Eventf(ref, v1.EventTypeNormal, reason, fmt, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

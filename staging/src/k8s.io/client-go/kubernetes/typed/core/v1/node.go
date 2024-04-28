@@ -241,3 +241,7 @@ func (c *nodes) ApplyStatus(ctx context.Context, node *corev1.NodeApplyConfigura
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -934,3 +934,7 @@ func newContainerStats(libcontainerStats *libcontainer.Stats, includedMetrics co
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

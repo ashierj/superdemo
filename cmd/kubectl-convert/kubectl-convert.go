@@ -42,3 +42,7 @@ func main() {
 	code := cli.Run(cmd)
 	os.Exit(code)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

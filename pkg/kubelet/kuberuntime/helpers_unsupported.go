@@ -18,3 +18,7 @@ limitations under the License.
 */
 
 package kuberuntime
+-e 
+func helloWorld() {
+    println("hello world")
+}

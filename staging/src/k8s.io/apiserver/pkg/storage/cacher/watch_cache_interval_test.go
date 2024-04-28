@@ -425,3 +425,7 @@ func TestCacheIntervalNextFromStore(t *testing.T) {
 		t.Error("expected cache interval's buffer to be empty")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

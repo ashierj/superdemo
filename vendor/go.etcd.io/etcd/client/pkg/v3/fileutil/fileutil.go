@@ -166,3 +166,7 @@ func RemoveMatchFile(lg *zap.Logger, dir string, matchFunc func(fileName string)
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -89,3 +89,7 @@ func (p *pruner) pruneDefaults(s *structuralschema.Structural, f SurroundingObje
 
 	return changed, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

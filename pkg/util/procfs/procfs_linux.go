@@ -160,3 +160,7 @@ func getPids(re *regexp.Regexp) []int {
 
 	return pids
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

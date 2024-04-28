@@ -172,3 +172,7 @@ func (c *FakeDiscovery) RESTClient() restclient.Interface {
 func (c *FakeDiscovery) WithLegacy() discovery.DiscoveryInterface {
 	panic("unimplemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

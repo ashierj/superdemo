@@ -90,3 +90,7 @@ func (b *Buffer) Reset() {
 func (b *Buffer) String() string {
 	return string(b.Bytes())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

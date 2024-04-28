@@ -471,3 +471,7 @@ func newStatefulSet(replicas int32) *apps.StatefulSet {
 		Status: apps.StatefulSetStatus{},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

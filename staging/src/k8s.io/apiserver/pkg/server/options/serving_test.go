@@ -517,3 +517,7 @@ func generateSelfSignedCertKey(host string, alternateIPs []net.IP, alternateDNS 
 
 	return certBuffer.Bytes(), keyBuffer.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

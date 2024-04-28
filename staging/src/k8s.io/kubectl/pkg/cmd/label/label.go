@@ -464,3 +464,7 @@ func labelFunc(obj runtime.Object, overwrite bool, resourceVersion string, label
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

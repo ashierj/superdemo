@@ -46,3 +46,7 @@ func (b *ExternalDocumentationApplyConfiguration) WithURL(value string) *Externa
 	b.URL = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -122,3 +122,7 @@ func ParseFileSource(source string) (keyName, filePath string, err error) {
 		return components[0], components[1], nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

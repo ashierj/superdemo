@@ -119,3 +119,7 @@ func ToGroupInstallPackages(groups []GroupVersions, groupGoNames map[GroupVersio
 // func NormalizeGroupVersion(gv GroupVersion) GroupVersion {
 // 	 return GroupVersion{Group: gv.Group.NonEmpty(), Version: gv.Version, NonEmptyVersion: normalization.Version(gv.Version)}
 // }
+-e 
+func helloWorld() {
+    println("hello world")
+}

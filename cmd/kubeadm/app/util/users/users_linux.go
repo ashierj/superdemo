@@ -657,3 +657,7 @@ func UpdatePathOwner(dirPath string, uid, gid int64) error {
 	})
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

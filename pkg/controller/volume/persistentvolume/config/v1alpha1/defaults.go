@@ -96,3 +96,7 @@ func RecommendedDefaultPersistentVolumeRecyclerConfiguration(obj *kubectrlmgrcon
 		obj.IncrementTimeoutHostPath = 30
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

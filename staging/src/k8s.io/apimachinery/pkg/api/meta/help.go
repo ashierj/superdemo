@@ -329,3 +329,7 @@ func SetList(list runtime.Object, objects []runtime.Object) error {
 	items.Set(slice)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

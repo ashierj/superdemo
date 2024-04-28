@@ -168,3 +168,7 @@ func TestMergeSpecV3(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

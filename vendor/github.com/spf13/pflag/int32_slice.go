@@ -172,3 +172,7 @@ func Int32Slice(name string, value []int32, usage string) *[]int32 {
 func Int32SliceP(name, shorthand string, value []int32, usage string) *[]int32 {
 	return CommandLine.Int32SliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

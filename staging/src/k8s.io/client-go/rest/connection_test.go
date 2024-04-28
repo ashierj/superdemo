@@ -368,3 +368,7 @@ func TestRestClientTimeout(t *testing.T) {
 		t.Fatalf("timeout error expected, received %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

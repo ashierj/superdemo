@@ -73,3 +73,7 @@ func (d *DeltaTracker) WillRun(suite internal.TestSuite) error {
 
 	return s.MarkAsRunAndRecomputedDependencies(d.maxDepth)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

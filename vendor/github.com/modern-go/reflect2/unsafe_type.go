@@ -83,3 +83,7 @@ func assertType(where string, expectRType unsafe.Pointer, actualRType unsafe.Poi
 		panic(where + ": expect " + expectType.String() + ", actual " + actualType.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

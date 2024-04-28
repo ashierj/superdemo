@@ -35,3 +35,7 @@ type TtestPointerList struct {
 	empty.TypeMeta
 	Items []*Ttest
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

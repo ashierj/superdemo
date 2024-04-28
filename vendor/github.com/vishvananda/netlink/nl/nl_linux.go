@@ -758,3 +758,7 @@ func (sh *SocketHandle) Close() {
 		sh.Socket.Close()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

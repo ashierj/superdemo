@@ -114,3 +114,7 @@ func SingleSubsystem(baseHierarchy Hierarchy, subsystem Name) Hierarchy {
 		return nil, fmt.Errorf("unable to find subsystem %s", subsystem)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

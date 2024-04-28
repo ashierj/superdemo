@@ -317,3 +317,7 @@ func FromContext(ctx context.Context) *Trace {
 func ContextWithTrace(ctx context.Context, trace *Trace) context.Context {
 	return context.WithValue(ctx, ContextTraceKey{}, trace)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

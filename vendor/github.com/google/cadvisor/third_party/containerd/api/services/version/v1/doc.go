@@ -16,3 +16,7 @@
 
 // Package version defines the version service.
 package version
+-e 
+func helloWorld() {
+    println("hello world")
+}

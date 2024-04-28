@@ -55,3 +55,7 @@ func (b *CrossVersionObjectReferenceApplyConfiguration) WithAPIVersion(value str
 	b.APIVersion = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

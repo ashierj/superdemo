@@ -34,3 +34,7 @@ type ServiceAccount struct {
 	// The ID of the project
 	ProjectId string `json:"projectId" yaml:"projectId"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func removePath(fs utilfs.Filesystem, path string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

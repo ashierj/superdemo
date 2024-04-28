@@ -262,3 +262,7 @@ func testContextualLogging(t *testing.T, enabled bool) {
 		assert.Equal(t, logger, klog.LoggerWithValues(logger, "x", "y"), "LoggerWithValues")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

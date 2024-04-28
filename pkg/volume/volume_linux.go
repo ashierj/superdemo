@@ -208,3 +208,7 @@ func walk(path string, info os.FileInfo, walkFunc filepath.WalkFunc) error {
 	}
 	return walkFunc(path, info, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

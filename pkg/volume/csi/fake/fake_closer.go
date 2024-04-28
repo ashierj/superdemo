@@ -45,3 +45,7 @@ func (c *Closer) Check() *Closer {
 
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

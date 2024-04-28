@@ -18,3 +18,7 @@ package trace // import "go.opentelemetry.io/otel/sdk/trace"
 func version() string {
 	return "1.16.0-rc.1"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

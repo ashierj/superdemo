@@ -809,3 +809,7 @@ func (w *legacyLayerWriter) Close() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

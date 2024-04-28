@@ -43,3 +43,7 @@ func TestMain(m *testing.M) {
 
 	os.Exit(result)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

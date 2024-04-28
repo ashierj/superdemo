@@ -2015,3 +2015,7 @@ func getMinCoreScalingRatio(s *info.ContainerStats) metricValues {
 	}
 	return values
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

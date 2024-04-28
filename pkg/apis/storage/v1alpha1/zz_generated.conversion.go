@@ -428,3 +428,7 @@ func autoConvert_storage_VolumeError_To_v1alpha1_VolumeError(in *storage.VolumeE
 func Convert_storage_VolumeError_To_v1alpha1_VolumeError(in *storage.VolumeError, out *v1alpha1.VolumeError, s conversion.Scope) error {
 	return autoConvert_storage_VolumeError_To_v1alpha1_VolumeError(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

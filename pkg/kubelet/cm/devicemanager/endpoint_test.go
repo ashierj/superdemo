@@ -278,3 +278,7 @@ func ecleanup(t *testing.T, p *plugin.Stub, e *endpointImpl) {
 	p.Stop()
 	e.client.Disconnect()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

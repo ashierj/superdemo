@@ -70,3 +70,7 @@ func setSecurityInfo(handle syscall.Handle, objectType uint32, si uint32, psidOw
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

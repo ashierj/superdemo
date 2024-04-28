@@ -151,3 +151,7 @@ func (p compositeTextMapPropagator) Fields() []string {
 func NewCompositeTextMapPropagator(p ...TextMapPropagator) TextMapPropagator {
 	return compositeTextMapPropagator(p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

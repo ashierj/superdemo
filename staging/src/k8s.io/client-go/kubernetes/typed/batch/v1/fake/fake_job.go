@@ -195,3 +195,7 @@ func (c *FakeJobs) ApplyStatus(ctx context.Context, job *batchv1.JobApplyConfigu
 	}
 	return obj.(*v1.Job), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

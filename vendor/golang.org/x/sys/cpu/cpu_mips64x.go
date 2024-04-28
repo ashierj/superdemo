@@ -13,3 +13,7 @@ func initOptions() {
 		{Name: "msa", Feature: &MIPS64X.HasMSA},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

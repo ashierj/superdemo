@@ -109,3 +109,7 @@ Loop:
 
 	return false, 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

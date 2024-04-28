@@ -90,3 +90,7 @@ func (s *SecurityScheme) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *js
 	s.SecuritySchemeProps = x.SecuritySchemeProps
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

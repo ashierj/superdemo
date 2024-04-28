@@ -74,3 +74,7 @@ func recordRequestTotal(ctx context.Context, code string, webhookName string) {
 func recordRequestLatency(ctx context.Context, code string, webhookName string, latency float64) {
 	requestLatency.WithContext(ctx).With(map[string]string{"code": code, "webhook": webhookName}).Observe(latency)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

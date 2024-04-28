@@ -68,3 +68,7 @@ type NetworkPolicyNamespaceLister interface {
 type networkPolicyNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.NetworkPolicy]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

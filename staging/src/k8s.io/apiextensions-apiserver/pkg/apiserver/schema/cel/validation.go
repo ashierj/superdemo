@@ -820,3 +820,7 @@ func hasXValidations(s *schema.Structural) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

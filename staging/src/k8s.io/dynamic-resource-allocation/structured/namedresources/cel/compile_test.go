@@ -153,3 +153,7 @@ attributes.stringslice["stringslice"].isSorted()`,
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

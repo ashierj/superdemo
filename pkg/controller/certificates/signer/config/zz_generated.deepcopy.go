@@ -57,3 +57,7 @@ func (in *CSRSigningControllerConfiguration) DeepCopy() *CSRSigningControllerCon
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

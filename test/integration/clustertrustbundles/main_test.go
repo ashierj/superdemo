@@ -53,3 +53,7 @@ func mustMakePEMBlock(blockType string, headers map[string]string, data []byte) 
 		Bytes:   data,
 	}))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

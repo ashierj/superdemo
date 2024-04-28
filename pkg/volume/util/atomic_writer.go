@@ -503,3 +503,7 @@ func (w *AtomicWriter) removeUserVisiblePaths(paths sets.String) error {
 
 	return lasterr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

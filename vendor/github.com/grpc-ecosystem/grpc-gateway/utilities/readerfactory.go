@@ -18,3 +18,7 @@ func IOReaderFactory(r io.Reader) (func() io.Reader, error) {
 		return bytes.NewReader(b)
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

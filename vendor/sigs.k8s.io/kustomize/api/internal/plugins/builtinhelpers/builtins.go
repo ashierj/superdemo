@@ -113,3 +113,7 @@ var TransformerFactories = map[BuiltinPluginType]func() resmap.TransformerPlugin
 	// We only want it to be available in the top-level kustomization.
 	// See: https://github.com/kubernetes-sigs/kustomize/issues/3913
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

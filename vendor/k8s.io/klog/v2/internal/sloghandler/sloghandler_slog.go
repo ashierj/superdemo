@@ -94,3 +94,7 @@ func appendAttr(groups string, kvList []interface{}, attr slog.Attr) []interface
 	}
 	return append(kvList, key, attr.Value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

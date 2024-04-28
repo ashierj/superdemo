@@ -26,3 +26,7 @@ import "time"
 func MonotonicEndTime(start time.Time) time.Time {
 	return start.Add(time.Since(start))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

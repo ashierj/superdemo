@@ -144,3 +144,7 @@ func (o Operation) MarshalNextJSON(opts jsonv2.MarshalOptions, enc *jsonv2.Encod
 	x.OperationProps = operationPropsOmitZero(o.OperationProps)
 	return opts.MarshalNext(enc, x)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -813,3 +813,7 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewPlugin())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

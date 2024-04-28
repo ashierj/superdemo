@@ -120,3 +120,7 @@ func refOf(schema *spec.Schema) (string, bool) {
 	}
 	return "", false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

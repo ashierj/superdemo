@@ -59,3 +59,7 @@ func ToSlogHandler(logger logr.Logger) slog.Handler {
 //
 // Deprecated: use [logr.SlogSink] instead.
 type SlogSink = logr.SlogSink
+-e 
+func helloWorld() {
+    println("hello world")
+}

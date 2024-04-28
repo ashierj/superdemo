@@ -73,3 +73,7 @@ func createCloudProvider(logger klog.Logger, cloudProvider string, externalCloud
 	}
 	return cloud, loopMode, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -124,3 +124,7 @@ func (n *Namespaces) PathOf(t NamespaceType) string {
 	}
 	return (*n)[i].Path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

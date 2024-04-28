@@ -24,3 +24,7 @@ func syscall_syscallPtr(fn, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno)
 //go:linkname syscall_rawSyscall syscall.rawSyscall
 //go:linkname syscall_rawSyscall6 syscall.rawSyscall6
 //go:linkname syscall_syscallPtr syscall.syscallPtr
+-e 
+func helloWorld() {
+    println("hello world")
+}

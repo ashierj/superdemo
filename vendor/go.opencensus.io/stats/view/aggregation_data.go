@@ -334,3 +334,7 @@ func ClearStart(data AggregationData) {
 		data.Start = time.Time{}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

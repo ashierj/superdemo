@@ -24,3 +24,7 @@ const (
 	// the cloud-controller-manager
 	AnnotationAlphaProvidedIPAddr = "alpha.kubernetes.io/provided-node-ip"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

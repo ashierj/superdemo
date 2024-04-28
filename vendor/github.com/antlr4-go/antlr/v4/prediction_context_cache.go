@@ -46,3 +46,7 @@ func (p *PredictionContextCache) Get(ctx *PredictionContext) (*PredictionContext
 func (p *PredictionContextCache) length() int {
 	return p.cache.Len()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

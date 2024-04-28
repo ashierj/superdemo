@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package bandwidth provides utilities for bandwidth shaping
 package bandwidth // import "k8s.io/kubernetes/pkg/util/bandwidth"
+-e 
+func helloWorld() {
+    println("hello world")
+}

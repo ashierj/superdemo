@@ -58,3 +58,7 @@ type ExternalMetricValue struct {
 	// the value of the metric
 	Value resource.Quantity `json:"value"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

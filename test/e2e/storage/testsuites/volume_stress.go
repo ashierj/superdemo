@@ -235,3 +235,7 @@ func (t *volumeStressTestSuite) DefineTests(driver storageframework.TestDriver, 
 		l.wg.Wait()
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

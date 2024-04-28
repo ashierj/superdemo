@@ -23,3 +23,7 @@ package util
 func GetPids(cgroupPath string) ([]int, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

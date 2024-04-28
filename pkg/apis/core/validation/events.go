@@ -191,3 +191,7 @@ func legacyValidateEvent(event *core.Event, requestVersion schema.GroupVersion) 
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -36,3 +36,7 @@ func (p *plugin) Register(factory info.MachineInfoFactory, fsInfo fs.FsInfo, inc
 	err := Register(factory, fsInfo, includedMetrics)
 	return nil, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

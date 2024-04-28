@@ -479,3 +479,7 @@ func rotateOrdered[E constraints.Ordered](data []E, a, m, b int) {
 	// i == j
 	swapRangeOrdered(data, m-i, m, i)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

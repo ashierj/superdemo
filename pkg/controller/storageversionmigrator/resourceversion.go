@@ -282,3 +282,7 @@ func (rv *ResourceVersionController) isResourceNamespaceScoped(gvr schema.GroupV
 
 	return false, fmt.Errorf("resource %q not found", gvr.String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -619,3 +619,7 @@ func createExpansionHook(expectedExpansionStatus expansionStatus) *drivers.Hooks
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

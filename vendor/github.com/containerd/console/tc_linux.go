@@ -49,3 +49,7 @@ func ptsname(f *os.File) (string, error) {
 	}
 	return fmt.Sprintf("/dev/pts/%d", u), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

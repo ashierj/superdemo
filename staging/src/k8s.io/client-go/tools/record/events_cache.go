@@ -523,3 +523,7 @@ func (c *EventCorrelator) EventCorrelate(newEvent *v1.Event) (*EventCorrelateRes
 func (c *EventCorrelator) UpdateState(event *v1.Event) {
 	c.logger.updateState(event)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -80,3 +80,7 @@ func (e *errArrayElem) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	Error(e.error).AddTo(enc)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

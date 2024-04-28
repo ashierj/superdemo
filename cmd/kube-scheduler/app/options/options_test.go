@@ -958,3 +958,7 @@ profiles:
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

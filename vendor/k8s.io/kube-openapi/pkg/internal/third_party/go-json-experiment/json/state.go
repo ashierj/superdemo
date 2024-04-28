@@ -745,3 +745,7 @@ func (s *uintSet) insert(i uint) bool {
 		return !has
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

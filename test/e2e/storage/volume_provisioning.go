@@ -782,3 +782,7 @@ func getRandomClusterZone(ctx context.Context, c clientset.Interface) string {
 	}
 	return zone
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -149,3 +149,7 @@ func (c *FakeClusterRoles) Apply(ctx context.Context, clusterRole *rbacv1beta1.C
 	}
 	return obj.(*v1beta1.ClusterRole), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

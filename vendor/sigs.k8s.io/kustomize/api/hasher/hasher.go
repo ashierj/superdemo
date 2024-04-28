@@ -153,3 +153,7 @@ func encodeSecret(node *yaml.RNode) (string, error) {
 	}
 	return string(data), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

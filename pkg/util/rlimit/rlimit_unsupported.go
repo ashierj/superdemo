@@ -27,3 +27,7 @@ import (
 func SetNumFiles(maxOpenFiles uint64) error {
 	return errors.New("SetRLimit unsupported in this platform")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

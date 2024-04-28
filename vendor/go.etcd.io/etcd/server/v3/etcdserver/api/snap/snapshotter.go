@@ -299,3 +299,7 @@ func (s *Snapshotter) ReleaseSnapDBs(snap raftpb.Snapshot) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

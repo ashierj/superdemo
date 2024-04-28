@@ -282,3 +282,7 @@ func varLexType(l *varLexer) lexState {
 	l.emit(tokType)
 	return varLexNormal
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

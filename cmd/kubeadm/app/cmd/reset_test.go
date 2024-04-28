@@ -256,3 +256,7 @@ func expectedResetIgnorePreflightErrors(expected sets.Set[string]) func(t *testi
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

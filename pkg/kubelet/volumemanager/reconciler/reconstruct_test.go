@@ -445,3 +445,7 @@ func getPodPVCAndPV(volumeMode v1.PersistentVolumeMode, podName, pvName, pvcName
 	}
 	return pod, pv, pvc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

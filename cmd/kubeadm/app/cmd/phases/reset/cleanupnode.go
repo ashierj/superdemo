@@ -219,3 +219,7 @@ func IsDirEmpty(dir string) (bool, error) {
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

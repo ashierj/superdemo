@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package statefulset // import "k8s.io/kubernetes/pkg/registry/apps/statefulset"
+-e 
+func helloWorld() {
+    println("hello world")
+}

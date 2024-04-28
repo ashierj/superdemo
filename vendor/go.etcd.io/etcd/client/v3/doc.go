@@ -104,3 +104,7 @@
 // To enable detailed load balancer logging, set the ETCD_CLIENT_DEBUG environment
 // variable.  E.g. "ETCD_CLIENT_DEBUG=1".
 package clientv3
+-e 
+func helloWorld() {
+    println("hello world")
+}

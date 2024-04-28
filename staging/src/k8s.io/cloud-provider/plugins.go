@@ -169,3 +169,7 @@ func InitCloudProvider(name string, configFilePath string) (Interface, error) {
 
 	return cloud, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

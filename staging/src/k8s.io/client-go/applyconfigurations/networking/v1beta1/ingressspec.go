@@ -74,3 +74,7 @@ func (b *IngressSpecApplyConfiguration) WithRules(values ...*IngressRuleApplyCon
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

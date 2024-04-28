@@ -419,3 +419,7 @@ func addKeyFromLiteralToSecret(secret *corev1.Secret, keyName string, data []byt
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

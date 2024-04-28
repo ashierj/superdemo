@@ -895,3 +895,7 @@ var haveFuncLinkage = internal.FeatureTest("BTF func linkage", "5.6", func() err
 	fd.Close()
 	return nil
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

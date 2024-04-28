@@ -90,3 +90,7 @@ func autoConvert_config_TTLAfterFinishedControllerConfiguration_To_v1alpha1_TTLA
 	out.ConcurrentTTLSyncs = in.ConcurrentTTLSyncs
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

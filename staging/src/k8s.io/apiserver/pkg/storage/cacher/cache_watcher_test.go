@@ -662,3 +662,7 @@ func TestBookmarkAfterResourceVersionWatchers(t *testing.T) {
 		t.Fatalf("expected only one watcher to be expired")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

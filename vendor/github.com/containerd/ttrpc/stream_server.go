@@ -20,3 +20,7 @@ type StreamServer interface {
 	SendMsg(m interface{}) error
 	RecvMsg(m interface{}) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

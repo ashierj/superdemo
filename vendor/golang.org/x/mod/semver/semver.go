@@ -399,3 +399,7 @@ func nextIdent(x string) (dx, rest string) {
 	}
 	return x[:i], x[i:]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

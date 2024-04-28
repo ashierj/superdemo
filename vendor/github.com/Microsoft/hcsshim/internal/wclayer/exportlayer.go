@@ -92,3 +92,7 @@ func (r *legacyLayerReaderWrapper) Close() (err error) {
 	os.RemoveAll(r.root)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

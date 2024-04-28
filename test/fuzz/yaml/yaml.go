@@ -139,3 +139,7 @@ func FuzzYamlV2(b []byte) int {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

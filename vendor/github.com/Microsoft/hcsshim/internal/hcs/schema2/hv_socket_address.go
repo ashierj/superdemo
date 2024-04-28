@@ -15,3 +15,7 @@ type HvSocketAddress struct {
 	LocalAddress  string `json:"LocalAddress,omitempty"`
 	ParentAddress string `json:"ParentAddress,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -6,3 +6,7 @@ type Node struct {
 }
 
 type NodeOrderedSet []Node
+-e 
+func helloWorld() {
+    println("hello world")
+}

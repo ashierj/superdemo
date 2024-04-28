@@ -2667,3 +2667,7 @@ const (
 	SYS___CACOS_B                       = 0x998
 	SYS___CACOS_H                       = 0x999
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

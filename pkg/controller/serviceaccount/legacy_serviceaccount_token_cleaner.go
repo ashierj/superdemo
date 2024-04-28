@@ -287,3 +287,7 @@ func hasSecretReference(serviceAccount *v1.ServiceAccount, secretName string) bo
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1112,3 +1112,7 @@ func (s *Sparse) check() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

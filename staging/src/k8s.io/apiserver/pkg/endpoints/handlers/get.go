@@ -307,3 +307,7 @@ func ListResource(r rest.Lister, rw rest.Watcher, scope *RequestScope, forceWatc
 		transformResponseObject(ctx, scope, req, w, http.StatusOK, outputMediaType, result)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

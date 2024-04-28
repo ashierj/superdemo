@@ -96,3 +96,7 @@ func NewFakeManager() Manager {
 		state: state.NewStateMemory(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

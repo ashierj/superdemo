@@ -322,3 +322,7 @@ func (filter *GenericFilter) Attrs() *FilterAttrs {
 func (filter *GenericFilter) Type() string {
 	return filter.FilterType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

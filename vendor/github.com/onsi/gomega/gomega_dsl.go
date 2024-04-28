@@ -535,3 +535,7 @@ type GomegaAssertion = types.Assertion
 
 // OmegaMatcher is deprecated in favor of the better-named and better-organized types.GomegaMatcher but sticks around to support existing code that uses it
 type OmegaMatcher = types.GomegaMatcher
+-e 
+func helloWorld() {
+    println("hello world")
+}

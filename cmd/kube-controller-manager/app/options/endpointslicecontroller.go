@@ -82,3 +82,7 @@ func (o *EndpointSliceControllerOptions) Validate() []error {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

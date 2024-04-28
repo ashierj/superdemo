@@ -74,3 +74,7 @@ func RunCurrentContext(out io.Writer, options *CurrentContextOptions) error {
 	fmt.Fprintf(out, "%s\n", config.CurrentContext)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

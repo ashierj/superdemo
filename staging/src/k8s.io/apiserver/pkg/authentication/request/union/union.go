@@ -69,3 +69,7 @@ func (authHandler *unionAuthRequestHandler) AuthenticateRequest(req *http.Reques
 
 	return nil, false, utilerrors.NewAggregate(errlist)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

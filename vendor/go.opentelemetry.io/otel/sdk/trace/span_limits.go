@@ -123,3 +123,7 @@ func NewSpanLimits() SpanLimits {
 		AttributePerLinkCountLimit:  env.SpanLinkAttributeCount(DefaultAttributePerLinkCountLimit),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

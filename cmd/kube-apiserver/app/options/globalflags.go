@@ -39,3 +39,7 @@ func AddCustomGlobalFlags(fs *pflag.FlagSet) {
 	globalflag.Register(fs, "default-not-ready-toleration-seconds")
 	globalflag.Register(fs, "default-unreachable-toleration-seconds")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

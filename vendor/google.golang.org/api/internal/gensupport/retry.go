@@ -119,3 +119,7 @@ func (r *RetryConfig) errorFunc() func(status int, err error) bool {
 		return r.ShouldRetry(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

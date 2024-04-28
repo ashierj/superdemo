@@ -215,3 +215,7 @@ func adapt(delta, numPoints int32, firstTime bool) int32 {
 	}
 	return k + (base-tmin+1)*delta/(delta+skew)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

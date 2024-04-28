@@ -622,3 +622,7 @@ type nopWriteCloser struct {
 
 func (wc *nopWriteCloser) Write(p []byte) (int, error) { return wc.Writer.Write(p) }
 func (wc *nopWriteCloser) Close() error                { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

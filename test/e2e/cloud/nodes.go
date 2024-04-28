@@ -82,3 +82,7 @@ var _ = SIGDescribe(feature.CloudProvider, framework.WithDisruptive(), "Nodes", 
 func deleteNodeOnCloudProvider(node *v1.Node) error {
 	return framework.TestContext.CloudConfig.Provider.DeleteNode(node)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

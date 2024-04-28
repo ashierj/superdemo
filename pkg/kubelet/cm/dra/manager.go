@@ -441,3 +441,7 @@ func (m *ManagerImpl) GetContainerClaimInfos(pod *v1.Pod, container *v1.Containe
 	}
 	return claimInfos, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

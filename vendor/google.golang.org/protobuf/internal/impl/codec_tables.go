@@ -555,3 +555,7 @@ func encoderFuncsForValue(fd protoreflect.FieldDescriptor) valueCoderFuncs {
 	}
 	panic(fmt.Sprintf("invalid field: no encoder for %v %v %v", fd.FullName(), fd.Cardinality(), fd.Kind()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

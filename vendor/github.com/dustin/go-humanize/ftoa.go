@@ -47,3 +47,7 @@ func Ftoa(num float64) string {
 func FtoaWithDigits(num float64, digits int) string {
 	return stripTrailingZeros(stripTrailingDigits(strconv.FormatFloat(num, 'f', 6, 64), digits))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

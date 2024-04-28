@@ -833,3 +833,7 @@ func newHKDFExtendedNonceGCMTransformerTest(t testing.TB, _ cipher.Block, key []
 
 	return transformer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

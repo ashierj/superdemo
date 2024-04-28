@@ -317,3 +317,7 @@ func (u *httpAuthUserAPI) modUser(ctx context.Context, req *authUserAPIAction) (
 	}
 	return &user, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -89,3 +89,7 @@ func TestRegistrationHandler_ValidatePlugin(t *testing.T) {
 		handler.DeRegisterPlugin("this-is-a-dummy-plugin-with-a-long-name-so-it-doesnt-collide")
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

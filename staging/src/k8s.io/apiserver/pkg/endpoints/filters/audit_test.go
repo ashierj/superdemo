@@ -856,3 +856,7 @@ func withTestContext(req *http.Request, user user.Info, ae *auditinternal.Event)
 	}
 	return req.WithContext(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

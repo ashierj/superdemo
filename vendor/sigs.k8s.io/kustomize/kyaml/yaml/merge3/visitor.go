@@ -170,3 +170,7 @@ type strValues struct {
 }
 
 var _ walk.Visitor = Visitor{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

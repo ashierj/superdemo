@@ -457,3 +457,7 @@ func RemoveNetMetrics(metrics container.MetricSet, remove bool) container.Metric
 	// A copy of all metrics except for network ones.
 	return metrics.Difference(container.AllNetworkMetrics)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

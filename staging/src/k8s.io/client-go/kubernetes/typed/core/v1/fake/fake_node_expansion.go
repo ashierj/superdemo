@@ -36,3 +36,7 @@ func (c *FakeNodes) PatchStatus(_ context.Context, nodeName string, data []byte)
 
 	return obj.(*v1.Node), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

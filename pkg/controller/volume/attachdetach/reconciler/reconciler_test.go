@@ -1820,3 +1820,7 @@ func testForceDetachMetric(t *testing.T, inputForceDetachMetricCounter int, reas
 		t.Errorf("Expected desiredForceDetachMericCounter to be %d, got %v", inputForceDetachMetricCounter, actualForceDetachMericCounter)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -176,3 +176,7 @@ func (f *freelist) init(pgids []pgid) {
 		f.addSpan(start, size)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

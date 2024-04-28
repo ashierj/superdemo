@@ -35,3 +35,7 @@ func (c *namespaces) Finalize(ctx context.Context, namespace *v1.Namespace, opts
 	err = c.client.Put().Resource("namespaces").Name(namespace.Name).VersionedParams(&opts, scheme.ParameterCodec).SubResource("finalize").Body(namespace).Do(ctx).Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -49,3 +49,7 @@ func WriteError(err error, w http.ResponseWriter) error {
 	_, writeErr := w.Write([]byte(err.Error()))
 	return writeErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

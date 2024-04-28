@@ -1627,3 +1627,7 @@ func Test_ServiceChangeTypeHeadlessToExternalNameWithPatch(t *testing.T) {
 		t.Fatalf("unexpected error patching service using strategic merge patch. %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

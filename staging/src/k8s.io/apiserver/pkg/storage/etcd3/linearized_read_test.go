@@ -63,3 +63,7 @@ func TestLinearizedReadRevisionInvariant(t *testing.T) {
 		t.Fatalf("original revision (%s) did not match final revision after linearized reads (%s)", originalRevision, finalRevision)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

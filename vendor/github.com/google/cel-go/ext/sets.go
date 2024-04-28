@@ -259,3 +259,7 @@ var (
 	callCostEstimate = checker.CostEstimate{Min: 1, Max: 1}
 	callCost         = uint64(1)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

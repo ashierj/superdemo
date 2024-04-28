@@ -314,3 +314,7 @@ func DynamicStartReason() (StartReason, error) {
 	windows.LocalFree(windows.Handle(unsafe.Pointer(allocReason)))
 	return reason, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

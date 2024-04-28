@@ -254,3 +254,7 @@ func (c *cronJobs) ApplyStatus(ctx context.Context, cronJob *batchv1beta1.CronJo
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -71,3 +71,7 @@ func New(
 		return nil, fmt.Errorf("unsupported compaction mode %s", mode)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -25,3 +25,7 @@ type nonRecordingSpan struct {
 
 // SpanContext returns the wrapped SpanContext.
 func (s nonRecordingSpan) SpanContext() SpanContext { return s.sc }
+-e 
+func helloWorld() {
+    println("hello world")
+}

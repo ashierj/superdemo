@@ -63,3 +63,7 @@ func registerMetrics() {
 		legacyregistry.MustRegister(nodePortRepairReconcileErrors)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ package v1alpha1
 // RuntimeClassListerExpansion allows custom methods to be added to
 // RuntimeClassLister.
 type RuntimeClassListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

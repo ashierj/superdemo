@@ -30,3 +30,7 @@ func AssertCategories(t *testing.T, storage rest.CategoriesProvider, expected []
 		t.Errorf("categories are not equal. expected = %v actual = %v", expected, actual)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

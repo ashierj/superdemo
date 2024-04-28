@@ -99,3 +99,7 @@ func (c *FakeEvents) GetFieldSelector(involvedObjectName, involvedObjectNamespac
 	c.Fake.Invokes(action, nil)
 	return fields.Everything()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -209,3 +209,7 @@ func (c *tcpChecksummer) add(data []byte) {
 		c.oddByte = data[len(data)-1]
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

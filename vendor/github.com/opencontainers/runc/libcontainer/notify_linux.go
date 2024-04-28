@@ -82,3 +82,7 @@ func notifyMemoryPressure(dir string, level PressureLevel) (<-chan struct{}, err
 	levelStr := []string{"low", "medium", "critical"}[level]
 	return registerMemoryEvent(dir, "memory.pressure_level", levelStr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

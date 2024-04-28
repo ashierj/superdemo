@@ -66,3 +66,7 @@ func gatherHistogram(t *testing.T, name string) (count uint64, sum float64) {
 	t.Fatalf("metric not found: %v", name)
 	return 0, 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

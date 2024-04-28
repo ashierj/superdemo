@@ -53,3 +53,7 @@ func addSwapCheck(checks []Checker) []Checker {
 func addExecChecks(checks []Checker, _ utilsexec.Interface) []Checker {
 	return checks
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

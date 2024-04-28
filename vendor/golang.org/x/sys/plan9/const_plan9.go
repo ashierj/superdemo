@@ -68,3 +68,7 @@ const (
 	MCACHE  = 0x0010
 	MMASK   = 0x0017
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

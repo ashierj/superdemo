@@ -27,3 +27,7 @@ import (
 func (m *kubeGenericRuntimeManager) applySandboxResources(pod *v1.Pod, config *runtimeapi.PodSandboxConfig) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

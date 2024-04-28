@@ -180,3 +180,7 @@ func storeScratch(ins StoreScratch, regScratch [16]uint32, regA uint32, regX uin
 
 	return regScratch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

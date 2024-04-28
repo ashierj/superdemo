@@ -173,3 +173,7 @@ func (d *DFA) ToLexerString() string {
 
 	return NewLexerDFASerializer(d).String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

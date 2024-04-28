@@ -2458,3 +2458,7 @@ func ParseFragmentWithOptions(r io.Reader, context *Node, opts ...ParseOption) (
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

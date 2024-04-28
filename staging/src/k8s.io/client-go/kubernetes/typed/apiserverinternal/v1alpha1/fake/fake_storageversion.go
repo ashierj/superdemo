@@ -184,3 +184,7 @@ func (c *FakeStorageVersions) ApplyStatus(ctx context.Context, storageVersion *a
 	}
 	return obj.(*v1alpha1.StorageVersion), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

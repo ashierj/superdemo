@@ -302,3 +302,7 @@ func getAwsRegionFromZones(zones []string) (string, error) {
 	}
 	return regions.UnsortedList()[0], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

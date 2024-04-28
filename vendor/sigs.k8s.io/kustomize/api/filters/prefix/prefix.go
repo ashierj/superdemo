@@ -48,3 +48,7 @@ func (f Filter) evaluateField(node *yaml.RNode) error {
 	return f.trackableSetter.SetScalar(fmt.Sprintf(
 		"%s%s", f.Prefix, node.YNode().Value))(node)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

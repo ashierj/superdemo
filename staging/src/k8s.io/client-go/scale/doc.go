@@ -19,3 +19,7 @@ limitations under the License.
 // as long as that subresource operates on a version of scale convertable to
 // autoscaling.Scale.
 package scale // import "k8s.io/client-go/scale"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -117,3 +117,7 @@ limitations under the License.
 // finishes being served, and the actual service time was S, the
 // queue’s virtual start time is decremented by G - S.
 package queueset // import "k8s.io/apiserver/pkg/util/flowcontrol/fairqueuing/queueset"
+-e 
+func helloWorld() {
+    println("hello world")
+}

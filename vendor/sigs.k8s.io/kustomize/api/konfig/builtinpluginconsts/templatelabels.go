@@ -6,3 +6,7 @@ package builtinpluginconsts
 const templateLabelFieldSpecs = `
 templateLabels:
 ` + metadataLabelsFieldSpecs
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -331,3 +331,7 @@ func (d *validatingDispatcher) callHook(ctx context.Context, h *v1.ValidatingWeb
 	}
 	return &webhookutil.ErrWebhookRejection{Status: webhookerrors.ToStatusErr(h.Name, result.Result)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

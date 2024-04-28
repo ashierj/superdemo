@@ -30,3 +30,7 @@ import (
 func init() {
 	logs.AddGoFlags(flag.CommandLine)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

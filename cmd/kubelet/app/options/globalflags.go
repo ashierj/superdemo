@@ -72,3 +72,7 @@ func addCredentialProviderFlags(fs *pflag.FlagSet) {
 
 	fs.AddFlagSet(local)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

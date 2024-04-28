@@ -172,3 +172,7 @@ func main() {
 	// TODO: Exit if there's no on-change?
 	log.Printf("Peer finder exiting")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

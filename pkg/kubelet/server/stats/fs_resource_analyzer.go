@@ -106,3 +106,7 @@ func (s *fsResourceAnalyzer) GetPodVolumeStats(uid types.UID) (PodVolumeStats, b
 	}
 	return statCalc.GetLatest()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

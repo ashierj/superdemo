@@ -15,3 +15,7 @@
 // Package types contains the types, traits, and utilities common to all
 // components of expression handling.
 package types
+-e 
+func helloWorld() {
+    println("hello world")
+}

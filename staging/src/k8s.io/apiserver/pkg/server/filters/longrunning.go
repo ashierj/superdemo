@@ -39,3 +39,7 @@ func BasicLongRunningRequestCheck(longRunningVerbs, longRunningSubresources sets
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

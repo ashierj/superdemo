@@ -123,3 +123,7 @@ func newSecret(name string) *v1.Secret {
 		ObjectMeta: metav1.ObjectMeta{Name: name},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

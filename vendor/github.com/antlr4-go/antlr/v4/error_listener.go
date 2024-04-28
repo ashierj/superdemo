@@ -98,3 +98,7 @@ func (p *ProxyErrorListener) ReportContextSensitivity(recognizer Parser, dfa *DF
 		d.ReportContextSensitivity(recognizer, dfa, startIndex, stopIndex, prediction, configs)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

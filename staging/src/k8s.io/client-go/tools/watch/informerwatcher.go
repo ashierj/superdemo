@@ -148,3 +148,7 @@ func NewIndexerInformerWatcher(lw cache.ListerWatcher, objType runtime.Object) (
 
 	return indexer, informer, w, doneCh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

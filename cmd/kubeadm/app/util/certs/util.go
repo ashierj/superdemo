@@ -255,3 +255,7 @@ func WritePKIFiles(t *testing.T, dir string, files PKIFiles) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

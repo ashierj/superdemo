@@ -38,3 +38,7 @@ func IsKeyNotFoundError(err error) bool {
 
 	return statusErr != nil && statusErr.Status().Code == http.StatusNotFound
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

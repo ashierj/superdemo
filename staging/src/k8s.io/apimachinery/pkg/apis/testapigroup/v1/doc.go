@@ -22,3 +22,7 @@ limitations under the License.
 // +groupName=testapigroup.apimachinery.k8s.io
 
 package v1 // import "k8s.io/apimachinery/pkg/apis/testapigroup/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

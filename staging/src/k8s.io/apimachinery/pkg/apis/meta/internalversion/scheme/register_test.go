@@ -88,3 +88,7 @@ func TestListOptions(t *testing.T) {
 		t.Errorf("unexpected: %s", cmp.Diff(in, actual))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

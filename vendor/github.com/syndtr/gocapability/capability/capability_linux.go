@@ -640,3 +640,7 @@ func (c *capsFile) Apply(kind CapType) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

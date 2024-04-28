@@ -744,3 +744,7 @@ const (
 	RISCV_HWPROBE_MISALIGNED_UNSUPPORTED = 0x4
 	RISCV_HWPROBE_MISALIGNED_MASK        = 0x7
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

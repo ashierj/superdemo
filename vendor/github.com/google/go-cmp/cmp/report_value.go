@@ -119,3 +119,7 @@ func (child *valueNode) PopStep() (parent *valueNode) {
 	}
 	return parent
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

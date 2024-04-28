@@ -167,3 +167,7 @@ func (l *loggerWriter) Write(p []byte) (int, error) {
 	l.logFunc(string(p))
 	return len(p), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

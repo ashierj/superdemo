@@ -468,3 +468,7 @@ func (tCtx tContext) Dynamic() dynamic.Interface {
 func (tCtx tContext) APIExtensions() apiextensions.Interface {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

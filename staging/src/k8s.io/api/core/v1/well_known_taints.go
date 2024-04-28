@@ -50,3 +50,7 @@ const (
 	// a non-graceful shutdown
 	TaintNodeOutOfService = "node.kubernetes.io/out-of-service"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

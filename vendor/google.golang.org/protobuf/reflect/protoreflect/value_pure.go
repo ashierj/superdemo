@@ -58,3 +58,7 @@ func (v Value) getBytes() []byte {
 func (v Value) getIface() interface{} {
 	return v.iface
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

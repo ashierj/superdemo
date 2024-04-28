@@ -96,3 +96,7 @@ func (c *nodeMetricses) Watch(ctx context.Context, opts v1.ListOptions) (watch.I
 		Timeout(timeout).
 		Watch(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

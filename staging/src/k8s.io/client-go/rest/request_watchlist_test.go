@@ -354,3 +354,7 @@ func (f fakeObj) GetObjectKind() schema.ObjectKind {
 func (f fakeObj) DeepCopyObject() runtime.Object {
 	return fakeObj{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func (b *DownwardAPIVolumeFileApplyConfiguration) WithMode(value int32) *Downwar
 	b.Mode = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -136,3 +136,7 @@ func (p ProcFDInfos) InotifyWatchLen() (int, error) {
 
 	return length, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func WarningsForJobSpec(ctx context.Context, path *field.Path, spec, oldSpec *ba
 	warnings = append(warnings, pod.GetWarningsForPodTemplate(ctx, path.Child("template"), &spec.Template, oldPodTemplate)...)
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

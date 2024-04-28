@@ -1165,3 +1165,7 @@ func deleteAddressWithWrongTier(s CloudAddressService, region, name, logPrefix s
 	err = s.DeleteRegionAddress(name, region)
 	return ignoreNotFound(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

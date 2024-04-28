@@ -436,3 +436,7 @@ func (h *s2aHandshaker) getAuthMechanisms() []*s2apb.AuthenticationMechanism {
 	}
 	return authMechanisms
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func hasExistingValue(node *yaml.RNode, key string) bool {
 	}
 	return yaml.GetValue(entry.Value) != ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

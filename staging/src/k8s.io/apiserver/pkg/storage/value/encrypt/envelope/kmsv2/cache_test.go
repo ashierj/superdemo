@@ -204,3 +204,7 @@ func TestMetrics(t *testing.T) {
 		t.Errorf("cache size entries missing values: %v", want.SymmetricDifference(got).List())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

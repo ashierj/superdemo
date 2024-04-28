@@ -28,3 +28,7 @@ const (
 	// variant.
 	wonSign rune = 0x20A9
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

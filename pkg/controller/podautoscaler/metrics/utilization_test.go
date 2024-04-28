@@ -147,3 +147,7 @@ func TestGetMetricUsageRatioBaseCase(t *testing.T) {
 
 	tc.runTest(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

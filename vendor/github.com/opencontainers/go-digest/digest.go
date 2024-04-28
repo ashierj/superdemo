@@ -155,3 +155,7 @@ func (d Digest) sepIndex() int {
 
 	return i
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

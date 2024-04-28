@@ -108,3 +108,7 @@ func (f *fakeMetricsDu) GetMetrics() (*volume.Metrics, error) {
 	}
 	return f.fakeStats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

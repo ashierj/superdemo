@@ -102,3 +102,7 @@ func GetSubreaper() (int, error) {
 
 	return int(i), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

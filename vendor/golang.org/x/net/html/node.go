@@ -223,3 +223,7 @@ func (s *insertionModeStack) top() insertionMode {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

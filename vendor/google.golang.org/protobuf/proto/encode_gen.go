@@ -95,3 +95,7 @@ func (o MarshalOptions) marshalSingular(b []byte, fd protoreflect.FieldDescripto
 	}
 	return b, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

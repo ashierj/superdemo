@@ -280,3 +280,7 @@ func NewCacheBasedManager(objectStore Store, getReferencedObjects func(*v1.Pod) 
 		registeredPods:       make(map[objectKey]*v1.Pod),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -75,3 +75,7 @@ func Key(password, salt []byte, iter, keyLen int, h func() hash.Hash) []byte {
 	}
 	return dk[:keyLen]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

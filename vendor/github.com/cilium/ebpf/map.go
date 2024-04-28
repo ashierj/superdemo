@@ -1422,3 +1422,7 @@ func NewMapFromID(id MapID) (*Map, error) {
 
 	return newMapFromFD(fd)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

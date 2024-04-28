@@ -34,3 +34,7 @@ func (matcher *HaveSuffixMatcher) FailureMessage(actual interface{}) (message st
 func (matcher *HaveSuffixMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to have suffix", matcher.suffix())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

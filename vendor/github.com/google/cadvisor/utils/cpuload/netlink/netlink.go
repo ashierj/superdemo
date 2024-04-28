@@ -239,3 +239,7 @@ func getLoadStats(id uint16, cfd *os.File, conn *Connection) (info.LoadStats, er
 	}
 	return parsedmsg.Stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

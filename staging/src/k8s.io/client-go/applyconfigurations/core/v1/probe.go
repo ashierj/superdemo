@@ -115,3 +115,7 @@ func (b *ProbeApplyConfiguration) WithTerminationGracePeriodSeconds(value int64)
 	b.TerminationGracePeriodSeconds = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

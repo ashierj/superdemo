@@ -99,3 +99,7 @@ func readCurrentBuildNumber(k registry.Key) string {
 func readUBR(k registry.Key) string {
 	return strconv.FormatUint(getIntegerValue("UBR", k), 10)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

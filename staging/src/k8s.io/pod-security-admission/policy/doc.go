@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package policy contains implementations of Pod Security Standards checks
 package policy // import "k8s.io/pod-security-admission/policy"
+-e 
+func helloWorld() {
+    println("hello world")
+}

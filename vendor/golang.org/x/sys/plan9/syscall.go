@@ -107,3 +107,7 @@ func (tv *Timeval) Nano() int64 {
 //
 //go:noescape
 func use(p unsafe.Pointer)
+-e 
+func helloWorld() {
+    println("hello world")
+}

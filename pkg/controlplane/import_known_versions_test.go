@@ -83,3 +83,7 @@ func TestTypeTags(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

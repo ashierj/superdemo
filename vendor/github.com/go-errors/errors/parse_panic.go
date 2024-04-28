@@ -125,3 +125,7 @@ func parsePanicFrame(name string, line string, createdBy bool) (*StackFrame, err
 		Name:       name,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

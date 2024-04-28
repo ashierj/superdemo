@@ -180,3 +180,7 @@ func (lm *LoadBalancerMetrics) computeL4ILBMetrics() map[feature]int {
 	klog.V(4).Info("L4 ILB usage metrics computed.")
 	return counts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

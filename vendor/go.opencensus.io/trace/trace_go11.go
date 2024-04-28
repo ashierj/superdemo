@@ -31,3 +31,7 @@ func startExecutionTracerTask(ctx context.Context, name string) (context.Context
 	nctx, task := t.NewTask(ctx, name)
 	return nctx, task.End
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -139,3 +139,7 @@ var _ = SIGDescribe("health handlers", func() {
 		framework.ExpectNoError(err)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

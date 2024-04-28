@@ -87,3 +87,7 @@ func (f *runtimeClassInformer) Informer() cache.SharedIndexInformer {
 func (f *runtimeClassInformer) Lister() v1beta1.RuntimeClassLister {
 	return v1beta1.NewRuntimeClassLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

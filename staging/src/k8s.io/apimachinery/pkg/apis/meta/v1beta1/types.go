@@ -82,3 +82,7 @@ const (
 	IncludeMetadata = v1.IncludeMetadata
 	IncludeObject   = v1.IncludeObject
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

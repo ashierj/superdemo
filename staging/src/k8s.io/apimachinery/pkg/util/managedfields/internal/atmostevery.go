@@ -58,3 +58,7 @@ func (s *AtMostEvery) Do(fn func()) bool {
 	fn()
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

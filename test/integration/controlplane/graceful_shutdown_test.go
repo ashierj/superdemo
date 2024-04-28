@@ -130,3 +130,7 @@ func newBlockingRequest(method, url string) (*http.Request, io.WriteCloser, erro
 	req, err := http.NewRequest(method, url, bodyReader)
 	return req, bodyWriter, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -197,3 +197,7 @@ func validate(ctx context.Context, pth *field.Path, s *structuralschema.Structur
 
 	return allErrs, nil, remainingCost
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

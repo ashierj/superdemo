@@ -64,3 +64,7 @@ func (p *jsonFS) LoadResourceFile(domain, lang, name string) ([]byte, error) {
 func (p *jsonFS) String() string {
 	return "gettext.nilfs(" + p.name + ")"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

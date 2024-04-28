@@ -221,3 +221,7 @@ func BootstrapTokenFromSecret(secret *v1.Secret) (*BootstrapToken, error) {
 		Groups:      groups,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

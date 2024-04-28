@@ -14,3 +14,7 @@ type ContainerCredentialGuardAddInstanceRequest struct {
 	CredentialSpec string `json:"CredentialSpec,omitempty"`
 	Transport      string `json:"Transport,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

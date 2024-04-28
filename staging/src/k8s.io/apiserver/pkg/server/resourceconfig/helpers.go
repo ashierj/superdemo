@@ -227,3 +227,7 @@ func ParseGroups(resourceConfig cliflag.ConfigurationMap) ([]string, error) {
 
 	return groups, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

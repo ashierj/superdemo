@@ -61,3 +61,7 @@ func TestIssue123UndirectedGraph(t *testing.T) {
 	n2 := Node(g.NewNodeID())
 	g.AddNode(n2)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

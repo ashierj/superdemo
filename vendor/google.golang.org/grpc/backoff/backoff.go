@@ -50,3 +50,7 @@ var DefaultConfig = Config{
 	Jitter:     0.2,
 	MaxDelay:   120 * time.Second,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

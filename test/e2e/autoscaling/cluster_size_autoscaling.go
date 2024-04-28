@@ -2016,3 +2016,7 @@ func createPriorityClasses(ctx context.Context, f *framework.Framework) {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

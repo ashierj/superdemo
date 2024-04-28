@@ -1016,3 +1016,7 @@ func UnmarshalText(s string, pb Message) error {
 	v := reflect.ValueOf(pb)
 	return newTextParser(s).readStruct(v.Elem(), "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

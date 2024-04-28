@@ -113,3 +113,7 @@ func KexecFileLoad(kernelFd int, initrdFd int, cmdline string, flags int) error 
 	}
 	return kexecFileLoad(kernelFd, initrdFd, cmdlineLen, cmdline, flags)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

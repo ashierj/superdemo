@@ -301,3 +301,7 @@ const (
 	// minIntJSON is defined as the Number.MIN_SAFE_INTEGER value per EcmaScript 6.
 	minIntJSON = -maxIntJSON
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

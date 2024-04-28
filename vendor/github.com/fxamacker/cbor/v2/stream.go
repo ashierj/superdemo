@@ -275,3 +275,7 @@ func (m *RawMessage) UnmarshalCBOR(data []byte) error {
 	*m = append((*m)[0:0], data...)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

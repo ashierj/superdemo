@@ -178,3 +178,7 @@ func (handler *ResourceConsumerHandler) handleBumpMetric(w http.ResponseWriter, 
 	fmt.Fprintln(w, delta, common.DeltaQuery)
 	fmt.Fprintln(w, durationSec, common.DurationSecQuery)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

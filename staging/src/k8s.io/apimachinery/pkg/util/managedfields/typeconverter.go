@@ -45,3 +45,7 @@ func NewDeducedTypeConverter() TypeConverter {
 func NewTypeConverter(openapiSpec map[string]*spec.Schema, preserveUnknownFields bool) (TypeConverter, error) {
 	return internal.NewTypeConverter(openapiSpec, preserveUnknownFields)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -114,3 +114,7 @@ func (m *realMountDetector) GetMountMedium(path string, requestedMedium v1.Stora
 	}
 	return v1.StorageMediumDefault, !notMnt, nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

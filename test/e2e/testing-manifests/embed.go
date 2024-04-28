@@ -31,3 +31,7 @@ func GetE2ETestingManifestsFS() e2etestfiles.EmbeddedFileSource {
 		Root:       "test/e2e/testing-manifests",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func RecommendedDefaultResourceQuotaControllerConfiguration(obj *kubectrlmgrconf
 		obj.ResourceQuotaSyncPeriod = metav1.Duration{Duration: 5 * time.Minute}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

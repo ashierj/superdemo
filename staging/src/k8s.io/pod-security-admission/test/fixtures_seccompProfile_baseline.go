@@ -112,3 +112,7 @@ func init() {
 		fixtureData_baseline_1_19,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

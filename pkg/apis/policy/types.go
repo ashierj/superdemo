@@ -172,3 +172,7 @@ type Eviction struct {
 	// +optional
 	DeleteOptions *metav1.DeleteOptions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -311,3 +311,7 @@ func (bfr *BoundedFrequencyRunner) tryRun() {
 	bfr.timer.Stop()
 	bfr.timer.Reset(nextScheduled)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

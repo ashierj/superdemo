@@ -96,3 +96,7 @@ func Execute(nameSystems namer.NameSystems, defaultSystem string, getTargets fun
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

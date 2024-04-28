@@ -61,3 +61,7 @@ func (c *shareListerContract) NodeInfos() framework.NodeInfoLister {
 func (c *shareListerContract) StorageInfos() framework.StorageInfoLister {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

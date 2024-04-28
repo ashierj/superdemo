@@ -55,3 +55,7 @@ func (b *EnvVarApplyConfiguration) WithValueFrom(value *EnvVarSourceApplyConfigu
 	b.ValueFrom = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

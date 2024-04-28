@@ -60,3 +60,7 @@ func init() {
 	// makes the code compile even when the generated files are missing.
 	localSchemeBuilder.Register(addDefaultingFuncs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -155,3 +155,7 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 
 	return fss
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -451,3 +451,7 @@ func adjustArgsForSystemd(args []string) {
 		args[i] = strings.Replace(args[i], "$", "$$", -1)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

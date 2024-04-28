@@ -1344,3 +1344,7 @@ func isProbeTerminationGracePeriodSecondsSet(pod *v1.Pod, containerSpec *v1.Cont
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

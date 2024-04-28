@@ -69,3 +69,7 @@ func (managerStub) Start() error {
 func (managerStub) ShutdownStatus() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

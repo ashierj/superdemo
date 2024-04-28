@@ -95,3 +95,7 @@ func getLoopbackAddress(wantIPv6 bool) string {
 	}
 	return "localhost"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

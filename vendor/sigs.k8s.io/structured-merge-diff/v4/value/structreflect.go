@@ -206,3 +206,7 @@ func (r structReflect) structZip(other *structReflect, lhsvr, rhsvr *valueReflec
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

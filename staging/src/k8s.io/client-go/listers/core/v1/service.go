@@ -68,3 +68,7 @@ type ServiceNamespaceLister interface {
 type serviceNamespaceLister struct {
 	listers.ResourceIndexer[*v1.Service]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

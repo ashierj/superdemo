@@ -24,3 +24,7 @@ type FakeProcFS struct{}
 func (fakePfs *FakeProcFS) GetFullContainerName(pid int) (string, error) {
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

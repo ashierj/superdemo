@@ -737,3 +737,7 @@ type VendorParameters struct {
 	// +optional
 	Parameters runtime.RawExtension `json:"parameters,omitempty" protobuf:"bytes,2,opt,name=parameters"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -112,3 +112,7 @@ func shouldRetry(status int, err error) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

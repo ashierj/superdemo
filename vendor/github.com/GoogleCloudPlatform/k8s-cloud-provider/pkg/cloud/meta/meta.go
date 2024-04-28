@@ -1075,3 +1075,7 @@ var AllServices = []*ServiceInfo{
 		serviceType: reflect.TypeOf(&ga.ZonesService{}),
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

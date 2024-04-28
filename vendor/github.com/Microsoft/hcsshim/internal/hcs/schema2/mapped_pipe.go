@@ -16,3 +16,7 @@ type MappedPipe struct {
 
 	HostPathType string `json:"HostPathType,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

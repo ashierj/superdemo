@@ -186,3 +186,7 @@ func (r *Reachability) PrintSummary(printExpected bool, printObserved bool, prin
 		framework.Logf("comparison:\n\n%s\n\n\n", comparison.PrettyPrint(""))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

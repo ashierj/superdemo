@@ -76,3 +76,7 @@ func Accept4(fd int, flags int) (nfd int, sa Sockaddr, err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

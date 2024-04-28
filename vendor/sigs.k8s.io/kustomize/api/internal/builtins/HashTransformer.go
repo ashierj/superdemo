@@ -38,3 +38,7 @@ func (p *HashTransformerPlugin) Transform(m resmap.ResMap) error {
 func NewHashTransformerPlugin() resmap.TransformerPlugin {
 	return &HashTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

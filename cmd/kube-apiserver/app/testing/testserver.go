@@ -523,3 +523,7 @@ func pkgPath(t Logger) (string, error) {
 
 	return pkgPath, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -130,3 +130,7 @@ func (in *Inflights) reset() {
 	in.count = 0
 	in.start = 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

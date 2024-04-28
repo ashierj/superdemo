@@ -36,3 +36,7 @@ func TagFromImage(image string) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

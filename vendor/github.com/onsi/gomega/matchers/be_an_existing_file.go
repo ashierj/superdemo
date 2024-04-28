@@ -38,3 +38,7 @@ func (matcher *BeAnExistingFileMatcher) FailureMessage(actual interface{}) (mess
 func (matcher *BeAnExistingFileMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to exist")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

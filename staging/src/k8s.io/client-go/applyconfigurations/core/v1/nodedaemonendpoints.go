@@ -37,3 +37,7 @@ func (b *NodeDaemonEndpointsApplyConfiguration) WithKubeletEndpoint(value *Daemo
 	b.KubeletEndpoint = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

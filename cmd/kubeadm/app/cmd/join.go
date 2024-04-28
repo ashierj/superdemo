@@ -631,3 +631,7 @@ func fetchInitConfiguration(tlsBootstrapCfg *clientcmdapi.Config) (*kubeadmapi.I
 
 	return initConfiguration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

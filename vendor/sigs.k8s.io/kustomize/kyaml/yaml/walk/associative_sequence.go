@@ -383,3 +383,7 @@ func (l Walker) elementValueList(keys []string, values []string) []*yaml.RNode {
 	}
 	return fields
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

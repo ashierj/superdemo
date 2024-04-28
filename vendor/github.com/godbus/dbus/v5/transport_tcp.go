@@ -39,3 +39,7 @@ func newTcpTransport(keys string) (transport, error) {
 	}
 	return NewConn(socket)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

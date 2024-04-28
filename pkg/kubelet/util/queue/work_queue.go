@@ -66,3 +66,7 @@ func (q *basicWorkQueue) Enqueue(item types.UID, delay time.Duration) {
 	defer q.lock.Unlock()
 	q.queue[item] = q.clock.Now().Add(delay)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

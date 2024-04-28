@@ -322,3 +322,7 @@ func newConfigMapWithEmptyKey(ctx context.Context, f *framework.Framework) (*v1.
 	ginkgo.By(fmt.Sprintf("Creating configMap that has name %s", configMap.Name))
 	return f.ClientSet.CoreV1().ConfigMaps(f.Namespace.Name).Create(ctx, configMap, metav1.CreateOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

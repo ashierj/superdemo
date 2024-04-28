@@ -60,3 +60,7 @@ func CreateKubeConfig(clientCfg *rest.Config) *clientcmdapi.Config {
 
 	return config
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

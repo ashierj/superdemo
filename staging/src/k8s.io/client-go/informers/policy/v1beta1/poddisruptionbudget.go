@@ -88,3 +88,7 @@ func (f *podDisruptionBudgetInformer) Informer() cache.SharedIndexInformer {
 func (f *podDisruptionBudgetInformer) Lister() v1beta1.PodDisruptionBudgetLister {
 	return v1beta1.NewPodDisruptionBudgetLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

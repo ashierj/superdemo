@@ -142,3 +142,7 @@ func Run(ctx context.Context, f func() error) {
 		break
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

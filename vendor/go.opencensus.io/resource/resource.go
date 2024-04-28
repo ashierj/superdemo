@@ -162,3 +162,7 @@ func detectAll(ctx context.Context, detectors ...Detector) (*Resource, error) {
 	}
 	return res, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

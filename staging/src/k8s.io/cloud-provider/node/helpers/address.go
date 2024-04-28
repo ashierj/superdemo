@@ -144,3 +144,7 @@ func GetNodeAddressesFromNodeIP(providedNodeIP string, cloudNodeAddresses []v1.N
 
 	return enforcedNodeAddresses, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

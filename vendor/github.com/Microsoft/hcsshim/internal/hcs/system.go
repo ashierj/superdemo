@@ -643,3 +643,7 @@ func (computeSystem *System) Modify(ctx context.Context, config interface{}) err
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

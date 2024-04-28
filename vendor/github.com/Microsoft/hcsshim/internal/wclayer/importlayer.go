@@ -164,3 +164,7 @@ func NewLayerWriter(ctx context.Context, path string, parentLayerPaths []string)
 		parentLayerPaths:  parentLayerPaths,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

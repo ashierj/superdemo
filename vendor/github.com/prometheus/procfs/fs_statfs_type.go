@@ -31,3 +31,7 @@ func isRealProc(mountPoint string) (bool, error) {
 	// 0x9fa0 is PROC_SUPER_MAGIC: https://elixir.bootlin.com/linux/v6.1/source/include/uapi/linux/magic.h#L87
 	return stat.Type == 0x9fa0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

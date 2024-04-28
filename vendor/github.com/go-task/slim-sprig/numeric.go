@@ -226,3 +226,7 @@ func seq(params ...int) string {
 func intArrayToString(slice []int, delimeter string) string {
 	return strings.Trim(strings.Join(strings.Fields(fmt.Sprint(slice)), delimeter), "[]")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

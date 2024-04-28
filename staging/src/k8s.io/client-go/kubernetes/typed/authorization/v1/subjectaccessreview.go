@@ -62,3 +62,7 @@ func (c *subjectAccessReviews) Create(ctx context.Context, subjectAccessReview *
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

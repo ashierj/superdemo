@@ -611,3 +611,7 @@ func Any(key string, value interface{}) Field {
 
 	return c.Any(key, value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

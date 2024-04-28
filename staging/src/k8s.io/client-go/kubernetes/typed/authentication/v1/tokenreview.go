@@ -62,3 +62,7 @@ func (c *tokenReviews) Create(ctx context.Context, tokenReview *v1.TokenReview, 
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

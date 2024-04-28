@@ -184,3 +184,7 @@ func TestBuiltInAuthorizationOptionsAddFlags(t *testing.T) {
 		t.Error(cmp.Diff(opts, expected))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

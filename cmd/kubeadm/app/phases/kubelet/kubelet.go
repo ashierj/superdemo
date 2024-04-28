@@ -82,3 +82,7 @@ func TryRestartKubelet() {
 		klog.Warningf("[kubelet-start] WARNING: unable to restart the kubelet service momentarily: [%v]\n", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

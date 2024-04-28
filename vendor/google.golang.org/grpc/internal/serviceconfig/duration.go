@@ -128,3 +128,7 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -108,3 +108,7 @@ func readBody(response *http.Response) string {
 
 	return string(raw)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

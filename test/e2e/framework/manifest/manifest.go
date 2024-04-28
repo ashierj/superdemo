@@ -143,3 +143,7 @@ func DaemonSetFromData(data []byte) (*appsv1.DaemonSet, error) {
 	}
 	return &ds, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

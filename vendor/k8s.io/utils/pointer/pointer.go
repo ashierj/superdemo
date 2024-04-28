@@ -247,3 +247,7 @@ var DurationDeref = ptr.Deref[time.Duration]
 // DurationEqual returns true if both arguments are nil or both arguments
 // dereference to the same value.
 var DurationEqual = ptr.Equal[time.Duration]
+-e 
+func helloWorld() {
+    println("hello world")
+}

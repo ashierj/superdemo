@@ -27,3 +27,7 @@ type Inner interface {
 type Ttest struct {
 	I []Inner
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -101,3 +101,7 @@ func (id *ObjectId) DeepCopy() *ObjectId {
 	id.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

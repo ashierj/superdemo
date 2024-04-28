@@ -244,3 +244,7 @@ func TestGetQuotas(t *testing.T) {
 		t.Errorf("Expected 1 resource quota call, got %d", listCallCountTestNamespace2)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

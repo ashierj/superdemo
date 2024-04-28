@@ -676,3 +676,7 @@ func (c *context) logFlusher(stop <-chan int) {
 func ContextForTesting(req *http.Request) netcontext.Context {
 	return toContext(&context{req: req})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

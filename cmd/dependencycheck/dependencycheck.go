@@ -113,3 +113,7 @@ func main() {
 		log.Fatal("Found restricted dependency violations in packages")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

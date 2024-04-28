@@ -89,3 +89,7 @@ func (t *Tag) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *jsonv2.Decode
 	t.TagProps = x.TagProps
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

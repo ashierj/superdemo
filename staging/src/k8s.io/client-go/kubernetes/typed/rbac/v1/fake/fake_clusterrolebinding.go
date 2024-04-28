@@ -149,3 +149,7 @@ func (c *FakeClusterRoleBindings) Apply(ctx context.Context, clusterRoleBinding 
 	}
 	return obj.(*v1.ClusterRoleBinding), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

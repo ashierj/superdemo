@@ -65,3 +65,7 @@ func main(cmd *cobra.Command, args []string) {
 	})
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

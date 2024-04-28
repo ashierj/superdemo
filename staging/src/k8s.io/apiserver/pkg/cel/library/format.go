@@ -268,3 +268,7 @@ func formatValidate(arg1, arg2 ref.Val) ref.Val {
 	}
 	return types.OptionalOf(types.NewStringList(types.DefaultTypeAdapter, res))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

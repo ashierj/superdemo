@@ -30,3 +30,7 @@ func OnceFunc(f func()) func() {
 		once.Do(f)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

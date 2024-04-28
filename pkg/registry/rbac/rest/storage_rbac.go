@@ -413,3 +413,7 @@ func primeSplitClusterRoleBindings(clusterRoleBindingToSplit map[string]rbacapiv
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

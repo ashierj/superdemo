@@ -126,3 +126,7 @@ type StorageVersionList struct {
 	metav1.ListMeta
 	Items []StorageVersion
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

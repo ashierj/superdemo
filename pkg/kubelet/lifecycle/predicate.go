@@ -307,3 +307,7 @@ func generalFilter(pod *v1.Pod, nodeInfo *schedulerframework.NodeInfo) []Predica
 
 	return reasons
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

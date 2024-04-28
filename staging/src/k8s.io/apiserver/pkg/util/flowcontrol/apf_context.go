@@ -91,3 +91,7 @@ func (i *initializationSignal) Signal() {
 func (i *initializationSignal) Wait() {
 	<-i.done
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

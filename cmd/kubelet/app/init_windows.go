@@ -93,3 +93,7 @@ func initForOS(windowsService bool, windowsPriorityClass string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

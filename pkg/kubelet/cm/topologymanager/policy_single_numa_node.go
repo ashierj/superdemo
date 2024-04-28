@@ -73,3 +73,7 @@ func (p *singleNumaNodePolicy) Merge(providersHints []map[string][]TopologyHint)
 	admit := p.canAdmitPodResult(&bestHint)
 	return bestHint, admit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

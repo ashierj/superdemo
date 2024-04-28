@@ -170,3 +170,7 @@ func parseARM64SystemRegisters(isar0, isar1, pfr0 uint64) {
 func extractBits(data uint64, start, end uint) uint {
 	return (uint)(data>>start) & ((1 << (end - start + 1)) - 1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

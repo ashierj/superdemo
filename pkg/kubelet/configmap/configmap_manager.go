@@ -156,3 +156,7 @@ func NewWatchingConfigMapManager(kubeClient clientset.Interface, resyncInterval 
 		manager: manager.NewWatchBasedManager(listConfigMap, watchConfigMap, newConfigMap, isImmutable, gr, resyncInterval, getConfigMapNames),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

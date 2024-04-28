@@ -162,3 +162,7 @@ func (p Paths) MarshalNextJSON(opts jsonv2.MarshalOptions, enc *jsonv2.Encoder) 
 	}
 	return opts.MarshalNext(enc, m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

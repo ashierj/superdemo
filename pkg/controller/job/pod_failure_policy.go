@@ -139,3 +139,7 @@ func isOnExitCodesOperatorMatching(exitCode int32, requirement *batch.PodFailure
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

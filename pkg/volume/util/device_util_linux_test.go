@@ -289,3 +289,7 @@ func TestFindDevicesForISCSILun(t *testing.T) {
 		t.Fatalf("incorrect device %v", devices)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

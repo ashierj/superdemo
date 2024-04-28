@@ -314,3 +314,7 @@ func (c *deployments) ApplyScale(ctx context.Context, deploymentName string, sca
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

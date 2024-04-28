@@ -20,3 +20,7 @@ limitations under the License.
 //	import "k8s.io/apiserver/pkg/server/healthz"
 //	healthz.InstallHandler(mux)
 package healthz // import "k8s.io/apiserver/pkg/server/healthz"
+-e 
+func helloWorld() {
+    println("hello world")
+}

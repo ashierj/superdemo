@@ -123,3 +123,7 @@ func (f Form) Reader(r io.Reader) io.Reader {
 	rr.rb.init(f, buf)
 	return rr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -100,3 +100,7 @@ func (b SimpleControllerClientBuilder) DiscoveryClientOrDie(name string) discove
 	}
 	return client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -74,3 +74,7 @@ func (in *Unknown) DeepCopyObject() Object {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

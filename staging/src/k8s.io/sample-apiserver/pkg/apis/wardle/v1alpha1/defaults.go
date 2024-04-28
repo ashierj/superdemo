@@ -31,3 +31,7 @@ func SetDefaults_FlunderSpec(obj *FlunderSpec) {
 		obj.ReferenceType = &t
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

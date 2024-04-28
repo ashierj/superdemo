@@ -319,3 +319,7 @@ func TestSumDiskCache(t *testing.T) {
 		c.Delete(key)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -237,3 +237,7 @@ func DecodeEach(bytes []byte, fn func(key Key, val string, md metadatas)) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

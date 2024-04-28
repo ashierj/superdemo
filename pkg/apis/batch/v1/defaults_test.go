@@ -624,3 +624,7 @@ func completionModePtr(m batchv1.CompletionMode) *batchv1.CompletionMode {
 func podReplacementPtr(m batchv1.PodReplacementPolicy) *batchv1.PodReplacementPolicy {
 	return &m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

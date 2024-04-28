@@ -178,3 +178,7 @@ func (t dynamicAnyType) New() protoreflect.Message {
 func (t dynamicAnyType) Zero() protoreflect.Message {
 	return dynamicAny{t.MessageType.Zero()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -76,3 +76,7 @@ func runPreflight(c workflow.RunData) error {
 	fmt.Println("[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'")
 	return preflight.RunPullImagesCheck(utilsexec.New(), data.Cfg(), data.IgnorePreflightErrors())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

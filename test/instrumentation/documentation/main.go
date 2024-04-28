@@ -218,3 +218,7 @@ func byStabilityLevel(ms []metric) map[string][]metric {
 func parseMinor(m string) string {
 	return strings.Trim(m, `+`)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

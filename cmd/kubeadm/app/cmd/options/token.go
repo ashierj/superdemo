@@ -103,3 +103,7 @@ func (bto *BootstrapTokenOptions) ApplyTo(cfg *kubeadmapiv1.InitConfiguration) e
 	cfg.BootstrapTokens = []bootstraptokenv1.BootstrapToken{*bto.BootstrapToken}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

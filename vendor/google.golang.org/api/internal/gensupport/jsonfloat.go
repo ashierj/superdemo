@@ -45,3 +45,7 @@ func (f *JSONFloat64) UnmarshalJSON(data []byte) error {
 	}
 	return errors.New("google.golang.org/api/internal: data not float or string")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

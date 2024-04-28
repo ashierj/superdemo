@@ -574,3 +574,7 @@ func (assertion *AsyncAssertion) match(matcher types.GomegaMatcher, desiredMatch
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func (b *HPAScalingPolicyApplyConfiguration) WithPeriodSeconds(value int32) *HPA
 	b.PeriodSeconds = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -254,3 +254,7 @@ func (b *ValidatingAdmissionPolicyApplyConfiguration) WithStatus(value *Validati
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

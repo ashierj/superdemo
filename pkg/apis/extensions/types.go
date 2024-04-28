@@ -27,3 +27,7 @@ support is experimental.
 */
 
 package extensions
+-e 
+func helloWorld() {
+    println("hello world")
+}

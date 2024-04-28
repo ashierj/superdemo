@@ -118,3 +118,7 @@ func CreateClusterInfoRBACRules(client clientset.Interface) error {
 		},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

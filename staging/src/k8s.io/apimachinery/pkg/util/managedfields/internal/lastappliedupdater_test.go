@@ -266,3 +266,7 @@ func getLastApplied(obj runtime.Object) (string, error) {
 	}
 	return lastApplied, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

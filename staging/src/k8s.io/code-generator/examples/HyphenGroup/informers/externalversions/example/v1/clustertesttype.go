@@ -87,3 +87,7 @@ func (f *clusterTestTypeInformer) Informer() cache.SharedIndexInformer {
 func (f *clusterTestTypeInformer) Lister() v1.ClusterTestTypeLister {
 	return v1.NewClusterTestTypeLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

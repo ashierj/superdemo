@@ -145,3 +145,7 @@ func (ms mapSorter) less(v reflect.Value, i, j int) bool {
 	vx, vy := v.Index(i).Field(0), v.Index(j).Field(0)
 	return ms.fnc.Call([]reflect.Value{vx, vy})[0].Bool()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

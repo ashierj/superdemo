@@ -91,3 +91,7 @@ func (w *journalWriter) Write(p []byte) (int, error) {
 	}
 	return 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -115,3 +115,7 @@ func (s *stateMemory) ClearState() {
 	s.assignments = make(ContainerCPUAssignments)
 	klog.V(2).InfoS("Cleared state")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

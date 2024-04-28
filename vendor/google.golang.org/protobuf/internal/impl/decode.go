@@ -283,3 +283,7 @@ func skipExtension(b []byte, xi *extensionFieldInfo, num protowire.Number, wtyp 
 		return out, ValidationUnknown
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

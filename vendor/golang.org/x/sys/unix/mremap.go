@@ -50,3 +50,7 @@ func (m *mremapMmapper) Mremap(oldData []byte, newLength int, flags int) (data [
 func Mremap(oldData []byte, newLength int, flags int) (data []byte, err error) {
 	return mapper.Mremap(oldData, newLength, flags)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

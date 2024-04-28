@@ -46,3 +46,7 @@ func SetObjectDefaults_APIServiceList(in *APIServiceList) {
 		SetObjectDefaults_APIService(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

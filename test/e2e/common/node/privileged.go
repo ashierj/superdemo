@@ -120,3 +120,7 @@ func (c *PrivilegedPodTestConfig) createPods(ctx context.Context) {
 	podSpec := c.createPodsSpec()
 	c.pod = e2epod.NewPodClient(c.f).CreateSync(ctx, podSpec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

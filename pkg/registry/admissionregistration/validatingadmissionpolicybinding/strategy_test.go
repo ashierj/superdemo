@@ -119,3 +119,7 @@ func validPolicyBindings() []*admissionregistration.ValidatingAdmissionPolicyBin
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

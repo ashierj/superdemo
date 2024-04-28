@@ -80,3 +80,7 @@ func (f *managedFieldsUpdater) Apply(liveObj, appliedObj runtime.Object, managed
 	}
 	return object, managed, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

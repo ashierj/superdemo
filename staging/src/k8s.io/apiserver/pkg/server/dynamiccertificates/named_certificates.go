@@ -89,3 +89,7 @@ func getCertificateNames(cert *x509.Certificate) []string {
 
 	return names
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

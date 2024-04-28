@@ -56,3 +56,7 @@ func (g *groupversion) Schema(contentType string) ([]byte, error) {
 
 	return cachedInfo.data, cachedInfo.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

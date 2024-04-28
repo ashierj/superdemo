@@ -80,3 +80,7 @@ func (a *panickingAuthenticationInfoResolver) ClientConfigFor(hostPort string) (
 func (a *panickingAuthenticationInfoResolver) ClientConfigForService(serviceName, serviceNamespace string, servicePort int) (*rest.Config, error) {
 	panic(a.panicMessage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

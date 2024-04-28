@@ -38,3 +38,7 @@ func CloseAndRemove(t *testing.T, files ...*os.File) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

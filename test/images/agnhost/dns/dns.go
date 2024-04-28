@@ -56,3 +56,7 @@ func getDNSServerList() []string {
 
 	panic("Could not find DNS search list!")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

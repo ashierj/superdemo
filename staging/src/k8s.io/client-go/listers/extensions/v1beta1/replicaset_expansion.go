@@ -72,3 +72,7 @@ func (s *replicaSetLister) GetPodReplicaSets(pod *v1.Pod) ([]*extensions.Replica
 
 	return rss, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

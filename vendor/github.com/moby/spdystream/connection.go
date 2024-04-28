@@ -970,3 +970,7 @@ func (s *Connection) FindStream(streamId uint32) *Stream {
 func (s *Connection) CloseChan() <-chan bool {
 	return s.closeChan
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

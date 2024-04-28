@@ -34,3 +34,7 @@ func (d *rwTimeoutDialer) Dial(network, address string) (net.Conn, error) {
 	}
 	return tconn, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

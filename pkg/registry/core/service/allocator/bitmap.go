@@ -262,3 +262,7 @@ func (rss randomScanStrategyWithOffset) AllocateBit(allocated *big.Int, max, cou
 }
 
 var _ bitAllocator = randomScanStrategyWithOffset{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

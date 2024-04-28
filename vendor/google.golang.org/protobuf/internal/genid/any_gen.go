@@ -32,3 +32,7 @@ const (
 	Any_TypeUrl_field_number protoreflect.FieldNumber = 1
 	Any_Value_field_number   protoreflect.FieldNumber = 2
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

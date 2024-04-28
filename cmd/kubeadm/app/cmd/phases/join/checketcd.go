@@ -68,3 +68,7 @@ func runCheckEtcdPhase(c workflow.RunData) error {
 
 	return etcdphase.CheckLocalEtcdClusterStatus(client, data.CertificateWriteDir())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

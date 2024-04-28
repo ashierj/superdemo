@@ -686,3 +686,7 @@ type CSIStorageCapacityList struct {
 	// items is the list of CSIStorageCapacity objects.
 	Items []CSIStorageCapacity `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

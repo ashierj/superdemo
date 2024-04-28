@@ -281,3 +281,7 @@ func makeFancyTestCsr(b csrBuilder) *capi.CertificateSigningRequest {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

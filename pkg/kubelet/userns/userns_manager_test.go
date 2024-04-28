@@ -485,3 +485,7 @@ func TestRecordBounds(t *testing.T) {
 	assert.Error(t, err)
 	assert.ErrorContains(t, err, "out of range")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

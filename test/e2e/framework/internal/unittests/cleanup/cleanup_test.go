@@ -245,3 +245,7 @@ func normalizeOutput(output string) string {
 	}
 	return output
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

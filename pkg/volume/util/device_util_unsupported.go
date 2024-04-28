@@ -41,3 +41,7 @@ func (handler *deviceHandler) FindDevicesForISCSILun(targetIqn string, lun int) 
 	devices := []string{}
 	return devices, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

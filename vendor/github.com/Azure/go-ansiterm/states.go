@@ -69,3 +69,7 @@ type dcsEntryState struct {
 type errorState struct {
 	baseState
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

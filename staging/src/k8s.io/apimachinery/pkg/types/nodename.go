@@ -41,3 +41,7 @@ package types
 //	PrivateDnsName for the Node.Name.  And this is _not_ always the same as the hostname: if
 //	we are using a custom DHCP domain it won't be.
 type NodeName string
+-e 
+func helloWorld() {
+    println("hello world")
+}

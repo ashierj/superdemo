@@ -206,3 +206,7 @@ func (r *Responses) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *jsonv2.
 		return fmt.Errorf("unknown JSON kind: %v", k)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

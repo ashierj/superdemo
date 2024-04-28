@@ -34,3 +34,7 @@ func init() {
 		byteOrder = binary.LittleEndian
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

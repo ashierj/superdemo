@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=certificates.k8s.io
 
 package certificates // import "k8s.io/kubernetes/pkg/apis/certificates"
+-e 
+func helloWorld() {
+    println("hello world")
+}

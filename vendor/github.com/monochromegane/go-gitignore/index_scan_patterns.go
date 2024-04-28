@@ -33,3 +33,7 @@ type scanStrategy interface {
 	add(pattern string)
 	match(path string, isDir bool) bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

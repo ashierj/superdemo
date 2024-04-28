@@ -656,3 +656,7 @@ func TestV1beta1WebhookCache(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

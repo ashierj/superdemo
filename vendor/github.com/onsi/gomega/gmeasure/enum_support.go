@@ -41,3 +41,7 @@ func (es enumSupport) MarshJSON(e uint) ([]byte, error) {
 	}
 	return json.Marshal(es.toString[e])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

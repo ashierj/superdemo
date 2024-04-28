@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package legacycloudproviders // import "k8s.io/legacy-cloud-providers"
+-e 
+func helloWorld() {
+    println("hello world")
+}

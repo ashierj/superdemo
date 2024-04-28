@@ -70,3 +70,7 @@ type tList struct {
 func (t tList) Len() int           { return len(t.types) }
 func (t tList) Less(i, j int) bool { return t.namer.Name(t.types[i]) < t.namer.Name(t.types[j]) }
 func (t tList) Swap(i, j int)      { t.types[i], t.types[j] = t.types[j], t.types[i] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

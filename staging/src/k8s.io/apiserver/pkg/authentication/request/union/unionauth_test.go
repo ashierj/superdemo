@@ -165,3 +165,7 @@ func TestAuthenticateRequestFailEarly(t *testing.T) {
 		t.Errorf("Unexpectedly authenticated: %v", isAuthenticated)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

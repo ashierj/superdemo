@@ -309,3 +309,7 @@ func (r *dummyRecorder) AddWarning(agent, text string) {
 }
 
 var _ warning.Recorder = &dummyRecorder{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

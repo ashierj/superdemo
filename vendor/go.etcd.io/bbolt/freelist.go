@@ -403,3 +403,7 @@ func (f *freelist) arrayMergeSpans(ids pgids) {
 	sort.Sort(ids)
 	f.ids = pgids(f.ids).merge(ids)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

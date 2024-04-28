@@ -149,3 +149,7 @@ var DeducedParseableType ParseableType = createOrDie(YAMLObject(`types:
       namedType: __untyped_deduced_
     elementRelationship: separable
 `)).Type("__untyped_deduced_")
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (s *service) GetPluginCapabilities(
 		Capabilities: capabilities,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

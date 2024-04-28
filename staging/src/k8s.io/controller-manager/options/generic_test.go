@@ -258,3 +258,7 @@ func getControllerAliases() map[string]string {
 		"ultramarine-controller": "blue-controller",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

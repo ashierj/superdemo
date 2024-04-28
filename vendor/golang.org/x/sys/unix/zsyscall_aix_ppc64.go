@@ -1418,3 +1418,7 @@ func mmap(addr uintptr, length uintptr, prot int, flags int, fd int, offset int6
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

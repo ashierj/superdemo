@@ -72,3 +72,7 @@ func (cse *ConnectivityStateEvaluator) CurrentState() connectivity.State {
 	}
 	return connectivity.TransientFailure
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

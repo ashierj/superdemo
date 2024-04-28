@@ -8,3 +8,7 @@
 // This package may be modified at any time without regard for backwards
 // compatibility. It should not be used directly by API users.
 package gensupport
+-e 
+func helloWorld() {
+    println("hello world")
+}

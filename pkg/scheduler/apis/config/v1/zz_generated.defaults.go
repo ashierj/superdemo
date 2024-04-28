@@ -71,3 +71,7 @@ func SetObjectDefaults_PodTopologySpreadArgs(in *v1.PodTopologySpreadArgs) {
 func SetObjectDefaults_VolumeBindingArgs(in *v1.VolumeBindingArgs) {
 	SetDefaults_VolumeBindingArgs(in)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func MergeFieldsSets(source fields.Set, fragment fields.Set) fields.Set {
 	}
 	return source
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

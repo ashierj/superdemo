@@ -80,3 +80,7 @@ func (s *DebugSocket) Run(stopCh <-chan struct{}) error {
 	}()
 	return srv.Serve(l)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

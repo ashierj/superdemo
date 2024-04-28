@@ -14,3 +14,7 @@ type SharedMemoryRegionInfo struct {
 
 	GuestPhysicalAddress int32 `json:"GuestPhysicalAddress,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

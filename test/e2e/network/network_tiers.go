@@ -237,3 +237,7 @@ func reserveRegionalAddress(cloud *gcecloud.Cloud, name string, netTier cloud.Ne
 
 	return addr.Address, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

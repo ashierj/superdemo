@@ -200,3 +200,7 @@ func (p *FnPlugin) invokePlugin(input []byte) ([]byte, error) {
 
 	return ouputBuffer.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

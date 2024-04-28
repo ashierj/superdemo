@@ -143,3 +143,7 @@ func (ctrl *PersistentVolumeController) GetSubpather() subpath.Interface {
 	// No volume plugin needs Subpaths in PV controller.
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -144,3 +144,7 @@ func (idr *InitDryRunGetter) handleSystemNodesClusterRoleBinding(action core.Get
 	// This can only happen on an upgrade; and in that case the ClientBackedDryRunGetter impl will be used
 	return true, nil, apierrors.NewNotFound(action.GetResource().GroupResource(), "clusterrolebinding not found")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

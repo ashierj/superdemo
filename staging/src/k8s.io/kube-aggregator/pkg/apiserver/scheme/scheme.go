@@ -34,3 +34,7 @@ var (
 func init() {
 	install.Install(Scheme)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

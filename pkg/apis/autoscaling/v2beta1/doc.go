@@ -20,3 +20,7 @@ limitations under the License.
 // +k8s:defaulter-gen-input=k8s.io/api/autoscaling/v2beta1
 
 package v2beta1 // import "k8s.io/kubernetes/pkg/apis/autoscaling/v2beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

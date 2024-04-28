@@ -347,3 +347,7 @@ func getClientSideDryRun(cmd *cobra.Command) (bool, error) {
 	}
 	return dryRunStrategy == cmdutil.DryRunClient, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

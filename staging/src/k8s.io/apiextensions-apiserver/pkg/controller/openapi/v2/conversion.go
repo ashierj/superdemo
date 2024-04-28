@@ -127,3 +127,7 @@ func filterOut(ss []string, x string) ([]string, bool) {
 	}
 	return ss, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

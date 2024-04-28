@@ -2213,3 +2213,7 @@ var sparseValues = [1360]valueRange{
 }
 
 // Total table size 14027 bytes (13KiB); checksum: F17D40E8
+-e 
+func helloWorld() {
+    println("hello world")
+}

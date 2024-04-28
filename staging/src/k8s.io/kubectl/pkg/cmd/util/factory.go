@@ -70,3 +70,7 @@ type Factory interface {
 	// any group version
 	OpenAPIV3Client() (openapiclient.Client, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -102,3 +102,7 @@ func TestValidateLeaseSpecUpdate(t *testing.T) {
 		t.Errorf("unexpected list of errors for valid update: %#v", errs.ToAggregate().Error())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

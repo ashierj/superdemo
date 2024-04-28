@@ -554,3 +554,7 @@ func Test_criStatsProvider_makeWinContainerStats(t *testing.T) {
 	assert.Equal(t, *got.Logs.UsedBytes, logStatsUsed, "Logs.UsedBytes does not match expected value")
 	assert.Equal(t, *got.Logs.InodesUsed, logStatsInodesUsed, "Logs.InodesUsed does not match expected value")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

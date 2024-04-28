@@ -139,3 +139,7 @@ func getJSONValue(data map[string]interface{}, keys ...string) (interface{}, boo
 	}
 	return getJSONValue(childData, keys[1:]...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

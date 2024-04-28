@@ -1174,3 +1174,7 @@ func normalizeURLString(s string) (string, error) {
 	}
 	return u.String(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

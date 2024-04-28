@@ -83,3 +83,7 @@ type Limit struct {
 	// +optional
 	CacheSize int32 `json:"cacheSize,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

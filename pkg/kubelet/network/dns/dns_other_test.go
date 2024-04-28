@@ -24,3 +24,7 @@ var (
 	// configurer.getHostDNSConfig is faked on Windows, while it is not faked on Linux.
 	fakeGetHostDNSConfigCustom = getHostDNSConfig
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

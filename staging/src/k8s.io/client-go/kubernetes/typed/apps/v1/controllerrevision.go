@@ -206,3 +206,7 @@ func (c *controllerRevisions) Apply(ctx context.Context, controllerRevision *app
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

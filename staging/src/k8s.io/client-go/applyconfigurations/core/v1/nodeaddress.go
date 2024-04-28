@@ -50,3 +50,7 @@ func (b *NodeAddressApplyConfiguration) WithAddress(value string) *NodeAddressAp
 	b.Address = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

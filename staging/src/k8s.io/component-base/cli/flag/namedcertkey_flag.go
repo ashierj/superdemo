@@ -111,3 +111,7 @@ func (a *NamedCertKeyArray) String() string {
 	}
 	return "[" + strings.Join(nkcs, ";") + "]"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

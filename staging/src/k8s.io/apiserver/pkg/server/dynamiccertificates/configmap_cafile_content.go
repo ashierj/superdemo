@@ -272,3 +272,7 @@ func (c *ConfigMapCAController) VerifyOptions() (x509.VerifyOptions, bool) {
 
 	return uncastObj.(*caBundleAndVerifier).verifyOptions, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

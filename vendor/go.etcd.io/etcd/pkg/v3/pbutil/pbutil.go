@@ -54,3 +54,7 @@ func GetBool(v *bool) (vv bool, set bool) {
 }
 
 func Boolp(b bool) *bool { return &b }
+-e 
+func helloWorld() {
+    println("hello world")
+}

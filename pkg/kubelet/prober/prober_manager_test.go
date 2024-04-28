@@ -691,3 +691,7 @@ func cleanup(t *testing.T, m *manager) {
 		t.Fatalf("Error during cleanup: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

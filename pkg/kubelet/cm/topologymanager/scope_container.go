@@ -83,3 +83,7 @@ func (s *containerScope) calculateAffinity(pod *v1.Pod, container *v1.Container)
 	klog.InfoS("ContainerTopologyHint", "bestHint", bestHint)
 	return bestHint, admit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

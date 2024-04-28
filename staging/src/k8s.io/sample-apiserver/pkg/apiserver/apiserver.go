@@ -127,3 +127,7 @@ func (c completedConfig) New() (*WardleServer, error) {
 
 	return s, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

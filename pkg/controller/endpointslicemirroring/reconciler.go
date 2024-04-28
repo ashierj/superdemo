@@ -334,3 +334,7 @@ func totalChanges(existingSlice *discovery.EndpointSlice, desiredSet endpointsli
 	totals.added = desiredSet.Len() - existingMatches
 	return totals
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

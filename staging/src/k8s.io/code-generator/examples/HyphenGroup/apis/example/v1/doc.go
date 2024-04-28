@@ -19,3 +19,7 @@ limitations under the License.
 // +groupName=example-group.hyphens.code-generator.k8s.io
 // +groupGoName=ExampleGroup
 package v1 // import "k8s.io/code-generator/examples/HyphenGroup/apis/example/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

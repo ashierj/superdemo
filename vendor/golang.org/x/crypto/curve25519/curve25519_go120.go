@@ -44,3 +44,7 @@ func scalarBaseMult(dst, scalar *[32]byte) {
 	}
 	copy(dst[:], priv.PublicKey().Bytes())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

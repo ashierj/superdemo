@@ -4187,3 +4187,7 @@ func get65MatchConditions() []admissionregistration.MatchCondition {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

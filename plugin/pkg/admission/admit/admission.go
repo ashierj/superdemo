@@ -63,3 +63,7 @@ func NewAlwaysAdmit() admission.Interface {
 		"Please remove this controller from your configuration files and scripts.", PluginName)
 	return new(alwaysAdmit)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

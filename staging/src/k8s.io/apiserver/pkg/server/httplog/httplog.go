@@ -323,3 +323,7 @@ func (rl *respLogger) recordStatus(status int) {
 		rl.statusStack = ""
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -370,3 +370,7 @@ func (v *Version) Compare(other string) (int, error) {
 	}
 	return v.compareInternal(ov), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

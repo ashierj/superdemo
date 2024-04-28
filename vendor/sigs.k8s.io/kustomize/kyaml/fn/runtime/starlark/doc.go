@@ -34,3 +34,7 @@
 // The starlark language spec can be found here:
 // https://github.com/google/starlark-go/blob/master/doc/spec.md
 package starlark
+-e 
+func helloWorld() {
+    println("hello world")
+}

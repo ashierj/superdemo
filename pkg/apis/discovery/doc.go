@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=discovery.k8s.io
 
 package discovery
+-e 
+func helloWorld() {
+    println("hello world")
+}

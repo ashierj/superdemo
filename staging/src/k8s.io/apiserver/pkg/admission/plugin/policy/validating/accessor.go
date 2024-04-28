@@ -80,3 +80,7 @@ func (v *validatingAdmissionPolicyBindingAccessor) GetMatchResources() *v1.Match
 func (v *validatingAdmissionPolicyBindingAccessor) GetParamRef() *v1.ParamRef {
 	return v.Spec.ParamRef
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

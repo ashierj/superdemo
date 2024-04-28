@@ -9,3 +9,7 @@ const (
 	ATNTypeLexer  = 0
 	ATNTypeParser = 1
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

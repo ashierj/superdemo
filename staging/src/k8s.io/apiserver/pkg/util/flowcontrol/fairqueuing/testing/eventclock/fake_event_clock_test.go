@@ -129,3 +129,7 @@ func TestFake(t *testing.T) {
 	fec, _ = NewFake(startTime, time.Second, nil)
 	exerciseTestableEventClock(t, fec, time.Second)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

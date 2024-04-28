@@ -39,3 +39,7 @@ func Init(fs *flag.FlagSet) {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

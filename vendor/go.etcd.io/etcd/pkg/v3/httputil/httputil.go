@@ -48,3 +48,7 @@ func GetHostname(req *http.Request) string {
 	}
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

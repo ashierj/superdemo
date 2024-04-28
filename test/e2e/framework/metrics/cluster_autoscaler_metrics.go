@@ -38,3 +38,7 @@ func parseClusterAutoscalerMetrics(data string) (ClusterAutoscalerMetrics, error
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

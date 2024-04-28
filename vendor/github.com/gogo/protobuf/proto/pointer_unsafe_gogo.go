@@ -54,3 +54,7 @@ func (p pointer) getSlice(typ reflect.Type) reflect.Value {
 	slice = slice.Elem()
 	return slice
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

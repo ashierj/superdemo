@@ -67,3 +67,7 @@ func removeDuplicateSlashes(u *url.URL) {
 		u.Path = rxDupSlashes.ReplaceAllString(u.Path, "/")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

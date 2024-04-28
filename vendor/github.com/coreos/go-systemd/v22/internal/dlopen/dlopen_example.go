@@ -55,3 +55,7 @@ func strlen(libs []string, s string) (int, error) {
 
 	return int(len), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

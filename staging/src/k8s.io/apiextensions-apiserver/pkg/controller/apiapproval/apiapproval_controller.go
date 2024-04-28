@@ -263,3 +263,7 @@ func (c *KubernetesAPIApprovalPolicyConformantConditionController) deleteCustomR
 	defer c.lastSeenProtectedAnnotationLock.Unlock()
 	delete(c.lastSeenProtectedAnnotation, castObj.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

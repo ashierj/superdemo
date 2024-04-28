@@ -241,3 +241,7 @@ func eventOccurred(ctx context.Context, c clientset.Interface, namespace, eventS
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

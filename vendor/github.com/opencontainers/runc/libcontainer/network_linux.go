@@ -98,3 +98,7 @@ func (l *loopback) attach(n *configs.Network) (err error) {
 func (l *loopback) detach(n *configs.Network) (err error) {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

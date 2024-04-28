@@ -383,3 +383,7 @@ func makeUnmarshalDurationSlice(sub *unmarshalInfo, name string) unmarshaler {
 		return b[x:], nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

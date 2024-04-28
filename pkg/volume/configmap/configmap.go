@@ -347,3 +347,7 @@ func getVolumeSource(spec *volume.Spec) (*v1.ConfigMapVolumeSource, bool) {
 
 	return volumeSource, readOnly
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

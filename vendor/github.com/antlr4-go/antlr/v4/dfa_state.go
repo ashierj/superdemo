@@ -168,3 +168,7 @@ func (d *DFAState) Equals(o Collectable[*DFAState]) bool {
 
 	return d.configs.Equals(o.(*DFAState).configs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

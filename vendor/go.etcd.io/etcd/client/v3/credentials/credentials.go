@@ -129,3 +129,7 @@ func (rc *perRPCCredential) UpdateAuthToken(token string) {
 	rc.authToken = token
 	rc.authTokenMu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

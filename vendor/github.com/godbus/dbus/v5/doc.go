@@ -69,3 +69,7 @@ UnixFDIndex.
 
 */
 package dbus
+-e 
+func helloWorld() {
+    println("hello world")
+}

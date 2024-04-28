@@ -134,3 +134,7 @@ func getServiceIPAndRanges(serviceClusterIPRanges string) (net.IP, net.IPNet, ne
 	}
 	return apiServerServiceIP, primaryServiceIPRange, secondaryServiceIPRange, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

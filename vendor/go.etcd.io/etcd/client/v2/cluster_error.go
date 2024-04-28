@@ -35,3 +35,7 @@ func (ce *ClusterError) Detail() string {
 	}
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

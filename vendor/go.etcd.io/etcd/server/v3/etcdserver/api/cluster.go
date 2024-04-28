@@ -36,3 +36,7 @@ type Cluster interface {
 	// Version is the cluster-wide minimum major.minor version.
 	Version() *semver.Version
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

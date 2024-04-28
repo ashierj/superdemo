@@ -106,3 +106,7 @@ func entrypointTestPod(namespace string, entrypointArgs ...string) *v1.Pod {
 	pod.Spec.RestartPolicy = v1.RestartPolicyNever
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

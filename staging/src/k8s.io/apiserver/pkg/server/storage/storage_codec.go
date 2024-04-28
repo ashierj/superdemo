@@ -101,3 +101,7 @@ func NewStorageCodec(opts StorageCodecConfig) (runtime.Codec, runtime.GroupVersi
 
 	return runtime.NewCodec(encoder, decoder), encodeVersioner, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

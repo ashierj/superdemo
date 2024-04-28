@@ -7,3 +7,7 @@ import "syscall"
 func inoFromDirent(de *syscall.Dirent) uint64 {
 	return uint64(de.Ino)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -526,3 +526,7 @@ func getWwnsLunWwids(fc *v1.FCVolumeSource) ([]string, string, []string, error) 
 	}
 	return nil, "", nil, fmt.Errorf("fc: no fc disk information found")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

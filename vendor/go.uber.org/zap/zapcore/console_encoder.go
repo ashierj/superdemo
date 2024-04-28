@@ -155,3 +155,7 @@ func (c consoleEncoder) addSeparatorIfNecessary(line *buffer.Buffer) {
 		line.AppendString(c.ConsoleSeparator)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func Split(src string) (entries []string) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

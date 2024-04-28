@@ -73,3 +73,7 @@ func createLegacyIPAM(
 	}
 	return ipamc, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

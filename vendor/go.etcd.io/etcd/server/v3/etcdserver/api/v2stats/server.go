@@ -140,3 +140,7 @@ func (ss *ServerStats) becomeLeader() {
 		ss.LeaderInfo.StartTime = time.Now()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

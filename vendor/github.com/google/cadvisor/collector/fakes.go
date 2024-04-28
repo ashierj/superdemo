@@ -35,3 +35,7 @@ func (fkm *FakeCollectorManager) Collect(metric map[string][]v1.MetricVal) (time
 	var zero time.Time
 	return zero, metric, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

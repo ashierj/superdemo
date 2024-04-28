@@ -30,3 +30,7 @@ func SetDefaults_ResourceClaimSpec(obj *v1alpha2.ResourceClaimSpec) {
 		obj.AllocationMode = v1alpha2.AllocationModeWaitForFirstConsumer
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

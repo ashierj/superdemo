@@ -421,3 +421,7 @@ type IngressClassList struct {
 	// items is the list of IngressClasses.
 	Items []IngressClass `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

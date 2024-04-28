@@ -77,3 +77,7 @@ type podLifecycleEventGeneratorHandler interface {
 	Update(relistDuration *RelistDuration)
 	Relist()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

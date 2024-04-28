@@ -59,3 +59,7 @@ func init() {
 		specialTags[i] = language.MustParse(t)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

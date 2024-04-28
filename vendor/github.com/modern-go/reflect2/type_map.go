@@ -68,3 +68,7 @@ func TypeByPackageName(pkgPath string, name string) Type {
 	}
 	return Type2(pkgTypes[name])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -585,3 +585,7 @@ var (
 	// MapType is equivalent to the CEL 'map' type.
 	MapType = NewMapType(AnyType, AnyType, noMaxLength)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

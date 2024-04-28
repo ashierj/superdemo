@@ -38,3 +38,7 @@ func Convert_custom_metrics_MetricValue_To_v1beta1_MetricValue(in *custom_metric
 	out.Selector = in.Metric.Selector
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

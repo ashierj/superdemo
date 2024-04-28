@@ -24,3 +24,7 @@ func (c *processCollector) processCollect(ch chan<- Metric) {
 	// noop on this platform
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

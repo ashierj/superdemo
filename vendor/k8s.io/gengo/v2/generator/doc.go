@@ -29,3 +29,7 @@ limitations under the License.
 // functions to the parsed template, so that they can be called directly from
 // your templates!
 package generator // import "k8s.io/gengo/v2/generator"
+-e 
+func helloWorld() {
+    println("hello world")
+}

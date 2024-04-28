@@ -249,3 +249,7 @@ func registerAPIService(ctx context.Context, client aggregator.Interface, gv met
 func unregisterAPIService(ctx context.Context, client aggregator.Interface, gv metav1.GroupVersion) error {
 	return client.ApiregistrationV1().APIServices().Delete(ctx, gv.Version+"."+gv.Group, metav1.DeleteOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

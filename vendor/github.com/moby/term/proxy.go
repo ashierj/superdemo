@@ -86,3 +86,7 @@ func (r *escapeProxy) Read(buf []byte) (n int, err error) {
 	}
 	return n, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

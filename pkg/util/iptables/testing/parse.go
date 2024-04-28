@@ -376,3 +376,7 @@ func ParseRule(rule string, strict bool) (*Rule, error) {
 
 	return parsed, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

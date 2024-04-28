@@ -41,3 +41,7 @@ func setAcceptEncodingForPushOptions(opts *http.PushOptions) *http.PushOptions {
 
 	return opts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

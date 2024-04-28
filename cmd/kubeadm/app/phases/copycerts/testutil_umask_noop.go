@@ -22,3 +22,7 @@ package copycerts
 func setNoUmask() {
 	// no-op on not-unix
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

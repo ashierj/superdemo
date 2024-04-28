@@ -207,3 +207,7 @@ func (f *FieldManager) Apply(liveObj, appliedObj runtime.Object, manager string,
 
 	return object, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

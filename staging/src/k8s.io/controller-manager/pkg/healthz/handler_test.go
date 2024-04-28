@@ -172,3 +172,7 @@ func TestConcurrentChecks(t *testing.T) {
 		t.Errorf("expected %v concurrency, got %v", N, concurrentCount)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

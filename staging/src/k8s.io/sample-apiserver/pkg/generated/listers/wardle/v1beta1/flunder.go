@@ -68,3 +68,7 @@ type FlunderNamespaceLister interface {
 type flunderNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.Flunder]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

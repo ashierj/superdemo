@@ -23,3 +23,7 @@ limitations under the License.
 
 // Package v1beta2 holds api types of version v1alpha1 for group "flowcontrol.apiserver.k8s.io".
 package v1beta2 // import "k8s.io/api/flowcontrol/v1beta2"
+-e 
+func helloWorld() {
+    println("hello world")
+}

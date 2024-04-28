@@ -5,3 +5,7 @@
 // for the kustomize API, e.g. the set of file names to look for
 // to identify a kustomization root.
 package konfig
+-e 
+func helloWorld() {
+    println("hello world")
+}

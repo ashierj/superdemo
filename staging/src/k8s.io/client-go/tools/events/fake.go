@@ -50,3 +50,7 @@ func NewFakeRecorder(bufferSize int) *FakeRecorder {
 		Events: make(chan string, bufferSize),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

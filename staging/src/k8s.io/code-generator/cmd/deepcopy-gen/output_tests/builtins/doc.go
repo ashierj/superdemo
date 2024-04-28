@@ -33,3 +33,7 @@ type Ttest struct {
 	Float64 float64
 	String  string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func isXfs(dir string) bool {
 	}
 	return buf.Type == xfsMagic
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

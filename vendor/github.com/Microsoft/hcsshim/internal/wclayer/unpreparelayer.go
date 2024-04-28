@@ -23,3 +23,7 @@ func UnprepareLayer(ctx context.Context, path string) (err error) {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

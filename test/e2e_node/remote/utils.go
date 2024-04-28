@@ -196,3 +196,7 @@ func cleanupNodeProcesses(host string) {
 func quote(s string) string {
 	return fmt.Sprintf("'\"'\"'%s'\"'\"'", s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

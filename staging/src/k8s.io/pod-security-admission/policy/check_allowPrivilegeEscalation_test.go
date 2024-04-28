@@ -118,3 +118,7 @@ func TestAllowPrivilegeEscalation_1_8(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

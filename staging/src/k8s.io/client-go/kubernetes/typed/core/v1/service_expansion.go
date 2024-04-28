@@ -39,3 +39,7 @@ func (c *services) ProxyGet(scheme, name, port, path string, params map[string]s
 	}
 	return request
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

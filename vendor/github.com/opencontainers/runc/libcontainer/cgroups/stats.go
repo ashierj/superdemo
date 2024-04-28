@@ -173,3 +173,7 @@ func NewStats() *Stats {
 	hugetlbStats := make(map[string]HugetlbStats)
 	return &Stats{MemoryStats: memoryStats, HugetlbStats: hugetlbStats}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

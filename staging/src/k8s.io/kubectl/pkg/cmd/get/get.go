@@ -819,3 +819,7 @@ func multipleGVKsRequested(infos []*resource.Info) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

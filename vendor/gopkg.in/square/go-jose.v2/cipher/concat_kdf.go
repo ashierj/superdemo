@@ -73,3 +73,7 @@ func (ctx *concatKDF) Read(out []byte) (int, error) {
 
 	return copied, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -17,3 +17,7 @@ func GetNetNsIdByFd(fd int) (int, error) {
 func SetNetNsIdByFd(fd, nsid int) error {
 	return ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

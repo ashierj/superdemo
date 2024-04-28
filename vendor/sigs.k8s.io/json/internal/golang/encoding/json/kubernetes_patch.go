@@ -166,3 +166,7 @@ func (e *UnmarshalStrictError) Error() string {
 	}
 	return b.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

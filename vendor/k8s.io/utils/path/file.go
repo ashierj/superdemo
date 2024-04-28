@@ -76,3 +76,7 @@ func ReadDirNoStat(dirname string) ([]string, error) {
 
 	return f.Readdirnames(-1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

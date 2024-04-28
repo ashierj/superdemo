@@ -234,3 +234,7 @@ func (c *Controller) onDelete(logger klog.Logger, node *v1.Node) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

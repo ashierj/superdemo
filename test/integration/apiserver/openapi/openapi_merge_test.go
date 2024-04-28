@@ -193,3 +193,7 @@ func TestOpenAPIV3MultipleCRDsSameGV(t *testing.T) {
 	assert.Contains(t, openAPISpec.Components.Schemas, "com.bar.cr.v1.BazSub")
 	assert.Contains(t, openAPISpec.Components.Schemas, "com.bar.cr.v1.FooSub")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

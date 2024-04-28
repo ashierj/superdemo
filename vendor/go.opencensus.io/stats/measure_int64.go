@@ -53,3 +53,7 @@ func (m *Int64Measure) Description() string {
 func (m *Int64Measure) Unit() string {
 	return m.desc.unit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

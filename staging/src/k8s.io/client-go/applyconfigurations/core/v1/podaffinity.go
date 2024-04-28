@@ -56,3 +56,7 @@ func (b *PodAffinityApplyConfiguration) WithPreferredDuringSchedulingIgnoredDuri
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -74,3 +74,7 @@ func (matcher *HaveKeyWithValueMatcher) NegatedFailureMessage(actual interface{}
 
 	return format.Message(actual, kStr, matcher.Key, vStr, matcher.Value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

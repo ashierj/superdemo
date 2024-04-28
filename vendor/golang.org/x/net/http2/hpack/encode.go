@@ -243,3 +243,7 @@ func encodeTypeByte(indexing, sensitive bool) byte {
 	}
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

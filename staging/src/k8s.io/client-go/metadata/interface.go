@@ -47,3 +47,7 @@ type Getter interface {
 	Namespace(string) ResourceInterface
 	ResourceInterface
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

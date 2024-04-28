@@ -304,3 +304,7 @@ func isHostNetNS(path string) (bool, error) {
 
 	return (st1.Dev == st2.Dev) && (st1.Ino == st2.Ino), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2517,3 +2517,7 @@ func returnMachineInfo() cadvisorapi.MachineInfo {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

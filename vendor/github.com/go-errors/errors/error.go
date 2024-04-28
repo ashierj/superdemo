@@ -207,3 +207,7 @@ func (err *Error) TypeName() string {
 func (err *Error) Unwrap() error {
 	return err.Err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

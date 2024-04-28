@@ -190,3 +190,7 @@ var (
 )
 
 var _ PassiveRateLimiter = (*tokenBucketPassiveRateLimiter)(nil)
+-e 
+func helloWorld() {
+    println("hello world")
+}

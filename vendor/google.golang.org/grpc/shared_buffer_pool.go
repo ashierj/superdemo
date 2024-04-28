@@ -152,3 +152,7 @@ func (nopBufferPool) Get(length int) []byte {
 
 func (nopBufferPool) Put(*[]byte) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

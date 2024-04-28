@@ -612,3 +612,7 @@ func cleanupSurroundingIdentical(groups []diffStats, eq func(i, j int) bool) []d
 	}
 	return groups
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

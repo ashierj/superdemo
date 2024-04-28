@@ -190,3 +190,7 @@ func (n NullProvider) EnableAndDisableInternalLB() (enable, disable func(svc *v1
 }
 
 var _ ProviderInterface = NullProvider{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

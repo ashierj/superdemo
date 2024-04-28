@@ -146,3 +146,7 @@ func (r *flateReadWrapper) Close() error {
 	r.fr = nil
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

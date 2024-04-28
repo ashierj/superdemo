@@ -68,3 +68,7 @@ type LeaseNamespaceLister interface {
 type leaseNamespaceLister struct {
 	listers.ResourceIndexer[*v1.Lease]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

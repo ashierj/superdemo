@@ -138,3 +138,7 @@ func Is(any *Any, pb proto.Message) bool {
 	prefix := len(any.TypeUrl) - len(name)
 	return prefix >= 1 && any.TypeUrl[prefix-1] == '/' && any.TypeUrl[prefix:] == name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

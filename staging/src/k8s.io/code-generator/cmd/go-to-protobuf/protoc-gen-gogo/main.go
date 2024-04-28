@@ -45,3 +45,7 @@ func main() {
 	// generate
 	command.Write(command.Generate(request))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

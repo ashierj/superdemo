@@ -117,3 +117,7 @@ func (b *PersistentVolumeClaimStatusApplyConfiguration) WithModifyVolumeStatus(v
 	b.ModifyVolumeStatus = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

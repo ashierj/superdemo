@@ -89,3 +89,7 @@ func allowHTTP2(nextProtos []string) bool {
 	// the transport explicitly set NextProtos and excluded http/2
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

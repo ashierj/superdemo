@@ -356,3 +356,7 @@ func getAllParentLinks(path string) ([]string, error) {
 
 	return links, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

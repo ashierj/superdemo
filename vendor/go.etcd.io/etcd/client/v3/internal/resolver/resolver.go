@@ -72,3 +72,7 @@ func (r EtcdManualResolver) updateState() {
 		r.UpdateState(state)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

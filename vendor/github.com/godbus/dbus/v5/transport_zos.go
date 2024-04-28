@@ -4,3 +4,7 @@ func (t *unixTransport) SendNullByte() error {
 	_, err := t.Write([]byte{0})
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

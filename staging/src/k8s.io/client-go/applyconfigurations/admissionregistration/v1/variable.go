@@ -46,3 +46,7 @@ func (b *VariableApplyConfiguration) WithExpression(value string) *VariableApply
 	b.Expression = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

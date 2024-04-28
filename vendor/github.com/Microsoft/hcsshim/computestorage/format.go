@@ -24,3 +24,7 @@ func FormatWritableLayerVhd(ctx context.Context, vhdHandle windows.Handle) (err 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

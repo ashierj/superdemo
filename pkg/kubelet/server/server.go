@@ -1142,3 +1142,7 @@ func containerPrometheusLabelsFunc(s stats.Provider) metrics.ContainerLabelsFunc
 		return set
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

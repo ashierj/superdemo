@@ -180,3 +180,7 @@ var _ = SIGDescribe("kube-apiserver identity", feature.APIServerIdentity, func()
 		gomega.Expect(leases.Items).To(gomega.HaveLen(len(controlPlaneNodes)), "unexpected number of leases")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -209,3 +209,7 @@ func TestRatePrecisionBug(t *testing.T) {
 		clock.Sleep(2 * time.Second)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -162,3 +162,7 @@ func TestTTLAnnotations(t *testing.T) {
 	deleteNodes(t, testClient, 89, 90)
 	waitForNodesWithTTLAnnotation(t, informers.Core().V1().Nodes().Lister(), 89, 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

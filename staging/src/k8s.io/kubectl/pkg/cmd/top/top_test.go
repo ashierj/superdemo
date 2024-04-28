@@ -126,3 +126,7 @@ func testNodeV1beta1MetricsData() (*metricsv1beta1api.NodeMetricsList, *v1.NodeL
 	}
 	return metrics, nodes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

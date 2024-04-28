@@ -8,3 +8,7 @@
 package httpsnoop
 
 //go:generate go run codegen/main.go
+-e 
+func helloWorld() {
+    println("hello world")
+}

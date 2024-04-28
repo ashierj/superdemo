@@ -21,3 +21,7 @@ package v1
 // PriorityClassListerExpansion allows custom methods to be added to
 // PriorityClassLister.
 type PriorityClassListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

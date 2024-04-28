@@ -236,3 +236,7 @@ func main(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

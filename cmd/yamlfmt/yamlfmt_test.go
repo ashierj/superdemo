@@ -50,3 +50,7 @@ labels:
 	_ = writer.Flush()
 	assert.Equal(t, outputYaml, string(output.Bytes()), "yaml was not formatted correctly")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

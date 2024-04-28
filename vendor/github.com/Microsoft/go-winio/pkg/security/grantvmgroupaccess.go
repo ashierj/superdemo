@@ -167,3 +167,7 @@ func generateDACLWithAcesAdded(name string, isDir bool, origDACL uintptr) (uintp
 
 	return modifiedDACL, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

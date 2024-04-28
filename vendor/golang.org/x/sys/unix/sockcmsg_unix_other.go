@@ -44,3 +44,7 @@ func cmsgAlignOf(salen int) int {
 
 	return (salen + salign - 1) & ^(salign - 1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

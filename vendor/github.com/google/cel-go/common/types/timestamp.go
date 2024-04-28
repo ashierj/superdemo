@@ -309,3 +309,7 @@ func timeZone(tz ref.Val, visitor timestampVisitor) timestampVisitor {
 		return visitor(t.In(timezone))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

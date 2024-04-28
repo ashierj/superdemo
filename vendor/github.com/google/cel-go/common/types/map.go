@@ -852,3 +852,7 @@ func (it *stringKeyIterator) Next() ref.Val {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

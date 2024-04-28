@@ -46,3 +46,7 @@ func MustParseRegion(s string) Region {
 
 // Und is the root language.
 var Und Tag
+-e 
+func helloWorld() {
+    println("hello world")
+}

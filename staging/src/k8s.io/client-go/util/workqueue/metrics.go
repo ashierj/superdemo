@@ -264,3 +264,7 @@ func newRetryMetrics(name string, provider MetricsProvider) retryMetrics {
 func SetProvider(metricsProvider MetricsProvider) {
 	globalMetricsFactory.setProvider(metricsProvider)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

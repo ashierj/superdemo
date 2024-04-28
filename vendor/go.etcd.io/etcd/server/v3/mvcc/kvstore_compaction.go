@@ -92,3 +92,7 @@ func (s *store) scheduleCompaction(compactMainRev, prevCompactRev int64) (KeyVal
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

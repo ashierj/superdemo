@@ -139,3 +139,7 @@ func (p *ValueAddTransformerPlugin) Transform(m resmap.ResMap) (err error) {
 func NewValueAddTransformerPlugin() resmap.TransformerPlugin {
 	return &ValueAddTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

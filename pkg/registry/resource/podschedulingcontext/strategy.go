@@ -163,3 +163,7 @@ func toSelectableFields(scheduling *resource.PodSchedulingContext) fields.Set {
 	fields := generic.ObjectMetaFieldsSet(&scheduling.ObjectMeta, true)
 	return fields
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

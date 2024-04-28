@@ -78,3 +78,7 @@ func (b *HorizontalPodAutoscalerSpecApplyConfiguration) WithBehavior(value *Hori
 	b.Behavior = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -207,3 +207,7 @@ func LoadAndValidateData(data []byte, requireNonWebhookTypes sets.Set[authzconfi
 
 	return authorizationConfiguration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

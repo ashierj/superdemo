@@ -149,3 +149,7 @@ func checkExistingRCRecovers(ctx context.Context, f *framework.Framework) {
 		return false, nil
 	}))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

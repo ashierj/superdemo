@@ -197,3 +197,7 @@ func (h *websocketStreamHandler) portForward(p *websocketStreamPair) {
 		fmt.Fprint(p.errorStream, msg.Error())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

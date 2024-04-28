@@ -82,3 +82,7 @@ func GetTargets(context *generator.Context, args *args.Args) []generator.Target 
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

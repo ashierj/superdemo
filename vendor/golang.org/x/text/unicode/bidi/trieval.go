@@ -46,3 +46,7 @@ const (
 	openMask     = 0x10
 	xorMaskShift = 5
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -159,3 +159,7 @@ func (t *TestFixture) Cleanup() []error {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

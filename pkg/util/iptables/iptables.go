@@ -875,3 +875,7 @@ func ExtractLines(lines []byte, line, count int) []LineData {
 	}
 	return extractLines
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

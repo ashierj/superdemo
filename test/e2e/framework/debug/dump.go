@@ -186,3 +186,7 @@ func getNodeEvents(ctx context.Context, c clientset.Interface, nodeName string) 
 	}
 	return events.Items
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

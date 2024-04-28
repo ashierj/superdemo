@@ -277,3 +277,7 @@ func (b *ConfigMapApplyConfiguration) WithBinaryData(entries map[string][]byte) 
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

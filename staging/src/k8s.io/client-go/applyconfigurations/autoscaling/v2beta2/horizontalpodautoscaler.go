@@ -256,3 +256,7 @@ func (b *HorizontalPodAutoscalerApplyConfiguration) WithStatus(value *Horizontal
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

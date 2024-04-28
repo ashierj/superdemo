@@ -1683,3 +1683,7 @@ func yaml_emitter_write_folded_scalar(emitter *yaml_emitter_t, value []byte) boo
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

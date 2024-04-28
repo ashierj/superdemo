@@ -172,3 +172,7 @@ func Float32Slice(name string, value []float32, usage string) *[]float32 {
 func Float32SliceP(name, shorthand string, value []float32, usage string) *[]float32 {
 	return CommandLine.Float32SliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

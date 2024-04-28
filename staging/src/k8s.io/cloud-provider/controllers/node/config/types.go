@@ -22,3 +22,7 @@ type NodeControllerConfiguration struct {
 	// concurrently synchronizing nodes
 	ConcurrentNodeSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

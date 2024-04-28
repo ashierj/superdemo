@@ -24,3 +24,7 @@ const (
 	// LabelMultiZoneDelimiter separates zones for volumes
 	LabelMultiZoneDelimiter = "__"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

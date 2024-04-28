@@ -80,3 +80,7 @@ func (c info) isLetter() bool {
 	}
 	return ccc != cccBreak
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

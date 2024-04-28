@@ -187,3 +187,7 @@ loop:
 	}
 	return nDst, nSrc, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

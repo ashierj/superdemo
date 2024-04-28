@@ -54,3 +54,7 @@ type ContainerProcessState struct {
 	// State of the container.
 	State State `json:"state"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

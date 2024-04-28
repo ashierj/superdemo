@@ -111,3 +111,7 @@ func timestampProto(t time.Time) (*timestamp, error) {
 	}
 	return ts, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

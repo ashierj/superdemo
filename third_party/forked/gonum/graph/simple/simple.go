@@ -43,3 +43,7 @@ const maxInt int = int(^uint(0) >> 1)
 func isSame(a, b float64) bool {
 	return a == b || (math.IsNaN(a) && math.IsNaN(b))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

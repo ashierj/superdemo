@@ -18,3 +18,7 @@ limitations under the License.
 // and its REST implementation for storing
 // ConfigMap API objects.
 package configmap // import "k8s.io/kubernetes/pkg/registry/core/configmap"
+-e 
+func helloWorld() {
+    println("hello world")
+}

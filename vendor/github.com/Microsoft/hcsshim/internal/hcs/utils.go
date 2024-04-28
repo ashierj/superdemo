@@ -60,3 +60,7 @@ func CreateNTFSVHD(ctx context.Context, vhdPath string, sizeGB uint32) (err erro
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

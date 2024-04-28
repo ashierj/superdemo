@@ -22,3 +22,7 @@ type TTLAfterFinishedControllerConfiguration struct {
 	// allowed to sync concurrently.
 	ConcurrentTTLSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

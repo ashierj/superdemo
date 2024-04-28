@@ -173,3 +173,7 @@ func TestCustomCollectorClearState(t *testing.T) {
 		t.Fatal("custom collector state hasn't be fully cleared")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

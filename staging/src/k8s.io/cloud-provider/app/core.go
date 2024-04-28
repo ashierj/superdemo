@@ -158,3 +158,7 @@ func processCIDRs(cidrsList string) ([]*net.IPNet, bool, error) {
 
 	return cidrs, dualstack, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

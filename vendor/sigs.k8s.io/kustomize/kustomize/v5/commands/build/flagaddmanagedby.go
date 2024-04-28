@@ -27,3 +27,7 @@ func isManagedByLabelEnabled() bool {
 	enableLabel, isSet := os.LookupEnv(konfig.EnableManagedbyLabelEnv)
 	return isSet && enableLabel == "on"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

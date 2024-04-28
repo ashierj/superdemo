@@ -19,3 +19,7 @@ type Storage struct {
 
 	QoS *StorageQoS `json:"QoS,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

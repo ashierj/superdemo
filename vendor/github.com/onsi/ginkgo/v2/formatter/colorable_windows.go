@@ -807,3 +807,7 @@ func n256setup() {
 		n256backAttr[i] = c.backgroundAttr()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

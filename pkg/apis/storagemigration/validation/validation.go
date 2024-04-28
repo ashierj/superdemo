@@ -225,3 +225,7 @@ func convertResourceVersionToInt(rv string) (int64, error) {
 
 	return resourceVersion, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

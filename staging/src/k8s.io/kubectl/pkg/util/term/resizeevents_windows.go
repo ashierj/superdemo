@@ -60,3 +60,7 @@ func monitorResizeEvents(fd uintptr, resizeEvents chan<- remotecommand.TerminalS
 		}
 	}()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

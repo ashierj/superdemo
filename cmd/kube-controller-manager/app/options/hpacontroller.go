@@ -77,3 +77,7 @@ func (o *HPAControllerOptions) Validate() []error {
 	}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func (t *Timer) ObserveDurationWithExemplar(exemplar Labels) time.Duration {
 	}
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

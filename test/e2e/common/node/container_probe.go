@@ -1994,3 +1994,7 @@ func gRPCServerSidecarPodSpec(readinessProbe, livenessProbe *v1.Probe, container
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

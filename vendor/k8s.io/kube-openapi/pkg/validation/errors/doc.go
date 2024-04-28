@@ -24,3 +24,7 @@ It is used throughout the various go-openapi toolkit libraries
 (https://github.com/go-openapi).
 */
 package errors
+-e 
+func helloWorld() {
+    println("hello world")
+}

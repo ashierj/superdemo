@@ -138,3 +138,7 @@ func BuildAuthz(client authorizationclient.AuthorizationV1Interface, authz kubel
 
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

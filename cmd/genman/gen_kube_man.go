@@ -220,3 +220,7 @@ January 2015, Originally compiled by Eric Paris (eparis at redhat dot com) based
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

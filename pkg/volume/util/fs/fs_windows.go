@@ -115,3 +115,7 @@ func diskUsage(currPath string, info os.FileInfo) (int64, error) {
 	}
 	return size, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

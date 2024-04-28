@@ -1382,3 +1382,7 @@ var signalList = [...]struct {
 	{62, "SIGSOUND", "sound completed"},
 	{63, "SIGSAK", "secure attention"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

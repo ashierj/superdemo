@@ -659,3 +659,7 @@ func maybeInteropProvider(provider any) (types.Provider, error) {
 		return nil, fmt.Errorf("unsupported type provider: %T", provider)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

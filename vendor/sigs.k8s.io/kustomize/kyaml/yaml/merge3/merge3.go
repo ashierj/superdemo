@@ -43,3 +43,7 @@ func MergeStrings(dest, original, update string, infer bool) (string, error) {
 	}
 	return result.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

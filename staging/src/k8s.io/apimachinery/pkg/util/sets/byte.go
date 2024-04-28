@@ -135,3 +135,7 @@ func (s Byte) PopAny() (byte, bool) {
 func (s Byte) Len() int {
 	return len(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

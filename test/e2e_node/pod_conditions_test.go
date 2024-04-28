@@ -291,3 +291,7 @@ func webserverPodSpec(podName, containerName, initContainerName string, addInitC
 	}
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

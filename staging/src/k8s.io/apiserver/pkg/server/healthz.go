@@ -184,3 +184,7 @@ func (c delayedLivezCheck) Check(req *http.Request) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

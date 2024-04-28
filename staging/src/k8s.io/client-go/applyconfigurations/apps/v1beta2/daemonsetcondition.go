@@ -79,3 +79,7 @@ func (b *DaemonSetConditionApplyConfiguration) WithMessage(value string) *Daemon
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

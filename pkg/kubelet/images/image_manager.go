@@ -224,3 +224,7 @@ func applyDefaultImageTag(image string) (string, error) {
 	}
 	return image, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

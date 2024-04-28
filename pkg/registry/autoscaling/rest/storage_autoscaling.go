@@ -85,3 +85,7 @@ func (p RESTStorageProvider) v2Storage(apiResourceConfigSource serverstorage.API
 func (p RESTStorageProvider) GroupName() string {
 	return autoscaling.GroupName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

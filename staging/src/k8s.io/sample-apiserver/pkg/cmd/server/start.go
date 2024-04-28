@@ -173,3 +173,7 @@ func (o WardleServerOptions) RunWardleServer(stopCh <-chan struct{}) error {
 
 	return server.GenericAPIServer.PrepareRun().Run(stopCh)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

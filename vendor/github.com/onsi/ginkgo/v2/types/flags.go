@@ -487,3 +487,7 @@ func GenerateFlagArgs(flags GinkgoFlags, bindings interface{}) ([]string, error)
 
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

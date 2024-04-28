@@ -588,3 +588,7 @@ func MustSync(st, prevst pb.HardState, entsnum int) bool {
 	// log entries[]
 	return entsnum != 0 || st.Vote != prevst.Vote || st.Term != prevst.Term
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

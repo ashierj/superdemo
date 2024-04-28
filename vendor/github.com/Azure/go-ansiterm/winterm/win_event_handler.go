@@ -741,3 +741,7 @@ func (h *windowsAnsiEventHandler) clearWrap() {
 	h.wrapNext = false
 	h.drewMarginByte = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -195,3 +195,7 @@ func (c *cSIDrivers) Apply(ctx context.Context, cSIDriver *storagev1.CSIDriverAp
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

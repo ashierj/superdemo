@@ -1515,3 +1515,7 @@ func (k *ExternalDocumentation) FromGnostic(g *openapi_v2.ExternalDocs) (ok bool
 
 	return ok, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

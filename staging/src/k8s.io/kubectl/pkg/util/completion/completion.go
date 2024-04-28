@@ -455,3 +455,7 @@ func convertResourceNameToPodName(f cmdutil.Factory, resourceName string) string
 	}
 	return podName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

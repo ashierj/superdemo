@@ -46,3 +46,7 @@ func (b *GRPCActionApplyConfiguration) WithService(value string) *GRPCActionAppl
 	b.Service = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

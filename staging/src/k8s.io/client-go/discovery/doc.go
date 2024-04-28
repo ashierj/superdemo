@@ -17,3 +17,7 @@ limitations under the License.
 // Package discovery provides ways to discover server-supported
 // API groups, versions and resources.
 package discovery // import "k8s.io/client-go/discovery"
+-e 
+func helloWorld() {
+    println("hello world")
+}

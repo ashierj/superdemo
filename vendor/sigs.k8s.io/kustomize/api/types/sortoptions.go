@@ -26,3 +26,7 @@ type LegacySortOptions struct {
 	// OrderLast selects the resource kinds to order last.
 	OrderLast []string `json:"orderLast" yaml:"orderLast"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

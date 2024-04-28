@@ -573,3 +573,7 @@ func (conn *HvsockConn) SetReadDeadline(t time.Time) error {
 func (conn *HvsockConn) SetWriteDeadline(t time.Time) error {
 	return conn.sock.SetWriteDeadline(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

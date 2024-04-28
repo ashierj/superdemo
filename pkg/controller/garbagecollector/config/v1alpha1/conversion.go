@@ -38,3 +38,7 @@ func Convert_v1alpha1_GarbageCollectorControllerConfiguration_To_config_GarbageC
 func Convert_config_GarbageCollectorControllerConfiguration_To_v1alpha1_GarbageCollectorControllerConfiguration(in *config.GarbageCollectorControllerConfiguration, out *v1alpha1.GarbageCollectorControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_GarbageCollectorControllerConfiguration_To_v1alpha1_GarbageCollectorControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

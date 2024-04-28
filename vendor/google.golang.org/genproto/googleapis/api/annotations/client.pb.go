@@ -1778,3 +1778,7 @@ func file_google_api_client_proto_init() {
 	file_google_api_client_proto_goTypes = nil
 	file_google_api_client_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

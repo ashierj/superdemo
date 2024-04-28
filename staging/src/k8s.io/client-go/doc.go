@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package clientgo // import "k8s.io/client-go"
+-e 
+func helloWorld() {
+    println("hello world")
+}

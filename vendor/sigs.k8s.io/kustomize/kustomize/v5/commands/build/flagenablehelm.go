@@ -22,3 +22,7 @@ func AddFlagEnableHelm(set *pflag.FlagSet) {
 		"helm", // default
 		"helm command (path to executable)")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

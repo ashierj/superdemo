@@ -416,3 +416,7 @@ func TestProtocolSupportsStreamClose(t *testing.T) {
 			"%s: expected (%t), got (%t)", name, test.expected, actual)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

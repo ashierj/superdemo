@@ -50,3 +50,7 @@ var (
 	RPCMessageTypeSent     = RPCMessageTypeKey.String("SENT")
 	RPCMessageTypeReceived = RPCMessageTypeKey.String("RECEIVED")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

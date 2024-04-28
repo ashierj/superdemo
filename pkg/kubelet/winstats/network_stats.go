@@ -311,3 +311,7 @@ func (n *networkCounter) listInterfaceStats() []cadvisorapi.InterfaceStats {
 	}
 	return stats
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

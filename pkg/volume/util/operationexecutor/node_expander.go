@@ -157,3 +157,7 @@ func (ne *NodeExpander) expandOnPlugin() (bool, error, testResponseData) {
 	}
 	return true, nil, testResponseData{true, true}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -233,3 +233,7 @@ func (enc *encoder) encode(v reflect.Value, depth int) {
 		panic(InvalidTypeError{v.Type()})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

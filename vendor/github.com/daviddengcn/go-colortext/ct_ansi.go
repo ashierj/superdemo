@@ -49,3 +49,7 @@ func changeColor(fg Color, fgBright bool, bg Color, bgBright bool) {
 	}
 	fmt.Fprint(Writer, ansiText(fg, fgBright, bg, bgBright))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -30,3 +30,7 @@ func DeepHashObject(hasher hash.Hash, objectToWrite interface{}) {
 	hasher.Reset()
 	fmt.Fprintf(hasher, "%v", dump.ForHash(objectToWrite))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -322,3 +322,7 @@ func TestMaxInFlightSkipsMasters(t *testing.T) {
 
 	responses.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -236,3 +236,7 @@ func getClusterInfo(client clientset.Interface, kubeconfig *clientcmdapi.Config,
 
 	return cm, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

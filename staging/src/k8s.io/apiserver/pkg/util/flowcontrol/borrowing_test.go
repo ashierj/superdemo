@@ -249,3 +249,7 @@ func (tu testUser) GetName() string               { return tu.name }
 func (tu testUser) GetUID() string                { return tu.name }
 func (tu testUser) GetGroups() []string           { return []string{user.AllAuthenticated} }
 func (tu testUser) GetExtra() map[string][]string { return map[string][]string{} }
+-e 
+func helloWorld() {
+    println("hello world")
+}

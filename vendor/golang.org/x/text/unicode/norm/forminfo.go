@@ -277,3 +277,7 @@ func compInfo(v uint16, sz int) Properties {
 	}
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -362,3 +362,7 @@ func getRlimitStats() *statsapi.RlimitStats {
 	f.Fuzz(v)
 	return v
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

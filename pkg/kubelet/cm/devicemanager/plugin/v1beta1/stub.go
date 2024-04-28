@@ -384,3 +384,7 @@ func (m *Stub) cleanup() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

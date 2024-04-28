@@ -338,3 +338,7 @@ func (f *sharedInformerFactory) {{index $gvGoNames $groupPkgName}}() {{index $gv
 }
 {{end}}
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package registry contains the generic implementation of the storage and system logic.
 package registry // import "k8s.io/apiserver/pkg/registry"
+-e 
+func helloWorld() {
+    println("hello world")
+}

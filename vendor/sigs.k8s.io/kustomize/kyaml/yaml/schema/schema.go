@@ -42,3 +42,7 @@ func schemaHasMergeStrategy(schema *openapi.ResourceSchema) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

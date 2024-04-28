@@ -30,3 +30,7 @@ const (
 	// +deprecated
 	AnnotationIngressClass = "kubernetes.io/ingress.class"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

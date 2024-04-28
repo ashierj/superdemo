@@ -322,3 +322,7 @@ func (pw *ProxyWatcher) ResultChan() <-chan Event {
 func (pw *ProxyWatcher) StopChan() <-chan struct{} {
 	return pw.stopCh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

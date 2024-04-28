@@ -350,3 +350,7 @@ func BenchmarkIsMountPointMatch(b *testing.B) {
 		testIsMountPointMatch(b)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -99,3 +99,7 @@ func SinceInSeconds(start time.Time) float64 {
 func CollectVolumeStatCalDuration(metricSource string, start time.Time) {
 	VolumeStatCalDuration.WithLabelValues(metricSource).Observe(SinceInSeconds(start))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

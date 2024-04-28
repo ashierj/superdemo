@@ -158,3 +158,7 @@ func (c *FakeRoles) Apply(ctx context.Context, role *rbacv1beta1.RoleApplyConfig
 	}
 	return obj.(*v1beta1.Role), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -17,3 +17,7 @@ limitations under the License.
 // +k8s:deepcopy-gen=package
 
 package eventratelimit // import "k8s.io/kubernetes/plugin/pkg/admission/eventratelimit/apis/eventratelimit"
+-e 
+func helloWorld() {
+    println("hello world")
+}

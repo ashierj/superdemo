@@ -420,3 +420,7 @@ func neighSubscribeAt(newNs, curNs netns.NsHandle, ch chan<- NeighUpdate, done <
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

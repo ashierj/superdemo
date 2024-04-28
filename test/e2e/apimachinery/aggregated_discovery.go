@@ -406,3 +406,7 @@ func isGVRPresentAPIDiscovery(apidiscovery apidiscoveryv2.APIGroupDiscoveryList,
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

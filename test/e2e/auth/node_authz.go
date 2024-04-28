@@ -212,3 +212,7 @@ var _ = SIGDescribe(feature.NodeAuthorizer, func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

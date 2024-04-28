@@ -160,3 +160,7 @@ func SocketGet(local, remote net.Addr) (*Socket, error) {
 	}
 	return sock, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

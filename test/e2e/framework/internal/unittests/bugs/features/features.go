@@ -37,3 +37,7 @@ var testFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
 	Beta:  {PreRelease: featuregate.Beta},
 	GA:    {PreRelease: featuregate.GA},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

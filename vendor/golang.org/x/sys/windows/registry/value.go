@@ -384,3 +384,7 @@ loopItems:
 	}
 	return names, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

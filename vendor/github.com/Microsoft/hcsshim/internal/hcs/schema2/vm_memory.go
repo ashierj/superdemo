@@ -24,3 +24,7 @@ type VmMemory struct {
 
 	DmOperationInProgress bool `json:"DmOperationInProgress,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

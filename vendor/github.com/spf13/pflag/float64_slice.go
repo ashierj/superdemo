@@ -164,3 +164,7 @@ func Float64Slice(name string, value []float64, usage string) *[]float64 {
 func Float64SliceP(name, shorthand string, value []float64, usage string) *[]float64 {
 	return CommandLine.Float64SliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -151,3 +151,7 @@ func appendMissingElements(message string, missingElements []interface{}) string
 func (matcher *ConsistOfMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to consist of", presentable(matcher.Elements))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

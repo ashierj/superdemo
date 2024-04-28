@@ -112,3 +112,7 @@ func NewSelectiveStringsValue(valids ...string) *SelectiveStringsValue {
 	}
 	return &SelectiveStringsValue{valids: vm, vs: []string{}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

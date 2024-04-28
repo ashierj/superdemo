@@ -62,3 +62,7 @@ func TestPriorityClassStrategy(t *testing.T) {
 		t.Errorf("Expected a validation error")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

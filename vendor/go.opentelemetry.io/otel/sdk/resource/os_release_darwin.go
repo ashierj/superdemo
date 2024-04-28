@@ -100,3 +100,7 @@ func buildOSRelease(properties map[string]string) string {
 
 	return fmt.Sprintf("%s %s (%s)", productName, productVersion, productBuildVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

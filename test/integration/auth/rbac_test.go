@@ -816,3 +816,7 @@ func TestDiscoveryUpgradeBootstrapping(t *testing.T) {
 		t.Errorf("`system:public-info-viewer` should have inherited Subjects from `system:discovery` Wanted: %v, got %v", newDiscRoleBinding.Subjects, publicInfoViewerRoleBinding.Subjects)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

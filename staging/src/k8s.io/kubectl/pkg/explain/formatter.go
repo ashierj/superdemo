@@ -176,3 +176,7 @@ func wrapString(str string, wrap int) []string {
 	flush()
 	return wrapped
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

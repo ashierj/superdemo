@@ -57,3 +57,7 @@ func init() {
 	prometheus.MustRegister(leaseRenewed)
 	prometheus.MustRegister(leaseTotalTTLs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

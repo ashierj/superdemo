@@ -53,3 +53,7 @@ func getDriverHash(driverName string) string {
 	hashed = hashed[:16]
 	return CSIAttachLimitPrefix + charsFromDriverName + hashed
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

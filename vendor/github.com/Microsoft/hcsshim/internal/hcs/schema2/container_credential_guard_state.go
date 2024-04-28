@@ -23,3 +23,7 @@ type ContainerCredentialGuardState struct {
 	//  Credential spec used for the configured Container Credential Guard instance.
 	CredentialSpec string `json:"CredentialSpec,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

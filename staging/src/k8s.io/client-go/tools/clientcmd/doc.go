@@ -35,3 +35,7 @@ Sample usage from merged .kubeconfig files (local directory, home directory)
 	// ...
 */
 package clientcmd // import "k8s.io/client-go/tools/clientcmd"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func AlmostEqualFloat64s(a, b []float64, epsilon float64) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

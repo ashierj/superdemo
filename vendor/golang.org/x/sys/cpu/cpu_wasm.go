@@ -15,3 +15,7 @@ const cacheLineSize = 0
 func initOptions() {}
 
 func archInit() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

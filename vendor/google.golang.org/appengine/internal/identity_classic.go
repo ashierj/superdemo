@@ -59,3 +59,7 @@ func fullyQualifiedAppID(ctx netcontext.Context) string {
 	}
 	return c.FullyQualifiedAppID()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

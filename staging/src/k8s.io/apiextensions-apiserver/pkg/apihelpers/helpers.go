@@ -258,3 +258,7 @@ func HasVersionServed(crd *apiextensionsv1.CustomResourceDefinition, version str
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -269,3 +269,7 @@ func (r *Resource) Encoded(enc attribute.Encoder) string {
 	}
 	return r.attrs.Encoded(enc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

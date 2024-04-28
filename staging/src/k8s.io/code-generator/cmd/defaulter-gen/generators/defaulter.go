@@ -1229,3 +1229,7 @@ func (path callPath) String() string {
 
 	return strings.Join(parts, ".") + " calls " + strings.Join(calls, ", ")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

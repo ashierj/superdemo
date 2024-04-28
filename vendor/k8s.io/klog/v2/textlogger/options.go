@@ -152,3 +152,7 @@ func (c *Config) AddFlags(fs *flag.FlagSet) {
 	fs.Var(c.Verbosity(), c.co.verbosityFlagName, "number for the log level verbosity of the testing logger")
 	fs.Var(c.VModule(), c.co.vmoduleFlagName, "comma-separated list of pattern=N log level settings for files matching the patterns")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -398,3 +398,7 @@ func findPort(pod *v1.Pod, svcPort *v1.ServicePort) (int, error) {
 
 	return 0, fmt.Errorf("no suitable port for manifest: %s", pod.UID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

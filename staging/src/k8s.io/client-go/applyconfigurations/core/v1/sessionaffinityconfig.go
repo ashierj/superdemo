@@ -37,3 +37,7 @@ func (b *SessionAffinityConfigApplyConfiguration) WithClientIP(value *ClientIPCo
 	b.ClientIP = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -72,3 +72,7 @@ var _ = common.SIGDescribe("Loadbalancing: L7 Scalability", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

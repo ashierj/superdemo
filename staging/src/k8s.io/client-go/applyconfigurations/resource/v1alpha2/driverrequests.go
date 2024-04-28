@@ -64,3 +64,7 @@ func (b *DriverRequestsApplyConfiguration) WithRequests(values ...*ResourceReque
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

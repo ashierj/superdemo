@@ -100,3 +100,7 @@ func RegisterMetrics() {
 		legacyregistry.MustRegister(validTokensTotal)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

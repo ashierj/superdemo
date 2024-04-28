@@ -128,3 +128,7 @@ func hasExemptPathPrefix(r *http.Request) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

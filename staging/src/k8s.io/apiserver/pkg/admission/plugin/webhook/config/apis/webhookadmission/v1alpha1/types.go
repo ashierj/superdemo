@@ -27,3 +27,7 @@ type WebhookAdmission struct {
 	// KubeConfigFile is the path to the kubeconfig file.
 	KubeConfigFile string `json:"kubeConfigFile"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -97,3 +97,7 @@ var Funcs = fuzzer.MergeFuzzerFuncs(
 	overrideMetaFuncs,
 	testapigroupFuncs,
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

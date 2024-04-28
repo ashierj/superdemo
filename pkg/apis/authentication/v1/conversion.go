@@ -33,3 +33,7 @@ func Convert_v1_UserInfo_To_authentication_UserInfo(in *v1.UserInfo, out *authen
 func Convert_authentication_UserInfo_To_v1_UserInfo(in *authentication.UserInfo, out *v1.UserInfo, s conversion.Scope) error {
 	return autoConvert_authentication_UserInfo_To_v1_UserInfo(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

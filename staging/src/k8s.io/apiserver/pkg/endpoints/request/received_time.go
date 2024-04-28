@@ -43,3 +43,7 @@ func ReceivedTimestampFrom(ctx context.Context) (time.Time, bool) {
 	info, ok := ctx.Value(requestReceivedTimestampKey).(time.Time)
 	return info, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -70,3 +70,7 @@ func NewNotFound(a Attributes) error {
 	}
 	return apierrors.NewNotFound(resource, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

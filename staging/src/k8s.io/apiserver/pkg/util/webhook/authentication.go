@@ -274,3 +274,7 @@ func setGlobalDefaults(config *rest.Config) *rest.Config {
 
 	return config
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

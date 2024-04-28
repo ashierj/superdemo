@@ -255,3 +255,7 @@ func skipLeadingUtf8Bom(src []byte) []byte {
 	}
 	return src
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

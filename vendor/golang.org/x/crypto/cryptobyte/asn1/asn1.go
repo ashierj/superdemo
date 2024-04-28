@@ -44,3 +44,7 @@ const (
 	GeneralizedTime   = Tag(24)
 	GeneralString     = Tag(27)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

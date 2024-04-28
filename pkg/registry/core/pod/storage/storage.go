@@ -365,3 +365,7 @@ func (r *EphemeralContainersREST) Update(ctx context.Context, name string, objIn
 	// subresources should never allow create on update.
 	return r.store.Update(ctx, name, objInfo, createValidation, updateValidation, false, options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -330,3 +330,7 @@ func checkRules(t *testing.T, expectMatch bool, digest RequestDigest, rules []fl
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

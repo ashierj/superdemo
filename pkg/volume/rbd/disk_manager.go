@@ -133,3 +133,7 @@ func diskTearDown(manager diskManager, c rbdUnmounter, volPath string, mounter m
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

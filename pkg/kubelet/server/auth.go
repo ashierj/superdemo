@@ -113,3 +113,7 @@ func (n nodeAuthorizerAttributesGetter) GetRequestAttributes(u user.Info, r *htt
 
 	return attrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

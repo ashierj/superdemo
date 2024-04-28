@@ -58,3 +58,7 @@ func getMetadata(key string) ([]byte, error) {
 	}
 	return ioutil.ReadAll(resp.Body)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

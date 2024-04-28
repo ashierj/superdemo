@@ -83,3 +83,7 @@ func (b *PolicyRuleApplyConfiguration) WithNonResourceURLs(values ...string) *Po
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

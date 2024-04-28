@@ -20,3 +20,7 @@ func modeType(osPathname string) (os.FileMode, error) {
 	}
 	return 0, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func RecommendedDefaultReplicationControllerConfiguration(obj *kubectrlmgrconfig
 		obj.ConcurrentRCSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

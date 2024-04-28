@@ -722,3 +722,7 @@ type VolumeAttributesClassList struct {
 	// +listMapKey=name
 	Items []VolumeAttributesClass
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

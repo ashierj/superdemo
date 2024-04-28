@@ -26,3 +26,7 @@ const (
 	// BadQuotaID -- Invalid quota
 	BadQuotaID QuotaID = 0
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

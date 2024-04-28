@@ -141,3 +141,7 @@ func parseNetRouteLine(fields []string) (*NetRouteLine, error) {
 	}
 	return routeline, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

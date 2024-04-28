@@ -236,3 +236,7 @@ func BuildAuthorizer(ctx context.Context, s controlplaneapiserver.CompletedOptio
 
 	return authorizer, ruleResolver, enablesRBAC, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

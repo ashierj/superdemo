@@ -124,3 +124,7 @@ func (m *KeysMatcher) NegatedFailureMessage(actual interface{}) (message string)
 func (m *KeysMatcher) Failures() []error {
 	return m.failures
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

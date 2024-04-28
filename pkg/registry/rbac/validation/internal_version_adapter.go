@@ -37,3 +37,7 @@ func ConfirmNoEscalationInternal(ctx context.Context, ruleResolver Authorization
 
 	return ConfirmNoEscalation(ctx, ruleResolver, rules)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

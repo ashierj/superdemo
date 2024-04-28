@@ -27,3 +27,7 @@ import (
 func Stats() (*statsapi.RlimitStats, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

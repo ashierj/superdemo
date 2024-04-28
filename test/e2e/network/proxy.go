@@ -617,3 +617,7 @@ func waitForEndpoint(ctx context.Context, c clientset.Interface, ns, name string
 	}
 	return fmt.Errorf("failed to get endpoints for %s/%s", ns, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -312,3 +312,7 @@ func (s sortedSeqContents) Less(i, j int) bool {
 	// compare the field values
 	return iValue < jValue
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

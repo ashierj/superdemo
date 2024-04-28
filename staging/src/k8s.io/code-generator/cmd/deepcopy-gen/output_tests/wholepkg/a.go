@@ -169,3 +169,7 @@ type StructInterfaces struct {
 	NilObjectField otherpkg.Object
 	SelectorField  Selector
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

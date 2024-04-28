@@ -259,3 +259,7 @@ func (b *ClusterRoleBindingApplyConfiguration) WithRoleRef(value *RoleRefApplyCo
 	b.RoleRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -209,3 +209,7 @@ type resourceShortcuts struct {
 	ShortForm schema.GroupResource
 	LongForm  schema.GroupResource
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

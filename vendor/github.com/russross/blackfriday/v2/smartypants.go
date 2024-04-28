@@ -455,3 +455,7 @@ func (r *SPRenderer) Process(w io.Writer, text []byte) {
 		w.Write(text[mark:])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

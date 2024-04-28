@@ -273,3 +273,7 @@ func (rc *resourceMetricsCollector) collectPodSwapMetrics(ch chan<- metrics.Metr
 		metrics.NewLazyConstMetric(podSwapUsageDesc, metrics.GaugeValue,
 			float64(*pod.Swap.SwapUsageBytes), pod.PodRef.Name, pod.PodRef.Namespace))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

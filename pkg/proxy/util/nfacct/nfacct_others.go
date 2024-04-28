@@ -29,3 +29,7 @@ var unsupportedError = fmt.Errorf(runtime.GOOS + "/" + runtime.GOARCH + "is unsu
 func New() (Interface, error) {
 	return nil, unsupportedError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

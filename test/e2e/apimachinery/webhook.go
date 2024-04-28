@@ -2751,3 +2751,7 @@ func newMutatingIsReadyWebhookFixture(f *framework.Framework, certCtx *certConte
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

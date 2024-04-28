@@ -78,3 +78,7 @@ func (ne *NSEnter) LookPath(file string) (string, error) {
 }
 
 var _ exec.Interface = &NSEnter{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

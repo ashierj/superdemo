@@ -68,3 +68,7 @@ type StatefulSetNamespaceLister interface {
 type statefulSetNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta2.StatefulSet]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

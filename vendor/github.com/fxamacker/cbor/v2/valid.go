@@ -316,3 +316,7 @@ func (d *decoder) wellformedHead() (t cborType, ai byte, val uint64, err error) 
 	// ai == 28, 29, 30
 	return 0, 0, 0, &SyntaxError{"cbor: invalid additional information " + strconv.Itoa(int(ai)) + " for type " + t.String()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

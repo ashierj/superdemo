@@ -77,3 +77,7 @@ func (t *Trie) GetPrefix(v string) (string, bool) {
 	}
 	return "", false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

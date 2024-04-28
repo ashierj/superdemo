@@ -566,3 +566,7 @@ func (m aberrantMessage) ProtoMethods() *protoiface.Methods {
 func (m aberrantMessage) protoUnwrap() interface{} {
 	return m.v.Interface()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

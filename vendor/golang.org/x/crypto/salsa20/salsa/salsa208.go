@@ -199,3 +199,7 @@ func Core208(out *[64]byte, in *[64]byte) {
 	out[62] = byte(x15 >> 16)
 	out[63] = byte(x15 >> 24)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

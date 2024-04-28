@@ -49,3 +49,7 @@ var _ = Describe("bootstrap signer", func() {
 		ExpectRole(f.ClientSet, kubeSystemNamespace, bootstrapTokensSignerRoleName)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

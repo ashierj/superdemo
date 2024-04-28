@@ -126,3 +126,7 @@ var _ = utils.SIGDescribe("Subpath", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

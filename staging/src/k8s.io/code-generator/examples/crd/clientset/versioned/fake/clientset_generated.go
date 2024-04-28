@@ -90,3 +90,7 @@ func (c *Clientset) ExampleV1() examplev1.ExampleV1Interface {
 func (c *Clientset) SecondExampleV1() secondexamplev1.SecondExampleV1Interface {
 	return &fakesecondexamplev1.FakeSecondExampleV1{Fake: &c.Fake}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

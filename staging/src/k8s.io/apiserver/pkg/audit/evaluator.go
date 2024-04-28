@@ -43,3 +43,7 @@ type PolicyRuleEvaluator interface {
 	// is applicable to the given equest.
 	EvaluatePolicyRule(authorizer.Attributes) RequestAuditConfig
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

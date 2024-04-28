@@ -51,3 +51,7 @@ func Run() error {
 	cmd := cmd.NewKubeadmCommand(os.Stdin, os.Stdout, os.Stderr)
 	return cmd.Execute()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

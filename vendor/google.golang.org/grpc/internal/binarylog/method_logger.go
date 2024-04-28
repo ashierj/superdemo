@@ -443,3 +443,7 @@ func addrToProto(addr net.Addr) *binlogpb.Address {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

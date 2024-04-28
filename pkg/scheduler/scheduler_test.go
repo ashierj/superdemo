@@ -1004,3 +1004,7 @@ func (*emptyEventsToRegisterPlugin) Filter(_ context.Context, _ *framework.Cycle
 }
 
 func (*emptyEventsToRegisterPlugin) EventsToRegister() []framework.ClusterEventWithHint { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

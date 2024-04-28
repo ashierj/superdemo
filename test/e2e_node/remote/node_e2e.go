@@ -201,3 +201,7 @@ func (n *NodeE2ERemote) RunTest(host, workspace, results, imageDesc, junitFilePr
 	)
 	return SSH(host, "/bin/bash", "-c", cmd)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

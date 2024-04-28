@@ -58,3 +58,7 @@ type ScaleStatus struct {
 	// +optional
 	Selector *metav1.LabelSelector
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

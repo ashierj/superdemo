@@ -124,3 +124,7 @@ func (s *ProtoJSONStream) Close() error {
 
 	return s.reader.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

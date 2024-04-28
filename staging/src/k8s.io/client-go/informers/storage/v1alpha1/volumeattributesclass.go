@@ -87,3 +87,7 @@ func (f *volumeAttributesClassInformer) Informer() cache.SharedIndexInformer {
 func (f *volumeAttributesClassInformer) Lister() v1alpha1.VolumeAttributesClassLister {
 	return v1alpha1.NewVolumeAttributesClassLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

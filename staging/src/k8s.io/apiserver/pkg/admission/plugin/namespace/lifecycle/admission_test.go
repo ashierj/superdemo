@@ -310,3 +310,7 @@ func TestAdmissionNamespaceForceLiveLookup(t *testing.T) {
 	}
 	getCalls = 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

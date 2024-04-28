@@ -350,3 +350,7 @@ func getPollTimeoutSeconds() int {
 	}
 	return defaultPollTimeoutSeconds
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

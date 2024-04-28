@@ -628,3 +628,7 @@ func TestShortNames(t *testing.T) {
 	expected := []string{"ns"}
 	registrytest.AssertShortNames(t, storage, expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

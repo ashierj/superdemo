@@ -33,3 +33,7 @@ func fakeGetHostDNSConfigCustom(resolverConfig string) (*runtimeapi.DNSConfig, e
 		Searches: []string{testHostDomain},
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

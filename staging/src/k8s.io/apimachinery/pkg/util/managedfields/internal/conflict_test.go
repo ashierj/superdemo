@@ -129,3 +129,7 @@ conflicts with "foo" using v1 at 2001-02-03T04:05:06Z:
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

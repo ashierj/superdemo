@@ -65,3 +65,7 @@ func main() {
 		klog.Fatalf("Error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

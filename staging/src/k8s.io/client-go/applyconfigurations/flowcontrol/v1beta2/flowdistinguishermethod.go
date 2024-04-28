@@ -41,3 +41,7 @@ func (b *FlowDistinguisherMethodApplyConfiguration) WithType(value v1beta2.FlowD
 	b.Type = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

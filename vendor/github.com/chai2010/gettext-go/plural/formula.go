@@ -179,3 +179,7 @@ var formulaTable = map[string]func(n int) int{
 		return 3
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

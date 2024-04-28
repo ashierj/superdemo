@@ -220,3 +220,7 @@ func nextRequest() interface{} {
 	requestUID++
 	return requestUID
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

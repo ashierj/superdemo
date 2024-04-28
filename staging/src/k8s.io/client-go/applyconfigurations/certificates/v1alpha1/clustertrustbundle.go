@@ -245,3 +245,7 @@ func (b *ClusterTrustBundleApplyConfiguration) WithSpec(value *ClusterTrustBundl
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

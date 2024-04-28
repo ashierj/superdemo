@@ -741,3 +741,7 @@ func setNestedField(u *unstructured.Unstructured, value interface{}, fields ...s
 	}
 	unstructured.SetNestedField(u.Object, value, fields...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

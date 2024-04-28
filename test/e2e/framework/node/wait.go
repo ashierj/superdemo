@@ -293,3 +293,7 @@ func readyForTests(node *v1.Node, nonblockingTaints string) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

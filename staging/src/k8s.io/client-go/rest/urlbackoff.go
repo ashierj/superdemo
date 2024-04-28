@@ -105,3 +105,7 @@ func (b *URLBackoff) CalculateBackoff(actualUrl *url.URL) time.Duration {
 func (b *URLBackoff) Sleep(d time.Duration) {
 	b.Backoff.Clock.Sleep(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

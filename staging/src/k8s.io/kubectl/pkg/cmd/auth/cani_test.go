@@ -331,3 +331,7 @@ func getSelfSubjectRulesReview() *authorizationv1.SelfSubjectRulesReview {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

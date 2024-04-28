@@ -86,3 +86,7 @@ func (b *OwnerReferenceApplyConfiguration) WithBlockOwnerDeletion(value bool) *O
 	b.BlockOwnerDeletion = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -99,3 +99,7 @@ func syscallMode(i fs.FileMode) (o uint32) {
 	// No mapping for Go's ModeTemporary (plan9 only).
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

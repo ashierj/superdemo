@@ -56,3 +56,7 @@ func (m *PointerMatcher) FailureMessage(_ interface{}) (message string) {
 func (m *PointerMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return m.Matcher.NegatedFailureMessage(actual)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

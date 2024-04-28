@@ -297,3 +297,7 @@ func (t RegisterWithTaintsVar) String() string {
 func (t RegisterWithTaintsVar) Type() string {
 	return "[]v1.Taint"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

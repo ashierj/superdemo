@@ -38,3 +38,7 @@ func (in *SelfSubjectReview) APILifecycleDeprecated() (major, minor int) {
 func (in *SelfSubjectReview) APILifecycleRemoved() (major, minor int) {
 	return 1, 32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ func Stat(path string, statptr *Stat_t) error {
 	fixStatTimFields(statptr)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

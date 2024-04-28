@@ -151,3 +151,7 @@ func TestSetResetDynamicDefaults(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

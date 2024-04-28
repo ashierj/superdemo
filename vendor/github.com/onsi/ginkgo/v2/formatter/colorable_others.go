@@ -39,3 +39,7 @@ import (
 func newColorable(file *os.File) io.Writer {
 	return file
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

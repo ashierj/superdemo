@@ -816,3 +816,7 @@ func (q *QuantityValue) Set(s string) error {
 func (q QuantityValue) Type() string {
 	return "quantity"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

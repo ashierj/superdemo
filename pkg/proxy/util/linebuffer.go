@@ -158,3 +158,7 @@ func (buf *discardLineBuffer) String() string {
 func (buf *discardLineBuffer) Lines() int {
 	return buf.lines
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

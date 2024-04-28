@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package controllerrevision // import "k8s.io/kubernetes/pkg/registry/apps/controllerrevision"
+-e 
+func helloWorld() {
+    println("hello world")
+}

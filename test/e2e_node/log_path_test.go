@@ -160,3 +160,7 @@ var _ = SIGDescribe("ContainerLogPath", framework.WithNodeConformance(), func() 
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

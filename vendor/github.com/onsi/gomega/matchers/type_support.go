@@ -180,3 +180,7 @@ func isNil(a interface{}) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

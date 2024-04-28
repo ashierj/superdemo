@@ -65,3 +65,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	cmv1beta1.AddToScheme(scheme)
 	cmv1beta2.AddToScheme(scheme)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

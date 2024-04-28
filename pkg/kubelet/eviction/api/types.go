@@ -116,3 +116,7 @@ func GetThresholdQuantity(value ThresholdValue, capacity *resource.Quantity) *re
 	}
 	return resource.NewQuantity(int64(float64(capacity.Value())*float64(value.Percentage)), resource.BinarySI)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

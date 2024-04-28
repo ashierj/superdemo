@@ -51,3 +51,7 @@ func loadSimpleBpf(progType BpfProgType, ret uint32) (int, error) {
 	}
 	return int(fd), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

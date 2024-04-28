@@ -579,3 +579,7 @@ func (element *Element) parse(line string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

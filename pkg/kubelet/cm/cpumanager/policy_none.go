@@ -74,3 +74,7 @@ func (p *nonePolicy) GetPodTopologyHints(s state.State, pod *v1.Pod) map[string]
 func (p *nonePolicy) GetAllocatableCPUs(m state.State) cpuset.CPUSet {
 	return cpuset.New()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

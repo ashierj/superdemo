@@ -74,3 +74,7 @@ var _ MemoryAllocator = &SimpleAllocator{}
 func (sa *SimpleAllocator) Allocate(n uint64) []byte {
 	return make([]byte, n)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

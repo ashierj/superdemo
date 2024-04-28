@@ -86,3 +86,7 @@ const (
 	// UnknownParameterKind indicates the request parameter type has not been specified.
 	UnknownParameterKind
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

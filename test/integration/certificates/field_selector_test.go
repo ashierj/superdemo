@@ -126,3 +126,7 @@ func pemWithTemplate(template *x509.CertificateRequest) []byte {
 
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

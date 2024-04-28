@@ -236,3 +236,7 @@ func (m *concurrentUIDToNode) Delete(uid types.UID) {
 	defer m.uidToNodeLock.Unlock()
 	delete(m.uidToNode, uid)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

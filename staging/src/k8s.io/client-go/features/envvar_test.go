@@ -154,3 +154,7 @@ func TestHasAlreadyReadEnvVar(t *testing.T) {
 	_ = target.getEnabledMapFromEnvVar()
 	require.True(t, target.hasAlreadyReadEnvVar())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

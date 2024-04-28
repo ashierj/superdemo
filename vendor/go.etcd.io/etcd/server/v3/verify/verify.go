@@ -145,3 +145,7 @@ func validateWal(cfg Config) (*walpb.Snapshot, *raftpb.HardState, error) {
 	}
 	return &snapshot, hardstate, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

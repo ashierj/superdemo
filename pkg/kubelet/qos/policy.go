@@ -80,3 +80,7 @@ func GetContainerOOMScoreAdjust(pod *v1.Pod, container *v1.Container, memoryCapa
 	}
 	return int(oomScoreAdjust)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

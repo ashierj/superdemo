@@ -99,3 +99,7 @@ func (o MarshalOptions) sizeMap(num protowire.Number, fd protoreflect.FieldDescr
 	})
 	return size
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

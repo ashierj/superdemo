@@ -182,3 +182,7 @@ func descName(d protoreflect.Descriptor) string {
 		return fmt.Sprintf("%T", d)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -673,3 +673,7 @@ func (i *Handle) doSetConfigCmd(c *Config) error {
 |-----------------------------------|
 
 */
+-e 
+func helloWorld() {
+    println("hello world")
+}

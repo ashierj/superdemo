@@ -76,3 +76,7 @@ func (ca *CertificateAuthority) Sign(crDER []byte, policy SigningPolicy) ([]byte
 	}
 	return der, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

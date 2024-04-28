@@ -121,3 +121,7 @@ func (any *numberLazyAny) GetInterface() interface{} {
 	defer any.cfg.ReturnIterator(iter)
 	return iter.Read()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

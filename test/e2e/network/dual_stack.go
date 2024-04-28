@@ -840,3 +840,7 @@ func createService(name, ns string, labels map[string]string, ipFamilyPolicy *v1
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

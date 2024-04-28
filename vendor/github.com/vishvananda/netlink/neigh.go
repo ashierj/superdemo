@@ -30,3 +30,7 @@ type NeighUpdate struct {
 	Type uint16
 	Neigh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

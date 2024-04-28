@@ -40,3 +40,7 @@ func init() {
 	prometheus.MustRegister(walFsyncSec)
 	prometheus.MustRegister(walWriteBytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

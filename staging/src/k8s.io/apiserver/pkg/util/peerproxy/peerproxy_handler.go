@@ -355,3 +355,7 @@ func (h *peerProxyHandler) addSVToMap(sv *v1alpha1.StorageVersion) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func (c Command) EmitUsage(writer io.Writer) {
 		fmt.Fprintf(writer, formatter.F(flagUsage))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -224,3 +224,7 @@ func minimizeTags(t Tag) (Tag, error) {
 	}
 	return t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -8916,3 +8916,7 @@ func autoConvert_core_WindowsSecurityContextOptions_To_v1_WindowsSecurityContext
 func Convert_core_WindowsSecurityContextOptions_To_v1_WindowsSecurityContextOptions(in *core.WindowsSecurityContextOptions, out *v1.WindowsSecurityContextOptions, s conversion.Scope) error {
 	return autoConvert_core_WindowsSecurityContextOptions_To_v1_WindowsSecurityContextOptions(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

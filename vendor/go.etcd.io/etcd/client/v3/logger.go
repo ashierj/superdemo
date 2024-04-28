@@ -57,3 +57,7 @@ func etcdClientDebugLevel() zapcore.Level {
 	}
 	return l
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

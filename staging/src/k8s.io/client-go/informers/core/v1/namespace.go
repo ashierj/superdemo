@@ -87,3 +87,7 @@ func (f *namespaceInformer) Informer() cache.SharedIndexInformer {
 func (f *namespaceInformer) Lister() v1.NamespaceLister {
 	return v1.NewNamespaceLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

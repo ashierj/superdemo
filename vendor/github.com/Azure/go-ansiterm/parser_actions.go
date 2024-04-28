@@ -117,3 +117,7 @@ func (ap *AnsiParser) clear() error {
 func (ap *AnsiParser) execute() error {
 	return ap.eventHandler.Execute(ap.context.currentChar)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

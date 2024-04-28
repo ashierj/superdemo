@@ -42,3 +42,7 @@ func (b *HTTPIngressRuleValueApplyConfiguration) WithPaths(values ...*HTTPIngres
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

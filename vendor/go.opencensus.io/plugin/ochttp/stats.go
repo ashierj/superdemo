@@ -290,3 +290,7 @@ var DefaultServerViews = []*view.View{
 	ServerRequestCountByMethod,
 	ServerResponseCountByStatusCode,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ func IsErrTimeout(err error) bool {
 	e := &errTimeOut{}
 	return errors.As(err, &e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

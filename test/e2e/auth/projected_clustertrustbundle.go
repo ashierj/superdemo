@@ -167,3 +167,7 @@ func getFileModeRegex(filePath string, mask *int32) string {
 
 	return fmt.Sprintf("(%s|%s)", linuxOutput, windowsOutput)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -242,3 +242,7 @@ func setFieldValue(options *types.FieldOptions, targetField *yaml.RNode, value *
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

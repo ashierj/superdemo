@@ -189,3 +189,7 @@ func tryDecodePodList(data []byte, defaultFn defaultFunc) (parsed bool, pods v1.
 	}
 	return true, *v1Pods, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

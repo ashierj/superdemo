@@ -156,3 +156,7 @@ func execute(ctx context.Context, method string, url *url.URL, config *restclien
 		Tty:    tty,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -97,3 +97,7 @@ func TestAbsWithSlash(t *testing.T) {
 	assert.False(t, IsAbs("./local"))
 	assert.False(t, IsAbs("local"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

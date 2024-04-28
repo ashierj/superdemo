@@ -51,3 +51,7 @@ func MergeBuckets(buckets ...[]float64) []float64 {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

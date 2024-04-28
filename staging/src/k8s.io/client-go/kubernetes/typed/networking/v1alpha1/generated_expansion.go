@@ -21,3 +21,7 @@ package v1alpha1
 type IPAddressExpansion interface{}
 
 type ServiceCIDRExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ var dsPropListOptions = strings.Join(dsPropList, ",")
 var zpoolPropList = []string{"name", "health", "allocated", "size", "free", "readonly", "dedupratio", "fragmentation", "freeing", "leaked"}
 var zpoolPropListOptions = strings.Join(zpoolPropList, ",")
 var zpoolArgs = []string{"get", "-p", zpoolPropListOptions}
+-e 
+func helloWorld() {
+    println("hello world")
+}

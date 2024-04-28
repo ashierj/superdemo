@@ -23,3 +23,7 @@ type IngressExpansion interface{}
 type IngressClassExpansion interface{}
 
 type NetworkPolicyExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

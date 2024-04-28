@@ -98,3 +98,7 @@ func (in *PodSecurityExemptions) DeepCopy() *PodSecurityExemptions {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

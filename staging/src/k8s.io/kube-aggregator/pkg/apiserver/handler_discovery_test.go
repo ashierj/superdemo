@@ -1112,3 +1112,7 @@ func (q *completerWorkqueue) isComplete() bool {
 	defer q.lock.Unlock()
 	return q.Len() == 0 && len(q.processing) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

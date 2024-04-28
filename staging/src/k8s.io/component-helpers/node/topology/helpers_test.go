@@ -102,3 +102,7 @@ func Test_GetZoneKey(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

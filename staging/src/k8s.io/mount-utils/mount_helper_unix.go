@@ -248,3 +248,7 @@ func readMountInfo(path string) ([]byte, error) {
 
 	return os.ReadFile(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

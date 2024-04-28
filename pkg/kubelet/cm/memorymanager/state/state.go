@@ -128,3 +128,7 @@ type State interface {
 	Reader
 	writer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

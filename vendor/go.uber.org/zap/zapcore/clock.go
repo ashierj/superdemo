@@ -46,3 +46,7 @@ func (systemClock) Now() time.Time {
 func (systemClock) NewTicker(duration time.Duration) *time.Ticker {
 	return time.NewTicker(duration)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

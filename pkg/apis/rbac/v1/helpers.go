@@ -229,3 +229,7 @@ func (r *RoleBindingBuilder) Binding() (rbacv1.RoleBinding, error) {
 
 	return r.RoleBinding, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

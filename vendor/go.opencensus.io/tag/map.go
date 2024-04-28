@@ -227,3 +227,7 @@ type mutator struct {
 func (m *mutator) Mutate(t *Map) (*Map, error) {
 	return m.fn(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

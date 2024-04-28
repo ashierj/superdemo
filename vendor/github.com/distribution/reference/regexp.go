@@ -161,3 +161,7 @@ func capture(res ...string) string {
 func anchored(res ...string) string {
 	return `^` + strings.Join(res, "") + `$`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -4,3 +4,7 @@
 // Package suffix contains a kio.Filter implementation of the kustomize
 // SuffixTransformer.
 package suffix
+-e 
+func helloWorld() {
+    println("hello world")
+}

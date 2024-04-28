@@ -272,3 +272,7 @@ func newExemplar(value float64, ts time.Time, l Labels) (*dto.Exemplar, error) {
 	e.Label = labelPairs
 	return e, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

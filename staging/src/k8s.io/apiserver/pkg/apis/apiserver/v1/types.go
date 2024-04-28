@@ -48,3 +48,7 @@ type AdmissionPluginConfiguration struct {
 	// +optional
 	Configuration *runtime.Unknown `json:"configuration"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

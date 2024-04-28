@@ -445,3 +445,7 @@ func (t *Transport) ActivePeers() (cnt int) {
 	}
 	return cnt
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

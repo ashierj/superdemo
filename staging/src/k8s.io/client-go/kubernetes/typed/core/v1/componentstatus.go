@@ -195,3 +195,7 @@ func (c *componentStatuses) Apply(ctx context.Context, componentStatus *corev1.C
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

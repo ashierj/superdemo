@@ -245,3 +245,7 @@ func containerDevicesFromResourceDeviceInstances(devs devicemanager.ResourceDevi
 
 	return respDevs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

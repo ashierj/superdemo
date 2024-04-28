@@ -207,3 +207,7 @@ func namespaceLifecycleSetup(t *testing.T) (kubeapiservertesting.TearDownFunc, *
 
 	return server.TearDownFn, controller, informers, clientSet, dynamic.NewForConfigOrDie(config)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

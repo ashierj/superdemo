@@ -474,3 +474,7 @@ func (w *window) waitWriterBlocked() {
 	}
 	w.Cond.L.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

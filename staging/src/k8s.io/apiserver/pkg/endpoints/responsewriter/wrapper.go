@@ -178,3 +178,7 @@ func (wr outerWithCloseNotifyFlushAndHijack) Hijack() (net.Conn, *bufio.ReadWrit
 
 	return wr.InnerHijacker.Hijack()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

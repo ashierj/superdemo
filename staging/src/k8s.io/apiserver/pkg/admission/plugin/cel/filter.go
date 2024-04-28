@@ -355,3 +355,7 @@ func (e *filter) CompilationErrors() []error {
 	}
 	return compilationErrors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

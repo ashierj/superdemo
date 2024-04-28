@@ -84,3 +84,7 @@ func (c Config) hostIDFromMapping(containerID int64, uMap []IDMap) (int64, bool)
 	}
 	return -1, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

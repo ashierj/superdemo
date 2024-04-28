@@ -32,3 +32,7 @@ type unsupportedThresholdNotifier struct{}
 func (*unsupportedThresholdNotifier) Start(_ chan<- struct{}) {}
 
 func (*unsupportedThresholdNotifier) Stop() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func SetNodeSelection(podSpec *v1.PodSpec, nodeSelection NodeSelection) {
 		SetNodeAffinity(podSpec, nodeSelection.Name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

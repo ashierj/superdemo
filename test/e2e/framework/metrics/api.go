@@ -87,3 +87,7 @@ func APICallToPerfData(apicalls *APIResponsiveness) *e2eperftype.PerfData {
 	}
 	return perfData
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

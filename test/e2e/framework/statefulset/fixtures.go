@@ -193,3 +193,7 @@ func getStatefulPodOrdinal(pod *v1.Pod) int {
 	}
 	return ordinal
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

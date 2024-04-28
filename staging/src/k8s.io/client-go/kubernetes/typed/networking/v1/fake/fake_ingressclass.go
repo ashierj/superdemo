@@ -149,3 +149,7 @@ func (c *FakeIngressClasses) Apply(ctx context.Context, ingressClass *networking
 	}
 	return obj.(*v1.IngressClass), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

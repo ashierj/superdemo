@@ -160,3 +160,7 @@ func buildSigningClusterRoleForSigners(name string, signerNames ...string) *rbac
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

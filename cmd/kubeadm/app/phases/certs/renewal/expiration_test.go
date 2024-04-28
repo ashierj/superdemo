@@ -35,3 +35,7 @@ func TestExpirationInfo(t *testing.T) {
 		t.Errorf("expected IsInRenewalWindow equal to %v, saw %v", validity, e.ResidualTime())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

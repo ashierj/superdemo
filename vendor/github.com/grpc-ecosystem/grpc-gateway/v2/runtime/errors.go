@@ -179,3 +179,7 @@ func DefaultRoutingErrorHandler(ctx context.Context, mux *ServeMux, marshaler Ma
 	}
 	mux.errorHandler(ctx, mux, marshaler, w, r, sterr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

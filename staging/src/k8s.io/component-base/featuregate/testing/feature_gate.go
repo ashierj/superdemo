@@ -98,3 +98,7 @@ func sameTestOrSubtest(tb testing.TB, testName string) bool {
 	// Assumes that "/" is not used in test names.
 	return tb.Name() == testName || strings.HasPrefix(tb.Name(), testName+"/")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

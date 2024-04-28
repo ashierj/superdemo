@@ -49,3 +49,7 @@ func regCreateKeyEx(key syscall.Handle, subkey *uint16, reserved uint32, class *
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

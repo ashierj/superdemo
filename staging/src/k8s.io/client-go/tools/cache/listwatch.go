@@ -110,3 +110,7 @@ func (lw *ListWatch) List(options metav1.ListOptions) (runtime.Object, error) {
 func (lw *ListWatch) Watch(options metav1.ListOptions) (watch.Interface, error) {
 	return lw.WatchFunc(options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

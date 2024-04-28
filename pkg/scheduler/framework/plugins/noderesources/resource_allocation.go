@@ -143,3 +143,7 @@ func (r *resourceAllocationScorer) calculatePodResourceRequestList(pod *v1.Pod, 
 	}
 	return podRequests
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

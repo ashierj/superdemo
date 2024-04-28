@@ -129,3 +129,7 @@ func MatchAll(pargs ...PositionalArgs) PositionalArgs {
 func ExactValidArgs(n int) PositionalArgs {
 	return MatchAll(ExactArgs(n), OnlyValidArgs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

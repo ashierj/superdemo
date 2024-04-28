@@ -22,3 +22,7 @@ limitations under the License.
 // +groupName=imagepolicy.k8s.io
 
 package v1alpha1 // import "k8s.io/kubernetes/pkg/apis/imagepolicy/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

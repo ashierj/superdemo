@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=networking.k8s.io
 
 package v1beta1 // import "k8s.io/api/networking/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

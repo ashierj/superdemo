@@ -23,3 +23,7 @@ package flock
 func Acquire(path string) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

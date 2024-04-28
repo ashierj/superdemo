@@ -112,3 +112,7 @@ func (cCtx clientContext) Dynamic() dynamic.Interface {
 func (cCtx clientContext) APIExtensions() apiextensions.Interface {
 	return cCtx.apiextensions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

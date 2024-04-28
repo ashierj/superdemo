@@ -147,3 +147,7 @@ func (op ALUOp) Imm32(dst Register, value int32) Instruction {
 		Constant: int64(value),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

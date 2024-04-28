@@ -187,3 +187,7 @@ func pemWithGroup(group string) []byte {
 
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

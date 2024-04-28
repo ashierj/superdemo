@@ -37,3 +37,7 @@ func (b *ImageReviewContainerSpecApplyConfiguration) WithImage(value string) *Im
 	b.Image = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

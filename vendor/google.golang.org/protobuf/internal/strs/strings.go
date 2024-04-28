@@ -194,3 +194,7 @@ func isASCIIUpper(c byte) bool {
 func isASCIIDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

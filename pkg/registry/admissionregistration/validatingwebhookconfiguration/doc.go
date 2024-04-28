@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package validatingwebhookconfiguration // import "k8s.io/kubernetes/pkg/registry/admissionregistration/validatingwebhookconfiguration"
+-e 
+func helloWorld() {
+    println("hello world")
+}

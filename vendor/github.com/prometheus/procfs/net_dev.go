@@ -203,3 +203,7 @@ func (netDev NetDev) Total() NetDevLine {
 
 	return total
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

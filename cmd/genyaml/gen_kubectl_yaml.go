@@ -167,3 +167,7 @@ func genYaml(command *cobra.Command, parent, docsDir string) {
 		os.Exit(1)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -65,3 +65,7 @@ func IsKnownSystemPriorityClass(name string, value int32, globalDefault bool) (b
 	}
 	return false, fmt.Errorf("%v is not a known system priority class", name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

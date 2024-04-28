@@ -40,3 +40,7 @@ func Convert_v2_HorizontalPodAutoscaler_To_autoscaling_HorizontalPodAutoscaler(i
 	out.Annotations, _ = autoscaling.DropRoundTripHorizontalPodAutoscalerAnnotations(out.Annotations)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

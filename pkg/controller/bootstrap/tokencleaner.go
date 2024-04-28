@@ -207,3 +207,7 @@ func (tc *TokenCleaner) evalSecret(ctx context.Context, o interface{}) {
 		tc.queue.AddAfter(key, ttl)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

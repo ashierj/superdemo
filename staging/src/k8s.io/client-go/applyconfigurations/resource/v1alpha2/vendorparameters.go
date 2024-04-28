@@ -50,3 +50,7 @@ func (b *VendorParametersApplyConfiguration) WithParameters(value runtime.RawExt
 	b.Parameters = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

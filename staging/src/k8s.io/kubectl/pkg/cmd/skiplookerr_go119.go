@@ -27,3 +27,7 @@ import (
 func shouldSkipOnLookPathErr(err error) bool {
 	return err != nil && !errors.Is(err, exec.ErrDot)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

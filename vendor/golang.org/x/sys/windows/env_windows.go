@@ -55,3 +55,7 @@ func (token Token) Environ(inheritExisting bool) (env []string, err error) {
 func Unsetenv(key string) error {
 	return syscall.Unsetenv(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -710,3 +710,7 @@ func (c *Command) GenBashCompletionFile(filename string) error {
 
 	return c.GenBashCompletion(outFile)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

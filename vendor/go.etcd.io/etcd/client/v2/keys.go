@@ -678,3 +678,7 @@ func unmarshalFailedKeysResponse(body []byte) error {
 	}
 	return etcdErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

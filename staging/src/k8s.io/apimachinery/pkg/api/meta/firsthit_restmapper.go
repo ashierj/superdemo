@@ -103,3 +103,7 @@ func collapseAggregateErrors(errors []error) error {
 
 	return utilerrors.NewAggregate(errors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

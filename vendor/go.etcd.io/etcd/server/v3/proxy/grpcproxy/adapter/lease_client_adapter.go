@@ -80,3 +80,7 @@ func (s *ls2lcServerStream) Recv() (*pb.LeaseKeepAliveRequest, error) {
 	}
 	return v.(*pb.LeaseKeepAliveRequest), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

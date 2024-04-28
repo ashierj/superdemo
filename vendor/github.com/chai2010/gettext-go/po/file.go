@@ -79,3 +79,7 @@ func (f *File) Data() []byte {
 func (f *File) String() string {
 	return string(f.Data())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

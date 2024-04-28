@@ -83,3 +83,7 @@ func (priorityClassStrategy) WarningsOnUpdate(ctx context.Context, obj, old runt
 func (priorityClassStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

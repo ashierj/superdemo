@@ -90,3 +90,7 @@ func UpdateReplicaSetStatusWithRetries(c clientset.Interface, namespace, name st
 	}
 	return rs, pollErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

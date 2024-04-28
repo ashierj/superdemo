@@ -35,3 +35,7 @@ type ResourcePrinterFunc func(runtime.Object, io.Writer) error
 func (fn ResourcePrinterFunc) PrintObj(obj runtime.Object, w io.Writer) error {
 	return fn(obj, w)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

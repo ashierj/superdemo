@@ -293,3 +293,7 @@ func (w TypedWithMaxWaitRateLimiter[T]) Forget(item T) {
 func (w TypedWithMaxWaitRateLimiter[T]) NumRequeues(item T) int {
 	return w.limiter.NumRequeues(item)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

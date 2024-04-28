@@ -235,3 +235,7 @@ func PropPids(pids ...uint32) Property {
 		Value: dbus.MakeVariant(pids),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

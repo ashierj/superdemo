@@ -172,3 +172,7 @@ func ConvertSelectorToLabelsMap(selector string, opts ...field.PathOption) (Set,
 	}
 	return labelsMap, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

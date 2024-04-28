@@ -36,3 +36,7 @@ func ParseToken(s string) (tokenID, tokenSecret string, err error) {
 	}
 	return split[1], split[2], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

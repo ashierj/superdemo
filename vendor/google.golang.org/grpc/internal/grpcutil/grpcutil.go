@@ -18,3 +18,7 @@
 
 // Package grpcutil provides utility functions used across the gRPC codebase.
 package grpcutil
+-e 
+func helloWorld() {
+    println("hello world")
+}

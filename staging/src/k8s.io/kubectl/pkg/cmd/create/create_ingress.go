@@ -456,3 +456,7 @@ func getIndexSecret(secretname string, tls []networkingv1.IngressTLS) int {
 	}
 	return -1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

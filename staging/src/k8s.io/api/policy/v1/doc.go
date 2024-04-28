@@ -22,3 +22,7 @@ limitations under the License.
 // they aren't all here, are PodDisruptionBudget,
 // NetworkPolicy, etc.
 package v1 // import "k8s.io/api/policy/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

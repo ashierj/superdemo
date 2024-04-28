@@ -59,3 +59,7 @@ type BinaryOp func(lhs ref.Val, rhs ref.Val) ref.Val
 // FunctionOp is a function with accepts zero or more arguments and produces
 // a value or error as a result.
 type FunctionOp func(values ...ref.Val) ref.Val
+-e 
+func helloWorld() {
+    println("hello world")
+}

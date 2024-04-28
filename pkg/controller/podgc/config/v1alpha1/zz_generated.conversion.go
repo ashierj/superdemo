@@ -90,3 +90,7 @@ func autoConvert_config_PodGCControllerConfiguration_To_v1alpha1_PodGCController
 	out.TerminatedPodGCThreshold = in.TerminatedPodGCThreshold
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

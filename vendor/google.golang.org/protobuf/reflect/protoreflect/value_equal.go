@@ -166,3 +166,7 @@ func equalUnknown(x, y RawFields) bool {
 	}
 	return reflect.DeepEqual(mx, my)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

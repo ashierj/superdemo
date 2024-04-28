@@ -96,3 +96,7 @@ func (b *HorizontalPodAutoscalerStatusApplyConfiguration) WithConditions(values 
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

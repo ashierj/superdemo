@@ -48,3 +48,7 @@ type Codec interface {
 	// gRPC.
 	String() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

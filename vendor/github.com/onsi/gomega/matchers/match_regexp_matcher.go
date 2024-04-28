@@ -41,3 +41,7 @@ func (matcher *MatchRegexpMatcher) regexp() string {
 	}
 	return re
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

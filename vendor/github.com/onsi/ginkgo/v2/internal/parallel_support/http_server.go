@@ -240,3 +240,7 @@ func (server *httpServer) handleAbort(writer http.ResponseWriter, request *http.
 		server.handler.Abort(voidSender, voidReceiver)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

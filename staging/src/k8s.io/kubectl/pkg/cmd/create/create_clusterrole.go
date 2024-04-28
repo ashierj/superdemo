@@ -225,3 +225,7 @@ func (c *CreateClusterRoleOptions) RunCreateRole() error {
 
 	return c.PrintObj(clusterRole)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

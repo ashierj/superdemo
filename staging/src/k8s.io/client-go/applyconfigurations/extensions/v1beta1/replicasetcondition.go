@@ -79,3 +79,7 @@ func (b *ReplicaSetConditionApplyConfiguration) WithMessage(value string) *Repli
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

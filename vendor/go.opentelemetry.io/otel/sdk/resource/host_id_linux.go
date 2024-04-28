@@ -20,3 +20,7 @@ package resource // import "go.opentelemetry.io/otel/sdk/resource"
 var platformHostIDReader hostIDReader = &hostIDReaderLinux{
 	readFile: readFile,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

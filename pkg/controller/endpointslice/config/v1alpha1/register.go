@@ -32,3 +32,7 @@ var (
 	// to a scheme
 	AddToScheme = localSchemeBuilder.AddToScheme
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

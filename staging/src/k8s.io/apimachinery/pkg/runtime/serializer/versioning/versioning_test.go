@@ -403,3 +403,7 @@ func BenchmarkIdentifier(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

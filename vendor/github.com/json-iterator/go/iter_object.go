@@ -265,3 +265,7 @@ func (iter *Iterator) readObjectFieldAsBytes() (ret []byte) {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

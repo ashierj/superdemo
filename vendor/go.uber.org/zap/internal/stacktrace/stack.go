@@ -179,3 +179,7 @@ func (sf *Formatter) FormatFrame(frame runtime.Frame) {
 	sf.b.AppendByte(':')
 	sf.b.AppendInt(int64(frame.Line))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

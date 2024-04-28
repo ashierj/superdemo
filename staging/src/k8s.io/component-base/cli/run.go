@@ -143,3 +143,7 @@ func run(cmd *cobra.Command) (logsInitialized bool, err error) {
 	err = cmd.Execute()
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

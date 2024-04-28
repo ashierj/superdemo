@@ -83,3 +83,7 @@ func (o *LeaderMigrationOptions) ApplyTo(cfg *config.GenericControllerManagerCon
 	cfg.LeaderMigration = *leaderMigrationConfig
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

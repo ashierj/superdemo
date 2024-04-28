@@ -196,3 +196,7 @@ func findReferenced(def *spec.Schema, allSchemas, referencedOut map[string]spec.
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

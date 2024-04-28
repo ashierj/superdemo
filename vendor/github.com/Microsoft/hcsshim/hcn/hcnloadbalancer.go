@@ -309,3 +309,7 @@ func AddLoadBalancer(endpoints []HostComputeEndpoint, flags LoadBalancerFlags, p
 
 	return loadBalancer.Create()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

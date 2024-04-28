@@ -219,3 +219,7 @@ func (jDuration *JSONDuration) UnmarshalJSON(b []byte) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

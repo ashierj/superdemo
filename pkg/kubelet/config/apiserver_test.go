@@ -192,3 +192,7 @@ func TestNewSourceApiserverInitialEmptySendsEmptyPodUpdate(t *testing.T) {
 		t.Errorf("Expected %#v; Got %#v", expected, update)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

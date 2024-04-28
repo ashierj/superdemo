@@ -20,3 +20,7 @@
 
 // Package stack is used for parsing stacks from `runtime.Stack`.
 package stack
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -128,3 +128,7 @@ func (v *validatingAdmissionPolicyBindingStrategy) WarningsOnUpdate(ctx context.
 func (v *validatingAdmissionPolicyBindingStrategy) AllowUnconditionalUpdate() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

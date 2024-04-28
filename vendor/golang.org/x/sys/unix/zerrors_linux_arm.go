@@ -846,3 +846,7 @@ var signalList = [...]struct {
 	{30, "SIGPWR", "power failure"},
 	{31, "SIGSYS", "bad system call"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

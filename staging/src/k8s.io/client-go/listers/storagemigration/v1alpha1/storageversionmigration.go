@@ -46,3 +46,7 @@ type storageVersionMigrationLister struct {
 func NewStorageVersionMigrationLister(indexer cache.Indexer) StorageVersionMigrationLister {
 	return &storageVersionMigrationLister{listers.New[*v1alpha1.StorageVersionMigration](indexer, v1alpha1.Resource("storageversionmigration"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

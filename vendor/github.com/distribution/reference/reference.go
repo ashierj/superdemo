@@ -434,3 +434,7 @@ func (c canonicalReference) String() string {
 func (c canonicalReference) Digest() digest.Digest {
 	return c.digest
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

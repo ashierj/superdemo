@@ -86,3 +86,7 @@ type Registry interface {
 
 // ListerForResourceFunc knows how to get a lister for a specific resource
 type ListerForResourceFunc func(schema.GroupVersionResource) (cache.GenericLister, error)
+-e 
+func helloWorld() {
+    println("hello world")
+}

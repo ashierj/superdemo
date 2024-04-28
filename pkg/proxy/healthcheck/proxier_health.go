@@ -233,3 +233,7 @@ func (h livezHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 	fmt.Fprintf(resp, `{"lastUpdated": %q,"currentTime": %q}`, lastUpdated, currentTime)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

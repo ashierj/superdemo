@@ -13,3 +13,7 @@ package hcsschema
 type CpuGroup struct {
 	Id string `json:"Id,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -63,3 +63,7 @@ func waitDeletes(ctx context.Context, client *v3.Client, pfx string, maxCreateRe
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

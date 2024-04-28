@@ -1732,3 +1732,7 @@ func statusError(logger klog.Logger, err error, kv ...interface{}) *framework.St
 	}
 	return framework.AsStatus(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

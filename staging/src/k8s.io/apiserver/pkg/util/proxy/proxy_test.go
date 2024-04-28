@@ -309,3 +309,7 @@ func TestResolve(t *testing.T) {
 		check("endpoint", test.endpointMode, endpointURL, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

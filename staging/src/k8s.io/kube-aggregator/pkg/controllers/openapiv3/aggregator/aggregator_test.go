@@ -322,3 +322,7 @@ func buildTestAPIServiceOpenAPIDefinition() openapicommon.OpenAPIDefinition {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

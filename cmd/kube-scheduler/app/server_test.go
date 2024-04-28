@@ -472,3 +472,7 @@ func (*foo) PreFilterExtensions() framework.PreFilterExtensions {
 func (*foo) Filter(_ context.Context, _ *framework.CycleState, _ *v1.Pod, nodeInfo *framework.NodeInfo) *framework.Status {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

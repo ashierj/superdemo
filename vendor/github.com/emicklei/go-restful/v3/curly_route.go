@@ -52,3 +52,7 @@ func (s sortableCurlyRoutes) Less(i, j int) bool {
 	}
 	return a.route.Path < b.route.Path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

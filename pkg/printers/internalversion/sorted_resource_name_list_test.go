@@ -47,3 +47,7 @@ func TestSortableResourceNamesSorting(t *testing.T) {
 		t.Errorf("got %v, want %v", in, want)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

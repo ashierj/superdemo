@@ -72,3 +72,7 @@ func (m *CelMetrics) ObserveEvaluation(elapsed time.Duration) {
 	seconds := elapsed.Seconds()
 	m.evaluationTime.Observe(seconds)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

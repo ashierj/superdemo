@@ -173,3 +173,7 @@ func TestJSONFrameReaderShortBuffer(t *testing.T) {
 		t.Fatalf("unexpected: %v %d %q", err, n, buf)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func (g *TokenGroupAdder) AuthenticateToken(ctx context.Context, token string) (
 	}
 	return &ret, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

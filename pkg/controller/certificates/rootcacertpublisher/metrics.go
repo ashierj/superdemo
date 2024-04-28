@@ -70,3 +70,7 @@ func registerMetrics() {
 		legacyregistry.MustRegister(syncLatency)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

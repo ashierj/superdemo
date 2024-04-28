@@ -109,3 +109,7 @@ func LookupSchemaForField(schema proto.Schema, path []string) (proto.Schema, err
 	schema.Accept(f)
 	return f.Schema, f.Error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

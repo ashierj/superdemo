@@ -303,3 +303,7 @@ func FromAPIVersionAndKind(apiVersion, kind string) GroupVersionKind {
 	}
 	return GroupVersionKind{Kind: kind}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

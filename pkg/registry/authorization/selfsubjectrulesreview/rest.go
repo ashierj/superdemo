@@ -124,3 +124,7 @@ func getNonResourceRules(infos []authorizer.NonResourceRuleInfo) []authorization
 	}
 	return rules
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

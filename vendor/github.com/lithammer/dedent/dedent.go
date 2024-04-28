@@ -47,3 +47,7 @@ func Dedent(text string) string {
 	}
 	return text
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

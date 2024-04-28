@@ -269,3 +269,7 @@ func checkRequestOp(u *pb.RequestOp, maxTxnOps int) error {
 		return rpctypes.ErrGRPCKeyNotFound
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

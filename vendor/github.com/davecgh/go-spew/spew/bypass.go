@@ -143,3 +143,7 @@ func init() {
 	}
 	panic("reflect.Value read-only flag has changed semantics")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -411,3 +411,7 @@ func joinStrings(ss []string, isMulti bool) string {
 	}
 	return strings.Join(ss, ", ")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

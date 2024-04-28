@@ -92,3 +92,7 @@ func (k *NodeKiller) kill(ctx context.Context, nodes []v1.Node) {
 	}
 	wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

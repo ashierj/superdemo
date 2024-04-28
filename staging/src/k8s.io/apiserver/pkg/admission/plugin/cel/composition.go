@@ -251,3 +251,7 @@ func convertCelTypeToDeclType(celType *cel.Type) *apiservercel.DeclType {
 		return apiservercel.DynType
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

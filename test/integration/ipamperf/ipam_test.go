@@ -177,3 +177,7 @@ func TestPerformance(t *testing.T) {
 
 	logResults(allResults)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func (c *TunnelingConnection) SetReadDeadline(t time.Time) error {
 func (c *TunnelingConnection) SetWriteDeadline(t time.Time) error {
 	return c.conn.SetWriteDeadline(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

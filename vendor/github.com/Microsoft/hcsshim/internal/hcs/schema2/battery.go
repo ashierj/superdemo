@@ -11,3 +11,7 @@ package hcsschema
 
 type Battery struct {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

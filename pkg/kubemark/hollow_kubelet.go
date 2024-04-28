@@ -216,3 +216,7 @@ func GetHollowKubeletConfig(opt *HollowKubeletOptions) (*options.KubeletFlags, *
 
 	return f, c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

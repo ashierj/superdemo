@@ -3224,3 +3224,7 @@ func isPodInitializedConditionTrue(status *api.PodStatus) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

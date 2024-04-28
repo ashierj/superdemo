@@ -39,3 +39,7 @@ func (b *NamedResourcesStringSliceApplyConfiguration) WithStrings(values ...stri
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

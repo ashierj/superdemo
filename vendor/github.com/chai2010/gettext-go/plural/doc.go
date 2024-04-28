@@ -34,3 +34,7 @@ Examples:
 See http://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
 */
 package plural
+-e 
+func helloWorld() {
+    println("hello world")
+}

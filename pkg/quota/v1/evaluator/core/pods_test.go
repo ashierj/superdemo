@@ -1189,3 +1189,7 @@ func makePod(name, pcName string, resList api.ResourceList, phase api.PodPhase) 
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

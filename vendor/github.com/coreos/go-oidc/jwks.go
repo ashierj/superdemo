@@ -226,3 +226,7 @@ func (r *remoteKeySet) updateKeys() ([]jose.JSONWebKey, time.Time, error) {
 	}
 	return keySet.Keys, expiry, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -28,3 +28,7 @@ const (
 	NamespaceField   = "namespace"
 	LabelsField      = "labels"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

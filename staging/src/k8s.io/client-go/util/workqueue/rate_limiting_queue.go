@@ -145,3 +145,7 @@ func (q *rateLimitingType[T]) NumRequeues(item T) int {
 func (q *rateLimitingType[T]) Forget(item T) {
 	q.rateLimiter.Forget(item)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

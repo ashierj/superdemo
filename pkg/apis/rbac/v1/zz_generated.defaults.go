@@ -66,3 +66,7 @@ func SetObjectDefaults_RoleBindingList(in *v1.RoleBindingList) {
 		SetObjectDefaults_RoleBinding(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

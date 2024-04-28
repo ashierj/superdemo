@@ -140,3 +140,7 @@ func mapFlagName(from, to string, old func(fs *pflag.FlagSet, name string) pflag
 		return old(fs, name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

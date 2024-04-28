@@ -245,3 +245,7 @@ func (b *IngressClassApplyConfiguration) WithSpec(value *IngressClassSpecApplyCo
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

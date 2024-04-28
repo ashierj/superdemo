@@ -399,3 +399,7 @@ func sanitizedOptionsForLogging(options []string, sensitiveOptions []string) str
 		sensitiveOptionsStart +
 		sensitiveOptionsEnd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

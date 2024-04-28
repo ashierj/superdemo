@@ -171,3 +171,7 @@ func (l *LexerActionExecutor) Equals(other interface{}) bool {
 		return i.Equals(j)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

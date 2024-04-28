@@ -1503,3 +1503,7 @@ func newMockClientForTest(t *testing.T, replicas int32, deploymentSize int, imag
 	}
 	return client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package kubescheduler // import "k8s.io/kube-scheduler"
+-e 
+func helloWorld() {
+    println("hello world")
+}

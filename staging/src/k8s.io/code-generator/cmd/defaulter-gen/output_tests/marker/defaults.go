@@ -30,3 +30,7 @@ func SetDefaults_DefaultedWithFunction(obj *DefaultedWithFunction) {
 		obj.S1 = "default_function"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

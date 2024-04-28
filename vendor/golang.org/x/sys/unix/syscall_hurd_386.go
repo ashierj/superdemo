@@ -26,3 +26,7 @@ type Termios struct {
 	Ispeed int32
 	Ospeed int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

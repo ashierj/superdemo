@@ -112,3 +112,7 @@ func (o *terminationOrdering) containerTerminated(name string) {
 		close(ch)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

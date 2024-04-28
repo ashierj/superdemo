@@ -50,3 +50,7 @@ func stripGo(v string) string {
 	}
 	return v[2:]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

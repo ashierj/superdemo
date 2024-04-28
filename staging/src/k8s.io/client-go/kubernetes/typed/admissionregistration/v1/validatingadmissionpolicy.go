@@ -241,3 +241,7 @@ func (c *validatingAdmissionPolicies) ApplyStatus(ctx context.Context, validatin
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

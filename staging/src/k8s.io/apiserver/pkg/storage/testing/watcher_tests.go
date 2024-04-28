@@ -1634,3 +1634,7 @@ func baseNamespacedPodAssigned(podName, namespace, nodeName string) *example.Pod
 		Spec:       example.PodSpec{NodeName: nodeName},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

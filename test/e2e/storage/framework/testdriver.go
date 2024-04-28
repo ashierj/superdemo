@@ -289,3 +289,7 @@ type PerformanceTestProvisioningOptions struct {
 type PerformanceTestOptions struct {
 	ProvisioningOptions *PerformanceTestProvisioningOptions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

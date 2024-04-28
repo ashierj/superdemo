@@ -35,3 +35,7 @@ func ParseKey(key []byte) (*rsa.PrivateKey, error) {
 	}
 	return parsed, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

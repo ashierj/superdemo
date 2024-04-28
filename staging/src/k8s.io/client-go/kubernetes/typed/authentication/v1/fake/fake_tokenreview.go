@@ -45,3 +45,7 @@ func (c *FakeTokenReviews) Create(ctx context.Context, tokenReview *v1.TokenRevi
 	}
 	return obj.(*v1.TokenReview), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

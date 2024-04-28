@@ -389,3 +389,7 @@ func retryingWriteFile(path string, data []byte, mode os.FileMode) error {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

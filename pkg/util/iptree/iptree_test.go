@@ -779,3 +779,7 @@ func generateRandomCIDRs(is6 bool, number int) sets.Set[netip.Prefix] {
 	}
 	return cidrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

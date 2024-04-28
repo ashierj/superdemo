@@ -100,3 +100,7 @@ func (a authCookieSha1) generateChallenge() []byte {
 	hex.Encode(enc, b)
 	return enc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

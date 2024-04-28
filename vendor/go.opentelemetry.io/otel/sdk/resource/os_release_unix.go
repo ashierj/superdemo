@@ -152,3 +152,7 @@ func buildOSRelease(values map[string]string) string {
 
 	return osRelease
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -36,3 +36,7 @@ var (
 	// New is an alias for logr.New.
 	New = logr.New
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func (cs fileCredentialSource) subjectToken() (string, error) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

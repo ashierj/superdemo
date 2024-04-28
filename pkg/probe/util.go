@@ -55,3 +55,7 @@ func findPortByName(container *v1.Container, portName string) (int, error) {
 	}
 	return 0, fmt.Errorf("port %s not found", portName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

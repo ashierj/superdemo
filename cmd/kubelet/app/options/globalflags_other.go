@@ -25,3 +25,7 @@ import (
 
 func addCadvisorFlags(fs *pflag.FlagSet) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

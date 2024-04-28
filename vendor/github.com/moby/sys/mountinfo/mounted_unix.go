@@ -51,3 +51,7 @@ func mountedByMountinfo(path string) (bool, error) {
 
 	return len(entries) > 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

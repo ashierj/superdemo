@@ -157,3 +157,7 @@ func containerFromProto(containerpb containersapi.Container) *containers.Contain
 		Extensions:  containerpb.Extensions,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

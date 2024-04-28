@@ -144,3 +144,7 @@ func recursivePath(path string) (string, bool) {
 	}
 	return path, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

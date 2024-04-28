@@ -44,3 +44,7 @@ func (c yamlSerializer) Decode(data []byte, gvk *schema.GroupVersionKind, into r
 	data = out
 	return c.Serializer.Decode(data, gvk, into)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

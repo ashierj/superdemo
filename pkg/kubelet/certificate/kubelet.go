@@ -234,3 +234,7 @@ func NewKubeletClientCertificateManager(
 
 	return m, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func ValidateConfiguration(config *resourcequotaapi.Configuration) field.ErrorLi
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

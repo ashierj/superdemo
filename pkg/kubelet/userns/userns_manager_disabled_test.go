@@ -117,3 +117,7 @@ func TestCleanupOrphanedPodUsernsAllocationsDisabled(t *testing.T) {
 	err = m.CleanupOrphanedPodUsernsAllocations(nil, nil)
 	assert.NoError(t, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

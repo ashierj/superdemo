@@ -116,3 +116,7 @@ func GetHNSEndpointByName(endpointName string) (*HNSEndpoint, error) {
 func GetHNSEndpointStats(endpointName string) (*HNSEndpointStats, error) {
 	return hns.GetHNSEndpointStats(endpointName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

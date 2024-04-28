@@ -32,3 +32,7 @@ func getStat(event fsnotify.Event) (os.FileInfo, error) {
 func getSocketPath(socketPath string) string {
 	return socketPath
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

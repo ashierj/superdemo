@@ -136,3 +136,7 @@ func (g *Cloud) GetInstanceGroup(name string, zone string) (*compute.InstanceGro
 	v, err := g.c.InstanceGroups().Get(ctx, meta.ZonalKey(name, zone))
 	return v, mc.Observe(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

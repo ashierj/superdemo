@@ -122,3 +122,7 @@ func (RealOS) OpenFile(name string, flag int, perm os.FileMode) (*os.File, error
 func (RealOS) Rename(oldpath, newpath string) error {
 	return os.Rename(oldpath, newpath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

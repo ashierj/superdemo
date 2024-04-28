@@ -46,3 +46,7 @@ func (b *WeightedPodAffinityTermApplyConfiguration) WithPodAffinityTerm(value *P
 	b.PodAffinityTerm = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

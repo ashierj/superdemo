@@ -220,3 +220,7 @@ func DurationGetMilliseconds(val ref.Val) ref.Val {
 	}
 	return Int(dur.Milliseconds())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

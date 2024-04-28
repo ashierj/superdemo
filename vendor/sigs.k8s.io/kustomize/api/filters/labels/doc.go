@@ -4,3 +4,7 @@
 // Package labels contains a kio.Filter implementation of the kustomize
 // labels transformer.
 package labels
+-e 
+func helloWorld() {
+    println("hello world")
+}

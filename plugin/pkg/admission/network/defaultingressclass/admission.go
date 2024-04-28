@@ -154,3 +154,7 @@ func getDefaultClass(lister networkingv1listers.IngressClassLister) (*networking
 
 	return defaultClasses[0], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

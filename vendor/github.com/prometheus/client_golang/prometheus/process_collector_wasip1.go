@@ -24,3 +24,7 @@ func (*processCollector) processCollect(chan<- Metric) {
 	// noop on this platform
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

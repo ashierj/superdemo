@@ -60,3 +60,7 @@ type ControllerContext struct {
 	// ControllerManagerMetrics provides a proxy to set controller manager specific metrics.
 	ControllerManagerMetrics *controllersmetrics.ControllerManagerMetrics
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

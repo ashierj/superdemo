@@ -31,3 +31,7 @@ var defaultValidations = []Validation{
 	validations.LintCamelCase,
 	validations.LintUnitAbbreviations,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

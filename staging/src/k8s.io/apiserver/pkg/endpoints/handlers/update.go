@@ -298,3 +298,7 @@ func updateToCreateOptions(uo *metav1.UpdateOptions) *metav1.CreateOptions {
 	co.TypeMeta.SetGroupVersionKind(metav1.SchemeGroupVersion.WithKind("CreateOptions"))
 	return co
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

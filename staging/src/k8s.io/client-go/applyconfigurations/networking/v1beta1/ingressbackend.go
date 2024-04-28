@@ -60,3 +60,7 @@ func (b *IngressBackendApplyConfiguration) WithResource(value *v1.TypedLocalObje
 	b.Resource = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

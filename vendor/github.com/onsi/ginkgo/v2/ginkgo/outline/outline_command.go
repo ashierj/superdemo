@@ -96,3 +96,7 @@ func outlineFile(args []string, format string) {
 	}
 	command.AbortIfError("Failed to write outline:", oerr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

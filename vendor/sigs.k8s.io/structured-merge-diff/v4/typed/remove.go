@@ -163,3 +163,7 @@ func (w *removingWalker) doMap(t *schema.Map) ValidationErrors {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

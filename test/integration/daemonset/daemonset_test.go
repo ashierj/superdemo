@@ -1327,3 +1327,7 @@ func TestDaemonSetRollingUpdateWithTolerations(t *testing.T) {
 	validateDaemonSetStatus(dsClient, ds.Name, 0, t)
 	validateUpdatedNumberScheduled(ctx, dsClient, ds.Name, 0, t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

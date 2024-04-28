@@ -29,3 +29,7 @@ type IngressNamespaceListerExpansion interface{}
 // IngressClassListerExpansion allows custom methods to be added to
 // IngressClassLister.
 type IngressClassListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

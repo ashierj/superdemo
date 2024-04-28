@@ -502,3 +502,7 @@ func TestPluginNameMappings(t *testing.T) {
 }
 
 // TODO: test for not modifying the original PV.
+-e 
+func helloWorld() {
+    println("hello world")
+}

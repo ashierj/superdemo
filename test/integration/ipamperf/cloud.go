@@ -155,3 +155,7 @@ func (bil *baseInstanceList) newMockCloud() cloud.Cloud {
 
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

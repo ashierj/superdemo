@@ -267,3 +267,7 @@ func (o int64CallbackOpt) applyInt64ObservableGauge(cfg Int64ObservableGaugeConf
 func WithInt64Callback(callback Int64Callback) Int64ObservableOption {
 	return int64CallbackOpt{callback}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -221,3 +221,7 @@ func (cache *claimInfoCache) syncToCheckpoint() error {
 
 	return cache.state.Store(claimInfoStateList)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

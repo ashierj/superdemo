@@ -335,3 +335,7 @@ var Funcs = fuzzer.MergeFuzzerFuncs(
 	v1FuzzerFuncs,
 	v1beta1FuzzerFuncs,
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

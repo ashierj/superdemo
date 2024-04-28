@@ -237,3 +237,7 @@ func (wideTransform) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err
 	}
 	return nDst, nSrc, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

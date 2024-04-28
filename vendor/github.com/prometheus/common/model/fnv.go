@@ -40,3 +40,7 @@ func hashAddByte(h uint64, b byte) uint64 {
 	h *= prime64
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

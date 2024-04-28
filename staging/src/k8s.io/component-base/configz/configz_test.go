@@ -78,3 +78,7 @@ func TestConfigz(t *testing.T) {
 		t.Fatalf("unexpected Content-Type: %s", resp.Header.Get("Content-Type"))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

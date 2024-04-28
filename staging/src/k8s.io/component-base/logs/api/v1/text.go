@@ -140,3 +140,7 @@ func (b *bufferedWriter) Flush() {
 
 	_ = b.writer.Flush()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

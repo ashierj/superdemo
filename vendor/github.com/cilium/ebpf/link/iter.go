@@ -83,3 +83,7 @@ func (it *Iter) Open() (io.ReadCloser, error) {
 type bpfIterLinkInfoMap struct {
 	map_fd uint32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

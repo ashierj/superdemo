@@ -137,3 +137,7 @@ func (p *prober) Status(id string) (Status, error) {
 	}
 	return s, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

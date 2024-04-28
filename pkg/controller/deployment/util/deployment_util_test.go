@@ -1319,3 +1319,7 @@ func TestMinAvailable(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

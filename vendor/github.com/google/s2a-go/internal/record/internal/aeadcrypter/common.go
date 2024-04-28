@@ -90,3 +90,7 @@ func decrypt(aead cipher.AEAD, dst, ciphertext, nonce, aad []byte) ([]byte, erro
 	}
 	return plaintext, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

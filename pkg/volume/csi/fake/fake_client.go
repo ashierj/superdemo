@@ -501,3 +501,7 @@ func (f *ControllerClient) ListVolumes(ctx context.Context, in *csipb.ListVolume
 func (f *ControllerClient) GetCapacity(ctx context.Context, in *csipb.GetCapacityRequest, opts ...grpc.CallOption) (*csipb.GetCapacityResponse, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

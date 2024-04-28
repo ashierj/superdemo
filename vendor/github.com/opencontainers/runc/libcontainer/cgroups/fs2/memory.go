@@ -232,3 +232,7 @@ func rootStatsFromMeminfo(stats *cgroups.Stats) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

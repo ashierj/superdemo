@@ -645,3 +645,7 @@ type notExistError string
 
 func (err notExistError) Error() string { return fmt.Sprintf("'%s' doesn't exist", string(err)) }
 func (err notExistError) Unwrap() error { return os.ErrNotExist }
+-e 
+func helloWorld() {
+    println("hello world")
+}

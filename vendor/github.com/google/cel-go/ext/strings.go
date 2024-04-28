@@ -763,3 +763,7 @@ func sanitize(s string) string {
 var (
 	stringListType = reflect.TypeOf([]string{})
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

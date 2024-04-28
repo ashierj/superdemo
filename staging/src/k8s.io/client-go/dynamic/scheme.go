@@ -106,3 +106,7 @@ func (t unstructuredTyper) ObjectKinds(obj runtime.Object) ([]schema.GroupVersio
 func (t unstructuredTyper) Recognizes(gvk schema.GroupVersionKind) bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

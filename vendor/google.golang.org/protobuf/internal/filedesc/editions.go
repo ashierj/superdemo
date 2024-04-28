@@ -140,3 +140,7 @@ func getFeaturesFor(ed Edition) EditionFeatures {
 	}
 	panic(fmt.Sprintf("unsupported edition: %v", ed))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

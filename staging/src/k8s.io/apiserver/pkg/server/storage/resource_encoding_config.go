@@ -82,3 +82,7 @@ func (o *DefaultResourceEncodingConfig) InMemoryEncodingFor(resource schema.Grou
 	}
 	return schema.GroupVersion{Group: resource.Group, Version: runtime.APIVersionInternal}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

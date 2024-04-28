@@ -164,3 +164,7 @@ func TestWatch(t *testing.T) {
 }
 
 // TODO: test update /status
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ func ExtractSingleBoolCommentTag(marker string, key string, defaultVal bool, lin
 	}
 	return false, fmt.Errorf("tag value for %q is not boolean: %q", key, values[0])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

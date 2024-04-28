@@ -73,3 +73,7 @@ func SPIFFEIDFromCert(cert *x509.Certificate) *url.URL {
 	}
 	return spiffeID
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

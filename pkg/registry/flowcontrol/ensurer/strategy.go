@@ -360,3 +360,7 @@ func namesOfBootstrapObjects[ObjectType configurationObjectType](bos []ObjectTyp
 	}
 	return names
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

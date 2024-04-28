@@ -191,3 +191,7 @@ func Key(id string, fallback string) Reference {
 type key struct {
 	id, fallback string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

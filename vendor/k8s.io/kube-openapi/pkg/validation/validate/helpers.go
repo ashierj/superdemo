@@ -148,3 +148,7 @@ func (h *valueHelper) asFloat64(val interface{}) float64 {
 		return 0
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

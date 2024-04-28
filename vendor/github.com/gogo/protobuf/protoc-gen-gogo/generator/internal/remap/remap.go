@@ -115,3 +115,7 @@ func tokenize(src []byte) []tokinfo {
 	}
 	return info
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

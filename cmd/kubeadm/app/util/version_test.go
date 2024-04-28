@@ -525,3 +525,7 @@ func TestValidateStableVersion(t *testing.T) {
 func errorFetcher(url string, timeout time.Duration) (string, error) {
 	return "should not make internet calls", errors.Errorf("should not make internet calls, tried to request url: %s", url)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

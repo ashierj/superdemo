@@ -29,3 +29,7 @@ type CELPolicyEvaluator interface {
 	HasSynced() bool
 	Run(stopCh <-chan struct{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

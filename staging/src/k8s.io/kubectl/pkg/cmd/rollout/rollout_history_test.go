@@ -427,3 +427,7 @@ func TestValidate(t *testing.T) {
 		t.Fatalf("expected error %s, but got %s", expectedError, err.Error())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

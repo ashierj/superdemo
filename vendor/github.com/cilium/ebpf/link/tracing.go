@@ -139,3 +139,7 @@ func AttachLSM(opts LSMOptions) (Link, error) {
 
 	return attachBTFID(opts.Program)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

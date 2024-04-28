@@ -75,3 +75,7 @@ func (ts *gaeTokenSource) Token() (*oauth2.Token, error) {
 	}
 	return tok.t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

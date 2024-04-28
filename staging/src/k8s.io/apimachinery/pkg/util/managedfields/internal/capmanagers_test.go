@@ -292,3 +292,7 @@ func mustMarshal(i interface{}) string {
 	}
 	return string(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -107,3 +107,7 @@ func (s *DevicesGroup) Set(path string, r *configs.Resources) error {
 func (s *DevicesGroup) GetStats(path string, stats *cgroups.Stats) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

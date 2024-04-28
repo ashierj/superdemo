@@ -325,3 +325,7 @@ func GetKubeletContainer(kubeletCgroups string) (string, error) {
 	}
 	return kubeletCgroups, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -243,3 +243,7 @@ func (h postStartHookHealthz) Check(req *http.Request) error {
 		return errHookNotFinished
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

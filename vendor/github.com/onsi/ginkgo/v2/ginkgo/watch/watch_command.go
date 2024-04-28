@@ -190,3 +190,7 @@ func (w *SpecWatcher) updateSeed() {
 		w.suiteConfig.RandomSeed = time.Now().Unix()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

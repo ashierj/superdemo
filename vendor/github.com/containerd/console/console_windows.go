@@ -214,3 +214,7 @@ func newMaster(f File) (Console, error) {
 	m.initStdios()
 	return m, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

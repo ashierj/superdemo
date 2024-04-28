@@ -55,3 +55,7 @@ func (aw *ansiWriter) Write(p []byte) (total int, err error) {
 
 	return aw.parser.Parse(p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

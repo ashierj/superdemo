@@ -25,3 +25,7 @@ const (
 	// DefaultContainerRuntimeURLScheme defines default socket url prefix
 	DefaultContainerRuntimeURLScheme = "npipe"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

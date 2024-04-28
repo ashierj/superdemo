@@ -24,3 +24,7 @@ func callgetsystemcfg(label int) (r1 uintptr, e1 syscall.Errno) {
 	e1 = syscall.GetErrno()
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

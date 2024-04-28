@@ -80,3 +80,7 @@ func Clone(s []string) []string {
 	copy(c, s)
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

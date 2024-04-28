@@ -315,3 +315,7 @@ func TestIndexModels(t *testing.T) {
 		}: "def3",
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

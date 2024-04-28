@@ -83,3 +83,7 @@ func CloneEvent(ev Event, at time.Time) Event {
 	ev.at = at
 	return ev
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

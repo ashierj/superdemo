@@ -59,3 +59,7 @@ func RequireDevices(s Subsystem, _ Path, _ error) error {
 	}
 	return ErrIgnoreSubsystem
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

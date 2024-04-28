@@ -5,3 +5,7 @@
 // Package prototext marshals and unmarshals protocol buffer messages as the
 // textproto format.
 package prototext
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -36,3 +36,7 @@ func (in *ValidatingAdmissionPolicyStatusControllerConfiguration) DeepCopy() *Va
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

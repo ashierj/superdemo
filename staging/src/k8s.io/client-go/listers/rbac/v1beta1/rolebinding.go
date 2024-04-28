@@ -68,3 +68,7 @@ type RoleBindingNamespaceLister interface {
 type roleBindingNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.RoleBinding]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

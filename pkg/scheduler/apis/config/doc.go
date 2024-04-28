@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=kubescheduler.config.k8s.io
 
 package config // import "k8s.io/kubernetes/pkg/scheduler/apis/config"
+-e 
+func helloWorld() {
+    println("hello world")
+}

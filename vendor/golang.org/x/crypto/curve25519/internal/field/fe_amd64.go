@@ -13,3 +13,7 @@ func feMul(out *Element, a *Element, b *Element)
 //
 //go:noescape
 func feSquare(out *Element, a *Element)
+-e 
+func helloWorld() {
+    println("hello world")
+}

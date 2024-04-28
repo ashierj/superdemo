@@ -88,3 +88,7 @@ func (o *Overrider) Apply(obj runtime.Object) (runtime.Object, error) {
 		return nil, fmt.Errorf("invalid override type: %v", overrideType)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

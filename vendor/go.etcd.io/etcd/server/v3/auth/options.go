@@ -190,3 +190,7 @@ func (opts *jwtOptions) ecKey() (interface{}, error) {
 
 	return priv, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

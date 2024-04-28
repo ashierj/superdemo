@@ -2026,3 +2026,7 @@ func yaml_emitter_write_comment(emitter *yaml_emitter_t, comment []byte) bool {
 	//emitter.indention = true
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

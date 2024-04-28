@@ -90,3 +90,7 @@ func (r *Selector) Watch(resourceVersion string) (watch.Interface, error) {
 func (r *Selector) ResourceMapping() *meta.RESTMapping {
 	return r.Mapping
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -17,3 +17,7 @@ const (
 	Empty_message_name     protoreflect.Name     = "Empty"
 	Empty_message_fullname protoreflect.FullName = "google.protobuf.Empty"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

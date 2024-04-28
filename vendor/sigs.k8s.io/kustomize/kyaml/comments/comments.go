@@ -81,3 +81,7 @@ func copyFieldComments(from, to *yaml.RNode) {
 		to.Document().FootComment = from.Document().FootComment
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

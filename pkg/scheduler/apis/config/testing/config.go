@@ -36,3 +36,7 @@ func V1ToInternalWithDefaults(t *testing.T, versionedCfg v1.KubeSchedulerConfigu
 	}
 	return &cfg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

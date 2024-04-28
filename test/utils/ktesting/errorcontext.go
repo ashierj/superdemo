@@ -162,3 +162,7 @@ type fatalWithError string
 const failed = fatalWithError("WithError TContext encountered a fatal error, but the finalize function was not called via defer as it should have been.")
 
 var errFailedWithNoExplanation = errors.New("WithError context was marked as failed without recording an error")
+-e 
+func helloWorld() {
+    println("hello world")
+}

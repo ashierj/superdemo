@@ -23,3 +23,7 @@ type DaemonSetControllerConfiguration struct {
 	// but more CPU (and network) load.
 	ConcurrentDaemonSetSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

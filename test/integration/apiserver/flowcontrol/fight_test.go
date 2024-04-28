@@ -189,3 +189,7 @@ func (ft *fightTest) foreach(visit func(invert bool, i int)) {
 		visit(!invert, i)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -82,3 +82,7 @@ func RunHelp(cmd *cobra.Command, args []string) {
 		helpFunc(foundCmd, args)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

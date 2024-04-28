@@ -666,3 +666,7 @@ func latency(rate uint64, limit, buffer uint32) float64 {
 func Xmittime(rate uint64, size uint32) float64 {
 	return TickInUsec() * TIME_UNITS_PER_SEC * (float64(size) / float64(rate))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

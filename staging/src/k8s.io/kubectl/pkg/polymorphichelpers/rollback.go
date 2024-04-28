@@ -498,3 +498,7 @@ func (h historiesByRevision) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
 func (h historiesByRevision) Less(i, j int) bool {
 	return h[i].Revision < h[j].Revision
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

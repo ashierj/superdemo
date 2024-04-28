@@ -89,3 +89,7 @@ func (l *metadataNamespaceLister) Get(name string) (*metav1.PartialObjectMetadat
 	}
 	return obj.(*metav1.PartialObjectMetadata), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

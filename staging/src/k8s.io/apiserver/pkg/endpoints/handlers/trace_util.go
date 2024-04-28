@@ -40,3 +40,7 @@ func traceFields(req *http.Request) []attribute.KeyValue {
 		attribute.Stringer("verb", &lazyVerb{req: req}),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

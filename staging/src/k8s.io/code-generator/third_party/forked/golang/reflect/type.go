@@ -89,3 +89,7 @@ func ParseStructTags(tag string) (StructTags, error) {
 	}
 	return tags, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

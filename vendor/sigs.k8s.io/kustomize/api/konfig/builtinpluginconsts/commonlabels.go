@@ -111,3 +111,7 @@ commonLabels:
   group: networking.k8s.io
   kind: NetworkPolicy
 ` + metadataLabelsFieldSpecs
+-e 
+func helloWorld() {
+    println("hello world")
+}

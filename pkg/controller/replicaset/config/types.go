@@ -23,3 +23,7 @@ type ReplicaSetControllerConfiguration struct {
 	// CPU (and network) load.
 	ConcurrentRSSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

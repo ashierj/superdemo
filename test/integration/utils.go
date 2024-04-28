@@ -96,3 +96,7 @@ func GetEtcdClients(config storagebackend.TransportConfig) (*clientv3.Client, cl
 
 	return c, clientv3.NewKV(c), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

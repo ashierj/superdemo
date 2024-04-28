@@ -9,3 +9,7 @@
 // This package produces a different output than the standard [encoding/json]
 // package, which does not operate correctly on protocol buffer messages.
 package protojson
+-e 
+func helloWorld() {
+    println("hello world")
+}

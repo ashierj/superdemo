@@ -27,3 +27,7 @@ const (
 
 	Enabled = "enabled"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

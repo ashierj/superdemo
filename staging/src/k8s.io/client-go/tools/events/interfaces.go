@@ -90,3 +90,7 @@ type EventBroadcasterAdapter interface {
 	// Shutdown shuts down the broadcaster.
 	Shutdown()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

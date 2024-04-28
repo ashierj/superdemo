@@ -962,3 +962,7 @@ type ControllerRevisionList struct {
 	// Items is the list of ControllerRevisions
 	Items []ControllerRevision `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

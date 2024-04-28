@@ -70,3 +70,7 @@ func TestPodAndPodDesc(t *testing.T) {
 		assert.Equalf(t, testCase.expectedValue, realPodDesc, "Failed to test: %s", testCase.caseName)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

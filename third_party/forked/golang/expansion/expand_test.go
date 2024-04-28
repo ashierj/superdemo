@@ -283,3 +283,7 @@ func doExpansionTest(t *testing.T, mapping func(string) string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

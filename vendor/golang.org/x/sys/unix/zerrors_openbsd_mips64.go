@@ -1903,3 +1903,7 @@ var signalList = [...]struct {
 	{32, "SIGTHR", "thread AST"},
 	{81920, "SIGSTKSZ", "unknown signal"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

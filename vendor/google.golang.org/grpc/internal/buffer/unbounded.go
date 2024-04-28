@@ -103,3 +103,7 @@ func (b *Unbounded) Close() {
 	b.closed = true
 	close(b.c)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

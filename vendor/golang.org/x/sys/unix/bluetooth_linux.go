@@ -34,3 +34,7 @@ const (
 	SOL_RFCOMM    = 0x12
 	SOL_SCO       = 0x11
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

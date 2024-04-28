@@ -47,3 +47,7 @@ func PtraceGetRegsMips64(pid int, regsout *PtraceRegsMips64) error {
 func PtraceSetRegsMips64(pid int, regs *PtraceRegsMips64) error {
 	return ptracePtr(PTRACE_SETREGS, pid, 0, unsafe.Pointer(regs))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

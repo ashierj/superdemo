@@ -18,3 +18,7 @@ package sdk // import "go.opentelemetry.io/otel/sdk"
 func Version() string {
 	return "1.20.0"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

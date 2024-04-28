@@ -106,3 +106,7 @@ type RuntimeClassList struct {
 	// items is a list of schema objects.
 	Items []RuntimeClass `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

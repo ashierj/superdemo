@@ -171,3 +171,7 @@ func (c *LRUExpireCache) Keys() []interface{} {
 
 	return val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

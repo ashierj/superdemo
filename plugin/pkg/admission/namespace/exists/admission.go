@@ -116,3 +116,7 @@ func (e *Exists) ValidateInitialization() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

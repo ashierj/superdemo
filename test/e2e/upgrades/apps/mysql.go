@@ -220,3 +220,7 @@ func (t *MySQLUpgradeTest) countNames() (int, error) {
 	}
 	return count, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

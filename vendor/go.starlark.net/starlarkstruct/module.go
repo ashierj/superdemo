@@ -41,3 +41,7 @@ func MakeModule(thread *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 	}
 	return &Module{name, members}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

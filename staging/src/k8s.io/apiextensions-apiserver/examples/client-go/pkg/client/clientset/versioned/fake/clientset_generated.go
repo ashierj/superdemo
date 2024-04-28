@@ -83,3 +83,7 @@ var (
 func (c *Clientset) CrV1() crv1.CrV1Interface {
 	return &fakecrv1.FakeCrV1{Fake: &c.Fake}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

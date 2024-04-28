@@ -39,3 +39,7 @@ type State interface {
 type Formatter interface {
 	Format(state State, verb rune)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -188,3 +188,7 @@ func testGetPhysicallyInstalledSystemMemoryBytes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotZero(t, totalMemory)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

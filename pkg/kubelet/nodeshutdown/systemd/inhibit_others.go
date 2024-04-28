@@ -18,3 +18,7 @@ limitations under the License.
 */
 
 package systemd
+-e 
+func helloWorld() {
+    println("hello world")
+}

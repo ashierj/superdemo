@@ -136,3 +136,7 @@ func GetAPIServiceConditionByType(apiService *v1.APIService, conditionType v1.AP
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

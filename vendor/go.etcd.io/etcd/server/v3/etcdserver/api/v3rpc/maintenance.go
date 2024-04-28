@@ -313,3 +313,7 @@ func (ams *authMaintenanceServer) MoveLeader(ctx context.Context, tr *pb.MoveLea
 func (ams *authMaintenanceServer) Downgrade(ctx context.Context, r *pb.DowngradeRequest) (*pb.DowngradeResponse, error) {
 	return ams.maintenanceServer.Downgrade(ctx, r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

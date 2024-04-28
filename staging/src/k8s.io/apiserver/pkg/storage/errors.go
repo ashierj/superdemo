@@ -211,3 +211,7 @@ func IsTooLargeResourceVersion(err error) bool {
 	}
 	return apierrors.HasStatusCause(err, metav1.CauseTypeResourceVersionTooLarge)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

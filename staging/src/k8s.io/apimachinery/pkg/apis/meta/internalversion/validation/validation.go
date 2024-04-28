@@ -74,3 +74,7 @@ func validateWatchOptions(options *internalversion.ListOptions, isWatchListFeatu
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

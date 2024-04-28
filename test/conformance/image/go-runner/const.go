@@ -65,3 +65,7 @@ const (
 	// override an explicit E2E_SKIP value.
 	serialTestsRegexp = "\\[Serial\\]"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

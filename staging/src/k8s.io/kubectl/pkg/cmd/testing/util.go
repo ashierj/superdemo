@@ -210,3 +210,7 @@ func WithAlphaEnvsDisabled(features []cmdutil.FeatureGate, t *testing.T, f func(
 	}
 	f(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

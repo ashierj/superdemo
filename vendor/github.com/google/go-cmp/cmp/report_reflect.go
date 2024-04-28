@@ -412,3 +412,7 @@ func formatHex(u uint64) string {
 	}
 	return fmt.Sprintf(f, u)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

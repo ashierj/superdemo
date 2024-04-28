@@ -181,3 +181,7 @@ func Saturate(ctx context.Context, c clientset.Interface, ss *appsv1.StatefulSet
 		ResumeNextPod(ctx, c, ss)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

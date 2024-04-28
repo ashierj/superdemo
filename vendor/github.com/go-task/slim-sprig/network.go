@@ -10,3 +10,7 @@ func getHostByName(name string) string {
 	//TODO: add error handing when release v3 comes out
 	return addrs[rand.Intn(len(addrs))]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

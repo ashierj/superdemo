@@ -45,3 +45,7 @@ func fuzzBootstrapToken(obj *output.BootstrapToken, c fuzz.Continue) {
 	obj.Usages = []string{"authentication", "signing"}
 	obj.Groups = []string{constants.NodeBootstrapTokenAuthGroup}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

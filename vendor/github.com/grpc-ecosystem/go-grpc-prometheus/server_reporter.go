@@ -44,3 +44,7 @@ func (r *serverReporter) Handled(code codes.Code) {
 		r.metrics.serverHandledHistogram.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName).Observe(time.Since(r.startTime).Seconds())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

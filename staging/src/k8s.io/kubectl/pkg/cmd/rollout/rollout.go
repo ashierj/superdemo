@@ -73,3 +73,7 @@ func NewCmdRollout(f cmdutil.Factory, streams genericiooptions.IOStreams) *cobra
 
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -128,3 +128,7 @@ func (s *v2v3Server) Do(ctx context.Context, r pb.Request) (etcdserver.Response,
 	}
 	return resp, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

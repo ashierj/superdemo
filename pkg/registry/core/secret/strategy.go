@@ -139,3 +139,7 @@ func warningsForSecret(secret *api.Secret) []string {
 	}
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

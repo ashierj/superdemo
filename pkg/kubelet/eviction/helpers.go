@@ -1292,3 +1292,7 @@ func getThresholdMetInfo(resourceToReclaim v1.ResourceName, thresholds []evictio
 	}
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

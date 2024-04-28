@@ -289,3 +289,7 @@ func NewImagePolicyWebhook(configFile io.Reader) (*Plugin, error) {
 		defaultAllow:  whConfig.DefaultAllow,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

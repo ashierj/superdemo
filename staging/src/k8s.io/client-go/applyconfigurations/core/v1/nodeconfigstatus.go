@@ -64,3 +64,7 @@ func (b *NodeConfigStatusApplyConfiguration) WithError(value string) *NodeConfig
 	b.Error = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

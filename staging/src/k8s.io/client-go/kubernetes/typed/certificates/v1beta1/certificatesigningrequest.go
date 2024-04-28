@@ -241,3 +241,7 @@ func (c *certificateSigningRequests) ApplyStatus(ctx context.Context, certificat
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

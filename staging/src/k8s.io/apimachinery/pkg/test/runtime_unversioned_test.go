@@ -95,3 +95,7 @@ func TestExperimentalEncodeDecodeStatus(t *testing.T) {
 		t.Errorf("expected: %v, got: %v", status, decoded)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

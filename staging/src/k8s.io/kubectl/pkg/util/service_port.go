@@ -57,3 +57,7 @@ func LookupServicePortNumberByName(svc v1.Service, name string) (int32, error) {
 
 	return int32(-1), fmt.Errorf("Service '%s' does not have a named port '%s'", svc.Name, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -100,3 +100,7 @@ func IsConflict(err error) bool {
 	_, ok := err.(ErrConflict)
 	return ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

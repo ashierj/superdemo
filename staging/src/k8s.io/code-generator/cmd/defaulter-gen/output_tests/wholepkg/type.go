@@ -72,3 +72,7 @@ type StructEverything struct {
 	SliceFloatField    []float64
 	SlicesStructField  StructSlices
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

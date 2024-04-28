@@ -168,3 +168,7 @@ func ConfChangesToString(ccs []ConfChangeSingle) string {
 	}
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

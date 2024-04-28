@@ -77,3 +77,7 @@ type NoopManager struct {
 func (np *NoopManager) GetCollector(_ string, _ func() ([]string, error), _ int) (stats.Collector, error) {
 	return &stats.NoopCollector{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

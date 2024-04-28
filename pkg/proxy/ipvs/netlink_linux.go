@@ -192,3 +192,7 @@ func (h *netlinkHandle) GetAllLocalAddressesExcept(dev string) (sets.Set[string]
 	}
 	return proxyutil.AddressSet(h.isValidForSet, addr), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

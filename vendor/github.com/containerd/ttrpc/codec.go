@@ -41,3 +41,7 @@ func (c codec) Unmarshal(p []byte, msg interface{}) error {
 		return fmt.Errorf("ttrpc: cannot unmarshal into unknown type: %T", msg)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

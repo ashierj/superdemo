@@ -65,3 +65,7 @@ type revisions []revision
 func (a revisions) Len() int           { return len(a) }
 func (a revisions) Less(i, j int) bool { return a[j].GreaterThan(a[i]) }
 func (a revisions) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

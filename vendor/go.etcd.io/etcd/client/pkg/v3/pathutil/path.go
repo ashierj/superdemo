@@ -29,3 +29,7 @@ func CanonicalURLPath(p string) string {
 	}
 	return np
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

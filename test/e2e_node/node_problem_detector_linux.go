@@ -512,3 +512,7 @@ func verifyNodeCondition(ctx context.Context, n coreclientset.NodeInterface, con
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

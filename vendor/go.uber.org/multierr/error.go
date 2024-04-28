@@ -644,3 +644,7 @@ func AppendInvoke(into *error, invoker Invoker) {
 func AppendFunc(into *error, fn func() error) {
 	AppendInvoke(into, Invoke(fn))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

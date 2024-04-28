@@ -25,3 +25,7 @@ import (
 func NewUUID() types.UID {
 	return types.UID(uuid.New().String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -174,3 +174,7 @@ func DoTestSecrets(t *testing.T, client clientset.Interface, ns *v1.Namespace) {
 	// Verifying contents of the volumes is out of scope for a
 	// apiserver<->kubelet integration test.  It is covered by an e2e test.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

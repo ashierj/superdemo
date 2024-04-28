@@ -16,3 +16,7 @@
 //
 // TODO: add info on how to define and register a custom format
 package strfmt
+-e 
+func helloWorld() {
+    println("hello world")
+}

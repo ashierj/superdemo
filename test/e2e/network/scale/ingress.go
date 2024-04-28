@@ -472,3 +472,7 @@ func generateScaleTestBackendDeploymentSpec(numReplicas int32) *appsv1.Deploymen
 	}
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

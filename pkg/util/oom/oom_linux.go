@@ -128,3 +128,7 @@ func (oomAdjuster *OOMAdjuster) applyOOMScoreAdjContainer(cgroupName string, oom
 	}
 	return fmt.Errorf("exceeded maxTries, some processes might not have desired OOM score")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

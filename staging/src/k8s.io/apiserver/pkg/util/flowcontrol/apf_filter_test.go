@@ -167,3 +167,7 @@ func TestQueueWaitTimeLatencyTracker(t *testing.T) {
 		t.Errorf("unexpected latency, got %s, expected %s", latency, expectedLatency)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

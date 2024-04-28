@@ -161,3 +161,7 @@ func updateEnv(existing []v1.EnvVar, env []v1.EnvVar, remove []string) []v1.EnvV
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

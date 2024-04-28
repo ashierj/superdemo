@@ -43,3 +43,7 @@ type TestResult struct {
 	Host   string
 	ExitOK bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -199,3 +199,7 @@ func TestCategories(t *testing.T) {
 	expected := []string{"api-extensions"}
 	registrytest.AssertCategories(t, storage, expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

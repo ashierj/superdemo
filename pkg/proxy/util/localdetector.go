@@ -114,3 +114,7 @@ func NewDetectLocalByInterfaceNamePrefix(interfacePrefix string) LocalTrafficDet
 		ifNotLocalNFT: []string{"iif", "!=", interfacePrefix + "*"},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -511,3 +511,7 @@ func (w *effectiveContainerSecurityContextWrapper) SetAllowPrivilegeEscalation(v
 		w.containerSC.SetAllowPrivilegeEscalation(v)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

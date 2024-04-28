@@ -510,3 +510,7 @@ func (rb *reorderBuffer) compose() {
 	}
 	rb.nrune = k
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

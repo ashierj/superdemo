@@ -79,3 +79,7 @@ func (s *ByteSource) consumeUint64() uint64 {
 	}
 	return binary.BigEndian.Uint64(bytes[:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

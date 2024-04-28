@@ -32,3 +32,7 @@ func (c *Container) OPTIONSFilter(req *Request, resp *Response, chain *FilterCha
 func OPTIONSFilter() FilterFunction {
 	return DefaultContainer.OPTIONSFilter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

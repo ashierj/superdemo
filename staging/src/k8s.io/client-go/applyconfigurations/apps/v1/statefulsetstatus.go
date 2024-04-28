@@ -123,3 +123,7 @@ func (b *StatefulSetStatusApplyConfiguration) WithAvailableReplicas(value int32)
 	b.AvailableReplicas = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -96,3 +96,7 @@ func hasInvalidLabelValueInLabelSelector(capacity *storage.CSIStorageCapacity) b
 	labelSelectorValidationOptions := metav1validation.LabelSelectorValidationOptions{AllowInvalidLabelValueInSelector: false}
 	return len(metav1validation.ValidateLabelSelector(capacity.NodeTopology, labelSelectorValidationOptions, nil)) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

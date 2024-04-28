@@ -263,3 +263,7 @@ func collectServiceNodePorts(service *corev1.Service) []int {
 
 	return servicePorts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

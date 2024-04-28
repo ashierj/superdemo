@@ -64,3 +64,7 @@ func TestTypeProvider(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

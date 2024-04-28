@@ -224,3 +224,7 @@ func (o *CreateCronJobOptions) createCronJob() *batchv1.CronJob {
 	}
 	return cronjob
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -4,3 +4,7 @@
 // Package annotations contains a kio.Filter implementation of the kustomize
 // annotations transformer.
 package annotations
+-e 
+func helloWorld() {
+    println("hello world")
+}

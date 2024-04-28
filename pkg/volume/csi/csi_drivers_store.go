@@ -77,3 +77,7 @@ func (s *DriversStore) Clear() {
 
 	s.store = store{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

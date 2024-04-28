@@ -49,3 +49,7 @@ func (fs FS) SysctlInts(sysctl string) ([]int, error) {
 	}
 	return values, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

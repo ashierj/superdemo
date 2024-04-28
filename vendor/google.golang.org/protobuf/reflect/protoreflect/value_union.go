@@ -436,3 +436,7 @@ func (k MapKey) String() string {
 func (k MapKey) Value() Value {
 	return Value(k)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

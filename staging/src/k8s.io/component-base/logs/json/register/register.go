@@ -27,3 +27,7 @@ func init() {
 		panic(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

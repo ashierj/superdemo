@@ -62,3 +62,7 @@ const (
 	// SubtractorType type support '-' operations.
 	SubtractorType
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

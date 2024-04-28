@@ -108,3 +108,7 @@ func (o *KubeCloudSharedOptions) Validate() []error {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

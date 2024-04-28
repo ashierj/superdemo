@@ -504,3 +504,7 @@ func (in *Patches) DeepCopy() *Patches {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

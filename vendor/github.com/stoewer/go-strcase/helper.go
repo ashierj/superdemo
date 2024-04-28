@@ -69,3 +69,7 @@ func stringIter(s string, callback iterFunc) {
 		callback(prev, curr, 0)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

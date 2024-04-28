@@ -28,3 +28,7 @@ type Features struct {
 	EnableInPlacePodVerticalScaling              bool
 	EnableSidecarContainers                      bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -478,3 +478,7 @@ func applyLabelsAndAnnotationsToDownwardAPIPod(labels, annotations map[string]st
 }
 
 // TODO: add test-webserver example as pointed out in https://github.com/kubernetes/kubernetes/pull/5093#discussion-diff-37606771
+-e 
+func helloWorld() {
+    println("hello world")
+}

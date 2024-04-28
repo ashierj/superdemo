@@ -215,3 +215,7 @@ func newBase64Service(keyID string) *testService {
 		status:  status,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

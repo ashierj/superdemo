@@ -161,3 +161,7 @@ func ternary(vt interface{}, vf interface{}, v bool) interface{} {
 
 	return vf
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

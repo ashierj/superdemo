@@ -268,3 +268,7 @@ func PerformControlPlaneUpgrade(flags *applyFlags, client clientset.Interface, w
 
 	return upgrade.PerformStaticPodUpgrade(client, waiter, initCfg, *upgradeCfg.Apply.EtcdUpgrade, *upgradeCfg.Apply.CertificateRenewal, upgradeCfg.Apply.Patches.Directory)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -33,3 +33,7 @@ const (
 	RDMA_NLDEV_SYS_ATTR_NETNS_MODE  = 66
 	RDMA_NLDEV_NET_NS_FD            = 68
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

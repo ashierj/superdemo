@@ -78,3 +78,7 @@ func DefaultIgnores(bucket, key []byte) bool {
 	return bytes.Compare(bucket, Meta.Name()) == 0 &&
 		(bytes.Compare(key, MetaTermKeyName) == 0 || bytes.Compare(key, MetaConsistentIndexKeyName) == 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package mutatingwebhookconfiguration // import "k8s.io/kubernetes/pkg/registry/admissionregistration/mutatingwebhookconfiguration"
+-e 
+func helloWorld() {
+    println("hello world")
+}

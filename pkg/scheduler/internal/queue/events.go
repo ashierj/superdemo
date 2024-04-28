@@ -87,3 +87,7 @@ var (
 	// UnschedulableTimeout is the event when a pod stays in unschedulable for longer than timeout.
 	UnschedulableTimeout = framework.ClusterEvent{Resource: framework.WildCard, ActionType: framework.All, Label: "UnschedulableTimeout"}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

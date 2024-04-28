@@ -36,3 +36,7 @@ func NewWatcher(_ record.EventRecorder) (Watcher, error) {
 func (ow *oomWatcherUnsupported) Start(_ *v1.ObjectReference) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

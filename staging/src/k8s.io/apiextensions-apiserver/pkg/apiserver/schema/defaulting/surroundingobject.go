@@ -145,3 +145,7 @@ func (f SurroundingObjectFunc) Index() SurroundingObjectFunc {
 		}, err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

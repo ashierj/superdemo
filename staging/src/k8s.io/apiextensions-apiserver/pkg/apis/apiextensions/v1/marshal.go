@@ -134,3 +134,7 @@ func (s *JSON) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

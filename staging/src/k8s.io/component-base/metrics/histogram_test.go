@@ -311,3 +311,7 @@ func TestHistogramWithLabelValueAllowList(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

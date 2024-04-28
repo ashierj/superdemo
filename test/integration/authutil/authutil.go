@@ -132,3 +132,7 @@ func grantAuthorization(t *testing.T, ctx context.Context, adminClient clientset
 		true,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

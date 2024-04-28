@@ -223,3 +223,7 @@ func (c *sha1SignatureChecker) CheckPeerCertificates(peerCertificates []*x509.Ce
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

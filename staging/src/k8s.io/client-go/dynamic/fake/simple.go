@@ -537,3 +537,7 @@ func convertToUnstructured(s *runtime.Scheme, obj runtime.Object) (runtime.Objec
 	}
 	return &u, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

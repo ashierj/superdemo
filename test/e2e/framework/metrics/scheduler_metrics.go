@@ -38,3 +38,7 @@ func parseSchedulerMetrics(data string) (SchedulerMetrics, error) {
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

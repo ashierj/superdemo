@@ -149,3 +149,7 @@ func (c *FakeStorageClasses) Apply(ctx context.Context, storageClass *storagev1.
 	}
 	return obj.(*v1.StorageClass), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -146,3 +146,7 @@ func (p *IntegrationTestNodePreparer) CleanupNodes(ctx context.Context) error {
 	}
 	return errRet
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

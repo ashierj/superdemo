@@ -22,3 +22,7 @@ type ContactInfo struct {
 	URL   string `json:"url,omitempty"`
 	Email string `json:"email,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

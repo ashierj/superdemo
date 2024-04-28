@@ -45,3 +45,7 @@ func SetObjectDefaults_PriorityClassList(in *v1.PriorityClassList) {
 		SetObjectDefaults_PriorityClass(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

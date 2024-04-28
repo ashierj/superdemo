@@ -1016,3 +1016,7 @@ func Test_NestedPendingOperations_OperationExists_ExactMatchFirstNoPending(t *te
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

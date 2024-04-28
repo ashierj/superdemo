@@ -107,3 +107,7 @@ func (m Measurement) Value() float64 {
 func (m Measurement) Measure() Measure {
 	return m.m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

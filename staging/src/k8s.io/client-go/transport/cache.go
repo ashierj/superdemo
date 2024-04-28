@@ -176,3 +176,7 @@ func tlsConfigKey(c *Config) (tlsCacheKey, bool, error) {
 
 	return k, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

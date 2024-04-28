@@ -187,3 +187,7 @@ func (th *timingHistogram) Describe(ch chan<- *prometheus.Desc) {
 func (th *timingHistogram) Collect(ch chan<- prometheus.Metric) {
 	ch <- th
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

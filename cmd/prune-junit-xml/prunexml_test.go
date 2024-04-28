@@ -116,3 +116,7 @@ func TestPruneTESTS(t *testing.T) {
 	_ = writer.Flush()
 	assert.Equal(t, outputXML, string(output.Bytes()), "tests in xml was not pruned correctly")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

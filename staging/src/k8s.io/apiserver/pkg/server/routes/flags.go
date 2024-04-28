@@ -125,3 +125,7 @@ func writePlainText(statusCode int, text string, w http.ResponseWriter) {
 	w.WriteHeader(statusCode)
 	fmt.Fprintln(w, text)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

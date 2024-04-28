@@ -14,3 +14,7 @@ var (
 func GetHNSGlobals() (*HNSGlobals, error) {
 	return hns.GetHNSGlobals()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

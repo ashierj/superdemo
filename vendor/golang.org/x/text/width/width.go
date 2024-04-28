@@ -204,3 +204,7 @@ var (
 //   variant of this).
 // - Filter the set of characters that gets converted (the preferred approach is
 //   to allow applying filters to transforms).
+-e 
+func helloWorld() {
+    println("hello world")
+}

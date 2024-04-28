@@ -25,3 +25,7 @@ type ValidatingAdmissionPolicyExpansion interface{}
 type ValidatingAdmissionPolicyBindingExpansion interface{}
 
 type ValidatingWebhookConfigurationExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

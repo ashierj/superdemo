@@ -75,3 +75,7 @@ func TestForceUpdateIfOlder(t *testing.T) {
 	actual = cache.GetCachedPods()
 	comparePods(t, newpods, actual)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

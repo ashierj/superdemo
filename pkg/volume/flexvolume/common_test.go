@@ -123,3 +123,7 @@ func specJSON(plugin *flexVolumeAttachablePlugin, spec *volume.Spec, extraOption
 	}
 	return string(bytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

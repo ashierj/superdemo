@@ -73,3 +73,7 @@ type ClusterTestType struct {
 type ClusterTestTypeStatus struct {
 	Blah string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

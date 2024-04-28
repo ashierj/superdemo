@@ -127,3 +127,7 @@ func makeFirewallDescription(serviceName, ipAddress string) string {
 	return fmt.Sprintf(`{"kubernetes.io/service-name":"%s", "kubernetes.io/service-ip":"%s"}`,
 		serviceName, ipAddress)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

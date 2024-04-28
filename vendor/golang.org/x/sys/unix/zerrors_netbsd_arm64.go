@@ -1767,3 +1767,7 @@ var signalList = [...]struct {
 	{31, "SIGUSR2", "user defined signal 2"},
 	{32, "SIGPWR", "power fail/restart"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

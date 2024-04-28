@@ -478,3 +478,7 @@ func (m *legacyManager) Exists() bool {
 func (m *legacyManager) OOMKillCount() (uint64, error) {
 	return fs.OOMKillCount(m.Path("memory"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

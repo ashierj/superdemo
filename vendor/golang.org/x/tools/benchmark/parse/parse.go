@@ -129,3 +129,7 @@ func ParseSet(r io.Reader) (Set, error) {
 
 	return bb, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

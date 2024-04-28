@@ -158,3 +158,7 @@ func (c *FakeSecrets) Apply(ctx context.Context, secret *corev1.SecretApplyConfi
 	}
 	return obj.(*v1.Secret), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

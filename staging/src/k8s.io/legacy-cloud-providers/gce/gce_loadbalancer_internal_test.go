@@ -2017,3 +2017,7 @@ func TestEnsureInternalLoadBalancerAllPorts(t *testing.T) {
 	}
 	assertInternalLbResourcesDeleted(t, gce, svc, vals, true)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

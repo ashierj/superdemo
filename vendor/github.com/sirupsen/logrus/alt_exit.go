@@ -74,3 +74,7 @@ func RegisterExitHandler(handler func()) {
 func DeferExitHandler(handler func()) {
 	handlers = append([]func(){handler}, handlers...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

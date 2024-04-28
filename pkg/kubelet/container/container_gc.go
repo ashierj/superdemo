@@ -107,3 +107,7 @@ func (cgc *realContainerGC) IsContainerFsSeparateFromImageFs(ctx context.Context
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

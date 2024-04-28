@@ -88,3 +88,7 @@ func (*MapStringBool) Type() string {
 func (m *MapStringBool) Empty() bool {
 	return len(*m.Map) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

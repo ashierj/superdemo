@@ -99,3 +99,7 @@ type RuntimeClassList struct {
 	// items is a list of schema objects.
 	Items []RuntimeClass
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -650,3 +650,7 @@ func comprehensionFactory(nav *navigableExprImpl) []NavigableExpr {
 		nav.createChild(compre.Result()),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -168,3 +168,7 @@ type Underlier interface {
 func (l logger) GetUnderlying() StdLogger {
 	return l.std
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func (b *AffinityApplyConfiguration) WithPodAntiAffinity(value *PodAntiAffinityA
 	b.PodAntiAffinity = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

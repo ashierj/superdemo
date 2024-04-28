@@ -46,3 +46,7 @@ func SetDefaults_PodSecurityDefaults(obj *PodSecurityDefaults) {
 		obj.AuditVersion = string(api.VersionLatest)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

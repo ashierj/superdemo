@@ -491,3 +491,7 @@ func (test setCredentialsTest) run(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

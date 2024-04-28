@@ -38,3 +38,7 @@ func getStat(event fsnotify.Event) (os.FileInfo, error) {
 }
 
 var getSocketPath = util.NormalizePath
+-e 
+func helloWorld() {
+    println("hello world")
+}

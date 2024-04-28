@@ -225,3 +225,7 @@ func testDeployment(replicas int32, podLabels map[string]string, nodeSelector ma
 	}
 	return deploymentSpec
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

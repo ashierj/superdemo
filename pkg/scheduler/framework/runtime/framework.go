@@ -1634,3 +1634,7 @@ func (f *frameworkImpl) PercentageOfNodesToScore() *int32 {
 func (f *frameworkImpl) Parallelizer() parallelize.Parallelizer {
 	return f.parallelizer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

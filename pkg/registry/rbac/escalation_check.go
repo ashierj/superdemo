@@ -144,3 +144,7 @@ func BindingAuthorized(ctx context.Context, roleRef rbac.RoleRef, bindingNamespa
 	}
 	return decision == authorizer.DecisionAllow
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

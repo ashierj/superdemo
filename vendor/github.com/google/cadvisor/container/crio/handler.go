@@ -360,3 +360,7 @@ func (h *crioContainerHandler) Exists() bool {
 func (h *crioContainerHandler) Type() container.ContainerType {
 	return container.ContainerTypeCrio
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func ServeAttach(w http.ResponseWriter, req *http.Request, attacher Attacher, po
 		}})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

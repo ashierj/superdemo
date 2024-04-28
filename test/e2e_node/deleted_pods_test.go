@@ -216,3 +216,7 @@ var _ = SIGDescribe("Deleted pods handling", framework.WithNodeConformance(), fu
 	)
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

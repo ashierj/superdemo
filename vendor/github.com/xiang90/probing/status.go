@@ -106,3 +106,7 @@ func (s *status) reset() {
 	s.clockdiff = 0
 	s.err = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func (w *patternAllowlist) Admit(attrs *lifecycle.PodAdmitAttributes) lifecycle.
 		Admit: true,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

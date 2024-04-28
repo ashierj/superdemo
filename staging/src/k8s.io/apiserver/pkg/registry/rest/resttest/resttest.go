@@ -1563,3 +1563,7 @@ func (t *Tester) testWatchLabels(obj runtime.Object, emitFn EmitFunc, labelsPass
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

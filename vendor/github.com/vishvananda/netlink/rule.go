@@ -40,3 +40,7 @@ func NewRule() *Rule {
 		Flow:              -1,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

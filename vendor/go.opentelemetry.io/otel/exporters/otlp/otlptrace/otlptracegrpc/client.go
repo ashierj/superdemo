@@ -304,3 +304,7 @@ func (c *client) MarshalLog() interface{} {
 		Endpoint: c.endpoint,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

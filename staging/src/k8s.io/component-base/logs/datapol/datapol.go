@@ -97,3 +97,7 @@ func datatypes(v reflect.Value) []string {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

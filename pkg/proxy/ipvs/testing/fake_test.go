@@ -59,3 +59,7 @@ func TestSetGetLocalAddresses(t *testing.T) {
 		t.Errorf("Unexpected mismatch, expected: %v, got: %v", expected, addr)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -26,3 +26,7 @@ type WantsInternalWardleInformerFactory interface {
 	SetInternalWardleInformerFactory(informers.SharedInformerFactory)
 	admission.InitializationValidator
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

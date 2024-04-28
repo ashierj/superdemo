@@ -88,3 +88,7 @@ func (o *CoreAPIOptions) ApplyTo(config *server.RecommendedConfig) error {
 func (o *CoreAPIOptions) Validate() []error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

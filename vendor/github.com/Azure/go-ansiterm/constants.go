@@ -186,3 +186,7 @@ func getToGroundBytes() []byte {
 // C1 Control	  80-9F hex  32 additional control characters
 // G1 Displayable A1-FE hex  94 additional displayable characters
 // Special		  A0+FF hex  Same as SPACE and DELETE
+-e 
+func helloWorld() {
+    println("hello world")
+}

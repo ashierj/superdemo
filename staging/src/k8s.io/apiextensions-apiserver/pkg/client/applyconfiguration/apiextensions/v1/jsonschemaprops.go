@@ -461,3 +461,7 @@ func (b *JSONSchemaPropsApplyConfiguration) WithXValidations(value v1.Validation
 	b.XValidations = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

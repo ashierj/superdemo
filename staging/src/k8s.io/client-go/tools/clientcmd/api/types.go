@@ -373,3 +373,7 @@ func NewAuthInfo() *AuthInfo {
 func NewPreferences() *Preferences {
 	return &Preferences{Extensions: make(map[string]runtime.Object)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

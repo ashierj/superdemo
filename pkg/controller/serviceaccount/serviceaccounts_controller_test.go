@@ -236,3 +236,7 @@ func TestServiceAccountCreation(t *testing.T) {
 }
 
 var alwaysReady = func() bool { return true }
+-e 
+func helloWorld() {
+    println("hello world")
+}

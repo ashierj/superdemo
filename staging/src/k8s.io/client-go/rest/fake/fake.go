@@ -116,3 +116,7 @@ func (c *RESTClient) do(req *http.Request) (*http.Response, error) {
 	}
 	return c.Resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -153,3 +153,7 @@ func (r *Ref) UnmarshalJSON(d []byte) error {
 func (r *Ref) fromMap(v map[string]interface{}) error {
 	return internal.JSONRefFromMap(&r.Ref, v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

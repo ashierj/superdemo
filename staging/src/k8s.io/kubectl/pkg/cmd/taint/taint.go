@@ -369,3 +369,7 @@ func (o TaintOptions) updateTaints(obj runtime.Object) (string, error) {
 	node.Spec.Taints = newTaints
 	return operation, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

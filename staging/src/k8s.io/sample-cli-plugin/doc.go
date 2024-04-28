@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package samplecliplugin // import "k8s.io/sample-cli-plugin"
+-e 
+func helloWorld() {
+    println("hello world")
+}

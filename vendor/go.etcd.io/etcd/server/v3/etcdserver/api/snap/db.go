@@ -98,3 +98,7 @@ func (s *Snapshotter) DBFilePath(id uint64) (string, error) {
 func (s *Snapshotter) dbFilePath(id uint64) string {
 	return filepath.Join(s.dir, fmt.Sprintf("%016x.snap.db", id))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

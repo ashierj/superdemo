@@ -436,3 +436,7 @@ func (le *LeaderElector) getObservedRecord() rl.LeaderElectionRecord {
 
 	return le.observedRecord
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

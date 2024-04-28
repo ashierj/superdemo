@@ -193,3 +193,7 @@ func (f *fakeStorage) Update(ctx context.Context, name string, objInfo rest.Upda
 	f.updated++
 	return nil, false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -283,3 +283,7 @@ var CommonNameUserConversion = UserConversionFunc(func(chain []*x509.Certificate
 		},
 	}, true, nil
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

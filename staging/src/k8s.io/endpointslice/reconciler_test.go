@@ -2450,3 +2450,7 @@ func setupMetrics() {
 	metrics.EndpointSliceSyncs.Reset()
 	metrics.ServicesCountByTrafficDistribution.Reset()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

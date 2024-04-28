@@ -39,3 +39,7 @@ func SetObjectDefaults_CloudControllerManagerConfiguration(in *CloudControllerMa
 	SetDefaults_CloudControllerManagerConfiguration(in)
 	SetDefaults_KubeCloudSharedConfiguration(&in.KubeCloudShared)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

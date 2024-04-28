@@ -95,3 +95,7 @@ func (b *NamedResourcesAttributeValueApplyConfiguration) WithVersionValue(value 
 	b.VersionValue = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

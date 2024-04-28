@@ -129,3 +129,7 @@ func TestDecoder_SourceClose(t *testing.T) {
 		t.Error("Timeout")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

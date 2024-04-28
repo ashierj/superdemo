@@ -20,3 +20,7 @@ limitations under the License.
 // get the expected behavior out of runtime.Scheme.ConvertToVersion
 // and associated methods.
 package extensionsint // import "k8s.io/client-go/scale/scheme/extensionsint"
+-e 
+func helloWorld() {
+    println("hello world")
+}

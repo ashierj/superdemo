@@ -1192,3 +1192,7 @@ func newCPUSetPtr(cpus ...int) *cpuset.CPUSet {
 	ret := cpuset.New(cpus...)
 	return &ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

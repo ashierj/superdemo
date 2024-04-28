@@ -45,3 +45,7 @@ type Interface interface {
 	// passing the time when the invocation was launched.
 	EventAfterTime(f EventFunc, t time.Time)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

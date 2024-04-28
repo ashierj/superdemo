@@ -121,3 +121,7 @@ func SetTestEnv() func() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

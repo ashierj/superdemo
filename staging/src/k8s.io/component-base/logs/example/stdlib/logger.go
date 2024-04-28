@@ -65,3 +65,7 @@ func main() {
 	// Produce some output.
 	example.Run(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

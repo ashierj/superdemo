@@ -49,3 +49,7 @@ func seccompProfileLocalhost(profile string) *corev1.SeccompProfile {
 func annotationKeyContainer(c corev1.Container) string {
 	return annotationKeyContainerPrefix + c.Name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

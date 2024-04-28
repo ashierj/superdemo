@@ -254,3 +254,7 @@ func newPartialObjectMetadata(apiVersion, kind, namespace, name string) *metav1.
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

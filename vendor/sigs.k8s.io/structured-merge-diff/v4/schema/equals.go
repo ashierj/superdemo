@@ -200,3 +200,7 @@ func (a *List) Equals(b *List) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

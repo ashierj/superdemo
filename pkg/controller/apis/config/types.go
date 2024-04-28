@@ -141,3 +141,7 @@ type KubeControllerManagerConfiguration struct {
 // DeprecatedControllerConfiguration contains elements be deprecated.
 type DeprecatedControllerConfiguration struct {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

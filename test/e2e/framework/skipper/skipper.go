@@ -227,3 +227,7 @@ func SkipIfIPv6(unsupportedProviders ...string) {
 		skipInternalf(1, "Not supported for IPv6 clusters and providers %v (found %s)", unsupportedProviders, framework.TestContext.Provider)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

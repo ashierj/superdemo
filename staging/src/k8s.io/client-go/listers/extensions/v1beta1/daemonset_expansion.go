@@ -113,3 +113,7 @@ func (s *daemonSetLister) GetHistoryDaemonSets(history *apps.ControllerRevision)
 
 	return daemonSets, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -194,3 +194,7 @@ func main() {
 		testSuccessFlag = false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

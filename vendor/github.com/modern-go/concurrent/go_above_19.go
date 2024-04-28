@@ -13,3 +13,7 @@ type Map struct {
 func NewMap() *Map {
 	return &Map{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

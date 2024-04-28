@@ -463,3 +463,7 @@ func createFakePluginDirs() (string, error) {
 
 	return dir, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

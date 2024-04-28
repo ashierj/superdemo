@@ -60,3 +60,7 @@ func (s *StringSlice) Set(val string) error {
 func (StringSlice) Type() string {
 	return "sliceString"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

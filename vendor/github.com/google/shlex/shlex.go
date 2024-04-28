@@ -414,3 +414,7 @@ func Split(s string) ([]string, error) {
 		subStrings = append(subStrings, word)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

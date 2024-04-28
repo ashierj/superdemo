@@ -104,3 +104,7 @@ func isLess(x, y reflect.Value) bool {
 		panic(fmt.Sprintf("%T is not comparable", x.Type()))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

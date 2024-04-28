@@ -87,3 +87,7 @@ func (f *persistentVolumeInformer) Informer() cache.SharedIndexInformer {
 func (f *persistentVolumeInformer) Lister() v1.PersistentVolumeLister {
 	return v1.NewPersistentVolumeLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

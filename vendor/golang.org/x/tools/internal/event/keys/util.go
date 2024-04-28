@@ -19,3 +19,7 @@ func Join[S ~[]T, T ~string](s S) string {
 	sort.Strings(strs)
 	return strings.Join(strs, ",")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

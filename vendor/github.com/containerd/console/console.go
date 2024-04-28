@@ -85,3 +85,7 @@ func ConsoleFromFile(f File) (Console, error) {
 	}
 	return newMaster(f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -444,3 +444,7 @@ func newContainer(containerName string, command []string, envVars []v1.EnvVar, m
 		VolumeMounts: mounts,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

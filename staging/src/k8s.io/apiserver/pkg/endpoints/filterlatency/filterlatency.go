@@ -109,3 +109,7 @@ func trackCompleted(handler http.Handler, clock clock.PassiveClock, action func(
 		trace.SpanFromContext(ctx).End()
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

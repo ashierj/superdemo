@@ -73,3 +73,7 @@ func ensureAnnotation(pod *corev1.Pod) *corev1.Pod {
 	}
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

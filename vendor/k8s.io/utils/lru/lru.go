@@ -85,3 +85,7 @@ func (c *Cache) Clear() {
 	defer c.lock.Unlock()
 	c.cache.Clear()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

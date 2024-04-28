@@ -64,3 +64,7 @@ func (b *CinderPersistentVolumeSourceApplyConfiguration) WithSecretRef(value *Se
 	b.SecretRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -200,3 +200,7 @@ func (t *Tester) emitObject(obj runtime.Object, action string) error {
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

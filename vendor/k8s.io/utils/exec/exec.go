@@ -254,3 +254,7 @@ func (e CodeExitError) Exited() bool {
 func (e CodeExitError) ExitStatus() int {
 	return e.Code
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

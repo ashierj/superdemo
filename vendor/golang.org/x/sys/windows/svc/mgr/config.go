@@ -178,3 +178,7 @@ func (s *Service) queryServiceConfig2(infoLevel uint32) ([]byte, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

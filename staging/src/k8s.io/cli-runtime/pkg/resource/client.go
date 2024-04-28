@@ -67,3 +67,7 @@ func (clientConfigFn ClientConfigFunc) withStdinUnavailable(stdinUnavailable boo
 		return cfg, err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

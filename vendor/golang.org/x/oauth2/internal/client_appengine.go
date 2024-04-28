@@ -11,3 +11,7 @@ import "google.golang.org/appengine/urlfetch"
 func init() {
 	appengineClientHook = urlfetch.Client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

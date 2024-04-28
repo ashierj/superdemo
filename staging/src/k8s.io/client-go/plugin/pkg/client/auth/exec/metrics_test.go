@@ -199,3 +199,7 @@ func TestCallsMetric(t *testing.T) {
 		t.Fatalf("got unexpected metrics calls; -want, +got:\n%s", diff)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

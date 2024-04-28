@@ -26,3 +26,7 @@ func BaseLanguages() []Language {
 	}
 	return base
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

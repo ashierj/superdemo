@@ -96,3 +96,7 @@ func getSafeSysctlAllowlist(getVersion func() (*version.Version, error)) []strin
 	}
 	return safeSysctlAllowlist
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -94,3 +94,7 @@ func (l *klogger) WithGroup(name string) logr.SlogSink {
 }
 
 var _ logr.SlogSink = &klogger{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

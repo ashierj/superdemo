@@ -49,3 +49,7 @@ func RegisterProcessStartTime(registrationFunc func(Registerable) error) error {
 	processStartTime.WithLabelValues().Set(start)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -84,3 +84,7 @@ func (c MergeFilter) Filter(input []*yaml.RNode) ([]*yaml.RNode, error) {
 	}
 	return output, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

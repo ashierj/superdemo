@@ -946,3 +946,7 @@ func Test_ServiceWatchUntil(t *testing.T) {
 	}
 	t.Logf("Service %s deleted", testSvcName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

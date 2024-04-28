@@ -261,3 +261,7 @@ func RemoveNamespacesPrefix(value string) (string, error) {
 	}
 	return value, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

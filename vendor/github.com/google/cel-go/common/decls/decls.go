@@ -842,3 +842,7 @@ func collectParamNames(paramNames map[string]struct{}, arg *types.Type) {
 var (
 	emptyArgs = []*types.Type{}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

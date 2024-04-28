@@ -67,3 +67,7 @@ func (a *clientAdapter) Add(in map[clientfeatures.Feature]clientfeatures.Feature
 	}
 	return a.mfg.Add(out)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

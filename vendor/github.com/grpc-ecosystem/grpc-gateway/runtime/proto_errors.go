@@ -104,3 +104,7 @@ func DefaultHTTPStreamErrorHandler(_ context.Context, err error) *StreamError {
 		Details:    grpcDetails,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

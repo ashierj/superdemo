@@ -12,3 +12,7 @@ type Executor interface {
 	// Go starts a new goroutine controlled by the context
 	Go(handler func(ctx context.Context))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

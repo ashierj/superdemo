@@ -26,3 +26,7 @@ const (
 	// May be overridden by a flag at startup.
 	KubeControllerManagerPort = 10257
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

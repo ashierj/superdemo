@@ -434,3 +434,7 @@ func GetTargets(context *generator.Context, args *args.Args) []generator.Target 
 
 	return targetList
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

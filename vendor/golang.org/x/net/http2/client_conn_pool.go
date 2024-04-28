@@ -309,3 +309,7 @@ func shouldRetryDial(call *dialCall, req *http.Request) bool {
 	// and the context associated with the call was canceled or expired.
 	return call.ctx.Err() != nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

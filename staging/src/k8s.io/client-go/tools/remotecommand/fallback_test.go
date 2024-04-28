@@ -225,3 +225,7 @@ func TestFallbackClient_PrimaryAndSecondaryFail(t *testing.T) {
 		require.Error(t, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

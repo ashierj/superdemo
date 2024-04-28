@@ -606,3 +606,7 @@ func init() {
 	RegisterTestPlugin(newJson)
 	RegisterTestPlugin(newText)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

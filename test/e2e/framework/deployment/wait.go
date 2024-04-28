@@ -45,3 +45,7 @@ func WaitForDeploymentRevisionAndImage(c clientset.Interface, ns, deploymentName
 func WaitForDeploymentComplete(c clientset.Interface, d *appsv1.Deployment) error {
 	return testutils.WaitForDeploymentComplete(c, d, framework.Logf, poll, pollLongTimeout)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

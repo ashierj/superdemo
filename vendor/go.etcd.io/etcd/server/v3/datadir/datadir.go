@@ -38,3 +38,7 @@ func ToWalDir(dataDir string) string {
 func ToMemberDir(dataDir string) string {
 	return filepath.Join(dataDir, memberDirSegment)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

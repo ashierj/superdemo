@@ -271,3 +271,7 @@ func (c *pods) UpdateEphemeralContainers(ctx context.Context, podName string, po
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func TestStrategy(t *testing.T) {
 		t.Errorf("expected error validating, got none")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

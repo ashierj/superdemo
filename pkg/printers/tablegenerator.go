@@ -169,3 +169,7 @@ func ValidateRowPrintHandlerFunc(printFunc reflect.Value) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

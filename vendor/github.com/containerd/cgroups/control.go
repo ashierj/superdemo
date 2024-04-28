@@ -97,3 +97,7 @@ type Cgroup interface {
 	// Subsystems returns all the subsystems in the cgroup
 	Subsystems() []Subsystem
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

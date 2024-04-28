@@ -17,3 +17,7 @@ package resource // import "go.opentelemetry.io/otel/sdk/resource"
 var platformHostIDReader hostIDReader = &hostIDReaderDarwin{
 	execCommand: execCommand,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

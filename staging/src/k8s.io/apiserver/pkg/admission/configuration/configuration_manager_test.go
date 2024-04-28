@@ -92,3 +92,7 @@ func TestNotTolerateNonbootstrapFailure(t *testing.T) {
 		t.Errorf("unexpected no error")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

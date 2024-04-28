@@ -59,3 +59,7 @@ func (ec EdgeSet) SymmetricDifference(ec2 EdgeSet) EdgeSet {
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

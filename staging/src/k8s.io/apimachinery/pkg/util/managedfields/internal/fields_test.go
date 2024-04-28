@@ -143,3 +143,7 @@ func BenchmarkFieldsToSet(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

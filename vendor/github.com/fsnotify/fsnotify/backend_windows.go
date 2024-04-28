@@ -825,3 +825,7 @@ func (w *Watcher) toFSnotifyFlags(action uint32) uint64 {
 	}
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func CachableResponse(req *http.Request,
 	opts Options) ([]cacheobject.Reason, time.Time, error) {
 	return cacheobject.UsingRequestResponse(req, resp.StatusCode, resp.Header, opts.PrivateCache)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

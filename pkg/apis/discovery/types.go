@@ -191,3 +191,7 @@ type EndpointSliceList struct {
 	// List of endpoint slices
 	Items []EndpointSlice
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

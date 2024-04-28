@@ -32,3 +32,7 @@ func (m *UInt32Value) ProtoSize() (n int)       { return m.Size() }
 func (m *BoolValue) ProtoSize() (n int)         { return m.Size() }
 func (m *StringValue) ProtoSize() (n int)       { return m.Size() }
 func (m *BytesValue) ProtoSize() (n int)        { return m.Size() }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -139,3 +139,7 @@ func (h *Handle) setNetNsId(attrType int, val uint32, newnsid uint32) error {
 	_, err := req.Execute(unix.NETLINK_ROUTE, unix.RTM_NEWNSID)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

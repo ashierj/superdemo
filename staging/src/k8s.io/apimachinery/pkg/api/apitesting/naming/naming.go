@@ -162,3 +162,7 @@ func containsType(s []reflect.Type, t reflect.Type) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

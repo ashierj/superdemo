@@ -265,3 +265,7 @@ func initConn() {
 
 	atomic.StorePointer(&unixConnPtr, unsafe.Pointer(sock))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

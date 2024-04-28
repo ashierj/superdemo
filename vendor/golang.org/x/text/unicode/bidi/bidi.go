@@ -357,3 +357,7 @@ func ReverseString(s string) string {
 	}
 	return string(ret)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

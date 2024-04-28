@@ -1071,3 +1071,7 @@ func (h HostPortInfo) sanitize(ip, protocol *string) {
 		*protocol = string(v1.ProtocolTCP)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -369,3 +369,7 @@ func (i *siHistogram) Record(ctx context.Context, x int64, opts ...metric.Record
 		ctr.(metric.Int64Histogram).Record(ctx, x, opts...)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

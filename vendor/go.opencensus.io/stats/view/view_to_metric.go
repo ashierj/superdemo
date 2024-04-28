@@ -145,3 +145,7 @@ func viewToMetric(v *viewInternal, r *resource.Resource, now time.Time) *metricd
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

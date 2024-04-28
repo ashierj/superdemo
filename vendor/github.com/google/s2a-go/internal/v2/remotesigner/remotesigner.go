@@ -184,3 +184,7 @@ func ecdsaAlgorithm(opts crypto.SignerOpts) (s2av2pb.SignatureAlgorithm, error) 
 		return s2av2pb.SignatureAlgorithm_S2A_SSL_SIGN_UNSPECIFIED, fmt.Errorf("unknown signature algorithm")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

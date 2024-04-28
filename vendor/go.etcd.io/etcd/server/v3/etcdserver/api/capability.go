@@ -93,3 +93,7 @@ func EnableCapability(c Capability) {
 	defer enableMapMu.Unlock()
 	enabledMap[c] = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

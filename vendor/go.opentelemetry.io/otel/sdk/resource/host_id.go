@@ -118,3 +118,7 @@ func (hostIDDetector) Detect(ctx context.Context) (*Resource, error) {
 		semconv.HostID(hostID),
 	), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

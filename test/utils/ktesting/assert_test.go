@@ -269,3 +269,7 @@ Errorf a b 42`,
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -24,3 +24,7 @@ func DestroyLayer(ctx context.Context, layerPath string) (err error) {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

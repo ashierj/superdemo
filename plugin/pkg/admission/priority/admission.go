@@ -254,3 +254,7 @@ func (p *Plugin) getDefaultPriority() (string, int32, *apiv1.PreemptionPolicy, e
 	preemptLowerPriority := apiv1.PreemptLowerPriority
 	return "", int32(scheduling.DefaultPriorityWhenNoDefaultClassExists), &preemptLowerPriority, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

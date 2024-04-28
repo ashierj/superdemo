@@ -104,3 +104,7 @@ const (
 	Mixin_Name_field_number protoreflect.FieldNumber = 1
 	Mixin_Root_field_number protoreflect.FieldNumber = 2
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

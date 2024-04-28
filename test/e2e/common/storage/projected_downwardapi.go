@@ -404,3 +404,7 @@ func applyLabelsAndAnnotationsToProjectedDownwardAPIPod(labels, annotations map[
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -25,3 +25,7 @@ var (
 	// added on a per-component basis.
 	Registry = metrics.NewKubeRegistry()
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

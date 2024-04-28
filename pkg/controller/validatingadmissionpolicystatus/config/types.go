@@ -24,3 +24,7 @@ type ValidatingAdmissionPolicyStatusControllerConfiguration struct {
 	// The default value is 5.
 	ConcurrentPolicySyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

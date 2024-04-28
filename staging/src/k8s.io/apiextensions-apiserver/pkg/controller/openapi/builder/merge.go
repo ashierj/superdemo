@@ -151,3 +151,7 @@ func mergeSpecV3(dest, source *spec3.OpenAPI) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

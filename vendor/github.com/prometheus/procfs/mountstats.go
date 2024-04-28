@@ -710,3 +710,7 @@ func parseNFSTransportStats(ss []string, statVersion string) (*NFSTransportStats
 		BcallCount:           ns[30],
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -199,3 +199,7 @@ func (mi *MessageInfo) appendExtensions(b []byte, ext *map[int32]ExtensionField,
 		return b, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

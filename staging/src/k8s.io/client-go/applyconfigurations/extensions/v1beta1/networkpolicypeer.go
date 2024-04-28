@@ -59,3 +59,7 @@ func (b *NetworkPolicyPeerApplyConfiguration) WithIPBlock(value *IPBlockApplyCon
 	b.IPBlock = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

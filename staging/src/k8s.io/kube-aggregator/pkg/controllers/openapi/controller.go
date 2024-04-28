@@ -163,3 +163,7 @@ func (c *AggregationController) RemoveAPIService(apiServiceName string) {
 	// and will not add it again to the queue.
 	c.queue.Forget(apiServiceName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -123,3 +123,7 @@ func createPodPVCFromSC(ctx context.Context, f *framework.Framework, c clientset
 	framework.ExpectNoError(err, "While creating pods for kubelet restart test")
 	return pod, pvc, pvs[0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

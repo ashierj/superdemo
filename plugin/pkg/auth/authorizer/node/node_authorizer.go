@@ -383,3 +383,7 @@ func (r *NodeAuthorizer) hasPathFrom(nodeName string, startingType vertexType, s
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

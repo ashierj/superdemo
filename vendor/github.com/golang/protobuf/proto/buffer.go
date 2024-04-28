@@ -322,3 +322,7 @@ func consumeGroup(b []byte) ([]byte, int, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

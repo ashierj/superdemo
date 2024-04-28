@@ -73,3 +73,7 @@ func (b *IngressClassParametersReferenceApplyConfiguration) WithNamespace(value 
 	b.Namespace = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

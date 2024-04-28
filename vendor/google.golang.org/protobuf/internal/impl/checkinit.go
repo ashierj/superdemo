@@ -139,3 +139,7 @@ func needsInitCheckLocked(md protoreflect.MessageDescriptor) (has bool) {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

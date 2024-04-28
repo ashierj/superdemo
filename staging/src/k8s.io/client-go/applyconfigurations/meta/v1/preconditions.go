@@ -50,3 +50,7 @@ func (b *PreconditionsApplyConfiguration) WithResourceVersion(value string) *Pre
 	b.ResourceVersion = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

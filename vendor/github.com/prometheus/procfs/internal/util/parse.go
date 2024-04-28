@@ -110,3 +110,7 @@ func ParseBool(b string) *bool {
 	}
 	return &truth
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

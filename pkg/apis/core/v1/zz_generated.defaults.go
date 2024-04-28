@@ -1090,3 +1090,7 @@ func SetObjectDefaults_ServiceList(in *v1.ServiceList) {
 		SetObjectDefaults_Service(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

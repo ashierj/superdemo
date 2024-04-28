@@ -44,3 +44,7 @@ func (o *Options) addOSFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&o.config.Winkernel.RootHnsEndpointName, "root-hnsendpoint-name", "cbr0", "The name of the hns endpoint name for root namespace attached to l2bridge")
 	fs.BoolVar(&o.config.Winkernel.ForwardHealthCheckVip, "forward-healthcheck-vip", o.config.Winkernel.ForwardHealthCheckVip, "If true forward service VIP for health check port")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

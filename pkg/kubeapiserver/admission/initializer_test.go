@@ -83,3 +83,7 @@ func TestQuotaConfigurationAdmissionPlugin(t *testing.T) {
 		t.Errorf("Expected quota configuration to be initialized but found nil")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

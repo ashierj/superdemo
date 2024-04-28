@@ -48,3 +48,7 @@ type OsLayerOptions struct {
 	DisableCiCacheOptimization bool        `json:"DisableCiCacheOptimization,omitempty"`
 	SkipUpdateBcdForBoot       bool        `json:"SkipUpdateBcdForBoot,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

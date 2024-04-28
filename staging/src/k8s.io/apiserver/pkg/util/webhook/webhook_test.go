@@ -927,3 +927,7 @@ func getSingleCounterValueFromRegistry(t *testing.T, r metrics.Gatherer, name st
 
 	return -1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

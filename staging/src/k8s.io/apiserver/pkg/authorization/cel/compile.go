@@ -212,3 +212,7 @@ func convertObjectToUnstructured(obj *authorizationv1.SubjectAccessReviewSpec) m
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

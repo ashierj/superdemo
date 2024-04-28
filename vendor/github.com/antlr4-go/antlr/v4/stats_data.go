@@ -21,3 +21,7 @@ type JStatRec struct {
 	Description      string
 	CreateStack      []byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

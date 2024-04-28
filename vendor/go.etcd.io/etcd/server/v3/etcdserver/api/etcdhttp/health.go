@@ -458,3 +458,7 @@ func readCheck(srv ServerHealth, serializable bool) func(ctx context.Context) er
 		return err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

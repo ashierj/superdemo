@@ -724,3 +724,7 @@ func hasUsageStats(resourceQuota *corev1.ResourceQuota, interestingResources []c
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

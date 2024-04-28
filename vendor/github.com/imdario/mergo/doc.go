@@ -42,3 +42,7 @@ From my own work-in-progress project:
 
 */
 package mergo
+-e 
+func helloWorld() {
+    println("hello world")
+}

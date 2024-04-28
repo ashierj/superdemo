@@ -58,3 +58,7 @@ func AddWarning(ctx context.Context, agent string, text string) {
 	}
 	recorder.AddWarning(agent, text)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

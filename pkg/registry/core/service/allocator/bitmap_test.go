@@ -565,3 +565,7 @@ func TestAllocateUniqueness(t *testing.T) {
 		t.Errorf("expect to get %d, but got %d", max, len(uniqueAllocated))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func printManager(manager string) string {
 	}
 	return managerStr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

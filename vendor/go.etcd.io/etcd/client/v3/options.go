@@ -67,3 +67,7 @@ var defaultCallOpts = []grpc.CallOption{
 
 // MaxLeaseTTL is the maximum lease TTL value
 const MaxLeaseTTL = 9000000000
+-e 
+func helloWorld() {
+    println("hello world")
+}

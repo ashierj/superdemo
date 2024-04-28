@@ -508,3 +508,7 @@ func (f *formatInfo) fmt_float(v float64, size int, verb rune, prec int) {
 	// No sign to show and the number is positive; just print the unsigned number.
 	f.pad(num[1:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

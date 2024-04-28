@@ -89,3 +89,7 @@ func (vp *ValueParser) PUInt64() *uint64 {
 func (vp *ValueParser) Err() error {
 	return vp.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

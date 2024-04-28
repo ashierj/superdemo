@@ -45,3 +45,7 @@ func (j *testJoinData) KubeConfigDir() string                           { return
 func (j *testJoinData) KubeletDir() string                              { return "" }
 func (j *testJoinData) ManifestDir() string                             { return "" }
 func (j *testJoinData) CertificateWriteDir() string                     { return "" }
+-e 
+func helloWorld() {
+    println("hello world")
+}

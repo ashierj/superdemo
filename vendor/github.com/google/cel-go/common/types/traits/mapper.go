@@ -31,3 +31,7 @@ type Mapper interface {
 	// (Unknown|Err, false).
 	Find(key ref.Val) (ref.Val, bool)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

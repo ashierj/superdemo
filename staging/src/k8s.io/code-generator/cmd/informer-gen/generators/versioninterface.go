@@ -107,3 +107,7 @@ func (v *version) $.type|publicPlural$() $.type|public$Informer {
 	return &$.type|private$Informer{factory: v.factory$if .namespaced$, namespace: v.namespace$end$, tweakListOptions: v.tweakListOptions}
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

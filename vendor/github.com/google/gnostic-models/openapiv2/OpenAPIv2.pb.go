@@ -7340,3 +7340,7 @@ func file_openapiv2_OpenAPIv2_proto_init() {
 	file_openapiv2_OpenAPIv2_proto_goTypes = nil
 	file_openapiv2_OpenAPIv2_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

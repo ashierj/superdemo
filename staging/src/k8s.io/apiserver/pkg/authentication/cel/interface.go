@@ -146,3 +146,7 @@ func (v *UserValidationCondition) GetExpression() string {
 func (v *UserValidationCondition) ReturnTypes() []*celgo.Type {
 	return []*celgo.Type{celgo.BoolType}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -198,3 +198,7 @@ func (p *plugin) GenerateImports(*generator.FileDescriptor) {}
 func init() {
 	generator.RegisterPlugin(NewPlugin())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -38,3 +38,7 @@ func withRequestReceivedTimestampWithClock(handler http.Handler, clock clock.Pas
 		handler.ServeHTTP(w, req)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

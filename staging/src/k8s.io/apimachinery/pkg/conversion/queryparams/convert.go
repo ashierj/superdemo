@@ -192,3 +192,7 @@ func convertStruct(result url.Values, st reflect.Type, sv reflect.Value) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

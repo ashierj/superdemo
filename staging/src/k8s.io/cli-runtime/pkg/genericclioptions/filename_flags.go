@@ -80,3 +80,7 @@ func (o *FileNameFlags) AddFlags(flags *pflag.FlagSet) {
 			"Process a kustomization directory. This flag can't be used together with -f or -R.")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

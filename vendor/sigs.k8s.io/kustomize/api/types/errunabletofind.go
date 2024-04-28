@@ -34,3 +34,7 @@ func IsErrUnableToFind(err error) bool {
 	e := &errUnableToFind{}
 	return errors.As(err, &e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

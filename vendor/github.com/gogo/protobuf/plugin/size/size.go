@@ -694,3 +694,7 @@ func (p *size) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewSize())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

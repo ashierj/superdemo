@@ -287,3 +287,7 @@ func TestSetCustomLoadTranslationsFuncAfterTranslationsLoadedShouldFail(t *testi
 		t.Errorf("expected LoadTranslationsFunc to have not been called, but it was called %d times", timesCalled)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

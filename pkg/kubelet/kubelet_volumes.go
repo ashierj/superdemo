@@ -272,3 +272,7 @@ func (kl *Kubelet) cleanupOrphanedPodDirs(pods []*v1.Pod, runningPods []*kubecon
 	metrics.OrphanPodCleanedVolumesErrors.Set(float64(errorPods))
 	return utilerrors.NewAggregate(orphanRemovalErrors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

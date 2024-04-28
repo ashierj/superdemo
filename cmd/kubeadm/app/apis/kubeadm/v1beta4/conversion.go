@@ -67,3 +67,7 @@ func Convert_v1beta4_Discovery_To_kubeadm_Discovery(in *Discovery, out *kubeadm.
 	out.Timeout = &metav1.Duration{}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

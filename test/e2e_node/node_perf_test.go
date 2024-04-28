@@ -196,3 +196,7 @@ var _ = SIGDescribe("Node Performance Testing", framework.WithSerial(), framewor
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

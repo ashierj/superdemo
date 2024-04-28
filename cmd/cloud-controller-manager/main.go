@@ -100,3 +100,7 @@ func cloudInitializer(config *cloudcontrollerconfig.CompletedConfig) cloudprovid
 
 	return cloud
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

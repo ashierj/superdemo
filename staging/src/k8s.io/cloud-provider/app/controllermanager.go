@@ -561,3 +561,7 @@ func filterInitializers(allInitializers map[string]InitFunc, filterFunc leadermi
 	}
 	return initializers
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

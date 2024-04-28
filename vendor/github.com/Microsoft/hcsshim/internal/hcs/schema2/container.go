@@ -32,3 +32,7 @@ type Container struct {
 
 	AssignedDevices []Device `json:"AssignedDevices,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

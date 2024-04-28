@@ -103,3 +103,7 @@ func removeIndentation(lines []string, n int, skipFirstLine bool) []string {
 func Docf(raw string, args ...interface{}) string {
 	return fmt.Sprintf(Doc(raw), args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

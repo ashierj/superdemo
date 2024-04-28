@@ -35,3 +35,7 @@ func (p Proc) Environ() ([]string, error) {
 
 	return environments, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

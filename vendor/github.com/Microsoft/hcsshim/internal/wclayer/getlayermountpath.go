@@ -48,3 +48,7 @@ func GetLayerMountPath(ctx context.Context, path string) (_ string, err error) {
 	span.AddAttributes(trace.StringAttribute("mountPath", mountPath))
 	return mountPath, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

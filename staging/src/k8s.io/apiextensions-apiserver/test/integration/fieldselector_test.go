@@ -882,3 +882,7 @@ func crdConverter(desiredAPIVersion string, obj runtime.RawExtension) (runtime.R
 	}
 	return runtime.RawExtension{Raw: raw}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -743,3 +743,7 @@ func autoConvert_admissionregistration_Variable_To_v1alpha1_Variable(in *admissi
 func Convert_admissionregistration_Variable_To_v1alpha1_Variable(in *admissionregistration.Variable, out *v1alpha1.Variable, s conversion.Scope) error {
 	return autoConvert_admissionregistration_Variable_To_v1alpha1_Variable(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

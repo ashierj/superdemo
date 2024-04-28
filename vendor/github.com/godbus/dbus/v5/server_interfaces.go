@@ -105,3 +105,7 @@ type SerialGenerator interface {
 	GetSerial() uint32
 	RetireSerial(serial uint32)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

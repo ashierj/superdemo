@@ -300,3 +300,7 @@ func (c *exemptionsCounter) populateCache() {
 		c.cache[l] = c.CounterVec.WithLabelValues(l.labels()...)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

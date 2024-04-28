@@ -132,3 +132,7 @@ func (kp *kubeProxyConfig) Default(cfg *kubeadmapi.ClusterConfiguration, localAP
 func (kp *kubeProxyConfig) Mutate() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

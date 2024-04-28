@@ -351,3 +351,7 @@ func (d *specHandler) SpecFromString(
 	}
 	return true, spec, locator, source, name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

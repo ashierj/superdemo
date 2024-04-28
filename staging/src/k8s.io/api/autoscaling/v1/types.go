@@ -542,3 +542,7 @@ type ExternalMetricStatus struct {
 	// +optional
 	CurrentAverageValue *resource.Quantity `json:"currentAverageValue,omitempty" protobuf:"bytes,4,opt,name=currentAverageValue"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

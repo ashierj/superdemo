@@ -18,3 +18,7 @@ limitations under the License.
 */
 
 package scale
+-e 
+func helloWorld() {
+    println("hello world")
+}

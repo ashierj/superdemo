@@ -194,3 +194,7 @@ func TestSeccompProfileRestricted_1_19(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -14,3 +14,7 @@ const (
 
 	AliasTypeUnknown AliasType = -1
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

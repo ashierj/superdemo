@@ -63,3 +63,7 @@ func (prc *PodResourceAllocationCheckpoint) VerifyChecksum() error {
 	prc.Checksum = ck
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

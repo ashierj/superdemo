@@ -663,3 +663,7 @@ const (
 	Delete       OperationType = v1.Delete
 	Connect      OperationType = v1.Connect
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

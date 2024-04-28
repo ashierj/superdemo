@@ -236,3 +236,7 @@ func TestPlugin(t *testing.T) {
 		t.Errorf("Deleter() failed: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

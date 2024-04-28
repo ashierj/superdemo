@@ -272,3 +272,7 @@ func handleCmdResponse(cmd string, output []byte) (*DriverStatus, error) {
 
 	return &status, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -258,3 +258,7 @@ func FromTag(t language.Tag) (id ID, exact bool) {
 }
 
 var root = language.Tag{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -38,3 +38,7 @@ func WithHSTS(handler http.Handler, hstsDirectives []string) http.Handler {
 		handler.ServeHTTP(w, req)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

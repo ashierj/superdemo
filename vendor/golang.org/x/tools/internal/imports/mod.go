@@ -816,3 +816,7 @@ func modulePath(mod []byte) string {
 	}
 	return "" // missing module path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

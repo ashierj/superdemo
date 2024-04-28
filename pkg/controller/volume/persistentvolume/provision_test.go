@@ -693,3 +693,7 @@ func TestDisablingDynamicProvisioner(t *testing.T) {
 		t.Errorf("Expected nil return but got %v", retVal)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func waitFrozen(dirPath string) (configs.FreezerState, error) {
 	// or if the file does not contain "frozen " line.
 	return configs.Undefined, scanner.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ type PauseOptions struct {
 
 	HostedNotification *PauseNotification `json:"HostedNotification,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

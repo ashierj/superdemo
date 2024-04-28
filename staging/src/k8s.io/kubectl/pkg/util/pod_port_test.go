@@ -96,3 +96,7 @@ func TestLookupContainerPortNumberByName(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

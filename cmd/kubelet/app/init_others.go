@@ -22,3 +22,7 @@ package app
 func initForOS(service bool, priorityClass string) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

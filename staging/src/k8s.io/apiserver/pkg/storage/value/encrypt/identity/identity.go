@@ -55,3 +55,7 @@ func (identityTransformer) TransformFromStorage(ctx context.Context, data []byte
 func (identityTransformer) TransformToStorage(ctx context.Context, data []byte, dataCtx value.Context) ([]byte, error) {
 	return data, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

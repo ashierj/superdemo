@@ -506,3 +506,7 @@ func formatGottenArg(m Matcher, arg any) string {
 	}
 	return got
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

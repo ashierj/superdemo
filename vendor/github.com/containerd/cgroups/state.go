@@ -26,3 +26,7 @@ const (
 	Freezing State = "freezing"
 	Deleted  State = "deleted"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

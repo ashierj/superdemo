@@ -25,3 +25,7 @@ import (
 	_ "github.com/google/cadvisor/utils/cloudinfo/azure"
 	_ "github.com/google/cadvisor/utils/cloudinfo/gce"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

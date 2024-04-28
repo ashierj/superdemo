@@ -240,3 +240,7 @@ func (fn BuiltinFunc) Call() Instruction {
 		Constant: int64(fn),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

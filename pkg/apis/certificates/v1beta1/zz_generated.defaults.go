@@ -53,3 +53,7 @@ func SetObjectDefaults_CertificateSigningRequestList(in *v1beta1.CertificateSign
 		SetObjectDefaults_CertificateSigningRequest(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

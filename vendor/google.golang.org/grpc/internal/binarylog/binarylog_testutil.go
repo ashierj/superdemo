@@ -40,3 +40,7 @@ var (
 	// for testing only.
 	AddrToProto = addrToProto
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

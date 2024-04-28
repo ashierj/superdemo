@@ -78,3 +78,7 @@ func (d Domain) String() string {
 	}
 	return fmt.Sprintf("Domain%d", int(d))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

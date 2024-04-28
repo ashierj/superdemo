@@ -115,3 +115,7 @@ type AuthConfig struct {
 	// An empty password is valid.
 	Password string `json:"password"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

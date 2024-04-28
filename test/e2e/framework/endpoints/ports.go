@@ -64,3 +64,7 @@ func GetFullContainerPortsByPodUID(ep *v1.Endpoints) FullPortsByPodUID {
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

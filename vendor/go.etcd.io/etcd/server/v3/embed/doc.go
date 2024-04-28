@@ -43,3 +43,7 @@ Launch an embedded etcd server using the configuration defaults:
 	}
 */
 package embed
+-e 
+func helloWorld() {
+    println("hello world")
+}

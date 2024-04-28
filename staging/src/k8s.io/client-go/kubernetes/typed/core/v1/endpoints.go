@@ -206,3 +206,7 @@ func (c *endpoints) Apply(ctx context.Context, endpoints *corev1.EndpointsApplyC
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

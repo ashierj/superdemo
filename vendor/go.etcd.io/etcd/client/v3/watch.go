@@ -1040,3 +1040,7 @@ func streamKeyFromCtx(ctx context.Context) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

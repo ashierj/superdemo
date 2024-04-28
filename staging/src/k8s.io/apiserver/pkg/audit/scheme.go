@@ -36,3 +36,7 @@ func init() {
 	utilruntime.Must(auditinternal.AddToScheme(Scheme))
 	utilruntime.Must(Scheme.SetVersionPriority(v1.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

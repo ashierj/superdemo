@@ -247,3 +247,7 @@ func getOutputSerializer(accept string) runtime.Serializer {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

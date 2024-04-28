@@ -86,3 +86,7 @@ func (b *AzureDiskVolumeSourceApplyConfiguration) WithKind(value v1.AzureDataDis
 	b.Kind = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

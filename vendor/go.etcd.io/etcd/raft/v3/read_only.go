@@ -119,3 +119,7 @@ func (ro *readOnly) lastPendingRequestCtx() string {
 	}
 	return ro.readIndexQueue[len(ro.readIndexQueue)-1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

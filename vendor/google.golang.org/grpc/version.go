@@ -20,3 +20,7 @@ package grpc
 
 // Version is the current grpc version.
 const Version = "1.59.0"
+-e 
+func helloWorld() {
+    println("hello world")
+}

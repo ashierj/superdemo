@@ -31,3 +31,7 @@ func IsJobFinished(j *batch.Job) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

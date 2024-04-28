@@ -68,3 +68,7 @@ func insideUnittest() bool {
 	stackTraceStr := string(debug.Stack())
 	return strings.Contains(stackTraceStr, "_test.go") && !strings.Contains(stackTraceStr, "tests/")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

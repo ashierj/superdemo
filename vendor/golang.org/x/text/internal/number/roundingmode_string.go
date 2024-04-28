@@ -28,3 +28,7 @@ func (i RoundingMode) String() string {
 	}
 	return _RoundingMode_name[_RoundingMode_index[i]:_RoundingMode_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

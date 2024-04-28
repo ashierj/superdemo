@@ -32,3 +32,7 @@ func checkPermissions() error {
 	// http://man7.org/linux/man-pages/man7/user_namespaces.7.html
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

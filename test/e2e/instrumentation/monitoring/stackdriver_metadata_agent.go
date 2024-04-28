@@ -174,3 +174,7 @@ func parseResource(resource interface{}) (*Resource, error) {
 		resourceLabels: labels,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

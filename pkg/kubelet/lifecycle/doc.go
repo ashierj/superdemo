@@ -17,3 +17,7 @@ limitations under the License.
 // Package lifecycle contains handlers for pod lifecycle events and interfaces
 // to integrate with kubelet admission, synchronization, and eviction of pods.
 package lifecycle // import "k8s.io/kubernetes/pkg/kubelet/lifecycle"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -90,3 +90,7 @@ func findLinuxNode(ctx context.Context, f *framework.Framework) (v1.Node, error)
 
 	return targetNode, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

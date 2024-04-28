@@ -115,3 +115,7 @@ func testStore(t *testing.T, store Store) {
 	require.NoError(t, err)
 	assert.Equal(t, len(keys), 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

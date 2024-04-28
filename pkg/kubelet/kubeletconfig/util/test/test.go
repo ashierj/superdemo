@@ -53,3 +53,7 @@ func SkipRest(t *testing.T, desc string, err error, contains string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

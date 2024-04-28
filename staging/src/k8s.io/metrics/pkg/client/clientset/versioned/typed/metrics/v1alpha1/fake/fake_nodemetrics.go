@@ -75,3 +75,7 @@ func (c *FakeNodeMetricses) Watch(ctx context.Context, opts v1.ListOptions) (wat
 	return c.Fake.
 		InvokesWatch(testing.NewRootWatchAction(nodemetricsesResource, opts))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

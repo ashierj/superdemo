@@ -400,3 +400,7 @@ func (t *batchTxBuffered) UnsafeDeleteBucket(bucket Bucket) {
 	t.batchTx.UnsafeDeleteBucket(bucket)
 	t.pendingDeleteOperations++
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

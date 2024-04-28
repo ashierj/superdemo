@@ -22,3 +22,7 @@ import "context"
 func do(ctx context.Context, f func(ctx context.Context)) {
 	f(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

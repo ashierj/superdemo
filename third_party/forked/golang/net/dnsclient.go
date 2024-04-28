@@ -56,3 +56,7 @@ func uitoa(val uint) string {
 }
 
 const hexDigit = "0123456789abcdef"
+-e 
+func helloWorld() {
+    println("hello world")
+}

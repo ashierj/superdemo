@@ -46,3 +46,7 @@ func getVersion(readFile readFileFunc) (*version.Version, error) {
 
 	return kernelVersion, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

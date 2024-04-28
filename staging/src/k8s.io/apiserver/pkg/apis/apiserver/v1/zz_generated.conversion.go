@@ -361,3 +361,7 @@ func autoConvert_apiserver_SecretboxConfiguration_To_v1_SecretboxConfiguration(i
 func Convert_apiserver_SecretboxConfiguration_To_v1_SecretboxConfiguration(in *apiserver.SecretboxConfiguration, out *SecretboxConfiguration, s conversion.Scope) error {
 	return autoConvert_apiserver_SecretboxConfiguration_To_v1_SecretboxConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

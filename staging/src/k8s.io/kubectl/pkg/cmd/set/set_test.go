@@ -45,3 +45,7 @@ func ensureLocalAndDryRunFlagsOnChildren(t *testing.T, c *cobra.Command, prefix 
 		ensureLocalAndDryRunFlagsOnChildren(t, cmd, name+".")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

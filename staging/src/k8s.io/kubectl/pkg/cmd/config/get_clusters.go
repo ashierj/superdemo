@@ -62,3 +62,7 @@ func runGetClusters(out io.Writer, configAccess clientcmd.ConfigAccess) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

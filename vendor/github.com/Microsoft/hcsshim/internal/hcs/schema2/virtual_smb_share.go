@@ -18,3 +18,7 @@ type VirtualSmbShare struct {
 
 	Options *VirtualSmbShareOptions `json:"Options,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

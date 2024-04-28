@@ -76,3 +76,7 @@ func String(s []byte) string {
 	}
 	return string(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

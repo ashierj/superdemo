@@ -186,3 +186,7 @@ func subjectMatcher(name, kind string) gomega.OmegaMatcher {
 		"Kind": gomega.Equal(kind),
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

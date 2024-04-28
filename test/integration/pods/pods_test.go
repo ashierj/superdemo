@@ -872,3 +872,7 @@ func TestMutablePodSchedulingDirectives(t *testing.T) {
 		integration.DeletePodOrErrorf(t, client, ns.Name, tc.update.Name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

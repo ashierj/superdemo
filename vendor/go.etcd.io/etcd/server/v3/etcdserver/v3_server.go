@@ -1082,3 +1082,7 @@ func (s *EtcdServer) downgradeCancel(ctx context.Context) (*pb.DowngradeResponse
 	resp := pb.DowngradeResponse{Version: s.ClusterVersion().String()}
 	return &resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

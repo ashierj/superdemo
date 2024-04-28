@@ -32,3 +32,7 @@ func simplifiedLanguage(lang string) string {
 	}
 	return strings.TrimSpace(lang)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

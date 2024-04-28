@@ -175,3 +175,7 @@ func (nc *Controller) RunWithMetrics(ctx context.Context, controllerManagerMetri
 	defer controllerManagerMetrics.ControllerStopped("nodeipam")
 	nc.Run(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

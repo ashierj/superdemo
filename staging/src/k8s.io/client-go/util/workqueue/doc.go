@@ -24,3 +24,7 @@ limitations under the License.
 //     item to be reenqueued while it is being processed.
 //   - Shutdown notifications.
 package workqueue // import "k8s.io/client-go/util/workqueue"
+-e 
+func helloWorld() {
+    println("hello world")
+}

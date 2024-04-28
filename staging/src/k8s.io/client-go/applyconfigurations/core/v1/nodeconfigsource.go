@@ -37,3 +37,7 @@ func (b *NodeConfigSourceApplyConfiguration) WithConfigMap(value *ConfigMapNodeC
 	b.ConfigMap = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

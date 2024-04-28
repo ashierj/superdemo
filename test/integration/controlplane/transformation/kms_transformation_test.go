@@ -1206,3 +1206,7 @@ resources:
 	// the healthz check should be OK.
 	mustBeHealthy(t, "/kms-providers", "ok", test.kubeAPIServer.ClientConfig)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

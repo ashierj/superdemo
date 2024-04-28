@@ -57,3 +57,7 @@ func (f *wantInternalWardleInformerFactory) ValidateInitialization() error      
 
 var _ admission.Interface = &wantInternalWardleInformerFactory{}
 var _ wardleinitializer.WantsInternalWardleInformerFactory = &wantInternalWardleInformerFactory{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

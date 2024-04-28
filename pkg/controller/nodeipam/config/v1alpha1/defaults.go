@@ -33,3 +33,7 @@ func RecommendedDefaultNodeIPAMControllerConfiguration(obj *kubectrlmgrconfigv1a
 	// The default mask size is not set here because we need to determine the cluster cidr family before setting the
 	// appropriate mask size.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ func TestBugs(t *testing.T) {
 	assert.Equal(t, 1, code)
 	assert.Equal(t, "ERROR: E2E suite initialization was faulty, these errors must be fixed:\n"+bugOutput, output)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

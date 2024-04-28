@@ -227,3 +227,7 @@ func (l Level) Enabled(lvl Level) bool {
 type LevelEnabler interface {
 	Enabled(Level) bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

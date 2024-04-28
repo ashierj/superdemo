@@ -62,3 +62,7 @@ func Run(o *options.CustomResourceDefinitionsServerOptions, stopCh <-chan struct
 	}
 	return server.GenericAPIServer.PrepareRun().Run(stopCh)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

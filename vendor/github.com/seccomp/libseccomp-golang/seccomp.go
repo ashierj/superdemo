@@ -1186,3 +1186,7 @@ func NotifRespond(fd ScmpFd, scmpResp *ScmpNotifResp) error {
 func NotifIDValid(fd ScmpFd, id uint64) error {
 	return notifIDValid(fd, id)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

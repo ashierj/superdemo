@@ -74,3 +74,7 @@ func (n *CAdvisorE2ERemote) RunTest(host, workspace, _, _, _, _, _, _, _, _ stri
 			timeout.Seconds()),
 	))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

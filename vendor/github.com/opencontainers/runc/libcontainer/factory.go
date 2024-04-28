@@ -28,3 +28,7 @@ type Factory interface {
 	// Type returns info string about factory type (e.g. lxc, libcontainer...)
 	Type() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

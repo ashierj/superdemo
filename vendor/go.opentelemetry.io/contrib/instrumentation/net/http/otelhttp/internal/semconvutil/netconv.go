@@ -366,3 +366,7 @@ func splitHostPort(hostport string) (host string, port int) {
 	}
 	return host, int(p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

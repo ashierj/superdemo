@@ -179,3 +179,7 @@ func (s *Scanner) Scan() bool {
 		return true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

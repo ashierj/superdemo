@@ -298,3 +298,7 @@ func TestConvertToRuntimeAPIImageSpecWithRuntimeHandlerInImageSpecCri(t *testing
 		assert.Equal(t, test.expected, actual)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

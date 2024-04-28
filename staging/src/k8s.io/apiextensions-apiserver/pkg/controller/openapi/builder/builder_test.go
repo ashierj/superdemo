@@ -652,3 +652,7 @@ func TestGetDefinitionRefPrefix(t *testing.T) {
 		t.Errorf("v2 ref (%v) does not have the correct prefix (%v)", v2String, definitionPrefix)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

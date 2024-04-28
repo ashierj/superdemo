@@ -340,3 +340,7 @@ func validateFloat(str string) string {
 func (iter *Iterator) ReadNumber() (ret json.Number) {
 	return json.Number(iter.readNumberAsString())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -19,3 +19,7 @@ limitations under the License.
 package v1
 
 type LeaseExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

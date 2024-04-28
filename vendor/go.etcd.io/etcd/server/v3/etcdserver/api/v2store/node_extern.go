@@ -114,3 +114,7 @@ func (ns NodeExterns) Less(i, j int) bool {
 func (ns NodeExterns) Swap(i, j int) {
 	ns[i], ns[j] = ns[j], ns[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

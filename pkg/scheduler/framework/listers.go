@@ -40,3 +40,7 @@ type SharedLister interface {
 	NodeInfos() NodeInfoLister
 	StorageInfos() StorageInfoLister
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -96,3 +96,7 @@ func (c *Command) MarkPersistentFlagDirname(name string) error {
 func MarkFlagDirname(flags *pflag.FlagSet, name string) error {
 	return flags.SetAnnotation(name, BashCompSubdirsInDir, []string{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

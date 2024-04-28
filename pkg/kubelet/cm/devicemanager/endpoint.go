@@ -121,3 +121,7 @@ func (e *endpointImpl) preStartContainer(devs []string) (*pluginapi.PreStartCont
 		DevicesIDs: devs,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

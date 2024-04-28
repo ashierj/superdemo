@@ -37,3 +37,7 @@ func (b *HostIPApplyConfiguration) WithIP(value string) *HostIPApplyConfiguratio
 	b.IP = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

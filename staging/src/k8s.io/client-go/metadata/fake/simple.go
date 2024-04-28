@@ -403,3 +403,7 @@ func (c *metadataResourceClient) Patch(ctx context.Context, name string, pt type
 	}
 	return ret, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

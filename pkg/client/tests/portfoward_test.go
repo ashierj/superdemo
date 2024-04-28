@@ -249,3 +249,7 @@ func TestForwardPortsReturnsErrorWhenAllBindsFailed(t *testing.T) {
 		t.Fatal("expected non-nil error for pf2.ForwardPorts")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

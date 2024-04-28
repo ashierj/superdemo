@@ -89,3 +89,7 @@ func generateLogLine(id int) string {
 
 	return fmt.Sprintf("%d %s %s %d", id, method, url, status)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

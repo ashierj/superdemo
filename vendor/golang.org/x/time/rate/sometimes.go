@@ -65,3 +65,7 @@ func (s *Sometimes) Do(f func()) {
 	}
 	s.count++
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

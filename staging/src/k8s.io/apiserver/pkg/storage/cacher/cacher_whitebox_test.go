@@ -2500,3 +2500,7 @@ func watchAndWaitForBookmark(t *testing.T, ctx context.Context, etcdStorage stor
 		return rv
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

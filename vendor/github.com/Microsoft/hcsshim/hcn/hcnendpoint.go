@@ -386,3 +386,7 @@ func (endpoint *HostComputeEndpoint) NamespaceAttach(namespaceId string) error {
 func (endpoint *HostComputeEndpoint) NamespaceDetach(namespaceId string) error {
 	return RemoveNamespaceEndpoint(namespaceId, endpoint.Id)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

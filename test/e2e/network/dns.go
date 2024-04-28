@@ -643,3 +643,7 @@ var _ = common.SIGDescribe("DNS HostNetwork", func() {
 	})
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@
 // 2. Suspend and resume of ongoing digest calculations to support efficient digest verification in the registry.
 //
 package digest
+-e 
+func helloWorld() {
+    println("hello world")
+}

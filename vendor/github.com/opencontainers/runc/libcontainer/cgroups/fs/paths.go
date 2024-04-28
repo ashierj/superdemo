@@ -185,3 +185,7 @@ func apply(path string, pid int) error {
 	}
 	return cgroups.WriteCgroupProc(path, pid)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -142,3 +142,7 @@ func TestErrorInterrupted(t *testing.T) {
 		t.Fatalf("should not be Interrupted")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ func RecommendedDefaultNodeControllerConfiguration(obj *NodeControllerConfigurat
 		obj.ConcurrentNodeSyncs = 1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

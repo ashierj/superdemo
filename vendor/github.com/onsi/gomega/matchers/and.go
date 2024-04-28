@@ -60,3 +60,7 @@ func (m *AndMatcher) MatchMayChangeInTheFuture(actual interface{}) bool {
 	// one of the matchers failed.. it must be able to change in order to affect the result
 	return types.MatchMayChangeInTheFuture(m.firstFailedMatcher, actual)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

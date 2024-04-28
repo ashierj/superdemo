@@ -118,3 +118,7 @@ func test_UpgradePVC(t *testing.T, featureEnabled bool) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

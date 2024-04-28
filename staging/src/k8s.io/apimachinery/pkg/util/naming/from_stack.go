@@ -91,3 +91,7 @@ func extractStackCreator() (string, int, bool) {
 	}
 	return matches[2], line, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

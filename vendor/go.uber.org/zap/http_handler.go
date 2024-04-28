@@ -138,3 +138,7 @@ func decodePutJSON(body io.Reader) (zapcore.Level, error) {
 	}
 	return *pld.Level, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

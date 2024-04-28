@@ -152,3 +152,7 @@ func IsNodeReady(node *v1.Node) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

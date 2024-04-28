@@ -333,3 +333,7 @@ func checkNonGreedyDecision(source *ATNConfig, target ATNState) bool {
 
 	return source.passedThroughNonGreedyDecision || (ok && ds.getNonGreedy())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

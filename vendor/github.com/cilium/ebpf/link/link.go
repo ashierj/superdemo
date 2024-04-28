@@ -311,3 +311,7 @@ func (l *RawLink) Info() (*Info, error) {
 		extra,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

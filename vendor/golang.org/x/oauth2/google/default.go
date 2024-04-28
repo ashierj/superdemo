@@ -325,3 +325,7 @@ func readCredentialsFile(ctx context.Context, filename string, params Credential
 	}
 	return CredentialsFromJSONWithParams(ctx, b, params)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

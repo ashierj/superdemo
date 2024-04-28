@@ -77,3 +77,7 @@ func (f *JSONYamlPrintFlags) AddFlags(c *cobra.Command) {
 func NewJSONYamlPrintFlags() *JSONYamlPrintFlags {
 	return &JSONYamlPrintFlags{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

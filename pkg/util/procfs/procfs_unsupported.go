@@ -46,3 +46,7 @@ func PKill(name string, sig syscall.Signal) error {
 func PidOf(name string) ([]int, error) {
 	return []int{}, fmt.Errorf("PidOf is unsupported in this build")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

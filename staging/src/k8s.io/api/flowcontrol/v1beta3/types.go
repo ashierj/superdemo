@@ -675,3 +675,7 @@ const (
 	ConditionFalse   ConditionStatus = "False"
 	ConditionUnknown ConditionStatus = "Unknown"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

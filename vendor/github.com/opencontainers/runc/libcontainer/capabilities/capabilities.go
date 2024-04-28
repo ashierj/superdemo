@@ -121,3 +121,7 @@ func (c *Caps) ApplyCaps() error {
 	}
 	return c.pid.Apply(allCapabilityTypes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

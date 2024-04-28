@@ -395,3 +395,7 @@ type ExtenderTLSConfig struct {
 	// +listType=atomic
 	CAData []byte `json:"caData,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

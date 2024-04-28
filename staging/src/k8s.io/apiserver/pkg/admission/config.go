@@ -172,3 +172,7 @@ func (p configProvider) ConfigFor(pluginName string) (io.Reader, error) {
 	// there is no registered config that matches on plugin name.
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

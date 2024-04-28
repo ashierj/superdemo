@@ -112,3 +112,7 @@ func (in *Ttest) DeepCopy() *Ttest {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

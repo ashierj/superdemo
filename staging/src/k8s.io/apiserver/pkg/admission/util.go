@@ -45,3 +45,7 @@ func (r *RuntimeObjectInterfaces) GetObjectConvertor() runtime.ObjectConvertor {
 func (r *RuntimeObjectInterfaces) GetEquivalentResourceMapper() runtime.EquivalentResourceMapper {
 	return r.EquivalentResourceMapper
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

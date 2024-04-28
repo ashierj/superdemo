@@ -66,3 +66,7 @@ func (matcher *BeTemporallyMatcher) matchTimes(actual, compareTo time.Time, thre
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

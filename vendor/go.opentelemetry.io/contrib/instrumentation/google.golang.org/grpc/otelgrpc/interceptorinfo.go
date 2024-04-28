@@ -48,3 +48,7 @@ type InterceptorInfo struct {
 	// Type is the type for interceptor
 	Type InterceptorType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -120,3 +120,7 @@ var _ = SIGDescribe("Downgrade", feature.Downgrade, func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

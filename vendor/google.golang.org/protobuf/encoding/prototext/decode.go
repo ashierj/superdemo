@@ -770,3 +770,7 @@ func (d decoder) skipMessageValue() error {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

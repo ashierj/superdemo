@@ -56,3 +56,7 @@ func (codec) Unmarshal(data []byte, v any) error {
 func (codec) Name() string {
 	return Name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

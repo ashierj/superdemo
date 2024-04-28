@@ -71,3 +71,7 @@ func RoundToInt32(a float64) int32 {
 	}
 	return int32(a + 0.5)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

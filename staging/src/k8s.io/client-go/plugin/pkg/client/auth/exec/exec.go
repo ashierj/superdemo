@@ -545,3 +545,7 @@ func (a *Authenticator) wrapCmdRunErrorLocked(err error) error {
 		return fmt.Errorf("exec: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

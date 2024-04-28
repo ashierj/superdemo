@@ -68,3 +68,7 @@ type DeploymentNamespaceLister interface {
 type deploymentNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta2.Deployment]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

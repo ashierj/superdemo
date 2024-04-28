@@ -227,3 +227,7 @@ type RequestedToCapacityRatioParam struct {
 	// +listType=atomic
 	Shape []UtilizationShapePoint `json:"shape,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -169,3 +169,7 @@ func conflictsDifference(conflicts merge.Conflicts, s *fieldpath.Set) merge.Conf
 	}
 	return newConflicts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

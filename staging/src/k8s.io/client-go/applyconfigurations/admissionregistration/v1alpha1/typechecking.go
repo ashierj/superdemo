@@ -42,3 +42,7 @@ func (b *TypeCheckingApplyConfiguration) WithExpressionWarnings(values ...*Expre
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ func (g *groupversion) Schema(contentType string) ([]byte, error) {
 
 	return path.Do(context.TODO()).Raw()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

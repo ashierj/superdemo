@@ -104,3 +104,7 @@ func (p *Plugin) Validate(ctx context.Context, a admission.Attributes, o admissi
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

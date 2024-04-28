@@ -169,3 +169,7 @@ var (
 var (
 	forward_TraceService_Export_0 = runtime.ForwardResponseMessage
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

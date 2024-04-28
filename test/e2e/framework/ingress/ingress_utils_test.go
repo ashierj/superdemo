@@ -43,3 +43,7 @@ func TestIngressToManifest(t *testing.T) {
 		t.Fatalf("Error in creating file: %s", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

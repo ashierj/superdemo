@@ -652,3 +652,7 @@ func SplitLines(s string) []string {
 	lines[len(lines)-1] += "\n"
 	return lines
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -371,3 +371,7 @@ type Unstructured interface {
 	// If the items passed to fn are not retained, or are retained for the same duration, use EachListItem instead for memory efficiency.
 	EachListItemWithAlloc(func(Object) error) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

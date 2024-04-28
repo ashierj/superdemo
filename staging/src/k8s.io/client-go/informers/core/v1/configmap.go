@@ -88,3 +88,7 @@ func (f *configMapInformer) Informer() cache.SharedIndexInformer {
 func (f *configMapInformer) Lister() v1.ConfigMapLister {
 	return v1.NewConfigMapLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -184,3 +184,7 @@ func (c *FakePriorityLevelConfigurations) ApplyStatus(ctx context.Context, prior
 	}
 	return obj.(*v1.PriorityLevelConfiguration), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -297,3 +297,7 @@ func (ResourceMetricStatus) SwaggerDoc() map[string]string {
 }
 
 // AUTO-GENERATED FUNCTIONS END HERE
+-e 
+func helloWorld() {
+    println("hello world")
+}

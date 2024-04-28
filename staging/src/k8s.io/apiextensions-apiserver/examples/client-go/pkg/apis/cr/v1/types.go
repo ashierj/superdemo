@@ -61,3 +61,7 @@ type ExampleList struct {
 
 	Items []Example `json:"items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -352,3 +352,7 @@ func (v *versionedAttributeAccessor) VersionedAttribute(gvk schema.GroupVersionK
 	v.versionedAttrs[gvk] = versionedAttr
 	return versionedAttr, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

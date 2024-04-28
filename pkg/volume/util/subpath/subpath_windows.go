@@ -381,3 +381,7 @@ func findExistingPrefix(base, pathname string) (string, []string, error) {
 
 	return pathname, []string{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

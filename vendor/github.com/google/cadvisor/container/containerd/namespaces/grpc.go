@@ -72,3 +72,7 @@ func fromGRPCHeader(ctx context.Context) (string, bool) {
 
 	return values[0], true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -140,3 +140,7 @@ func (in *AdmissionReview) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

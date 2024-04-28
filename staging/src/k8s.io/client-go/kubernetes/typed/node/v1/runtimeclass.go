@@ -195,3 +195,7 @@ func (c *runtimeClasses) Apply(ctx context.Context, runtimeClass *nodev1.Runtime
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

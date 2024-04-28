@@ -148,3 +148,7 @@ func (txn *txn) Commit() (*TxnResponse, error) {
 	}
 	return (*TxnResponse)(resp), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

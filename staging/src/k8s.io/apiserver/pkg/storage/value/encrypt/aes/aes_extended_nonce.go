@@ -184,3 +184,7 @@ func (t *transformerWithInfo) TransformToStorage(ctx context.Context, data []byt
 
 	return outWithInfo, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

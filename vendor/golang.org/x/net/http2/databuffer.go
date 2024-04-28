@@ -147,3 +147,7 @@ func (b *dataBuffer) lastChunkOrAlloc(want int64) []byte {
 	b.w = 0
 	return chunk
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

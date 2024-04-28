@@ -928,3 +928,7 @@ func CompactText(w io.Writer, pb Message) error { return compactTextMarshaler.Ma
 
 // CompactTextString is the same as CompactText, but returns the string directly.
 func CompactTextString(pb Message) string { return compactTextMarshaler.Text(pb) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -748,3 +748,7 @@ func TestPodSchedulingContextSSA(t *testing.T) {
 		t.Fatalf("Failed while waiting for PodSchedulingContext Patch: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

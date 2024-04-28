@@ -389,3 +389,7 @@ func (m fixedRESTMapper) RESTMappings(gk schema.GroupKind, versions ...string) (
 func (m fixedRESTMapper) ResourceIsValid(resource schema.GroupVersionResource) bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

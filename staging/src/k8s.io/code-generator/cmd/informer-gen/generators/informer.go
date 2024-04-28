@@ -184,3 +184,7 @@ func (f *$.type|private$Informer) Lister() $.lister|raw$ {
 	return $.newLister|raw$(f.Informer().GetIndexer())
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

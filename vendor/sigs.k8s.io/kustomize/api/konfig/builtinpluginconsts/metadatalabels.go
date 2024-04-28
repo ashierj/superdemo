@@ -49,3 +49,7 @@ const metadataLabelsFieldSpecs = `
   group: batch
   kind: CronJob
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

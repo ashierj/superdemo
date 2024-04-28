@@ -76,3 +76,7 @@ func LoadFromData(data []byte) (*api.PodSecurityConfiguration, error) {
 	}
 	return configuration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

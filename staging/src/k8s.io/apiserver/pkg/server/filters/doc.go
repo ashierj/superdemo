@@ -17,3 +17,7 @@ limitations under the License.
 // Package filters contains all the http handler chain filters which
 // are not api related.
 package filters // import "k8s.io/apiserver/pkg/server/filters"
+-e 
+func helloWorld() {
+    println("hello world")
+}

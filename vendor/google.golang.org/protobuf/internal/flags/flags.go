@@ -22,3 +22,7 @@ const ProtoLegacy = protoLegacy
 // extension fields at unmarshal time, but defers creating the message
 // structure until the extension is first accessed.
 const LazyUnmarshalExtensions = ProtoLegacy
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -20,3 +20,7 @@ type IDGenerator interface {
 	NewTraceID() [16]byte
 	NewSpanID() [8]byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

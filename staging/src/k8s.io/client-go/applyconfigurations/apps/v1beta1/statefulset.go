@@ -256,3 +256,7 @@ func (b *StatefulSetApplyConfiguration) WithStatus(value *StatefulSetStatusApply
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

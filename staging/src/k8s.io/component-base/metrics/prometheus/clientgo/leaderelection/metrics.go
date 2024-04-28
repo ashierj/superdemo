@@ -66,3 +66,7 @@ func (s *leaderAdapter) Off(name string) {
 func (s *leaderAdapter) SlowpathExercised(name string) {
 	s.counter.WithLabelValues(name).Inc()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

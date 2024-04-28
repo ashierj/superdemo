@@ -236,3 +236,7 @@ func (g *Cloud) SetSecurityPolicyForAlphaGlobalBackendService(backendServiceName
 	mc := newBackendServiceMetricContextWithVersion("set_security_policy", "", computeAlphaVersion)
 	return mc.Observe(g.c.AlphaBackendServices().SetSecurityPolicy(ctx, meta.GlobalKey(backendServiceName), securityPolicyReference))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

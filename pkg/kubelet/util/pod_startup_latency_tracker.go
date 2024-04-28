@@ -194,3 +194,7 @@ func (p *basicPodStartupLatencyTracker) DeletePodStartupState(podUID types.UID) 
 
 	delete(p.pods, podUID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

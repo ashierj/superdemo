@@ -93,3 +93,7 @@ func raw(restClient *rest.RESTClient, streams genericiooptions.IOStreams, url, f
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

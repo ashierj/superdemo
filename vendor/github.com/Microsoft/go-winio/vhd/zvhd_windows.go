@@ -106,3 +106,7 @@ func _openVirtualDisk(virtualStorageType *VirtualStorageType, path *uint16, virt
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

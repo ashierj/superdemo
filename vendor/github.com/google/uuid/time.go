@@ -121,3 +121,7 @@ func (uuid UUID) Time() Time {
 func (uuid UUID) ClockSequence() int {
 	return int(binary.BigEndian.Uint16(uuid[8:10])) & 0x3fff
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

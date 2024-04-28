@@ -308,3 +308,7 @@ func importedGlobalVariableDeclaration(localVariables map[string]ast.Expr, impor
 
 	return localVariables, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

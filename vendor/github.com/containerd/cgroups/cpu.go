@@ -123,3 +123,7 @@ func (c *cpuController) Stat(path string, stats *v1.Metrics) error {
 	}
 	return sc.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

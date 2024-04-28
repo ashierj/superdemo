@@ -55,3 +55,7 @@ func (b *GlusterfsVolumeSourceApplyConfiguration) WithReadOnly(value bool) *Glus
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

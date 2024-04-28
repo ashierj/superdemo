@@ -279,3 +279,7 @@ func (in *SecretboxConfiguration) DeepCopy() *SecretboxConfiguration {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

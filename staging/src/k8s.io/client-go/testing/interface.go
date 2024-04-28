@@ -64,3 +64,7 @@ type FakeClient interface {
 	// fake client.
 	Actions() []Action
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

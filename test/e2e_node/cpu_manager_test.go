@@ -895,3 +895,7 @@ var _ = SIGDescribe("CPU Manager", framework.WithSerial(), feature.CPUManager, f
 		runCPUManagerTests(f)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

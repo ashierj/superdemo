@@ -162,3 +162,7 @@ func (c *ClientMetrics) ObserveStreamErrorNoPacket(segment commonmetrics.Segment
 func (c *ClientMetrics) ObserveStreamError(segment commonmetrics.Segment, err error, packetType client.PacketType) {
 	commonmetrics.ObserveStreamError(c.streamErrors, segment, err, packetType)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

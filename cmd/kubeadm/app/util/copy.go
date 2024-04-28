@@ -70,3 +70,7 @@ func MoveFile(src, dest string) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

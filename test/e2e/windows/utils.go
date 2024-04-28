@@ -99,3 +99,7 @@ func skipUnlessContainerdOneSevenOrGreater(ctx context.Context, f *framework.Fra
 		e2eskipper.Skipf("container runtime is < 1.7.0")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -90,3 +90,7 @@ func autoConvert_config_ValidatingAdmissionPolicyStatusControllerConfiguration_T
 	out.ConcurrentPolicySyncs = in.ConcurrentPolicySyncs
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1163,3 +1163,7 @@ type MatchCondition struct {
 	// Required.
 	Expression string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

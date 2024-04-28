@@ -195,3 +195,7 @@ func (c *resourceClasses) Apply(ctx context.Context, resourceClass *resourcev1al
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

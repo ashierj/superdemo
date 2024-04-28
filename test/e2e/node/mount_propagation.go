@@ -212,3 +212,7 @@ var _ = SIGDescribe("Mount propagation", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

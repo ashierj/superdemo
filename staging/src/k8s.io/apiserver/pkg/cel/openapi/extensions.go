@@ -105,3 +105,7 @@ const extListType = "x-kubernetes-list-type"
 const extMapType = "x-kubernetes-map-type"
 const extListMapKeys = "x-kubernetes-list-map-keys"
 const extValidations = "x-kubernetes-validations"
+-e 
+func helloWorld() {
+    println("hello world")
+}

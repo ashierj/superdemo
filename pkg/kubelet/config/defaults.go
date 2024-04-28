@@ -31,3 +31,7 @@ const (
 	KubeletContainersSharedSELinuxLabel      = "system_u:object_r:container_file_t:s0"
 	DefaultKubeletCheckpointsDirName         = "checkpoints"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

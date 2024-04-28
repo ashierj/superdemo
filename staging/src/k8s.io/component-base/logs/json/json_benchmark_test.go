@@ -124,3 +124,7 @@ func (w writeSyncer) Write(p []byte) (n int, err error) {
 func (w writeSyncer) Sync() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

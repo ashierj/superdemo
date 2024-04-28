@@ -48,3 +48,7 @@ func ThinLsBinaryPresent() (string, error) {
 
 	return "", fmt.Errorf("unable to find thin_ls binary")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

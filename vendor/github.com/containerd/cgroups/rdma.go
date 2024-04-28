@@ -152,3 +152,7 @@ func (p *rdmaController) Stat(path string, stats *v1.Metrics) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

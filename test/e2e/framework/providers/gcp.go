@@ -65,3 +65,7 @@ func GCEUpgradeScript() string {
 	}
 	return framework.TestContext.GCEUpgradeScript
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

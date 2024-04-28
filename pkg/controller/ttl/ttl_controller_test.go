@@ -246,3 +246,7 @@ func TestDesiredTTL(t *testing.T) {
 			"%d: unexpected ttl: %d", i, ttlController.getDesiredTTLSeconds())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

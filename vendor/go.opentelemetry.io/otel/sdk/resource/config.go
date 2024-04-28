@@ -204,3 +204,7 @@ func WithContainer() Option {
 func WithContainerID() Option {
 	return WithDetectors(cgroupContainerIDDetector{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

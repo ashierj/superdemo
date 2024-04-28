@@ -128,3 +128,7 @@ func (gc *GarbageCollector) removeFinalizer(logger klog.Logger, owner *node, tar
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

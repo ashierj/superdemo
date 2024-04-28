@@ -83,3 +83,7 @@ func init() {
 		fixtureData_restricted_1_19,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package json // import "sigs.k8s.io/json"
+-e 
+func helloWorld() {
+    println("hello world")
+}

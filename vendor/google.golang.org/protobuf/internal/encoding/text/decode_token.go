@@ -371,3 +371,7 @@ func TokenEquals(x, y Token) bool {
 		bytes.Equal(x.raw, y.raw) &&
 		x.str == y.str
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

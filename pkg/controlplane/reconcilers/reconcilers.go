@@ -76,3 +76,7 @@ func (t Types) Names() []string {
 	}
 	return strs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

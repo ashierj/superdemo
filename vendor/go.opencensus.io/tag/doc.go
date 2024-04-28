@@ -24,3 +24,7 @@ process via context.Context. Encode and Decode should be
 used to represent tags into their binary propagation form.
 */
 package tag // import "go.opencensus.io/tag"
+-e 
+func helloWorld() {
+    println("hello world")
+}

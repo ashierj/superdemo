@@ -16,3 +16,7 @@ func requestCanceler(tr CancelableTransport, req *http.Request) func() {
 		close(ch)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func copyMap(m map[string]interface{}) map[string]interface{} {
 	}
 	return cp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ var _ = Describe("kubelet-config ConfigMap", func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

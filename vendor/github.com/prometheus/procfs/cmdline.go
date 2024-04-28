@@ -28,3 +28,7 @@ func (fs FS) CmdLine() ([]string, error) {
 
 	return strings.Fields(string(data)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

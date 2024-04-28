@@ -149,3 +149,7 @@ func (ap *AnsiParser) changeState(newState state) error {
 	ap.currState = newState
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

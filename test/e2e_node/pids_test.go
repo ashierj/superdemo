@@ -130,3 +130,7 @@ var _ = SIGDescribe("PodPidsLimit", framework.WithSerial(), func() {
 		runPodPidsLimitTests(f)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

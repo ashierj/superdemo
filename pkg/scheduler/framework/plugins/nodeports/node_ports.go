@@ -202,3 +202,7 @@ func fitsPorts(wantPorts []*v1.ContainerPort, nodeInfo *framework.NodeInfo) bool
 func New(_ context.Context, _ runtime.Object, _ framework.Handle) (framework.Plugin, error) {
 	return &NodePorts{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

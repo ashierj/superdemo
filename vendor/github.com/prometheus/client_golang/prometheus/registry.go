@@ -1073,3 +1073,7 @@ func (g *noTransactionGatherer) Gather() (_ []*dto.MetricFamily, done func(), er
 	mfs, err := g.g.Gather()
 	return mfs, func() {}, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

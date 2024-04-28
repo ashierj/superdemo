@@ -157,3 +157,7 @@ func validateDirNotExists(dir string) error {
 	}
 	return fmt.Errorf("dir %q still exists", dir)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

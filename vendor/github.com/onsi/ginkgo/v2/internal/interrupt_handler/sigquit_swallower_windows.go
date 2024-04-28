@@ -6,3 +6,7 @@ package interrupt_handler
 func SwallowSigQuit() {
 	//noop
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

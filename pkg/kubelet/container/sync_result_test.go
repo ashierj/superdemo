@@ -66,3 +66,7 @@ func TestPodSyncResult(t *testing.T) {
 		t.Errorf("PodSyncResult should be error: %v", result)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

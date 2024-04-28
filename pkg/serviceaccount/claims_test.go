@@ -592,3 +592,7 @@ func (f fakeGetter) GetNode(name string) (*v1.Node, error) {
 	}
 	return f.node, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

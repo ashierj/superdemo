@@ -118,3 +118,7 @@ func (a *claimDefaulterPlugin) Admit(ctx context.Context, attr admission.Attribu
 	pvc.Spec.StorageClassName = &def.Name
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

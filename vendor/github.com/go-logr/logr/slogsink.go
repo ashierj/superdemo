@@ -118,3 +118,7 @@ func kvListToAttrs(kvList ...interface{}) []slog.Attr {
 	})
 	return attrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

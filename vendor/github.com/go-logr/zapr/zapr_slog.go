@@ -46,3 +46,7 @@ func zapIt(field string, val interface{}) zap.Field {
 	}
 	return zap.Any(field, val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ type LogicalProcessor struct {
 	CoreId      uint32 `json:"CoreId,omitempty"`
 	RootVpIndex int32  `json:"RootVpIndex,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

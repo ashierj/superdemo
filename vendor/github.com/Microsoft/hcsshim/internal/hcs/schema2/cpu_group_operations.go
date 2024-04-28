@@ -16,3 +16,7 @@ const (
 	DeleteGroup CPUGroupOperation = "DeleteGroup"
 	SetProperty CPUGroupOperation = "SetProperty"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

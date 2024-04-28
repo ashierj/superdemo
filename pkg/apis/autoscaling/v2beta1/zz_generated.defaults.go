@@ -49,3 +49,7 @@ func SetObjectDefaults_HorizontalPodAutoscalerList(in *v2beta1.HorizontalPodAuto
 		SetObjectDefaults_HorizontalPodAutoscaler(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

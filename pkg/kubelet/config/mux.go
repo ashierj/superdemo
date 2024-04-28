@@ -78,3 +78,7 @@ func (m *mux) listen(source string, listenChannel <-chan interface{}) {
 		m.merger.Merge(source, update)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

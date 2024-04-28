@@ -27,3 +27,7 @@ func isMatchCustomVerb(routeToken string, pathToken string) bool {
 func removeCustomVerb(str string) string {
 	return customVerbReg.ReplaceAllString(str, "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

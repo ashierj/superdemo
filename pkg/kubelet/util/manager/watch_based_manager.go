@@ -399,3 +399,7 @@ func NewWatchBasedManager(
 	objectStore := NewObjectCache(listObject, watchObject, newObject, isImmutable, groupResource, clock.RealClock{}, maxIdleTime, wait.NeverStop)
 	return NewCacheBasedManager(objectStore, getReferencedObjects)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

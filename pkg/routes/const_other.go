@@ -24,3 +24,7 @@ import "syscall"
 const (
 	fileNameTooLong = syscall.ENAMETOOLONG
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

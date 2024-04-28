@@ -76,3 +76,7 @@ func (l *LogReduction) ClearID(parentID string) {
 	delete(l.lastError, parentID)
 	delete(l.errorPrinted, parentID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

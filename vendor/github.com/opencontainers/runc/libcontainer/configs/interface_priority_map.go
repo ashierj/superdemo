@@ -12,3 +12,7 @@ type IfPrioMap struct {
 func (i *IfPrioMap) CgroupString() string {
 	return fmt.Sprintf("%s %d", i.Interface, i.Priority)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

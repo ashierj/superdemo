@@ -88,3 +88,7 @@ func (f *resourceQuotaInformer) Informer() cache.SharedIndexInformer {
 func (f *resourceQuotaInformer) Lister() v1.ResourceQuotaLister {
 	return v1.NewResourceQuotaLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

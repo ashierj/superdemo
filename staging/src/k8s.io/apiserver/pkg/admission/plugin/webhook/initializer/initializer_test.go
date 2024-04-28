@@ -50,3 +50,7 @@ func TestWantsServiceResolver(t *testing.T) {
 		t.Errorf("plumbing fail - %v %v#", ok, got)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

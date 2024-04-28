@@ -215,3 +215,7 @@ func TestUpdateStatus(t *testing.T) {
 		t.Errorf("unexpected object: %s", cmp.Diff(autoscalerIn, autoscalerOut))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

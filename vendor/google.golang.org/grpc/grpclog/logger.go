@@ -85,3 +85,7 @@ func (g *loggerWrapper) V(l int) bool {
 	// Returns true for all verbose level.
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

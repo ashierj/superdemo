@@ -126,3 +126,7 @@ resources:
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

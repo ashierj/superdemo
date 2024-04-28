@@ -56,3 +56,7 @@ func BuildVersionCommand() command.Command {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

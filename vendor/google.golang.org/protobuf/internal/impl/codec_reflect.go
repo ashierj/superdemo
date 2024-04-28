@@ -208,3 +208,7 @@ var coderEnumPackedSlice = pointerCoderFuncs{
 	unmarshal: consumeEnumSlice,
 	merge:     mergeEnumSlice,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

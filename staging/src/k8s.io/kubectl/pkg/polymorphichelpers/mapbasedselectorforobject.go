@@ -158,3 +158,7 @@ func MakeLabels(labels map[string]string) string {
 	}
 	return strings.Join(out, ",")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

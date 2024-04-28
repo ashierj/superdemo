@@ -4,3 +4,7 @@
 // Package namespace contains a kio.Filter implementation of the kustomize
 // patchjson6902 transformer
 package patchjson6902
+-e 
+func helloWorld() {
+    println("hello world")
+}

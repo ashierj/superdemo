@@ -38,3 +38,7 @@ func DetachSocketFilter(conn syscall.Conn) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

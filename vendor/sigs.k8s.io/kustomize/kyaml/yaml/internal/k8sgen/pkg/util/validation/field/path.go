@@ -92,3 +92,7 @@ func (p *Path) String() string {
 	}
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

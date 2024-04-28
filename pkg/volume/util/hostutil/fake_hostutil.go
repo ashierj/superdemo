@@ -123,3 +123,7 @@ func (hu *FakeHostUtil) GetSELinuxMountContext(pathname string) (string, error) 
 	// This pretends the OS does not support SELinux.
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

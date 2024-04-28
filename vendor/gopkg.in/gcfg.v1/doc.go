@@ -143,3 +143,7 @@
 //    - limit input size?
 //
 package gcfg // import "gopkg.in/gcfg.v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

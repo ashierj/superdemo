@@ -119,3 +119,7 @@ func (server *EtcdServer) DoServerCheck() (probe.Result, string, error) {
 	}
 	return probe.Success, "ok", err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

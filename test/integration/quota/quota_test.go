@@ -593,3 +593,7 @@ func newService(name string, svcType v1.ServiceType, allocateNodePort bool) *v1.
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

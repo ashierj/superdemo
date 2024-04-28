@@ -1211,3 +1211,7 @@ func setSwapControllerAvailableDuringTest(available bool) func() {
 		swapControllerAvailable = original
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -20,3 +20,7 @@ type ProcessorLimits struct {
 	// Provides the target maximum CPU frequency, in MHz, for a virtual machine.
 	MaximumFrequencyMHz uint32 `json:"MaximumFrequencyMHz,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

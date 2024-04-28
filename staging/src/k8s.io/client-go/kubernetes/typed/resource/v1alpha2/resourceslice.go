@@ -195,3 +195,7 @@ func (c *resourceSlices) Apply(ctx context.Context, resourceSlice *resourcev1alp
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

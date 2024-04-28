@@ -540,3 +540,7 @@ func BenchmarkFromUnstructured(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

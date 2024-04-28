@@ -553,3 +553,7 @@ func (tpf *certTextPrintFlags) ToPrinter(outputFormat string) (output.Printer, e
 	}
 	return nil, genericclioptions.NoCompatiblePrinterError{OutputFormat: &outputFormat, AllowedFormats: []string{output.TextOutput}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

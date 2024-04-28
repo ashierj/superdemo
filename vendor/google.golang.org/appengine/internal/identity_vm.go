@@ -132,3 +132,7 @@ func fullyQualifiedAppID(_ netcontext.Context) string {
 func IsDevAppServer() bool {
 	return os.Getenv("RUN_WITH_DEVAPPSERVER") != ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

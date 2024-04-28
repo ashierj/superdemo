@@ -24,3 +24,7 @@ import (
 func main() {
 	kubeadmutil.CheckErr(app.Run())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

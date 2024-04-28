@@ -605,3 +605,7 @@ func (a *ApplySet) BeforeApply(objects []*resource.Info, dryRunStrategy cmdutil.
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

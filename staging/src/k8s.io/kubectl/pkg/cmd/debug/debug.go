@@ -957,3 +957,7 @@ func logOpts(restClientGetter genericclioptions.RESTClientGetter, pod *corev1.Po
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

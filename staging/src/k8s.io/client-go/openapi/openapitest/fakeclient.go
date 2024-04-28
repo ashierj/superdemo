@@ -77,3 +77,7 @@ func (f FakeGroupVersion) Schema(contentType string) ([]byte, error) {
 	}
 	return f.GVSpec, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

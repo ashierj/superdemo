@@ -72,3 +72,7 @@ func (r *listUnstructuredRange) Item() (index int, value Value) {
 	}
 	return r.i, r.vv.reuse(r.list[r.i])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

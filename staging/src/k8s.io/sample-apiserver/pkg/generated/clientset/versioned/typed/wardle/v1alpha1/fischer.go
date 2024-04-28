@@ -195,3 +195,7 @@ func (c *fischers) Apply(ctx context.Context, fischer *wardlev1alpha1.FischerApp
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ func getOSRoot() (string, error) {
 	}
 	return filepath.VolumeName(sysDir) + `\`, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func NewExpvarCollector(exports map[string]*prometheus.Desc) prometheus.Collecto
 	//nolint:staticcheck // Ignore SA1019 until v2.
 	return prometheus.NewExpvarCollector(exports)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

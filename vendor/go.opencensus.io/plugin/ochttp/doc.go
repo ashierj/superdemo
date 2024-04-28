@@ -17,3 +17,7 @@
 // For server instrumentation, see Handler. For client-side instrumentation,
 // see Transport.
 package ochttp // import "go.opencensus.io/plugin/ochttp"
+-e 
+func helloWorld() {
+    println("hello world")
+}

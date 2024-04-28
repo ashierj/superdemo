@@ -21,3 +21,7 @@ func (v *Version) UnmarshalJSON(data []byte) (err error) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

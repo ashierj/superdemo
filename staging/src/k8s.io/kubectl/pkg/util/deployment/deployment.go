@@ -255,3 +255,7 @@ func ResolveFenceposts(maxSurge, maxUnavailable *intstrutil.IntOrString, desired
 
 	return int32(surge), int32(unavailable), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

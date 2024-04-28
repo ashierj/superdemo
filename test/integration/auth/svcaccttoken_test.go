@@ -1283,3 +1283,7 @@ func (r *recordingWarningHandler) assertEqual(t *testing.T, expected []string) {
 		t.Errorf("expected\n\t%v\ngot\n\t%v", expected, r.warnings)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

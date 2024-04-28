@@ -703,3 +703,7 @@ func isScalar(t *types.Type) bool {
 var (
 	doubleTwoTo64 = math.Ldexp(1.0, 64)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

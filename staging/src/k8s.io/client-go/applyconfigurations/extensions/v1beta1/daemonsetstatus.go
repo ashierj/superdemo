@@ -123,3 +123,7 @@ func (b *DaemonSetStatusApplyConfiguration) WithConditions(values ...*DaemonSetC
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -203,3 +203,7 @@ func newHandlerForTest(c kubernetes.Interface) (*Plugin, informers.SharedInforme
 	err := admission.ValidateInitialization(handler)
 	return handler, f, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

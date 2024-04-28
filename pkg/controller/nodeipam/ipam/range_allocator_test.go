@@ -841,3 +841,7 @@ func TestReleaseCIDRSuccess(t *testing.T) {
 		testFunc(tc)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

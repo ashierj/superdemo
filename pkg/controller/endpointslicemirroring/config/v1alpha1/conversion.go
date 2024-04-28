@@ -38,3 +38,7 @@ func Convert_v1alpha1_EndpointSliceMirroringControllerConfiguration_To_config_En
 func Convert_config_EndpointSliceMirroringControllerConfiguration_To_v1alpha1_EndpointSliceMirroringControllerConfiguration(in *endpointslicemirroringconfig.EndpointSliceMirroringControllerConfiguration, out *v1alpha1.EndpointSliceMirroringControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_EndpointSliceMirroringControllerConfiguration_To_v1alpha1_EndpointSliceMirroringControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

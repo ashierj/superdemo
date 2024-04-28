@@ -178,3 +178,7 @@ func GetProcMounts(pid int) ([]*MountInfo, error) {
 	}
 	return parseMountInfo(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

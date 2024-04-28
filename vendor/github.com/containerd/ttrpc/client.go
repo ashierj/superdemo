@@ -510,3 +510,7 @@ func (c *Client) dispatch(ctx context.Context, req *Request, resp *Response) err
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

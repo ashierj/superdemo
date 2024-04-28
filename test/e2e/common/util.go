@@ -215,3 +215,7 @@ func rcByNamePort(name string, replicas int32, image string, containerArgs []str
 		Ports: []v1.ContainerPort{{ContainerPort: int32(port), Protocol: protocol}},
 	}, gracePeriod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

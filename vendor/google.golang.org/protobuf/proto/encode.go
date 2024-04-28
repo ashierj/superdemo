@@ -320,3 +320,7 @@ func finishSpeculativeLength(b []byte, pos int) []byte {
 	protowire.AppendVarint(b[:pos], uint64(mlen))
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

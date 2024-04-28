@@ -89,3 +89,7 @@ func getDefaultConfigFileDirectory() (directory string) {
 func GetDefaultConfigFilePath() (path string) {
 	return filepath.Join(getDefaultConfigFileDirectory(), configFileName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

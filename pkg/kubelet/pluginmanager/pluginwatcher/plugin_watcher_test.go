@@ -260,3 +260,7 @@ func newWatcher(t *testing.T, socketDir string, desiredStateOfWorldCache cache.D
 
 	return w
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

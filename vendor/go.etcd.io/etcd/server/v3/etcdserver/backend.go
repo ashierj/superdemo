@@ -107,3 +107,7 @@ func recoverSnapshotBackend(cfg config.ServerConfig, oldbe backend.Backend, snap
 	oldbe.Close()
 	return openSnapshotBackend(cfg, snap.New(cfg.Logger, cfg.SnapDir()), snapshot, hooks)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

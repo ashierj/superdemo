@@ -62,3 +62,7 @@ func (b *CustomResourceDefinitionStatusApplyConfiguration) WithStoredVersions(va
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

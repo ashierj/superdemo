@@ -44,3 +44,7 @@ func Convert_custom_metrics_ObjectReference_To_v1_ObjectReference(in *ObjectRefe
 	out.FieldPath = in.FieldPath
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

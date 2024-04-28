@@ -218,3 +218,7 @@ func CacheableObjectTest(t *testing.T, e runtime.Encoder) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -481,3 +481,7 @@ func mapRecvMsgError(err error) error {
 	}
 	return connectionErrorf(true, err, err.Error())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

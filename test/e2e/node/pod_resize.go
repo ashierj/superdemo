@@ -1692,3 +1692,7 @@ var _ = SIGDescribe("Pod InPlace Resize Container", feature.InPlacePodVerticalSc
 	doPodResizeResourceQuotaTests()
 	doPodResizeErrorTests()
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -23,3 +23,7 @@ limitations under the License.
 // oldest objects first. The PodGCController will not delete non-terminated
 // pods.
 package podgc // import "k8s.io/kubernetes/pkg/controller/podgc"
+-e 
+func helloWorld() {
+    println("hello world")
+}

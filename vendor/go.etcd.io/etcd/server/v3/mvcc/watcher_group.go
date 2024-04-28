@@ -291,3 +291,7 @@ func (wg *watcherGroup) watcherSetByKey(key string) watcherSet {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

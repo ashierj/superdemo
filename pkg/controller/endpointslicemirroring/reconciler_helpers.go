@@ -136,3 +136,7 @@ func toSlicesByAddrType(slices []*discovery.EndpointSlice) slicesByAddrType {
 	}
 	return byAddrType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

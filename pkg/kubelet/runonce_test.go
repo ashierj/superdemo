@@ -185,3 +185,7 @@ func TestRunOnce(t *testing.T) {
 		t.Errorf("unexpected pod: %q", results[0].Pod.Name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

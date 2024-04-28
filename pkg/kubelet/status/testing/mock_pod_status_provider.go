@@ -406,3 +406,7 @@ func (mr *MockManagerMockRecorder) TerminatePod(pod any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TerminatePod", reflect.TypeOf((*MockManager)(nil).TerminatePod), pod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

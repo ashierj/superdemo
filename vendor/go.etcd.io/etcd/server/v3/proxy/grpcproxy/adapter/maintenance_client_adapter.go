@@ -90,3 +90,7 @@ func (s *ss2scServerStream) Recv() (*pb.SnapshotRequest, error) {
 	}
 	return v.(*pb.SnapshotRequest), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

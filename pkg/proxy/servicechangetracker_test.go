@@ -933,3 +933,7 @@ func TestBuildServiceMapServiceUpdate(t *testing.T) {
 		t.Errorf("expected healthcheck ports length 0, got %v", healthCheckNodePorts)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

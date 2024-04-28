@@ -78,3 +78,7 @@ func (rn *RawNode) Bootstrap(peers []Peer) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1615,3 +1615,7 @@ func ExampleQuantityValue() {
 	// Output:
 	// --mem quantity   sets amount of memory (default 1Mi)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

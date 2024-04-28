@@ -128,3 +128,7 @@ func (c *Fake$.GroupGoName$$.Version$) RESTClient() $.RESTClientInterface|raw$ {
 	return ret
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

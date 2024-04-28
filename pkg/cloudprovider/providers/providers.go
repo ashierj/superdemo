@@ -23,3 +23,7 @@ import (
 	// Cloud providers
 	_ "k8s.io/legacy-cloud-providers/gce"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

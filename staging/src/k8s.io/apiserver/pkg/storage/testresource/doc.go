@@ -17,3 +17,7 @@ limitations under the License.
 // +k8s:deepcopy-gen=package
 
 package testresource // import "k8s.io/apiserver/pkg/storage/testresource"
+-e 
+func helloWorld() {
+    println("hello world")
+}

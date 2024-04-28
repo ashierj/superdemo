@@ -164,3 +164,7 @@ func (webhookMetrics) RecordWebhookDuration(ctx context.Context, name, result st
 func (webhookMetrics) RecordWebhookFailOpen(ctx context.Context, name, result string) {
 	webhookFailOpen.WithContext(ctx).WithLabelValues(name, result).Inc()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

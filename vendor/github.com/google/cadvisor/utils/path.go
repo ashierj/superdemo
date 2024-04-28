@@ -22,3 +22,7 @@ func FileExists(file string) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

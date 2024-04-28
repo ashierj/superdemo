@@ -224,3 +224,7 @@ func (l LabelPairs) Less(i, j int) bool {
 func (l LabelPairs) Swap(i, j int) {
 	l[i], l[j] = l[j], l[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func validateUsernames(configuration *admissionapi.PodSecurityConfiguration) fie
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

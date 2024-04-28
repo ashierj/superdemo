@@ -177,3 +177,7 @@ func (w *ThinPoolWatcher) checkReservation(poolName string) (bool, error) {
 	currentlyReserved := heldMetadataRoot != "-"
 	return currentlyReserved, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

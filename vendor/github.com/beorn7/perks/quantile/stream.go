@@ -314,3 +314,7 @@ func (s *stream) samples() Samples {
 	copy(samples, s.l)
 	return samples
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

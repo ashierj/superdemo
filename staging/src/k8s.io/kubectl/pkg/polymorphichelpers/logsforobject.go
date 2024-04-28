@@ -167,3 +167,7 @@ func logsForObjectWithClient(clientset corev1client.CoreV1Interface, object, opt
 
 	return logsForObjectWithClient(clientset, pod, options, timeout, allContainers)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

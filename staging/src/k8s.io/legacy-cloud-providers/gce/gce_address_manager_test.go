@@ -148,3 +148,7 @@ func testReleaseAddress(t *testing.T, mgr *addressManager, svc CloudAddressServi
 	_, err = svc.GetRegionAddress(name, region)
 	assert.True(t, isNotFound(err))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

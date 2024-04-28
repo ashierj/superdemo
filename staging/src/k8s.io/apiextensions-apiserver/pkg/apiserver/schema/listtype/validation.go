@@ -217,3 +217,7 @@ func validateListMap(fldPath *field.Path, s *schema.Structural, obj []interface{
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

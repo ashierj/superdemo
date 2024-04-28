@@ -55,3 +55,7 @@ func TestGet(t *testing.T) {
 		t.Fatalf("expected Capabilities: %#v , got a different: %#v", cap, res)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -383,3 +383,7 @@ func mustParseSupportedVersions(list []string) SupportedVersions {
 	}
 	return versions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

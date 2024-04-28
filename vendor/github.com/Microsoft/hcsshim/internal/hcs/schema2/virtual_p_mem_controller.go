@@ -18,3 +18,7 @@ type VirtualPMemController struct {
 
 	Backing string `json:"Backing,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

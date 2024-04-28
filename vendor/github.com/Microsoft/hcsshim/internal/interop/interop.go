@@ -21,3 +21,7 @@ func Win32FromHresult(hr uintptr) syscall.Errno {
 	}
 	return syscall.Errno(hr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

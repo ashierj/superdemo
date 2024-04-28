@@ -132,3 +132,7 @@ func fixupPatchForNodeStatusAddresses(patchBytes []byte, addresses []v1.NodeAddr
 
 	return json.Marshal(patchMap)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

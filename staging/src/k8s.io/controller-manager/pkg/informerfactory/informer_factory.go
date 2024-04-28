@@ -54,3 +54,7 @@ func NewInformerFactory(typedInformerFactory informers.SharedInformerFactory, me
 		metadataInformerFactory: metadataInformerFactory,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

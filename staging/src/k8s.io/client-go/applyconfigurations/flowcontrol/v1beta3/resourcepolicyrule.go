@@ -81,3 +81,7 @@ func (b *ResourcePolicyRuleApplyConfiguration) WithNamespaces(values ...string) 
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

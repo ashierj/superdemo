@@ -46,3 +46,7 @@ type resourceClassLister struct {
 func NewResourceClassLister(indexer cache.Indexer) ResourceClassLister {
 	return &resourceClassLister{listers.New[*v1alpha2.ResourceClass](indexer, v1alpha2.Resource("resourceclass"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

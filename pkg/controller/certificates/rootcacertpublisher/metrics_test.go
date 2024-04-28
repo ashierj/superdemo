@@ -95,3 +95,7 @@ root_ca_cert_publisher_sync_total{code="500"} 1
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

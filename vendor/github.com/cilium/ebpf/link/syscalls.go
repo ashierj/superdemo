@@ -101,3 +101,7 @@ var haveBPFLink = internal.FeatureTest("bpf_link", "5.7", func() error {
 	}
 	return err
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

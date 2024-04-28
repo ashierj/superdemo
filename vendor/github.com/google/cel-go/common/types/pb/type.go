@@ -585,3 +585,7 @@ var (
 		"google.protobuf.UInt64Value": wrapperspb.UInt64(0),
 	}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

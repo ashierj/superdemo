@@ -40,3 +40,7 @@ func GetCurrentStatus() {
 	log.Printf("GetCurrentStatus")
 	// not implemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

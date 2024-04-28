@@ -292,3 +292,7 @@ func DeleteCollection(r rest.CollectionDeleter, checkBody bool, scope *RequestSc
 		transformResponseObject(ctx, scope, req, w, http.StatusOK, outputMediaType, result)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

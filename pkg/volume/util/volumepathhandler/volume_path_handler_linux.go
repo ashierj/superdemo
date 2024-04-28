@@ -234,3 +234,7 @@ func getDeviceMajorMinor(path string) (string, error) {
 
 	return fmt.Sprintf("%x:%x", major, minor), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

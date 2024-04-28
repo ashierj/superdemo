@@ -49,3 +49,7 @@ func ParseFullMethod(fullMethod string) (string, []attribute.KeyValue) {
 	}
 	return name, attrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1082,3 +1082,7 @@ func TestTracePacketV6(t *testing.T) {
 		},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

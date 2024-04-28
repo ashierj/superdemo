@@ -177,3 +177,7 @@ func (n *ptNode) match(b []byte, prefix bool) bool {
 	}
 	return nextN.match(b, prefix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

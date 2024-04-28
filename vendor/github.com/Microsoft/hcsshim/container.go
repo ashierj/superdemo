@@ -221,3 +221,7 @@ func (container *container) Close() error {
 func (container *container) Modify(config *ResourceModificationRequestResponse) error {
 	return convertSystemError(container.system.Modify(context.Background(), config), container)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

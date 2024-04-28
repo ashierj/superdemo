@@ -4,3 +4,7 @@
 // Package replicacount contains a kio.Filter implementation of the kustomize
 // ReplicaCountTransformer.
 package replicacount
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func VerifyConfigMapSignature(cm *v1.ConfigMap) bool {
 	}
 	return signature == ChecksumForConfigMap(cm)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

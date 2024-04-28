@@ -480,3 +480,7 @@ func (fh *fakeHistory) ReleaseControllerRevision(parent metav1.Object, revision 
 	}
 	return clone, fh.indexer.Update(clone)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

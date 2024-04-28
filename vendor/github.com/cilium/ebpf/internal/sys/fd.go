@@ -94,3 +94,7 @@ func (fd *FD) File(name string) *os.File {
 	fd.Forget()
 	return os.NewFile(uintptr(fd.raw), name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

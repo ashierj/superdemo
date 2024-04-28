@@ -136,3 +136,7 @@ func newPrivateKey(keyType kubeadmapi.EncryptionAlgorithmType) (crypto.Signer, e
 
 	return signer, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

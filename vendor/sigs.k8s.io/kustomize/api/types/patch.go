@@ -32,3 +32,7 @@ func (p *Patch) Equals(o Patch) bool {
 		targetEqual &&
 		reflect.DeepEqual(p.Options, o.Options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -49,3 +49,7 @@ func (fn DelayFunc) Concurrent() DelayFunc {
 		return fn()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

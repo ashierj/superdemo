@@ -37,3 +37,7 @@ func (b *PriorityLevelConfigurationReferenceApplyConfiguration) WithName(value s
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

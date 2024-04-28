@@ -403,3 +403,7 @@ func (step reSetUp) run(test *downwardAPITest) {
 			currentTarget, currentTarget2)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

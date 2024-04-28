@@ -239,3 +239,7 @@ func (rn *RawNode) TransferLeader(transferee uint64) {
 func (rn *RawNode) ReadIndex(rctx []byte) {
 	_ = rn.raft.Step(pb.Message{Type: pb.MsgReadIndex, Entries: []pb.Entry{{Data: rctx}}})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

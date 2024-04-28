@@ -60,3 +60,7 @@ type FnPluginLoadingOptions struct {
 	// Run in this working directory
 	WorkingDir string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func MakeConfigMap(
 	}
 	return rn, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

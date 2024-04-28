@@ -29,3 +29,7 @@ var MeasurementRecorder interface{}
 
 // SubscriptionReporter reports when a view subscribed with a measure.
 var SubscriptionReporter func(measure string)
+-e 
+func helloWorld() {
+    println("hello world")
+}

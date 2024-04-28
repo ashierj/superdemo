@@ -154,3 +154,7 @@ func (in *ObjectReference) DeepCopy() *ObjectReference {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

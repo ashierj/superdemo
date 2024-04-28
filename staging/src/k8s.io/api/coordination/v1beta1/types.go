@@ -78,3 +78,7 @@ type LeaseList struct {
 	// items is a list of schema objects.
 	Items []Lease `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

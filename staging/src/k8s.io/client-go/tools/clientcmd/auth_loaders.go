@@ -108,3 +108,7 @@ func NewPromptingAuthLoader(reader io.Reader) *PromptingAuthLoader {
 func NewDefaultAuthLoader() AuthLoader {
 	return &defaultAuthLoader{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

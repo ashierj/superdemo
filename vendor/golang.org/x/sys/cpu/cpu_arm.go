@@ -71,3 +71,7 @@ func initOptions() {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

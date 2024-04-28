@@ -85,3 +85,7 @@ func newControlPlaneWaiter(dryRun bool, timeout time.Duration, client clientset.
 	}
 	return apiclient.NewKubeWaiter(client, timeout, out), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

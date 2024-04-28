@@ -601,3 +601,7 @@ func newFakeScheme(t *testing.T) *runtime.Scheme {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ type EndpointsNamespaceLister interface {
 type endpointsNamespaceLister struct {
 	listers.ResourceIndexer[*v1.Endpoints]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

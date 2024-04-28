@@ -13,3 +13,7 @@ func FouDel(f Fou) error {
 func FouList(fam int) ([]Fou, error) {
 	return nil, ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

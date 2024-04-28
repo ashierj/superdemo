@@ -148,3 +148,7 @@ func RelabelNeeded(label string) bool {
 func IsShared(label string) bool {
 	return strings.Contains(label, "z")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

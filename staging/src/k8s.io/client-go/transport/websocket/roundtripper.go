@@ -180,3 +180,7 @@ func Negotiate(rt http.RoundTripper, connectionInfo ConnectionHolder, req *http.
 	}
 	return connectionInfo.Connection(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

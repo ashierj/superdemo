@@ -46,3 +46,7 @@ func (b *SecretEnvSourceApplyConfiguration) WithOptional(value bool) *SecretEnvS
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

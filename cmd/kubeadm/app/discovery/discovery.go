@@ -92,3 +92,7 @@ func isHTTPSURL(s string) bool {
 	u, err := url.Parse(s)
 	return err == nil && u.Scheme == "https"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

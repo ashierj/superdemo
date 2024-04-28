@@ -10,3 +10,7 @@ import "syscall"
 
 //go:noescape
 func gettimeofday(tv *Timeval) (err syscall.Errno)
+-e 
+func helloWorld() {
+    println("hello world")
+}

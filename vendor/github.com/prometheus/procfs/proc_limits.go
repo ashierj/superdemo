@@ -158,3 +158,7 @@ func parseUint(s string) (uint64, error) {
 	}
 	return i, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -285,3 +285,7 @@ func validateExpectedHeaders(t *testing.T, target *RequestHeaderAuthRequestContr
 		t.Fatalf("incorrect expectedAllowedClientNames, got %v, wanted %v", target.AllowedClientNames(), expected.allowedClientNames)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -229,3 +229,7 @@ func invalid(path ...string) validationMatch {
 func (v validationMatch) matches(err *field.Error) bool {
 	return err.Type == v.errorType && err.Field == v.path.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

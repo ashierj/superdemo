@@ -269,3 +269,7 @@ func newBaseServiceInfo(service *v1.Service, ipFamily v1.IPFamily, port *v1.Serv
 
 	return info
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

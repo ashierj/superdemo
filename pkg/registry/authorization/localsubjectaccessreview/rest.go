@@ -95,3 +95,7 @@ func (r *REST) Create(ctx context.Context, obj runtime.Object, createValidation 
 
 	return localSubjectAccessReview, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func (unsupportedContainerManager) Start(_ *v1.Node, _ ActivePodsFunc, _ config.
 func NewContainerManager(_ mount.Interface, _ cadvisor.Interface, _ NodeConfig, failSwapOn bool, recorder record.EventRecorder, kubeClient clientset.Interface) (ContainerManager, error) {
 	return &unsupportedContainerManager{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

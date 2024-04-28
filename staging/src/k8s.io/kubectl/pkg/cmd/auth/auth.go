@@ -39,3 +39,7 @@ func NewCmdAuth(f cmdutil.Factory, streams genericiooptions.IOStreams) *cobra.Co
 
 	return cmds
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -888,3 +888,7 @@ type Int int
 func (a Int) Less(b Item) bool {
 	return a < b.(Int)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

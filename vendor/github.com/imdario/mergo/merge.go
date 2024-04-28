@@ -250,3 +250,7 @@ func merge(dst, src interface{}, opts ...func(*Config)) error {
 	}
 	return deepMerge(vDst, vSrc, make(map[uintptr]*visit), 0, config)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

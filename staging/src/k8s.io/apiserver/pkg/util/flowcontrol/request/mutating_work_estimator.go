@@ -155,3 +155,7 @@ func isRequestExemptFromWatchEvents(requestInfo *apirequest.RequestInfo) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

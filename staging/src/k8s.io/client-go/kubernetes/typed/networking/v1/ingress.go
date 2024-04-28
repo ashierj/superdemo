@@ -254,3 +254,7 @@ func (c *ingresses) ApplyStatus(ctx context.Context, ingress *networkingv1.Ingre
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

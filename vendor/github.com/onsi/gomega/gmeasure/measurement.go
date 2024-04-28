@@ -233,3 +233,7 @@ func (m Measurement) Stats() Stats {
 
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

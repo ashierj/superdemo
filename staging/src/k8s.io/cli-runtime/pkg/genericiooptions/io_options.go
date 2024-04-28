@@ -54,3 +54,7 @@ func NewTestIOStreamsDiscard() IOStreams {
 		ErrOut: io.Discard,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -371,3 +371,7 @@ func versionTarget(outputDirBase, outputPkgBase string, groupPkgName string, gv 
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -178,3 +178,7 @@ var _ = utils.SIGDescribe("PersistentVolumes GCEPD", feature.StorageProvider, fu
 		framework.ExpectNoError(waitForPDDetach(diskName, node), "PD ", diskName, " did not detach")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

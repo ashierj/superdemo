@@ -18,3 +18,7 @@ const (
 	PS384 = "PS384" // RSASSA-PSS using SHA384 and MGF1-SHA384
 	PS512 = "PS512" // RSASSA-PSS using SHA512 and MGF1-SHA512
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

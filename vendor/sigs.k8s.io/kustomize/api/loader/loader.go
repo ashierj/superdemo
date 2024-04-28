@@ -33,3 +33,7 @@ func NewLoader(
 	return newLoaderAtConfirmedDir(
 		lr, root, fSys, nil, git.ClonerUsingGitExec), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

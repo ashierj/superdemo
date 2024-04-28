@@ -45,3 +45,7 @@ func getFlagLoadRestrictorValue() types.LoadRestrictions {
 		return types.LoadRestrictionsRootOnly
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

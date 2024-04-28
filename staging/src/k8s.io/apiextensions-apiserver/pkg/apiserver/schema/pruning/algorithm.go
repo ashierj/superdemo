@@ -147,3 +147,7 @@ func skipPrune(x interface{}, s *structuralschema.Structural, opts *structuralsc
 		// scalars, do nothing
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

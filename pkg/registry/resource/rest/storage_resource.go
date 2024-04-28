@@ -116,3 +116,7 @@ func (p RESTStorageProvider) v1alpha2Storage(apiResourceConfigSource serverstora
 func (p RESTStorageProvider) GroupName() string {
 	return resource.GroupName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

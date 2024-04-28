@@ -1022,3 +1022,7 @@ func newCyclicList() *myList {
 	a.Next = b
 	return a
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

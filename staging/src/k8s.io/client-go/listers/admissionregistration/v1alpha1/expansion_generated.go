@@ -25,3 +25,7 @@ type ValidatingAdmissionPolicyListerExpansion interface{}
 // ValidatingAdmissionPolicyBindingListerExpansion allows custom methods to be added to
 // ValidatingAdmissionPolicyBindingLister.
 type ValidatingAdmissionPolicyBindingListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

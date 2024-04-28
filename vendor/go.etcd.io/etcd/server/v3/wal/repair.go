@@ -113,3 +113,7 @@ func openLast(lg *zap.Logger, dirpath string) (*fileutil.LockedFile, error) {
 	last := filepath.Join(dirpath, names[len(names)-1])
 	return fileutil.LockFile(last, os.O_RDWR, fileutil.PrivateFileMode)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -131,3 +131,7 @@ type Unknown struct {
 	// Unspecified means ContentTypeJSON.
 	ContentType string `protobuf:"bytes,4,opt,name=contentType"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

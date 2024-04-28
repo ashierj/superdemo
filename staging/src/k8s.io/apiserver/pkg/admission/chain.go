@@ -68,3 +68,7 @@ func (admissionHandler chainAdmissionHandler) Handles(operation Operation) bool 
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

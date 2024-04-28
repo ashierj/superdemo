@@ -240,3 +240,7 @@ func autoConvert_policy_PodDisruptionBudgetStatus_To_v1_PodDisruptionBudgetStatu
 func Convert_policy_PodDisruptionBudgetStatus_To_v1_PodDisruptionBudgetStatus(in *policy.PodDisruptionBudgetStatus, out *v1.PodDisruptionBudgetStatus, s conversion.Scope) error {
 	return autoConvert_policy_PodDisruptionBudgetStatus_To_v1_PodDisruptionBudgetStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

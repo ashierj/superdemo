@@ -55,3 +55,7 @@ func (v Version) Install(c *restful.Container) {
 func (v Version) handleVersion(req *restful.Request, resp *restful.Response) {
 	responsewriters.WriteRawJSON(http.StatusOK, *v.Version, resp.ResponseWriter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -216,3 +216,7 @@ func setupWithOptions(t *testing.T, instanceOptions *apitesting.TestServerInstan
 
 	return clientSet, result.TearDownFn
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

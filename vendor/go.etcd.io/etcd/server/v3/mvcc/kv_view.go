@@ -54,3 +54,7 @@ func (wv *writeView) Put(key, value []byte, lease lease.LeaseID) (rev int64) {
 	defer tw.End()
 	return tw.Put(key, value, lease)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

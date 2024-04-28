@@ -378,3 +378,7 @@ func (j *jsonTime) UnmarshalJSON(b []byte) error {
 func (j jsonTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(time.Time(j).Unix())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

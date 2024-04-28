@@ -125,3 +125,7 @@ func (c *namespacedClientConfig) ClientConfig() (*rest.Config, error) {
 func (c *namespacedClientConfig) ConfigAccess() clientcmd.ConfigAccess {
 	return c.delegate.ConfigAccess()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

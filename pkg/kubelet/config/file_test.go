@@ -81,3 +81,7 @@ func removeAll(dir string, t *testing.T) {
 		t.Fatalf("unable to remove dir %s: %v", dir, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -6,3 +6,7 @@ representing sizes like 82854982 into useful strings like, "83 MB" or
 "79 MiB" (whichever you prefer).
 */
 package humanize
+-e 
+func helloWorld() {
+    println("hello world")
+}

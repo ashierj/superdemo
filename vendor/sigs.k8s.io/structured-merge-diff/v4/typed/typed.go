@@ -247,3 +247,7 @@ func merge(lhs, rhs *TypedValue, rule, postRule mergeRule) (*TypedValue, error) 
 	}
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -268,3 +268,7 @@ func (c CustomGomegaMatcher) renderTemplateMessage(actual any, isFailure bool) s
 	}
 	return b.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

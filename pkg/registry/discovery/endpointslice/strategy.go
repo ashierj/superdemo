@@ -222,3 +222,7 @@ func warnOnDeprecatedAddressType(addressType discovery.AddressType) []string {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

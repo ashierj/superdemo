@@ -23,3 +23,7 @@ type PodGCControllerConfiguration struct {
 	// If <= 0, the terminated pod garbage collector is disabled.
 	TerminatedPodGCThreshold int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

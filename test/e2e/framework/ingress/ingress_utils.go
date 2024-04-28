@@ -1151,3 +1151,7 @@ func (j *TestJig) DeleteTestResource(ctx context.Context, cs clientset.Interface
 	}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

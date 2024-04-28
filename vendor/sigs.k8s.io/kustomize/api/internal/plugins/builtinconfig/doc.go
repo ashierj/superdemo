@@ -8,3 +8,7 @@
 // or `generators:` field, than to use this legacy
 // configuration technique.
 package builtinconfig
+-e 
+func helloWorld() {
+    println("hello world")
+}

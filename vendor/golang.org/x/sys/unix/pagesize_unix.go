@@ -13,3 +13,7 @@ import "syscall"
 func Getpagesize() int {
 	return syscall.Getpagesize()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

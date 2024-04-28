@@ -37,3 +37,7 @@ func Convert_v1alpha1_GenericControllerManagerConfiguration_To_config_GenericCon
 func Convert_config_GenericControllerManagerConfiguration_To_v1alpha1_GenericControllerManagerConfiguration(in *cmconfig.GenericControllerManagerConfiguration, out *GenericControllerManagerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_GenericControllerManagerConfiguration_To_v1alpha1_GenericControllerManagerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

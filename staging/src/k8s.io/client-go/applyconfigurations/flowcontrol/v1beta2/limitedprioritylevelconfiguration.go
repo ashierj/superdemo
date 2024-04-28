@@ -64,3 +64,7 @@ func (b *LimitedPriorityLevelConfigurationApplyConfiguration) WithBorrowingLimit
 	b.BorrowingLimitPercent = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

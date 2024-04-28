@@ -231,3 +231,7 @@ type PatchCSIOptions struct {
 	//	-- value: []string{feature-gates}
 	Features map[string][]string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -268,3 +268,7 @@ func (sow *singleObjListerWatcher) Watch(options metav1.ListOptions) (watch.Inte
 	options.FieldSelector = "metadata.name=" + sow.objectName
 	return sow.lw.Watch(options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

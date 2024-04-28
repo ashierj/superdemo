@@ -79,3 +79,7 @@ func (dr *StreamReporter) Report(key, value string, resultType ValidationResultT
 var DefaultReporter = &StreamReporter{
 	WriteStream: os.Stdout,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

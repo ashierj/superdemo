@@ -191,3 +191,7 @@ func (g *Cloud) getNetworkTierFromForwardingRule(name, region string) (string, e
 	}
 	return fwdRule.NetworkTier, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -377,3 +377,7 @@ func walk(osPathname string, dirent *Dirent, options *Options) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

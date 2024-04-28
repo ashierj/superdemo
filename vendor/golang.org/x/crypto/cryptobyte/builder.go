@@ -348,3 +348,7 @@ func (b *Builder) AddValue(v MarshalingValue) {
 		b.err = err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

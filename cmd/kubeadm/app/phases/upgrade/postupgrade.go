@@ -297,3 +297,7 @@ func GetKubeletDir(dryRun bool) (string, error) {
 	}
 	return kubeadmconstants.KubeletRunDirectory, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

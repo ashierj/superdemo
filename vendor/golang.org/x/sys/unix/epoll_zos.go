@@ -218,3 +218,7 @@ func EpollCtl(epfd int, op int, fd int, event *EpollEvent) (err error) {
 func EpollWait(epfd int, events []EpollEvent, msec int) (n int, err error) {
 	return impl.epollwait(epfd, events, msec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

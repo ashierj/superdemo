@@ -793,3 +793,7 @@ func hcnCloseRoute(route hcnRoute) (hr error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

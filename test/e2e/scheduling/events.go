@@ -114,3 +114,7 @@ func observeEventAfterAction(ctx context.Context, c clientset.Interface, ns stri
 	})
 	return err == nil, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -101,3 +101,7 @@ var DecodeLax cbor.DecMode = func() cbor.DecMode {
 	}
 	return dm
 }()
+-e 
+func helloWorld() {
+    println("hello world")
+}

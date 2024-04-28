@@ -70,3 +70,7 @@ func (l *jobLister) GetPodJobs(pod *v1.Pod) (jobs []batch.Job, err error) {
 // JobNamespaceListerExpansion allows custom methods to be added to
 // JobNamespaceLister.
 type JobNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

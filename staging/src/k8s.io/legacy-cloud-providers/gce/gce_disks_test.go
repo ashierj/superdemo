@@ -1019,3 +1019,7 @@ func createNodeZones(zones []string) map[string]sets.String {
 	}
 	return nodeZones
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

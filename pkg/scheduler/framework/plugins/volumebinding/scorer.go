@@ -52,3 +52,7 @@ func buildScorerFunction(scoringFunctionShape helper.FunctionShape) volumeCapaci
 		return int64(math.Round(float64(nodeScore) / float64(weightSum)))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -53,3 +53,7 @@ func maskBytes(key [4]byte, pos int, b []byte) int {
 
 	return pos & 3
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -3417,3 +3417,7 @@ func (t *Transport) dialTLSWithContext(ctx context.Context, network, addr string
 	tlsCn := cn.(*tls.Conn) // DialContext comment promises this will always succeed
 	return tlsCn, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

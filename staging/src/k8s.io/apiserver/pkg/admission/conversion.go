@@ -134,3 +134,7 @@ func ConvertVersionedAttributes(attr *VersionedAttributes, gvk schema.GroupVersi
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

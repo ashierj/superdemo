@@ -79,3 +79,7 @@ func NewPolicyOptions(policyOptions map[string]string) (PolicyOptions, error) {
 	}
 	return opts, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

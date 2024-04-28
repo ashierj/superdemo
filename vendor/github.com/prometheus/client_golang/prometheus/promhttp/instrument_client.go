@@ -247,3 +247,7 @@ func InstrumentRoundTripperTrace(it *InstrumentTrace, next http.RoundTripper) Ro
 		return next.RoundTrip(r)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

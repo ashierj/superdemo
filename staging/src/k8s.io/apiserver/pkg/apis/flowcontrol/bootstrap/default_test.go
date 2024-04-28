@@ -122,3 +122,7 @@ func TestBootstrapPriorityLevelConfigurationWithBorrowing(t *testing.T) {
 		t.Errorf("Expected exempt priority level to have LendablePercent==0 but got %d instead", *exemptPL.Spec.Exempt.LendablePercent)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

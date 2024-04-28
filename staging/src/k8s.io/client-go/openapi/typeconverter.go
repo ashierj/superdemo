@@ -46,3 +46,7 @@ func NewTypeConverter(client Client, preserveUnknownFields bool) (managedfields.
 	}
 	return managedfields.NewTypeConverter(spec, preserveUnknownFields)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

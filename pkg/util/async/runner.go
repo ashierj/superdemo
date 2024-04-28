@@ -56,3 +56,7 @@ func (r *Runner) Stop() {
 		r.stop = nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

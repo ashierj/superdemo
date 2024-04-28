@@ -437,3 +437,7 @@ func newDeployment(foo *samplev1alpha1.Foo) *appsv1.Deployment {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

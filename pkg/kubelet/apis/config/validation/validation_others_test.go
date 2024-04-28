@@ -23,3 +23,7 @@ var (
 	cgroupsPerQOS          = true
 	enforceNodeAllocatable = []string{"pods", "system-reserved", "kube-reserved"}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

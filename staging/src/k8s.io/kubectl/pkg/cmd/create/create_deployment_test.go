@@ -161,3 +161,7 @@ func TestCreateDeploymentNoImage(t *testing.T) {
 	err = options.Run()
 	assert.Error(t, err, "at least one image must be specified")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

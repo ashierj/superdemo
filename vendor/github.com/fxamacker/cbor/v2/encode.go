@@ -1606,3 +1606,7 @@ func float32NaNFromReflectValue(v reflect.Value) float32 {
 	f32 := p.Convert(reflect.TypeOf((*float32)(nil))).Elem().Interface().(float32)
 	return f32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

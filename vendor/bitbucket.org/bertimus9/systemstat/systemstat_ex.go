@@ -39,3 +39,7 @@ func getCPUSample(procfile string) (samp CPUSample) {
 	samp.Time = time.Now()
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

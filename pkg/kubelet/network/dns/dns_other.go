@@ -21,3 +21,7 @@ package dns
 
 // Read the DNS configuration from a resolv.conf file.
 var getHostDNSConfig = getDNSConfig
+-e 
+func helloWorld() {
+    println("hello world")
+}

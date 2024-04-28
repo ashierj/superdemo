@@ -502,3 +502,7 @@ func ensureValidTracerProviderConfig(cfg tracerProviderConfig) tracerProviderCon
 	}
 	return cfg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

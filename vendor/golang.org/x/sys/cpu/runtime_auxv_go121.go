@@ -16,3 +16,7 @@ func runtime_getAuxv() []uintptr
 func init() {
 	getAuxvFn = runtime_getAuxv
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

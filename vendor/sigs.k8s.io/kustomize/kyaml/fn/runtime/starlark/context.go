@@ -77,3 +77,7 @@ func interfaceToValue(i interface{}) (starlark.Value, error) {
 	}
 	return value, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

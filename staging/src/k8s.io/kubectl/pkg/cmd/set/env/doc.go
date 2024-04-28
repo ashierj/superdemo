@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package env provides functions to incorporate environment variables into set env.
 package env // import "k8s.io/kubectl/pkg/cmd/set/env"
+-e 
+func helloWorld() {
+    println("hello world")
+}

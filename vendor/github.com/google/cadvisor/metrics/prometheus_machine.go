@@ -390,3 +390,7 @@ func getDistance(machineInfo *info.MachineInfo) metricValues {
 	}
 	return mValues
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

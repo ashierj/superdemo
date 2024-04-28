@@ -719,3 +719,7 @@ func (t *unstructuredMap) Find(key ref.Val) (ref.Val, bool) {
 
 	return nil, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

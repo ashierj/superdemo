@@ -13,3 +13,7 @@ type File interface {
 	io.ReadWriteCloser
 	Stat() (os.FileInfo, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

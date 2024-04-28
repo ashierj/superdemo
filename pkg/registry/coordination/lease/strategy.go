@@ -81,3 +81,7 @@ func (leaseStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Obje
 func (leaseStrategy) AllowUnconditionalUpdate() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

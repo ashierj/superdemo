@@ -248,3 +248,7 @@ func TestCheckpointManager(t *testing.T) {
 	err = manager.GetCheckpoint("key1", checkpointNE)
 	assert.Error(t, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

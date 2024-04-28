@@ -39,3 +39,7 @@ func WaitForCacheSync(controllerName string, stopCh <-chan struct{}, cacheSyncs 
 	klog.Infof("Caches are synced for %s controller", controllerName)
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

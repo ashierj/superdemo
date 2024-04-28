@@ -165,3 +165,7 @@ func (c *crioClientImpl) ContainerInfo(id string) (*ContainerInfo, error) {
 	}
 	return &cInfo, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

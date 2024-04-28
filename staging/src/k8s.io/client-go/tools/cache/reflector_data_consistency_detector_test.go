@@ -141,3 +141,7 @@ func (lw *errorLister) List(_ metav1.ListOptions) (runtime.Object, error) {
 func (lw *errorLister) Watch(_ metav1.ListOptions) (watch.Interface, error) {
 	panic("not implemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

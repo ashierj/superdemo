@@ -77,3 +77,7 @@ func readPassword(fd int) ([]byte, error) {
 	defer f.Close()
 	return readPasswordLine(f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ var _ = SIGDescribe("AppArmor", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

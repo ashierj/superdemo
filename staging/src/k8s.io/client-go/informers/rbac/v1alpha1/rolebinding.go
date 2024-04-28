@@ -88,3 +88,7 @@ func (f *roleBindingInformer) Informer() cache.SharedIndexInformer {
 func (f *roleBindingInformer) Lister() v1alpha1.RoleBindingLister {
 	return v1alpha1.NewRoleBindingLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

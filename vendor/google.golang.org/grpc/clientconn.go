@@ -2036,3 +2036,7 @@ func (cc *ClientConn) initResolverWrapper(creds credentials.TransportCredentials
 	cc.mu.Unlock()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

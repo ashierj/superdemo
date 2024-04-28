@@ -149,3 +149,7 @@ func (fs FS) SlabInfo() (SlabInfo, error) {
 
 	return parseSlabInfo21(bytes.NewReader(data))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

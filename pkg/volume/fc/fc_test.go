@@ -506,3 +506,7 @@ func Test_ConstructVolumeSpecNoRefs(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

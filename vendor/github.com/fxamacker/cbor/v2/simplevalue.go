@@ -67,3 +67,7 @@ func (sv *SimpleValue) UnmarshalCBOR(data []byte) error {
 	*sv = SimpleValue(val)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

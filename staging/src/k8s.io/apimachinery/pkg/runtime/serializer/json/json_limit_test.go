@@ -167,3 +167,7 @@ func BenchmarkJSONLimits(b *testing.B) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (i SyncMarker) String() string {
 	}
 	return _SyncMarker_name[_SyncMarker_index[i]:_SyncMarker_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

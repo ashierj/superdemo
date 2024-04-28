@@ -87,3 +87,7 @@ func (f *clusterRoleBindingInformer) Informer() cache.SharedIndexInformer {
 func (f *clusterRoleBindingInformer) Lister() v1.ClusterRoleBindingLister {
 	return v1.NewClusterRoleBindingLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

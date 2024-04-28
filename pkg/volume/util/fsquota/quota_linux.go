@@ -468,3 +468,7 @@ func ClearQuota(m mount.Interface, path string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

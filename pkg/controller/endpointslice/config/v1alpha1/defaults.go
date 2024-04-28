@@ -39,3 +39,7 @@ func RecommendedDefaultEndpointSliceControllerConfiguration(obj *kubectrlmgrconf
 		obj.MaxEndpointsPerSlice = 100
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

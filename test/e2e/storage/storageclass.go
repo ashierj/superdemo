@@ -169,3 +169,7 @@ var _ = utils.SIGDescribe("StorageClasses", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

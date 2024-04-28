@@ -379,3 +379,7 @@ func (c *NamingConditionController) requeueAllOtherGroupCRDs(name string) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -171,3 +171,7 @@ func (t *typeValidator) Validate(data interface{}) *Result {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

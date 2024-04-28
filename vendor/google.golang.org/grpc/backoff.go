@@ -59,3 +59,7 @@ type ConnectParams struct {
 	// connection to complete.
 	MinConnectTimeout time.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

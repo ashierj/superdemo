@@ -51,3 +51,7 @@ func (p Pool) Get() *Buffer {
 func (p Pool) put(buf *Buffer) {
 	p.p.Put(buf)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

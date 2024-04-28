@@ -163,3 +163,7 @@ func (f *fifo) run() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

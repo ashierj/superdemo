@@ -110,3 +110,7 @@ func GetGroups(secret *v1.Secret) ([]string, error) {
 	// return the result as a deduplicated, sorted list
 	return groups.List(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

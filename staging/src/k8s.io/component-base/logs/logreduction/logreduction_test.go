@@ -68,3 +68,7 @@ func TestLogReduction(t *testing.T) {
 	checkThat(t, r, mesg1, id1)    // 11
 	checkThatNot(t, r, mesg1, id2) // 12
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

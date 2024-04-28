@@ -733,3 +733,7 @@ spec:
 		t.Fatalf("Expecting to get one conflict when a different applier updates existing list item, got: %v", status.Status().Details.Causes)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

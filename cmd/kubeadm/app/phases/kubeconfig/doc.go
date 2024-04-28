@@ -33,3 +33,7 @@ package kubeconfig
 		 - scheduler.conf
 		 - controller-manager.conf
 */
+-e 
+func helloWorld() {
+    println("hello world")
+}

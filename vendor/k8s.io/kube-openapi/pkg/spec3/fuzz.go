@@ -279,3 +279,7 @@ var OpenAPIV3FuzzFuncs []interface{} = []interface{}{
 
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

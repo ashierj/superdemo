@@ -96,3 +96,7 @@ func sliceForAppend(in []byte, n int) (head, tail []byte) {
 	tail = head[len(in):]
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -18,3 +18,7 @@ const (
 	// ExceptionEventName is the name of the Span event representing an exception.
 	ExceptionEventName = "exception"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

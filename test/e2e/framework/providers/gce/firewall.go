@@ -255,3 +255,7 @@ func WaitForFirewallRule(ctx context.Context, gceCloud *gcecloud.Cloud, fwName s
 	}
 	return fw, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -583,3 +583,7 @@ func CreateNewVersionedScaleClient(crd *apiextensionsv1.CustomResourceDefinition
 
 	return scale.NewForConfig(config, restMapper, dynamic.LegacyAPIPathResolverFunc, resolver)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

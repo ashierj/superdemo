@@ -114,3 +114,7 @@ func TestAdmissionOptionsAddFlags(t *testing.T) {
 	assert.Equal(t, opts.GenericAdmission.ConfigFile, "admission_control_config.yaml")
 	assert.Equal(t, opts.GenericAdmission.EnablePlugins, []string{"foo", "bar", "baz"})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

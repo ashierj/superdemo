@@ -102,3 +102,7 @@ func DeletePodWithGracePeriodByName(ctx context.Context, c clientset.Interface, 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

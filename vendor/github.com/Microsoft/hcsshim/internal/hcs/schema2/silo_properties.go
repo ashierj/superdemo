@@ -15,3 +15,7 @@ type SiloProperties struct {
 
 	JobName string `json:"JobName,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

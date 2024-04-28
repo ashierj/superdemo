@@ -1069,3 +1069,7 @@ func parseBackendFreelistType(freelistType string) bolt.FreelistType {
 
 	return bolt.FreelistMapType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -414,3 +414,7 @@ func (mcs multipleControls) Control(network, addr string, conn syscall.RawConn) 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -361,3 +361,7 @@ func (s *DefaultStorageFactory) ResourcePrefix(groupResource schema.GroupResourc
 
 	return etcdResourcePrefix
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

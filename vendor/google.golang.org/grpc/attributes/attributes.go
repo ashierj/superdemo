@@ -139,3 +139,7 @@ func str(x any) (s string) {
 func (a *Attributes) MarshalJSON() ([]byte, error) {
 	return []byte(a.String()), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

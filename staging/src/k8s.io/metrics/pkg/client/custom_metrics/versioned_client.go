@@ -290,3 +290,7 @@ func (m *namespacedMetrics) GetForObjects(groupKind schema.GroupKind, selector l
 	}
 	return res, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

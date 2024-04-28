@@ -9,3 +9,7 @@ import "sigs.k8s.io/kustomize/kyaml/yaml"
 func (l Walker) walkScalar() (*yaml.RNode, error) {
 	return l.VisitScalar(l.Sources, l.Schema)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

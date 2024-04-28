@@ -140,3 +140,7 @@ func (p *zipFS) lsZip(r *zip.Reader) map[string]bool {
 	}
 	return ssMap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

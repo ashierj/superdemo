@@ -28,3 +28,7 @@ func ConvertToZapLevel(lvl string) zapcore.Level {
 	}
 	return level
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

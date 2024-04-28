@@ -40,3 +40,7 @@ func StartedByExplorer() bool {
 	}
 	return "explorer.exe" == syscall.UTF16ToString(pe.ExeFile[:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

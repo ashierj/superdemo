@@ -164,3 +164,7 @@ func retryAfterSent(resp *http.Response) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

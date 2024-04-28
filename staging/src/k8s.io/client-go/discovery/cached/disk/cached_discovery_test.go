@@ -816,3 +816,7 @@ func groupVersionsFromGroups(groups *metav1.APIGroupList) []string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

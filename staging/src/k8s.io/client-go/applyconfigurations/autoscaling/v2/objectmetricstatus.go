@@ -55,3 +55,7 @@ func (b *ObjectMetricStatusApplyConfiguration) WithDescribedObject(value *CrossV
 	b.DescribedObject = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

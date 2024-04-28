@@ -215,3 +215,7 @@ func (s *sparseBlocks) lookup(n uint32, b byte) uint16 {
 // lastRuneForTesting is the last rune used for testing. Everything after this
 // is boring.
 const lastRuneForTesting = rune(0x1FFFF)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2112,3 +2112,7 @@ func TestAdmitAllowDecreaseUsageWithoutCoveringQuota(t *testing.T) {
 		t.Errorf("Expected no error for decreasing a limited resource without quota, got %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

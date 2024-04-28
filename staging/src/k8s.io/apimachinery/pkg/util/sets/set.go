@@ -240,3 +240,7 @@ func (s Set[T]) Len() int {
 func less[T cmp.Ordered](lhs, rhs T) bool {
 	return lhs < rhs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

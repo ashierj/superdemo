@@ -123,3 +123,7 @@ func GetControlPlaneImages(cfg *kubeadmapi.ClusterConfiguration) []string {
 func GetPauseImage(cfg *kubeadmapi.ClusterConfiguration) string {
 	return GetGenericImage(cfg.ImageRepository, "pause", constants.PauseVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

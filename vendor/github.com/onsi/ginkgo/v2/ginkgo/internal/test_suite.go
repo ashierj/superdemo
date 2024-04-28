@@ -282,3 +282,7 @@ func filesHaveGinkgoSuite(dir string, files []os.DirEntry) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

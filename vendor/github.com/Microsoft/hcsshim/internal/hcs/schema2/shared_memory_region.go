@@ -20,3 +20,7 @@ type SharedMemoryRegion struct {
 
 	HiddenFromGuest bool `json:"HiddenFromGuest,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

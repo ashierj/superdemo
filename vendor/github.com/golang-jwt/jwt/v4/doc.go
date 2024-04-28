@@ -2,3 +2,7 @@
 //
 // See README.md for more info.
 package jwt
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -12,3 +12,7 @@ package hcsschema
 type ContainerCredentialGuardSystemInfo struct {
 	Instances []ContainerCredentialGuardInstance `json:"Instances,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

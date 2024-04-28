@@ -101,3 +101,7 @@ func autoConvert_config_NodeLifecycleControllerConfiguration_To_v1alpha1_NodeLif
 	out.UnhealthyZoneThreshold = in.UnhealthyZoneThreshold
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -333,3 +333,7 @@ func (utf8Validator) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err
 	}
 	return n, n, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

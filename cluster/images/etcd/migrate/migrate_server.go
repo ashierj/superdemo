@@ -131,3 +131,7 @@ func (r *EtcdMigrateServer) Stop() error {
 	klog.Infof("Stopped etcd server %s", r.cfg.name)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

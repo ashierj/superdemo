@@ -209,3 +209,7 @@ func (d Double) Type() ref.Type {
 func (d Double) Value() any {
 	return float64(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

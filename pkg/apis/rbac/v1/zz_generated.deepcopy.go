@@ -42,3 +42,7 @@ func (in SortableRuleSlice) DeepCopy() SortableRuleSlice {
 	in.DeepCopyInto(out)
 	return *out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -53,3 +53,7 @@ func DefaultNormalizeScore(maxPriority int64, reverse bool, scores framework.Nod
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

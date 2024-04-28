@@ -217,3 +217,7 @@ func (b *ExampleApplyConfiguration) WithStatus(value *ExampleStatusApplyConfigur
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

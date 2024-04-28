@@ -42,3 +42,7 @@ type ParseResult struct {
 	Config Config
 	Err    error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func (b *GitRepoVolumeSourceApplyConfiguration) WithDirectory(value string) *Git
 	b.Directory = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

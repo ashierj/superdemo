@@ -276,3 +276,7 @@ func (in *JSONSchemaProps) DeepCopy() *JSONSchemaProps {
 
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

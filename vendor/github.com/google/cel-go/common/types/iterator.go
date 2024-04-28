@@ -53,3 +53,7 @@ func (*baseIterator) Type() ref.Type {
 func (*baseIterator) Value() any {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

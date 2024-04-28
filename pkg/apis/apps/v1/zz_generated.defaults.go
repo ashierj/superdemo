@@ -1150,3 +1150,7 @@ func SetObjectDefaults_StatefulSetList(in *v1.StatefulSetList) {
 		SetObjectDefaults_StatefulSet(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

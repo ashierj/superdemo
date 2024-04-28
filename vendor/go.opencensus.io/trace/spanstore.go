@@ -306,3 +306,7 @@ func (s *spanStore) finished(span SpanInterface, sd *SpanData) {
 	}
 	s.mu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

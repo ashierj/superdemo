@@ -347,3 +347,7 @@ func (r *ByteReader) decode(originalYAML string, index int, decoder *yaml.Decode
 	}
 	return n, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

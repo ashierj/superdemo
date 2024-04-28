@@ -332,3 +332,7 @@ func (f *FakeIPTables) Present() bool {
 }
 
 var _ = iptables.Interface(&FakeIPTables{})
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -137,3 +137,7 @@ var _ = sigDescribe(feature.GPUDevicePlugin, "Device Plugin", skipUnlessWindows(
 		framework.ExpectNoError(envVarDirectxGpuNameErr, "failed: didn't find expected environment variable.")
 	})
 }))
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -259,3 +259,7 @@ func (b *ClusterRoleApplyConfiguration) WithAggregationRule(value *AggregationRu
 	b.AggregationRule = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

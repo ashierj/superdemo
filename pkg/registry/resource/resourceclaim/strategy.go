@@ -163,3 +163,7 @@ func toSelectableFields(claim *resource.ResourceClaim) fields.Set {
 	fields := generic.ObjectMetaFieldsSet(&claim.ObjectMeta, true)
 	return fields
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

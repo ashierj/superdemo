@@ -92,3 +92,7 @@ func StdTimeUnmarshal(t *time.Time, data []byte) error {
 	*t = tt
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

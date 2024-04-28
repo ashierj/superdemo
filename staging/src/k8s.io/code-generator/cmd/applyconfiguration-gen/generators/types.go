@@ -31,3 +31,7 @@ var (
 	yamlObject         = types.Ref("sigs.k8s.io/structured-merge-diff/v4/typed", "YAMLObject")
 	yamlUnmarshal      = types.Ref("gopkg.in/yaml.v2", "Unmarshal")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

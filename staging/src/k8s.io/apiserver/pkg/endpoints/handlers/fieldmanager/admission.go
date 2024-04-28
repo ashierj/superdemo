@@ -88,3 +88,7 @@ func (admit *managedFieldsValidatingAdmissionController) Validate(ctx context.Co
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1228,3 +1228,7 @@ func FormatCloseMessage(closeCode int, text string) []byte {
 	copy(buf[2:], text)
 	return buf
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

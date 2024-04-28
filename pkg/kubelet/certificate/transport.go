@@ -183,3 +183,7 @@ func addCertRotation(stopCh <-chan struct{}, period time.Duration, clientConfig 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

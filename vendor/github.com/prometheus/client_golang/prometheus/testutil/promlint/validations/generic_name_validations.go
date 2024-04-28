@@ -99,3 +99,7 @@ func LintUnitAbbreviations(mf *dto.MetricFamily) []error {
 	}
 	return problems
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

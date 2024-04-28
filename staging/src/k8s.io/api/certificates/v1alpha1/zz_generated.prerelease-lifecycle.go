@@ -56,3 +56,7 @@ func (in *ClusterTrustBundleList) APILifecycleDeprecated() (major, minor int) {
 func (in *ClusterTrustBundleList) APILifecycleRemoved() (major, minor int) {
 	return 1, 32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -85,3 +85,7 @@ func (in *LimitedResource) DeepCopy() *LimitedResource {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

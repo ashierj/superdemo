@@ -27,3 +27,7 @@ func init() {
 func newProvider() (framework.ProviderInterface, error) {
 	return &framework.NullProvider{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

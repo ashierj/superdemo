@@ -87,3 +87,7 @@ func (f *flowSchemaInformer) Informer() cache.SharedIndexInformer {
 func (f *flowSchemaInformer) Lister() v1.FlowSchemaLister {
 	return v1.NewFlowSchemaLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

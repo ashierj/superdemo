@@ -136,3 +136,7 @@ func List() []Cap {
 		CAP_CHECKPOINT_RESTORE,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

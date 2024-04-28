@@ -150,3 +150,7 @@ var _ = SIGDescribe("SubjectReview", func() {
 		framework.Logf("LocalSubjectAccessReview has been verified")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -196,3 +196,7 @@ func (e *namedChannelWrapper) Signaled() <-chan struct{} {
 func (e *namedChannelWrapper) Name() string {
 	return e.name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

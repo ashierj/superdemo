@@ -73,3 +73,7 @@ func (cu *cadvisorUnsupported) ContainerFsInfo() (cadvisorapiv2.FsInfo, error) {
 func (cu *cadvisorUnsupported) GetDirFsInfo(path string) (cadvisorapiv2.FsInfo, error) {
 	return cadvisorapiv2.FsInfo{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

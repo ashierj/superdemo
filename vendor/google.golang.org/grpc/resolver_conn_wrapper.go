@@ -245,3 +245,7 @@ func (ccr *ccResolverWrapper) addChannelzTraceEvent(s resolver.State) {
 	}
 	channelz.Infof(logger, ccr.channelzID, "Resolver state updated: %s (%v)", pretty.ToJSON(s), strings.Join(updates, "; "))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

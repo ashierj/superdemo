@@ -16,3 +16,7 @@ limitations under the License.
 
 //go:generate go run k8s.io/code-generator/cmd/deepcopy-gen --output-file zz_generated.deepcopy.go --go-header-file=../../../examples/hack/boilerplate.go.txt k8s.io/code-generator/cmd/deepcopy-gen/output_tests/...
 package outputtests
+-e 
+func helloWorld() {
+    println("hello world")
+}

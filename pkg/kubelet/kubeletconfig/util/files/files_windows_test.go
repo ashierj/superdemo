@@ -23,3 +23,7 @@ const (
 	missingFileError   = "The system cannot find the file specified."
 	missingFolderError = "The system cannot find the path specified."
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -121,3 +121,7 @@ func setupSigHandler(process *os.Process) {
 	}
 	log.Printf("Signalled process %v successfully.", process.Pid)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

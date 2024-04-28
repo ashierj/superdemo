@@ -158,3 +158,7 @@ func getKindContainerName() string {
 func prettyCmd(cmd *exec.Cmd) string {
 	return fmt.Sprintf("%s %s", cmd.Path, strings.Join(cmd.Args, " "))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

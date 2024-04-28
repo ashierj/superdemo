@@ -35,3 +35,7 @@ func modeTypeFromDirent(de *syscall.Dirent, osDirname, osBasename string) (os.Fi
 		return modeType(filepath.Join(osDirname, osBasename))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

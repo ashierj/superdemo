@@ -183,3 +183,7 @@ func TestContextNoPanic(t *testing.T) {
 	SpanFromContext(ctx).AddEvent("foo")
 	SpanFromContext(ctx).End(time.Minute)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

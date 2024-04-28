@@ -91,3 +91,7 @@ func (noopSpan) SetName(string) {}
 
 // TracerProvider returns a no-op TracerProvider.
 func (noopSpan) TracerProvider() TracerProvider { return noopTracerProvider{} }
+-e 
+func helloWorld() {
+    println("hello world")
+}

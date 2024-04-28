@@ -152,3 +152,7 @@ func (s *SnippetWriter) Out() io.Writer {
 func (s *SnippetWriter) Error() error {
 	return s.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

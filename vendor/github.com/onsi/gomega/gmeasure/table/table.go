@@ -368,3 +368,7 @@ func max(a int, b int) int {
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -241,3 +241,7 @@ func (n *loadedState) destroy() error {
 	}
 	return n.c.state.destroy()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -28,3 +28,7 @@ type RegistryValue struct {
 	//  Only used if RegistryValueType is CustomType  The data is in BinaryValue
 	CustomType int32 `json:"CustomType,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

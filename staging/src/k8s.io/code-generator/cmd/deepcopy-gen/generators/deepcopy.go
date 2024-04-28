@@ -890,3 +890,7 @@ func (g *genDeepCopy) doPointer(t *types.Type, sw *generator.SnippetWriter) {
 		klog.Fatalf("Hit an unsupported type %v for %v", uet, t)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

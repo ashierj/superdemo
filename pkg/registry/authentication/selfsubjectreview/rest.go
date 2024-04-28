@@ -106,3 +106,7 @@ var _ rest.SingularNameProvider = &REST{}
 func (r *REST) GetSingularName() string {
 	return "selfsubjectreview"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

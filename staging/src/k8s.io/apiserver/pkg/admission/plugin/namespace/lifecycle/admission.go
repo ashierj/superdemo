@@ -231,3 +231,7 @@ var accessReviewResources = map[schema.GroupResource]bool{
 func isAccessReview(a admission.Attributes) bool {
 	return accessReviewResources[a.GetResource().GroupResource()]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

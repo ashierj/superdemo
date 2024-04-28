@@ -94,3 +94,7 @@ func TestFakeClient(t *testing.T) {
 		t.Error("Informer did not get the added pod")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

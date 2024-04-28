@@ -278,3 +278,7 @@ func WriteLog(host, filename, content string) error {
 	_, err = f.WriteString(content)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

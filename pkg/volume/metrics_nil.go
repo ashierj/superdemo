@@ -33,3 +33,7 @@ func (*MetricsNil) SupportsMetrics() bool {
 func (*MetricsNil) GetMetrics() (*Metrics, error) {
 	return &Metrics{}, NewNotSupportedError()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

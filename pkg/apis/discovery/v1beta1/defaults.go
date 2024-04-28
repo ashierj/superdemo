@@ -40,3 +40,7 @@ func SetDefaults_EndpointPort(obj *discoveryv1beta1.EndpointPort) {
 		obj.Protocol = &defaultProtocol
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

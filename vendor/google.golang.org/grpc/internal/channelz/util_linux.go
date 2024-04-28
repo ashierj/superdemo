@@ -35,3 +35,7 @@ func GetSocketOption(socket any) *SocketOptionData {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -82,3 +82,7 @@ func (c *RolloutPauseRESTClient) Get() *restclient.Request {
 func (c *RolloutPauseRESTClient) Patch(pt types.PatchType) *restclient.Request {
 	return c.RESTClient.Verb("PATCH")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

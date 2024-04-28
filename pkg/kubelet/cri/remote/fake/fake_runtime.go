@@ -366,3 +366,7 @@ func (f *RemoteRuntime) RuntimeConfig(ctx context.Context, req *kubeapi.RuntimeC
 
 	return resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

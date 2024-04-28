@@ -40,3 +40,7 @@ func FamiliarMatch(pattern string, ref Reference) (bool, error) {
 	}
 	return matched, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

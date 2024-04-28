@@ -329,3 +329,7 @@ func (t *fakeTimer) Reset(d time.Duration) bool {
 	}
 	return active
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

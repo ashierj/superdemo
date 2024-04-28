@@ -55,3 +55,7 @@ func (w crlfWriter) Write(b []byte) (n int, err error) {
 		i = next + 1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

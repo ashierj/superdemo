@@ -69,3 +69,7 @@ func (b *MetricTargetApplyConfiguration) WithAverageUtilization(value int32) *Me
 	b.AverageUtilization = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

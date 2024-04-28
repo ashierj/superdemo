@@ -27,3 +27,7 @@ func TestApps(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Apps Suite")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

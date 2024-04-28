@@ -182,3 +182,7 @@ func ExperimentalChecks() []Check {
 	}
 	return retval
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -517,3 +517,7 @@ func (w *Walker) WalkRoot(swagger *spec.Swagger) *spec.Swagger {
 
 	return swagger
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

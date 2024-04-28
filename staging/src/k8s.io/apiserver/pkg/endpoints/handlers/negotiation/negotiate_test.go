@@ -307,3 +307,7 @@ func BenchmarkNegotiateMediaTypeOptions(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

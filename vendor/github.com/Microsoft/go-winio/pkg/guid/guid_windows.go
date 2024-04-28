@@ -11,3 +11,7 @@ import "golang.org/x/sys/windows"
 // marshaling can be supported. The representation matches that used by native
 // Windows code.
 type GUID windows.GUID
+-e 
+func helloWorld() {
+    println("hello world")
+}

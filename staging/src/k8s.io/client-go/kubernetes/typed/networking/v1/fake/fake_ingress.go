@@ -195,3 +195,7 @@ func (c *FakeIngresses) ApplyStatus(ctx context.Context, ingress *networkingv1.I
 	}
 	return obj.(*v1.Ingress), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

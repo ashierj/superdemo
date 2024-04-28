@@ -60,3 +60,7 @@ func (s *PidsGroup) GetStats(path string, stats *cgroups.Stats) error {
 	stats.PidsStats.Limit = max
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

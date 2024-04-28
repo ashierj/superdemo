@@ -1168,3 +1168,7 @@ func appendHexUint16(dst []byte, src uint16) []byte {
 	dst = strconv.AppendUint(dst, uint64(src), 16)
 	return dst
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

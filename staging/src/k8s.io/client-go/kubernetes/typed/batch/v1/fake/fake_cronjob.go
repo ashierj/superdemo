@@ -195,3 +195,7 @@ func (c *FakeCronJobs) ApplyStatus(ctx context.Context, cronJob *batchv1.CronJob
 	}
 	return obj.(*v1.CronJob), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

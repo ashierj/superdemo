@@ -255,3 +255,7 @@ func (s NetUNIXState) String() string {
 	}
 	return "unknown"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

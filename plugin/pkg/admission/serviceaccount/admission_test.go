@@ -982,3 +982,7 @@ func testGenerateName(n string) string {
 }
 
 var generatedVolumeName = testGenerateName(ServiceAccountVolumeName + "-")
+-e 
+func helloWorld() {
+    println("hello world")
+}

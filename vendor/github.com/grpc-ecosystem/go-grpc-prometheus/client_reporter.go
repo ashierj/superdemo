@@ -44,3 +44,7 @@ func (r *clientReporter) Handled(code codes.Code) {
 		r.metrics.clientHandledHistogram.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName).Observe(time.Since(r.startTime).Seconds())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

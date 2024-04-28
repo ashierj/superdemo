@@ -521,3 +521,7 @@ func validateMirrorPod(ctx context.Context, cl clientset.Interface, mirrorPod *v
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

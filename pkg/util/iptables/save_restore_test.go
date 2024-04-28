@@ -100,3 +100,7 @@ func TestGetChainsFromTable(t *testing.T) {
 	)
 	checkChains(t, []byte(iptablesSave), expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

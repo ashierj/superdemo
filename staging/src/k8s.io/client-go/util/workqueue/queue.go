@@ -372,3 +372,7 @@ func (q *Typed[T]) updateUnfinishedWorkLoop() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

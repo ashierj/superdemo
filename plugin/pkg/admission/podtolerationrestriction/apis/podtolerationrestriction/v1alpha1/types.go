@@ -33,3 +33,7 @@ type Configuration struct {
 	// cluster level whitelist of tolerations
 	Whitelist []v1.Toleration `json:"whitelist,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

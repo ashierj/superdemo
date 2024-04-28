@@ -44,3 +44,7 @@ func NewGenerationBehavior(s string) GenerationBehavior {
 		return BehaviorUnspecified
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

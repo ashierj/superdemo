@@ -25,3 +25,7 @@ import (
 
 func (f *KubeletFlags) addOSFlags(fs *pflag.FlagSet) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ func RecommendedDefaultNodeLifecycleControllerConfiguration(obj *kubectrlmgrconf
 		obj.NodeStartupGracePeriod = metav1.Duration{Duration: 60 * time.Second}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -61,3 +61,7 @@ func (b *NodeSelectorRequirementApplyConfiguration) WithValues(values ...string)
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

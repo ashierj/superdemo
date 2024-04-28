@@ -153,3 +153,7 @@ type nonCancellableRoundTripper struct{}
 func (rtc *nonCancellableRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

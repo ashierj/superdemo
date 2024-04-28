@@ -497,3 +497,7 @@ func copyPods(sourcePods []*v1.Pod) []*v1.Pod {
 	}
 	return pods
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

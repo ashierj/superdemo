@@ -229,3 +229,7 @@ func (bb *bucketBuffer) Copy() *bucketBuffer {
 	copy(bbCopy.buf, bb.buf)
 	return &bbCopy
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

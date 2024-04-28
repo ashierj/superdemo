@@ -63,3 +63,7 @@ func (matcher *HaveEachMatcher) FailureMessage(actual interface{}) (message stri
 func (matcher *HaveEachMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to contain element matching", matcher.Element)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

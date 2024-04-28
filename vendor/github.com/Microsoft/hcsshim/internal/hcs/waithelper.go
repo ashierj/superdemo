@@ -66,3 +66,7 @@ func waitForNotification(ctx context.Context, callbackNumber uintptr, expectedNo
 		return ErrTimeout
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

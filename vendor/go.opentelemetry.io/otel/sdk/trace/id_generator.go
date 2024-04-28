@@ -75,3 +75,7 @@ func defaultIDGenerator() IDGenerator {
 	gen.randSource = rand.New(rand.NewSource(rngSeed))
 	return gen
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -272,3 +272,7 @@ func estimateMaxAdditionalPropertiesFromMinSize(minSize int64) int64 {
 	// subtract 2 to account for { and }
 	return (maxRequestSizeBytes - 2) / keyValuePairSize
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

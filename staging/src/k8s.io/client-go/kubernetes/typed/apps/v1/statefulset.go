@@ -314,3 +314,7 @@ func (c *statefulSets) ApplyScale(ctx context.Context, statefulSetName string, s
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

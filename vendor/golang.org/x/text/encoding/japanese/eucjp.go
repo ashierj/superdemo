@@ -223,3 +223,7 @@ func init() {
 		panic("bad numEncodeTables")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

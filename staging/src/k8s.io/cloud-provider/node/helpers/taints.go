@@ -243,3 +243,7 @@ func deleteTaint(taints []v1.Taint, taintToDelete *v1.Taint) ([]v1.Taint, bool) 
 	}
 	return newTaints, deleted
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

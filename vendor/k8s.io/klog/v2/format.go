@@ -63,3 +63,7 @@ func (f formatAny) MarshalLog() interface{} {
 
 var _ fmt.Stringer = formatAny{}
 var _ logr.Marshaler = formatAny{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

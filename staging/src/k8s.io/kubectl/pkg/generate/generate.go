@@ -205,3 +205,7 @@ func GetBool(params map[string]string, key string, defValue bool) (bool, error) 
 		return strconv.ParseBool(val)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

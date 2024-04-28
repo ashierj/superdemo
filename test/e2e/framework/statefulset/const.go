@@ -28,3 +28,7 @@ const (
 	// StatefulPodTimeout is a timeout for stateful pods to change state
 	StatefulPodTimeout = 5 * time.Minute
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

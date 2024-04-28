@@ -176,3 +176,7 @@ func TestCronJobLaunchesPodAndCleansUp(t *testing.T) {
 
 	validateJobAndPod(t, clientSet, namespaceName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

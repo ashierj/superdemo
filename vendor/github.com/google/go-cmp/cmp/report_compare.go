@@ -431,3 +431,7 @@ func coalesceAdjacentRecords(name string, recs []reportRecord) (groups []diffSta
 	}
 	return groups
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

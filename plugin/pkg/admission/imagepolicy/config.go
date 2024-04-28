@@ -88,3 +88,7 @@ func normalizeConfigDuration(name string, scale, value, min, max, defaultValue t
 	}
 	return value, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -308,3 +308,7 @@ type DeviceUnmounter interface {
 	// unmounted.
 	UnmountDevice(deviceMountPath string) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

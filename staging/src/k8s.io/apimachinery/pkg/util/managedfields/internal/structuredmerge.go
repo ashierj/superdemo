@@ -187,3 +187,7 @@ func (f *structuredMergeManager) toVersioned(obj runtime.Object) (runtime.Object
 func (f *structuredMergeManager) toUnversioned(obj runtime.Object) (runtime.Object, error) {
 	return f.objectConverter.ConvertToVersion(obj, f.hubVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -317,3 +317,7 @@ func _hcsSetupBaseOSVolume(layerPath *uint16, volumePath *uint16, options *uint1
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

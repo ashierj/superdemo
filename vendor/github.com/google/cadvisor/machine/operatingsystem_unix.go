@@ -52,3 +52,7 @@ func getOperatingSystem() (string, error) {
 	}
 	return "Linux", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

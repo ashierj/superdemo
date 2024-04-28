@@ -234,3 +234,7 @@ func makeNginxPod(ns string, nodeSelector map[string]string, pvclaims []*v1.Pers
 	}
 	return podSpec
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

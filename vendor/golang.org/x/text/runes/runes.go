@@ -353,3 +353,7 @@ func (t replaceIllFormed) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int
 	}
 	return nDst, nSrc, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

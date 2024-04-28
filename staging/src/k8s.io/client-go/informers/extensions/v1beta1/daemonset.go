@@ -88,3 +88,7 @@ func (f *daemonSetInformer) Informer() cache.SharedIndexInformer {
 func (f *daemonSetInformer) Lister() v1beta1.DaemonSetLister {
 	return v1beta1.NewDaemonSetLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -277,3 +277,7 @@ func TestDeleteMultiSync(t *testing.T) {
 	_, ctx := ktesting.NewTestContext(t)
 	runMultisyncTests(t, ctx, tests, []*storage.StorageClass{}, "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

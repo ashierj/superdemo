@@ -373,3 +373,7 @@ func EnsureNotReparsePointRelative(path string, root *os.File) error {
 	f.Close()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

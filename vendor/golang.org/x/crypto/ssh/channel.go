@@ -643,3 +643,7 @@ func (ch *channel) ChannelType() string {
 func (ch *channel) ExtraData() []byte {
 	return ch.extraData
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

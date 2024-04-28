@@ -64,3 +64,7 @@ func TestSortableEvents(t *testing.T) {
 		t.Fatal("List is not sorted by time. List: ", list)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

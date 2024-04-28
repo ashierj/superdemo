@@ -216,3 +216,7 @@ func computeTermSetInternal(t types.Type, seen map[types.Type]*termSet, depth in
 func under(t types.Type) types.Type {
 	return t.Underlying()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

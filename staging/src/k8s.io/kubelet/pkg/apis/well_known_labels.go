@@ -85,3 +85,7 @@ func getLabelNamespace(key string) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

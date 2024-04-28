@@ -111,3 +111,7 @@ func TestMetricsDuRequireRealDirectory(t *testing.T) {
 		t.Errorf("Expected error when calling GetMetrics on incorrectly initialized MetricsDu, actual nil")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

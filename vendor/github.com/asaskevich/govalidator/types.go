@@ -634,3 +634,7 @@ var ISO693List = []ISO693Entry{
 	{Alpha3bCode: "zha", Alpha2Code: "za", English: "Zhuang; Chuang"},
 	{Alpha3bCode: "zul", Alpha2Code: "zu", English: "Zulu"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

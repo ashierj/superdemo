@@ -230,3 +230,7 @@ func (g *GUID) UnmarshalText(text []byte) error {
 	*g = g2
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

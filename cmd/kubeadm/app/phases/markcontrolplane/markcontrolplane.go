@@ -73,3 +73,7 @@ func markControlPlaneNode(n *v1.Node, taints []v1.Taint) {
 
 	n.Spec.Taints = taints
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

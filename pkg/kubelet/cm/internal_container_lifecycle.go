@@ -54,3 +54,7 @@ func (i *internalContainerLifecycleImpl) PreStartContainer(pod *v1.Pod, containe
 func (i *internalContainerLifecycleImpl) PostStopContainer(containerID string) error {
 	return i.topologyManager.RemoveContainer(containerID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

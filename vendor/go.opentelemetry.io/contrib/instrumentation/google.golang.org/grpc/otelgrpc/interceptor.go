@@ -587,3 +587,7 @@ func serverStatus(grpcStatus *status.Status) (codes.Code, string) {
 		return codes.Unset, ""
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

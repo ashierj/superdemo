@@ -97,3 +97,7 @@ func createGCESecrets(client clientset.Interface, ns string) {
 		framework.ExpectNoError(err, "Failed to create Secret %v", s.GetName())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

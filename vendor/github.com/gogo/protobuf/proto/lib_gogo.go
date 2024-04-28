@@ -48,3 +48,7 @@ func MarshalJSONEnum(m map[int32]string, value int32) ([]byte, error) {
 	}
 	return json.Marshal(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -86,3 +86,7 @@ func (b *ValidationRuleApplyConfiguration) WithOptionalOldSelf(value bool) *Vali
 	b.OptionalOldSelf = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

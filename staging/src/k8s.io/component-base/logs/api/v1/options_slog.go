@@ -35,3 +35,7 @@ func setSlogDefaultLogger() {
 	handler := logr.ToSlogHandler(klog.Background())
 	slog.SetDefault(slog.New(handler))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

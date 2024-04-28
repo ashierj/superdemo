@@ -1012,3 +1012,7 @@ func makeTestEndpointSlice(namespace, name string, sliceNum int, epsFunc func(*d
 	epsFunc(eps)
 	return eps
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

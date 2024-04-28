@@ -193,3 +193,7 @@ func TestAdmissionWithLatentCache(t *testing.T) {
 		t.Errorf("expected create namespace action")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

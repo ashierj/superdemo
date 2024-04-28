@@ -1610,3 +1610,7 @@ func SanitizedAnchorName(text string) string {
 	}
 	return string(anchorName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

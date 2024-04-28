@@ -451,3 +451,7 @@ func removeMetricsForPods(metrics metricsclient.PodMetricsInfo, pods sets.String
 		delete(metrics, pod)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

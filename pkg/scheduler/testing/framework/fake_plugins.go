@@ -290,3 +290,7 @@ func NewEqualPrioritizerPlugin() frameworkruntime.PluginFactory {
 		}, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

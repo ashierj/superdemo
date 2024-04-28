@@ -271,3 +271,7 @@ func IsStandardContainerResourceName(str string) bool {
 func IsHugePageResourceName(name corev1.ResourceName) bool {
 	return strings.HasPrefix(string(name), corev1.ResourceHugePagesPrefix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -57,3 +57,7 @@ func (f *fallbackQueryParamVerifier) HasSupport(gvk schema.GroupVersionKind) err
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

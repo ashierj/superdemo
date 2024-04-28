@@ -43,3 +43,7 @@ func Register() {
 		legacyregistry.MustRegister(GarbageCollectorResourcesSyncError)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

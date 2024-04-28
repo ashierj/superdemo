@@ -32,3 +32,7 @@ func Print(v ...interface{}) {
 func Printf(format string, v ...interface{}) {
 	Logger.Printf(format, v...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

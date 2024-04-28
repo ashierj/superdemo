@@ -67,3 +67,7 @@ var _ = SIGDescribe("ImageCredentialProvider", feature.KubeletCredentialProvider
 		podClient.CreateSync(ctx, pod)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

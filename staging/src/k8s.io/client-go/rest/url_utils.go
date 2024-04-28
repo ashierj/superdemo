@@ -95,3 +95,7 @@ func DefaultServerUrlFor(config *Config) (*url.URL, string, error) {
 	}
 	return DefaultServerURL(host, config.APIPath, schema.GroupVersion{}, defaultTLS)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

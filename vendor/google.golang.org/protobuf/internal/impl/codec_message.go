@@ -215,3 +215,7 @@ func (mi *MessageInfo) mutableUnknownBytes(p pointer) *[]byte {
 		return p.Apply(mi.unknownOffset).Bytes()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

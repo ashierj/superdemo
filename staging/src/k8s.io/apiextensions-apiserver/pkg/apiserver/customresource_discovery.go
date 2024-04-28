@@ -125,3 +125,7 @@ func splitPath(path string) []string {
 	}
 	return strings.Split(path, "/")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

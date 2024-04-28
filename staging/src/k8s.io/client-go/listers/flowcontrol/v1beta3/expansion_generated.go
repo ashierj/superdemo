@@ -25,3 +25,7 @@ type FlowSchemaListerExpansion interface{}
 // PriorityLevelConfigurationListerExpansion allows custom methods to be added to
 // PriorityLevelConfigurationLister.
 type PriorityLevelConfigurationListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

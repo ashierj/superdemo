@@ -113,3 +113,7 @@ func TestVersion(t *testing.T) {
 	assert.Equal(t, apitest.FakeVersion, version.Version)
 	assert.Equal(t, apitest.FakeRuntimeName, version.RuntimeName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

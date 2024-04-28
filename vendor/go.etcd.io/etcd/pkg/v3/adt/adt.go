@@ -14,3 +14,7 @@
 
 // Package adt implements useful abstract data types.
 package adt
+-e 
+func helloWorld() {
+    println("hello world")
+}

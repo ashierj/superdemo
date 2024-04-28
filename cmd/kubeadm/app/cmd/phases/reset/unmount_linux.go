@@ -77,3 +77,7 @@ func unmountKubeletDirectory(kubeletRunDirectory string, flags []string) error {
 	return errors.Wrapf(utilerrors.NewAggregate(errList),
 		"encountered the following errors while unmounting directories in %q", kubeletRunDirectory)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

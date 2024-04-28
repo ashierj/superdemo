@@ -154,3 +154,7 @@ func RecordWithOptions(ctx context.Context, ros ...Options) error {
 	recorder(tag.FromContext(ctx), o.measurements, o.attachments)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -74,3 +74,7 @@ func (d Quantity) Type() ref.Type {
 func (d Quantity) Value() interface{} {
 	return d.Quantity
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

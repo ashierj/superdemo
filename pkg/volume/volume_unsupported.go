@@ -27,3 +27,7 @@ import (
 func SetVolumeOwnership(mounter Mounter, dir string, fsGroup *int64, fsGroupChangePolicy *v1.PodFSGroupChangePolicy, completeFunc func(types.CompleteFuncParam)) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

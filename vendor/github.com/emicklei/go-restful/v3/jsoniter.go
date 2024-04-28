@@ -10,3 +10,7 @@ var (
 	NewDecoder    = json.NewDecoder
 	NewEncoder    = json.NewEncoder
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

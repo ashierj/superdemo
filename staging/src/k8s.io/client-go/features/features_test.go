@@ -38,3 +38,7 @@ func (f *fakeRegistry) Add(specs map[Feature]FeatureSpec) error {
 	f.specs = specs
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

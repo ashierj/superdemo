@@ -72,3 +72,7 @@ func (s *statsNotSupported) UsedSize(volumeID string) (uint64, error) {
 func (s *statsNotSupported) GetActiveRequests() (*api.ActiveRequests, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

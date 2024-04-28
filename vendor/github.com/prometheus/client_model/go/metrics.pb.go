@@ -1397,3 +1397,7 @@ func file_io_prometheus_client_metrics_proto_init() {
 	file_io_prometheus_client_metrics_proto_goTypes = nil
 	file_io_prometheus_client_metrics_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

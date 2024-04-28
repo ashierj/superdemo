@@ -59,3 +59,7 @@ func (lm *lruMap) add(key, value interface{}) {
 func (lm *lruMap) get(key interface{}) (interface{}, bool) {
 	return lm.cache.Get(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

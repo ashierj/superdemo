@@ -225,3 +225,7 @@
 //
 // Use of compression is experimental and may result in decreased performance.
 package websocket
+-e 
+func helloWorld() {
+    println("hello world")
+}

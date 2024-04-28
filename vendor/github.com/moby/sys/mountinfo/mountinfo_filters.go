@@ -61,3 +61,7 @@ func FSTypeFilter(fstype ...string) FilterFunc {
 		return true, false // skip, keep going
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

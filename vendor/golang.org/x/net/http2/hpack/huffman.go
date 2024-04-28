@@ -224,3 +224,7 @@ func HuffmanEncodeLength(s string) uint64 {
 	}
 	return (n + 7) / 8
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

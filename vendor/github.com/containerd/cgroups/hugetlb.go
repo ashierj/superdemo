@@ -107,3 +107,7 @@ func (h *hugetlbController) readSizeStat(path, size string) (*v1.HugetlbStat, er
 	}
 	return &s, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

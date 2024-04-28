@@ -1215,3 +1215,7 @@ func unquoteBytes(s []byte) (t []byte, ok bool) {
 	}
 	return b[0:w], true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

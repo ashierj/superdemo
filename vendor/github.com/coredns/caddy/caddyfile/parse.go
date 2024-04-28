@@ -488,3 +488,7 @@ func (p *parser) snippetTokens() ([]Token, error) {
 	}
 	return tokens, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

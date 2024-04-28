@@ -83,3 +83,7 @@ func IsDefaultAnnotation(obj metav1.ObjectMeta) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ func (con EtcdConnection) CheckEtcdServers() (done bool, err error) {
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

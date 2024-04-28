@@ -306,3 +306,7 @@ var _ = SIGDescribe("Checkpoint Container", nodefeature.CheckpointContainer, fun
 		gomega.Expect(checkpointContainerErrorMetric).To(gomega.Equal(0))
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

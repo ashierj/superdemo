@@ -25,3 +25,7 @@ type GeneratorArgs struct {
 	// Local overrides to global generatorOptions field.
 	Options *GeneratorOptions `json:"options,omitempty" yaml:"options,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

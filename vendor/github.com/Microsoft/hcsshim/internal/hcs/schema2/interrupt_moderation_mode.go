@@ -40,3 +40,7 @@ var InterruptModerationValueToName = map[InterruptModerationValue]InterruptModer
 	MediumValue:   MediumName,
 	HighValue:     HighName,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

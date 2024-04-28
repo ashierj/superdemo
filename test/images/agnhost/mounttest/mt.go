@@ -203,3 +203,7 @@ func testFileContent(filePath string, retryDuration int, breakOnExpectedContent 
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

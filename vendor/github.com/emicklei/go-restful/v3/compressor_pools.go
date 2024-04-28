@@ -89,3 +89,7 @@ func newZlibWriter() *zlib.Writer {
 	}
 	return writer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

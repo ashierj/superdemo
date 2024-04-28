@@ -66,3 +66,7 @@ func (dec *messageDecoder) decodeLimit(numBytes uint64) (raftpb.Message, error) 
 	}
 	return m, m.Unmarshal(buf)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

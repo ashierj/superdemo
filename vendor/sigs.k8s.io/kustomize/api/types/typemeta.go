@@ -9,3 +9,7 @@ type TypeMeta struct {
 	Kind       string `json:"kind,omitempty" yaml:"kind,omitempty"`
 	APIVersion string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -195,3 +195,7 @@ func (c *FakeDeployments) ApplyStatus(ctx context.Context, deployment *appsv1bet
 	}
 	return obj.(*v1beta1.Deployment), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

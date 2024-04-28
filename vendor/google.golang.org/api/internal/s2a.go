@@ -134,3 +134,7 @@ func (c *mtlsConfig) Valid() bool {
 func (c *mtlsConfig) expired() bool {
 	return c.Expiry.Before(time.Now())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

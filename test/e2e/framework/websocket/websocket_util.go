@@ -78,3 +78,7 @@ func headersForConfig(c *restclient.Config, url *url.URL) (http.Header, error) {
 	}
 	return extract.Header, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

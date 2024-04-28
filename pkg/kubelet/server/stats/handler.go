@@ -181,3 +181,7 @@ func handleError(response *restful.Response, request string, err error) {
 		response.WriteErrorString(http.StatusInternalServerError, msg)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

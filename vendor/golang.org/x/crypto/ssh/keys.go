@@ -1726,3 +1726,7 @@ func FingerprintSHA256(pubKey PublicKey) string {
 	hash := base64.RawStdEncoding.EncodeToString(sha256sum[:])
 	return "SHA256:" + hash
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

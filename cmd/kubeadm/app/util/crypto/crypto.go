@@ -74,3 +74,7 @@ func DecryptBytes(data, key []byte) ([]byte, error) {
 	}
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

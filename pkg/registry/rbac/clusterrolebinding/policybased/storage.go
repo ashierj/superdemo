@@ -137,3 +137,7 @@ func (s *Storage) GetSingularName() string {
 	}
 	return snp.GetSingularName()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

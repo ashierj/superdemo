@@ -261,3 +261,7 @@ type PathProps struct {
 	// Parameters a list of parameters that are applicable for this operation
 	Parameters []*Parameter `json:"parameters,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

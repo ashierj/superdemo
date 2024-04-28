@@ -422,3 +422,7 @@ func TestCollectResourceMetrics(t *testing.T) {
 func uint64Ptr(u uint64) *uint64 {
 	return &u
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

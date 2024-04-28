@@ -7,3 +7,7 @@ type HugepageLimit struct {
 	// usage limit for hugepage.
 	Limit uint64 `json:"limit"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

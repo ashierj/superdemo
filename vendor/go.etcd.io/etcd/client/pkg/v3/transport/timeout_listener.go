@@ -43,3 +43,7 @@ func (rwln *rwTimeoutListener) Accept() (net.Conn, error) {
 		readTimeout:  rwln.readTimeout,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -439,3 +439,7 @@ func Test_protocolToString(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

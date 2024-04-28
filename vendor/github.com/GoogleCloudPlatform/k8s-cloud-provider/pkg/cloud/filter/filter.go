@@ -319,3 +319,7 @@ func extractValue(path string, o interface{}) (interface{}, error) {
 	}
 	return nil, fmt.Errorf("unhandled object of type %T", o)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1925,3 +1925,7 @@ func fakeFunction(arg1 ref.Val) ref.Val {
 
 	return types.String(strings.ToUpper(arg))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

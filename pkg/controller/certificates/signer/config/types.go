@@ -52,3 +52,7 @@ type CSRSigningConfiguration struct {
 	// RSA or ECDSA private key used to issue certificates
 	KeyFile string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

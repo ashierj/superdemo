@@ -15,3 +15,7 @@ func checkIfTerminal(w io.Writer) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

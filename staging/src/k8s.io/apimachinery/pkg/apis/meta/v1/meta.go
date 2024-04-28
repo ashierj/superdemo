@@ -174,3 +174,7 @@ func (meta *ObjectMeta) GetManagedFields() []ManagedFieldsEntry { return meta.Ma
 func (meta *ObjectMeta) SetManagedFields(managedFields []ManagedFieldsEntry) {
 	meta.ManagedFields = managedFields
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

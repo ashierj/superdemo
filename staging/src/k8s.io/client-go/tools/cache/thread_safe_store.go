@@ -383,3 +383,7 @@ func NewThreadSafeStore(indexers Indexers, indices Indices) ThreadSafeStore {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -260,3 +260,7 @@ var _ = SIGDescribe("Kubelet with pods in a privileged namespace", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

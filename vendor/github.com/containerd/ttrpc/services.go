@@ -273,3 +273,7 @@ func fullPath(service, method string) string {
 func isNil(resp interface{}) bool {
 	return (*[2]uintptr)(unsafe.Pointer(&resp))[1] == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

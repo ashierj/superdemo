@@ -45,3 +45,7 @@ func (c *FakeSelfSubjectRulesReviews) Create(ctx context.Context, selfSubjectRul
 	}
 	return obj.(*v1beta1.SelfSubjectRulesReview), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

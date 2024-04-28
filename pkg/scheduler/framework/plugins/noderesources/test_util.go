@@ -54,3 +54,7 @@ func makeNode(node string, milliCPU, memory int64, extendedResource map[string]i
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

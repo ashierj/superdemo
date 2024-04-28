@@ -48,3 +48,7 @@ var badTrailer = map[string]bool{
 	"Transfer-Encoding":   true,
 	"Www-Authenticate":    true,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

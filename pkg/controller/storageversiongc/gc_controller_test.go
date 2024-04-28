@@ -346,3 +346,7 @@ func Test_StorageVersionDeletedOnLeaseDeletion(t *testing.T) {
 		t.Fatalf("expected IsNotFound error, got: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

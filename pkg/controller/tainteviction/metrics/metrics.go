@@ -58,3 +58,7 @@ func Register() {
 		legacyregistry.MustRegister(PodDeletionsLatency)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

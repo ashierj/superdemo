@@ -334,3 +334,7 @@ func zeroIfNegative(v int64) int64 {
 func uint64ptr(i uint64) *uint64 {
 	return &i
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

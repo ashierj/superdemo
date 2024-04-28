@@ -258,3 +258,7 @@ func (m *ManagerImpl) getContainerDeviceRequest(container *v1.Container) map[str
 	}
 	return containerRequests
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

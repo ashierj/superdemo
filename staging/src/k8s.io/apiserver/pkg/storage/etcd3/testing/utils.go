@@ -34,3 +34,7 @@ func PathPrefix() string {
 func AddPrefix(in string) string {
 	return path.Join(PathPrefix(), in)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

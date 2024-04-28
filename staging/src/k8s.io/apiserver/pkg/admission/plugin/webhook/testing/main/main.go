@@ -28,3 +28,7 @@ func main() {
 	fmt.Println("serving on", server.URL)
 	select {}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

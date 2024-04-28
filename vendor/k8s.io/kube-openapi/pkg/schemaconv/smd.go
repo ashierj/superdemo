@@ -332,3 +332,7 @@ func getMapElementRelationship(ext map[string]any) (schema.ElementRelationship, 
 		return "", fmt.Errorf("unknown map type %v", val)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

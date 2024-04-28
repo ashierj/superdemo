@@ -395,3 +395,7 @@ func digestedName(publicKey interface{}, subject *pkix.Name, usages []certificat
 
 	return fmt.Sprintf("node-csr-%s", encode(hash.Sum(nil))), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

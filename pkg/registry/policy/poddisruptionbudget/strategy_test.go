@@ -454,3 +454,7 @@ func specWithUnhealthyPodEvictionPolicy(unhealthyPodEvictionPolicy *policy.Unhea
 		UnhealthyPodEvictionPolicy: unhealthyPodEvictionPolicy,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

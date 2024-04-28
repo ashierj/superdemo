@@ -91,3 +91,7 @@ func (pl *PrefixLogger) V(l int) bool {
 func NewPrefixLogger(logger DepthLoggerV2, prefix string) *PrefixLogger {
 	return &PrefixLogger{logger: logger, prefix: prefix}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

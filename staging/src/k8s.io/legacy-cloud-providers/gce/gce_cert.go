@@ -72,3 +72,7 @@ func (g *Cloud) ListSslCertificates() ([]*compute.SslCertificate, error) {
 	v, err := g.c.SslCertificates().List(ctx, filter.None)
 	return v, mc.Observe(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

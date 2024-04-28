@@ -37,3 +37,7 @@ func (in *EndpointSliceMirroringControllerConfiguration) DeepCopy() *EndpointSli
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

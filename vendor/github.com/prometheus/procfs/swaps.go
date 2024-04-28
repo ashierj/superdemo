@@ -87,3 +87,7 @@ func parseSwapString(swapString string) (*Swap, error) {
 
 	return swap, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

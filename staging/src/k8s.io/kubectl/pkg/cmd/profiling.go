@@ -104,3 +104,7 @@ func flushProfiling() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

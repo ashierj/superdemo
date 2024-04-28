@@ -39,3 +39,7 @@ func (v *SubjectAccessReviewMatchCondition) GetExpression() string {
 func (v *SubjectAccessReviewMatchCondition) ReturnTypes() []*celgo.Type {
 	return []*celgo.Type{celgo.BoolType}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

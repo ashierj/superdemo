@@ -261,3 +261,7 @@ func parseDefault(value interface{}, name, def string) {
 		panic(fmt.Sprintf("%q: setting defaults not supported for type %T", name, value))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

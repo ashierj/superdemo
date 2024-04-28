@@ -115,3 +115,7 @@ func (b *ValidatingAdmissionPolicySpecApplyConfiguration) WithVariables(values .
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

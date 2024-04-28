@@ -574,3 +574,7 @@ func toParserHelper(meh MacroExprHelper) (parser.ExprHelper, *Error) {
 	}
 	return ah.modernHelper, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

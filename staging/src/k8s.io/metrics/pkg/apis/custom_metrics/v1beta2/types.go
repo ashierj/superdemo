@@ -88,3 +88,7 @@ type MetricListOptions struct {
 	// +optional
 	MetricLabelSelector string `json:"metricLabelSelector,omitempty" protobuf:"bytes,2,opt,name=metricLabelSelector"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

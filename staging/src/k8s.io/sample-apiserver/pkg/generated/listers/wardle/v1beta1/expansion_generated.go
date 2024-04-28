@@ -25,3 +25,7 @@ type FlunderListerExpansion interface{}
 // FlunderNamespaceListerExpansion allows custom methods to be added to
 // FlunderNamespaceLister.
 type FlunderNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

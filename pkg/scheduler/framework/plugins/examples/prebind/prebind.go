@@ -52,3 +52,7 @@ func (sr StatelessPreBindExample) PreBind(ctx context.Context, state *framework.
 func New(_ context.Context, _ *runtime.Unknown, _ framework.Handle) (framework.Plugin, error) {
 	return &StatelessPreBindExample{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

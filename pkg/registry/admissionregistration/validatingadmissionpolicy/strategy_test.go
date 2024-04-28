@@ -93,3 +93,7 @@ func validValidatingAdmissionPolicy() *admissionregistration.ValidatingAdmission
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

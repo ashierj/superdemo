@@ -511,3 +511,7 @@ func lookupArshaler(t reflect.Type) *arshaler {
 	v, _ := lookupArshalerCache.LoadOrStore(t, fncs)
 	return v.(*arshaler)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

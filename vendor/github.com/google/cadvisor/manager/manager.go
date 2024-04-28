@@ -1419,3 +1419,7 @@ func (f partialFailure) OrNil() error {
 	}
 	return f
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

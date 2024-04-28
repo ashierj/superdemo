@@ -335,3 +335,7 @@ func RecordMetric(key string, c *OperationStartTimeCache, err error) {
 		c.Delete(key)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

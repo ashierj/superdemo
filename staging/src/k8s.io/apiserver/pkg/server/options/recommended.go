@@ -157,3 +157,7 @@ func (o *RecommendedOptions) Validate() []error {
 
 	return errors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

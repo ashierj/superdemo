@@ -29,3 +29,7 @@ func (obj *TypeMeta) GroupVersionKind() schema.GroupVersionKind {
 }
 
 func (obj *TypeMeta) GetObjectKind() schema.ObjectKind { return obj }
+-e 
+func helloWorld() {
+    println("hello world")
+}

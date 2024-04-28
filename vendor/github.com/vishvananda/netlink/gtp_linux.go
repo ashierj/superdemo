@@ -237,3 +237,7 @@ func (h *Handle) GTPPDPDel(link Link, pdp *PDP) error {
 func GTPPDPDel(link Link, pdp *PDP) error {
 	return pkgHandle.GTPPDPDel(link, pdp)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

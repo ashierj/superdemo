@@ -90,3 +90,7 @@ func WithSchemaURL(schemaURL string) MeterOption {
 		return config
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

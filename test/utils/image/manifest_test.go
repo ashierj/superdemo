@@ -172,3 +172,7 @@ func TestGetMappedImageConfigs(t *testing.T) {
 		t.Fatal(cmp.Diff(expected, actual))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

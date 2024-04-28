@@ -28,3 +28,7 @@ func ValidateModel(obj interface{}, schema proto.Schema, name string) []error {
 	schema.Accept(rootValidation)
 	return rootValidation.Errors()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

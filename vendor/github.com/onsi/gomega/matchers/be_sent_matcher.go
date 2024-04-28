@@ -71,3 +71,7 @@ func (matcher *BeSentMatcher) MatchMayChangeInTheFuture(actual interface{}) bool
 
 	return !matcher.channelClosed
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

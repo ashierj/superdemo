@@ -121,3 +121,7 @@ func (f *HTTPFormat) SpanContextToRequest(sc trace.SpanContext, req *http.Reques
 	}
 	req.Header.Set(SampledHeader, sampled)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

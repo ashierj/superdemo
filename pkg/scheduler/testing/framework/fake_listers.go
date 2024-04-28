@@ -313,3 +313,7 @@ func (classes StorageClassLister) Get(name string) (*storagev1.StorageClass, err
 func (classes StorageClassLister) List(selector labels.Selector) ([]*storagev1.StorageClass, error) {
 	return nil, fmt.Errorf("not implemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

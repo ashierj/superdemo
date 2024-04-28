@@ -119,3 +119,7 @@ func Test_parseKubeVersion(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

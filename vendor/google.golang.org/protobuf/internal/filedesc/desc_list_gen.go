@@ -354,3 +354,7 @@ func (p *Methods) lazyInit() *Methods {
 	})
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

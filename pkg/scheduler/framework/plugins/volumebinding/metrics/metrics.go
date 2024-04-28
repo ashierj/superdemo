@@ -53,3 +53,7 @@ func RegisterVolumeSchedulingMetrics() {
 	legacyregistry.MustRegister(VolumeBindingRequestSchedulerBinderCache)
 	legacyregistry.MustRegister(VolumeSchedulingStageFailed)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

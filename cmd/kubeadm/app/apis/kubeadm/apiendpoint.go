@@ -47,3 +47,7 @@ func APIEndpointFromString(apiEndpoint string) (APIEndpoint, error) {
 func (endpoint *APIEndpoint) String() string {
 	return net.JoinHostPort(endpoint.AdvertiseAddress, strconv.FormatInt(int64(endpoint.BindPort), 10))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

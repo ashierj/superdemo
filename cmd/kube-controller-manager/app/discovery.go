@@ -70,3 +70,7 @@ func startEndpointSliceMirroringController(ctx context.Context, controllerContex
 	).Run(ctx, int(controllerContext.ComponentConfig.EndpointSliceMirroringController.MirroringConcurrentServiceEndpointSyncs))
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

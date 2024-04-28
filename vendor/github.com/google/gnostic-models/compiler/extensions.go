@@ -84,3 +84,7 @@ func (extensionHandlers *ExtensionHandler) handle(in *yaml.Node, extensionName s
 	}
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

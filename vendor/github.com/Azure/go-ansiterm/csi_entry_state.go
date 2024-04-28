@@ -47,3 +47,7 @@ func (csiState csiEntryState) Enter() error {
 	csiState.parser.clear()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

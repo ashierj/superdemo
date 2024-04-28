@@ -46,3 +46,7 @@ func (b *PodsMetricStatusApplyConfiguration) WithCurrent(value *MetricValueStatu
 	b.Current = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

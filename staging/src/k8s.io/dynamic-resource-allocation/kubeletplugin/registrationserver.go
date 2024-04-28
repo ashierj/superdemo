@@ -52,3 +52,7 @@ func (e *registrationServer) NotifyRegistrationStatus(ctx context.Context, statu
 
 	return &registerapi.RegistrationStatusResponse{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

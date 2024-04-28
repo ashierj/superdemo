@@ -213,3 +213,7 @@ func (o ResumeOptions) RunResume() error {
 
 	return utilerrors.NewAggregate(allErrs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

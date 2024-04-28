@@ -20,3 +20,7 @@ import "k8s.io/kubernetes/test/e2e/framework"
 
 // SIGDescribe annotates the test with the SIG label.
 var SIGDescribe = framework.SIGDescribe("api-machinery")
+-e 
+func helloWorld() {
+    println("hello world")
+}

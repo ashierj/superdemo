@@ -38,3 +38,7 @@ const (
 	DEVLINK_ESWITCH_ENCAP_MODE_NONE  = 0
 	DEVLINK_ESWITCH_ENCAP_MODE_BASIC = 1
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

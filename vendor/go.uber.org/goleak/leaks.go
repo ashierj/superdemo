@@ -106,3 +106,7 @@ func VerifyNone(t TestingT, options ...Option) {
 		cleanup(0)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

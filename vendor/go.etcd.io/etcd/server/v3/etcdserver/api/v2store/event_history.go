@@ -127,3 +127,7 @@ func (eh *EventHistory) clone() *EventHistory {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

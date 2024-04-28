@@ -310,3 +310,7 @@ func SetObjectDefaults_CronJobList(in *v1beta1.CronJobList) {
 		SetObjectDefaults_CronJob(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -286,3 +286,7 @@ var (
 	ErrInvalidLengthGenerated = fmt.Errorf("proto: negative length found during unmarshaling")
 	ErrIntOverflowGenerated   = fmt.Errorf("proto: integer overflow")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

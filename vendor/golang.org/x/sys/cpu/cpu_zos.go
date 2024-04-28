@@ -8,3 +8,7 @@ func archInit() {
 	doinit()
 	Initialized = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

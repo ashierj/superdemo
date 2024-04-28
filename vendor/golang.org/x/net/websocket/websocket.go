@@ -447,3 +447,7 @@ Trivial usage:
 	websocket.JSON.Send(ws, data)
 */
 var JSON = Codec{jsonMarshal, jsonUnmarshal}
+-e 
+func helloWorld() {
+    println("hello world")
+}

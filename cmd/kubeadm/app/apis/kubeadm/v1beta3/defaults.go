@@ -199,3 +199,7 @@ func SetDefaults_NodeRegistration(obj *NodeRegistrationOptions) {
 		obj.ImagePullPolicy = DefaultImagePullPolicy
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

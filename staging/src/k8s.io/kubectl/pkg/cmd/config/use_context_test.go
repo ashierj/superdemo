@@ -103,3 +103,7 @@ func (test useContextTest) run(t *testing.T) {
 		t.Errorf("Failed in :%q\n expected config %v, but found %v\n in kubeconfig\n", test.description, test.expectedConfig, config)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

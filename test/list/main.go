@@ -271,3 +271,7 @@ func main() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -45,3 +45,7 @@ func New() (CpuLoadReader, error) {
 	klog.V(4).Info("Using a netlink-based load reader")
 	return reader, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -145,3 +145,7 @@ func (c *coercer) coerce(pth *field.Path, x interface{}, s *structuralschema.Str
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

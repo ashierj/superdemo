@@ -96,3 +96,7 @@ func FindTailLineStartIndex(f io.ReadSeeker, n int64) (int64, error) {
 	}
 	return left, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

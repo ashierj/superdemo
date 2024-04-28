@@ -40,3 +40,7 @@ func (d *Document) YAMLValue(comment string) ([]byte, error) {
 	}
 	return yaml.Marshal(rawInfo)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

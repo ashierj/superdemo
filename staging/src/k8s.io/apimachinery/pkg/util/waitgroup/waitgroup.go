@@ -55,3 +55,7 @@ func (wg *SafeWaitGroup) Wait() {
 	wg.mu.Unlock()
 	wg.wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

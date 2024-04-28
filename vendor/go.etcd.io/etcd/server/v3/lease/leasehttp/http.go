@@ -256,3 +256,7 @@ func readResponse(resp *http.Response) (b []byte, err error) {
 	httputil.GracefulClose(resp)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -117,3 +117,7 @@ func (u UnionCategoryExpander) Expand(category string) ([]schema.GroupResource, 
 
 	return ret, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

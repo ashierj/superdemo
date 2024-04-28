@@ -1376,3 +1376,7 @@ const (
 	// Examples: 'Parse error', 'User already exists'
 	RPCJsonrpcErrorMessageKey = attribute.Key("rpc.jsonrpc.error_message")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

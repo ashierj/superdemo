@@ -41,3 +41,7 @@ func (n *negotiatedSerializerWrapper) EncoderForVersion(e runtime.Encoder, _ run
 func (n *negotiatedSerializerWrapper) DecoderToVersion(d runtime.Decoder, _gv runtime.GroupVersioner) runtime.Decoder {
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

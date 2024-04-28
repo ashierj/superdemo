@@ -337,3 +337,7 @@ func (e *events) StopWatch(watchID int) {
 	close(e.watchers[watchID].eventChannel.GetChannel())
 	delete(e.watchers, watchID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

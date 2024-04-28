@@ -80,3 +80,7 @@ func (p *textMapPropagator) Extract(ctx context.Context, carrier propagation.Tex
 func (p *textMapPropagator) Fields() []string {
 	return p.effectiveDelegate().Fields()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

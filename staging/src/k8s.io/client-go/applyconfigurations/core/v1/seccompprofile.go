@@ -50,3 +50,7 @@ func (b *SeccompProfileApplyConfiguration) WithLocalhostProfile(value string) *S
 	b.LocalhostProfile = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -202,3 +202,7 @@ func IsRestartableInitContainer(initContainer *v1.Container) bool {
 
 	return *initContainer.RestartPolicy == v1.ContainerRestartPolicyAlways
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

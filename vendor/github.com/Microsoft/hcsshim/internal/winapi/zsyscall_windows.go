@@ -369,3 +369,7 @@ func RtlNtStatusToDosError(status uint32) (winerr error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

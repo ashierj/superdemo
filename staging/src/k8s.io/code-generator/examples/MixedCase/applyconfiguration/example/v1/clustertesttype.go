@@ -208,3 +208,7 @@ func (b *ClusterTestTypeApplyConfiguration) WithStatus(value examplev1.ClusterTe
 	b.Status = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -25,3 +25,7 @@ type KeyMutex interface {
 	// Returns an error if the specified ID doesn't exist.
 	UnlockKey(id string) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

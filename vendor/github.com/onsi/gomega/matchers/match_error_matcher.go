@@ -84,3 +84,7 @@ func (matcher *MatchErrorMatcher) NegatedFailureMessage(actual interface{}) (mes
 	}
 	return format.Message(actual, "not to match error", matcher.Expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -308,3 +308,7 @@ func autoConvert_networking_ServiceCIDRStatus_To_v1alpha1_ServiceCIDRStatus(in *
 func Convert_networking_ServiceCIDRStatus_To_v1alpha1_ServiceCIDRStatus(in *networking.ServiceCIDRStatus, out *v1alpha1.ServiceCIDRStatus, s conversion.Scope) error {
 	return autoConvert_networking_ServiceCIDRStatus_To_v1alpha1_ServiceCIDRStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

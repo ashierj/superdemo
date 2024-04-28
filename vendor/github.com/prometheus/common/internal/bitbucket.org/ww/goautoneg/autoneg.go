@@ -158,3 +158,7 @@ func Negotiate(header string, alternatives []string) (content_type string) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

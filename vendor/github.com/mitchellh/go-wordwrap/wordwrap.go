@@ -81,3 +81,7 @@ func WrapString(s string, lim uint) string {
 
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

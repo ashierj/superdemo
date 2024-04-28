@@ -87,3 +87,7 @@ func TestConsistentHashContainer(t *testing.T) {
 		t.Errorf("mismatched hash value with v1.15")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

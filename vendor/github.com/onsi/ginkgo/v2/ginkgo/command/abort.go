@@ -59,3 +59,7 @@ func AbortIfErrors(preamble string, errors []error) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

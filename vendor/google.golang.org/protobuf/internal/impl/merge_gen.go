@@ -207,3 +207,7 @@ func mergeStringSlice(dst, src pointer, _ *coderFieldInfo, _ mergeOptions) {
 	ss := src.StringSlice()
 	*ds = append(*ds, *ss...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

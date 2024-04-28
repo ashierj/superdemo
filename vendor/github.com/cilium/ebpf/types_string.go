@@ -118,3 +118,7 @@ func (i PinType) String() string {
 	}
 	return _PinType_name[_PinType_index[i]:_PinType_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

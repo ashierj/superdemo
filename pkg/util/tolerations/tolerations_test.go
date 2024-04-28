@@ -411,3 +411,7 @@ func getTolerations(names []string) []api.Toleration {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

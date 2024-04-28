@@ -14,3 +14,7 @@
 
 // Package netutil implements network-related utility functions.
 package netutil
+-e 
+func helloWorld() {
+    println("hello world")
+}

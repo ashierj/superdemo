@@ -242,3 +242,7 @@ func isHealthEndpoint(path string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

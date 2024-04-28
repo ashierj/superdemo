@@ -34,3 +34,7 @@ func AttachNetNs(ns int, prog *ebpf.Program) (*NetNsLink, error) {
 
 	return &NetNsLink{*link}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

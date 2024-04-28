@@ -237,3 +237,7 @@ func (f *fakePolicyRuleEvaluator) EvaluatePolicyRule(_ authorizer.Attributes) au
 		OmitStages: f.stage,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

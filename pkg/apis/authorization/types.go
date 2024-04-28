@@ -216,3 +216,7 @@ type NonResourceRule struct {
 	// final step in the path.  "*" means all.
 	NonResourceURLs []string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -126,3 +126,7 @@ func (pr *conditionalProgressRequester) Remove() {
 	pr.waiting -= 1
 	pr.cond.Signal()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

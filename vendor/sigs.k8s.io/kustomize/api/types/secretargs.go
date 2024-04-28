@@ -17,3 +17,7 @@ type SecretArgs struct {
 	// keys: "tls.key" and "tls.crt"
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

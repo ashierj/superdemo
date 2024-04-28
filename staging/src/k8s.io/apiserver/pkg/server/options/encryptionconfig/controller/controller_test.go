@@ -402,3 +402,7 @@ func (m *mockHealthChecker) Check(req *http.Request) error {
 func (m *mockHealthChecker) Name() string {
 	return m.pluginName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

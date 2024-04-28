@@ -252,3 +252,7 @@ func TestOpenAPIV3ProtoRoundtrip(t *testing.T) {
 		t.Fatalf("spec mismatch - specFromProto: %s\n", jsonBytes)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -888,3 +888,7 @@ func apparmorFieldForAnnotation(annotation string) *api.AppArmorProfile {
 	// length or if the annotation has an unrecognized value
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

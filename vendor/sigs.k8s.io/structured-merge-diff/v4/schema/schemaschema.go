@@ -163,3 +163,7 @@ var SchemaSchemaYAML = `types:
       namedType: __untyped_atomic_
     elementRelationship: atomic
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

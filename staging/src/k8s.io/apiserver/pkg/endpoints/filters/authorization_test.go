@@ -186,3 +186,7 @@ func TestAuditAnnotation(t *testing.T) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

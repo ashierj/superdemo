@@ -336,3 +336,7 @@ func (p Proc) Schedstat() (ProcSchedstat, error) {
 	}
 	return parseProcSchedstat(string(contents))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

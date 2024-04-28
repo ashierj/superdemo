@@ -84,3 +84,7 @@ func (b *CephFSVolumeSourceApplyConfiguration) WithReadOnly(value bool) *CephFSV
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

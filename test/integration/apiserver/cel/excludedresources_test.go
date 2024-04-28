@@ -104,3 +104,7 @@ func formatGRs(grs []schema.GroupResource) string {
 	slices.Sort(lines)
 	return strings.Join(lines, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

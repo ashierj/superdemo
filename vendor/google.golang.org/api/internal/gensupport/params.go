@@ -55,3 +55,7 @@ func SetOptions(u URLParams, opts ...googleapi.CallOption) {
 		u.Set(o.Get())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

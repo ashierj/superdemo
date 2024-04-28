@@ -155,3 +155,7 @@ func removePath(mountPath string) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

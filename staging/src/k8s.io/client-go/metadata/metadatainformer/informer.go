@@ -213,3 +213,7 @@ func (d *metadataInformer) Informer() cache.SharedIndexInformer {
 func (d *metadataInformer) Lister() cache.GenericLister {
 	return metadatalister.NewRuntimeObjectShim(metadatalister.New(d.informer.GetIndexer(), d.gvr))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

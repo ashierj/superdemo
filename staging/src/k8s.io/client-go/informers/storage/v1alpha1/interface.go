@@ -57,3 +57,7 @@ func (v *version) VolumeAttachments() VolumeAttachmentInformer {
 func (v *version) VolumeAttributesClasses() VolumeAttributesClassInformer {
 	return &volumeAttributesClassInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

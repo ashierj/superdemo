@@ -306,3 +306,7 @@ func (tw *baseTimeoutWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	}
 	return conn, rw, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -239,3 +239,7 @@ func (c *FakeReplicaSets) ApplyScale(ctx context.Context, replicaSetName string,
 	}
 	return obj.(*v1beta1.Scale), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

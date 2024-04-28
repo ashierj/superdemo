@@ -356,3 +356,7 @@ func shouldRecordWatchListLatency(event watch.Event) bool {
 	}
 	return hasAnnotation
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

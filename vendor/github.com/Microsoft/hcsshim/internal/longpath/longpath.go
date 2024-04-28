@@ -22,3 +22,7 @@ func LongAbs(path string) (string, error) {
 	}
 	return `\\?\` + path, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

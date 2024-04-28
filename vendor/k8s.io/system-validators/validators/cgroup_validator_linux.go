@@ -152,3 +152,7 @@ func (c *CgroupsValidator) getCgroupV2Subsystems() ([]string, error) {
 	subsystems := append(pseudo, strings.Fields(string(data))...)
 	return subsystems, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

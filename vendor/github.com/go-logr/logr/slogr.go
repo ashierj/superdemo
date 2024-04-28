@@ -98,3 +98,7 @@ type SlogSink interface {
 	WithAttrs(attrs []slog.Attr) SlogSink
 	WithGroup(name string) SlogSink
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

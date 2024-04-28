@@ -444,3 +444,7 @@ func RemoveNamespaceEndpoint(namespaceId string, endpointId string) error {
 
 	return ModifyNamespaceSettings(namespaceId, requestMessage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

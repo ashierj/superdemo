@@ -637,3 +637,7 @@ func (g ginkgoErrors) FailedToParseStackTrace(message string) error {
 		Message: message,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

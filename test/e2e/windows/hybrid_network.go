@@ -170,3 +170,7 @@ func createTestPod(f *framework.Framework, image string, os string) *v1.Pod {
 	}
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

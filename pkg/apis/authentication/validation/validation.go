@@ -39,3 +39,7 @@ func ValidateTokenRequest(tr *authentication.TokenRequest) field.ErrorList {
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

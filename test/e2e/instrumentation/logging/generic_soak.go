@@ -137,3 +137,7 @@ func RunLogPodsWithSleepOf(ctx context.Context, f *framework.Framework, sleep ti
 		framework.Failf("Only got %v out of %v", len(pods), totalPods)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -101,3 +101,7 @@ func diskSetUp(manager diskManager, b iscsiDiskMounter, volPath string, mounter 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

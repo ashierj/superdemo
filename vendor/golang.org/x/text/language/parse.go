@@ -254,3 +254,7 @@ func (s *tagSort) Swap(i, j int) {
 	s.tag[i], s.tag[j] = s.tag[j], s.tag[i]
 	s.q[i], s.q[j] = s.q[j], s.q[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

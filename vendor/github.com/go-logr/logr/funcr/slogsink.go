@@ -103,3 +103,7 @@ func (l fnlogger) levelFromSlog(level slog.Level) int {
 	}
 	return int(result)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

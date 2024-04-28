@@ -565,3 +565,7 @@ func (h *batchHistogram) Write(out *dto.Metric) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

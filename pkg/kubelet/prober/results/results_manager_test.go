@@ -160,3 +160,7 @@ func TestResult_String(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

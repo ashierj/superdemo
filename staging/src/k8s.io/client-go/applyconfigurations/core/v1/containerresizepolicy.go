@@ -50,3 +50,7 @@ func (b *ContainerResizePolicyApplyConfiguration) WithRestartPolicy(value v1.Res
 	b.RestartPolicy = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

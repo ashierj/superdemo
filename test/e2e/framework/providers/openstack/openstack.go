@@ -35,3 +35,7 @@ func newProvider() (framework.ProviderInterface, error) {
 type Provider struct {
 	framework.NullProvider
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

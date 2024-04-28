@@ -466,3 +466,7 @@ func (o *openAPI) buildParameters(restParam []common.Parameter) (ret []spec.Para
 	}
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

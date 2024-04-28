@@ -50,3 +50,7 @@ func (v *version) ValidatingAdmissionPolicies() ValidatingAdmissionPolicyInforme
 func (v *version) ValidatingAdmissionPolicyBindings() ValidatingAdmissionPolicyBindingInformer {
 	return &validatingAdmissionPolicyBindingInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

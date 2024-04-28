@@ -45,3 +45,7 @@ func Register() {
 		legacyregistry.MustRegister(CronJobCreationSkew)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

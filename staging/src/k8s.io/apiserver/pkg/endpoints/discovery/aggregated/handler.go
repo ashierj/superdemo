@@ -565,3 +565,7 @@ func (rdm *resourceDiscoveryManager) serveHTTP(resp http.ResponseWriter, req *ht
 		)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -416,3 +416,7 @@ func usesL4RBS(service *v1.Service, forwardingRule *compute.ForwardingRule) bool
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

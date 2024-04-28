@@ -136,3 +136,7 @@ func (cmm *MetricsManager) RecordMetricsInterceptor(
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

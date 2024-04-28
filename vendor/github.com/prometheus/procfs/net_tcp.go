@@ -62,3 +62,7 @@ func newNetTCPSummary(file string) (*NetTCPSummary, error) {
 	n1 := NetTCPSummary(*n)
 	return &n1, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

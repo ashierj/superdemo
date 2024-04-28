@@ -417,3 +417,7 @@ func setExtraEnvs() {
 		os.Setenv(name, value)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

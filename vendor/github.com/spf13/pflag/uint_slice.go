@@ -166,3 +166,7 @@ func UintSlice(name string, value []uint, usage string) *[]uint {
 func UintSliceP(name, shorthand string, value []uint, usage string) *[]uint {
 	return CommandLine.UintSliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

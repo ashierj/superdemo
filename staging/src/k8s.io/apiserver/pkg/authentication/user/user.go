@@ -82,3 +82,7 @@ const (
 	KubeControllerManager = "system:kube-controller-manager"
 	KubeScheduler         = "system:kube-scheduler"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

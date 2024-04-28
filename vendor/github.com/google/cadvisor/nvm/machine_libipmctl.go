@@ -136,3 +136,7 @@ func Finalize() {
 	C.nvm_uninit()
 	isNVMLibInitialized = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

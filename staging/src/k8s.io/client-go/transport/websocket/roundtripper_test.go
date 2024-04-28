@@ -138,3 +138,7 @@ func webSocketServerStreams(req *http.Request, w http.ResponseWriter) (*websocke
 	}
 	return &websocketStreams{conn: conn}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

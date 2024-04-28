@@ -31,3 +31,7 @@ type ResourceClassExpansion interface{}
 type ResourceClassParametersExpansion interface{}
 
 type ResourceSliceExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ func GetBootTime() (time.Time, error) {
 	}
 	return currentTime.Add(-time.Duration(info.Uptime) * time.Second).Truncate(time.Second), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

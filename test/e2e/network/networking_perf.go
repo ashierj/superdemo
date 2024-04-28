@@ -286,3 +286,7 @@ var _ = common.SIGDescribe("Networking IPerf2", feature.NetworkingPerformance, f
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

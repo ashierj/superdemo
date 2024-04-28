@@ -265,3 +265,7 @@ func autoConvert_testapigroup_CarpStatus_To_v1_CarpStatus(in *testapigroup.CarpS
 func Convert_testapigroup_CarpStatus_To_v1_CarpStatus(in *testapigroup.CarpStatus, out *CarpStatus, s conversion.Scope) error {
 	return autoConvert_testapigroup_CarpStatus_To_v1_CarpStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -72,3 +72,7 @@ func (o *cacheOnce) cache(f func() error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

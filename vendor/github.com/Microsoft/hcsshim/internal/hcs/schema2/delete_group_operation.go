@@ -13,3 +13,7 @@ package hcsschema
 type DeleteGroupOperation struct {
 	GroupId string `json:"GroupId,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

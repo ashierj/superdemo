@@ -153,3 +153,7 @@ func seccompProfileRestricted_1_25(podMetadata *metav1.ObjectMeta, podSpec *core
 	}
 	return seccompProfileRestricted_1_19(podMetadata, podSpec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -159,3 +159,7 @@ func UnmarshalString(s string) (string, error) {
 	d := NewDecoder([]byte(s))
 	return d.parseString()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -201,3 +201,7 @@ func file_google_rpc_status_proto_init() {
 	file_google_rpc_status_proto_goTypes = nil
 	file_google_rpc_status_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

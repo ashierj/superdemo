@@ -131,3 +131,7 @@ func findStrings(object interface{}, visit func(value string), path ...string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

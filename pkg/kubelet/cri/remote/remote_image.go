@@ -235,3 +235,7 @@ func (r *remoteImageService) imageFsInfoV1(ctx context.Context) (*runtimeapi.Ima
 	}
 	return resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

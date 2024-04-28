@@ -154,3 +154,7 @@ func TestCancelAndReadd(t *testing.T) {
 		t.Errorf("Expected testVal = 4, got %v", lastVal)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

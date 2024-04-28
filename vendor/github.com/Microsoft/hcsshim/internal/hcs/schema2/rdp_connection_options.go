@@ -14,3 +14,7 @@ type RdpConnectionOptions struct {
 
 	NamedPipe string `json:"NamedPipe,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

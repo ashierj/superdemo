@@ -30,3 +30,7 @@ func ntohl(buf []byte) uint32 {
 func ntohs(buf []byte) uint16 {
 	return binary.BigEndian.Uint16(buf)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -149,3 +149,7 @@ func getLintError(problems []promlint.Problem) error {
 
 	return fmt.Errorf("lint error: %s", mergeProblems(filteredProblems))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

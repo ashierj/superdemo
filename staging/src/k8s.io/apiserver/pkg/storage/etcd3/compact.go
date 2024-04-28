@@ -160,3 +160,7 @@ func compact(ctx context.Context, client *clientv3.Client, t, rev int64) (int64,
 	klog.V(4).Infof("etcd: compacted rev (%d), endpoints (%v)", rev, client.Endpoints())
 	return curTime, curRev, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

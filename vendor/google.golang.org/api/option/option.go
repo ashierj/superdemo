@@ -343,3 +343,7 @@ func (w *withCreds) Apply(o *internal.DialSettings) {
 func WithCredentials(creds *google.Credentials) ClientOption {
 	return (*withCreds)(creds)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

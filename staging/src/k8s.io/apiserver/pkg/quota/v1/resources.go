@@ -302,3 +302,7 @@ func CalculateUsage(namespaceName string, scopes []corev1.ResourceQuotaScope, ha
 	newUsage = Mask(newUsage, matchedResources)
 	return newUsage, utilerrors.NewAggregate(errors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

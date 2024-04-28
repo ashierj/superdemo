@@ -345,3 +345,7 @@ func (h *debugHTTPHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func (gc *GarbageCollector) DebuggingHandler() http.Handler {
 	return NewDebugHandler(gc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

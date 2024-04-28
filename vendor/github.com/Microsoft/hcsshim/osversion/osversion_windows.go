@@ -48,3 +48,7 @@ func Build() uint16 {
 func (osv OSVersion) ToString() string {
 	return fmt.Sprintf("%d.%d.%d", osv.MajorVersion, osv.MinorVersion, osv.Build)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

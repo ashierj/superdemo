@@ -47,3 +47,7 @@ func (*timestamp) String() string { return "timestamp<string>" }
 func init() {
 	RegisterType((*timestamp)(nil), "gogo.protobuf.proto.timestamp")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

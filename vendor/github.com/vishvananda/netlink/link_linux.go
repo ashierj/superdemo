@@ -3016,3 +3016,7 @@ func addIPoIBAttrs(ipoib *IPoIB, linkInfo *nl.RtAttr) {
 	data.AddRtAttr(nl.IFLA_IPOIB_MODE, nl.Uint16Attr(uint16(ipoib.Mode)))
 	data.AddRtAttr(nl.IFLA_IPOIB_UMCAST, nl.Uint16Attr(uint16(ipoib.Umcast)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

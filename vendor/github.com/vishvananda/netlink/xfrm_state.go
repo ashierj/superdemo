@@ -129,3 +129,7 @@ func printLimit(lmt uint64) string {
 	}
 	return fmt.Sprintf("%d", lmt)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

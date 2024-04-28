@@ -483,3 +483,7 @@ func (o AnnotateOptions) updateAnnotations(obj runtime.Object) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

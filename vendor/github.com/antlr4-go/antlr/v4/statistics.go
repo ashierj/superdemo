@@ -279,3 +279,7 @@ func (s *goRunStats) CollectionAnomalies() {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

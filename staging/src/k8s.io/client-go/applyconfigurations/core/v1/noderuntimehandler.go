@@ -46,3 +46,7 @@ func (b *NodeRuntimeHandlerApplyConfiguration) WithFeatures(value *NodeRuntimeHa
 	b.Features = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

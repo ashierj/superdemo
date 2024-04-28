@@ -137,3 +137,7 @@ func TestWebhook(t *testing.T) {
 		require.True(t, gotEvents, fmt.Sprintf("no events received, apiVersion: %s", version))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

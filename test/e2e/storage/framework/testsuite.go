@@ -132,3 +132,7 @@ func SkipInvalidDriverPatternCombination(driver TestDriver, pattern TestPattern)
 		e2eskipper.Skipf("Distro %s doesn't support ntfs -- skipping", framework.TestContext.NodeOSDistro)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

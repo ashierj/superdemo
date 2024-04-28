@@ -220,3 +220,7 @@ func IsNetworkTimeoutError(err error) bool {
 	nerr, ok := err.(net.Error)
 	return ok && nerr.Timeout()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

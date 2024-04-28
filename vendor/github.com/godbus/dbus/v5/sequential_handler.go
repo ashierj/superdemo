@@ -123,3 +123,7 @@ func (scd *sequentialSignalChannelData) close() {
 	// any future sends on scd.ch
 	<-scd.done
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

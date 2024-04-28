@@ -18,3 +18,7 @@ func (matcher *BeNilMatcher) FailureMessage(actual interface{}) (message string)
 func (matcher *BeNilMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to be nil")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

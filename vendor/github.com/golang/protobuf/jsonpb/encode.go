@@ -558,3 +558,7 @@ func (w *jsonWriter) marshalSingularValue(fd protoreflect.FieldDescriptor, v pro
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

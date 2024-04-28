@@ -476,3 +476,7 @@ func OneTermNotEqualSelector(k, v string) Selector {
 func AndSelectors(selectors ...Selector) Selector {
 	return andTerm(selectors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

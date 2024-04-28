@@ -54,3 +54,7 @@ func LocalEndpoint(path, file string) (string, error) {
 func GetBootTime() (time.Time, error) {
 	return time.Time{}, fmt.Errorf("GetBootTime is unsupported in this build")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

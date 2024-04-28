@@ -181,3 +181,7 @@ func NewLoggablePutRequest(request *PutRequest) *loggablePutRequest {
 func (m *loggablePutRequest) Reset()         { *m = loggablePutRequest{} }
 func (m *loggablePutRequest) String() string { return proto.CompactTextString(m) }
 func (*loggablePutRequest) ProtoMessage()    {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

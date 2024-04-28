@@ -8631,3 +8631,7 @@ var (
 	pattern2 = regexp.MustCompile("^/")
 	pattern3 = regexp.MustCompile("^([0-9X]{3})$")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

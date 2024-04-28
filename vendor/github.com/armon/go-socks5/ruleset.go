@@ -39,3 +39,7 @@ func (p *PermitCommand) Allow(ctx context.Context, req *Request) (context.Contex
 
 	return ctx, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

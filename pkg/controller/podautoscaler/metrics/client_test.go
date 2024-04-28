@@ -437,3 +437,7 @@ func TestRESTClientContainerCPUEmptyMetricsForOnePod(t *testing.T) {
 func offsetTimestampBy(t int) time.Time {
 	return fixedTimestamp.Add(time.Duration(t) * time.Minute)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

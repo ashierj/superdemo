@@ -232,3 +232,7 @@ func (o *ExplainOptions) renderOpenAPIV2(
 
 	return explain.PrintModelDescription(fieldsPath, o.Out, schema, gvk, o.Recursive)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

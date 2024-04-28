@@ -60,3 +60,7 @@ func parseLoad(loadavgBytes []byte) (*LoadAvg, error) {
 		Load15: loads[2],
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

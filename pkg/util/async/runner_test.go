@@ -53,3 +53,7 @@ func TestRunner(t *testing.T) {
 		t.Errorf("expected 20 events, but got:\n%v\n", events)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

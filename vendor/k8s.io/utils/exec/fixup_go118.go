@@ -30,3 +30,7 @@ func maskErrDotCmd(cmd *osexec.Cmd) *osexec.Cmd {
 func maskErrDot(err error) error {
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

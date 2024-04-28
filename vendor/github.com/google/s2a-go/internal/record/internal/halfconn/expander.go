@@ -57,3 +57,7 @@ func (d *defaultHKDFExpander) expand(secret, label []byte, length int) ([]byte, 
 	}
 	return outBuf, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

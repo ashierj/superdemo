@@ -475,3 +475,7 @@ func unstructuredToNamespace(obj *unstructured.Unstructured) (*v1.Namespace, err
 
 	return ns, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

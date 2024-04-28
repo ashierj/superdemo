@@ -304,3 +304,7 @@ In [AfterEach] at: log_test.go:53 <time>
 
 	output.TestGinkgoOutput(t, expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

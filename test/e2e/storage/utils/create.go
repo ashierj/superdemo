@@ -711,3 +711,7 @@ func patchContainerImages(containers []v1.Container) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

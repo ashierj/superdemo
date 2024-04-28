@@ -63,3 +63,7 @@ func StripUnsupportedFormatsPostProcess(s *spec.Schema) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

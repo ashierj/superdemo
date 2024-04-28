@@ -76,3 +76,7 @@ func (s *statefulSetLister) GetPodStatefulSets(pod *v1.Pod) ([]*apps.StatefulSet
 
 	return psList, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

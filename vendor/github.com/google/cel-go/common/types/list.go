@@ -527,3 +527,7 @@ func IndexOrError(index ref.Val) (int, error) {
 		return -1, fmt.Errorf("unsupported index type '%s' in list", index.Type())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

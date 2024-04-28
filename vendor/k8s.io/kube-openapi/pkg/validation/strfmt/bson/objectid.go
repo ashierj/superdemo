@@ -120,3 +120,7 @@ func (id *ObjectID) UnmarshalJSON(b []byte) error {
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

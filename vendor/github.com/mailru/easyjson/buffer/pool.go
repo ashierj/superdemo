@@ -276,3 +276,7 @@ func (b *Buffer) ReadCloser() io.ReadCloser {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

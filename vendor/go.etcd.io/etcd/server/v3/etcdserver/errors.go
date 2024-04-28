@@ -55,3 +55,7 @@ type DiscoveryError struct {
 func (e DiscoveryError) Error() string {
 	return fmt.Sprintf("failed to %s discovery cluster (%v)", e.Op, e.Err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

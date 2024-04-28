@@ -55,3 +55,7 @@ func (tm *TextMarshaler) writeEnum(w *textWriter, v reflect.Value, props *Proper
 	_, err := fmt.Fprint(w, s)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

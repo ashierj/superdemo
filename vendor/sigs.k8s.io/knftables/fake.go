@@ -654,3 +654,7 @@ func (m *FakeMap) FindElement(key ...string) *Element {
 	}
 	return m.Elements[index]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -108,3 +108,7 @@ func (manager *impl) ListCheckpoints() ([]string, error) {
 	}
 	return keys, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

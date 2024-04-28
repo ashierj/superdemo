@@ -158,3 +158,7 @@ func (c *FakeNetworkPolicies) Apply(ctx context.Context, networkPolicy *extensio
 	}
 	return obj.(*v1beta1.NetworkPolicy), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

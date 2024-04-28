@@ -199,3 +199,7 @@ func createSnapBody(lg *zap.Logger, merged snap.Message) io.ReadCloser {
 		Closer: merged.ReadCloser,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

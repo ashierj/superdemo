@@ -23,3 +23,7 @@ const (
 
 	WeakFieldPrefix_goname = "XXX_weak_"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

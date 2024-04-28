@@ -30,3 +30,7 @@ func (s *NetClsGroup) Set(path string, r *configs.Resources) error {
 func (s *NetClsGroup) GetStats(path string, stats *cgroups.Stats) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

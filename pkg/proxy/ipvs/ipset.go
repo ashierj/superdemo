@@ -208,3 +208,7 @@ func checkMinVersion(vstring string) bool {
 	}
 	return !version.LessThan(minVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

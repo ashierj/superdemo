@@ -303,3 +303,7 @@ func topologyNormalizingWeight(size int) float64 {
 func scoreForCount(cnt int64, maxSkew int32, tpWeight float64) float64 {
 	return float64(cnt)*tpWeight + float64(maxSkew-1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

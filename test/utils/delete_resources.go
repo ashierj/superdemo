@@ -67,3 +67,7 @@ func DeleteResourceWithRetries(c clientset.Interface, kind schema.GroupKind, nam
 	}
 	return RetryWithExponentialBackOff(deleteFunc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

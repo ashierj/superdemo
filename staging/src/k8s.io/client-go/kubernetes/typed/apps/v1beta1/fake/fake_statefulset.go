@@ -195,3 +195,7 @@ func (c *FakeStatefulSets) ApplyStatus(ctx context.Context, statefulSet *appsv1b
 	}
 	return obj.(*v1beta1.StatefulSet), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -62,3 +62,7 @@ func TestConvertAdmissionResponseToV1beta1(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

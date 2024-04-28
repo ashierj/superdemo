@@ -26,3 +26,7 @@ func walkFrames(pcs []uintptr, visit frameVisitor) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

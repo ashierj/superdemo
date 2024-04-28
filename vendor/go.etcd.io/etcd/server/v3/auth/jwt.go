@@ -170,3 +170,7 @@ func newTokenProviderJWT(lg *zap.Logger, optMap map[string]string) (*tokenJWT, e
 
 	return t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -316,3 +316,7 @@ func (r *recorder) extractWarnings() []*cacheWarning {
 	r.warnings = nil
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

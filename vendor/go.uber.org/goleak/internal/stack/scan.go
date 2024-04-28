@@ -54,3 +54,7 @@ func (s *scanner) Scan() bool {
 func (s *scanner) Unscan() {
 	s.unscanned = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

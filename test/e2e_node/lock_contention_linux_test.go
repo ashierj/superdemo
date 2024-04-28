@@ -74,3 +74,7 @@ var _ = SIGDescribe("Lock contention", framework.WithSlow(), framework.WithDisru
 		}, 10*time.Second, time.Second).Should(gomega.BeFalse())
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

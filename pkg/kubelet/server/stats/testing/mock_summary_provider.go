@@ -85,3 +85,7 @@ func (mr *MockSummaryProviderMockRecorder) GetCPUAndMemoryStats(ctx any) *gomock
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCPUAndMemoryStats", reflect.TypeOf((*MockSummaryProvider)(nil).GetCPUAndMemoryStats), ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

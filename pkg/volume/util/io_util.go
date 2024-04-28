@@ -49,3 +49,7 @@ func (handler *osIOHandler) Lstat(name string) (os.FileInfo, error) {
 func (handler *osIOHandler) EvalSymlinks(path string) (string, error) {
 	return filepath.EvalSymlinks(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

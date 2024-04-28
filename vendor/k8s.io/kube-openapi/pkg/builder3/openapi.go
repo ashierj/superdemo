@@ -493,3 +493,7 @@ func (o *openAPI) toSchema(name string) (_ *spec.Schema, err error) {
 		}, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

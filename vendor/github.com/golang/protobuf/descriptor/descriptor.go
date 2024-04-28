@@ -178,3 +178,7 @@ func MessageDescriptorProto(m proto.GeneratedMessage) (*descriptorpb.FileDescrip
 	}
 	return fd, md
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

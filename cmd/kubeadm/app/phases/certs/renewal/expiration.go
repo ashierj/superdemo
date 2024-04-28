@@ -50,3 +50,7 @@ func newExpirationInfo(name string, cert *x509.Certificate, externallyManaged bo
 func (e *ExpirationInfo) ResidualTime() time.Duration {
 	return time.Until(e.ExpirationDate)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

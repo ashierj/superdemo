@@ -20,3 +20,7 @@ limitations under the License.
 // package testapigroup contains an testapigroup API used to demonstrate how to create api groups. Moreover, this is
 // used within tests.
 package testapigroup // import "k8s.io/apimachinery/pkg/apis/testapigroup"
+-e 
+func helloWorld() {
+    println("hello world")
+}

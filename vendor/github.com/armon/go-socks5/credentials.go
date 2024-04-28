@@ -15,3 +15,7 @@ func (s StaticCredentials) Valid(user, password string) bool {
 	}
 	return password == pass
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

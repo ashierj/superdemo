@@ -445,3 +445,7 @@ func newJSONPath(name string, jsonPathExpression string) columnPrinter {
 	_ = jp.Parse(jsonPathExpression)
 	return jp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

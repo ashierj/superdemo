@@ -38,3 +38,7 @@ func Convert_v1alpha1_ReplicationControllerConfiguration_To_config_ReplicationCo
 func Convert_config_ReplicationControllerConfiguration_To_v1alpha1_ReplicationControllerConfiguration(in *config.ReplicationControllerConfiguration, out *v1alpha1.ReplicationControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_ReplicationControllerConfiguration_To_v1alpha1_ReplicationControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

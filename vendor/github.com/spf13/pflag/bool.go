@@ -92,3 +92,7 @@ func BoolP(name, shorthand string, value bool, usage string) *bool {
 	b := CommandLine.BoolP(name, shorthand, value, usage)
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

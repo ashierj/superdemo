@@ -189,3 +189,7 @@ func TestCachingObjectLazyDeepCopy(t *testing.T) {
 		t.Errorf("object not deep-copied on change")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

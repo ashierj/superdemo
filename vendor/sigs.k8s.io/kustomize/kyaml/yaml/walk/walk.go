@@ -184,3 +184,7 @@ func (s Sources) setDestNode(node *yaml.RNode, err error) (*yaml.RNode, error) {
 	s[0] = node
 	return node, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

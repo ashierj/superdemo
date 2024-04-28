@@ -386,3 +386,7 @@ func makeDurationPtrSliceMarshaler(u *marshalInfo) (sizer, marshaler) {
 			return b, nil
 		}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -247,3 +247,7 @@ func readFile(file string) ([]byte, error) {
 	}
 	return b, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

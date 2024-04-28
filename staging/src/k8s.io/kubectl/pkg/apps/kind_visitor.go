@@ -73,3 +73,7 @@ func (elem GroupKindElement) GroupMatch(groups ...string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

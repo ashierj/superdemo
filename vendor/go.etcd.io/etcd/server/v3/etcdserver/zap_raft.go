@@ -100,3 +100,7 @@ func (zl *zapRaftLogger) Panic(args ...interface{}) {
 func (zl *zapRaftLogger) Panicf(format string, args ...interface{}) {
 	zl.sugar.Panicf(format, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

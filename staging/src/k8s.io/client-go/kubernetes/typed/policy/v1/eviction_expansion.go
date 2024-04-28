@@ -38,3 +38,7 @@ func (c *evictions) Evict(ctx context.Context, eviction *policy.Eviction) error 
 		Do(ctx).
 		Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

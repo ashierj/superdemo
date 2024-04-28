@@ -1636,3 +1636,7 @@ func (proxier *Proxier) deleteLoadBalancer(hns HostNetworkService, lbHnsID *stri
 	*lbHnsID = ""
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -120,3 +120,7 @@ func (a statusStrategy) ValidateUpdate(ctx context.Context, obj, old runtime.Obj
 func (statusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

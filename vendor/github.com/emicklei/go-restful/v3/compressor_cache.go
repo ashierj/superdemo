@@ -101,3 +101,7 @@ func (b *BoundedCachedCompressors) ReleaseZlibWriter(w *zlib.Writer) {
 		b.zlibWriters <- w
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

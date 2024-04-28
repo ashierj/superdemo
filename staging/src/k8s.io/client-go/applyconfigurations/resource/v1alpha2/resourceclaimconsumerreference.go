@@ -68,3 +68,7 @@ func (b *ResourceClaimConsumerReferenceApplyConfiguration) WithUID(value types.U
 	b.UID = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

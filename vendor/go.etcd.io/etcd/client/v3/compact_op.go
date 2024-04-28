@@ -49,3 +49,7 @@ func (op CompactOp) toRequest() *pb.CompactionRequest {
 func WithCompactPhysical() CompactOption {
 	return func(op *CompactOp) { op.physical = true }
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

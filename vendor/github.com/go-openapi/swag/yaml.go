@@ -448,3 +448,7 @@ func YAMLData(path string) (interface{}, error) {
 
 	return BytesToYAMLDoc(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

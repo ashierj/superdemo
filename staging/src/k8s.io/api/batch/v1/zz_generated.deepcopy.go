@@ -565,3 +565,7 @@ func (in *UncountedTerminatedPods) DeepCopy() *UncountedTerminatedPods {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

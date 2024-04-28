@@ -63,3 +63,7 @@ func TestAddAnnotation(t *testing.T) {
 		"unexpected final annotations",
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

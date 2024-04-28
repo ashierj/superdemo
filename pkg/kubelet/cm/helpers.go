@@ -76,3 +76,7 @@ func buildContainerMapAndRunningSetFromRuntime(ctx context.Context, runtimeServi
 	}
 	return containerMap, runningSet
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

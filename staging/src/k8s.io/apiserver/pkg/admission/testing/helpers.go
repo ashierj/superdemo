@@ -74,3 +74,7 @@ func (r *reinvoker) Handles(operation admission.Operation) bool {
 	r.t.Helper()
 	return r.admission.Handles(operation)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

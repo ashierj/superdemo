@@ -552,3 +552,7 @@ func flattenOptions(dst, src Options) Options {
 	}
 	return dst
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

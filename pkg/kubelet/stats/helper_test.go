@@ -97,3 +97,7 @@ func TestCustomMetrics(t *testing.T) {
 			Value: 2.1,
 		})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

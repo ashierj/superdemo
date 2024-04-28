@@ -163,3 +163,7 @@ func NewGoCollector(opts ...func(o *internal.GoCollectorOptions)) prometheus.Col
 	//nolint:staticcheck // Ignore SA1019 until v2.
 	return prometheus.NewGoCollector(opts...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

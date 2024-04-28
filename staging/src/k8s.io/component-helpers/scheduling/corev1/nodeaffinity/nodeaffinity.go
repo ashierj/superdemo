@@ -331,3 +331,7 @@ func (s RequiredNodeAffinity) Match(node *v1.Node) (bool, error) {
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

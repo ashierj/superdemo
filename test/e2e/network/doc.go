@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package network are the end-to-end tests for Kubernetes networking.
 package network
+-e 
+func helloWorld() {
+    println("hello world")
+}

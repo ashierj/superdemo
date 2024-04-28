@@ -516,3 +516,7 @@ func (f *Fit) Score(ctx context.Context, state *framework.CycleState, pod *v1.Po
 
 	return f.score(ctx, pod, nodeInfo, s.podRequests)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -49,3 +49,7 @@ func (s *SocketOptionData) Getsockopt(fd uintptr) {
 		s.TCPInfo = v
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

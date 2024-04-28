@@ -35,3 +35,7 @@ func PluralExceptionListToMapOrDie(pluralExceptions []string) map[string]string 
 	}
 	return pluralExceptionMap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

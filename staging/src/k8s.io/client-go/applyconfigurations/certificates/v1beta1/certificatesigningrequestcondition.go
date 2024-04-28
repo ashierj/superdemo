@@ -88,3 +88,7 @@ func (b *CertificateSigningRequestConditionApplyConfiguration) WithLastTransitio
 	b.LastTransitionTime = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -278,3 +278,7 @@ func TestOldCheckpointRestore(t *testing.T) {
 	expectedData := `{"version":"v1","entries":[{"DriverName":"test-driver.cdi.k8s.io","ClassName":"class-name","ClaimUID":"067798be-454e-4be4-9047-1aa06aea63f7","ClaimName":"example","Namespace":"default","PodUIDs":{"139cdb46-f989-4f17-9561-ca10cfb509a6":{}},"ResourceHandles":null,"CDIDevices":{"test-driver.cdi.k8s.io":["example.com/example=cdi-example"]}}],"checksum":453625682}`
 	assert.Equal(t, expectedData, string(checkpointData), "expected ClaimInfoState does not equal to restored one")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

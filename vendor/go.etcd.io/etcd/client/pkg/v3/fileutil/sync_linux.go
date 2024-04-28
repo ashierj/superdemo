@@ -33,3 +33,7 @@ func Fsync(f *os.File) error {
 func Fdatasync(f *os.File) error {
 	return syscall.Fdatasync(int(f.Fd()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

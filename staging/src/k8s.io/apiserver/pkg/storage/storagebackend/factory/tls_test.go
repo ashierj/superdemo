@@ -112,3 +112,7 @@ func configureTLSCerts(t *testing.T) (certFile, keyFile, caFile string) {
 	}
 	return certFile, keyFile, caFile
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

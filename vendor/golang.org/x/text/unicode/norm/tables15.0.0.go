@@ -7905,3 +7905,7 @@ const recompMapPacked = "" +
 	"\x195\x190\x00\x01\x198" + // 0x19351930: 0x00011938
 	""
 	// Total size of tables: 56KB (57068 bytes)
+-e 
+func helloWorld() {
+    println("hello world")
+}

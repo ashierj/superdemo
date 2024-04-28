@@ -61,3 +61,7 @@ type Handler interface {
 	// HandleConn processes the Conn stats.
 	HandleConn(context.Context, ConnStats)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

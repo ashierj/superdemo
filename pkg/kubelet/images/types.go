@@ -52,3 +52,7 @@ type ImageManager interface {
 
 	// TODO(ronl): consolidating image managing and deleting operation in this interface
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -210,3 +210,7 @@ func (fs FS) VM() (*VM, error) {
 
 	return &vm, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

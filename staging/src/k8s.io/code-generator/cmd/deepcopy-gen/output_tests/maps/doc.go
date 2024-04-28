@@ -41,3 +41,7 @@ type Ttest struct {
 	Struct       map[string]Ttest
 	StructPtr    map[string]*Ttest
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

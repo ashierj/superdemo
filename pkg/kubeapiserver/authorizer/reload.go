@@ -239,3 +239,7 @@ func (r *reloadableAuthorizerResolver) checkFile(ctx context.Context) {
 	klog.InfoS("reloaded authz config")
 	metrics.RecordAuthorizationConfigAutomaticReloadSuccess(r.apiServerID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

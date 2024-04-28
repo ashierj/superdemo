@@ -87,3 +87,7 @@ func (f *ingressClassInformer) Informer() cache.SharedIndexInformer {
 func (f *ingressClassInformer) Lister() v1beta1.IngressClassLister {
 	return v1beta1.NewIngressClassLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

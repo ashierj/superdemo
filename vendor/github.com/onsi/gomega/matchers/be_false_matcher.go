@@ -35,3 +35,7 @@ func (matcher *BeFalseMatcher) NegatedFailureMessage(actual interface{}) (messag
 		return fmt.Sprintf(`Expected not false but got false\nNegation of "%s" failed`, matcher.Reason)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -17,3 +17,7 @@ func init() {
 		return true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

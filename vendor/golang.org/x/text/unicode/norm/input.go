@@ -107,3 +107,7 @@ func (in *input) hangul(p int) (r rune) {
 	}
 	return r
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

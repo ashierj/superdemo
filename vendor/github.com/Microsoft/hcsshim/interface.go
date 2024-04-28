@@ -112,3 +112,7 @@ type Process interface {
 	// or wait on it.
 	Close() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

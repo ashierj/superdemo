@@ -241,3 +241,7 @@ func (c *serviceCIDRs) ApplyStatus(ctx context.Context, serviceCIDR *networkingv
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -698,3 +698,7 @@ func (p *BaseParser) SetTrace(trace *TraceListener) {
 		p.AddParseListener(p.tracer)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

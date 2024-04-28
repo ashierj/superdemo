@@ -27,3 +27,7 @@ func GetSharedBaseImages(ctx context.Context) (_ string, err error) {
 	span.AddAttributes(trace.StringAttribute("imageData", imageData))
 	return imageData, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

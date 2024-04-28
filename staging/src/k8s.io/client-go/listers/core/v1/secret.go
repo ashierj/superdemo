@@ -68,3 +68,7 @@ type SecretNamespaceLister interface {
 type secretNamespaceLister struct {
 	listers.ResourceIndexer[*v1.Secret]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func NewTestIOStreamsDiscard() genericiooptions.IOStreams {
 		ErrOut: io.Discard,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

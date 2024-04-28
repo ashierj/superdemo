@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=meta.k8s.io
 
 package v1beta1 // import "k8s.io/apimachinery/pkg/apis/meta/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ func (p *ImageTagTransformerPlugin) Transform(m resmap.ResMap) error {
 func NewImageTagTransformerPlugin() resmap.TransformerPlugin {
 	return &ImageTagTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *stripMetaManager) stripFields(managed fieldpath.ManagedFields, manager 
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

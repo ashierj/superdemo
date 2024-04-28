@@ -286,3 +286,7 @@ func createKubeadmCertsSecret(t *testing.T, cfg *kubeadmapi.InitConfiguration, s
 		Data: secretData,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

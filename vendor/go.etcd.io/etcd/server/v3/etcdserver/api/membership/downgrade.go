@@ -78,3 +78,7 @@ func AllowedDowngradeVersion(ver *semver.Version) *semver.Version {
 	// Todo: handle the case that downgrading from higher major version(e.g. downgrade from v4.0 to v3.x)
 	return &semver.Version{Major: ver.Major, Minor: ver.Minor - 1}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

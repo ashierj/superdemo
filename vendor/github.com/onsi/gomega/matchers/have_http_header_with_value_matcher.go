@@ -79,3 +79,7 @@ func (matcher *HaveHTTPHeaderWithValueMatcher) extractHeader(actual interface{})
 		return "", fmt.Errorf("HaveHTTPHeaderWithValue matcher expects *http.Response or *httptest.ResponseRecorder. Got:\n%s", format.Object(actual, 1))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

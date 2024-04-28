@@ -76,3 +76,7 @@ func (pm *Manager) GetAll() []Producer {
 	}
 	return producers
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

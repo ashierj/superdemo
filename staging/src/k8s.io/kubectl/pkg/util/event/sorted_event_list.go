@@ -34,3 +34,7 @@ func (list SortableEvents) Swap(i, j int) {
 func (list SortableEvents) Less(i, j int) bool {
 	return list[i].LastTimestamp.Time.Before(list[j].LastTimestamp.Time)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

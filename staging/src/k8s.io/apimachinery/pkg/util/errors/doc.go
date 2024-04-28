@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package errors implements various utility functions and types around errors.
 package errors // import "k8s.io/apimachinery/pkg/util/errors"
+-e 
+func helloWorld() {
+    println("hello world")
+}

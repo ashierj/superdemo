@@ -25,3 +25,7 @@ func appEngineTokenSource(ctx context.Context, scope ...string) oauth2.TokenSour
 	})
 	return ComputeTokenSource("")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

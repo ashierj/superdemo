@@ -145,3 +145,7 @@ func AttemptToLoadRecycler(path string, config *volume.VolumeConfig) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

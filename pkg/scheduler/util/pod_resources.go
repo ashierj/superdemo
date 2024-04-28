@@ -73,3 +73,7 @@ func GetRequestForResource(resourceName v1.ResourceName, requests *v1.ResourceLi
 		return quantity.DeepCopy()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

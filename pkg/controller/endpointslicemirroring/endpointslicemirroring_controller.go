@@ -537,3 +537,7 @@ func endpointSlicesMirroredForService(endpointSliceLister discoverylisters.Endpo
 	}).AsSelectorPreValidated()
 	return endpointSliceLister.EndpointSlices(namespace).List(esLabelSelector)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

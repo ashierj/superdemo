@@ -477,3 +477,7 @@ var _ = SIGDescribe("Restart", framework.WithSerial(), framework.WithSlow(), fra
 	})
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -200,3 +200,7 @@ func (cache ExperimentCache) Delete(name string) error {
 	path := filepath.Join(cache.Path, cache.hashOf(name)+CACHE_EXT)
 	return os.Remove(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

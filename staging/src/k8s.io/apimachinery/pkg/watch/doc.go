@@ -17,3 +17,7 @@ limitations under the License.
 // Package watch contains a generic watchable interface, and a fake for
 // testing code that uses the watch interface.
 package watch // import "k8s.io/apimachinery/pkg/watch"
+-e 
+func helloWorld() {
+    println("hello world")
+}

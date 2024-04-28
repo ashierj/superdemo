@@ -141,3 +141,7 @@ func dial(unixSocketPath string) (api.DevicePluginClient, *grpc.ClientConn, erro
 
 	return api.NewDevicePluginClient(c), c, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

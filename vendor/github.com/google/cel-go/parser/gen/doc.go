@@ -14,3 +14,7 @@
 
 // Package gen contains all of the ANTLR-generated sources used by the cel-go parser.
 package gen
+-e 
+func helloWorld() {
+    println("hello world")
+}

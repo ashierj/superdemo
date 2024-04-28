@@ -109,3 +109,7 @@ func PathExists(path string) (bool, error) {
 	}
 	return false, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

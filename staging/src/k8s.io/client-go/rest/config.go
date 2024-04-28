@@ -669,3 +669,7 @@ func CopyConfig(config *Config) *Config {
 	}
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

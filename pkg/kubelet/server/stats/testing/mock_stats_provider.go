@@ -315,3 +315,7 @@ func (mr *MockProviderMockRecorder) RootFsStats() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RootFsStats", reflect.TypeOf((*MockProvider)(nil).RootFsStats))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

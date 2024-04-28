@@ -1901,3 +1901,7 @@ var signalList = [...]struct {
 	{31, "SIGUSR2", "user defined signal 2"},
 	{32, "SIGTHR", "thread AST"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ func EnforcePtr(obj interface{}) (reflect.Value, error) {
 	}
 	return v.Elem(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

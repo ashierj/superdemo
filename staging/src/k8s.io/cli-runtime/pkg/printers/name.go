@@ -128,3 +128,7 @@ func printObj(w io.Writer, name string, operation string, shortOutput bool, grou
 	fmt.Fprintf(w, "%s.%s/%s%s\n", strings.ToLower(groupKind.Kind), groupKind.Group, name, operation)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

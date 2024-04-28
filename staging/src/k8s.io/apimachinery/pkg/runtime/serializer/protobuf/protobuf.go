@@ -493,3 +493,7 @@ func (lengthDelimitedFramer) NewFrameWriter(w io.Writer) io.Writer {
 func (lengthDelimitedFramer) NewFrameReader(r io.ReadCloser) io.ReadCloser {
 	return framer.NewLengthDelimitedFrameReader(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

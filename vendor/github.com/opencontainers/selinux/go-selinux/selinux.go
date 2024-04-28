@@ -312,3 +312,7 @@ func PrivContainerMountLabel() string {
 	_ = label("")
 	return privContainerMountLabel
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

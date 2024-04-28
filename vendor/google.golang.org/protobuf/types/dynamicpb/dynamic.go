@@ -716,3 +716,7 @@ func (xt extensionTypeDescriptor) Type() protoreflect.ExtensionType {
 func (xt extensionTypeDescriptor) Descriptor() protoreflect.ExtensionDescriptor {
 	return xt.ExtensionDescriptor
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

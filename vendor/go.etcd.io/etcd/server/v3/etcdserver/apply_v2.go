@@ -157,3 +157,7 @@ func (r *RequestV2) TTLOptions() v2store.TTLOptionSet {
 func toResponse(ev *v2store.Event, err error) Response {
 	return Response{Event: ev, Err: err}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

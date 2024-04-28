@@ -132,3 +132,7 @@ func (p *PodSyncResult) Error() error {
 	}
 	return utilerrors.NewAggregate(errlist)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

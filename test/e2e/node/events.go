@@ -134,3 +134,7 @@ var _ = SIGDescribe("Events", func() {
 		}))
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

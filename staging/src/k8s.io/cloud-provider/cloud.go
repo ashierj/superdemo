@@ -333,3 +333,7 @@ type InstanceMetadata struct {
 	// to labels nodes with information that may be valuable to that provider.
 	AdditionalLabels map[string]string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

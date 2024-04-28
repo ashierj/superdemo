@@ -27,3 +27,7 @@ func (c CompactCoreInfo) Tag() Tag {
 		ScriptID: Script(c>>12) & 0xff,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

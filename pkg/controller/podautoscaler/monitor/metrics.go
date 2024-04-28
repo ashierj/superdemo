@@ -86,3 +86,7 @@ func registerMetrics(extraMetrics ...metrics.Registerable) {
 		legacyregistry.MustRegister(metric)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

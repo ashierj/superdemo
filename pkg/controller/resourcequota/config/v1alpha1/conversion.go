@@ -38,3 +38,7 @@ func Convert_v1alpha1_ResourceQuotaControllerConfiguration_To_config_ResourceQuo
 func Convert_config_ResourceQuotaControllerConfiguration_To_v1alpha1_ResourceQuotaControllerConfiguration(in *config.ResourceQuotaControllerConfiguration, out *v1alpha1.ResourceQuotaControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_ResourceQuotaControllerConfiguration_To_v1alpha1_ResourceQuotaControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

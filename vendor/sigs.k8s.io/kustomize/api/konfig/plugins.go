@@ -136,3 +136,7 @@ func pwdEnv() string {
 	}
 	return "PWD"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

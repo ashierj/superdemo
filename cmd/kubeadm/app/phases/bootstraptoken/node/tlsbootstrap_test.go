@@ -299,3 +299,7 @@ func newMockRbacClientForTest(t *testing.T, clusterRole *rbac.ClusterRole, clust
 	}
 	return client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

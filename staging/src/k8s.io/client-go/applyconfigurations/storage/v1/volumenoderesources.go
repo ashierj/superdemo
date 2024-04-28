@@ -37,3 +37,7 @@ func (b *VolumeNodeResourcesApplyConfiguration) WithCount(value int32) *VolumeNo
 	b.Count = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

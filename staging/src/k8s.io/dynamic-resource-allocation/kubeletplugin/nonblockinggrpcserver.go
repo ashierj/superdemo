@@ -148,3 +148,7 @@ func (s *grpcServer) stop() {
 	}
 	s.logger.V(3).Info("GRPC server stopped")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

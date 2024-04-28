@@ -136,3 +136,7 @@ func (r *LogREST) OverrideMetricsVerb(oldVerb string) (newVerb string) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

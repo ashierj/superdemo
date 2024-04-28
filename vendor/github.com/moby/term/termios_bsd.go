@@ -11,3 +11,7 @@ const (
 	getTermios = unix.TIOCGETA
 	setTermios = unix.TIOCSETA
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

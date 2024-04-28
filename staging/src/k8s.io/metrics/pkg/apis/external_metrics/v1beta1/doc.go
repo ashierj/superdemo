@@ -21,3 +21,7 @@ limitations under the License.
 
 // Package v1beta1 is the v1beta1 version of the external metrics API.
 package v1beta1 // import "k8s.io/metrics/pkg/apis/external_metrics/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

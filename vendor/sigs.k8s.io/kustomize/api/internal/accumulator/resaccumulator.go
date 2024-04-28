@@ -188,3 +188,7 @@ func (ra *ResAccumulator) Intersection(other resmap.ResMap) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

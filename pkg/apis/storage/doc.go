@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=storage.k8s.io
 
 package storage // import "k8s.io/kubernetes/pkg/apis/storage"
+-e 
+func helloWorld() {
+    println("hello world")
+}

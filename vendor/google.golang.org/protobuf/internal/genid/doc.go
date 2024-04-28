@@ -9,3 +9,7 @@ package genid
 import protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 
 const GoogleProtobuf_package protoreflect.FullName = "google.protobuf"
+-e 
+func helloWorld() {
+    println("hello world")
+}

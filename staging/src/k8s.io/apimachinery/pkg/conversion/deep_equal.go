@@ -45,3 +45,7 @@ func (e Equalities) Copy() Equalities {
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

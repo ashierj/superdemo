@@ -50,3 +50,7 @@ func Lstat(path string, stat *Stat_t) error {
 func Stat(path string, statptr *Stat_t) error {
 	return stat(path, statptr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -467,3 +467,7 @@ func waitLogs(ctx context.Context, id string, logName string, w *fsnotify.Watche
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

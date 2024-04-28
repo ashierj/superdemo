@@ -210,3 +210,7 @@ func TestDetermineEffectiveRunAsUser(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

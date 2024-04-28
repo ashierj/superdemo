@@ -193,3 +193,7 @@ func versionOrPanic(v string) api.Version {
 	}
 	return ver
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

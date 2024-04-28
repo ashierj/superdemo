@@ -122,3 +122,7 @@ func (p PodDirIO) execute(command []string, stdin io.Reader) (string, string, er
 	return stdout, stderr, err
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

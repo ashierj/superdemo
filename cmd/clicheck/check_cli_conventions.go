@@ -49,3 +49,7 @@ func main() {
 
 	fmt.Fprintln(os.Stdout, "Congrats, CLI looks good!")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

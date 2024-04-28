@@ -88,3 +88,7 @@ func (b *MatchResourcesApplyConfiguration) WithMatchPolicy(value admissionregist
 	b.MatchPolicy = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -386,3 +386,7 @@ func getStaticPodSingleHash(client clientset.Interface, nodeName string, compone
 	staticPodHash := staticPod.Annotations["kubernetes.io/config.hash"]
 	return staticPodHash, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

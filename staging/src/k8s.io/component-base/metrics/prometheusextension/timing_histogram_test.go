@@ -260,3 +260,7 @@ func BenchmarkTimingHistogramVecEltFetched(b *testing.B) {
 		x = (x + i) % 23
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

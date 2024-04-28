@@ -103,3 +103,7 @@ func (mounter *SafeFormatAndMount) diskLooksUnformatted(disk string) (bool, erro
 func (mounter *SafeFormatAndMount) IsMountPoint(file string) (bool, error) {
 	return false, errUnsupported
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ var ParameterCodec = runtime.NewParameterCodec(scheme)
 func init() {
 	utilruntime.Must(internalversion.AddToScheme(scheme))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

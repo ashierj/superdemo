@@ -25,3 +25,7 @@ type LeaseListerExpansion interface{}
 // LeaseNamespaceListerExpansion allows custom methods to be added to
 // LeaseNamespaceLister.
 type LeaseNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

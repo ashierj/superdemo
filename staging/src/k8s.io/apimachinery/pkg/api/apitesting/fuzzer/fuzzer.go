@@ -50,3 +50,7 @@ func MergeFuzzerFuncs(funcs ...FuzzerFuncs) FuzzerFuncs {
 		return result
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

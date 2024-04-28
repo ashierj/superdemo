@@ -88,3 +88,7 @@ func (f *resourceClaimInformer) Informer() cache.SharedIndexInformer {
 func (f *resourceClaimInformer) Lister() v1alpha2.ResourceClaimLister {
 	return v1alpha2.NewResourceClaimLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -457,3 +457,7 @@ func xor(b1 [20]byte, b2 [20]byte) (xorbytes [20]byte) {
 	}
 	return xorbytes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -185,3 +185,7 @@ func TestMismatchSecretName(t *testing.T) {
 		t.Errorf("Token validation should fail with mismatched name")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

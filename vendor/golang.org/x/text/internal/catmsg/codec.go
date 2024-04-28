@@ -405,3 +405,7 @@ func (d *Decoder) ExecuteSubstitution() {
 		panic("catmsg: unreachable")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -69,3 +69,7 @@ func Sign(privateKey PrivateKey, message []byte) []byte {
 func Verify(publicKey PublicKey, message, sig []byte) bool {
 	return ed25519.Verify(publicKey, message, sig)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

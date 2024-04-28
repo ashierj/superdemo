@@ -35,3 +35,7 @@ func rollbacker(restClientGetter genericclioptions.RESTClientGetter, mapping *me
 
 	return RollbackerFor(mapping.GroupVersionKind.GroupKind(), external)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -323,3 +323,7 @@ func (plugin *flexVolumePlugin) getDeviceMountPath(spec *volume.Spec) (string, e
 func (plugin *flexVolumePlugin) RequiresFSResize() bool {
 	return plugin.capabilities.RequiresFSResize
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

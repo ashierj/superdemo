@@ -12,3 +12,7 @@ package hcsschema
 type GuestOs struct {
 	HostName string `json:"HostName,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

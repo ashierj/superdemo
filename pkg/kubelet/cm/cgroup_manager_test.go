@@ -79,3 +79,7 @@ func Test(t *testing.T) {
 		t.Errorf("Unexpected result, input: %v, expected: %v, actual: %v, err: %v", test.input, test.expected, actual, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

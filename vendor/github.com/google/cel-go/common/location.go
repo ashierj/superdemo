@@ -49,3 +49,7 @@ func (l *SourceLocation) Line() int {
 func (l *SourceLocation) Column() int {
 	return l.column
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ func (eq *evictedQueue) add(value interface{}) {
 	}
 	eq.queue = append(eq.queue, value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

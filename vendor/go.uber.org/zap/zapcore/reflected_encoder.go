@@ -39,3 +39,7 @@ func defaultReflectedEncoder(w io.Writer) ReflectedEncoder {
 	enc.SetEscapeHTML(false)
 	return enc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

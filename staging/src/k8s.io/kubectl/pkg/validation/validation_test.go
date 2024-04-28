@@ -418,3 +418,7 @@ spec:
 		Expect(err).ToNot(HaveOccurred())
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

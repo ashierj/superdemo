@@ -84,3 +84,7 @@ func (b *CephFSPersistentVolumeSourceApplyConfiguration) WithReadOnly(value bool
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

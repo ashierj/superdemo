@@ -42,3 +42,7 @@ func permitAddressReuse(network, addr string, conn syscall.RawConn) error {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

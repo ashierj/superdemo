@@ -363,3 +363,7 @@ func distTmpl() *template.Template {
 	})
 	return distTmplCache
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

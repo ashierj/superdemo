@@ -61,3 +61,7 @@ func (SimpleMetaFactory) Interpret(data []byte) (*schema.GroupVersionKind, error
 	}
 	return &schema.GroupVersionKind{Group: gv.Group, Version: gv.Version, Kind: findKind.Kind}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

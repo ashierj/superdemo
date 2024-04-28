@@ -484,3 +484,7 @@ func (a *application) applyList(parent ast.Node, name string) {
 	}
 	a.iter = saved
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

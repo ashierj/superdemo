@@ -49,3 +49,7 @@ func dialer(address string, timeout time.Duration) (net.Conn, error) {
 func DialAddress(address string) string {
 	return address
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

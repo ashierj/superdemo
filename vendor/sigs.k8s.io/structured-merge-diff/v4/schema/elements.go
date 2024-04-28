@@ -373,3 +373,7 @@ func (s *Schema) CopyInto(dst *Schema) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

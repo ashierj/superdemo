@@ -12,3 +12,7 @@ package hcsschema
 type EnhancedModeVideo struct {
 	ConnectionOptions *RdpConnectionOptions `json:"ConnectionOptions,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -72,3 +72,7 @@ func (in *EndpointSliceList) APILifecycleReplacement() schema.GroupVersionKind {
 func (in *EndpointSliceList) APILifecycleRemoved() (major, minor int) {
 	return 1, 25
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

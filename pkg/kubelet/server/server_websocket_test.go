@@ -259,3 +259,7 @@ func wsRead(conn *websocket.Conn) (byte, []byte, error) {
 		return channel, data, err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

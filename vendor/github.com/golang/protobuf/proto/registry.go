@@ -315,3 +315,7 @@ func RegisteredExtensions(m Message) extensionsByNumber {
 	extensionCache.Store(s, xs)
 	return xs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

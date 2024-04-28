@@ -131,3 +131,7 @@ func verifyCreatesAndUpdates(fakeClient *fake.Clientset, expectedCreates, expect
 
 	return utilerrors.NewAggregate(errors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func (b *PodDNSConfigApplyConfiguration) WithOptions(values ...*PodDNSConfigOpti
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

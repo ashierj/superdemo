@@ -70,3 +70,7 @@ func handleCompactedErrorForPaging(continueKey, keyPrefix string) error {
 	statusError.ErrStatus.ListMeta.Continue = newToken
 	return statusError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

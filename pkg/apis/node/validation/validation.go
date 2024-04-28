@@ -87,3 +87,7 @@ func validateTolerations(tolerations []core.Toleration, fldPath *field.Path) fie
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -247,3 +247,7 @@ func newExtra(h http.Header, headerPrefixes []string) map[string][]string {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

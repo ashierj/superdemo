@@ -706,3 +706,7 @@ func TestServerWithSelectiveListeningAddress(t *testing.T) {
 	// test the handler
 	testHandler(hcs, nsn, http.StatusServiceUnavailable, 0, t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ func TestGetBootTime(t *testing.T) {
 		t.Errorf("Invalid system uptime")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -256,3 +256,7 @@ func (b *ReplicationControllerApplyConfiguration) WithStatus(value *ReplicationC
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

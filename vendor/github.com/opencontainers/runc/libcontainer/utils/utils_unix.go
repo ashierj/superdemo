@@ -115,3 +115,7 @@ func NewSockPair(name string) (parent *os.File, child *os.File, err error) {
 	}
 	return os.NewFile(uintptr(fds[1]), name+"-p"), os.NewFile(uintptr(fds[0]), name+"-c"), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

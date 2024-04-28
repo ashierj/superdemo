@@ -136,3 +136,7 @@ func (c *FakeAPIServices) Patch(ctx context.Context, name string, pt types.Patch
 	}
 	return obj.(*v1.APIService), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

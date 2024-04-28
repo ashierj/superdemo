@@ -119,3 +119,7 @@ func parseProcSchedstat(contents string) (ProcSchedstat, error) {
 
 	return stats, errors.New("could not parse schedstat")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

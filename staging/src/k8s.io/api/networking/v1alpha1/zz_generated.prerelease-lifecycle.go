@@ -92,3 +92,7 @@ func (in *ServiceCIDRList) APILifecycleDeprecated() (major, minor int) {
 func (in *ServiceCIDRList) APILifecycleRemoved() (major, minor int) {
 	return 1, 33
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

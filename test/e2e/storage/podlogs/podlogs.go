@@ -370,3 +370,7 @@ func WatchPods(ctx context.Context, cs clientset.Interface, ns string, to io.Wri
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func (c *ClientAuthentication) InjectAuthentication(values url.Values, headers h
 		values.Set("client_secret", c.ClientSecret)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

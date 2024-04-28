@@ -43,3 +43,7 @@ func (c *Criu) FeatureCheck(features *rpc.CriuFeatures) (*rpc.CriuFeatures, erro
 
 	return features, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

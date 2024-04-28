@@ -26,3 +26,7 @@ func WithContentType(handler http.Handler, contentType string) http.Handler {
 		handler.ServeHTTP(w, r)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -703,3 +703,7 @@ func verifyAttachDetachCalls(t *testing.T, testPlugin *controllervolumetesting.T
 		t.Fatalf("Fatal error encountered in the testing volume plugin")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

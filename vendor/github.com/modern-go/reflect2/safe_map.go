@@ -99,3 +99,7 @@ func (iter *safeMapIterator) Next() (interface{}, interface{}) {
 func (iter *safeMapIterator) UnsafeNext() (unsafe.Pointer, unsafe.Pointer) {
 	panic("does not support unsafe operation")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -729,3 +729,7 @@ func storeObjectUpdate(logger klog.Logger, store cache.Store, obj interface{}, c
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

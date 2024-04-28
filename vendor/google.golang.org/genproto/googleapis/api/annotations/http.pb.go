@@ -780,3 +780,7 @@ func file_google_api_http_proto_init() {
 	file_google_api_http_proto_goTypes = nil
 	file_google_api_http_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -576,3 +576,7 @@ func (cs *awsCredentialSource) getMetadataRoleName(headers map[string]string) (s
 
 	return string(respBody), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

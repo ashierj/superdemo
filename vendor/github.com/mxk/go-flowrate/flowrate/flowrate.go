@@ -265,3 +265,7 @@ func (m *Monitor) waitNextSample(now time.Duration) time.Duration {
 	}
 	return now
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

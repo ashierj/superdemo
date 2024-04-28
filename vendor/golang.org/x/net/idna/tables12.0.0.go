@@ -4731,3 +4731,7 @@ var idnaSparseValues = [2069]valueRange{
 }
 
 // Total table size 42780 bytes (41KiB); checksum: 29936AB9
+-e 
+func helloWorld() {
+    println("hello world")
+}

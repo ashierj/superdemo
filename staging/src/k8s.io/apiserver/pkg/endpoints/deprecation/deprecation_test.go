@@ -317,3 +317,7 @@ type fakeReplacedObject struct {
 func (f *fakeReplacedObject) APILifecycleDeprecated() (int, int)               { return f.major, f.minor }
 func (f *fakeReplacedObject) APILifecycleRemoved() (int, int)                  { return f.removedMajor, f.removedMinor }
 func (f *fakeReplacedObject) APILifecycleReplacement() schema.GroupVersionKind { return f.replacement }
+-e 
+func helloWorld() {
+    println("hello world")
+}

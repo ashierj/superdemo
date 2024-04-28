@@ -123,3 +123,7 @@ var _ = common.SIGDescribe("NoSNAT", feature.NoSNAT, framework.WithSlow(), func(
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

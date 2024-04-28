@@ -394,3 +394,7 @@ func (v multiGroupVersioner) Identifier() string {
 	}
 	return string(identifier)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

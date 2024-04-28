@@ -31,3 +31,7 @@ const (
 	GreaterThan  Operator = "gt"
 	LessThan     Operator = "lt"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -147,3 +147,7 @@ func TestCleanerExpiredAt(t *testing.T) {
 	}
 	verifyFunc()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

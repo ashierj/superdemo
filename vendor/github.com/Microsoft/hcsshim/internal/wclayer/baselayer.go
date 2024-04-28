@@ -180,3 +180,7 @@ func (w *baseLayerWriter) Close() (err error) {
 	}
 	return w.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

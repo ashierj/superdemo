@@ -59,3 +59,7 @@ apiVersion: v1
 	}
 	t.Logf("%#v", out)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

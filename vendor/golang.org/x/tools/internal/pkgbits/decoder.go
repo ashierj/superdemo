@@ -515,3 +515,7 @@ func (pr *PkgDecoder) PeekObj(idx Index) (string, string, CodeObj) {
 
 	return path, name, tag
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

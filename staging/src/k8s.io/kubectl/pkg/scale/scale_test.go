@@ -769,3 +769,7 @@ func createFakeScaleClient(resource string, resourceName string, replicas int, e
 	})
 	return scaleClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -209,3 +209,7 @@ func (encoder *stringModeStringEncoder) Encode(ptr unsafe.Pointer, stream *Strea
 func (encoder *stringModeStringEncoder) IsEmpty(ptr unsafe.Pointer) bool {
 	return encoder.elemEncoder.IsEmpty(ptr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

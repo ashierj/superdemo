@@ -161,3 +161,7 @@ func (s *Server) Resume() {
 		s.setServingStatusLocked(service, healthpb.HealthCheckResponse_SERVING)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

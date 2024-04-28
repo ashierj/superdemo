@@ -29,3 +29,7 @@ type Ttest struct {
 	Struct    *Ttest
 	StructPtr **Ttest
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

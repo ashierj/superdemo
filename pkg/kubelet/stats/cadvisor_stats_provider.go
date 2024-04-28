@@ -504,3 +504,7 @@ func getCadvisorContainerInfo(ca cadvisor.Interface) (map[string]cadvisorapiv2.C
 	}
 	return infos, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

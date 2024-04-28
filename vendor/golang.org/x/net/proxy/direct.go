@@ -29,3 +29,7 @@ func (direct) DialContext(ctx context.Context, network, addr string) (net.Conn, 
 	var d net.Dialer
 	return d.DialContext(ctx, network, addr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -57,3 +57,7 @@ func SetDefaults_ParamRef(obj *admissionregistrationv1alpha1.ParamRef) {
 		obj.ParameterNotFoundAction = &v
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

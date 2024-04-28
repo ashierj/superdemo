@@ -22,3 +22,7 @@ The GNU PO file specification is at
 http://www.gnu.org/software/gettext/manual/html_node/PO-Files.html.
 */
 package po
+-e 
+func helloWorld() {
+    println("hello world")
+}

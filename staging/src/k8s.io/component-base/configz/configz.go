@@ -123,3 +123,7 @@ func write(w http.ResponseWriter) error {
 	_, err = w.Write(b)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

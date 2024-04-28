@@ -923,3 +923,7 @@ func SelectorFromValidatedSet(ls Set) Selector {
 func ParseToRequirements(selector string) ([]Requirement, error) {
 	return parse(selector)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

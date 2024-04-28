@@ -28,3 +28,7 @@ limitations under the License.
 //   - (Alpha only) IPAMFromCloud is the same as CloudAllocator (synchronizes
 //     from cloud into the cluster.)
 package ipam
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -69,3 +69,7 @@ func cacheRegexp(r *re.Regexp) {
 		reDict.Store(newCache)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

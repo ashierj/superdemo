@@ -64,3 +64,7 @@ func (m *SatisfyMatcher) FailureMessage(actual interface{}) (message string) {
 func (m *SatisfyMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "to not satisfy predicate", m.Predicate)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ type TestResource struct {
 	metav1.ObjectMeta `json:"metadata"`
 	Value             int `json:"value"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

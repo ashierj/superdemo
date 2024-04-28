@@ -825,3 +825,7 @@ func verifyThatTaintIsGone(ctx context.Context, c clientset.Interface, nodeName 
 		framework.Failf("Failed removing taint " + taint.ToString() + " of the node " + nodeName)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

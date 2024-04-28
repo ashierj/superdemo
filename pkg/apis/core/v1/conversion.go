@@ -554,3 +554,7 @@ func Convert_core_PersistentVolumeSpec_To_v1_PersistentVolumeSpec(in *core.Persi
 func Convert_v1_PersistentVolumeSpec_To_core_PersistentVolumeSpec(in *v1.PersistentVolumeSpec, out *core.PersistentVolumeSpec, s conversion.Scope) error {
 	return autoConvert_v1_PersistentVolumeSpec_To_core_PersistentVolumeSpec(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

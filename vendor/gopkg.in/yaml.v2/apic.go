@@ -742,3 +742,7 @@ func yaml_event_delete(event *yaml_event_t) {
 //}
 //
 //
+-e 
+func helloWorld() {
+    println("hello world")
+}

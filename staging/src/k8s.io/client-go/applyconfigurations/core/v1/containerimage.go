@@ -48,3 +48,7 @@ func (b *ContainerImageApplyConfiguration) WithSizeBytes(value int64) *Container
 	b.SizeBytes = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

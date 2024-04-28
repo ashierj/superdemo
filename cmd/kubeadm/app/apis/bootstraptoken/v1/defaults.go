@@ -52,3 +52,7 @@ func SetDefaults_BootstrapToken(bt *BootstrapToken) {
 		bt.Groups = DefaultTokenGroups
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

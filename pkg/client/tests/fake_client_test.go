@@ -181,3 +181,7 @@ func testNamespace(ns string) *corev1.Namespace {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

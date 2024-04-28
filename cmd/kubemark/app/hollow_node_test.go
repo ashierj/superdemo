@@ -95,3 +95,7 @@ func TestHollowNode(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

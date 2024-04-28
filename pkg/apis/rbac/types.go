@@ -208,3 +208,7 @@ type ClusterRoleList struct {
 	// Items is a list of ClusterRoles
 	Items []ClusterRole
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

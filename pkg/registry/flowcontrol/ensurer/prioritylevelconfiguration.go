@@ -47,3 +47,7 @@ func plcSpecEqualish(expected, actual *flowcontrolv1.PriorityLevelConfiguration)
 	}
 	return equality.Semantic.DeepEqual(copiedExpected.Spec, actual.Spec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

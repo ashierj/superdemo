@@ -624,3 +624,7 @@ func (a receiverOnlyObjectVal) Type() ref.Type {
 func (a receiverOnlyObjectVal) Value() any {
 	return types.NoSuchOverloadErr()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

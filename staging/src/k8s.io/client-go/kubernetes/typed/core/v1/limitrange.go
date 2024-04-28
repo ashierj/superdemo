@@ -206,3 +206,7 @@ func (c *limitRanges) Apply(ctx context.Context, limitRange *corev1.LimitRangeAp
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

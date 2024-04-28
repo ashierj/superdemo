@@ -180,3 +180,7 @@ func serveSCTPPort(port, value string) {
 		}(conn)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

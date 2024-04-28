@@ -193,3 +193,7 @@ func TestCalculateWindowsResources(t *testing.T) {
 		assert.Equal(t, test.expected, windowsContainerResources)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

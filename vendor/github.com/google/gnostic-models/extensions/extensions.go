@@ -62,3 +62,7 @@ func Main(handler extensionHandler) {
 	responseBytes, _ := proto.Marshal(response)
 	os.Stdout.Write(responseBytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func WithUnaryServerInterceptor(i UnaryServerInterceptor) ServerOpt {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

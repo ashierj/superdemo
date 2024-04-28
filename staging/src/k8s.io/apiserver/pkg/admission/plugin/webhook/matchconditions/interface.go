@@ -35,3 +35,7 @@ type Matcher interface {
 	// Match is used to take cel evaluations and convert into decisions
 	Match(ctx context.Context, versionedAttr *admission.VersionedAttributes, versionedParams runtime.Object, authz authorizer.Authorizer) MatchResult
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

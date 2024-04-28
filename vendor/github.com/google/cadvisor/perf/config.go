@@ -125,3 +125,7 @@ func (g *Group) UnmarshalJSON(b []byte) error {
 	}
 	return fmt.Errorf("unsupported type")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

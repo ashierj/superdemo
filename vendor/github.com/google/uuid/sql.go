@@ -57,3 +57,7 @@ func (uuid *UUID) Scan(src interface{}) error {
 func (uuid UUID) Value() (driver.Value, error) {
 	return uuid.String(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -165,3 +165,7 @@ func (proxier *metaProxier) OnServiceCIDRsChanged(cidrs []string) {
 	proxier.ipv4Proxier.OnServiceCIDRsChanged(cidrs)
 	proxier.ipv6Proxier.OnServiceCIDRsChanged(cidrs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

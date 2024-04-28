@@ -149,3 +149,7 @@ func (c *FakeComponentStatuses) Apply(ctx context.Context, componentStatus *core
 	}
 	return obj.(*v1.ComponentStatus), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

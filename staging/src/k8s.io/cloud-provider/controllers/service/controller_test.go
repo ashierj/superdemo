@@ -2426,3 +2426,7 @@ func (f *spyWorkQueue) AddAfter(key interface{}, delay time.Duration) {
 func (f *spyWorkQueue) getItems() []spyQueueItem {
 	return f.items
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

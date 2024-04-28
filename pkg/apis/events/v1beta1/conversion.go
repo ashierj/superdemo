@@ -85,3 +85,7 @@ func AddFieldLabelConversionsForEvent(scheme *runtime.Scheme) error {
 		},
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

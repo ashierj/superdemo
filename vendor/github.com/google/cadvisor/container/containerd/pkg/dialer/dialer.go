@@ -90,3 +90,7 @@ func timeoutDialer(address string, timeout time.Duration) (net.Conn, error) {
 		return nil, errors.Errorf("dial %s: timeout", address)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

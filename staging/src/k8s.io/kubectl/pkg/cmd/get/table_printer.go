@@ -92,3 +92,7 @@ func decodeIntoTable(obj runtime.Object) (runtime.Object, error) {
 	}
 	return table, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

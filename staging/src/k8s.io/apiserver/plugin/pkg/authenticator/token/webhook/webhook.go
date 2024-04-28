@@ -325,3 +325,7 @@ func v1beta1UserToV1User(u authenticationv1beta1.UserInfo) authenticationv1.User
 		Extra:    extra,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

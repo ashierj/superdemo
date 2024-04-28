@@ -167,3 +167,7 @@ func (pl *TaintToleration) ScoreExtensions() framework.ScoreExtensions {
 func New(_ context.Context, _ runtime.Object, h framework.Handle) (framework.Plugin, error) {
 	return &TaintToleration{handle: h}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

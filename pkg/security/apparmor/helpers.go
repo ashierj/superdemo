@@ -103,3 +103,7 @@ func getProfileFromPodAnnotations(annotations map[string]string, containerName s
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -170,3 +170,7 @@ func (t *DateTime) DeepCopy() *DateTime {
 	t.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

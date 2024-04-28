@@ -28,3 +28,7 @@ func labelFromCommonLabels(commonLabels map[string]string) *Label {
 		IncludeSelectors: true,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

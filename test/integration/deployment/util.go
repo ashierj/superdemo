@@ -455,3 +455,7 @@ func (d *deploymentTester) checkDeploymentStatusReplicasFields(replicas, updated
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

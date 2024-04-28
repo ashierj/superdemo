@@ -127,3 +127,7 @@ func SetDefaults_ServiceReference(obj *admissionregistrationv1beta1.ServiceRefer
 		obj.Port = utilpointer.Int32(443)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -222,3 +222,7 @@ func getDNSServerList() ([]string, error) {
 	}
 	return dnsServerList, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

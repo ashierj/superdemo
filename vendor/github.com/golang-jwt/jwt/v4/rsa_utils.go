@@ -103,3 +103,7 @@ func ParseRSAPublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
 
 	return pkey, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

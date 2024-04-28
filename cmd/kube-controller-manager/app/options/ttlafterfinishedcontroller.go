@@ -59,3 +59,7 @@ func (o *TTLAfterFinishedControllerOptions) Validate() []error {
 	errs := []error{}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

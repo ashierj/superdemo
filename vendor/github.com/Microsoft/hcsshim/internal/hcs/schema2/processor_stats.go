@@ -17,3 +17,7 @@ type ProcessorStats struct {
 
 	RuntimeKernel100ns uint64 `json:"RuntimeKernel100ns,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

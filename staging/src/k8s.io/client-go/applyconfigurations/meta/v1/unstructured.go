@@ -135,3 +135,7 @@ func (e *extractor) extractUnstructured(object *unstructured.Unstructured, field
 	result.SetAPIVersion(object.GetAPIVersion())
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

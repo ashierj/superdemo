@@ -116,3 +116,7 @@ func (nu *NullUUID) UnmarshalJSON(data []byte) error {
 	nu.Valid = err == nil
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

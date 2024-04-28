@@ -880,3 +880,7 @@ func goPackage(v interface{}) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

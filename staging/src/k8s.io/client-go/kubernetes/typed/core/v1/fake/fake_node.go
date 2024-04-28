@@ -184,3 +184,7 @@ func (c *FakeNodes) ApplyStatus(ctx context.Context, node *corev1.NodeApplyConfi
 	}
 	return obj.(*v1.Node), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

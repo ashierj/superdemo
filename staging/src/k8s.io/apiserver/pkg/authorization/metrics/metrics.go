@@ -90,3 +90,7 @@ func (a *instrumentedAuthorizer) Authorize(ctx context.Context, attributes autho
 	}
 	return decision, reason, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

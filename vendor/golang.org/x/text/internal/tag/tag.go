@@ -98,3 +98,7 @@ func FixCase(form string, b []byte) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

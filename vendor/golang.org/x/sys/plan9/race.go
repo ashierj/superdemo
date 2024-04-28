@@ -28,3 +28,7 @@ func raceReadRange(addr unsafe.Pointer, len int) {
 func raceWriteRange(addr unsafe.Pointer, len int) {
 	runtime.RaceWriteRange(addr, len)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

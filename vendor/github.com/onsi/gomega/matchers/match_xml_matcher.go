@@ -132,3 +132,7 @@ type xmlNode struct {
 	Content   []byte
 	Nodes     []*xmlNode
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

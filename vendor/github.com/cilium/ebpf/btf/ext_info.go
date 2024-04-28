@@ -719,3 +719,7 @@ func parseCOREReloRecords(r io.Reader, bo binary.ByteOrder, recordSize uint32, r
 
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -108,3 +108,7 @@ func (pnc *PersistedNamespaceConfig) Remove() error {
 	pnc.stored = false
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

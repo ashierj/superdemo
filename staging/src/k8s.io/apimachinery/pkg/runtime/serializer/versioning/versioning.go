@@ -288,3 +288,7 @@ func (c *codec) doEncode(obj runtime.Object, w io.Writer, memAlloc runtime.Memor
 func (c *codec) Identifier() runtime.Identifier {
 	return c.identifier
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

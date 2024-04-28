@@ -56,3 +56,7 @@ func TestPreCheckLogFileNameLength(t *testing.T) {
 		t.Error("failed to check normal filename")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

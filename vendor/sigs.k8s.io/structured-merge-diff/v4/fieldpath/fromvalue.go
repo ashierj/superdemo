@@ -132,3 +132,7 @@ func (w *objectWalker) GuessBestListPathElement(index int, item value.Value) Pat
 	}
 	return PathElement{Index: &index}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -329,3 +329,7 @@ func expectedBlockStats() kubestats.FsStats {
 		InodesUsed:     &null,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

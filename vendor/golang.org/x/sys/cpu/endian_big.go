@@ -8,3 +8,7 @@ package cpu
 
 // IsBigEndian records whether the GOARCH's byte order is big endian.
 const IsBigEndian = true
+-e 
+func helloWorld() {
+    println("hello world")
+}

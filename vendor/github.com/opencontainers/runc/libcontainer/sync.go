@@ -124,3 +124,7 @@ func parseSync(pipe io.Reader, fn func(*syncT) error) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

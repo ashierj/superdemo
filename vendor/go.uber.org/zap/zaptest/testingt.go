@@ -45,3 +45,7 @@ type TestingT interface {
 // Note: We currently only rely on Logf. We are including Errorf and FailNow
 // in the interface in anticipation of future need since we can't extend the
 // interface without a breaking change.
+-e 
+func helloWorld() {
+    println("hello world")
+}

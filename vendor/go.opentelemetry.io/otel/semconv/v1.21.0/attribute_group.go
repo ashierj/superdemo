@@ -1875,3 +1875,7 @@ const (
 func UserAgentOriginal(val string) attribute.KeyValue {
 	return UserAgentOriginalKey.String(val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

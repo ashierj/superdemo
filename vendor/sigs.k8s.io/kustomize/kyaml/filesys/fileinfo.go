@@ -32,3 +32,7 @@ func (fi fileInfo) IsDir() bool { return fi.node.isNodeADir() }
 
 // Sys should return underlying data source, but it now returns nil
 func (fi fileInfo) Sys() interface{} { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

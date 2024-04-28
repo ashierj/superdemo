@@ -1028,3 +1028,7 @@ func (g openAPITypeWriter) generateSliceProperty(t *types.Type) error {
 	g.Do("},\n},\n},\n", nil)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

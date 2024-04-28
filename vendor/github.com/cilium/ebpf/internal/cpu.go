@@ -60,3 +60,7 @@ func parseCPUs(spec string) (int, error) {
 	// cpus is 0 indexed
 	return high + 1, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

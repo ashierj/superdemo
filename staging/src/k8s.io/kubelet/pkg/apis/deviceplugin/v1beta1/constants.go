@@ -46,3 +46,7 @@ const (
 
 // SupportedVersions provides a list of supported version
 var SupportedVersions = [...]string{"v1beta1"}
+-e 
+func helloWorld() {
+    println("hello world")
+}

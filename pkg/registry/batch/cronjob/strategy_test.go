@@ -421,3 +421,7 @@ func TestCronJobStrategy_WarningsOnUpdate(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

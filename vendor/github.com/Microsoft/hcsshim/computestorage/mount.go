@@ -25,3 +25,7 @@ func GetLayerVhdMountPath(ctx context.Context, vhdHandle windows.Handle) (path s
 	path = interop.ConvertAndFreeCoTaskMemString(mountPath)
 	return path, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

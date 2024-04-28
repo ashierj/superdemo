@@ -44,3 +44,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 func (g *group) V1alpha2() v1alpha2.Interface {
 	return v1alpha2.New(g.factory, g.namespace, g.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

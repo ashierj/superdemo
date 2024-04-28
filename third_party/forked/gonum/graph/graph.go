@@ -151,3 +151,7 @@ func Copy(dst Builder, src Graph) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

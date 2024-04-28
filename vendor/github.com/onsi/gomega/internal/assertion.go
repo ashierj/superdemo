@@ -159,3 +159,7 @@ func vetActuals(actuals []interface{}, skipIndex int) (bool, string) {
 	}
 	return true, ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

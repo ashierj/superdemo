@@ -270,3 +270,7 @@ func (l *tlsListener) Close() error {
 	<-l.donec
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

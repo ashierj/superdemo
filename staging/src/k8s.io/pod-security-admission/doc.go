@@ -17,3 +17,7 @@ limitations under the License.
 // Package podsecurityadmission is a placeholder until the initial podsecurity implementation is
 // added.
 package podsecurityadmission // import "k8s.io/pod-security-admission"
+-e 
+func helloWorld() {
+    println("hello world")
+}

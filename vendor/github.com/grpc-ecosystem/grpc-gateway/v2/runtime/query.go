@@ -336,3 +336,7 @@ func parseMessage(msgDescriptor protoreflect.MessageDescriptor, value string) (p
 
 	return protoreflect.ValueOfMessage(msg.ProtoReflect()), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

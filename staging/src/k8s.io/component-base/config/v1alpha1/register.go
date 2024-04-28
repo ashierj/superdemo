@@ -29,3 +29,7 @@ var (
 	// AddToScheme is a global function that registers this API group & version to a scheme
 	AddToScheme = localSchemeBuilder.AddToScheme
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

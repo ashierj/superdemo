@@ -173,3 +173,7 @@ func writeAsCSV(vals []string) (string, error) {
 	w.Flush()
 	return strings.TrimSuffix(b.String(), "\n"), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

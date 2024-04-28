@@ -715,3 +715,7 @@ func endpointsEqual(left, right []url.URL) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

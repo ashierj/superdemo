@@ -1242,3 +1242,7 @@ func (r *Lexer) WantColon() {
 	r.wantSep = ':'
 	r.firstElement = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

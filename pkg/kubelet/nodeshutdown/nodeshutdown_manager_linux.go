@@ -491,3 +491,7 @@ type podShutdownGroup struct {
 	kubeletconfig.ShutdownGracePeriodByPodPriority
 	Pods []*v1.Pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

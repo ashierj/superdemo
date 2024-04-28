@@ -148,3 +148,7 @@ func TestValidateUpdate(t *testing.T) {
 		t.Errorf("ValidateUpdate should fail on name change")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

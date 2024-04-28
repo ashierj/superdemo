@@ -574,3 +574,7 @@ func HashByRev(ctx context.Context, cid types.ID, cc *http.Client, url string, r
 	}
 	return hashResp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

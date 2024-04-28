@@ -291,3 +291,7 @@ func typeFor(s string) (t reflect.Type) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

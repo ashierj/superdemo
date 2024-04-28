@@ -100,3 +100,7 @@ func (handler *auditHandler) logAnnotations(ctx context.Context, a Attributes) {
 
 	audit.AddAuditAnnotationsMap(ctx, annotations)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

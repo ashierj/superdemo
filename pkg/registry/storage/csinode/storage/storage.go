@@ -61,3 +61,7 @@ func NewStorage(optsGetter generic.RESTOptionsGetter) (*CSINodeStorage, error) {
 		CSINode: &REST{store},
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

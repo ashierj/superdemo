@@ -102,3 +102,7 @@ func (ml *MultiLock) Identity() string {
 func ConcatRawRecord(primaryRaw, secondaryRaw []byte) []byte {
 	return bytes.Join([][]byte{primaryRaw, secondaryRaw}, []byte(","))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

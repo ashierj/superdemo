@@ -98,3 +98,7 @@ func FeatureTest(name, version string, fn FeatureTestFn) func() error {
 		return ft.result
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

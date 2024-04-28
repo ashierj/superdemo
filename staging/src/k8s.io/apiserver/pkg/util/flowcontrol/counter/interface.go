@@ -31,3 +31,7 @@ type GoRoutineCounter interface {
 	// waiting on that something.
 	Add(delta int)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

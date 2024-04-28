@@ -73,3 +73,7 @@ func (o *NodeLifecycleControllerOptions) Validate() []error {
 	errs := []error{}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

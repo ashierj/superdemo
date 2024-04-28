@@ -92,3 +92,7 @@ func (s ServingMode) String() string {
 		return "INVALID_MODE"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

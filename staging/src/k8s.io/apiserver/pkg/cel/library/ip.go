@@ -327,3 +327,7 @@ func parseIPAddr(raw string) (netip.Addr, error) {
 
 	return addr, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

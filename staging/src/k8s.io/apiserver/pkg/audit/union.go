@@ -69,3 +69,7 @@ func (u union) String() string {
 	}
 	return fmt.Sprintf("union[%s]", strings.Join(backendStrings, ","))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

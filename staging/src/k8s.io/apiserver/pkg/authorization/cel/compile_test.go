@@ -156,3 +156,7 @@ func nativeTypeToCELType(t *testing.T, nativeType reflect.Type, field func(name 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

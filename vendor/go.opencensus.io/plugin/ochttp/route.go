@@ -59,3 +59,7 @@ type addedTagsKey struct{}
 type addedTags struct {
 	t []tag.Mutator
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -148,3 +148,7 @@ func (c *availabilityCollector) ForgetAPIService(apiServiceKey string) {
 
 	delete(c.availabilities, apiServiceKey)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

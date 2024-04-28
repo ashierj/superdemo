@@ -10,3 +10,7 @@ import _ "embed"
 
 //go:embed editions_defaults.binpb
 var Defaults []byte
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -386,3 +386,7 @@ func mergeMapOfMessage(dst, src pointer, f *coderFieldInfo, opts mergeOptions) {
 		dstm.SetMapIndex(iter.Key(), val)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

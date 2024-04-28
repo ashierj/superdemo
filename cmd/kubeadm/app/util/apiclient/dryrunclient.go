@@ -266,3 +266,7 @@ func PrintBytesWithLinePrefix(w io.Writer, objBytes []byte, linePrefix string) {
 		fmt.Fprintf(w, "%s%s\n", linePrefix, scanner.Text())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

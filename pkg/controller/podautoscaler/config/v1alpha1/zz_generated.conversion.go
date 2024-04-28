@@ -104,3 +104,7 @@ func autoConvert_config_HPAControllerConfiguration_To_v1alpha1_HPAControllerConf
 	out.HorizontalPodAutoscalerInitialReadinessDelay = in.HorizontalPodAutoscalerInitialReadinessDelay
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

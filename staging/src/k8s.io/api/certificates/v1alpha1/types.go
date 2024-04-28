@@ -104,3 +104,7 @@ type ClusterTrustBundleList struct {
 	// items is a collection of ClusterTrustBundle objects
 	Items []ClusterTrustBundle `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

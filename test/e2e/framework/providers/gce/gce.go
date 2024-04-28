@@ -419,3 +419,7 @@ func GetClusterID(ctx context.Context, c clientset.Interface) (string, error) {
 	}
 	return clusterID, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

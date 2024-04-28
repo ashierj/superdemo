@@ -60,3 +60,7 @@ func (b *ConfigMapProjectionApplyConfiguration) WithOptional(value bool) *Config
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

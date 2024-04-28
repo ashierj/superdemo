@@ -34,3 +34,7 @@ func alwaysAllowDelayFiveSeconds(ar v1.AdmissionReview) *v1.AdmissionResponse {
 	reviewResponse.Result = &metav1.Status{Message: "this webhook allows all requests"}
 	return &reviewResponse
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

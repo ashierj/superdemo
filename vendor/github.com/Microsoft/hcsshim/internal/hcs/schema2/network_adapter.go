@@ -15,3 +15,7 @@ type NetworkAdapter struct {
 	// The I/O virtualization (IOV) offloading configuration.
 	IovSettings *IovSettings `json:"IovSettings,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

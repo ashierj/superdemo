@@ -149,3 +149,7 @@ func SetObjectMeta(obj map[string]interface{}, objectMeta *metav1.ObjectMeta) er
 	obj["metadata"] = metadata
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ var (
 func init() {
 	prometheus.MustRegister(currentAuthRevision)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

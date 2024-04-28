@@ -65,3 +65,7 @@ func (m InheritanceMatcher) Match(want ...language.Tag) (language.Tag, int, lang
 	}
 	return language.Und, 0, language.No
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

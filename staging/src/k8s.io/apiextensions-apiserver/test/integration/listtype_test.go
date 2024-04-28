@@ -224,3 +224,7 @@ func TestListTypes(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

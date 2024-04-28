@@ -39,3 +39,7 @@ func (mc *MockCheckpoint) UnmarshalCheckpoint(blob []byte) error {
 func (mc *MockCheckpoint) VerifyChecksum() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

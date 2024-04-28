@@ -167,3 +167,7 @@ func logf(c appengine.Context, level int64, format string, args ...interface{}) 
 	}
 	fn(format, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

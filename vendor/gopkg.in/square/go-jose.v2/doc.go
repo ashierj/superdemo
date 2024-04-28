@@ -25,3 +25,7 @@ recipients.
 
 */
 package jose
+-e 
+func helloWorld() {
+    println("hello world")
+}

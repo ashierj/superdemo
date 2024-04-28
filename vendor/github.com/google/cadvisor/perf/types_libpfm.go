@@ -52,3 +52,7 @@ type readerCloser interface {
 	io.Reader
 	io.Closer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

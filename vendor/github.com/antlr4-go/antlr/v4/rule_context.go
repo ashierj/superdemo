@@ -38,3 +38,7 @@ type RuleContext interface {
 
 	String([]string, RuleContext) string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

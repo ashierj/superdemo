@@ -46,3 +46,7 @@ func (b *ConfigMapEnvSourceApplyConfiguration) WithOptional(value bool) *ConfigM
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

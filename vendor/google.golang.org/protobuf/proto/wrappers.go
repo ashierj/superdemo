@@ -27,3 +27,7 @@ func Uint64(v uint64) *uint64 { return &v }
 
 // String stores v in a new string value and returns a pointer to it.
 func String(v string) *string { return &v }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func (b *ResourceFieldSelectorApplyConfiguration) WithDivisor(value resource.Qua
 	b.Divisor = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

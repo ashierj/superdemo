@@ -194,3 +194,7 @@ func GetStdFile(nFile int) (*os.File, uintptr) {
 
 	return file, uintptr(fd)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

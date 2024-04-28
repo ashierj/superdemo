@@ -425,3 +425,7 @@ func certToConfig(cert *x509.Certificate) certutil.Config {
 func loadCertConfigMutators(certBaseName string) []certConfigMutatorFunc {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

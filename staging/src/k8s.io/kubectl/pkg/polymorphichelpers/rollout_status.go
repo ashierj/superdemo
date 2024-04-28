@@ -150,3 +150,7 @@ func (s *StatefulSetStatusViewer) Status(obj runtime.Unstructured, revision int6
 	return fmt.Sprintf("statefulset rolling update complete %d pods at revision %s...\n", sts.Status.CurrentReplicas, sts.Status.CurrentRevision), true, nil
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

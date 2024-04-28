@@ -224,3 +224,7 @@ func (noopRatioed) SetDenominator(float64) {}
 func (v *TimingRatioHistogramVec) Reset() {
 	v.delegate.Reset()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

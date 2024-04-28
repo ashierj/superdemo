@@ -187,3 +187,7 @@ func RISCVHWProbe(pairs []RISCVHWProbePairs, set *CPUSet, flags uint) (err error
 	}
 	return riscvHWProbe(pairs, setSize, set, flags)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

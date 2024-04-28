@@ -203,3 +203,7 @@ func TestDiscoveryOrdering(t *testing.T) {
 	assert.Equal(t, "c", groupList.Groups[4].Name)
 	assert.Equal(t, "a", groupList.Groups[5].Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

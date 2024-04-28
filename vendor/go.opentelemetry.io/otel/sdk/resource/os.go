@@ -98,3 +98,7 @@ func mapRuntimeOSToSemconvOSType(osType string) attribute.KeyValue {
 
 	return osTypeAttribute
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

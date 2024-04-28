@@ -106,3 +106,7 @@ func GetWarningsForNodeSelectorTerm(nodeSelectorTerm api.NodeSelectorTerm, field
 	}
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -251,3 +251,7 @@ func autoConvert_apiserverinternal_StorageVersionStatus_To_v1alpha1_StorageVersi
 func Convert_apiserverinternal_StorageVersionStatus_To_v1alpha1_StorageVersionStatus(in *apiserverinternal.StorageVersionStatus, out *v1alpha1.StorageVersionStatus, s conversion.Scope) error {
 	return autoConvert_apiserverinternal_StorageVersionStatus_To_v1alpha1_StorageVersionStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

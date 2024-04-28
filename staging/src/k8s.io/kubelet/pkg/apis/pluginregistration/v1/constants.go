@@ -24,3 +24,7 @@ const (
 	// DRAPlugin identifier for registered Dynamic Resourc Allocation plugins
 	DRAPlugin = "DRAPlugin"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

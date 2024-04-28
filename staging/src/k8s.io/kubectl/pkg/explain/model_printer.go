@@ -161,3 +161,7 @@ func PrintModel(name string, writer *Formatter, builder fieldsPrinterBuilder, sc
 	schema.Accept(m)
 	return m.Error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ func (e *Validation) ValidateName(name string) *Validation {
 	}
 	return e
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

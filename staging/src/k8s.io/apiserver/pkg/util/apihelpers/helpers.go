@@ -98,3 +98,7 @@ func (s FlowSchemaSequence) Less(i, j int) bool {
 func (s FlowSchemaSequence) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

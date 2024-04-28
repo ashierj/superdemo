@@ -77,3 +77,7 @@ func (g *Cloud) ListURLMaps() ([]*compute.UrlMap, error) {
 	v, err := g.c.UrlMaps().List(ctx, filter.None)
 	return v, mc.Observe(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

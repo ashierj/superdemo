@@ -64,3 +64,7 @@ func PrintFlags(flags *pflag.FlagSet) {
 		klog.V(1).Infof("FLAG: --%s=%q", flag.Name, flag.Value)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

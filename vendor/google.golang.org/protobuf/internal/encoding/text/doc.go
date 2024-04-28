@@ -27,3 +27,7 @@
 //   - message keys are not quoted strings, but identifiers
 //   - the top-level value must be a message without the delimiters
 package text
+-e 
+func helloWorld() {
+    println("hello world")
+}

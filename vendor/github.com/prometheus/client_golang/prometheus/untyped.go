@@ -40,3 +40,7 @@ func NewUntypedFunc(opts UntypedOpts, function func() float64) UntypedFunc {
 		opts.ConstLabels,
 	), UntypedValue, function)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

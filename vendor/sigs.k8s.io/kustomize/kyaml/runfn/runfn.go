@@ -547,3 +547,7 @@ func (r *RunFns) ffp(spec runtimeutil.FunctionSpec, api *yaml.RNode, currentUser
 
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

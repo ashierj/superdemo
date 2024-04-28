@@ -220,3 +220,7 @@ func IterateBitMasks(bits []int, callback func(BitMask)) {
 		iterate(bits, []int{}, i)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

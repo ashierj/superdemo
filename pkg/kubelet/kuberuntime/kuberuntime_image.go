@@ -179,3 +179,7 @@ func (m *kubeGenericRuntimeManager) ImageFsInfo(ctx context.Context) (*runtimeap
 	}
 	return allImages, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

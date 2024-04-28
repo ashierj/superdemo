@@ -114,3 +114,7 @@ type walkArgs struct {
 	entry fs.DirEntry
 	path  string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

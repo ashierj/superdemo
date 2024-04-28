@@ -202,3 +202,7 @@ func createService(namespace, ttServiceName string, creationTime time.Time) *v1.
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

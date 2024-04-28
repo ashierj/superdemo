@@ -574,3 +574,7 @@ func sanitizeCode(s int) string {
 		return "unknown"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

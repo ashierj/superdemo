@@ -525,3 +525,7 @@ func (g *Graph) DeleteResourceSlice(sliceName string) {
 	defer g.lock.Unlock()
 	g.deleteVertex_locked(sliceVertexType, "", sliceName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

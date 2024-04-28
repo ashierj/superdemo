@@ -84,3 +84,7 @@ func TestTimeBudget(t *testing.T) {
 		t.Errorf("Expected: %v, got: %v", budget.maxBudget, res)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

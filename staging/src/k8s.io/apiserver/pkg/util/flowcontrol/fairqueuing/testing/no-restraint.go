@@ -68,3 +68,7 @@ func (noRestraintRequest) Finish(execute func()) (idle bool) {
 	execute()
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

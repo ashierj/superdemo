@@ -1078,3 +1078,7 @@ func endpointSlicesEqual(endpoints *v1.Endpoints, endpointSliceList *discoveryv1
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

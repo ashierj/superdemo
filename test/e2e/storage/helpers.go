@@ -131,3 +131,7 @@ func waitForDeploymentToRecreatePod(ctx context.Context, client kubernetes.Inter
 	}
 	return runningPod, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -340,3 +340,7 @@ var _ = common.SIGDescribe("DNS configMap nameserver", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

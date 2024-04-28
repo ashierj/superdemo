@@ -48,3 +48,7 @@ func NewResourceAnalyzer(statsProvider Provider, calVolumeFrequency time.Duratio
 func (ra *resourceAnalyzer) Start() {
 	ra.fsResourceAnalyzer.Start()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

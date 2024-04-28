@@ -301,3 +301,7 @@ func marshal(t *testing.T, gv schema.GroupVersion, obj runtime.Object) []byte {
 
 	return data
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

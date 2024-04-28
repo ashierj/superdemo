@@ -32,3 +32,7 @@ func main() {
 		util.CheckErr(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

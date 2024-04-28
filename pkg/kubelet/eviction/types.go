@@ -168,3 +168,7 @@ type ThresholdNotifier interface {
 	// Description produces a relevant string describing the Memory Threshold Notifier
 	Description() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

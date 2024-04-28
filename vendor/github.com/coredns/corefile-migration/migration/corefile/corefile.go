@@ -193,3 +193,7 @@ NextOption:
 }
 
 const indent = 4
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	utilruntime.Must(v1alpha3.AddToScheme(scheme))
 	utilruntime.Must(scheme.SetVersionPriority(v1alpha3.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

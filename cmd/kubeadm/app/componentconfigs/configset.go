@@ -287,3 +287,7 @@ func GetVersionStates(clusterCfg *kubeadmapi.ClusterConfiguration, client client
 func Validate(clusterCfg *kubeadmapi.ClusterConfiguration) field.ErrorList {
 	return field.ErrorList{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

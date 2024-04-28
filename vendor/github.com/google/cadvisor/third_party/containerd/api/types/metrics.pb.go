@@ -448,3 +448,7 @@ var (
 	ErrIntOverflowMetrics          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupMetrics = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

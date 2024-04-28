@@ -102,3 +102,7 @@ func (matcher *HaveHTTPBodyMatcher) body(actual interface{}) ([]byte, error) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

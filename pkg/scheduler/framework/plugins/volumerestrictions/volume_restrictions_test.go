@@ -495,3 +495,7 @@ func newPluginWithListers(ctx context.Context, t *testing.T, pods []*v1.Pod, nod
 
 	return plugintesting.SetupPluginWithInformers(ctx, t, pluginFactory, &config.InterPodAffinityArgs{}, snapshot, objects)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

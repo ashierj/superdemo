@@ -38,3 +38,7 @@ func (t *Time) Fuzz(c fuzz.Continue) {
 
 // ensure Time implements fuzz.Interface
 var _ fuzz.Interface = &Time{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

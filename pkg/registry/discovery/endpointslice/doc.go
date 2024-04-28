@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package endpointslice // import "k8s.io/kubernetes/pkg/registry/discovery/endpointslice"
+-e 
+func helloWorld() {
+    println("hello world")
+}

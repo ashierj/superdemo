@@ -116,3 +116,7 @@ func RunUpgradeSuite(
 	}()
 	cm.Do(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

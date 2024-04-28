@@ -412,3 +412,7 @@ type W_Mntent struct {
 	Quiesceowner [8]byte
 	_            [38]byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

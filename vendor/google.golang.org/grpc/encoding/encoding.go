@@ -128,3 +128,7 @@ func RegisterCodec(codec Codec) {
 func GetCodec(contentSubtype string) Codec {
 	return registeredCodecs[contentSubtype]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

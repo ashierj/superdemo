@@ -26,3 +26,7 @@ func setCpuset(dirPath string, r *configs.Resources) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

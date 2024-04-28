@@ -86,3 +86,7 @@ func addToGroupVersion(scheme *runtime.Scheme) error {
 func init() {
 	localSchemeBuilder.Register(addToGroupVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -80,3 +80,7 @@ func Convert_config_ControllerLeaderConfiguration_To_v1_ControllerLeaderConfigur
 	out.Component = in.Component
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

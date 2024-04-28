@@ -2269,3 +2269,7 @@ var (
 	ErrIntOverflowStruct          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupStruct = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

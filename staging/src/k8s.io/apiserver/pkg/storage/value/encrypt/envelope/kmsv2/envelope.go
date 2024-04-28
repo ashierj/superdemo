@@ -526,3 +526,7 @@ func GetHashIfNotEmpty(data string) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

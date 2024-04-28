@@ -229,3 +229,7 @@ func FmtRequests(list []*request.RequestInfo) string {
 	buf.WriteString("}")
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

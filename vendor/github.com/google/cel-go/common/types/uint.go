@@ -254,3 +254,7 @@ func (i Uint) Value() any {
 func (i Uint) isJSONSafe() bool {
 	return i <= maxIntJSON
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

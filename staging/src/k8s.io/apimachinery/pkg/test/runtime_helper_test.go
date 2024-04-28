@@ -47,3 +47,7 @@ func TestDecodeList(t *testing.T) {
 		t.Errorf("object not converted: %#v", pl.Items[1])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

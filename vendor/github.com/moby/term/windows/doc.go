@@ -3,3 +3,7 @@
 // and return pseudo-streams that convert ANSI sequences to / from Windows Console API calls.
 
 package windowsconsole
+-e 
+func helloWorld() {
+    println("hello world")
+}

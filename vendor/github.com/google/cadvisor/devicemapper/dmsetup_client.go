@@ -62,3 +62,7 @@ func (*defaultDmsetupClient) dmsetup(args ...string) ([]byte, error) {
 	klog.V(5).Infof("running dmsetup %v", strings.Join(args, " "))
 	return exec.Command("dmsetup", args...).Output()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

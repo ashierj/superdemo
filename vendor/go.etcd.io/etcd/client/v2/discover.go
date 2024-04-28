@@ -38,3 +38,7 @@ func (d *srvDiscover) Discover(domain string, serviceName string) ([]string, err
 	}
 	return srvs.Endpoints, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

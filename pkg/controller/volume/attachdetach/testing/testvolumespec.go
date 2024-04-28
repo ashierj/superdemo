@@ -586,3 +586,7 @@ func (detacher *testPluginDetacher) Detach(volumeName string, nodeName types.Nod
 func (detacher *testPluginDetacher) UnmountDevice(deviceMountPath string) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

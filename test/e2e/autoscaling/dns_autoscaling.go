@@ -422,3 +422,7 @@ func waitForDNSConfigMapCreated(ctx context.Context, c clientset.Interface, time
 	}
 	return configMap, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

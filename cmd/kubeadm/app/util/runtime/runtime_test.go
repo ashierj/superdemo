@@ -536,3 +536,7 @@ func TestPullImagesInParallelImpl(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

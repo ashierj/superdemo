@@ -5,3 +5,7 @@ type ansiContext struct {
 	paramBuffer []byte
 	interBuffer []byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

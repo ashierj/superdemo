@@ -121,3 +121,7 @@ func isNoCorrespondingTypeError(err error) bool {
 	_, ok := err.(*noCorrespondingTypeErr)
 	return ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -518,3 +518,7 @@ func autoConvert_rbac_Subject_To_v1alpha1_Subject(in *rbac.Subject, out *v1alpha
 	out.Namespace = in.Namespace
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

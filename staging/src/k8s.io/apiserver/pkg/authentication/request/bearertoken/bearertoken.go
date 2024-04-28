@@ -74,3 +74,7 @@ func (a *Authenticator) AuthenticateRequest(req *http.Request) (*authenticator.R
 
 	return resp, ok, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

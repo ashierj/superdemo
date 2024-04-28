@@ -750,3 +750,7 @@ func TestAddRemoveQuotasEnabled(t *testing.T) {
 func TestAddRemoveQuotasDisabled(t *testing.T) {
 	testAddRemoveQuotas(t, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

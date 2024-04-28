@@ -171,3 +171,7 @@ func balancedResourceScorer(requested, allocable []int64) int64 {
 	// multiplying it with `MaxNodeScore` provides the scaling factor needed.
 	return int64((1 - std) * float64(framework.MaxNodeScore))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

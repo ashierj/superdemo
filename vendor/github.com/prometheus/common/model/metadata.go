@@ -26,3 +26,7 @@ const (
 	MetricTypeStateset       = MetricType("stateset")
 	MetricTypeUnknown        = MetricType("unknown")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

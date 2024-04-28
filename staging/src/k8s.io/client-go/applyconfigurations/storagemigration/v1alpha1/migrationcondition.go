@@ -79,3 +79,7 @@ func (b *MigrationConditionApplyConfiguration) WithMessage(value string) *Migrat
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

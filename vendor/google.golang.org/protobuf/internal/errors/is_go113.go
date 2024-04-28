@@ -11,3 +11,7 @@ import "errors"
 
 // Is is errors.Is.
 func Is(err, target error) bool { return errors.Is(err, target) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

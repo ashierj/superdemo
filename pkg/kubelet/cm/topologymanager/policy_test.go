@@ -1608,3 +1608,7 @@ func commonNUMAInfoEightNodes() *NUMAInfo {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

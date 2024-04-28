@@ -518,3 +518,7 @@ func (t *transformerStorageFactory) Configs() []storagebackend.Config {
 func (t *transformerStorageFactory) Backends() []serverstorage.Backend {
 	return t.delegate.Backends()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

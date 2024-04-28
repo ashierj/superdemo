@@ -13,3 +13,7 @@ type Pointer struct {
 	pad uint32
 	ptr unsafe.Pointer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

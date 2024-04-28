@@ -1035,3 +1035,7 @@ func autoConvert_autoscaling_ResourceMetricStatus_To_v2beta2_ResourceMetricStatu
 func Convert_autoscaling_ResourceMetricStatus_To_v2beta2_ResourceMetricStatus(in *autoscaling.ResourceMetricStatus, out *v2beta2.ResourceMetricStatus, s conversion.Scope) error {
 	return autoConvert_autoscaling_ResourceMetricStatus_To_v2beta2_ResourceMetricStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

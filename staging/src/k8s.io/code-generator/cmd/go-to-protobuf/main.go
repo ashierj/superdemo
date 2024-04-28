@@ -39,3 +39,7 @@ func main() {
 	flag.Parse()
 	protobuf.Run(g)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

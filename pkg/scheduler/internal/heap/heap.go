@@ -244,3 +244,7 @@ func NewWithRecorder(keyFn KeyFunc, lessFn lessFunc, metricRecorder metrics.Metr
 // lessFunc is a function that receives two items and returns true if the first
 // item should be placed before the second one when the list is sorted.
 type lessFunc = func(item1, item2 interface{}) bool
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -149,3 +149,7 @@ func TestPatchRequiresMatchingName(t *testing.T) {
 		t.Errorf("Unexpected response %#v", response)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

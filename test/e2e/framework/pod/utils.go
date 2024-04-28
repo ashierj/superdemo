@@ -275,3 +275,7 @@ func FindContainerStatusInPod(pod *v1.Pod, containerName string) *v1.ContainerSt
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

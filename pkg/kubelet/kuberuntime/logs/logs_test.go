@@ -539,3 +539,7 @@ func TestReadLogsLimitsWithTimestamps(t *testing.T) {
 
 	assert.Equal(t, 2, lineCount, "should have two lines")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -839,3 +839,7 @@ func MatchPrefixPatterns(globs, target string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

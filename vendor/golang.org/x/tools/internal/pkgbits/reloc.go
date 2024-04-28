@@ -40,3 +40,7 @@ const (
 
 	numRelocs = iota
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

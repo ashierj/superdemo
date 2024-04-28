@@ -260,3 +260,7 @@ func (k *KernelValidator) parseKernelConfig(r io.Reader) (map[string]kConfigOpti
 	}
 	return config, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

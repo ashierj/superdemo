@@ -67,3 +67,7 @@ func (c *MemberCollection) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

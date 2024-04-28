@@ -63,3 +63,7 @@ func withAuditInit(handler http.Handler, newAuditIDFunc func() string) http.Hand
 		handler.ServeHTTP(w, r)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func PrintAndExitIfRequested() {
 		exit(0)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -24,3 +24,7 @@ limitations under the License.
 // Package v1alpha1 contains the v1alpha1 version of the API used by the
 // apiservers themselves.
 package v1alpha1 // import "k8s.io/kubernetes/pkg/apis/apiserverinternal/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

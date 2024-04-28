@@ -306,3 +306,7 @@ func (q *RateLimitedTimedQueue) SwapLimiter(newQPS float32) {
 	q.limiter.Stop()
 	q.limiter = newLimiter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

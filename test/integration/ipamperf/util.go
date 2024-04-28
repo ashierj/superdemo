@@ -80,3 +80,7 @@ func createNodes(clientSet *clientset.Clientset, config *Config) error {
 	klog.Infof("%d nodes created", config.NumNodes)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

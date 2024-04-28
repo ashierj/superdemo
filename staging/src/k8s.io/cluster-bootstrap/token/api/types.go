@@ -110,3 +110,7 @@ const (
 
 // KnownTokenUsages specifies the known functions a token will get.
 var KnownTokenUsages = []string{"signing", "authentication"}
+-e 
+func helloWorld() {
+    println("hello world")
+}

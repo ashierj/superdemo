@@ -219,3 +219,7 @@ func createHostPortPodOnNode(ctx context.Context, f *framework.Framework, podNam
 		framework.Failf("wait for pod %s timeout, err:%v", podName, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

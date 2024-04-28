@@ -35,3 +35,7 @@ func ValidateConfiguration(config *internalapi.Configuration) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

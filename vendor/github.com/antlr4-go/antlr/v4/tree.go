@@ -302,3 +302,7 @@ func (i *IterativeParseTreeWalker) Walk(listener ParseTreeListener, t Tree) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

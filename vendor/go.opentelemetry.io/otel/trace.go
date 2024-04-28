@@ -45,3 +45,7 @@ func GetTracerProvider() trace.TracerProvider {
 func SetTracerProvider(tp trace.TracerProvider) {
 	global.SetTracerProvider(tp)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

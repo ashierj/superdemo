@@ -756,3 +756,7 @@ func BuildLabelsCommandFlagSet(cliConfig *CLIConfig) (GinkgoFlagSet, error) {
 
 	return NewGinkgoFlagSet(flags, bindings, flagSections)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

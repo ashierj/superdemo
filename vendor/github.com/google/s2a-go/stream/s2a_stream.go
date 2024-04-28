@@ -32,3 +32,7 @@ type S2AStream interface {
 	// Closes the channel to the S2A server.
 	CloseSend() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

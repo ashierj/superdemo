@@ -88,3 +88,7 @@ func getFirstAvailableFile(candidates []string) (*os.File, error) {
 
 	return nil, fmt.Errorf("no candidate file available: %v", candidates)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

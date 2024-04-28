@@ -229,3 +229,7 @@ func (r *StepRateLimiter) NumRequeues(item interface{}) int {
 
 func (r *StepRateLimiter) Forget(item interface{}) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

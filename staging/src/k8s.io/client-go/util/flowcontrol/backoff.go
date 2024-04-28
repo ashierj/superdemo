@@ -178,3 +178,7 @@ func (p *Backoff) jitter(delay time.Duration) time.Duration {
 func hasExpired(eventTime time.Time, lastUpdate time.Time, maxDuration time.Duration) bool {
 	return eventTime.Sub(lastUpdate) > maxDuration*2 // consider stable if it's ok for twice the maxDuration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

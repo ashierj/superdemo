@@ -137,3 +137,7 @@ func toSelectableFields(slice *resource.ResourceSlice) fields.Set {
 	// Adds one field.
 	return generic.AddObjectMetaFieldsSet(fields, &slice.ObjectMeta, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -154,3 +154,7 @@ func wait(ctx context.Context, delay time.Duration) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

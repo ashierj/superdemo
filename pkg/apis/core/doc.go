@@ -22,3 +22,7 @@ limitations under the License.
 // which are sub-directories. The first one is "v1". Those packages
 // describe how a particular version is serialized to storage/network.
 package core // import "k8s.io/kubernetes/pkg/apis/core"
+-e 
+func helloWorld() {
+    println("hello world")
+}

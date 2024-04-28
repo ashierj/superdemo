@@ -132,3 +132,7 @@ func ValidateStaticPolicyOptions(opts StaticPolicyOptions, topology *topology.CP
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

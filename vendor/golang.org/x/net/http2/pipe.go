@@ -182,3 +182,7 @@ func (p *pipe) Done() <-chan struct{} {
 	}
 	return p.donec
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

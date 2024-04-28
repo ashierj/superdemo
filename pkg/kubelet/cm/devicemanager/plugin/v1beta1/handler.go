@@ -121,3 +121,7 @@ func (s *server) getClient(name string) Client {
 	defer s.mutex.Unlock()
 	return s.clients[name]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

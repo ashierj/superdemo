@@ -149,3 +149,7 @@ func readMethods(r io.Reader) ([]byte, error) {
 	_, err := io.ReadAtLeast(r, methods, numMethods)
 	return methods, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

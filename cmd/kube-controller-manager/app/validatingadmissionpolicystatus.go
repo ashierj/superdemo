@@ -60,3 +60,7 @@ func startValidatingAdmissionPolicyStatusController(ctx context.Context, control
 	go c.Run(ctx, int(controllerContext.ComponentConfig.ValidatingAdmissionPolicyStatusController.ConcurrentPolicySyncs))
 	return nil, true, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -652,3 +652,7 @@ func noExporterDeployment(name, namespace string, replicas int32) *appsv1.Deploy
 	}}
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

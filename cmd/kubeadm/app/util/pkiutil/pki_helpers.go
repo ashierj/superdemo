@@ -740,3 +740,7 @@ func VerifyCertChain(cert *x509.Certificate, intermediates []*x509.Certificate, 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

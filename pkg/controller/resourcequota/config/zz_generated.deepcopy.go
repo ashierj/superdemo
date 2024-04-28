@@ -37,3 +37,7 @@ func (in *ResourceQuotaControllerConfiguration) DeepCopy() *ResourceQuotaControl
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

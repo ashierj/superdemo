@@ -55,3 +55,7 @@ func (f *FallbackExecutor) StreamWithContext(ctx context.Context, options Stream
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

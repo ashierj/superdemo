@@ -914,3 +914,7 @@ func takeByTopologyNUMADistributed(topo *topology.CPUTopology, availableCPUs cpu
 	// distribute CPUs across, fall back to the packing algorithm.
 	return takeByTopologyNUMAPacked(topo, availableCPUs, numCPUs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

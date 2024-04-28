@@ -95,3 +95,7 @@ func (s normalizer) indent() normalizer {
 	s.string = strings.Join(indentedLines, "\n")
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

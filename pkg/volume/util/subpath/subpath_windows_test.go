@@ -477,3 +477,7 @@ func TestIsDriveLetterorEmptyPath(t *testing.T) {
 			test.path, result, test.expectedResult)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

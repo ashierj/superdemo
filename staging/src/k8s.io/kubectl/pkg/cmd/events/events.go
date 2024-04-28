@@ -408,3 +408,7 @@ func decodeResourceTypeName(mapper meta.RESTMapper, s string) (gvk schema.GroupV
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

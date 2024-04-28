@@ -984,3 +984,7 @@ func readPasswordLine(reader io.Reader) ([]byte, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

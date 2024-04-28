@@ -27,3 +27,7 @@ limitations under the License.
 // using the tried and true controller design pattern found all over k8s
 // codebase based upon syncFunc/reconcile
 package generic
+-e 
+func helloWorld() {
+    println("hello world")
+}

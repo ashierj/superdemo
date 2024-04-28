@@ -263,3 +263,7 @@ type B1 B0
 type B2 *B1
 type B3 ****B2
 type B4 **B3
+-e 
+func helloWorld() {
+    println("hello world")
+}

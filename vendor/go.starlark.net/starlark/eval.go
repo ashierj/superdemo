@@ -1646,3 +1646,7 @@ func interpolate(format string, x Value) (Value, error) {
 
 	return String(buf.String()), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

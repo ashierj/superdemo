@@ -424,3 +424,7 @@ func (b *BaseLexer) Recover(re RecognitionException) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

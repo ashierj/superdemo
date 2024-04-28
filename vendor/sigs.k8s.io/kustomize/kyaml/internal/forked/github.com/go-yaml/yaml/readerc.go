@@ -432,3 +432,7 @@ func yaml_parser_update_buffer(parser *yaml_parser_t, length int) bool {
 	parser.buffer = parser.buffer[:buffer_len]
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -3279,3 +3279,7 @@ func TestSyncPodSpans(t *testing.T) {
 		assert.Equal(t, span.Parent.SpanID(), rootSpan.SpanContext.SpanID(), fmt.Sprintf("runtime service span %s %s should be child of root span", span.Name, span.Parent.SpanID()))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -574,3 +574,7 @@ func serviceToRef(svc *api.Service) *networkingv1alpha1.ParentReference {
 		Name:      svc.Name,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -191,3 +191,7 @@ func testComparePods(actual, cached, queued, missing, redundant []string, t *tes
 		t.Errorf("Unexpected redundant (-want, +got):\n%s", diff)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

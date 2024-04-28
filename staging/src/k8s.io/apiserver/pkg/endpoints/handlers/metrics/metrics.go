@@ -61,3 +61,7 @@ func Register() {
 func RecordRequestBodySize(ctx context.Context, resource string, verb RequestBodyVerb, size int) {
 	RequestBodySizes.WithContext(ctx).WithLabelValues(resource, string(verb)).Observe(float64(size))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ func RESTInPeace(storage *REST, err error) *REST {
 	}
 	return storage
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

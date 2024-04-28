@@ -540,3 +540,7 @@ func (o *DeleteOptions) confirmation(infos []*resource.Info) bool {
 
 	return strings.EqualFold(input, "y")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

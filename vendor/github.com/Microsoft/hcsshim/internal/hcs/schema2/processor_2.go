@@ -21,3 +21,7 @@ type Processor2 struct {
 	// An optional object that configures the CPU Group to which a Virtual Machine is going to bind to.
 	CpuGroup *CpuGroup `json:"CpuGroup,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

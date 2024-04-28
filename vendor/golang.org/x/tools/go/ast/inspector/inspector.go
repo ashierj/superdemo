@@ -218,3 +218,7 @@ func traverse(files []*ast.File) []event {
 
 	return events
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

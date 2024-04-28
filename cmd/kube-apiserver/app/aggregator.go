@@ -349,3 +349,7 @@ func apiServicesToRegister(delegateAPIServer genericapiserver.DelegationTarget, 
 
 	return apiServices
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

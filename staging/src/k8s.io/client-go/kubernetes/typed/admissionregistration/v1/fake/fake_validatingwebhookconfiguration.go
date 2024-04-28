@@ -149,3 +149,7 @@ func (c *FakeValidatingWebhookConfigurations) Apply(ctx context.Context, validat
 	}
 	return obj.(*v1.ValidatingWebhookConfiguration), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

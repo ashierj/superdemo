@@ -93,3 +93,7 @@ var (
 	// "GRPC_EXPERIMENTAL_XDS_CUSTOM_LB_CONFIG" to "false".
 	XDSCustomLBPolicy = boolFromEnv("GRPC_EXPERIMENTAL_XDS_CUSTOM_LB_CONFIG", true)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

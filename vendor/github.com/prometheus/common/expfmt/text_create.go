@@ -518,3 +518,7 @@ func writeName(w enhancedWriter, name string) (int, error) {
 	written++
 	return written, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

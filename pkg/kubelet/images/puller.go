@@ -123,3 +123,7 @@ func (sip *serialImagePuller) processImagePullRequests() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

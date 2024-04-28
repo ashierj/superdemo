@@ -113,3 +113,7 @@ func RangeEntries(es EntryRanger, less KeyOrder, fn VisitEntry) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

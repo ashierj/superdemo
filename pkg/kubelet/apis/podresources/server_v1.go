@@ -161,3 +161,7 @@ func (p *v1PodResourcesServer) getContainerResources(pod *v1.Pod, container *v1.
 
 	return containerResources
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

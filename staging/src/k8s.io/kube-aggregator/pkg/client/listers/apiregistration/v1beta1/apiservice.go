@@ -46,3 +46,7 @@ type aPIServiceLister struct {
 func NewAPIServiceLister(indexer cache.Indexer) APIServiceLister {
 	return &aPIServiceLister{listers.New[*v1beta1.APIService](indexer, v1beta1.Resource("apiservice"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

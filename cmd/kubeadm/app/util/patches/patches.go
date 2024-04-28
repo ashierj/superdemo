@@ -361,3 +361,7 @@ return_path_error:
 
 	return patchSets, patchFiles, ignoredFiles, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func TestAllowUnconditionalUpdate(t *testing.T) {
 		t.Errorf("Got true, want false")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

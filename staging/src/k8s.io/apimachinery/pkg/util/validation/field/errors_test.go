@@ -173,3 +173,7 @@ func TestNotSupported(t *testing.T) {
 		t.Errorf("Expected: %s\n, but got: %s\n", expected, notSupported.ErrorBody())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

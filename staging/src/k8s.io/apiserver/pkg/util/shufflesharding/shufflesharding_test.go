@@ -315,3 +315,7 @@ func TestDealer_DealIntoHand(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

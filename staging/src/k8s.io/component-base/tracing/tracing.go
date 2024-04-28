@@ -96,3 +96,7 @@ func SpanFromContext(ctx context.Context) *Span {
 func ContextWithSpan(ctx context.Context, s *Span) context.Context {
 	return trace.ContextWithSpan(utiltrace.ContextWithTrace(ctx, s.utilSpan), s.otelSpan)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

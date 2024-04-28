@@ -115,3 +115,7 @@ func (p grpcProber) Probe(host, service string, port int, timeout time.Duration)
 
 	return probe.Success, fmt.Sprintf("service healthy"), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

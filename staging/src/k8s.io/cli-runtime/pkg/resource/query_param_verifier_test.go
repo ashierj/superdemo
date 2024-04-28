@@ -193,3 +193,7 @@ func TestFieldValidationVerifierNoOpenAPI(t *testing.T) {
 		t.Fatalf("List does not support fieldValidation, yet no error found")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -205,3 +205,7 @@ func Marshal(fd protoreflect.FieldDescriptor, enumName string) string {
 	}
 	return strings.Join(tag, ",")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

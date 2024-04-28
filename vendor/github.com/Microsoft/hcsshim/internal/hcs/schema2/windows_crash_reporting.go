@@ -14,3 +14,7 @@ type WindowsCrashReporting struct {
 
 	MaxDumpSize int64 `json:"MaxDumpSize,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

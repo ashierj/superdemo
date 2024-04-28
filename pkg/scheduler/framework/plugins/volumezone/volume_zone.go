@@ -310,3 +310,7 @@ func New(_ context.Context, _ runtime.Object, handle framework.Handle) (framewor
 		scLister,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func SetDefaults_KMSConfiguration(obj *KMSConfiguration) {
 		obj.CacheSize = &defaultCacheSize
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -19,3 +19,7 @@ limitations under the License.
 // +groupName=kubecontrollermanager.config.k8s.io
 
 package v1alpha1 // import "k8s.io/kube-controller-manager/config/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

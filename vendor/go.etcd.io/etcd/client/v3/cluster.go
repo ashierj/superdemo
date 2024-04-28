@@ -139,3 +139,7 @@ func (c *cluster) MemberPromote(ctx context.Context, id uint64) (*MemberPromoteR
 	}
 	return (*MemberPromoteResponse)(resp), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

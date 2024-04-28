@@ -140,3 +140,7 @@ func SignatureWithoutLabels(m Metric, labels map[LabelName]struct{}) uint64 {
 	}
 	return sum
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

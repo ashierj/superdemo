@@ -47,3 +47,7 @@ type InvalidTypeError struct {
 func (e InvalidTypeError) Error() string {
 	return fmt.Sprintf("invalid type for %s: got %q, expected %q", e.Path, e.Actual, e.Expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

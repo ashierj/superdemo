@@ -113,3 +113,7 @@ func PodNotReady(p *v1.Pod) (bool, error) {
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

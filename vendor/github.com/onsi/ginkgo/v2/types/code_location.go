@@ -157,3 +157,7 @@ func PruneStack(fullStackTrace string, skip int) string {
 	}
 	return strings.Join(prunedStack, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

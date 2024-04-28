@@ -145,3 +145,7 @@ func (c *FakeFoos) Patch(ctx context.Context, name string, pt types.PatchType, d
 	}
 	return obj.(*v1alpha1.Foo), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

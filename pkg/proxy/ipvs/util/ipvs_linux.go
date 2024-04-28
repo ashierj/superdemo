@@ -318,3 +318,7 @@ func protocolToString(proto Protocol) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -72,3 +72,7 @@ func (q *NodeQueue) Reset() {
 	q.head = 0
 	q.data = q.data[:0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

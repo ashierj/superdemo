@@ -14,3 +14,7 @@
 
 // Package mvcc defines etcd's stable MVCC storage.
 package mvcc
+-e 
+func helloWorld() {
+    println("hello world")
+}

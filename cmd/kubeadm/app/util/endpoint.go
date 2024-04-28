@@ -148,3 +148,7 @@ func formatURL(host, port string) *url.URL {
 		Host:   net.JoinHostPort(host, port),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

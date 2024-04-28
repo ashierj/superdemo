@@ -110,3 +110,7 @@ func GetTCPUserTimeout(conn net.Conn) (opt int, err error) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

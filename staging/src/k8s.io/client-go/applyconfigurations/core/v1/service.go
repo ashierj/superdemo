@@ -256,3 +256,7 @@ func (b *ServiceApplyConfiguration) WithStatus(value *ServiceStatusApplyConfigur
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

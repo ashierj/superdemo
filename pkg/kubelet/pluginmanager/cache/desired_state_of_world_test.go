@@ -145,3 +145,7 @@ func Test_DSW_RemovePlugin_Positive(t *testing.T) {
 		t.Fatalf("PluginExists returns true for the removed plugin")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

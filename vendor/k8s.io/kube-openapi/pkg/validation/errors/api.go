@@ -44,3 +44,7 @@ func New(code int32, message string, args ...interface{}) Error {
 	}
 	return &apiError{code, message}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (v *version) IPAddresses() IPAddressInformer {
 func (v *version) ServiceCIDRs() ServiceCIDRInformer {
 	return &serviceCIDRInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

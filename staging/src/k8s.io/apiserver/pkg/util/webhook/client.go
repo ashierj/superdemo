@@ -255,3 +255,7 @@ func isLocalHost(u *url.URL) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

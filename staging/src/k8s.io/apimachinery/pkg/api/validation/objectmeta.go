@@ -263,3 +263,7 @@ func ValidateObjectMetaAccessorUpdate(newMeta, oldMeta metav1.Object, fldPath *f
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

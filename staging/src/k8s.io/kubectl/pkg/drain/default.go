@@ -73,3 +73,7 @@ func RunCordonOrUncordon(drainer *Helper, node *corev1.Node, desired bool) error
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

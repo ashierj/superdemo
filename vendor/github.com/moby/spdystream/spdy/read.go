@@ -362,3 +362,7 @@ func (f *Framer) parseDataFrame(streamId StreamId) (*DataFrame, error) {
 	}
 	return &frame, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -99,3 +99,7 @@ var (
     rxHasWhitespace       = regexp.MustCompile(hasWhitespace)
     rxHasWhitespaceOnly   = regexp.MustCompile(hasWhitespaceOnly)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

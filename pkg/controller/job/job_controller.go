@@ -1993,3 +1993,7 @@ func managedByExternalController(jobObj *batch.Job) *string {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

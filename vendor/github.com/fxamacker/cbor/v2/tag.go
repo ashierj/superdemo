@@ -295,3 +295,7 @@ type WrongTagError struct {
 func (e *WrongTagError) Error() string {
 	return fmt.Sprintf("cbor: wrong tag number for %s, got %v, expected %v", e.RegisteredType.String(), e.TagNum, e.RegisteredTagNum)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -105,3 +105,7 @@ func Negotiate(upgrader Upgrader, client *http.Client, req *http.Request, protoc
 	}
 	return conn, resp.Header.Get(httpstream.HeaderProtocolVersion), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

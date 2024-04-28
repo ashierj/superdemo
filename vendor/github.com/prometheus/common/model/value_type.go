@@ -81,3 +81,7 @@ func (e ValueType) String() string {
 	}
 	panic("ValueType.String: unhandled value type")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

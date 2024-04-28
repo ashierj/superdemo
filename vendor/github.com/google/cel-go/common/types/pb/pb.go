@@ -256,3 +256,7 @@ func init() {
 	DefaultDb.RegisterMessage(&structpb.Value{})
 	DefaultDb.RegisterMessage(&wrapperspb.BoolValue{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

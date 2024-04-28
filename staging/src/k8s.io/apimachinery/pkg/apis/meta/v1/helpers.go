@@ -296,3 +296,7 @@ func (f *FieldsV1) UnmarshalJSON(b []byte) error {
 
 var _ json.Marshaler = FieldsV1{}
 var _ json.Unmarshaler = &FieldsV1{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

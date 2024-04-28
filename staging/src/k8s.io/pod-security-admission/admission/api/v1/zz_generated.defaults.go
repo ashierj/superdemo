@@ -36,3 +36,7 @@ func RegisterDefaults(scheme *runtime.Scheme) error {
 func SetObjectDefaults_PodSecurityConfiguration(in *PodSecurityConfiguration) {
 	SetDefaults_PodSecurityDefaults(&in.Defaults)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -510,3 +510,7 @@ func listPodDirectory(ctx context.Context, h storageutils.HostExec, path string,
 	}
 	return strings.Split(out, "\n"), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -149,3 +149,7 @@ func generateTokenFile(tokenFilePath string) error {
 	tokenFile := fmt.Sprintf("%s,kubelet,uid,system:masters\n", framework.TestContext.BearerToken)
 	return os.WriteFile(tokenFilePath, []byte(tokenFile), 0644)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

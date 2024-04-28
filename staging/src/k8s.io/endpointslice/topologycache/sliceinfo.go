@@ -74,3 +74,7 @@ func (si *SliceInfo) getAllocatedHintsByZone(allocations map[string]allocation) 
 	si.Unchanged = si.Unchanged[:j]
 	return allocatedHintsByZone
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

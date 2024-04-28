@@ -21,3 +21,7 @@ host. The protocol uses simple framing for sending requests, responses, and data
 using multiple streams.
 */
 package ttrpc
+-e 
+func helloWorld() {
+    println("hello world")
+}

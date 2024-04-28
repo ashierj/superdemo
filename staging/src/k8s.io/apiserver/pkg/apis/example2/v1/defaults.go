@@ -24,3 +24,7 @@ func addDefaultingFuncs(scheme *runtime.Scheme) error {
 	// return RegisterDefaults(scheme)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

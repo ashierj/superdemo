@@ -412,3 +412,7 @@ func (w *wrappedParam) DeepCopyObject() runtime.Object {
 func (w *wrappedParam) GetObjectKind() schema.ObjectKind {
 	return w
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -171,3 +171,7 @@ func (file *defaultFile) Sync() error {
 func (file *defaultFile) Close() error {
 	return file.file.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

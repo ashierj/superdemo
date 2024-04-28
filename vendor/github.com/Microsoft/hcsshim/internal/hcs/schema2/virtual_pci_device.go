@@ -14,3 +14,7 @@ package hcsschema
 type VirtualPciDevice struct {
 	Functions []VirtualPciFunction `json:",omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

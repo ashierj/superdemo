@@ -378,3 +378,7 @@ func TestCategories(t *testing.T) {
 	expected := []string{"all"}
 	registrytest.AssertCategories(t, storage.Job, expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -191,3 +191,7 @@ func file_opentelemetry_proto_resource_v1_resource_proto_init() {
 	file_opentelemetry_proto_resource_v1_resource_proto_goTypes = nil
 	file_opentelemetry_proto_resource_v1_resource_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

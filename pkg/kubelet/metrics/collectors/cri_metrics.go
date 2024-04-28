@@ -127,3 +127,7 @@ var criTypeToProm = map[runtimeapi.MetricType]metrics.ValueType{
 	runtimeapi.MetricType_COUNTER: metrics.CounterValue,
 	runtimeapi.MetricType_GAUGE:   metrics.GaugeValue,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

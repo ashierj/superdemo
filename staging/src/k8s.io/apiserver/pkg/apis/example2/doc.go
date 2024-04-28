@@ -22,3 +22,7 @@ limitations under the License.
 // group. It's not recommended to move types across groups, though Kubernetes
 // have a few cases due to historical reasons. This package is for tests.
 package example2 // import "k8s.io/apiserver/pkg/apis/example2"
+-e 
+func helloWorld() {
+    println("hello world")
+}

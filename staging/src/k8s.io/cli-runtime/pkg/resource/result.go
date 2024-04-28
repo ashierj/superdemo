@@ -240,3 +240,7 @@ func (r *Result) Watch(resourceVersion string) (watch.Interface, error) {
 	}
 	return w.Watch(resourceVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

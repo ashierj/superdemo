@@ -27,3 +27,7 @@ import (
 func UpdateReplicaSetWithRetries(c clientset.Interface, namespace, name string, applyUpdate testutils.UpdateReplicaSetFunc) (*appsv1.ReplicaSet, error) {
 	return testutils.UpdateReplicaSetWithRetries(c, namespace, name, applyUpdate, framework.Logf, framework.Poll, framework.PollShortTimeout)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

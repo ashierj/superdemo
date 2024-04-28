@@ -276,3 +276,7 @@ func (any *arrayAny) WriteTo(stream *Stream) {
 func (any *arrayAny) GetInterface() interface{} {
 	return any.val.Interface()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

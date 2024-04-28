@@ -889,3 +889,7 @@ var packetTypeNames = map[byte]string{
 	msgChannelSuccess:      "channelRequestSuccessMsg",
 	msgChannelFailure:      "channelRequestFailureMsg",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -133,3 +133,7 @@ func (lfr *logFormatRegistry) freeze() {
 	defer lfr.mutex.Unlock()
 	lfr.frozen = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

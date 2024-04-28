@@ -148,3 +148,7 @@ func (h *HTTPProxyHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) 
 func (h *HTTPProxyHandler) Wait() {
 	h.handlerDone.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

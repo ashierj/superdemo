@@ -160,3 +160,7 @@ func (s *Service) RecoveryActionsOnNonCrashFailures() (bool, error) {
 	p := (*windows.SERVICE_FAILURE_ACTIONS_FLAG)(unsafe.Pointer(&b[0]))
 	return p.FailureActionsOnNonCrashFailures != 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (e *ExternalDocumentation) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, 
 	e.ExternalDocumentationProps = x.ExternalDocumentationProps
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

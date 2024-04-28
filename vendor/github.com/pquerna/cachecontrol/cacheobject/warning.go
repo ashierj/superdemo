@@ -105,3 +105,7 @@ func (w Warning) String() string {
 
 	panic(w)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

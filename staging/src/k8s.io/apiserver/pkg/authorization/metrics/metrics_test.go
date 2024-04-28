@@ -103,3 +103,7 @@ type dummyAuthorizer struct {
 func (d *dummyAuthorizer) Authorize(ctx context.Context, attrs authorizer.Attributes) (authorizer.Decision, string, error) {
 	return d.decision, "", d.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

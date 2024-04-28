@@ -474,3 +474,7 @@ func Test_signer_duration(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

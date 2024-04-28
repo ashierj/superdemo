@@ -116,3 +116,7 @@ func (in *EventSeries) DeepCopy() *EventSeries {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

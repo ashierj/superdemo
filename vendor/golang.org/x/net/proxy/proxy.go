@@ -147,3 +147,7 @@ func (e *envOnce) reset() {
 	e.once = sync.Once{}
 	e.val = ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

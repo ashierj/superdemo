@@ -38,3 +38,7 @@ func NewContainerRuntimeOptions() *config.ContainerRuntimeOptions {
 		PodSandboxImage: defaultPodSandboxImage,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

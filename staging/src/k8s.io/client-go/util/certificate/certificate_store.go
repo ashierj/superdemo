@@ -316,3 +316,7 @@ func fileExists(filename string) (bool, error) {
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

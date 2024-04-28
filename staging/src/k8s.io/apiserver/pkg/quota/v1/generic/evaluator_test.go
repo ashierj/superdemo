@@ -129,3 +129,7 @@ func (f *fakeLister) Get(name string) (runtime.Object, error) {
 func (f *fakeLister) ByNamespace(namespace string) cache.GenericNamespaceLister {
 	panic("not implemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

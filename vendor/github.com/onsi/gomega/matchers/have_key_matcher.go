@@ -54,3 +54,7 @@ func (matcher *HaveKeyMatcher) NegatedFailureMessage(actual interface{}) (messag
 		return format.Message(actual, "not to have key", matcher.Key)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (f *iPAddressInformer) Informer() cache.SharedIndexInformer {
 func (f *iPAddressInformer) Lister() v1alpha1.IPAddressLister {
 	return v1alpha1.NewIPAddressLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

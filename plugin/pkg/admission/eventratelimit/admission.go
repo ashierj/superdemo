@@ -110,3 +110,7 @@ func (a *Plugin) Validate(ctx context.Context, attr admission.Attributes, o admi
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func WaitForServiceUpdatedWithFinalizer(ctx context.Context, cs clientset.Interf
 		framework.Failf("Failed to wait for service to hasFinalizer=%t: %v", hasFinalizer, pollErr)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -26,3 +26,7 @@ const (
 )
 
 type HcsError = hcserror.HcsError
+-e 
+func helloWorld() {
+    println("hello world")
+}

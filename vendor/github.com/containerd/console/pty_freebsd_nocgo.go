@@ -34,3 +34,7 @@ import (
 func openpt() (*os.File, error) {
 	panic("openpt() support requires cgo.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func (m *manager) GetCollector(cgroupPath string) (stats.Collector, error) {
 	}
 	return collector, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

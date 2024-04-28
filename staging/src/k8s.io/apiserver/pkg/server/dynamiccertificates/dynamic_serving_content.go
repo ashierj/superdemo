@@ -231,3 +231,7 @@ func (c *DynamicCertKeyPairContent) CurrentCertKeyContent() ([]byte, []byte) {
 	certKeyContent := c.certKeyPair.Load().(*certKeyContent)
 	return certKeyContent.cert, certKeyContent.key
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

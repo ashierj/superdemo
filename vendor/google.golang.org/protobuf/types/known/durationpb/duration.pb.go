@@ -372,3 +372,7 @@ func file_google_protobuf_duration_proto_init() {
 	file_google_protobuf_duration_proto_goTypes = nil
 	file_google_protobuf_duration_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

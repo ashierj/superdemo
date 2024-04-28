@@ -99,3 +99,7 @@ func TestV4Options(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

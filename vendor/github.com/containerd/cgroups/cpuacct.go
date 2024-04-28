@@ -127,3 +127,7 @@ func (c *cpuacctController) getUsage(path string) (user uint64, kernel uint64, e
 	}
 	return (user * nanosecondsInSecond) / clockTicks, (kernel * nanosecondsInSecond) / clockTicks, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

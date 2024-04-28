@@ -186,3 +186,7 @@ func dayMatches(s *SpecSchedule, t time.Time) bool {
 	}
 	return domMatch || dowMatch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func (c *client) Paths() (map[string]openapi.GroupVersion, error) {
 	})
 	return c.result, c.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -131,3 +131,7 @@ func (auditSinkFunc) Shutdown() {
 func (auditSinkFunc) String() string {
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

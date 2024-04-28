@@ -26,3 +26,7 @@ import (
 func isAbs(path string) bool {
 	return filepath.IsAbs(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -898,3 +898,7 @@ func SetObjectDefaults_ReplicaSetList(in *v1beta1.ReplicaSetList) {
 		SetObjectDefaults_ReplicaSet(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

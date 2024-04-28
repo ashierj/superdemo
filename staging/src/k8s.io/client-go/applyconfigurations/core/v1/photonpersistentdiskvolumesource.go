@@ -46,3 +46,7 @@ func (b *PhotonPersistentDiskVolumeSourceApplyConfiguration) WithFSType(value st
 	b.FSType = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

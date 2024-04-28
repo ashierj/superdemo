@@ -240,3 +240,7 @@ func BenchmarkApplyConfigurationsToUnstructured(b *testing.B) {
 	}
 	b.StopTimer()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

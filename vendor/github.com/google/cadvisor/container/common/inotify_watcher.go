@@ -133,3 +133,7 @@ func mapToSlice(m map[string]bool) []string {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

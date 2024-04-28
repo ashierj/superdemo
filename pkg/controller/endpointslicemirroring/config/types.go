@@ -40,3 +40,7 @@ type EndpointSliceMirroringControllerConfiguration struct {
 	// update triggers an EndpointSlice update.
 	MirroringEndpointUpdatesBatchPeriod metav1.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

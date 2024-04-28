@@ -94,3 +94,7 @@ func (e errInterrupted) Error() string {
 	}
 	return e.cause.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

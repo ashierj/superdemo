@@ -107,3 +107,7 @@ func (m PlaceholderMessage) Enums() protoreflect.EnumDescriptors           { ret
 func (m PlaceholderMessage) Extensions() protoreflect.ExtensionDescriptors { return emptyExtensions }
 func (m PlaceholderMessage) ProtoType(protoreflect.MessageDescriptor)      { return }
 func (m PlaceholderMessage) ProtoInternal(pragma.DoNotImplement)           { return }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (b *AppArmorProfileApplyConfiguration) WithLocalhostProfile(value string) *
 	b.LocalhostProfile = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

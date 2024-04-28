@@ -519,3 +519,7 @@ func (process *Process) unregisterCallback(ctx context.Context) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -61,3 +61,7 @@ func DoTCPProbe(addr string, timeout time.Duration) (probe.Result, string, error
 	}
 	return probe.Success, "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

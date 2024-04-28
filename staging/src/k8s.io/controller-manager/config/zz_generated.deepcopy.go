@@ -97,3 +97,7 @@ func (in *LeaderMigrationConfiguration) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -66,3 +66,7 @@ func NewControllerRef(owner Object, gvk schema.GroupVersionKind) *OwnerReference
 		Controller:         ptr.To(true),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

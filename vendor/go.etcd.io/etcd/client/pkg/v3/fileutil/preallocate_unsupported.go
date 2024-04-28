@@ -24,3 +24,7 @@ func preallocExtend(f *os.File, sizeInBytes int64) error {
 }
 
 func preallocFixed(f *os.File, sizeInBytes int64) error { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

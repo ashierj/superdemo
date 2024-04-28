@@ -72,3 +72,7 @@ func TestNotFoundHandler(t *testing.T) {
 		t.Fatalf("unexpected response: %v, expected: %v", bodyStr, expectedMsg)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

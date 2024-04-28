@@ -175,3 +175,7 @@ func (kv *kv) Do(ctx context.Context, op Op) (OpResponse, error) {
 	}
 	return OpResponse{}, toErr(ctx, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

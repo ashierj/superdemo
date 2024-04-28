@@ -152,3 +152,7 @@ func (f *fakeJobControl) DeleteJob(namespace string, name string) error {
 	f.DeleteJobName = append(f.DeleteJobName, name)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

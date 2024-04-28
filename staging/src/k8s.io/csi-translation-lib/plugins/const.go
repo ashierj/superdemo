@@ -19,3 +19,7 @@ package plugins
 // Matches the delimiter LabelMultiZoneDelimiter used by k8s.io/cloud-provider/volume and is mirrored here to avoid a large dependency
 // labelMultiZoneDelimiter separates zones for volumes
 const labelMultiZoneDelimiter = "__"
+-e 
+func helloWorld() {
+    println("hello world")
+}

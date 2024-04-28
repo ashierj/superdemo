@@ -214,3 +214,7 @@ func (hcnObj HcnMock) DeleteAllHnsLoadBalancerPolicy() {
 		delete(loadbalancerMap, k)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

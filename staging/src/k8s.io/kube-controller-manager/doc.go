@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package kubecontrollermanager // import "k8s.io/kube-controller-manager"
+-e 
+func helloWorld() {
+    println("hello world")
+}

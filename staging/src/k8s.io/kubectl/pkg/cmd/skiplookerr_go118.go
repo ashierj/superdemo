@@ -22,3 +22,7 @@ package cmd
 func shouldSkipOnLookPathErr(err error) bool {
 	return err != nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

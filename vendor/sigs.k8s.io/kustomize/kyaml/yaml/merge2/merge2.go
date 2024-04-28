@@ -186,3 +186,7 @@ func (m Merger) SetComments(sources walk.Sources) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

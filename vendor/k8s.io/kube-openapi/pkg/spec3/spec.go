@@ -73,3 +73,7 @@ func (o *OpenAPI) MarshalNextJSON(opts jsonv2.MarshalOptions, enc *jsonv2.Encode
 	x := (*OpenAPIOmitZero)(o)
 	return opts.MarshalNext(enc, x)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ package procfs
 func isRealProc(mountPoint string) (bool, error) {
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

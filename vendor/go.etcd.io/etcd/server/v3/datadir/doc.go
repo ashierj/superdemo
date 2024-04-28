@@ -15,3 +15,7 @@
 package datadir
 
 // datadir contains functions to navigate file-layout of etcd data-directory.
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1071,3 +1071,7 @@ func generatePodFromRS(rs *apps.ReplicaSet) *v1.Pod {
 		Spec: rs.Spec.Template.Spec,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

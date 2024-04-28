@@ -378,3 +378,7 @@ func quantitySubInt(arg ref.Val, other ref.Val) ref.Val {
 		Quantity: &copy,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

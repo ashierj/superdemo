@@ -104,3 +104,7 @@ var _ = SIGDescribe("Kubectl delete", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

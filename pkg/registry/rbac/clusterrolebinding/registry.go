@@ -73,3 +73,7 @@ func (a AuthorizerAdapter) ListClusterRoleBindings() ([]*rbacv1.ClusterRoleBindi
 	}
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

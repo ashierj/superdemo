@@ -16,3 +16,7 @@ type Error struct {
 func (e Error) Error() string {
 	return fmt.Sprintf("%s: %q => %s", e.Err, e.Debug, e.Stderr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

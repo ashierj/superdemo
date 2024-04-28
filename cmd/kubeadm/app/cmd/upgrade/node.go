@@ -262,3 +262,7 @@ func (d *nodeData) KubeConfigPath() string {
 func (d *nodeData) OutputWriter() io.Writer {
 	return d.outputWriter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

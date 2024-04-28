@@ -9,3 +9,7 @@ var (
 	ErrHTTP     = errors.Errorf("HTTP Error")
 	ErrRtNotDir = errors.Errorf("must build at directory")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

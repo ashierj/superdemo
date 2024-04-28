@@ -86,3 +86,7 @@ func newThrottledUpgradeAwareProxyHandler(location *url.URL, transport http.Roun
 	handler.MaxBytesPerSec = capabilities.Get().PerConnectionBandwidthLimitBytesPerSec
 	return handler
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

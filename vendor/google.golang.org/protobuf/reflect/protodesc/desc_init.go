@@ -302,3 +302,7 @@ func (r descsByName) makeBase(child, parent protoreflect.Descriptor, name string
 		Index:      idx,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

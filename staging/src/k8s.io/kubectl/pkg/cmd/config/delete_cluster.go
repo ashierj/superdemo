@@ -84,3 +84,7 @@ func runDeleteCluster(out io.Writer, configAccess clientcmd.ConfigAccess, cmd *c
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

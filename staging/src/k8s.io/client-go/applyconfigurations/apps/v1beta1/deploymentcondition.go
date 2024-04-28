@@ -88,3 +88,7 @@ func (b *DeploymentConditionApplyConfiguration) WithMessage(value string) *Deplo
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

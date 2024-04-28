@@ -54,3 +54,7 @@ func (a Addr) PeerEqual(x Addr) bool {
 	// ignore label for comparison
 	return a.Peer.IP.Equal(x.Peer.IP) && sizea == sizeb
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

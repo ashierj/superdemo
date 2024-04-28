@@ -235,3 +235,7 @@ func NeighDeserialize(m []byte) (*Neigh, error) {
 func SocketGet(local, remote net.Addr) (*Socket, error) {
 	return nil, ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

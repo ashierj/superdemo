@@ -524,3 +524,7 @@ func hasChDirPrefix(value string) []string {
 	}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

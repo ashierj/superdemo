@@ -406,3 +406,7 @@ func TestPullThenListWithAnnotations(t *testing.T) {
 	assert.Equal(t, 1, len(images))
 	assert.Equal(t, images[0].Spec, imageSpec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -32,3 +32,7 @@ import (
 	// submodule test dependencies
 	_ "github.com/armon/go-socks5" // for staging/src/k8s.io/apimachinery/pkg/util/httpstream/spdy/roundtripper_test.go
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

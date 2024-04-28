@@ -243,3 +243,7 @@ func (s *CpusetGroup) ensureCpusAndMems(path string, r *configs.Resources) error
 	}
 	return cpusetCopyIfNeeded(path, filepath.Dir(path))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

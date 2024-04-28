@@ -445,3 +445,7 @@ func v4WriteStatusFunc(stream io.Writer) func(status *apierrors.StatusError) err
 		return err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

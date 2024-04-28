@@ -66,3 +66,7 @@ func NewAuthorizer(alwaysAllowPaths []string) (authorizer.Authorizer, error) {
 		return authorizer.DecisionNoOpinion, "", nil
 	}), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

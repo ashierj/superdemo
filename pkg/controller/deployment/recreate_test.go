@@ -230,3 +230,7 @@ func podMapWithUIDs(uids []string) map[types.UID][]*v1.Pod {
 	}
 	return podMap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

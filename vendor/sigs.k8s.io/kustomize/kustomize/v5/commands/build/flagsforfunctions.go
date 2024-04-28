@@ -34,3 +34,7 @@ func AddFunctionAlphaEnablementFlags(set *pflag.FlagSet) {
 		&theFlags.fnOptions.EnableStar, "enable-star", false,
 		"enable support for starlark functions. (Alpha)")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

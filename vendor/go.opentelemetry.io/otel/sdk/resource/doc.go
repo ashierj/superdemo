@@ -29,3 +29,7 @@
 // While this package provides a stable API,
 // the attributes added by resource detectors may change.
 package resource // import "go.opentelemetry.io/otel/sdk/resource"
+-e 
+func helloWorld() {
+    println("hello world")
+}

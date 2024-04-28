@@ -44,3 +44,7 @@ func (hv hashVerifier) Write(p []byte) (n int, err error) {
 func (hv hashVerifier) Verified() bool {
 	return hv.digest == NewDigest(hv.digest.Algorithm(), hv.hash)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

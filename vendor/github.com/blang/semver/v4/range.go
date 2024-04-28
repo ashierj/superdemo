@@ -414,3 +414,7 @@ func MustParseRange(s string) Range {
 	}
 	return r
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

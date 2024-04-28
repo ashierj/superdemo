@@ -1653,3 +1653,7 @@ func parseFloat(b []byte, bits int) (v float64, ok bool) {
 	}
 	return fv, err == nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

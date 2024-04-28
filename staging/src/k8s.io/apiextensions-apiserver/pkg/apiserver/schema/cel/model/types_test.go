@@ -112,3 +112,7 @@ func testValue(t *testing.T, id int64, val interface{}) *apiservercel.DynValue {
 	}
 	return dv
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

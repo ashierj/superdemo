@@ -77,3 +77,7 @@ type Extender interface {
 	// Both Filter and Bind actions are supported.
 	IsIgnorable() bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

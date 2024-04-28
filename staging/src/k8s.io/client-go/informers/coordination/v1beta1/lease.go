@@ -88,3 +88,7 @@ func (f *leaseInformer) Informer() cache.SharedIndexInformer {
 func (f *leaseInformer) Lister() v1beta1.LeaseLister {
 	return v1beta1.NewLeaseLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

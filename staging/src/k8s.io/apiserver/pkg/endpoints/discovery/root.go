@@ -133,3 +133,7 @@ func (s *rootAPIsHandler) WebService() *restful.WebService {
 		Writes(metav1.APIGroupList{}))
 	return ws
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

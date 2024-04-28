@@ -62,3 +62,7 @@ func convertObjToConfigMap(name string, obj runtime.Object) (*v1.ConfigMap, erro
 	}
 	return cm, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

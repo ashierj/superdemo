@@ -52,3 +52,7 @@ type FooList struct {
 
 	Items []Foo `json:"items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

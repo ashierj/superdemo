@@ -30,3 +30,7 @@ const (
 
 	VMShimOperation = "vmshim-op"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

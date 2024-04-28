@@ -142,3 +142,7 @@ func (lhs ManagedFields) String() string {
 	}
 	return s.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

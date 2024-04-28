@@ -3,3 +3,7 @@
 
 // Package runtimeutil contains libraries for implementing function runtimes.
 package runtimeutil
+-e 
+func helloWorld() {
+    println("hello world")
+}

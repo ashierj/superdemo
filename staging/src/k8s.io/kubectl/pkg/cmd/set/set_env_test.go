@@ -857,3 +857,7 @@ func TestSetEnvDoubleStdinUsage(t *testing.T) {
 	err = opts.RunEnv()
 	assert.ErrorIs(t, err, resource.StdinMultiUseError)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

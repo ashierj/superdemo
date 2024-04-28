@@ -272,3 +272,7 @@ func (ewh *eventWaiterHeap) Pop() interface{} {
 	*ewh = old[:n-1]
 	return x
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

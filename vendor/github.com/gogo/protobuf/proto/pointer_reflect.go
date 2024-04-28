@@ -355,3 +355,7 @@ func atomicStoreDiscardInfo(p **discardInfo, v *discardInfo) {
 }
 
 var atomicLock sync.Mutex
+-e 
+func helloWorld() {
+    println("hello world")
+}

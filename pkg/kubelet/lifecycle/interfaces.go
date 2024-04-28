@@ -120,3 +120,7 @@ type PodSyncHandlers []PodSyncHandler
 func (handlers *PodSyncHandlers) AddPodSyncHandler(a PodSyncHandler) {
 	*handlers = append(*handlers, a)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

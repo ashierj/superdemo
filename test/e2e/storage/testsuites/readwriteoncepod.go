@@ -244,3 +244,7 @@ func (t *readWriteOncePodTestSuite) DefineTests(driver storageframework.TestDriv
 		framework.ExpectNoError(err, "failed to wait for pod2 running status")
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

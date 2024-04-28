@@ -119,3 +119,7 @@ func TestWarningsForJobSpec(t *testing.T) {
 func completionModePtr(m batch.CompletionMode) *batch.CompletionMode {
 	return &m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

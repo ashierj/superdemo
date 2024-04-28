@@ -69,3 +69,7 @@ func warnDefaultComponentConfigValue(componentConfigKind, paramName string, defa
 	klog.Warningf("The recommended value for %q in %q is: %v; the provided value is: %v",
 		paramName, componentConfigKind, defaultValue, userValue)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

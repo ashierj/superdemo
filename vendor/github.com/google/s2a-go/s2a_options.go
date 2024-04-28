@@ -213,3 +213,7 @@ func toProtoIdentity(identity Identity) (*s2apb.Identity, error) {
 		return nil, errors.New("unrecognized identity type")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

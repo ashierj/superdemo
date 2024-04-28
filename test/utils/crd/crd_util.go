@@ -141,3 +141,7 @@ func CreateTestCRD(f *framework.Framework, opts ...Option) (*TestCrd, error) {
 		}
 	}}, opts...)...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

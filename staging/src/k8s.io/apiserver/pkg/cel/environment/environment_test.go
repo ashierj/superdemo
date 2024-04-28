@@ -324,3 +324,7 @@ type fakeAuthorizer struct {
 func (f fakeAuthorizer) Authorize(ctx context.Context, a authorizer.Attributes) (authorizer.Decision, string, error) {
 	return f.decision, f.reason, f.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

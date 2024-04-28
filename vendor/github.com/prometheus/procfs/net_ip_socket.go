@@ -226,3 +226,7 @@ func parseNetIPSocketLine(fields []string) (*netIPSocketLine, error) {
 
 	return line, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

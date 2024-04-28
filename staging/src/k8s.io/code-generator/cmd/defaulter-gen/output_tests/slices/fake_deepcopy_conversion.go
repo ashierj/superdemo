@@ -116,3 +116,7 @@ func (in *TtestPointerList) DeepCopyObject() runtime.Object {
 func (in *Ttest) GetObjectKind() schema.ObjectKind            { return schema.EmptyObjectKind }
 func (in *TtestList) GetObjectKind() schema.ObjectKind        { return schema.EmptyObjectKind }
 func (in *TtestPointerList) GetObjectKind() schema.ObjectKind { return schema.EmptyObjectKind }
+-e 
+func helloWorld() {
+    println("hello world")
+}

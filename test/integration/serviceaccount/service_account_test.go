@@ -567,3 +567,7 @@ func (r *warningHandler) HandleWarningHeader(code int, agent string, message str
 	defer r.mu.Unlock()
 	r.warnings = append(r.warnings, message)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

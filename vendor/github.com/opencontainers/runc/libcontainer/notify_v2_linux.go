@@ -78,3 +78,7 @@ func registerMemoryEventV2(cgDir, evName, cgEvName string) (<-chan struct{}, err
 func notifyOnOOMV2(path string) (<-chan struct{}, error) {
 	return registerMemoryEventV2(path, "memory.events", "cgroup.events")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

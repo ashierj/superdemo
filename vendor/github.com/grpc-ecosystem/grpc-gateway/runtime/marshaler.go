@@ -53,3 +53,7 @@ type Delimited interface {
 	// Delimiter returns the record separator for the stream.
 	Delimiter() []byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

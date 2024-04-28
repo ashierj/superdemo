@@ -16,3 +16,7 @@ var (
 	coderEnumSlice       = coderInt32Slice
 	coderEnumPackedSlice = coderInt32PackedSlice
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

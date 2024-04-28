@@ -46,3 +46,7 @@ func (b *HorizontalPodAutoscalerBehaviorApplyConfiguration) WithScaleDown(value 
 	b.ScaleDown = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

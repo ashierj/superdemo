@@ -76,3 +76,7 @@ type (
 		pragma.NoUnkeyedLiterals
 	}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

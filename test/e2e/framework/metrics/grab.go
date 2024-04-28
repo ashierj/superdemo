@@ -73,3 +73,7 @@ func GrabAfterEach(ctx context.Context, f *framework.Framework, before *Collecti
 		f.TestSummaries = append(f.TestSummaries, (*ComponentCollection)(&received))
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

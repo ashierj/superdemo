@@ -313,3 +313,7 @@ func (p *httpStreamPair) printError(s string) {
 		fmt.Fprint(p.errorStream, s)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

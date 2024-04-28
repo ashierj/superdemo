@@ -748,3 +748,7 @@ func getPod(ctx context.Context, f *framework.Framework, podName string) (bool, 
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

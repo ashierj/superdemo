@@ -412,3 +412,7 @@ func (c Command) Run(s *specs.State) error {
 		return fmt.Errorf("hook ran past specified timeout of %.1fs", c.Timeout.Seconds())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

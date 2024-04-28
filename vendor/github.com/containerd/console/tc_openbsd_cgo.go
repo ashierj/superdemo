@@ -49,3 +49,7 @@ func unlockpt(f *os.File) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

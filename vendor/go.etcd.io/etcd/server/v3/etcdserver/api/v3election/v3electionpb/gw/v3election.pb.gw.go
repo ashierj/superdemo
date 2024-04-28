@@ -452,3 +452,7 @@ var (
 
 	forward_Election_Resign_0 = runtime.ForwardResponseMessage
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

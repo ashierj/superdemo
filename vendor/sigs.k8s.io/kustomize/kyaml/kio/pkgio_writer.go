@@ -148,3 +148,7 @@ func (r LocalPackageWriter) indexByFilePath(nodes []*yaml.RNode) (map[string][]*
 	}
 	return outputFiles, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

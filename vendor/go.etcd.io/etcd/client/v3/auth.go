@@ -234,3 +234,7 @@ func StrToPermissionType(s string) (PermissionType, error) {
 	}
 	return PermissionType(-1), fmt.Errorf("invalid permission type: %s", s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

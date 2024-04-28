@@ -80,3 +80,7 @@ type ClientConnectionConfiguration struct {
 	// burst allows extra queries to accumulate when a client is exceeding its rate.
 	Burst int32 `json:"burst"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

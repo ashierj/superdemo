@@ -162,3 +162,7 @@ func (tr *tracer) newRecordingSpan(psc, sc trace.SpanContext, name string, sr Sa
 func (tr *tracer) newNonRecordingSpan(sc trace.SpanContext) nonRecordingSpan {
 	return nonRecordingSpan{tracer: tr, sc: sc}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

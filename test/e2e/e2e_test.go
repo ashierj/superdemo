@@ -194,3 +194,7 @@ var _ = ginkgo.ReportAfterSuite("Kubernetes e2e suite report", func(report ginkg
 		}
 	}
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

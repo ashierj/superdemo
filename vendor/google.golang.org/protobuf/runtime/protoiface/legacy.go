@@ -13,3 +13,7 @@ type MessageV1 interface {
 type ExtensionRangeV1 struct {
 	Start, End int32 // both inclusive
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

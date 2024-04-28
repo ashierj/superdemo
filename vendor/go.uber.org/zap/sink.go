@@ -178,3 +178,7 @@ func normalizeScheme(s string) (string, error) {
 	}
 	return s, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

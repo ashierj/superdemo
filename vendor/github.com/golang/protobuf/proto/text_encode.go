@@ -558,3 +558,7 @@ func (w *textWriter) writeIndent() {
 	}
 	w.complete = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

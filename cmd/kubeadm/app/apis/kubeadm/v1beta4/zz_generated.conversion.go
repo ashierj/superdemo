@@ -1158,3 +1158,7 @@ func autoConvert_kubeadm_UpgradePlanConfiguration_To_v1beta4_UpgradePlanConfigur
 func Convert_kubeadm_UpgradePlanConfiguration_To_v1beta4_UpgradePlanConfiguration(in *kubeadm.UpgradePlanConfiguration, out *UpgradePlanConfiguration, s conversion.Scope) error {
 	return autoConvert_kubeadm_UpgradePlanConfiguration_To_v1beta4_UpgradePlanConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

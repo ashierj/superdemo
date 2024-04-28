@@ -27,3 +27,7 @@ limitations under the License.
 // the assumption that the only legitimate use of hard pod
 // anti-affinity is to exclude other pods from the same node.
 package antiaffinity // import "k8s.io/kubernetes/plugin/pkg/admission/antiaffinity"
+-e 
+func helloWorld() {
+    println("hello world")
+}

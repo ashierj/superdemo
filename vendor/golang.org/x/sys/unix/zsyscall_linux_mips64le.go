@@ -634,3 +634,7 @@ func stat(path string, st *stat_t) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

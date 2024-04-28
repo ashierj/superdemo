@@ -814,3 +814,7 @@ type DeletedFinalStateUnknown struct {
 	Key string
 	Obj interface{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

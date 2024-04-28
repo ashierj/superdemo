@@ -77,3 +77,7 @@ func (d ConfirmedDir) Join(path string) string {
 func (d ConfirmedDir) String() string {
 	return string(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

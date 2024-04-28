@@ -104,3 +104,7 @@ func getWarningsForCIDR(fieldPath *field.Path, cidr string) []string {
 	}
 	return []string{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -300,3 +300,7 @@ func (pl *InterPodAffinity) NormalizeScore(ctx context.Context, cycleState *fram
 func (pl *InterPodAffinity) ScoreExtensions() framework.ScoreExtensions {
 	return pl
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

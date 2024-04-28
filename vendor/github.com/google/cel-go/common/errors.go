@@ -101,3 +101,7 @@ func (e *Errors) ToDisplayString() string {
 	}
 	return strings.Join(result, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

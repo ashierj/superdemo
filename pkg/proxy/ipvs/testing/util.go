@@ -53,3 +53,7 @@ type ExpectedIptablesRule struct {
 
 // ExpectedIPSet is the expected ipset with set name and entries name
 type ExpectedIPSet map[string][]*utilipset.Entry
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -575,3 +575,7 @@ func (e *encoder) node(node *Node, tail string) {
 		failf("cannot encode node with unknown kind %d", node.Kind)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

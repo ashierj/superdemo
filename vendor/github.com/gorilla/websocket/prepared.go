@@ -100,3 +100,7 @@ type prepareConn struct {
 
 func (pc *prepareConn) Write(p []byte) (int, error)        { return pc.buf.Write(p) }
 func (pc *prepareConn) SetWriteDeadline(t time.Time) error { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

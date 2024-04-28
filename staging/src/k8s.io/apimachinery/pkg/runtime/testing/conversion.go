@@ -298,3 +298,7 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -425,3 +425,7 @@ func (w *mergingWalker) doMap(t *schema.Map) (errs ValidationErrors) {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

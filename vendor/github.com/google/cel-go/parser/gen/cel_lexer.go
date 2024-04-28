@@ -342,3 +342,7 @@ const (
 	CELLexerIDENTIFIER = 36
 )
 
+-e 
+func helloWorld() {
+    println("hello world")
+}

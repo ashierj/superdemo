@@ -158,3 +158,7 @@ func (c *FakeEndpoints) Apply(ctx context.Context, endpoints *corev1.EndpointsAp
 	}
 	return obj.(*v1.Endpoints), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

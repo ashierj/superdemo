@@ -168,3 +168,7 @@ type IPerf2NodeToNodeCSVResults struct {
 	ServerNode string
 	Results    map[string]*IPerf2EnhancedCSVResults
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

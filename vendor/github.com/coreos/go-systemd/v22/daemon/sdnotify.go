@@ -82,3 +82,7 @@ func SdNotify(unsetEnvironment bool, state string) (bool, error) {
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func (r RepertoireError) Error() string {
 func (r RepertoireError) Replacement() byte { return byte(r) }
 
 var ErrASCIIReplacement = RepertoireError(encoding.ASCIISub)
+-e 
+func helloWorld() {
+    println("hello world")
+}

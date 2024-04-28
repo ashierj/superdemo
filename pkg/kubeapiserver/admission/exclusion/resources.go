@@ -64,3 +64,7 @@ func Included() []schema.GroupResource {
 func Excluded() []schema.GroupResource {
 	return slices.Clone(excluded)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

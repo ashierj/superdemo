@@ -250,3 +250,7 @@ func fullNameOf(d protoreflect.Descriptor) *string {
 	}
 	return proto.String("." + string(d.FullName()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

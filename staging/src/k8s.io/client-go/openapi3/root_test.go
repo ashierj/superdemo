@@ -316,3 +316,7 @@ func TestOpenAPIV3Root_PathToGroupVersion(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

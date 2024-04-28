@@ -64,3 +64,7 @@ func GetMetricUsageRatio(metrics PodMetricsInfo, targetUsage int64) (usageRatio 
 
 	return float64(currentUsage) / float64(targetUsage), currentUsage
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

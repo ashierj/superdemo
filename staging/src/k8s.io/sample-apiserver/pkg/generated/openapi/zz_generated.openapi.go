@@ -3007,3 +3007,7 @@ func schema_pkg_apis_wardle_v1beta1_FlunderStatus(ref common.ReferenceCallback) 
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

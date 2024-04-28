@@ -12,3 +12,7 @@ func DisallowUnknownFields(d *json.Decoder) *json.Decoder {
 	d.DisallowUnknownFields()
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

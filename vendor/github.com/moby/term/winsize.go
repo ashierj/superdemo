@@ -19,3 +19,7 @@ func SetWinsize(fd uintptr, ws *Winsize) error {
 	uws := &unix.Winsize{Row: ws.Height, Col: ws.Width, Xpixel: ws.x, Ypixel: ws.y}
 	return unix.IoctlSetWinsize(int(fd), unix.TIOCSWINSZ, uws)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

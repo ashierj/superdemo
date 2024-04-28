@@ -111,3 +111,7 @@ func AssertKubeConfigCurrentContextWithClusterName(t *testing.T, config *clientc
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

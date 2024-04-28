@@ -68,3 +68,7 @@ type CronJobNamespaceLister interface {
 type cronJobNamespaceLister struct {
 	listers.ResourceIndexer[*v1.CronJob]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

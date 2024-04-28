@@ -770,3 +770,7 @@ func assignValues(to interface{},
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

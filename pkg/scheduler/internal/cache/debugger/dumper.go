@@ -86,3 +86,7 @@ func (d *CacheDumper) printNodeInfo(name string, n *framework.NodeInfo) string {
 func printPod(p *v1.Pod) string {
 	return fmt.Sprintf("name: %v, namespace: %v, uid: %v, phase: %v, nominated node: %v\n", p.Name, p.Namespace, p.UID, p.Status.Phase, p.Status.NominatedNodeName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

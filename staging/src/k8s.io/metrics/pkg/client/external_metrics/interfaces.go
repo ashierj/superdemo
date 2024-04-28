@@ -38,3 +38,7 @@ type MetricsInterface interface {
 	// metricSelector.
 	List(metricName string, metricSelector labels.Selector) (*v1beta1.ExternalMetricValueList, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

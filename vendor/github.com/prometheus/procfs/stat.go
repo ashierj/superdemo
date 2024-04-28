@@ -256,3 +256,7 @@ func parseStat(r io.Reader, fileName string) (Stat, error) {
 
 	return stat, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

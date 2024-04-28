@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=authentication.k8s.io
 
 package authentication // import "k8s.io/kubernetes/pkg/apis/authentication"
+-e 
+func helloWorld() {
+    println("hello world")
+}

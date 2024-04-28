@@ -435,3 +435,7 @@ const (
 	SYS_MAXSYSCALL                     = 530
 	SYS_INVALID                        = 63
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

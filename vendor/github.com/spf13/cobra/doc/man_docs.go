@@ -244,3 +244,7 @@ func genMan(cmd *cobra.Command, header *GenManHeader) []byte {
 	}
 	return buf.Bytes()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

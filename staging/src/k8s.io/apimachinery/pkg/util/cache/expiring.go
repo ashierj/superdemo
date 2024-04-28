@@ -200,3 +200,7 @@ func (cq *expiringHeap) Pop() interface{} {
 	*cq = (*cq)[:cq.Len()-1]
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

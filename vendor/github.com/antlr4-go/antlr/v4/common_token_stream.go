@@ -448,3 +448,7 @@ func (c *CommonTokenStream) getNumberOfOnChannelTokens() int {
 
 	return n
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

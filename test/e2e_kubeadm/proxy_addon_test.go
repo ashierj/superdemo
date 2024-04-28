@@ -104,3 +104,7 @@ var _ = Describe("proxy addon", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -808,3 +808,7 @@ func file_google_protobuf_struct_proto_init() {
 	file_google_protobuf_struct_proto_goTypes = nil
 	file_google_protobuf_struct_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

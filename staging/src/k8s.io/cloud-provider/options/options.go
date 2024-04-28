@@ -306,3 +306,7 @@ func (o *CloudControllerManagerOptions) Config(allControllers []string, disabled
 
 	return c, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

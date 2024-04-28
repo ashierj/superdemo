@@ -132,3 +132,7 @@ func TestHandlerSupportsUserNamespaces(t *testing.T) {
 	assert.Equal(t, false, got)
 	assert.Error(t, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

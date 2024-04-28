@@ -580,3 +580,7 @@ func Unmount(target string, flags int) (err error) {
 	}
 	return umount(target)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

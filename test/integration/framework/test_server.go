@@ -231,3 +231,7 @@ func StartTestServer(ctx context.Context, t testing.TB, setup TestServerSetup) (
 
 	return kubeAPIServerClient, kubeAPIServerClientConfig, tearDownFn
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

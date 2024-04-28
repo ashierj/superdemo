@@ -231,3 +231,7 @@ func assertConfStatesEquivalent(l Logger, cs1, cs2 pb.ConfState) {
 	}
 	l.Panic(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

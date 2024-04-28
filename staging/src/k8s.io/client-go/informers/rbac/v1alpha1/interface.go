@@ -64,3 +64,7 @@ func (v *version) Roles() RoleInformer {
 func (v *version) RoleBindings() RoleBindingInformer {
 	return &roleBindingInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

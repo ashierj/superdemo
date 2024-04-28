@@ -628,3 +628,7 @@ func file_opentelemetry_proto_common_v1_common_proto_init() {
 	file_opentelemetry_proto_common_v1_common_proto_goTypes = nil
 	file_opentelemetry_proto_common_v1_common_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -541,3 +541,7 @@ type Error struct {
 func (e *Error) Error() string {
 	return fmt.Sprintf("compute: Received %d `%s`", e.Code, e.Message)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

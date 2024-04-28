@@ -225,3 +225,7 @@ func (i BuiltinFunc) String() string {
 	}
 	return _BuiltinFunc_name[_BuiltinFunc_index[i]:_BuiltinFunc_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

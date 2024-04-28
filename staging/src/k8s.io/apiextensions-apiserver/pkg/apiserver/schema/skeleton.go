@@ -46,3 +46,7 @@ func (s *Structural) StripNullable() *Structural {
 	v.Visit(s)
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

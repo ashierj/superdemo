@@ -83,3 +83,7 @@ var (
 func (c *Clientset) ExampleV1() examplev1.ExampleV1Interface {
 	return &fakeexamplev1.FakeExampleV1{Fake: &c.Fake}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

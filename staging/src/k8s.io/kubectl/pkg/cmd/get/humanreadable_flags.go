@@ -136,3 +136,7 @@ func NewHumanPrintFlags() *HumanPrintFlags {
 		ShowKind:   &showKind,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -171,3 +171,7 @@ func autoConvert_node_Scheduling_To_v1_Scheduling(in *node.Scheduling, out *v1.S
 func Convert_node_Scheduling_To_v1_Scheduling(in *node.Scheduling, out *v1.Scheduling, s conversion.Scope) error {
 	return autoConvert_node_Scheduling_To_v1_Scheduling(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -262,3 +262,7 @@ func updateReferencePrefix(prefix, ref string) string {
 	suffix := strings.TrimPrefix(prefix, pointerDelimPrefix)
 	return pointerDelimPrefix + ref + ": " + suffix
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

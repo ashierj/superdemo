@@ -18,3 +18,7 @@
 // patterns for OpenTelemetry things. This package represents the conventions
 // as of the v1.21.0 version of the OpenTelemetry specification.
 package semconv // import "go.opentelemetry.io/otel/semconv/v1.21.0"
+-e 
+func helloWorld() {
+    println("hello world")
+}

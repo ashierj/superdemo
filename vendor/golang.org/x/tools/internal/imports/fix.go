@@ -1827,3 +1827,7 @@ func copyExports(pkg []string) map[string]bool {
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

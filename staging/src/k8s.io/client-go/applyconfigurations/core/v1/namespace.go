@@ -254,3 +254,7 @@ func (b *NamespaceApplyConfiguration) WithStatus(value *NamespaceStatusApplyConf
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

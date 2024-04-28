@@ -1702,3 +1702,7 @@ var (
 	// received
 	MessageTypeReceived = MessageTypeKey.String("RECEIVED")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

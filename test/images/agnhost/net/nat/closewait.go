@@ -196,3 +196,7 @@ func (client *closeWaitClient) Run(logger *log.Logger, rawOptions interface{}) e
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

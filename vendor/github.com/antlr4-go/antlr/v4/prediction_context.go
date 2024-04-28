@@ -725,3 +725,7 @@ func getCachedBasePredictionContext(context *PredictionContext, contextCache *Pr
 	
 	return updated
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

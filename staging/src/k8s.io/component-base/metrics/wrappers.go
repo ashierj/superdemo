@@ -165,3 +165,7 @@ func ErrIsNotRegistered(err error) bool {
 }
 
 var errNotRegistered = errors.New("metric vec is not registered yet")
+-e 
+func helloWorld() {
+    println("hello world")
+}

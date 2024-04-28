@@ -126,3 +126,7 @@ func (pm *pluginManager) Run(sourcesReady config.SourcesReady, stopCh <-chan str
 func (pm *pluginManager) AddHandler(pluginType string, handler cache.PluginHandler) {
 	pm.reconciler.AddHandler(pluginType, handler)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

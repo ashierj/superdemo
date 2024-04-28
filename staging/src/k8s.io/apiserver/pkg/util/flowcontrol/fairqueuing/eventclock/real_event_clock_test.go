@@ -66,3 +66,7 @@ func TestRealEventClock(t *testing.T) {
 		lastTime = nextTime
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

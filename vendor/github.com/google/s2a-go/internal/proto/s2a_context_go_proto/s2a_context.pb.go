@@ -265,3 +265,7 @@ func file_internal_proto_s2a_context_s2a_context_proto_init() {
 	file_internal_proto_s2a_context_s2a_context_proto_goTypes = nil
 	file_internal_proto_s2a_context_s2a_context_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

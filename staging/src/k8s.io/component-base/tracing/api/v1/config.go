@@ -86,3 +86,7 @@ func validateEndpoint(endpoint string, fldPath *field.Path) field.ErrorList {
 	}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

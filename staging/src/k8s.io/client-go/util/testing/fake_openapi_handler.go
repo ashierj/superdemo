@@ -165,3 +165,7 @@ func (t *testMux) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	w.WriteHeader(http.StatusNotFound)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

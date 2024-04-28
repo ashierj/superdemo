@@ -165,3 +165,7 @@ func (lm *lockerMutex) Unlock() {
 func NewLocker(s *Session, pfx string) sync.Locker {
 	return &lockerMutex{NewMutex(s, pfx)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

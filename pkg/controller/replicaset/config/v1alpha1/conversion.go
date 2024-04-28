@@ -38,3 +38,7 @@ func Convert_v1alpha1_ReplicaSetControllerConfiguration_To_config_ReplicaSetCont
 func Convert_config_ReplicaSetControllerConfiguration_To_v1alpha1_ReplicaSetControllerConfiguration(in *config.ReplicaSetControllerConfiguration, out *v1alpha1.ReplicaSetControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_ReplicaSetControllerConfiguration_To_v1alpha1_ReplicaSetControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

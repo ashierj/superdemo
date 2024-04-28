@@ -87,3 +87,7 @@ func (r *REST) Create(ctx context.Context, obj runtime.Object, createValidation 
 
 	return subjectAccessReview, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

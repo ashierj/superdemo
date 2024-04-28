@@ -46,3 +46,7 @@ func (b *ClusterTrustBundleSpecApplyConfiguration) WithTrustBundle(value string)
 	b.TrustBundle = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

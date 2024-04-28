@@ -592,3 +592,7 @@ func (w *Watcher) newEvent(name string, mask uint32) Event {
 	}
 	return e
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

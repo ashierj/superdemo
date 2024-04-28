@@ -37,3 +37,7 @@ func (c *CgroupsValidator) Validate(spec SysSpec) (warns, errs []error) {
 func (c *CgroupsValidator) Name() string {
 	return "cgroups"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

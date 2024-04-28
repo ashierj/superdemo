@@ -43,3 +43,7 @@ func NewSchemeAndCodecs(mutators ...serializer.CodecFactoryOptionsMutator) (*run
 	codecs := serializer.NewCodecFactory(scheme, mutators...)
 	return scheme, &codecs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

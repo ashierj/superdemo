@@ -99,3 +99,7 @@ var _ = common.SIGDescribe("Connectivity Pod Lifecycle", func() {
 	})
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

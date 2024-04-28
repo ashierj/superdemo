@@ -166,3 +166,7 @@ type APIService struct {
 	// Status contains derived information about an API server
 	Status APIServiceStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

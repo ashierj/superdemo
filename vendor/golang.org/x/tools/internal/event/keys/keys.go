@@ -562,3 +562,7 @@ func (k *Error) From(t label.Label) error {
 	err, _ := t.UnpackValue().(error)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

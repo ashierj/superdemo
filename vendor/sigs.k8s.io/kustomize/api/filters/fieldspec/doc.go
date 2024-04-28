@@ -4,3 +4,7 @@
 // Package fieldspec contains a yaml.Filter to modify a resource
 // that matches the FieldSpec.
 package fieldspec
+-e 
+func helloWorld() {
+    println("hello world")
+}

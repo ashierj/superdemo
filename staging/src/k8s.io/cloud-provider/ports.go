@@ -21,3 +21,7 @@ const (
 	// This value may be overridden by a flag at startup.
 	CloudControllerManagerPort = 10258
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

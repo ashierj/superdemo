@@ -772,3 +772,7 @@ func assertCertsExist(t *testing.T, dir string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

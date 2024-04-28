@@ -387,3 +387,7 @@ func newWebhookTokenAuthenticator(config Config) (authenticator.Token, error) {
 
 	return tokencache.New(webhookTokenAuthenticator, false, config.WebhookTokenAuthnCacheTTL, config.WebhookTokenAuthnCacheTTL), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

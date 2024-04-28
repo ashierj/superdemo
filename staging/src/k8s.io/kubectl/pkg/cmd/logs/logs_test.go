@@ -930,3 +930,7 @@ func (l *logTestMock) mockLogsForObject(restClientGetter genericclioptions.RESTC
 		return nil, fmt.Errorf("cannot get the logs from %T", object)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

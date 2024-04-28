@@ -64,3 +64,7 @@ func (b *ValidatingAdmissionPolicyStatusApplyConfiguration) WithConditions(value
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

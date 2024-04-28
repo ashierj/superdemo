@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package handlers contains HTTP handlers to implement the apiserver APIs.
 package handlers // import "k8s.io/apiserver/pkg/endpoints/handlers"
+-e 
+func helloWorld() {
+    println("hello world")
+}

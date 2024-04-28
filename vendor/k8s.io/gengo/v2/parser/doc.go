@@ -17,3 +17,7 @@ limitations under the License.
 // Package parser provides code to parse go files, type-check them, extract the
 // types.
 package parser // import "k8s.io/gengo/v2/parser"
+-e 
+func helloWorld() {
+    println("hello world")
+}

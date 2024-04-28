@@ -71,3 +71,7 @@ func NewCert(certfile, keyfile string, parseFunc func([]byte, []byte) (tls.Certi
 	}
 	return &tlsCert, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

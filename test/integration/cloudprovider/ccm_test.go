@@ -190,3 +190,7 @@ func makeNode(name string) *v1.Node {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

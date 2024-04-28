@@ -50,3 +50,7 @@ func ValidateLeaseSpec(spec *coordination.LeaseSpec, fldPath *field.Path) field.
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

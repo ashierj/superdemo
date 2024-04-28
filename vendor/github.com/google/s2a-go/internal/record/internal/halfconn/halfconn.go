@@ -191,3 +191,7 @@ func (hc *S2AHalfConnection) deriveSecret(secret, label []byte, length int) ([]b
 	}
 	return hc.expander.expand(secret, hkdfLabelBytes, length)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -89,3 +89,7 @@ func GetIndexedIP(subnet *net.IPNet, index int) (net.IP, error) {
 	}
 	return ip, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

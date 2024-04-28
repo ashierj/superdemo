@@ -356,3 +356,7 @@ func parsenum(s string, start, end int) (num int, isnum bool, newi int) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

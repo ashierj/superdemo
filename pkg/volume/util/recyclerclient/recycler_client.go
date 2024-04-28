@@ -264,3 +264,7 @@ func (c *realRecyclerClient) WatchPod(name, namespace string, stopChannel chan s
 
 	return eventCh, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

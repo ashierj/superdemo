@@ -34,3 +34,7 @@ func (f fieldsPrinterBuilder) BuildFieldsPrinter(writer *Formatter) fieldsPrinte
 		Writer: writer,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

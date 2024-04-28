@@ -92,3 +92,7 @@ func FlushCoverage() {
 		klog.Errorf("Couldn't move coverage file from %s to %s", coverageFile, tempCoveragePath())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

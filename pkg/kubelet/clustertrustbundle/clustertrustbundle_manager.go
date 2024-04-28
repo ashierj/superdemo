@@ -259,3 +259,7 @@ func (m *NoopManager) GetTrustAnchorsByName(name string, allowMissing bool) ([]b
 func (m *NoopManager) GetTrustAnchorsBySigner(signerName string, labelSelector *metav1.LabelSelector, allowMissing bool) ([]byte, error) {
 	return nil, fmt.Errorf("ClusterTrustBundle projection is not supported in static kubelet mode")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

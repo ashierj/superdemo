@@ -227,3 +227,7 @@ func newReplicaSetWithSelectorLabels(selectorLabels map[string]string) *apps.Rep
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

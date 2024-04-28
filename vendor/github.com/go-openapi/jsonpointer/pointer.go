@@ -388,3 +388,7 @@ func Escape(token string) string {
 	step2 := strings.Replace(step1, decRefTok1, encRefTok1, -1)
 	return step2
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

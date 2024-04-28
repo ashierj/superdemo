@@ -141,3 +141,7 @@ func (c *sshConn) ClientVersion() []byte {
 func (c *sshConn) ServerVersion() []byte {
 	return dup(c.serverVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

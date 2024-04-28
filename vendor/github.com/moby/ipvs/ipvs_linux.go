@@ -201,3 +201,7 @@ func (i *Handle) GetConfig() (*Config, error) {
 func (i *Handle) SetConfig(c *Config) error {
 	return i.doSetConfigCmd(c)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

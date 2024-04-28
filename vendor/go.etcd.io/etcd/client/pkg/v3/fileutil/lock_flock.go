@@ -48,3 +48,7 @@ func flockLockFile(path string, flag int, perm os.FileMode) (*LockedFile, error)
 	}
 	return &LockedFile{f}, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -397,3 +397,7 @@ func checkCompletion(t *testing.T, comps, expectedComps []string, directive, exp
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func GetFrameworkOutput(t *testing.T, flags map[string]string) (output string, f
 }
 
 type exitCode int
+-e 
+func helloWorld() {
+    println("hello world")
+}

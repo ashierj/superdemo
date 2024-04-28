@@ -56,3 +56,7 @@ func (b Baggage) Extract(parent context.Context, carrier TextMapCarrier) context
 func (b Baggage) Fields() []string {
 	return []string{baggageHeader}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

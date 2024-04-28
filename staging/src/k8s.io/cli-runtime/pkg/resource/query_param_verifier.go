@@ -174,3 +174,7 @@ func supportsQueryParam(doc *openapi_v2.Document, gvk schema.GroupVersionKind, q
 
 	return false, errors.New("couldn't find GVK in openapi")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

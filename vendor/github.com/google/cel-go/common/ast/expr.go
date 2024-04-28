@@ -858,3 +858,7 @@ var (
 	nilStruct      *baseStructExpr        = nil
 	nilStructField *baseStructField       = nil
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

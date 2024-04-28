@@ -31,3 +31,7 @@ func WithCacheControl(handler http.Handler) http.Handler {
 		handler.ServeHTTP(w, req)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

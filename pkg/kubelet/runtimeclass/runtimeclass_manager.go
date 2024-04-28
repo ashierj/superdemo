@@ -76,3 +76,7 @@ func (m *Manager) LookupRuntimeHandler(runtimeClassName *string) (string, error)
 
 	return rc.Handler, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

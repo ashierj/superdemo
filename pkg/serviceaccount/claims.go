@@ -298,3 +298,7 @@ func (v *validator) Validate(ctx context.Context, _ string, public *jwt.Claims, 
 func (v *validator) NewPrivateClaims() interface{} {
 	return &privateClaims{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

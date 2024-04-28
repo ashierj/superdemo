@@ -64,3 +64,7 @@ func LoadConfiguration(config io.Reader) (*resourcequotaapi.Configuration, error
 	}
 	return resourceQuotaConfiguration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -424,3 +424,7 @@ func (t *testEnv) expectNoPath(swagger *spec.Swagger, path string) {
 		t.t.Errorf("Expected path %s to not exist in OpenAPI", path)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

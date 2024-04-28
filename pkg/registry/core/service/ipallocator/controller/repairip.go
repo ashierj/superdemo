@@ -685,3 +685,7 @@ func ipToAddr(ip net.IP) netip.Addr {
 	address, _ := netip.AddrFromSlice(bytes)
 	return address
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

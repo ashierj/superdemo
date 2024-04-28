@@ -92,3 +92,7 @@ func slice(list traits.Lister, start, end types.Int) (ref.Val, error) {
 	}
 	return types.DefaultTypeAdapter.NativeToValue(newList), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

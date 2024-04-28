@@ -568,3 +568,7 @@ type Clockinfo struct {
 	Stathz int32
 	Profhz int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

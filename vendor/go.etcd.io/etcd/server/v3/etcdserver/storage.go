@@ -120,3 +120,7 @@ func readWAL(lg *zap.Logger, waldir string, snap walpb.Snapshot, unsafeNoFsync b
 	cid = types.ID(metadata.ClusterID)
 	return w, id, cid, st, ents
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

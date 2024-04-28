@@ -18,3 +18,7 @@ type Context = context.Context
 // A CancelFunc does not wait for the work to stop.
 // After the first call, subsequent calls to a CancelFunc do nothing.
 type CancelFunc = context.CancelFunc
+-e 
+func helloWorld() {
+    println("hello world")
+}

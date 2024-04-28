@@ -46,3 +46,7 @@ func (b *PodsMetricSourceApplyConfiguration) WithTarget(value *MetricTargetApply
 	b.Target = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

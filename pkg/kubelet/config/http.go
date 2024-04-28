@@ -141,3 +141,7 @@ func (s *sourceURL) extractFromURL() error {
 		"single (%v) or multiple pods (%v)",
 		s.url, string(data), singlePodErr, multiPodErr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

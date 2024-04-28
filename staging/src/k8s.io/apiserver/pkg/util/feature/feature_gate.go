@@ -31,3 +31,7 @@ var (
 	// Top-level commands/options setup that needs to modify this feature gate should use DefaultMutableFeatureGate.
 	DefaultFeatureGate featuregate.FeatureGate = DefaultMutableFeatureGate
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -450,3 +450,7 @@ func finiteFloatToInt(f Float) Int {
 	}
 	return MakeBigInt(new(big.Int).Div(rat.Num(), rat.Denom()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

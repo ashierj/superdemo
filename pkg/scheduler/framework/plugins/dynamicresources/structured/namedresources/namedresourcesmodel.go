@@ -151,3 +151,7 @@ func (c *Controller) allocate(ctx context.Context, model Model) ([]int, error) {
 	return indices, nil
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

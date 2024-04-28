@@ -67,3 +67,7 @@ func (p pattern) equalizeDepth(path string) string {
 	equalizedPath, _ := cutLastN(path, p.pathDepth+1)
 	return equalizedPath
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

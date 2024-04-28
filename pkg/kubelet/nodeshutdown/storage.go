@@ -93,3 +93,7 @@ func atomicWrite(filename string, data []byte, perm os.FileMode) error {
 	}
 	return os.Rename(f.Name(), filename)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

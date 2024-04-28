@@ -254,3 +254,7 @@ func (eic *execInContainer) StdoutPipe() (io.ReadCloser, error) {
 func (eic *execInContainer) StderrPipe() (io.ReadCloser, error) {
 	return nil, fmt.Errorf("unimplemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

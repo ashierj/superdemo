@@ -104,3 +104,7 @@ func TestExecTLSCache(t *testing.T) {
 		t.Fatal("expected different TLS config for non-matching exec config via rest config")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

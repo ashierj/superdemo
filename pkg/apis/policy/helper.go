@@ -49,3 +49,7 @@ func StripPDBV1beta1Label(selector *metav1.LabelSelector) {
 	}
 	selector.MatchExpressions = trimmedMatchExpressions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

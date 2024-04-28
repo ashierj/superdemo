@@ -190,3 +190,7 @@ func FormatFloat(format string, n float64) string {
 func FormatInteger(format string, n int) string {
 	return FormatFloat(format, float64(n))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func (q *TimedWorkerQueue) GetWorkerUnsafe(key string) *TimedWorker {
 	defer q.Unlock()
 	return q.workers[key]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

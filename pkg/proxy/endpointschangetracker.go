@@ -348,3 +348,7 @@ func detectStaleConntrackEntries(oldEndpointsMap, newEndpointsMap EndpointsMap, 
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

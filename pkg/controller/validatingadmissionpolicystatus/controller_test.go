@@ -221,3 +221,7 @@ func makePolicy(name string) *admissionregistrationv1.ValidatingAdmissionPolicy 
 		ObjectMeta: metav1.ObjectMeta{Name: name},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

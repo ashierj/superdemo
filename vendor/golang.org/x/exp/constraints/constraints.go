@@ -48,3 +48,7 @@ type Complex interface {
 type Ordered interface {
 	Integer | Float | ~string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ func BigCommaf(v *big.Float) string {
 	}
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -238,3 +238,7 @@ func UpdateResourceOptions(rm resmap.ResMap) (resmap.ResMap, error) {
 	}
 	return rm, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

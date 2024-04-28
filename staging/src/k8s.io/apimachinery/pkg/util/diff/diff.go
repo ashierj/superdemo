@@ -136,3 +136,7 @@ func IgnoreUnset() cmp.Option {
 		}, cmp.Ignore()),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

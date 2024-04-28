@@ -151,3 +151,7 @@ func (fs FileSystemOrOnDisk) WriteFile(path string, data []byte) error {
 func (fs FileSystemOrOnDisk) Walk(path string, walkFn filepath.WalkFunc) error {
 	return fs.fs().Walk(path, walkFn)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

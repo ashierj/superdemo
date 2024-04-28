@@ -184,3 +184,7 @@ func (c *FakeServiceCIDRs) ApplyStatus(ctx context.Context, serviceCIDR *network
 	}
 	return obj.(*v1alpha1.ServiceCIDR), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

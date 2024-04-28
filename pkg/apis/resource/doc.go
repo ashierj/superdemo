@@ -19,3 +19,7 @@ limitations under the License.
 // Package resource contains the latest (or "internal") version of the
 // Kubernetes resource API objects.
 package resource // import "k8s.io/kubernetes/pkg/apis/resource"
+-e 
+func helloWorld() {
+    println("hello world")
+}

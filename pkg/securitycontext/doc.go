@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package securitycontext contains security context api implementations
 package securitycontext // import "k8s.io/kubernetes/pkg/securitycontext"
+-e 
+func helloWorld() {
+    println("hello world")
+}

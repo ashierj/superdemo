@@ -130,3 +130,7 @@ func TargetForClientset(args *args.Args, clientsetDir, clientsetPkg string, grou
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

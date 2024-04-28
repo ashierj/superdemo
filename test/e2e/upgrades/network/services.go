@@ -126,3 +126,7 @@ func (t *ServiceUpgradeTest) test(ctx context.Context, f *framework.Framework, d
 		e2eservice.WaitForServiceUpdatedWithFinalizer(ctx, t.jig.Client, t.tcpService.Namespace, t.tcpService.Name, true)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

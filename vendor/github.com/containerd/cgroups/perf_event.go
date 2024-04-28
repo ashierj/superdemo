@@ -35,3 +35,7 @@ func (p *PerfEventController) Name() Name {
 func (p *PerfEventController) Path(path string) string {
 	return filepath.Join(p.root, path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

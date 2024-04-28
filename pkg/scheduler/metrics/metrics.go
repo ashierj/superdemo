@@ -286,3 +286,7 @@ func SinceInSeconds(start time.Time) float64 {
 func UnschedulableReason(plugin string, profile string) metrics.GaugeMetric {
 	return unschedulableReasons.With(metrics.Labels{"plugin": plugin, "profile": profile})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

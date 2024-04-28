@@ -895,3 +895,7 @@ func BenchmarkStore_GetList(b *testing.B) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

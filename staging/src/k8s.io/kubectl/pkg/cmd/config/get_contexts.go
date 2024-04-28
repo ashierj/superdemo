@@ -181,3 +181,7 @@ func printContext(name string, context *clientcmdapi.Context, w io.Writer, nameO
 	_, err := fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", prefix, name, context.Cluster, context.AuthInfo, context.Namespace)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

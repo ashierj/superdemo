@@ -109,3 +109,7 @@ func isSpecialElement(element *Node) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

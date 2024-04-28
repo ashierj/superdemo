@@ -67,3 +67,7 @@ type ImageReviewStatus struct {
 	// appropriate prefix).
 	AuditAnnotations map[string]string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

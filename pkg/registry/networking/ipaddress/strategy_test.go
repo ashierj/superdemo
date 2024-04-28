@@ -80,3 +80,7 @@ func TestIPAddressStrategy(t *testing.T) {
 		t.Errorf("Incoming resource version on update should not be mutated")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

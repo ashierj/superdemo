@@ -784,3 +784,7 @@ func (d *DiscoveryClient) RESTClient() restclient.Interface {
 	}
 	return d.restClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

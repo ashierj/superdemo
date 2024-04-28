@@ -85,3 +85,7 @@ func (v *version) ResourceClassParameters() ResourceClassParametersInformer {
 func (v *version) ResourceSlices() ResourceSliceInformer {
 	return &resourceSliceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

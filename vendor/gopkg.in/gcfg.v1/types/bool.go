@@ -21,3 +21,7 @@ func ParseBool(s string) (bool, error) {
 	}
 	return v.(bool), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

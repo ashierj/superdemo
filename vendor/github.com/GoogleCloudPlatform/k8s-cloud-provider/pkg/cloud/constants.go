@@ -53,3 +53,7 @@ func NetworkTierGCEValueToType(s string) NetworkTier {
 		return NetworkTier(s)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

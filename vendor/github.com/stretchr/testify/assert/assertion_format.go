@@ -803,3 +803,7 @@ func Zerof(t TestingT, i interface{}, msg string, args ...interface{}) bool {
 	}
 	return Zero(t, i, append([]interface{}{msg}, args...)...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -91,3 +91,7 @@ type Prober interface {
 	Probe(ctx context.Context) error
 	Close() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

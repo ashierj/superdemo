@@ -97,3 +97,7 @@ func (decoder *sliceDecoder) doDecode(ptr unsafe.Pointer, iter *Iterator) {
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

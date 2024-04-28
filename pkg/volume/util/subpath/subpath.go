@@ -90,3 +90,7 @@ func (fs *FakeSubpath) CleanSubPaths(podDir string, volumeName string) error {
 func (fs *FakeSubpath) SafeMakeDir(pathname string, base string, perm os.FileMode) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

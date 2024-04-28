@@ -220,3 +220,7 @@ func (ts TraceState) Delete(key string) TraceState {
 func (ts TraceState) Len() int {
 	return len(ts.list)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

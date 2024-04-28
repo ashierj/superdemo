@@ -40,3 +40,7 @@ type infoProvider interface {
 	// GetMachineInfo provides information about the machine.
 	GetMachineInfo() (*info.MachineInfo, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

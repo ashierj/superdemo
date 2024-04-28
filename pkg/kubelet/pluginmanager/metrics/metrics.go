@@ -101,3 +101,7 @@ func (c *totalPluginsCollector) getPluginCount() pluginCount {
 	}
 	return counter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -18,3 +18,7 @@ package wholepkg
 
 // Another type in another file.
 type StructB struct{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

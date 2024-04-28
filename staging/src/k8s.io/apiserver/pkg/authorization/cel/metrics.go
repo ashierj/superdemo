@@ -118,3 +118,7 @@ func (matcherMetrics) RecordAuthorizationMatchConditionEvaluation(ctx context.Co
 	elapsedSeconds := elapsed.Seconds()
 	authorizationMatchConditionEvaluationSeconds.WithContext(ctx).WithLabelValues(authorizerType, authorizerName).Observe(elapsedSeconds)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

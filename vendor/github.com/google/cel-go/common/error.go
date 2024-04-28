@@ -77,3 +77,7 @@ func (e *Error) ToDisplayString(source Source) string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

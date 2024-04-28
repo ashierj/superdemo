@@ -71,3 +71,7 @@ func WithTypeAndObjectMeta(s *schema.Structural) *schema.Structural {
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

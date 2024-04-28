@@ -170,3 +170,7 @@ func TestMarkControlPlane(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

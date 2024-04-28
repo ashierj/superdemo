@@ -592,3 +592,7 @@ func checkServingCerts(expectedBytes []byte, actual [][]byte) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

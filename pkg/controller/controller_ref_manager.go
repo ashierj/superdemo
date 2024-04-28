@@ -594,3 +594,7 @@ func ownerReference(uid types.UID, patchType string) map[string]string {
 		"uid":    string(uid),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

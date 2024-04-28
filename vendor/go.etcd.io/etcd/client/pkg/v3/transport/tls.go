@@ -50,3 +50,7 @@ func ValidateSecureEndpoints(tlsInfo TLSInfo, eps []string) ([]string, error) {
 	}
 	return endpoints, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

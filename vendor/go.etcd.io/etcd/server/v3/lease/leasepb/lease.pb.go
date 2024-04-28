@@ -731,3 +731,7 @@ var (
 	ErrIntOverflowLease          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupLease = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

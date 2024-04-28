@@ -593,3 +593,7 @@ func (gen *defaultIDGenerator) NewTraceID() [16]byte {
 	gen.Unlock()
 	return tid
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

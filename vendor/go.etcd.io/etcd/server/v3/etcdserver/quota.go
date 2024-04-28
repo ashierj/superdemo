@@ -175,3 +175,7 @@ func costTxn(r *pb.TxnRequest) int {
 func (b *backendQuota) Remaining() int64 {
 	return b.maxBackendBytes - b.s.Backend().Size()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

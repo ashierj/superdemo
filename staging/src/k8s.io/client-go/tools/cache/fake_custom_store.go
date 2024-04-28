@@ -100,3 +100,7 @@ func (f *FakeCustomStore) Resync() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

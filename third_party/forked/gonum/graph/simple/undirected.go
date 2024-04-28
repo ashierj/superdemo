@@ -240,3 +240,7 @@ func (g *UndirectedGraph) Degree(n graph.Node) int {
 
 	return g.edges[n.ID()].Len()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

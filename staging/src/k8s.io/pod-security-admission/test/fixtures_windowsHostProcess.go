@@ -79,3 +79,7 @@ func init() {
 	)
 	// TODO: register another set of fixtures with passing test cases that explicitly set hostProcess=false at pod and container level once hostProcess is GA
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

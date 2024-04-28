@@ -99,3 +99,7 @@ func accept4(s int, rsa *RawSockaddrAny, addrlen *_Socklen, flags int) (fd int, 
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

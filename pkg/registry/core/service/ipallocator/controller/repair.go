@@ -339,3 +339,7 @@ func (c *Repair) checkLeaked(leaks map[string]int, stored ipallocator.Interface,
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

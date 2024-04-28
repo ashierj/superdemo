@@ -69,3 +69,7 @@ func (b *TaintApplyConfiguration) WithTimeAdded(value metav1.Time) *TaintApplyCo
 	b.TimeAdded = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -165,3 +165,7 @@ func TestCompatibility(t *testing.T) {
 	}
 	roundtrip.NewCompatibilityTestOptions(scheme).Complete(t).Run(t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -324,3 +324,7 @@ func (dc *sortableDispatcherCandidates) Less(i, j int) bool {
 	// tertiary key
 	return ci.nonDefaultCount < cj.nonDefaultCount
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -483,3 +483,7 @@ func generateCRDwithCondition(conditions []CustomResourceDefinitionCondition) *C
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

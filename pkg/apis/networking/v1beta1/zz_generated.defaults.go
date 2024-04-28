@@ -53,3 +53,7 @@ func SetObjectDefaults_IngressList(in *v1beta1.IngressList) {
 		SetObjectDefaults_Ingress(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

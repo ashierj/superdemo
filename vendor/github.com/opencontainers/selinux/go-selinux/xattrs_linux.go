@@ -69,3 +69,7 @@ func dogetxattr(path, attr string, dest []byte) (int, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

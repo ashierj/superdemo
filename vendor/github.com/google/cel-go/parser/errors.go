@@ -41,3 +41,7 @@ func (e *parseErrors) syntaxError(l common.Location, message string) {
 func (e *parseErrors) reportErrorAtID(id int64, l common.Location, message string, args ...any) {
 	e.errs.ReportErrorAtID(id, l, message, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

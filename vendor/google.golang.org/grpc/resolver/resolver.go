@@ -314,3 +314,7 @@ type Resolver interface {
 	// Close closes the resolver.
 	Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

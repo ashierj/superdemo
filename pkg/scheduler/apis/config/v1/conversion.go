@@ -105,3 +105,7 @@ func convertToExternalPluginConfigArgs(out *v1.KubeSchedulerConfiguration) error
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

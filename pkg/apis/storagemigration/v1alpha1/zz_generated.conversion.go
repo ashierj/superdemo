@@ -254,3 +254,7 @@ func autoConvert_storagemigration_StorageVersionMigrationStatus_To_v1alpha1_Stor
 func Convert_storagemigration_StorageVersionMigrationStatus_To_v1alpha1_StorageVersionMigrationStatus(in *storagemigration.StorageVersionMigrationStatus, out *v1alpha1.StorageVersionMigrationStatus, s conversion.Scope) error {
 	return autoConvert_storagemigration_StorageVersionMigrationStatus_To_v1alpha1_StorageVersionMigrationStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

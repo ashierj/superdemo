@@ -1342,3 +1342,7 @@ func TestExtractModifyApply_ForceOwnership(t *testing.T) {
 		t.Errorf("createMgrExtracted apply configuration did not match expected, got:\n%s\n", cmp.Diff(expectedCreateExtracted, createMgrExtracted))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

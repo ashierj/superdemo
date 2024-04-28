@@ -76,3 +76,7 @@ func (p *ReplacementTransformerPlugin) Transform(m resmap.ResMap) (err error) {
 func NewReplacementTransformerPlugin() resmap.TransformerPlugin {
 	return &ReplacementTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2308,3 +2308,7 @@ func OTelLibraryName(val string) attribute.KeyValue {
 func OTelLibraryVersion(val string) attribute.KeyValue {
 	return OTelLibraryVersionKey.String(val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

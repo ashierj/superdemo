@@ -54,3 +54,7 @@ func (obj *Config) SetGroupVersionKind(gvk schema.GroupVersionKind) {
 func (obj *Config) GroupVersionKind() schema.GroupVersionKind {
 	return schema.FromAPIVersionAndKind(obj.APIVersion, obj.Kind)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

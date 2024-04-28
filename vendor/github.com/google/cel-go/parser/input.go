@@ -127,3 +127,7 @@ func newCharStream(buf runes.Buffer, desc string) antlr.CharStream {
 		src: desc,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func (mod LoadMode) String() string {
 	}
 	return fmt.Sprintf("LoadMode(%s)", strings.Join(out, "|"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -774,3 +774,7 @@ func rootSchema() *spec.Schema {
 	initSchema()
 	return &globalSchema.schema
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

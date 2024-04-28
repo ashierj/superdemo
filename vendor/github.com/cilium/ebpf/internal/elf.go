@@ -100,3 +100,7 @@ func (se *SafeELFFile) SectionsByType(typ elf.SectionType) []*elf.Section {
 	}
 	return sections
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

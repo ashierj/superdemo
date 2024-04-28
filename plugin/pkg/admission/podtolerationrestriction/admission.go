@@ -274,3 +274,7 @@ func extractNSTolerations(ns *corev1.Namespace, key string) ([]api.Toleration, e
 
 	return ts, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

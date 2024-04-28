@@ -453,3 +453,7 @@ func (t *trackingResponseWriter) wrappedResponseWriter() http.ResponseWriter {
 		}{t}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -22,3 +22,7 @@ const (
 	KubernetesSuffix                     = ".k8s.io"
 	WebsocketsSPDYTunnelingPortForwardV1 = WebsocketsSPDYTunnelingPrefix + PortForwardV1Name
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

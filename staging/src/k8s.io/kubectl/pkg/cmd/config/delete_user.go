@@ -120,3 +120,7 @@ func (o *DeleteUserOptions) Run() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

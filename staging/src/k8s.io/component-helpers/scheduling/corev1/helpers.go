@@ -99,3 +99,7 @@ func getFilteredTaints(taints []v1.Taint, inclusionFilter taintsFilterFunc) []v1
 	}
 	return filteredTaints
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -462,3 +462,7 @@ func concat(lists ...interface{}) interface{} {
 	}
 	return res
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -9,3 +9,7 @@ package cpu
 func archInit() {
 	Initialized = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

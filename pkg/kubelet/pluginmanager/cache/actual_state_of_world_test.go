@@ -146,3 +146,7 @@ func Test_ASW_PluginExistsWithCorrectTimestamp_Negative_WrongTimestamp(t *testin
 		t.Fatalf("PluginExistsWithCorrectTimestamp returns true for a plugin with newer timestamp")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -747,3 +747,7 @@ func (cd *containerData) updateSubcontainers() error {
 	cd.info.Subcontainers = subcontainers
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

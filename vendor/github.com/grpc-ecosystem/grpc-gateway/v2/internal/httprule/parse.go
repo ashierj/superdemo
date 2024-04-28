@@ -366,3 +366,7 @@ func isHexDigit(r rune) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

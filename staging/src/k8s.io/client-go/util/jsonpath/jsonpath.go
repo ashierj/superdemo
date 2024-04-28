@@ -580,3 +580,7 @@ func (j *JSONPath) evalToText(v reflect.Value) ([]byte, error) {
 	fmt.Fprint(&buffer, iface)
 	return buffer.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

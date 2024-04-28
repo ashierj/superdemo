@@ -23,3 +23,7 @@ func platformPrefix(symbol string) string {
 
 	return fmt.Sprintf("__%s_%s", prefix, symbol)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

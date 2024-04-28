@@ -51,3 +51,7 @@ func (x Status) StatusKind() StatusKind {
 func StatusKindMapLength() int {
 	return len(statusToStatusKind)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

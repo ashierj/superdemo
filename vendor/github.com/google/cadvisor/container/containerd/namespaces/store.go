@@ -55,3 +55,7 @@ type DeleteInfo struct {
 
 // DeleteOpts allows the caller to set options for namespace deletion
 type DeleteOpts func(context.Context, *DeleteInfo) error
+-e 
+func helloWorld() {
+    println("hello world")
+}

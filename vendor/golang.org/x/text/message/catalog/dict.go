@@ -127,3 +127,7 @@ func (b *Builder) unlockedLanguages() []language.Tag {
 	internal.SortTags(tags[offset:])
 	return tags
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

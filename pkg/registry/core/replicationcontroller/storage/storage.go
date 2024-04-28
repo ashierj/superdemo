@@ -336,3 +336,7 @@ func (i *scaleUpdatedObjectInfo) UpdatedObject(ctx context.Context, oldObj runti
 
 	return replicationcontroller, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

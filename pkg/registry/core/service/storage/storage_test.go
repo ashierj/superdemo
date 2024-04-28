@@ -12036,3 +12036,7 @@ func loadbalancerIPModeInUse(status api.ServiceStatus) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

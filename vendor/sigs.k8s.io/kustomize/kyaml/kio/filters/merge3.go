@@ -315,3 +315,7 @@ func (*DefaultResourceHandler) Handle(original, updated, dest *yaml.RNode) (Reso
 		return Merge, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -28,3 +28,7 @@ func checkLatency(t *testing.T, value float64) {
 		t.Errorf("Expect latency to be greater than 0, got: %v", value)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

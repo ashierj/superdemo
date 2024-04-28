@@ -81,3 +81,7 @@ func init() {
 	utilruntime.Must(Scheme.SetVersionPriority(schedulingv1alpha1.SchemeGroupVersion))
 	utilruntime.Must(Scheme.SetVersionPriority(storagev1.SchemeGroupVersion, storagev1beta1.SchemeGroupVersion, storagev1alpha1.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

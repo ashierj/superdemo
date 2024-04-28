@@ -1515,3 +1515,7 @@ func mustMakeRoot(t *testing.T, cn string) string {
 		Bytes:   cert,
 	}))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

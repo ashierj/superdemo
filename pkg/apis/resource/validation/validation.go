@@ -567,3 +567,7 @@ func ValidateResourceClassParametersUpdate(resourceClassParameters, oldResourceC
 	allErrs = append(allErrs, ValidateResourceClassParameters(resourceClassParameters)...)
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

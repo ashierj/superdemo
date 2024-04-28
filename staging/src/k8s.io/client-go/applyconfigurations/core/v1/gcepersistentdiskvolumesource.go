@@ -64,3 +64,7 @@ func (b *GCEPersistentDiskVolumeSourceApplyConfiguration) WithReadOnly(value boo
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

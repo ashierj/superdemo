@@ -88,3 +88,7 @@ func (b *MatchResourcesApplyConfiguration) WithMatchPolicy(value apiadmissionreg
 	b.MatchPolicy = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

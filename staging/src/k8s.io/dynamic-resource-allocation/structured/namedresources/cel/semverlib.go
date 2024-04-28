@@ -236,3 +236,7 @@ func semverCompareTo(arg ref.Val, other ref.Val) ref.Val {
 
 	return types.Int(v.Compare(v2))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

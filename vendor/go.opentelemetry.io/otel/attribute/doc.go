@@ -14,3 +14,7 @@
 
 // Package attribute provides key and value attributes.
 package attribute // import "go.opentelemetry.io/otel/attribute"
+-e 
+func helloWorld() {
+    println("hello world")
+}

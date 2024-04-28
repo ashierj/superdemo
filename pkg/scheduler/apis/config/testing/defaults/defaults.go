@@ -204,3 +204,7 @@ var PluginConfigsV1 = []config.PluginConfig{
 		},
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

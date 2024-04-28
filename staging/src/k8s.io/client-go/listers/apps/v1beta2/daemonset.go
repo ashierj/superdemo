@@ -68,3 +68,7 @@ type DaemonSetNamespaceLister interface {
 type daemonSetNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta2.DaemonSet]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

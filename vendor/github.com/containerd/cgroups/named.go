@@ -37,3 +37,7 @@ func (n *namedController) Name() Name {
 func (n *namedController) Path(path string) string {
 	return filepath.Join(n.root, string(n.name), path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

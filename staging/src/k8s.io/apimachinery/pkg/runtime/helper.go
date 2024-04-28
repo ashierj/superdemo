@@ -284,3 +284,7 @@ func (e *encoderWithAllocator) Encode(obj Object, w io.Writer) error {
 func (e *encoderWithAllocator) Identifier() Identifier {
 	return e.encoder.Identifier()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

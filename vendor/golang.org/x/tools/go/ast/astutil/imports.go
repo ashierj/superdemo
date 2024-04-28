@@ -483,3 +483,7 @@ func Imports(fset *token.FileSet, f *ast.File) [][]*ast.ImportSpec {
 
 	return groups
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

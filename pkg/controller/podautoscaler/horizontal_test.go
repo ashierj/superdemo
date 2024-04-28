@@ -5286,3 +5286,7 @@ func TestMultipleHPAs(t *testing.T) {
 
 	assert.Equal(t, hpaCount, len(processedHPA), "Expected to process all HPAs")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

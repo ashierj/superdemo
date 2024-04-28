@@ -41,3 +41,7 @@ func FuzzUser(data []byte) int {
 	_, _ = GetExecUser(string(divided[4]), nil, passwd, group)
 	return 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

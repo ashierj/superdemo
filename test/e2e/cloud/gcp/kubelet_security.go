@@ -92,3 +92,7 @@ func portClosedTest(f *framework.Framework, pickNode *v1.Node, port int) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

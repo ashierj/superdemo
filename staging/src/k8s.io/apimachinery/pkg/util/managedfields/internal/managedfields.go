@@ -246,3 +246,7 @@ func encodeManagerVersionedSet(manager string, versionedSet fieldpath.VersionedS
 
 	return encodedVersionedSet, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

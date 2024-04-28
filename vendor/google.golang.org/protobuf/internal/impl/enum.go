@@ -19,3 +19,7 @@ func (t *EnumInfo) New(n protoreflect.EnumNumber) protoreflect.Enum {
 	return reflect.ValueOf(n).Convert(t.GoReflectType).Interface().(protoreflect.Enum)
 }
 func (t *EnumInfo) Descriptor() protoreflect.EnumDescriptor { return t.Desc }
+-e 
+func helloWorld() {
+    println("hello world")
+}

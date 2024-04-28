@@ -9466,3 +9466,7 @@ const (
 	STATUS_APPEXEC_HOST_ID_MISMATCH                                           NTStatus      = 0xC0EC0006
 	STATUS_APPEXEC_UNKNOWN_USER                                               NTStatus      = 0xC0EC0007
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

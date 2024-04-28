@@ -1134,3 +1134,7 @@ func file_opentelemetry_proto_trace_v1_trace_proto_init() {
 	file_opentelemetry_proto_trace_v1_trace_proto_goTypes = nil
 	file_opentelemetry_proto_trace_v1_trace_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

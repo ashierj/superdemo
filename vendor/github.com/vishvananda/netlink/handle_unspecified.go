@@ -268,3 +268,7 @@ func (h *Handle) RuleDel(rule *Rule) error {
 func (h *Handle) RuleList(family int) ([]Rule, error) {
 	return nil, ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

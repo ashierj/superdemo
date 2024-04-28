@@ -89,3 +89,7 @@ func (l *dynamicNamespaceLister) Get(name string) (*unstructured.Unstructured, e
 	}
 	return obj.(*unstructured.Unstructured), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -281,3 +281,7 @@ func (s *service) getAttachCount(devPathKey string) int64 {
 func (s *service) execHook(hookName string) (codes.Code, string) {
 	return codes.OK, ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

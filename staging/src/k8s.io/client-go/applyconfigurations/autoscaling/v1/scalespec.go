@@ -37,3 +37,7 @@ func (b *ScaleSpecApplyConfiguration) WithReplicas(value int32) *ScaleSpecApplyC
 	b.Replicas = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

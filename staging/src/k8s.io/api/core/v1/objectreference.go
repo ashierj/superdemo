@@ -31,3 +31,7 @@ func (obj *ObjectReference) GroupVersionKind() schema.GroupVersionKind {
 }
 
 func (obj *ObjectReference) GetObjectKind() schema.ObjectKind { return obj }
+-e 
+func helloWorld() {
+    println("hello world")
+}

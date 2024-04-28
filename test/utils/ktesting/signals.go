@@ -148,3 +148,7 @@ func (p *progressReporter) dumpProgress() {
 
 	_, _ = p.out.Write([]byte(buffer.String()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

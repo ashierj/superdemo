@@ -97,3 +97,7 @@ func parseCgroupFromReader(r io.Reader) (string, error) {
 	}
 	return "", errors.New("cgroup path not found")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

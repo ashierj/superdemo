@@ -13,3 +13,7 @@ package hcsschema
 type PropertyQuery struct {
 	PropertyTypes []PropertyType `json:"PropertyTypes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

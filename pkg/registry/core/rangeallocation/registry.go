@@ -29,3 +29,7 @@ type RangeRegistry interface {
 	// has occurred since the item was last created.
 	CreateOrUpdate(*api.RangeAllocation) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

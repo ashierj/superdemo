@@ -19,3 +19,7 @@ type GuestConnectionInfo struct {
 
 	GuestDefinedCapabilities *interface{} `json:"GuestDefinedCapabilities,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

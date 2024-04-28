@@ -58,3 +58,7 @@ func GetSize(fd int) (width, height int, err error) {
 func ReadPassword(fd int) ([]byte, error) {
 	return readPassword(fd)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

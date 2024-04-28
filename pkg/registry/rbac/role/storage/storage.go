@@ -52,3 +52,7 @@ func NewREST(optsGetter generic.RESTOptionsGetter) (*REST, error) {
 
 	return &REST{store}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

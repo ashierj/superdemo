@@ -87,3 +87,7 @@ func (f *validatingAdmissionPolicyInformer) Informer() cache.SharedIndexInformer
 func (f *validatingAdmissionPolicyInformer) Lister() v1beta1.ValidatingAdmissionPolicyLister {
 	return v1beta1.NewValidatingAdmissionPolicyLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

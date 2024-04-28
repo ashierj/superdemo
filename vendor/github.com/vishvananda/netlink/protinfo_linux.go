@@ -72,3 +72,7 @@ func parseProtinfo(infos []syscall.NetlinkRouteAttr) (pi Protinfo) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

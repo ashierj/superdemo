@@ -70,3 +70,7 @@ func (f Filter) isOnDenyList(node *yaml.RNode) bool {
 	// https://github.com/kubernetes-sigs/kustomize/issues/890
 	return meta.Kind == `CustomResourceDefinition`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

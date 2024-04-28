@@ -90,3 +90,7 @@ func CustomMustRegister(cs ...metrics.StableCollector) {
 		prometheus.MustRegister(c)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ func ScanFully(ptr interface{}, val string, verb byte) error {
 	// n == 1 && err == io.EOF
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

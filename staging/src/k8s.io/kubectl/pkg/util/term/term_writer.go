@@ -144,3 +144,7 @@ func (m maxWidthWriter) Write(p []byte) (nn int, err error) {
 	}
 	return len(p), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

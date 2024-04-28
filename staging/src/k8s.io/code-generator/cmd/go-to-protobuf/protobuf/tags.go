@@ -31,3 +31,7 @@ func extractBoolTagOrDie(key string, lines []string) bool {
 	}
 	return val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

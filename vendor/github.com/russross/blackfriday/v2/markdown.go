@@ -948,3 +948,7 @@ func slugify(in []byte) []byte {
 	}
 	return out[a : b+1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

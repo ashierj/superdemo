@@ -128,3 +128,7 @@ func (in *RoleRuleOwner) DeepCopy() *RoleRuleOwner {
 func (in RoleRuleOwner) DeepCopyRuleOwner() RuleOwner {
 	return *in.DeepCopy()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

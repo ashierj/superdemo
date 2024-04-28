@@ -84,3 +84,7 @@ func ExecClusterToConfig(cluster *clientauthenticationapi.Cluster) (*Config, err
 		DisableCompression: cluster.DisableCompression,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

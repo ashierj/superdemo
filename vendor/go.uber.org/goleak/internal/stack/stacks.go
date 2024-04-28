@@ -296,3 +296,7 @@ func parseGoStackHeader(line string) (goroutineID int, state string, err error) 
 	state = strings.TrimSuffix(strings.TrimPrefix(parts[2], "["), "]")
 	return id, state, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

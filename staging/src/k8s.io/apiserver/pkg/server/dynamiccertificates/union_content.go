@@ -103,3 +103,7 @@ func (c unionCAContent) Run(ctx context.Context, workers int) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

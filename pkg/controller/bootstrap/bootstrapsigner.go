@@ -304,3 +304,7 @@ func (e *Signer) getTokens(ctx context.Context) map[string]string {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

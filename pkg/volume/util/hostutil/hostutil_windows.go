@@ -151,3 +151,7 @@ func (hu *HostUtil) GetMode(pathname string) (os.FileMode, error) {
 func (hu *HostUtil) GetSELinuxMountContext(pathname string) (string, error) {
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

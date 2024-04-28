@@ -107,3 +107,7 @@ func TestPollCheckServer(t *testing.T) {
 		t.Fatal("expected check to time out")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

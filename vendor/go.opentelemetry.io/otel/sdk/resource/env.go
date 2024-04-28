@@ -104,3 +104,7 @@ func constructOTResources(s string) (*Resource, error) {
 	}
 	return NewSchemaless(attrs...), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

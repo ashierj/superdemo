@@ -13,3 +13,7 @@ type CpuGroupProperty struct {
 	PropertyCode  uint32 `json:"PropertyCode,omitempty"`
 	PropertyValue uint32 `json:"PropertyValue,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

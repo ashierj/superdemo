@@ -164,3 +164,7 @@ func WaitForBootstrapTokenSecretNotDisappear(c clientset.Interface, tokenID stri
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -121,3 +121,7 @@ func UploadConfiguration(cfg *kubeadmapi.InitConfiguration, client clientset.Int
 		},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

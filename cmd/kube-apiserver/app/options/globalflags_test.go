@@ -62,3 +62,7 @@ func TestAddCustomGlobalFlags(t *testing.T) {
 		t.Errorf("[Default]: expected %+v, got %+v", wantedFlag, actualFlag)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

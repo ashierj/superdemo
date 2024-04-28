@@ -855,3 +855,7 @@ func (r *ErrorReporter) AsObject(err error) runtime.Object {
 	})
 	return &status.ErrStatus
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

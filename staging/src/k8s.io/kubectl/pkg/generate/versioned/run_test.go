@@ -417,3 +417,7 @@ func securityContextWithPrivilege(privileged bool) *v1.SecurityContext {
 		Privileged: &privileged,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

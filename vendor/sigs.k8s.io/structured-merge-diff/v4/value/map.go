@@ -268,3 +268,7 @@ func MapEqualsUsing(a Allocator, lhs, rhs Map) bool {
 		return EqualsUsing(a, lhs, rhs)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

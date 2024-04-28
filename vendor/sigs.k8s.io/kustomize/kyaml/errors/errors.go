@@ -48,3 +48,7 @@ func GetStack(err error) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

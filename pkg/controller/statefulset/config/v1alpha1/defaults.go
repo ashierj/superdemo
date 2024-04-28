@@ -34,3 +34,7 @@ func RecommendedDefaultStatefulSetControllerConfiguration(obj *kubectrlmgrconfig
 		obj.ConcurrentStatefulSetSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

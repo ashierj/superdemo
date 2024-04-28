@@ -366,3 +366,7 @@ func (r *StaticRoles) ListRoleBindings(namespace string) ([]*rbacv1.RoleBinding,
 func (r *StaticRoles) ListClusterRoleBindings() ([]*rbacv1.ClusterRoleBinding, error) {
 	return r.clusterRoleBindings, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

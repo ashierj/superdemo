@@ -352,3 +352,7 @@ func TestDial(t *testing.T) {
 	}
 	_ = protocol
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

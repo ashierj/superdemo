@@ -261,3 +261,7 @@ var _ = SIGDescribe("Container Manager Misc", framework.WithSerial(), func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -57,3 +57,7 @@ type EventRecorderLogger interface {
 	//    recorder.WithLogger(logger).Eventf(...)
 	WithLogger(logger klog.Logger) EventRecorderLogger
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

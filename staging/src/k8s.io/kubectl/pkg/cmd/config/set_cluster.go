@@ -196,3 +196,7 @@ func (o setClusterOptions) validate() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

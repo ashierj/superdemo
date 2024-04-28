@@ -23,3 +23,7 @@ const (
 	missingFileError   = "no such file or directory"
 	missingFolderError = "no such file or directory"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

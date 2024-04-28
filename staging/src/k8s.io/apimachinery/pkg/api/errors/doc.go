@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package errors provides detailed error types for api field validation.
 package errors // import "k8s.io/apimachinery/pkg/api/errors"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -183,3 +183,7 @@ func (h HelmChart) AsHelmArgs(absChartHome string) []string {
 	}
 	return args
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

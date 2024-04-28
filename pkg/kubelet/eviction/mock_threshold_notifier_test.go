@@ -384,3 +384,7 @@ func (mr *MockThresholdNotifierMockRecorder) UpdateThreshold(summary any) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateThreshold", reflect.TypeOf((*MockThresholdNotifier)(nil).UpdateThreshold), summary)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

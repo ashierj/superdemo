@@ -99,3 +99,7 @@ func (b *DeleteOptionsApplyConfiguration) WithDryRun(values ...string) *DeleteOp
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

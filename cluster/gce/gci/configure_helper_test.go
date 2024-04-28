@@ -177,3 +177,7 @@ func copyFile(src, dst string) (err error) {
 	_, err = io.Copy(out, in)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

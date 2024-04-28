@@ -3601,3 +3601,7 @@ func mustNewPodInfo(t *testing.T, pod *v1.Pod) *framework.PodInfo {
 	}
 	return podInfo
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -302,3 +302,7 @@ func getBootID() (string, error) {
 	}
 	return strconv.FormatUint(regValue, 10), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

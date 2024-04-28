@@ -608,3 +608,7 @@ const (
 	IFLA_IPOIB_UMCAST
 	IFLA_IPOIB_MAX = IFLA_IPOIB_UMCAST
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

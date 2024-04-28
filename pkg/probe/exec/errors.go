@@ -45,3 +45,7 @@ func (t *TimeoutError) Error() string {
 func (t *TimeoutError) Timeout() time.Duration {
 	return t.timeout
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

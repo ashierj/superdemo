@@ -37,3 +37,7 @@ func (b *VolumeNodeAffinityApplyConfiguration) WithRequired(value *NodeSelectorA
 	b.Required = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

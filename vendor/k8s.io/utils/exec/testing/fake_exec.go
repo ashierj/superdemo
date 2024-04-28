@@ -275,3 +275,7 @@ func (fake FakeExitError) Exited() bool {
 func (fake FakeExitError) ExitStatus() int {
 	return fake.Status
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

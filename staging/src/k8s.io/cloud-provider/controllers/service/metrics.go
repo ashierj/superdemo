@@ -70,3 +70,7 @@ var (
 		StabilityLevel: metrics.ALPHA,
 	})
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

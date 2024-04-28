@@ -139,3 +139,7 @@ func GetLoadAvgSample() (samp LoadAvgSample) {
 func GetMemSample() (samp MemSample) {
 	return getMemSample("/proc/meminfo")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

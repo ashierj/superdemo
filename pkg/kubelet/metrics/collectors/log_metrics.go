@@ -85,3 +85,7 @@ func (c *logMetricsCollector) CollectWithStability(ch chan<- metrics.Metric) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

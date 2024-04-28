@@ -105,3 +105,7 @@ func (d *Dealer) DealIntoHand(hashValue uint64, hand []int) []int {
 	d.Deal(hashValue, func(card int) { h = append(h, card) })
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

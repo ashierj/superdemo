@@ -160,3 +160,7 @@ func CheckGlobalVarFlags() []error {
 	})
 	return errors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

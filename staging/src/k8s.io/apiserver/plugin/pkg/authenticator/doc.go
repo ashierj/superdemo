@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package authenticator contains implementations for pkg/auth/authenticator interfaces
 package authenticator // import "k8s.io/apiserver/plugin/pkg/authenticator"
+-e 
+func helloWorld() {
+    println("hello world")
+}

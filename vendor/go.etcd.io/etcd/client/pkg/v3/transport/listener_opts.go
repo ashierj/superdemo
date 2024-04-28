@@ -74,3 +74,7 @@ func WithTLSInfo(t *TLSInfo) ListenerOption {
 func WithSkipTLSInfoCheck(skip bool) ListenerOption {
 	return func(lo *ListenerOptions) { lo.skipTLSInfoCheck = skip }
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

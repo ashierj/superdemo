@@ -18,3 +18,7 @@ limitations under the License.
 
 // Package v1 contains scheduler API objects.
 package v1 // import "k8s.io/kube-scheduler/extender/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

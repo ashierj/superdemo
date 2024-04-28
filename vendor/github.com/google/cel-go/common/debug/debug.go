@@ -307,3 +307,7 @@ func (w *debugWriter) removeIndent() {
 func (w *debugWriter) String() string {
 	return w.buffer.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

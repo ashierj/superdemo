@@ -19,3 +19,7 @@ See the official OTLP span exporter implementations:
   - [go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp].
 */
 package otlptrace // import "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+-e 
+func helloWorld() {
+    println("hello world")
+}

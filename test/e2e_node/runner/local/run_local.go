@@ -134,3 +134,7 @@ func runCommand(interactive bool, name string, args ...string) error {
 
 	return cmd.Run()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

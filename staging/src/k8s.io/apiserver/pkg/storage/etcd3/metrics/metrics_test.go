@@ -279,3 +279,7 @@ func (m fakeEtcdMonitor) Monitor(_ context.Context) (StorageMetrics, error) {
 func (m fakeEtcdMonitor) Close() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -91,3 +91,7 @@ func (p *Plugin) Validate(_ context.Context, a admission.Attributes, _ admission
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func Acquire(path string) error {
 
 	return unix.Flock(fd, unix.LOCK_EX)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

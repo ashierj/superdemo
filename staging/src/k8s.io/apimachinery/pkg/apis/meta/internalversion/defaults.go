@@ -36,3 +36,7 @@ func SetListOptionsDefaults(obj *ListOptions, isWatchListFeatureEnabled bool) {
 		obj.ResourceVersionMatch = metav1.ResourceVersionMatchNotOlderThan
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1498,3 +1498,7 @@ func (x Bytes) CompareSameType(op syntax.Token, y_ Value, depth int) (bool, erro
 	y := y_.(Bytes)
 	return threeway(op, strings.Compare(string(x), string(y))), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

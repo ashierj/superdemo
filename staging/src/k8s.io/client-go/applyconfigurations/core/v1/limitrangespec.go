@@ -42,3 +42,7 @@ func (b *LimitRangeSpecApplyConfiguration) WithLimits(values ...*LimitRangeItemA
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -114,3 +114,7 @@ func (b *DeploymentSpecApplyConfiguration) WithProgressDeadlineSeconds(value int
 	b.ProgressDeadlineSeconds = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

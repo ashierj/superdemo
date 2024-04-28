@@ -308,3 +308,7 @@ func removeBigIntFactors(d, factor *big.Int) (result *big.Int, times int32) {
 	}
 	return d, times
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

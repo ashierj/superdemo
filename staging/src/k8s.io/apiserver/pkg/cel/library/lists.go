@@ -314,3 +314,7 @@ func templatedOverloads(types []namedCELType, template func(name string, t *cel.
 	}
 	return overloads
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

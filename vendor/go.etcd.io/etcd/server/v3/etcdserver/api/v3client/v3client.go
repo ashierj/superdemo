@@ -65,3 +65,7 @@ type watchWrapper struct{ clientv3.Watcher }
 func (ww *watchWrapper) Watch(ctx context.Context, key string, opts ...clientv3.OpOption) clientv3.WatchChan {
 	return ww.Watcher.Watch(&blankContext{ctx}, key, opts...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

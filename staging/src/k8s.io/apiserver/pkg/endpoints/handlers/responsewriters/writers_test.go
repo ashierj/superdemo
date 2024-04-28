@@ -547,3 +547,7 @@ func gzipContent(data []byte, level int) []byte {
 	}
 	return buf.Bytes()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

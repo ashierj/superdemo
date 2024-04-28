@@ -78,3 +78,7 @@ func appendExpandableLegacyProviderVolumes(logger klog.Logger, allPlugins []volu
 func appendLegacyProviderVolumes(logger klog.Logger, allPlugins []volume.VolumePlugin, featureGate featuregate.FeatureGate) ([]volume.VolumePlugin, error) {
 	return appendAttachableLegacyProviderVolumes(logger, allPlugins, featureGate)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

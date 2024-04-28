@@ -41,3 +41,7 @@ func MkTmpdirOrDie(prefix string) string {
 	}
 	return tmpDir
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

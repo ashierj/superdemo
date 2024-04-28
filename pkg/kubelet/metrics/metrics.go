@@ -1028,3 +1028,7 @@ func GetImageSizeBucket(sizeInBytes uint64) string {
 	// return empty string when sizeInBytes is 0 (error getting image size)
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

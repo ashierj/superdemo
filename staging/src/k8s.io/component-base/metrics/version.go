@@ -35,3 +35,7 @@ func RegisterBuildInfo(r KubeRegistry) {
 	r.MustRegister(buildInfo)
 	buildInfo.WithLabelValues(info.Major, info.Minor, info.GitVersion, info.GitCommit, info.GitTreeState, info.BuildDate, info.GoVersion, info.Compiler, info.Platform).Set(1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

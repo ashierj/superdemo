@@ -102,3 +102,7 @@ func GetNamespace(sysctl string) (ns Namespace, sysctlOrPrefix string, prefixed 
 	ns = namespaceOf(sysctlOrPrefix)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

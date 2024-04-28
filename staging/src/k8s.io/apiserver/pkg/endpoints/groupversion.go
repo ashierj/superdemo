@@ -149,3 +149,7 @@ func (s staticLister) ListAPIResources() []metav1.APIResource {
 }
 
 var _ discovery.APIResourceLister = &staticLister{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

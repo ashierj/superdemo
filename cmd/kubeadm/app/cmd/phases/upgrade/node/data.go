@@ -40,3 +40,7 @@ type Data interface {
 	KubeConfigPath() string
 	OutputWriter() io.Writer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

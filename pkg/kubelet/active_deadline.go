@@ -96,3 +96,7 @@ func (m *activeDeadlineHandler) pastActiveDeadline(pod *v1.Pod) bool {
 	allowedDuration := time.Duration(*pod.Spec.ActiveDeadlineSeconds) * time.Second
 	return duration >= allowedDuration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

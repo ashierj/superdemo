@@ -220,3 +220,7 @@ var svgAttributeAdjustments = map[string]string{
 	"ychannelselector":    "yChannelSelector",
 	"zoomandpan":          "zoomAndPan",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

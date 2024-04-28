@@ -46,3 +46,7 @@ func (b *TypeMetaApplyConfiguration) WithAPIVersion(value string) *TypeMetaApply
 	b.APIVersion = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

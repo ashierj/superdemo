@@ -254,3 +254,7 @@ func (c *deployments) ApplyStatus(ctx context.Context, deployment *appsv1beta2.D
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

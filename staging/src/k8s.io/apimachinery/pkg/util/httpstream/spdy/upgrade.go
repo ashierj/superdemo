@@ -118,3 +118,7 @@ func (u responseUpgrader) UpgradeResponse(w http.ResponseWriter, req *http.Reque
 
 	return spdyConn
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

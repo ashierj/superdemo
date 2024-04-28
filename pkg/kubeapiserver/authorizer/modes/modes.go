@@ -40,3 +40,7 @@ var AuthorizationModeChoices = []string{ModeAlwaysAllow, ModeAlwaysDeny, ModeABA
 func IsValidAuthorizationMode(authzMode string) bool {
 	return sets.NewString(AuthorizationModeChoices...).Has(authzMode)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

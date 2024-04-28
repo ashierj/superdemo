@@ -63,3 +63,7 @@ func (n *netprioController) Create(path string, resources *specs.LinuxResources)
 func formatPrio(name string, prio uint32) []byte {
 	return []byte(fmt.Sprintf("%s %d", name, prio))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

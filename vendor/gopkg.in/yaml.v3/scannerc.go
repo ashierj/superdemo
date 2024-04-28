@@ -3036,3 +3036,7 @@ func yaml_parser_scan_comments(parser *yaml_parser_t, scan_mark yaml_mark_t) boo
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ type Lister[T any] interface {
 	NamespacedLister[T]
 	Namespaced(namespace string) NamespacedLister[T]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

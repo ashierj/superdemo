@@ -46,3 +46,7 @@ type persistentVolumeLister struct {
 func NewPersistentVolumeLister(indexer cache.Indexer) PersistentVolumeLister {
 	return &persistentVolumeLister{listers.New[*v1.PersistentVolume](indexer, v1.Resource("persistentvolume"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

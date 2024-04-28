@@ -126,3 +126,7 @@ func IsAPIServiceConditionTrue(apiService *APIService, conditionType APIServiceC
 	condition := GetAPIServiceConditionByType(apiService, conditionType)
 	return condition != nil && condition.Status == ConditionTrue
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

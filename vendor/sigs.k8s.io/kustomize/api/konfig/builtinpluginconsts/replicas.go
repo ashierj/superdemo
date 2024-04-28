@@ -21,3 +21,7 @@ replicas:
   create: true
   kind: StatefulSet
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

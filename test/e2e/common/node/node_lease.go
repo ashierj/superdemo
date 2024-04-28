@@ -214,3 +214,7 @@ func expectLease(lease *coordinationv1.Lease, nodeName string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

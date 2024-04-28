@@ -167,3 +167,7 @@ func (dsw *desiredStateOfWorld) PluginExists(socketPath string) bool {
 	_, exists := dsw.socketFileToInfo[socketPath]
 	return exists
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

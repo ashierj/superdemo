@@ -51,3 +51,7 @@ func TestMain(m *testing.M) {
 	flag.Parse()
 	m.Run()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

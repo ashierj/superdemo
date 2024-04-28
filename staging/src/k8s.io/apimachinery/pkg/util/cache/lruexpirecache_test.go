@@ -160,3 +160,7 @@ func TestLRUKeys(t *testing.T) {
 
 	assertKeys(t, c.Keys(), []interface{}{"elem1", "elem2", "elem3", "elem4"})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

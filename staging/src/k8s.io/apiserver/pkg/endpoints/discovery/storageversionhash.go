@@ -34,3 +34,7 @@ func StorageVersionHash(group, version, kind string) string {
 	// See https://en.wikipedia.org/wiki/Birthday_problem#Approximations.
 	return base64.StdEncoding.EncodeToString(bytes[:8])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

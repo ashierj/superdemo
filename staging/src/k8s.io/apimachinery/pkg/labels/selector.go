@@ -1034,3 +1034,7 @@ func (s ValidatedSetSelector) toFullSelector() Selector {
 }
 
 var _ Selector = ValidatedSetSelector{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -246,3 +246,7 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 	}
 	return m, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

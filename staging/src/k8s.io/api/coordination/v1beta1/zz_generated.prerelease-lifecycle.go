@@ -72,3 +72,7 @@ func (in *LeaseList) APILifecycleReplacement() schema.GroupVersionKind {
 func (in *LeaseList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

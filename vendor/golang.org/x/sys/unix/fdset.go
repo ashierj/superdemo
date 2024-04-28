@@ -27,3 +27,7 @@ func (fds *FdSet) Zero() {
 		fds.Bits[i] = 0
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package lease
+-e 
+func helloWorld() {
+    println("hello world")
+}

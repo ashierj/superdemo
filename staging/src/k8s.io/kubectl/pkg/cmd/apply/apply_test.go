@@ -3453,3 +3453,7 @@ func TestApplySetDryRun(t *testing.T) {
 		require.Nil(t, serverSideData[pathSecret], "secret was created")
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

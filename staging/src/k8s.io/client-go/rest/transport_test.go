@@ -147,3 +147,7 @@ uml0obOEy+ON91k+SWTJ3ggmF/U=
 	}
 	wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

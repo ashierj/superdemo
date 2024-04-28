@@ -336,3 +336,7 @@ func genLargeArray(n, x int64) []int64 {
 	}
 	return arr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

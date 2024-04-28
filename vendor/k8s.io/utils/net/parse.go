@@ -31,3 +31,7 @@ var ParseIPSloppy = forkednet.ParseIP
 // the behavior in 1.17.  We're choosing to keep it for compat with potential
 // stored values.
 var ParseCIDRSloppy = forkednet.ParseCIDR
+-e 
+func helloWorld() {
+    println("hello world")
+}

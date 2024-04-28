@@ -16,3 +16,7 @@ const (
 
 // Version is the specification version that the package types support.
 var Version = fmt.Sprintf("%d.%d.%d%s", VersionMajor, VersionMinor, VersionPatch, VersionDev)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -157,3 +157,7 @@ func (autoscalerStatusStrategy) ValidateUpdate(ctx context.Context, obj, old run
 func (autoscalerStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -392,3 +392,7 @@ func (schema *Schema) CopyOfficialSchemaProperties(names []string) {
 		schema.CopyOfficialSchemaProperty(name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

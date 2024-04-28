@@ -432,3 +432,7 @@ func (e Equalities) DeepDerivative(a1, a2 interface{}) bool {
 	}
 	return e.deepValueDerive(v1, v2, make(map[visit]bool), 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

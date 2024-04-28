@@ -56,3 +56,7 @@ func TestNewSimpleClientset(t *testing.T) {
 		t.Logf("TestNewSimpleClientset() res = %v", pods)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

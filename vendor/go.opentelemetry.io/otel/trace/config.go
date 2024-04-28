@@ -332,3 +332,7 @@ func WithSchemaURL(schemaURL string) TracerOption {
 		return cfg
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

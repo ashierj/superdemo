@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package images is responsible for managing lifecycle of container images.
 package images
+-e 
+func helloWorld() {
+    println("hello world")
+}

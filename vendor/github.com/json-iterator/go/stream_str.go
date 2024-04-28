@@ -370,3 +370,7 @@ func writeStringSlowPath(stream *Stream, i int, s string, valLen int) {
 	}
 	stream.writeByte('"')
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1210,3 +1210,7 @@ func formatType(f fmt.State, verb rune, t formattableType, extra ...interface{})
 	}
 	_, _ = io.WriteString(f, "]")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

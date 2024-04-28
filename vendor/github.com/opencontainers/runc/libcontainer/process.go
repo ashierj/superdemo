@@ -124,3 +124,7 @@ type IO struct {
 	Stdout io.ReadCloser
 	Stderr io.ReadCloser
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

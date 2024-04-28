@@ -87,3 +87,7 @@ func (f *serviceCIDRInformer) Informer() cache.SharedIndexInformer {
 func (f *serviceCIDRInformer) Lister() v1alpha1.ServiceCIDRLister {
 	return v1alpha1.NewServiceCIDRLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

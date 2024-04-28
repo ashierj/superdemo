@@ -54,3 +54,7 @@ func NewCmdOptions(out io.Writer) *cobra.Command {
 	templates.UseOptionsTemplates(cmd)
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

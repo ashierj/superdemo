@@ -231,3 +231,7 @@ func (f *defaultFormats) Parse(name, data string) (interface{}, error) {
 	}
 	return nil, errors.InvalidTypeName(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

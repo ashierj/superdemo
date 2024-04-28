@@ -2008,3 +2008,7 @@ func OtelLibraryName(val string) attribute.KeyValue {
 func OtelLibraryVersion(val string) attribute.KeyValue {
 	return OtelLibraryVersionKey.String(val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

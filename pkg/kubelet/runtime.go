@@ -149,3 +149,7 @@ func newRuntimeState(runtimeSyncThreshold time.Duration) *runtimeState {
 		networkError:             ErrNetworkUnknown,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

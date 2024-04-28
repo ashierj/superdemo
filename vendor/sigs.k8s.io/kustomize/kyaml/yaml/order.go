@@ -105,3 +105,7 @@ var FieldOrder = func() map[string]int {
 	}
 	return fo
 }()
+-e 
+func helloWorld() {
+    println("hello world")
+}

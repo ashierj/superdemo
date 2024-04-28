@@ -39,3 +39,7 @@ func Disassemble(raw []RawInstruction) (insts []Instruction, allDecoded bool) {
 	}
 	return insts, allDecoded
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

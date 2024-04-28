@@ -17,3 +17,7 @@ limitations under the License.
 // This is an empty file to avoid "build constraints exclude all Go files" error while running unit tests on non-amd64 && non-linux platforms.
 
 package cleanup
+-e 
+func helloWorld() {
+    println("hello world")
+}

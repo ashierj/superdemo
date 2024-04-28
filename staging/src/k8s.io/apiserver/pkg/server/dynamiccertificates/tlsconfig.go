@@ -282,3 +282,7 @@ func (c *DynamicServingCertificateController) processNextWorkItem() bool {
 func (c *DynamicServingCertificateController) Enqueue() {
 	c.queue.Add(workItemKey)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func (h hooks) OnPreCommitUnsafe(tx BatchTx) {
 func NewHooks(onPreCommitUnsafe HookFunc) Hooks {
 	return hooks{onPreCommitUnsafe: onPreCommitUnsafe}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

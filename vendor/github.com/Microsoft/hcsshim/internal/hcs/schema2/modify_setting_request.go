@@ -18,3 +18,7 @@ type ModifySettingRequest struct {
 
 	GuestRequest interface{} `json:"GuestRequest,omitempty"` // NOTE: Swagger generated as *interface{}. Locally updated
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

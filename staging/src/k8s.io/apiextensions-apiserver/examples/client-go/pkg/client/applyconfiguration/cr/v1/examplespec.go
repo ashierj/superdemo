@@ -46,3 +46,7 @@ func (b *ExampleSpecApplyConfiguration) WithBar(value bool) *ExampleSpecApplyCon
 	b.Bar = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -118,3 +118,7 @@ func readURL(url string, client *http.Client) (body []byte, err error) {
 
 	return contents, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

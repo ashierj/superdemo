@@ -121,3 +121,7 @@ type ServiceAccountListerExpansion interface{}
 // ServiceAccountNamespaceListerExpansion allows custom methods to be added to
 // ServiceAccountNamespaceLister.
 type ServiceAccountNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

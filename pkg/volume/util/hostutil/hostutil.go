@@ -115,3 +115,7 @@ func getFileType(pathname string) (FileType, error) {
 
 	return pathType, errUnknownFileType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

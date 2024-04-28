@@ -103,3 +103,7 @@ func (l klogger) WithCallDepth(depth int) logr.LogSink {
 
 var _ logr.LogSink = &klogger{}
 var _ logr.CallDepthLogSink = &klogger{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

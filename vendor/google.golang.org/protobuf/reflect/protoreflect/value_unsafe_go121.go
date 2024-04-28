@@ -85,3 +85,7 @@ func (v Value) getIface() (x interface{}) {
 	*(*ifaceHeader)(unsafe.Pointer(&x)) = ifaceHeader{Type: v.typ, Data: v.ptr}
 	return x
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

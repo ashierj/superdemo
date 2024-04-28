@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package ingressclass // import "k8s.io/kubernetes/pkg/registry/networking/ingressclass"
+-e 
+func helloWorld() {
+    println("hello world")
+}

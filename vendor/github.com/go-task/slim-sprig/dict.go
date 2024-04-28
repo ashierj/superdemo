@@ -116,3 +116,7 @@ func digFromDict(dict map[string]interface{}, d interface{}, ks []string) (inter
 	}
 	return digFromDict(step.(map[string]interface{}), d, ns)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

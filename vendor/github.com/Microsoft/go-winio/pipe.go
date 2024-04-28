@@ -519,3 +519,7 @@ func (l *win32PipeListener) Close() error {
 func (l *win32PipeListener) Addr() net.Addr {
 	return pipeAddress(l.path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

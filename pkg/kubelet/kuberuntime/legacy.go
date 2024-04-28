@@ -73,3 +73,7 @@ func logSymlink(containerLogsDir, podFullName, containerName, containerID string
 	}
 	return filepath.Join(containerLogsDir, logPath+suffix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

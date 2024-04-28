@@ -135,3 +135,7 @@ func NewJSONPathPrintFlags(templateValue string, allowMissingKeys bool) *JSONPat
 		AllowMissingKeys: &allowMissingKeys,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

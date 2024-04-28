@@ -115,3 +115,7 @@ func isReady(serviceCIDR *networkingv1alpha1.ServiceCIDR) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

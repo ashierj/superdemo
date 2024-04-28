@@ -558,3 +558,7 @@ func newPodInformer(cs clientset.Interface, resyncPeriod time.Duration) cache.Sh
 	informer.SetTransform(trim)
 	return informer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

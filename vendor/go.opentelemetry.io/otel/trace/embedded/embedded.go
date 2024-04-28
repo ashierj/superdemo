@@ -54,3 +54,7 @@ type Tracer interface{ tracer() }
 // extended (which is something that can happen without a major version bump of
 // the API package).
 type Span interface{ span() }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func ValidateLeaderElectionConfiguration(cc *config.LeaderElectionConfiguration,
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

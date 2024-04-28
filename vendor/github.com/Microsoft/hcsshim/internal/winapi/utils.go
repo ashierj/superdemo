@@ -78,3 +78,7 @@ func ConvertStringSetToSlice(buf []byte) ([]string, error) {
 	}
 	return nil, errors.New("string set malformed: missing null terminator at end of buffer")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ func Convert_v1_PartialObjectMetadataList_To_v1beta1_PartialObjectMetadataList(i
 	out.Items = *(*[]v1.PartialObjectMetadata)(unsafe.Pointer(&in.Items))
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -93,3 +93,7 @@ var Shuffle = func(n int, f func(int, int)) {
 	defer mu.Unlock()
 	r.Shuffle(n, f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

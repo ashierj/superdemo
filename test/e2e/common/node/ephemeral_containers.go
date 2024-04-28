@@ -179,3 +179,7 @@ func unstructuredToPod(obj *unstructured.Unstructured) (*v1.Pod, error) {
 
 	return p, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

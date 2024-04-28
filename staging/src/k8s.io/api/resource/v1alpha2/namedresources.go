@@ -125,3 +125,7 @@ type NamedResourcesAllocationResult struct {
 	// Name is the name of the selected resource instance.
 	Name string `json:"name" protobuf:"bytes,1,name=name"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -518,3 +518,7 @@ func buildTestScheme() *runtime.Scheme {
 	_ = apiextensionsscheme.AddToScheme(scheme)
 	return scheme
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

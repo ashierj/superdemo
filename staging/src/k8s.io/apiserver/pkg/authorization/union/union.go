@@ -104,3 +104,7 @@ func (authzHandler unionAuthzRulesHandler) RulesFor(user user.Info, namespace st
 
 	return resourceRulesList, nonResourceRulesList, incompleteStatus, utilerrors.NewAggregate(errList)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

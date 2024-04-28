@@ -9,3 +9,7 @@ func getMountinfo(entry *unix.Statfs_t) *Info {
 		Source:     unix.ByteSliceToString(entry.F_mntfromname[:]),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

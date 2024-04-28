@@ -176,3 +176,7 @@ func (p *pipeline) post(data []byte) (err error) {
 
 // waitSchedule waits other goroutines to be scheduled for a while
 func waitSchedule() { runtime.Gosched() }
+-e 
+func helloWorld() {
+    println("hello world")
+}

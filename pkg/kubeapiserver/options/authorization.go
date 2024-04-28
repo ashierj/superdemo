@@ -292,3 +292,7 @@ func (o *BuiltInAuthorizationOptions) buildAuthorizationConfiguration() (*authzc
 
 	return &authzconfig.AuthorizationConfiguration{Authorizers: authorizers}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

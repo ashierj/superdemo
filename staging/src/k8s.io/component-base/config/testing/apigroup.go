@@ -205,3 +205,7 @@ func dashesToCapitalCase(str string) string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

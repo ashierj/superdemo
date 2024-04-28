@@ -1024,3 +1024,7 @@ type JobStatusValidationOptions struct {
 	RejectCompleteJobWithFailedCondition         bool
 	RejectCompleteJobWithFailureTargetCondition  bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

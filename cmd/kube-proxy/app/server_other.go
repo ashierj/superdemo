@@ -59,3 +59,7 @@ func (s *ProxyServer) createProxier(ctx context.Context, config *proxyconfigapi.
 func platformCleanup(ctx context.Context, mode proxyconfigapi.ProxyMode, cleanupAndExit bool) error {
 	return unsupportedError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

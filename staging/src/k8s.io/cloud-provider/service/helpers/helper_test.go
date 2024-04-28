@@ -347,3 +347,7 @@ func Test_getPatchBytes(t *testing.T) {
 func addAnnotations(svc *v1.Service) {
 	svc.Annotations["foo"] = "bar"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

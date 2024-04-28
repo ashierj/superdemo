@@ -387,3 +387,7 @@ func deleteExtension(pb extensionsBytes, theFieldNum int32, offset int) int {
 	}
 	return -1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

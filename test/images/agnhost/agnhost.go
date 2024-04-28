@@ -94,3 +94,7 @@ func main() {
 	code := cli.Run(rootCmd)
 	os.Exit(code)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

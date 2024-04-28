@@ -227,3 +227,7 @@ func (va addressableValue) addrWhen(addr bool) reflect.Value {
 	}
 	return va.Value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

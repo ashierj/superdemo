@@ -33,3 +33,7 @@ func IsStaleInformerCacheErr(err error) bool {
 	_, ok := err.(*StaleInformerCache)
 	return ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

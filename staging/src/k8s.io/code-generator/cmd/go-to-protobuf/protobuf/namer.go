@@ -204,3 +204,7 @@ func (n *protobufNamer) AssignTypesToPackages(c *generator.Context) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

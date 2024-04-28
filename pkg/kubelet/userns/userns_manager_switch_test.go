@@ -135,3 +135,7 @@ func TestCleanupOrphanedPodUsernsAllocationsSwitch(t *testing.T) {
 		assert.False(t, ok, "pod %q should not be allocated", pod)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

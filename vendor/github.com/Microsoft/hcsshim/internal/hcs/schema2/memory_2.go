@@ -47,3 +47,7 @@ type Memory2 struct {
 	// docs when a public build with this is out.
 	HighMMIOGapInMB uint64 `json:"HighMmioGapInMB,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

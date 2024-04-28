@@ -2814,3 +2814,7 @@ func TestCompleteAndValidate(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

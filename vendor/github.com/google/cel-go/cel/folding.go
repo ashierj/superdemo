@@ -557,3 +557,7 @@ var (
 const (
 	defaultMaxConstantFoldIterations = 100
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

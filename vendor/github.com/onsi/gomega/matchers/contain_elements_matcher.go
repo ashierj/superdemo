@@ -42,3 +42,7 @@ func (matcher *ContainElementsMatcher) FailureMessage(actual interface{}) (messa
 func (matcher *ContainElementsMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to contain elements", presentable(matcher.Elements))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

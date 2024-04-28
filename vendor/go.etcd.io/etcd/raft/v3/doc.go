@@ -297,3 +297,7 @@ stale log entries:
 	the leader sets it back to probe.
 */
 package raft
+-e 
+func helloWorld() {
+    println("hello world")
+}

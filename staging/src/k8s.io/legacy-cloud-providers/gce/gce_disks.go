@@ -1052,3 +1052,7 @@ func verifyDisksAttachedToNode(disksToVerify []string, disksActuallyAttached []*
 
 	return verifiedDisks
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

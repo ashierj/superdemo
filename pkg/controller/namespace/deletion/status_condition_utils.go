@@ -219,3 +219,7 @@ func getCondition(conditions []v1.NamespaceCondition, conditionType v1.Namespace
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

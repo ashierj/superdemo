@@ -246,3 +246,7 @@ func createCDIFile(devs []*pluginapi.Device) error {
 	klog.InfoS("Created CDI file", "path", cdiPath, "devices", devs)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

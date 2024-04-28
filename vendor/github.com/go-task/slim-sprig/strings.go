@@ -187,3 +187,7 @@ func substring(start, end int, s string) string {
 	}
 	return s[start:end]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

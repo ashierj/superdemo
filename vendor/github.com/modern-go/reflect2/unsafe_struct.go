@@ -57,3 +57,7 @@ func (type2 *UnsafeStructType) FieldByNameFunc(match func(string) bool) StructFi
 	}
 	return newUnsafeStructField(type2, structField)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

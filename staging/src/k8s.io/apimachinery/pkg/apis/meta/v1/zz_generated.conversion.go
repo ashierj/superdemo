@@ -532,3 +532,7 @@ func autoConvert_url_Values_To_v1_UpdateOptions(in *url.Values, out *UpdateOptio
 func Convert_url_Values_To_v1_UpdateOptions(in *url.Values, out *UpdateOptions, s conversion.Scope) error {
 	return autoConvert_url_Values_To_v1_UpdateOptions(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

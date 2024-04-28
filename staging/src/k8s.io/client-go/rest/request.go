@@ -1616,3 +1616,7 @@ func objectKeyFromMeta(objMeta metav1.Object) string {
 	}
 	return objMeta.GetName()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

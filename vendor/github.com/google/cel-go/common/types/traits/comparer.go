@@ -31,3 +31,7 @@ type Comparer interface {
 	// be returned.
 	Compare(other ref.Val) ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

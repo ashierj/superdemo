@@ -64,3 +64,7 @@ func (b *EnvVarSourceApplyConfiguration) WithSecretKeyRef(value *SecretKeySelect
 	b.SecretKeyRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

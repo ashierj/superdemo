@@ -16,3 +16,7 @@ type FlexibleIoDevice struct {
 
 	Configuration []string `json:"Configuration,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func annotateNodeWithCRISocket(n *v1.Node, criSocket string) {
 	}
 	n.ObjectMeta.Annotations[constants.AnnotationKubeadmCRISocket] = criSocket
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package servicecidr // import "k8s.io/kubernetes/pkg/registry/networking/servicecidr"
+-e 
+func helloWorld() {
+    println("hello world")
+}

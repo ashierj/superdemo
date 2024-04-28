@@ -14,3 +14,7 @@
 
 // Package api manages the capabilities and features that are exposed to clients by the etcd cluster.
 package api
+-e 
+func helloWorld() {
+    println("hello world")
+}

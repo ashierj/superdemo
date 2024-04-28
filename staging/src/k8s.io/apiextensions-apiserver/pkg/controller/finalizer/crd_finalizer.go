@@ -349,3 +349,7 @@ func (c *CRDFinalizer) updateCustomResourceDefinition(oldObj, newObj interface{}
 		c.enqueue(newCRD)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -260,3 +260,7 @@ func mustBuildEnvs(baseEnv *environment.EnvSet) variableDeclEnvs {
 	}
 	return envs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

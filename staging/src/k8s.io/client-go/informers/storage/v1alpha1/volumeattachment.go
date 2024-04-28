@@ -87,3 +87,7 @@ func (f *volumeAttachmentInformer) Informer() cache.SharedIndexInformer {
 func (f *volumeAttachmentInformer) Lister() v1alpha1.VolumeAttachmentLister {
 	return v1alpha1.NewVolumeAttachmentLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

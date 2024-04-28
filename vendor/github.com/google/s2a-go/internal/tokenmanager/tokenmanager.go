@@ -68,3 +68,7 @@ func (m *singleTokenAccessTokenManager) DefaultToken() (string, error) {
 func (m *singleTokenAccessTokenManager) Token(*commonpb.Identity) (string, error) {
 	return m.token, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

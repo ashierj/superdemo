@@ -84,3 +84,7 @@ func TestCreatePriorityClass(t *testing.T) {
 		t.Errorf("expected output: %s, but got: %s", expectedOutput, buf.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

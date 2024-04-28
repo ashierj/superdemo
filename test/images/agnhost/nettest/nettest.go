@@ -362,3 +362,7 @@ func contactSingle(e string, state *State) {
 	}
 	state.appendSuccessfulSend(wr.Hostname)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

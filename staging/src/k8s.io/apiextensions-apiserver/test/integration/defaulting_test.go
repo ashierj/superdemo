@@ -711,3 +711,7 @@ func jsonPtr(x interface{}) *apiextensionsv1.JSON {
 	ret := apiextensionsv1.JSON{Raw: bs}
 	return &ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

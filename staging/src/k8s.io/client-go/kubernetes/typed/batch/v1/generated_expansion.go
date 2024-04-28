@@ -21,3 +21,7 @@ package v1
 type CronJobExpansion interface{}
 
 type JobExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

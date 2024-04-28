@@ -451,3 +451,7 @@ func updateStructTags(decl ast.Decl, structTags map[string]map[string]string, to
 	}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

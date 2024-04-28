@@ -445,3 +445,7 @@ func (nums uintptrs) MarshalLogArray(arr zapcore.ArrayEncoder) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

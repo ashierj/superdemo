@@ -58,3 +58,7 @@ func SetActiveTimeouts(timeouts *Timeouts) {
 	activeTimeouts = timeouts.DeepCopy()
 	timeoutMutex.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

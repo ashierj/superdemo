@@ -55,3 +55,7 @@ func (t *Toleration) ToleratesTaint(taint *Taint) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

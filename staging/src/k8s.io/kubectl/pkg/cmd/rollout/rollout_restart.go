@@ -213,3 +213,7 @@ func (o RestartOptions) RunRestart() error {
 
 	return utilerrors.NewAggregate(allErrs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

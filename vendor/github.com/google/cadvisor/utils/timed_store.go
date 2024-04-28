@@ -162,3 +162,7 @@ func (s *TimedStore) getData(index int) timedStoreData {
 func (s *TimedStore) Size() int {
 	return len(s.buffer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

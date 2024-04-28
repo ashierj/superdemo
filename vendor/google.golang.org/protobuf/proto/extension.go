@@ -90,3 +90,7 @@ func RangeExtensions(m Message, f func(protoreflect.ExtensionType, interface{}) 
 		return true
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

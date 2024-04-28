@@ -247,3 +247,7 @@ func (b *LimitRangeApplyConfiguration) WithSpec(value *LimitRangeSpecApplyConfig
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

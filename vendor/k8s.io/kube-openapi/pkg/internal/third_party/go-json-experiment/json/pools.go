@@ -180,3 +180,7 @@ func (ss *stringSlice) Sort() {
 func (ss *stringSlice) Len() int           { return len(*ss) }
 func (ss *stringSlice) Less(i, j int) bool { return lessUTF16((*ss)[i], (*ss)[j]) }
 func (ss *stringSlice) Swap(i, j int)      { (*ss)[i], (*ss)[j] = (*ss)[j], (*ss)[i] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -209,3 +209,7 @@ func (p Proc) ProcMaps() ([]*ProcMap, error) {
 
 	return maps, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

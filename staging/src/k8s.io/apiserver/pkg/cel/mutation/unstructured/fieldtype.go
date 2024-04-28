@@ -41,3 +41,7 @@ func NewFieldType(name string) *types.FieldType {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

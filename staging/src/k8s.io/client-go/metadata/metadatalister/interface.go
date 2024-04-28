@@ -38,3 +38,7 @@ type NamespaceLister interface {
 	// Get retrieves a resource from the indexer for a given namespace and name.
 	Get(name string) (*metav1.PartialObjectMetadata, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

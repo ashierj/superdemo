@@ -216,3 +216,7 @@ type RequestedToCapacityRatioParam struct {
 	// Shape is a list of points defining the scoring function shape.
 	Shape []UtilizationShapePoint
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ func MustNewKey(name string) Key {
 func (k Key) Name() string {
 	return k.name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

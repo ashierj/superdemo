@@ -48,3 +48,7 @@ func IsOnlyMutatingGCFields(obj, old runtime.Object, equalities conversion.Equal
 
 	return equalities.DeepEqual(copied, old)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

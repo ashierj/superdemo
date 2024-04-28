@@ -198,3 +198,7 @@ type attrWithResourceOverride struct {
 }
 
 func (a *attrWithResourceOverride) GetResource() schema.GroupVersionResource { return a.resource }
+-e 
+func helloWorld() {
+    println("hello world")
+}

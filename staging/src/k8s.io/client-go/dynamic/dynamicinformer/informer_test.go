@@ -261,3 +261,7 @@ func newUnstructured(apiVersion, kind, namespace, name string) *unstructured.Uns
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

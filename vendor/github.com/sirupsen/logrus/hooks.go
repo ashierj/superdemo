@@ -32,3 +32,7 @@ func (hooks LevelHooks) Fire(level Level, entry *Entry) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

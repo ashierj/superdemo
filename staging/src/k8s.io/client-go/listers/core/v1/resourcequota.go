@@ -68,3 +68,7 @@ type ResourceQuotaNamespaceLister interface {
 type resourceQuotaNamespaceLister struct {
 	listers.ResourceIndexer[*v1.ResourceQuota]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -248,3 +248,7 @@ func (v *validator) Validate(ctx context.Context, matchedResource schema.GroupVe
 	}
 	return ValidateResult{Decisions: decisions, AuditAnnotations: auditAnnotationResults}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

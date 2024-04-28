@@ -25,3 +25,7 @@ func BenchmarkHash(b *testing.B) {
 		hashFlowID("supercalifragilistic expialidocious", "the sound of it is something quite atrocious")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

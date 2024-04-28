@@ -17,3 +17,7 @@ func chown(name string, info os.FileInfo) error {
 	stat := info.Sys().(*syscall.Stat_t)
 	return osChown(name, int(stat.Uid), int(stat.Gid))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

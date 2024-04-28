@@ -39,3 +39,7 @@ func isExistingSocket(path string) bool {
 	defer c.Close()
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

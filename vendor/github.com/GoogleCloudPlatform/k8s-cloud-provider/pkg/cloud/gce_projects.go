@@ -97,3 +97,7 @@ func (g *GCEProjects) SetCommonInstanceMetadata(ctx context.Context, projectID s
 	}
 	return g.s.WaitForCompletion(ctx, op)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

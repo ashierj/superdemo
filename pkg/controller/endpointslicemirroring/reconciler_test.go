@@ -1368,3 +1368,7 @@ func setupMetrics() {
 	metrics.EndpointSliceChanges.Delete(map[string]string{"operation": "update"})
 	metrics.EndpointSliceChanges.Delete(map[string]string{"operation": "delete"})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

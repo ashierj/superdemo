@@ -382,3 +382,7 @@ type Element struct {
 	// Comment is an optional comment for the element
 	Comment *string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

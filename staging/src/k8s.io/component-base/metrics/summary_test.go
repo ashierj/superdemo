@@ -275,3 +275,7 @@ func TestSummaryWithLabelValueAllowList(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

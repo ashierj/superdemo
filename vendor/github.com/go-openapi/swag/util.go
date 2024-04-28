@@ -384,3 +384,7 @@ type CommandLineOptionsGroup struct {
 	LongDescription  string
 	Options          interface{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

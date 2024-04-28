@@ -701,3 +701,7 @@ func (dv *defaultValue) get(fd protoreflect.FieldDescriptor) protoreflect.Value 
 	}
 	return dv.val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

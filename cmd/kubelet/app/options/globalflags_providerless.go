@@ -26,3 +26,7 @@ import (
 func addLegacyCloudProviderCredentialProviderFlags(global, local *pflag.FlagSet) {
 	// no-op when no legacy providers are compiled in
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

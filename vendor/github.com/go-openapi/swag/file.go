@@ -31,3 +31,7 @@ func (f *File) Read(p []byte) (n int, err error) {
 func (f *File) Close() error {
 	return f.Data.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -131,3 +131,7 @@ func validateOmitStages(omitStages []audit.Stage, fldPath *field.Path) field.Err
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

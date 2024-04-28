@@ -354,3 +354,7 @@ func isAutomanaged(service *v1.APIService) bool {
 	managedType := automanagedType(service)
 	return managedType == manageOnStart || managedType == manageContinuously
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

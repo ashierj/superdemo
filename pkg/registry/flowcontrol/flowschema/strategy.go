@@ -168,3 +168,7 @@ func (flowSchemaStatusStrategy) ValidateUpdate(ctx context.Context, obj, old run
 func (flowSchemaStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

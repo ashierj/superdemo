@@ -140,3 +140,7 @@ func init() {
 	internal.RegisterErrorCodeMap("app_identity_service", pb.AppIdentityServiceError_ErrorCode_name)
 	internal.RegisterErrorCodeMap("modules", modpb.ModulesServiceError_ErrorCode_name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

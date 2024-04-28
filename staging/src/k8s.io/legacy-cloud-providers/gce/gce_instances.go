@@ -808,3 +808,7 @@ func (g *Cloud) GetNodeTags(nodeNames []string) ([]string, error) {
 	g.lastComputedNodeTags = tags
 	return tags, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

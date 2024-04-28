@@ -31,3 +31,7 @@ func SetDefaults_TokenRequestSpec(obj *authenticationv1.TokenRequestSpec) {
 		obj.ExpirationSeconds = &hour
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

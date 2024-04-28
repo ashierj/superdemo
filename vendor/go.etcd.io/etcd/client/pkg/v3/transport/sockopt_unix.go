@@ -34,3 +34,7 @@ func setReuseAddress(network, address string, conn syscall.RawConn) error {
 		syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, unix.SO_REUSEADDR, 1)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

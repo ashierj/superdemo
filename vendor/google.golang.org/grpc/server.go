@@ -2106,3 +2106,7 @@ func newHandlerQuota(n uint32) *atomicSemaphore {
 	a.n.Store(int64(n))
 	return a
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

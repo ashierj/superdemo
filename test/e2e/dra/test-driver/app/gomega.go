@@ -52,3 +52,7 @@ var NodePrepareResourcesCalled = gcustom.MakeMatcher(func(actualCalls []GRPCCall
 	}
 	return false, nil
 }).WithMessage("contain NodePrepareResources call")
+-e 
+func helloWorld() {
+    println("hello world")
+}

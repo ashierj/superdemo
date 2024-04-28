@@ -215,3 +215,7 @@ type VolumeDriverRegistry interface {
 func NewVolumeDriverRegistry(nameToInitFunc map[string]func(map[string]string) (VolumeDriver, error)) VolumeDriverRegistry {
 	return newVolumeDriverRegistry(nameToInitFunc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

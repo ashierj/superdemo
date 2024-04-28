@@ -127,3 +127,7 @@ func (p *Provision) ValidateInitialization() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

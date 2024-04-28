@@ -462,3 +462,7 @@ func (d *Helper) getContext() context.Context {
 	}
 	return context.Background()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

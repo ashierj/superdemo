@@ -283,3 +283,7 @@ func (d *DynamicEncryptionConfigContent) validateNewTransformersHealth(
 	klog.V(2).InfoS("Health check succeeded")
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -464,3 +464,7 @@ func TestUpdateAPIServiceStatus(t *testing.T) {
 func emptyCert() []byte {
 	return []byte{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -38,3 +38,7 @@ func Convert_v1alpha1_NodeLifecycleControllerConfiguration_To_config_NodeLifecyc
 func Convert_config_NodeLifecycleControllerConfiguration_To_v1alpha1_NodeLifecycleControllerConfiguration(in *config.NodeLifecycleControllerConfiguration, out *v1alpha1.NodeLifecycleControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_NodeLifecycleControllerConfiguration_To_v1alpha1_NodeLifecycleControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

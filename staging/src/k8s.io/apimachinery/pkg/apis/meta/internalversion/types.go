@@ -103,3 +103,7 @@ type List struct {
 
 	Items []runtime.Object
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

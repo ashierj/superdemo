@@ -64,3 +64,7 @@ func (b *ServiceReferenceApplyConfiguration) WithPort(value int32) *ServiceRefer
 	b.Port = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

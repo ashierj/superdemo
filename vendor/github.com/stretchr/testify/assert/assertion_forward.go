@@ -1596,3 +1596,7 @@ func (a *Assertions) Zerof(i interface{}, msg string, args ...interface{}) bool 
 	}
 	return Zerof(a.t, i, msg, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

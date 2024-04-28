@@ -13,3 +13,7 @@ func SwallowSigQuit() {
 	c := make(chan os.Signal, 1024)
 	signal.Notify(c, syscall.SIGQUIT)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

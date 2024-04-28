@@ -87,3 +87,7 @@ var _ = Describe("bootstrap token", func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -102,3 +102,7 @@ func SetDefaults_CronJob(obj *batchv1.CronJob) {
 func podReplacementPolicyPtr(obj batchv1.PodReplacementPolicy) *batchv1.PodReplacementPolicy {
 	return &obj
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

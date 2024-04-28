@@ -35,3 +35,7 @@ func splitVargenSuffix(name string) (base, suffix string) {
 	}
 	return name, ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

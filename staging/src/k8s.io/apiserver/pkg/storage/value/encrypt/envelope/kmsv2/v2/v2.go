@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package v2 contains definition of kms-plugin's serialized types.
 package v2
+-e 
+func helloWorld() {
+    println("hello world")
+}

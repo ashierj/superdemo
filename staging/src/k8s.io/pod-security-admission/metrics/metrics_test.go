@@ -194,3 +194,7 @@ func addZeroExpectation(currentExpectations []string, mixin string) []string {
 	}
 	return append(currentExpectations, fmt.Sprintf("%s 0", mixin))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

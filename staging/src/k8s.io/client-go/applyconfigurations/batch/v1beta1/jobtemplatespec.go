@@ -187,3 +187,7 @@ func (b *JobTemplateSpecApplyConfiguration) WithSpec(value *batchv1.JobSpecApply
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

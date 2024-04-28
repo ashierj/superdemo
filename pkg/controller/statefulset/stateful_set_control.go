@@ -799,3 +799,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSetStatus(
 }
 
 var _ StatefulSetControlInterface = &defaultStatefulSetControl{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

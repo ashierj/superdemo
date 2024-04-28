@@ -254,3 +254,7 @@ func (c *podSchedulingContexts) ApplyStatus(ctx context.Context, podSchedulingCo
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

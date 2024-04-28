@@ -199,3 +199,7 @@ IsOnlyMutatingGCFields if necessary, and update this test:
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

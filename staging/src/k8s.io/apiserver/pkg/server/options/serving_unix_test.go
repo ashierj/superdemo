@@ -54,3 +54,7 @@ func TestCreateListenerPreventUpgrades(t *testing.T) {
 		t.Fatalf("creating second listener without port sharing should fail")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

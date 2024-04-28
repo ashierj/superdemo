@@ -3399,3 +3399,7 @@ func isOrHasInternalError(err error) bool {
 	}
 	return apierrors.IsInternalError(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

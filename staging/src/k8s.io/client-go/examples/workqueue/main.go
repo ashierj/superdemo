@@ -218,3 +218,7 @@ func main() {
 	// Wait forever
 	select {}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

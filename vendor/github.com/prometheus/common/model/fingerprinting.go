@@ -103,3 +103,7 @@ func (s FingerprintSet) Intersection(o FingerprintSet) FingerprintSet {
 
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

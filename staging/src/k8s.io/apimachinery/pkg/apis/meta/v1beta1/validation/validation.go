@@ -31,3 +31,7 @@ func ValidateTableOptions(opts *metav1.TableOptions) field.ErrorList {
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

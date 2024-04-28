@@ -46,3 +46,7 @@ type fischerLister struct {
 func NewFischerLister(indexer cache.Indexer) FischerLister {
 	return &fischerLister{listers.New[*v1alpha1.Fischer](indexer, v1alpha1.Resource("fischer"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

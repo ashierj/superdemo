@@ -499,3 +499,7 @@ func (c *createWrapper) Create(ctx context.Context, key string, obj, out runtime
 		return true, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

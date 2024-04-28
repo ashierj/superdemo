@@ -403,3 +403,7 @@ func (w *Writer) base64(in []byte) {
 		w.Buffer.Buf = append(w.Buffer.Buf, byte(padChar), byte(padChar))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

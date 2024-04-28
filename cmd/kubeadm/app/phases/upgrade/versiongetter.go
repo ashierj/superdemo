@@ -179,3 +179,7 @@ func (o *OfflineVersionGetter) VersionFromCILabel(ciVersionLabel, description st
 	}
 	return o.version, ver, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

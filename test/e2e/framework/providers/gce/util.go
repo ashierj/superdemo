@@ -103,3 +103,7 @@ func WaitForNodeBootIdsToChange(ctx context.Context, c clientset.Interface, node
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func NodeAllocatableRoot(cgroupRoot string, cgroupsPerQOS bool, cgroupDriver str
 func GetKubeletContainer(kubeletCgroups string) (string, error) {
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

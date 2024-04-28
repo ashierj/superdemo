@@ -42,3 +42,7 @@ func (i VarLinkage) String() string {
 	}
 	return _VarLinkage_name[_VarLinkage_index[i]:_VarLinkage_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

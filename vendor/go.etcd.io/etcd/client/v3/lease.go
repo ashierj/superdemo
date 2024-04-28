@@ -605,3 +605,7 @@ func (ka *keepAlive) close() {
 		close(ch)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

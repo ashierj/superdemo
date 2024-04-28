@@ -329,3 +329,7 @@ func (d *deadlineHandler) set(deadline time.Time) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

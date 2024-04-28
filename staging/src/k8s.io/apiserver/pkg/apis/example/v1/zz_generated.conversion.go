@@ -265,3 +265,7 @@ func autoConvert_example_PodStatus_To_v1_PodStatus(in *example.PodStatus, out *P
 func Convert_example_PodStatus_To_v1_PodStatus(in *example.PodStatus, out *PodStatus, s conversion.Scope) error {
 	return autoConvert_example_PodStatus_To_v1_PodStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

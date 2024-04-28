@@ -160,3 +160,7 @@ func getErrorCode(err error) string {
 	// method was called, otherwise we would get gRPC error.
 	return "unknown-non-grpc"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

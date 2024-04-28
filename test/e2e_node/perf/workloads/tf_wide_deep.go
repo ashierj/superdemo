@@ -118,3 +118,7 @@ func (w tfWideDeepWorkload) ExtractPerformanceFromLogs(logs string) (perf time.D
 
 	return perf, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

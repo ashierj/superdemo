@@ -243,3 +243,7 @@ func TestPodAnnotations(t *testing.T) {
 		t.Errorf("expected %v, got %v", expected, podSandboxInfo)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

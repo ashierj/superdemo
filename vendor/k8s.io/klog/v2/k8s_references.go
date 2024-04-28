@@ -210,3 +210,7 @@ func (ks kobjSlice) WriteText(out *bytes.Buffer) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

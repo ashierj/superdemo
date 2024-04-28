@@ -150,3 +150,7 @@ func (e *quotaAccessor) GetQuotas(namespace string) ([]corev1.ResourceQuota, err
 
 	return resourceQuotas, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func WaitForReplicaSetTargetAvailableReplicasWithTimeout(ctx context.Context, c 
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

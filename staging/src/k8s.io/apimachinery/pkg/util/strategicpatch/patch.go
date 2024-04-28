@@ -2251,3 +2251,7 @@ func hasAdditionalNewField(original, modified map[string]interface{}) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

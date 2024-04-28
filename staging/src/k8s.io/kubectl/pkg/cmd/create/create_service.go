@@ -410,3 +410,7 @@ func parsePorts(portString string) (int32, intstr.IntOrString, error) {
 	}
 	return int32(port), targetPort, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

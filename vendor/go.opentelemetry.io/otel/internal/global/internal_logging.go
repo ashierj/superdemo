@@ -67,3 +67,7 @@ func Debug(msg string, keysAndValues ...interface{}) {
 func Warn(msg string, keysAndValues ...interface{}) {
 	getLogger().V(1).Info(msg, keysAndValues...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

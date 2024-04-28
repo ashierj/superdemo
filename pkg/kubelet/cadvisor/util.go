@@ -75,3 +75,7 @@ func EphemeralStorageCapacityFromFsInfo(info cadvisorapi2.FsInfo) v1.ResourceLis
 func UsingLegacyCadvisorStats(runtimeEndpoint string) bool {
 	return strings.HasSuffix(runtimeEndpoint, CrioSocketSuffix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

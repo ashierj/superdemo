@@ -24,3 +24,7 @@ func (l *keepAliveConn) SetKeepAlivePeriod(d time.Duration) error {
 	// Refer to https://github.com/etcd-io/etcd/issues/15811.
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

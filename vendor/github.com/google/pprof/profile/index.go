@@ -62,3 +62,7 @@ func sampleTypes(p *Profile) []string {
 	}
 	return types
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -287,3 +287,7 @@ func CheckTaintValidation(taint v1.Taint) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

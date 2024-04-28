@@ -36,3 +36,7 @@ type DockerImage struct {
 	VirtualSize int64    `json:"virtual_size"`
 	Size        int64    `json:"size"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

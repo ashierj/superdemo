@@ -104,3 +104,7 @@ func AsPollingSignalError(actual interface{}) (*PollingSignalErrorImpl, bool) {
 
 	return nil, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

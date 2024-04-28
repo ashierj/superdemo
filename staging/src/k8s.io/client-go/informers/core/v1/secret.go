@@ -88,3 +88,7 @@ func (f *secretInformer) Informer() cache.SharedIndexInformer {
 func (f *secretInformer) Lister() v1.SecretLister {
 	return v1.NewSecretLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

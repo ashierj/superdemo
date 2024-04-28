@@ -37,3 +37,7 @@ func AddWarningsHandler(handler restful.RouteFunction, warnings []string) restfu
 		handler(req, res)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -32,3 +32,7 @@ type NodeTimeSeries struct {
 	Labels        map[string]string          `json:"labels"`
 	Version       string                     `json:"version"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

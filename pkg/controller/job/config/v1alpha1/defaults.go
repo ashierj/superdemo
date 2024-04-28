@@ -34,3 +34,7 @@ func RecommendedDefaultJobControllerConfiguration(obj *kubectrlmgrconfigv1alpha1
 		obj.ConcurrentJobSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

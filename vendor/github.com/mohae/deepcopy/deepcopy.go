@@ -110,3 +110,7 @@ func copyRecursive(original, cpy reflect.Value) {
 		cpy.Set(original)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

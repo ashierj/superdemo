@@ -605,3 +605,7 @@ func newInformer(clientState Store, options InformerOptions) Controller {
 	}
 	return New(cfg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

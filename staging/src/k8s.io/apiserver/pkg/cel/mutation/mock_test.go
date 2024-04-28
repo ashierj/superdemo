@@ -108,3 +108,7 @@ func (m *mockTypeResolverForOptional) Resolve(name string) (common.TypeRef, bool
 	}
 	return nil, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

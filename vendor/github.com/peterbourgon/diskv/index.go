@@ -113,3 +113,7 @@ func rebuild(less LessFunction, keys <-chan string) *btree.BTree {
 	}
 	return tree
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

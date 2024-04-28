@@ -116,3 +116,7 @@ func ExampleNewLocalBuilder() {
 	// Name: "mutating4", Namespace: "" (*v1.MutatingWebhookConfiguration)
 	// Name: "validating4", Namespace: "" (*v1.ValidatingWebhookConfiguration)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

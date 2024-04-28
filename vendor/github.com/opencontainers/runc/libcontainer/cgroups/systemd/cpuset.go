@@ -58,3 +58,7 @@ func RangeToBits(str string) ([]byte, error) {
 	}
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

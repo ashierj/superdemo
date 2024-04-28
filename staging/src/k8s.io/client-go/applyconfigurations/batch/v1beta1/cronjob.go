@@ -256,3 +256,7 @@ func (b *CronJobApplyConfiguration) WithStatus(value *CronJobStatusApplyConfigur
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

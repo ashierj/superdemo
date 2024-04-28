@@ -34,3 +34,7 @@ func GetInfo() (info.NVMInfo, error) {
 func Finalize() {
 	klog.V(4).Info("libipmctl not available, doing nothing.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

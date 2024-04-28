@@ -217,3 +217,7 @@ func (o *SetLastAppliedOptions) RunSetLastApplied() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1444,3 +1444,7 @@ func resourcesEqual(lhs, rhs v1.ResourceList) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

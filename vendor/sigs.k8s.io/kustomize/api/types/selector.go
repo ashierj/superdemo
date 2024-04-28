@@ -122,3 +122,7 @@ func (s *SelectorRegex) MatchNamespace(ns string) bool {
 	}
 	return s.namespaceRegex.MatchString(ns)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

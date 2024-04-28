@@ -54,3 +54,7 @@ func pause(cmd *cobra.Command, args []string) {
 	result := <-done
 	fmt.Printf("exiting %d\n", result)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

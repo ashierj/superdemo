@@ -87,3 +87,7 @@ func (lw *listerWatcher) Watch(options metav1.ListOptions) (watch.Interface, err
 	}
 	return lw.storage.Watch(ctx, lw.resourcePrefix, opts)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

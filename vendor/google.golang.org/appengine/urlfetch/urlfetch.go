@@ -208,3 +208,7 @@ func init() {
 	internal.RegisterErrorCodeMap("urlfetch", pb.URLFetchServiceError_ErrorCode_name)
 	internal.RegisterTimeoutErrorCode("urlfetch", int32(pb.URLFetchServiceError_DEADLINE_EXCEEDED))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

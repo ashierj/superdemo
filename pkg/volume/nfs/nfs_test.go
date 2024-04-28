@@ -278,3 +278,7 @@ func TestPersistentClaimReadOnlyFlag(t *testing.T) {
 		t.Errorf("Expected true for mounter.IsReadOnly")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

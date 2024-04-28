@@ -873,3 +873,7 @@ func findTargetInProgram(prog *Program, name string, progType ProgramType, attac
 
 	return spec.TypeID(targetFunc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

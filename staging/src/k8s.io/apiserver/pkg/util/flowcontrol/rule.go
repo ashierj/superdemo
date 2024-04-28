@@ -201,3 +201,7 @@ func containsString(x string, list []string, wildcard string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

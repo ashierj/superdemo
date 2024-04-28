@@ -12,3 +12,7 @@ type ifReq struct {
 	Flags uint16
 	pad   [SizeOfIfReq - IFNAMSIZ - 2]byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

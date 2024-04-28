@@ -165,3 +165,7 @@ func (s sortVariants) Swap(i, j int) {
 func (s sortVariants) Less(i, j int) bool {
 	return variantIndex[s[i]] < variantIndex[s[j]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

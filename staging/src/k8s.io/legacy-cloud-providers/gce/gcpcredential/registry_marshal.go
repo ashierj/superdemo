@@ -108,3 +108,7 @@ func encodeRegistryConfigFieldAuth(username, password string) string {
 
 	return base64.StdEncoding.EncodeToString([]byte(fieldValue))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

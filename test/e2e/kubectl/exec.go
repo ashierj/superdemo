@@ -94,3 +94,7 @@ var _ = SIGDescribe("Kubectl exec", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

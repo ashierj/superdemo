@@ -335,3 +335,7 @@ func verifyPodRestartCount(ctx context.Context, f *framework.Framework, podName 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

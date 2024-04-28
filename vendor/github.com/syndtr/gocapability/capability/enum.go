@@ -307,3 +307,7 @@ var (
 
 	capUpperMask = ^uint32(0)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

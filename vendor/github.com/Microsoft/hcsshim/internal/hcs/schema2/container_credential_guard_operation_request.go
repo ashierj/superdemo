@@ -13,3 +13,7 @@ type ContainerCredentialGuardOperationRequest struct {
 	Operation        ContainerCredentialGuardModifyOperation `json:"Operation,omitempty"`
 	OperationDetails interface{}                             `json:"OperationDetails,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

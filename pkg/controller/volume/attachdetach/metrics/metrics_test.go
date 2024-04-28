@@ -191,3 +191,7 @@ func TestTotalVolumesMetricCollection(t *testing.T) {
 		t.Errorf("Expected 1 fake-plugin volume in ActualStateOfWorld, got %d", fakePluginCount)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

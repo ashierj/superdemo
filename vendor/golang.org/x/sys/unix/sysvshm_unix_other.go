@@ -11,3 +11,7 @@ package unix
 func SysvShmCtl(id, cmd int, desc *SysvShmDesc) (result int, err error) {
 	return shmctl(id, cmd, desc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

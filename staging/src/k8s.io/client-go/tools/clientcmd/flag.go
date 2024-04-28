@@ -47,3 +47,7 @@ func (t *transformingStringValue) Type() string {
 func (t *transformingStringValue) String() string {
 	return string(*t.target)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

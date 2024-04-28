@@ -136,3 +136,7 @@ func ValidateKubeletClientCSR(req *x509.CertificateRequest, usages sets.String) 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

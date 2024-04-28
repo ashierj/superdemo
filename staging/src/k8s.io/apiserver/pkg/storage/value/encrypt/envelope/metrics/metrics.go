@@ -320,3 +320,7 @@ func addLabelToCache(c *lru.Cache, transformationType, providerName, keyID, apiS
 	}, nil) // value is irrelevant, this is a set and not a map
 	return keyIDHash, apiServerIDHash
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

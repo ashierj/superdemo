@@ -16,3 +16,7 @@ type VirtualPciFunction struct {
 
 	VirtualFunction uint16 `json:",omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

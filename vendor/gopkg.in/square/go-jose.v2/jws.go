@@ -364,3 +364,7 @@ func (obj JSONWebSignature) FullSerialize() string {
 
 	return string(mustSerializeJSON(raw))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

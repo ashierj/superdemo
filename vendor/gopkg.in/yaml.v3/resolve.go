@@ -324,3 +324,7 @@ func parseTimestamp(s string) (time.Time, bool) {
 	}
 	return time.Time{}, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

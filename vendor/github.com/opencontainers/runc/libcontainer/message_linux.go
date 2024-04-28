@@ -95,3 +95,7 @@ func (msg *Boolmsg) Serialize() []byte {
 func (msg *Boolmsg) Len() int {
 	return unix.NLA_HDRLEN + 4 // alignment
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

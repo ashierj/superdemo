@@ -26,3 +26,7 @@ func (i Kind) String() string {
 	}
 	return _Kind_name[_Kind_index[i]:_Kind_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -12,3 +12,7 @@ package hcsschema
 type Memory struct {
 	SizeInMB uint64 `json:"SizeInMB,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

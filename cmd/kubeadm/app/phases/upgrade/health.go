@@ -257,3 +257,7 @@ func getNotReadyNodes(nodes []v1.Node) []string {
 	}
 	return notReadyNodes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

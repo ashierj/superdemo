@@ -154,3 +154,7 @@ var quirkyIDs = []string{
 	"-//webtechs//dtd mozilla html 2.0//",
 	"-//webtechs//dtd mozilla html//",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

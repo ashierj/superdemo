@@ -970,3 +970,7 @@ func coreAreMembersCompatible(localType Type, targetType Type) error {
 		return fmt.Errorf("type %s: %w", localType, ErrNotSupported)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

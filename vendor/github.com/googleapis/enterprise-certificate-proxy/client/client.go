@@ -183,3 +183,7 @@ func Cred(configFilePath string) (*Key, error) {
 
 	return k, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

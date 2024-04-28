@@ -69,3 +69,7 @@ func (b *SecretVolumeSourceApplyConfiguration) WithOptional(value bool) *SecretV
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

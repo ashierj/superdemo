@@ -79,3 +79,7 @@ func WrapAggregatedDiscoveryToHandler(handler http.Handler, aggHandler http.Hand
 	codecs := serializer.NewCodecFactory(scheme)
 	return &WrappedHandler{codecs, handler, aggHandler}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

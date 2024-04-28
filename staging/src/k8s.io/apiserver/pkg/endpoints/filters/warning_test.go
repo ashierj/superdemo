@@ -130,3 +130,7 @@ func TestTruncation(t *testing.T) {
 		t.Errorf("expected\n%#v\ngot\n%#v", e, a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

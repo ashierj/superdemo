@@ -425,3 +425,7 @@ func (cgc *containerGC) GarbageCollect(ctx context.Context, gcPolicy kubecontain
 	}
 	return utilerrors.NewAggregate(errors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

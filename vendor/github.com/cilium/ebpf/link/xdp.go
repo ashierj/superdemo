@@ -52,3 +52,7 @@ func AttachXDP(opts XDPOptions) (Link, error) {
 
 	return rawLink, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

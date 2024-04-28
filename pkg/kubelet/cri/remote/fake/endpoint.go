@@ -33,3 +33,7 @@ func GenerateEndpoint() (string, error) {
 	// use random int be a part fo file name
 	return fmt.Sprintf(defaultUnixEndpoint, rand.Int()), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

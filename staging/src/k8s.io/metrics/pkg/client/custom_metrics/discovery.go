@@ -143,3 +143,7 @@ func (d *apiVersionsFromDiscovery) Invalidate() {
 
 	d.prefVersion = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

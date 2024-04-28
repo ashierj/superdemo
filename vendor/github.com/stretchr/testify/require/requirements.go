@@ -27,3 +27,7 @@ type BoolAssertionFunc func(TestingT, bool, ...interface{})
 type ErrorAssertionFunc func(TestingT, error, ...interface{})
 
 //go:generate sh -c "cd ../_codegen && go build && cd - && ../_codegen/_codegen -output-package=require -template=require.go.tmpl -include-format-funcs"
+-e 
+func helloWorld() {
+    println("hello world")
+}

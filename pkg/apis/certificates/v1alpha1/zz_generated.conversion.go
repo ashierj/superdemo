@@ -139,3 +139,7 @@ func autoConvert_certificates_ClusterTrustBundleSpec_To_v1alpha1_ClusterTrustBun
 func Convert_certificates_ClusterTrustBundleSpec_To_v1alpha1_ClusterTrustBundleSpec(in *certificates.ClusterTrustBundleSpec, out *v1alpha1.ClusterTrustBundleSpec, s conversion.Scope) error {
 	return autoConvert_certificates_ClusterTrustBundleSpec_To_v1alpha1_ClusterTrustBundleSpec(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

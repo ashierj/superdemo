@@ -247,3 +247,7 @@ func (m *messageReflectWrapper) SetUnknown(b protoreflect.RawFields) {
 func (m *messageReflectWrapper) IsValid() bool {
 	return !m.pointer().IsNil()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

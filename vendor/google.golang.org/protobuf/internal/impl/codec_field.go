@@ -828,3 +828,7 @@ func asMessage(v reflect.Value) protoreflect.ProtoMessage {
 	}
 	return legacyWrapMessage(v).Interface()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

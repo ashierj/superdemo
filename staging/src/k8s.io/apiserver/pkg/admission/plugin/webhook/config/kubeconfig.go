@@ -68,3 +68,7 @@ func LoadConfig(configFile io.Reader) (string, error) {
 	}
 	return kubeconfigFile, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

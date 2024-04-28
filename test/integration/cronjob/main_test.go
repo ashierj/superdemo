@@ -24,3 +24,7 @@ import (
 func TestMain(m *testing.M) {
 	framework.EtcdMain(m.Run)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ func TestGomega(t *testing.T) {
 		return 42
 	}).WithPolling(time.Second).Should(gomega.Equal(1))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

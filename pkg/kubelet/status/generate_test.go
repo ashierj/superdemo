@@ -658,3 +658,7 @@ func getNotStartedStatus(cName string) v1.ContainerStatus {
 		Started: pointer.Bool(false),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

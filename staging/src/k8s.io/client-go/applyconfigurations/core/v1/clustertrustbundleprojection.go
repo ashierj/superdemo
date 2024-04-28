@@ -77,3 +77,7 @@ func (b *ClusterTrustBundleProjectionApplyConfiguration) WithPath(value string) 
 	b.Path = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

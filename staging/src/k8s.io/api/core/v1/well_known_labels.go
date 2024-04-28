@@ -72,3 +72,7 @@ const (
 	// LabelMetadataName is the label name which, in-tree, is used to automatically label namespaces, so they can be selected easily by tools which require definitive labels
 	LabelMetadataName = "kubernetes.io/metadata.name"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -134,3 +134,7 @@ type ImageManagerService interface {
 	// ImageFsInfo returns information of the filesystem(s) used to store the read-only layers and the writeable layer.
 	ImageFsInfo(ctx context.Context) (*runtimeapi.ImageFsInfoResponse, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

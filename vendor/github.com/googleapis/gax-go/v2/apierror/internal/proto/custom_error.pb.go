@@ -254,3 +254,7 @@ func file_custom_error_proto_init() {
 	file_custom_error_proto_goTypes = nil
 	file_custom_error_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

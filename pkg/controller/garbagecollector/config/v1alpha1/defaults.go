@@ -38,3 +38,7 @@ func RecommendedDefaultGarbageCollectorControllerConfiguration(obj *kubectrlmgrc
 		obj.ConcurrentGCSyncs = 20
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

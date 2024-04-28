@@ -53,3 +53,7 @@ func (m *Float64Measure) Description() string {
 func (m *Float64Measure) Unit() string {
 	return m.desc.unit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

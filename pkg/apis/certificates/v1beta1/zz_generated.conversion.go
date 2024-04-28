@@ -256,3 +256,7 @@ func autoConvert_certificates_CertificateSigningRequestStatus_To_v1beta1_Certifi
 func Convert_certificates_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus(in *certificates.CertificateSigningRequestStatus, out *v1beta1.CertificateSigningRequestStatus, s conversion.Scope) error {
 	return autoConvert_certificates_CertificateSigningRequestStatus_To_v1beta1_CertificateSigningRequestStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

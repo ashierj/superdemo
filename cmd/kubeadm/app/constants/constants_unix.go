@@ -30,3 +30,7 @@ const (
 	// DefaultCRISocket defines the default CRI socket
 	DefaultCRISocket = CRISocketContainerd
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

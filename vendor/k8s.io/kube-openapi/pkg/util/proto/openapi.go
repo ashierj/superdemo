@@ -283,3 +283,7 @@ type Reference interface {
 	Reference() string
 	SubSchema() Schema
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

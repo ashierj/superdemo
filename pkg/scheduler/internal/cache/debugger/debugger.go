@@ -74,3 +74,7 @@ func (d *CacheDebugger) ListenForSignal(ctx context.Context) {
 		}
 	}()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

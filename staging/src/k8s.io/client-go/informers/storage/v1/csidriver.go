@@ -87,3 +87,7 @@ func (f *cSIDriverInformer) Informer() cache.SharedIndexInformer {
 func (f *cSIDriverInformer) Lister() v1.CSIDriverLister {
 	return v1.NewCSIDriverLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

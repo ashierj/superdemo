@@ -205,3 +205,7 @@ func (pp PluginInitializers) Initialize(plugin Interface) {
 		p.Initialize(plugin)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

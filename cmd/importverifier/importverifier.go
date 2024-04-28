@@ -273,3 +273,7 @@ func logForbiddenPackages(base string, forbidden []string) {
 		log.Printf("--- %s\n", forbiddenPackage)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

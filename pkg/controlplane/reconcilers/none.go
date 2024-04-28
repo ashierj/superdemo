@@ -47,3 +47,7 @@ func (r *noneEndpointReconciler) StopReconciling() {
 
 func (r *noneEndpointReconciler) Destroy() {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

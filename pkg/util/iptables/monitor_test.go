@@ -346,3 +346,7 @@ func waitForBlocked(mfe *monitorFakeExec) error {
 		return blocked, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

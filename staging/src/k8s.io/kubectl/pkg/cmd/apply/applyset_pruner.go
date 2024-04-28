@@ -193,3 +193,7 @@ func (a *ApplySet) deleteObjects(ctx context.Context, dynamicClient dynamic.Inte
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

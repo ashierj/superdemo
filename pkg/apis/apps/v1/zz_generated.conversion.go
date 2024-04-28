@@ -1340,3 +1340,7 @@ func autoConvert_apps_StatefulSetUpdateStrategy_To_v1_StatefulSetUpdateStrategy(
 func Convert_apps_StatefulSetUpdateStrategy_To_v1_StatefulSetUpdateStrategy(in *apps.StatefulSetUpdateStrategy, out *v1.StatefulSetUpdateStrategy, s conversion.Scope) error {
 	return autoConvert_apps_StatefulSetUpdateStrategy_To_v1_StatefulSetUpdateStrategy(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

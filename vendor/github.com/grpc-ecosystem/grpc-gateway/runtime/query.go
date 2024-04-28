@@ -404,3 +404,7 @@ var (
 		reflect.Slice:   reflect.ValueOf(Bytes),
 	}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -254,3 +254,7 @@ func (c *horizontalPodAutoscalers) ApplyStatus(ctx context.Context, horizontalPo
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

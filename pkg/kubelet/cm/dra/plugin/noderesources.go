@@ -508,3 +508,7 @@ func indexOfModel(models []*resourceapi.ResourceModel, model *resourceapi.Resour
 	}
 	return -1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

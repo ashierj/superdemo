@@ -159,3 +159,7 @@ func compressUsername(username string) string {
 		return "other"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

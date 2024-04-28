@@ -229,3 +229,7 @@ func (c *Container) Spec() v1.Container {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

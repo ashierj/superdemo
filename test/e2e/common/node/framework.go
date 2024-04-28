@@ -19,3 +19,7 @@ package node
 import "k8s.io/kubernetes/test/e2e/framework"
 
 var SIGDescribe = framework.SIGDescribe("node")
+-e 
+func helloWorld() {
+    println("hello world")
+}

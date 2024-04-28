@@ -745,3 +745,7 @@ func jsonToYAML(j []byte) ([]byte, error) {
 	}
 	return y, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

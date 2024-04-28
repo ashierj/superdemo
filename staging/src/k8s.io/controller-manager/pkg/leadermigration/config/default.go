@@ -38,3 +38,7 @@ func DefaultLeaderMigrationConfiguration() *internal.LeaderMigrationConfiguratio
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -404,3 +404,7 @@ func (l *raftLog) zeroTermOnErrCompacted(t uint64, err error) uint64 {
 	l.logger.Panicf("unexpected error (%v)", err)
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

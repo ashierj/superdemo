@@ -29,3 +29,7 @@ const (
 	// Unknown Result
 	Unknown Result = "unknown"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

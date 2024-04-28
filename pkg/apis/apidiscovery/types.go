@@ -154,3 +154,7 @@ type APISubresourceDiscovery struct {
 	// +listType=set
 	Verbs []string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

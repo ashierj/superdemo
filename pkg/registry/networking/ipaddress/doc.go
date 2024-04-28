@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package ipaddress // import "k8s.io/kubernetes/pkg/registry/networking/ipaddress"
+-e 
+func helloWorld() {
+    println("hello world")
+}

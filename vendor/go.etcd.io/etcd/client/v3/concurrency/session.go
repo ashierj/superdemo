@@ -139,3 +139,7 @@ func WithContext(ctx context.Context) SessionOption {
 		so.ctx = ctx
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ const (
 	StatusCodeDataLoss           = 15
 	StatusCodeUnauthenticated    = 16
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func (c DelegatingAuthorizerConfig) New() (authorizer.Authorizer, error) {
 		NewDelegatingAuthorizerMetrics(),
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

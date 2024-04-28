@@ -55,3 +55,7 @@ func (b *RuntimeClassSpecApplyConfiguration) WithScheduling(value *SchedulingApp
 	b.Scheduling = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

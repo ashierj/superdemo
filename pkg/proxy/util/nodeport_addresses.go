@@ -132,3 +132,7 @@ func (npa *NodePortAddresses) GetNodeIPs(nw NetworkInterfacer) ([]net.IP, error)
 func (npa *NodePortAddresses) ContainsIPv4Loopback() bool {
 	return npa.containsIPv4Loopback
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

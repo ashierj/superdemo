@@ -19,3 +19,7 @@ limitations under the License.
 package v1alpha1
 
 type FooExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

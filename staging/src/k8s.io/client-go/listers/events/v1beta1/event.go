@@ -68,3 +68,7 @@ type EventNamespaceLister interface {
 type eventNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.Event]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

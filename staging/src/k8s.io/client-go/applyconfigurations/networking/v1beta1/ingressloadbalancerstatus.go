@@ -42,3 +42,7 @@ func (b *IngressLoadBalancerStatusApplyConfiguration) WithIngress(values ...*Ing
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

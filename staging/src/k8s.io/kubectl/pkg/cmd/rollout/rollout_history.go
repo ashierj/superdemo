@@ -221,3 +221,7 @@ func (o *RolloutHistoryOptions) Run() error {
 		return printer.PrintObj(info.Object, o.Out)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

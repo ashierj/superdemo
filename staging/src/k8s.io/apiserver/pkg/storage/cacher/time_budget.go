@@ -100,3 +100,7 @@ func (t *timeBudgetImpl) returnUnused(unused time.Duration) {
 		t.budget = t.maxBudget
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

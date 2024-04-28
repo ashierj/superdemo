@@ -50,3 +50,7 @@ func (b *PodFailurePolicyOnPodConditionsPatternApplyConfiguration) WithStatus(va
 	b.Status = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

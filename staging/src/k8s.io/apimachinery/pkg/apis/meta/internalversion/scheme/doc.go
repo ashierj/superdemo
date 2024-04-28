@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package scheme // import "k8s.io/apimachinery/pkg/apis/meta/internalversion/scheme"
+-e 
+func helloWorld() {
+    println("hello world")
+}

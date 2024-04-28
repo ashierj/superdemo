@@ -106,3 +106,7 @@ func FormatBugs() error {
 	}
 	return errors.New(strings.Join(lines, ""))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

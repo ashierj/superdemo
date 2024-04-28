@@ -247,3 +247,7 @@ func validateBundledVersions(bundledVersions SupportedVersions, binDir string) e
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

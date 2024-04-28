@@ -297,3 +297,7 @@ func unstructuredToEvent(obj *unstructured.Unstructured) (*v1.Event, error) {
 	err = runtime.DecodeInto(clientscheme.Codecs.LegacyCodec(v1.SchemeGroupVersion), json, event)
 	return event, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

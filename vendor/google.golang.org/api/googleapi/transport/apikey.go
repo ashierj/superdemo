@@ -42,3 +42,7 @@ func (t *APIKey) RoundTrip(req *http.Request) (*http.Response, error) {
 	newReq.URL.RawQuery = args.Encode()
 	return rt.RoundTrip(&newReq)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

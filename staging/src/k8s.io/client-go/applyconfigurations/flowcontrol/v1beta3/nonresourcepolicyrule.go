@@ -50,3 +50,7 @@ func (b *NonResourcePolicyRuleApplyConfiguration) WithNonResourceURLs(values ...
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

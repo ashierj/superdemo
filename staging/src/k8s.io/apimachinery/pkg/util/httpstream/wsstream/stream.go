@@ -175,3 +175,7 @@ func messageCopy(ws *websocket.Conn, r io.Reader, base64Encode, ping bool, timeo
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

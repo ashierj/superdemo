@@ -56,3 +56,7 @@ func (b *PodAntiAffinityApplyConfiguration) WithPreferredDuringSchedulingIgnored
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

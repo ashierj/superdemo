@@ -221,3 +221,7 @@ func (s *Base64Plugin) Encrypt(ctx context.Context, request *kmsapi.EncryptReque
 
 	return &kmsapi.EncryptResponse{Ciphertext: buf, KeyId: s.keyID, Annotations: map[string][]byte{"local-kek.kms.kubernetes.io": []byte("encrypted-local-kek")}}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

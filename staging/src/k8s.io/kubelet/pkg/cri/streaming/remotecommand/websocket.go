@@ -130,3 +130,7 @@ func createWebSocketStreams(req *http.Request, w http.ResponseWriter, opts *Opti
 
 	return ctx, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

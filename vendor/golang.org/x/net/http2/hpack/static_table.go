@@ -186,3 +186,7 @@ var staticTable = &headerFieldTable{
 		{Name: "www-authenticate", Value: "", Sensitive: false},
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -275,3 +275,7 @@ func parseMemInfo(r io.Reader) (*Meminfo, error) {
 
 	return &m, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

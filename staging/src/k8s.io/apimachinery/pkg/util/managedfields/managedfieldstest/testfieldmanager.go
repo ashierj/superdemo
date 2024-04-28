@@ -92,3 +92,7 @@ func NewFakeFieldManager(typeConverter managedfields.TypeConverter, gvk schema.G
 	}
 	return ffm
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

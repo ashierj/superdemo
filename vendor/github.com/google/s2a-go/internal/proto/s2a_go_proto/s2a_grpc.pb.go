@@ -171,3 +171,7 @@ var S2AService_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "internal/proto/s2a/s2a.proto",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

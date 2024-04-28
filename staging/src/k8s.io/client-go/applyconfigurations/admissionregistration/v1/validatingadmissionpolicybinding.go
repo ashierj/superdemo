@@ -245,3 +245,7 @@ func (b *ValidatingAdmissionPolicyBindingApplyConfiguration) WithSpec(value *Val
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

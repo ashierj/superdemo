@@ -129,3 +129,7 @@ type StorageVersionMigrationList struct {
 	// +listMapKey=type
 	Items []StorageVersionMigration `json:"items" listType:"map" listMapKey:"type" patchStrategy:"merge" patchMergeKey:"type" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

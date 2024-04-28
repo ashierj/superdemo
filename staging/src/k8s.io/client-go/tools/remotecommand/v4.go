@@ -117,3 +117,7 @@ func (d *errorDecoderV4) decode(message []byte) error {
 
 	return fmt.Errorf(status.Message)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

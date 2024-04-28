@@ -21,3 +21,7 @@ type KernelValidatorHelper interface {
 	// GetKernelReleaseVersion gets the current kernel release version of the system
 	GetKernelReleaseVersion() (string, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func NewFS(mountPoint string) (FS, error) {
 
 	return FS{fs, isReal}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

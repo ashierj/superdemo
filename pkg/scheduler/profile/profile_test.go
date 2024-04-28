@@ -299,3 +299,7 @@ func checkErr(err error, wantErr string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

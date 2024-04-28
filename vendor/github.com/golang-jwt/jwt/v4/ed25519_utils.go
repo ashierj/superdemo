@@ -62,3 +62,7 @@ func ParseEdPublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
 
 	return pkey, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

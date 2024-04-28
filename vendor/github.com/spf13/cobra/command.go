@@ -1832,3 +1832,7 @@ func commandNameMatches(s string, t string) bool {
 
 	return s == t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

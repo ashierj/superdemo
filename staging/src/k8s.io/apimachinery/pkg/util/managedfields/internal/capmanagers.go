@@ -131,3 +131,7 @@ func (f *capManagersManager) capUpdateManagers(managed Managed) (newManaged Mana
 
 	return managed, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -189,3 +189,7 @@ func (igr Moments) AvgAndStdDev() (float64, float64) {
 	}
 	return avg, math.NaN()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

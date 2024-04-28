@@ -79,3 +79,7 @@ func (c *ObjectCache) Get(key string) (interface{}, error) {
 func (c *ObjectCache) Add(key string, obj interface{}) error {
 	return c.cache.Add(objectEntry{key: key, obj: obj})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -242,3 +242,7 @@ var defaultOrderLast = []string{ //nolint:gochecknoglobals
 func NewSortOrderTransformerPlugin() resmap.TransformerPlugin {
 	return &SortOrderTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

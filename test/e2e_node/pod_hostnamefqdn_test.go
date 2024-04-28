@@ -227,3 +227,7 @@ func checkPodIsPending(ctx context.Context, f *framework.Framework, podName, nam
 		return false, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

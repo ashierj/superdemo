@@ -37,3 +37,7 @@ func init() {
 		},
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

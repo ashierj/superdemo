@@ -172,3 +172,7 @@ func TestWatch(t *testing.T) {
 }
 
 // TODO: Test generation number.
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -320,3 +320,7 @@ func NewHeap(keyFn KeyFunc, lessFn LessFunc) *Heap {
 	h.cond.L = &h.lock
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

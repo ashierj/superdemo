@@ -97,3 +97,7 @@ type WantsExcludedAdmissionResources interface {
 	SetExcludedAdmissionResources(excludedAdmissionResources []schema.GroupResource)
 	admission.InitializationValidator
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

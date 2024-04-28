@@ -457,3 +457,7 @@ func initTestPlugins(t *testing.T, plugs []volume.VolumePlugin, pluginName strin
 
 	return pluginMgr, tmpDir
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

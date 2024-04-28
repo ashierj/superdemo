@@ -282,3 +282,7 @@ func formatError(errMsgs []errorMsg) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

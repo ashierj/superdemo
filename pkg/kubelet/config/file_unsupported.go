@@ -32,3 +32,7 @@ func (s *sourceFile) startWatch() {
 func (s *sourceFile) consumeWatchEvent(e *watchEvent) error {
 	return fmt.Errorf("consuming watch event is unsupported in this build")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

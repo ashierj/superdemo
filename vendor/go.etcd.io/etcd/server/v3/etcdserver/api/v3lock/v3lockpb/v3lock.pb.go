@@ -1139,3 +1139,7 @@ var (
 	ErrIntOverflowV3Lock          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupV3Lock = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

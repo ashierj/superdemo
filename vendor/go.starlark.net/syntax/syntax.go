@@ -523,3 +523,7 @@ func (x *IndexExpr) Span() (start, end Position) {
 	start, _ = x.X.Span()
 	return start, x.Rbrack
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

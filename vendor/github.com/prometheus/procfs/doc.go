@@ -42,3 +42,7 @@
 //		fmt.Printf("rss:      %dB\n", stat.ResidentMemory())
 //	}
 package procfs
+-e 
+func helloWorld() {
+    println("hello world")
+}

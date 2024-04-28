@@ -17,3 +17,7 @@ limitations under the License.
 */
 
 package test
+-e 
+func helloWorld() {
+    println("hello world")
+}

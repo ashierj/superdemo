@@ -343,3 +343,7 @@ konnectivity_network_proxy_client_client_connections{status="dialing"} 1
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -284,3 +284,7 @@ func createPodAndVerifyContentGid(ctx context.Context, f *framework.Framework, p
 	storageutils.VerifyFilePathGidInPod(f, subDirFilePath, expectedSubDirFileOwnership, pod)
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

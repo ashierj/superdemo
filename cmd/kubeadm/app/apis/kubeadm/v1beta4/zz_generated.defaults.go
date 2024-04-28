@@ -95,3 +95,7 @@ func SetObjectDefaults_UpgradeConfiguration(in *UpgradeConfiguration) {
 		SetDefaults_Timeouts(in.Timeouts)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

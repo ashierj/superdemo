@@ -60,3 +60,7 @@ func TestEditor(t *testing.T) {
 		t.Errorf("path not expected: %s", path)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

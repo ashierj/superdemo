@@ -156,3 +156,7 @@ func isNotMounted(mounter mount.Interface, deviceMountPath string) (bool, error)
 	}
 	return notmnt, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

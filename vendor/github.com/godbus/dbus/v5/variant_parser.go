@@ -815,3 +815,7 @@ func varInfer(n varNode) (Signature, error) {
 	}
 	return n.Infer()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

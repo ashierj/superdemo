@@ -228,3 +228,7 @@ func ipsToStrings(ips []net.IP) []string {
 	}
 	return ss
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

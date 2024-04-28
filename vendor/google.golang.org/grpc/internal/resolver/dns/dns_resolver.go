@@ -468,3 +468,7 @@ func canaryingSC(js string) string {
 	}
 	return sc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

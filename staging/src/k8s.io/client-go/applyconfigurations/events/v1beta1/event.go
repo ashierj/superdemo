@@ -365,3 +365,7 @@ func (b *EventApplyConfiguration) WithDeprecatedCount(value int32) *EventApplyCo
 	b.DeprecatedCount = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

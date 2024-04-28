@@ -216,3 +216,7 @@ func (daemonSetStatusStrategy) ValidateUpdate(ctx context.Context, obj, old runt
 func (daemonSetStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

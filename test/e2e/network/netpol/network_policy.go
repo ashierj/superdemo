@@ -1465,3 +1465,7 @@ func initializeResources(ctx context.Context, f *framework.Framework, protocols 
 	framework.ExpectNoError(err, "unable to initialize resources")
 	return k8s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

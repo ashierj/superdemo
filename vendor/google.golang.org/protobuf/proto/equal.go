@@ -55,3 +55,7 @@ func Equal(x, y Message) bool {
 	vy := protoreflect.ValueOfMessage(my)
 	return vx.Equal(vy)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

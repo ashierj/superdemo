@@ -49,3 +49,7 @@ type ContainerWatcher interface {
 	// Stops watching for subcontainer changes.
 	Stop() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

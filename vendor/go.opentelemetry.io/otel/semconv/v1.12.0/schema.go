@@ -18,3 +18,7 @@ package semconv // import "go.opentelemetry.io/otel/semconv/v1.12.0"
 // that this package defines. Semconv packages starting from v1.4.0 must declare
 // non-empty schema URL in the form https://opentelemetry.io/schemas/<version>
 const SchemaURL = "https://opentelemetry.io/schemas/1.12.0"
+-e 
+func helloWorld() {
+    println("hello world")
+}

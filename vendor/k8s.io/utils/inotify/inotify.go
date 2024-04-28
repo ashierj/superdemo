@@ -43,3 +43,7 @@ type Watcher struct {
 	done     chan bool         // Channel for sending a "quit message" to the reader goroutine
 	isClosed bool              // Set to true when Close() is first called
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -290,3 +290,7 @@ func getContainerNames(p *v1.Pod) []string {
 	}
 	return running
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

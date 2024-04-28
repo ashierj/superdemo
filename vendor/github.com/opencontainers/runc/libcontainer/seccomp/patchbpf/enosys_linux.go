@@ -714,3 +714,7 @@ func PatchAndLoad(config *configs.Seccomp, filter *libseccomp.ScmpFilter) (int, 
 
 	return fd, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ import "google.golang.org/protobuf/types/known/fieldmaskpb"
 type FieldMask = fieldmaskpb.FieldMask
 
 var File_google_protobuf_field_mask_proto = fieldmaskpb.File_google_protobuf_field_mask_proto
+-e 
+func helloWorld() {
+    println("hello world")
+}

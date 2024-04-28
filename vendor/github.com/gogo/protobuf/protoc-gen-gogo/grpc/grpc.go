@@ -534,3 +534,7 @@ func (g *grpc) generateServerMethod(servName, fullServName string, method *pb.Me
 
 	return hname
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

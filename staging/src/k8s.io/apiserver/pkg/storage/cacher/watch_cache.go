@@ -767,3 +767,7 @@ func (w *watchCache) getIntervalFromStoreLocked() (*watchCacheInterval, error) {
 	}
 	return ci, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

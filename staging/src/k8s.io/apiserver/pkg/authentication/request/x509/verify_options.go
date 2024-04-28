@@ -69,3 +69,7 @@ type StaticStringSlice []string
 func (s StaticStringSlice) Value() []string {
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

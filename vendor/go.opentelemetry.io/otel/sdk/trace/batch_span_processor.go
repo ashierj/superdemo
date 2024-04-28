@@ -418,3 +418,7 @@ func (bsp *batchSpanProcessor) MarshalLog() interface{} {
 		Config:       bsp.o,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

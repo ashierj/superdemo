@@ -46,3 +46,7 @@ type ErrWebhookRejection struct {
 func (e *ErrWebhookRejection) Error() string {
 	return e.Status.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

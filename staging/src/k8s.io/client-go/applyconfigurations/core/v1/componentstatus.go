@@ -250,3 +250,7 @@ func (b *ComponentStatusApplyConfiguration) WithConditions(values ...*ComponentC
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

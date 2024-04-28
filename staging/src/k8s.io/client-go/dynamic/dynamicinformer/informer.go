@@ -186,3 +186,7 @@ func (d *dynamicInformer) Informer() cache.SharedIndexInformer {
 func (d *dynamicInformer) Lister() cache.GenericLister {
 	return dynamiclister.NewRuntimeObjectShim(dynamiclister.New(d.informer.GetIndexer(), d.gvr))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

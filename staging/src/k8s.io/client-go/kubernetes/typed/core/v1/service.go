@@ -237,3 +237,7 @@ func (c *services) ApplyStatus(ctx context.Context, service *corev1.ServiceApply
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

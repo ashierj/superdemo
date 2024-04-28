@@ -33,3 +33,7 @@ type DeploymentExpansion interface {
 func (c *deployments) Rollback(ctx context.Context, deploymentRollback *v1beta1.DeploymentRollback, opts metav1.CreateOptions) error {
 	return c.client.Post().Namespace(c.ns).Resource("deployments").Name(deploymentRollback.Name).VersionedParams(&opts, scheme.ParameterCodec).SubResource("rollback").Body(deploymentRollback).Do(ctx).Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

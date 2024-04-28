@@ -1735,3 +1735,7 @@ var signalList = [...]struct {
 	{33, "SIGCKPT", "checkPoint"},
 	{34, "SIGCKPTEXIT", "checkPointExit"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -252,3 +252,7 @@ func normalizeToIntString(n numberParts) (string, bool) {
 	}
 	return string(num), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

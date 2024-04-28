@@ -102,3 +102,7 @@ func LoadExecCredential(data []byte) (runtime.Object, *rest.Config, error) {
 
 	return obj, restConfig, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -97,3 +97,7 @@ func getEraseParam(params []string) int {
 
 	return param
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

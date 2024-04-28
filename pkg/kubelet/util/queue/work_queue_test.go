@@ -81,3 +81,7 @@ func TestNewBasicWorkQueue(t *testing.T) {
 		assert.Equal(t, test.expectedWorkQueue, workQueue)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

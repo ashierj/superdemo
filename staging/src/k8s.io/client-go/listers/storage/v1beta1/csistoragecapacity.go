@@ -68,3 +68,7 @@ type CSIStorageCapacityNamespaceLister interface {
 type cSIStorageCapacityNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.CSIStorageCapacity]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

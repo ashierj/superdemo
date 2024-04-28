@@ -319,3 +319,7 @@ func contain(slice []rbacv1.Subject, item rbacv1.Subject) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

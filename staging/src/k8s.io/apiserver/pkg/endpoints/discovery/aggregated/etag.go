@@ -83,3 +83,7 @@ func calculateETag(resources interface{}) (string, error) {
 
 	return fmt.Sprintf("%X", sha512.Sum512(serialized)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

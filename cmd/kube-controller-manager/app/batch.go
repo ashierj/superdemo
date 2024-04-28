@@ -71,3 +71,7 @@ func startCronJobController(ctx context.Context, controllerContext ControllerCon
 	go cj2c.Run(ctx, int(controllerContext.ComponentConfig.CronJobController.ConcurrentCronJobSyncs))
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

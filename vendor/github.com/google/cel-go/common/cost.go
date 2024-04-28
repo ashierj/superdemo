@@ -38,3 +38,7 @@ const (
 	// applying the regex to a string of unit cost.
 	RegexStringLengthCostFactor = 0.25
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

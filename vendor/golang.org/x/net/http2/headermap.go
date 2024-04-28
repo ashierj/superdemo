@@ -103,3 +103,7 @@ func canonicalHeader(v string) string {
 	}
 	return http.CanonicalHeaderKey(v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

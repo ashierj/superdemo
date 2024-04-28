@@ -202,3 +202,7 @@ func StoreXAdd(dst, src Register, size Size) Instruction {
 		Src:    src,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

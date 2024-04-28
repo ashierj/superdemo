@@ -14,3 +14,7 @@ type Version struct {
 
 	Minor int32 `json:"Minor,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

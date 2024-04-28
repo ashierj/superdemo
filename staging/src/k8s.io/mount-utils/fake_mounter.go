@@ -240,3 +240,7 @@ func (f *FakeMounter) GetMountRefs(pathname string) ([]string, error) {
 	}
 	return getMountRefsByDev(f, realpath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

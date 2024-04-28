@@ -203,3 +203,7 @@ func (p *protobufPackage) OutputPath() string {
 var (
 	_ = generator.Target(&protobufPackage{})
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

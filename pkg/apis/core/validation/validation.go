@@ -8121,3 +8121,7 @@ func validateNodeSelectorTermHasOnlyAdditions(newTerm, oldTerm core.NodeSelector
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -25,3 +25,7 @@ func init() {
 		return NullProvider{}, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

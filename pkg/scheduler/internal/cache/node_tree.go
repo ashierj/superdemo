@@ -141,3 +141,7 @@ func (nt *nodeTree) list() ([]string, error) {
 	}
 	return nodesList, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

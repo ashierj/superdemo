@@ -50,3 +50,7 @@ func (b *RollingUpdateDeploymentApplyConfiguration) WithMaxSurge(value intstr.In
 	b.MaxSurge = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

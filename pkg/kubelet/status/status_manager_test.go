@@ -2078,3 +2078,7 @@ func getPodStatus() v1.PodStatus {
 		Message: "Message",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

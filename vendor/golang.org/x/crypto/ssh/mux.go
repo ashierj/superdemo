@@ -355,3 +355,7 @@ func (m *mux) handleUnknownChannelPacket(id uint32, packet []byte) error {
 		return fmt.Errorf("ssh: invalid channel %d", id)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

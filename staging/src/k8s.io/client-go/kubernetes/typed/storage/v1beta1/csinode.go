@@ -195,3 +195,7 @@ func (c *cSINodes) Apply(ctx context.Context, cSINode *storagev1beta1.CSINodeApp
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

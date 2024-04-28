@@ -163,3 +163,7 @@ var ignoredKinds = sets.NewString(
 	"NodeProxyOptions",
 	"ServiceProxyOptions",
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -132,3 +132,7 @@ func autoConvert_scheme_ScaleStatus_To_v1beta1_ScaleStatus(in *scheme.ScaleStatu
 	// WARNING: in.Selector requires manual conversion: inconvertible types (*k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector vs map[string]string)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

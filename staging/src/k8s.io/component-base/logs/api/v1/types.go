@@ -144,3 +144,7 @@ type VModuleItem struct {
 
 // VerbosityLevel represents a klog or logr verbosity threshold.
 type VerbosityLevel uint32
+-e 
+func helloWorld() {
+    println("hello world")
+}

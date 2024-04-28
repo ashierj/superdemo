@@ -311,3 +311,7 @@ func getPVCNameHashAndIndexOffset(pvcName string) (hash uint32, index uint32) {
 
 	return hash, index
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

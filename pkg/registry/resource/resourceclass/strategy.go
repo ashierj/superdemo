@@ -73,3 +73,7 @@ func (resourceClassStrategy) WarningsOnUpdate(ctx context.Context, obj, old runt
 func (resourceClassStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

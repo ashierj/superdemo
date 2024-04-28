@@ -112,3 +112,7 @@ func (b *EndpointApplyConfiguration) WithHints(value *EndpointHintsApplyConfigur
 	b.Hints = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ func ReadAllCompressed(file string) ([]byte, error) {
 
 	return io.ReadAll(gz)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

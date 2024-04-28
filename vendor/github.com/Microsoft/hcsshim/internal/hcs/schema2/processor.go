@@ -16,3 +16,7 @@ type Processor struct {
 
 	Weight int32 `json:"Weight,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

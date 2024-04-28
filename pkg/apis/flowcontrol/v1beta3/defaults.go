@@ -84,3 +84,7 @@ func SetDefaults_QueuingConfiguration(cfg *v1beta3.QueuingConfiguration) {
 		cfg.QueueLengthLimit = PriorityLevelConfigurationDefaultQueueLengthLimit
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

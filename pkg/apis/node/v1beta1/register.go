@@ -37,3 +37,7 @@ var (
 	// AddToScheme node API registration
 	AddToScheme = localSchemeBuilder.AddToScheme
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

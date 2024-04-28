@@ -156,3 +156,7 @@ func (c *cpusetController) copyIfNeeded(current, parent string) error {
 func isEmpty(b []byte) bool {
 	return len(bytes.Trim(b, "\n")) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -407,3 +407,7 @@ func unmarshalResp(r *http.Response, body []byte, v interface{}) error {
 	}
 	return fmt.Errorf("expected Content-Type = application/json, got %q: %v", ct, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

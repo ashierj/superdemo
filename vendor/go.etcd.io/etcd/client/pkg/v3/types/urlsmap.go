@@ -105,3 +105,7 @@ func parse(s string) map[string][]string {
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

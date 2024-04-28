@@ -450,3 +450,7 @@ func assertReplicasOwnership(t *testing.T, obj *unstructured.Unstructured, field
 		t.Fatalf("replicas fields should be owned by %v", missingManagers)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

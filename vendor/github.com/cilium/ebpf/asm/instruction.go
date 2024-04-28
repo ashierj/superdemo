@@ -857,3 +857,7 @@ func newBPFRegisters(dst, src Register, bo binary.ByteOrder) (bpfRegisters, erro
 func IsUnreferencedSymbol(err error) bool {
 	return errors.Is(err, ErrUnreferencedSymbol)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

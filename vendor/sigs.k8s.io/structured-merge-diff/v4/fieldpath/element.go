@@ -315,3 +315,7 @@ func (s *PathElementSet) Iterate(f func(PathElement)) {
 		f(pe)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

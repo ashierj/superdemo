@@ -85,3 +85,7 @@ func (us URLs) StringSlice() []string {
 
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

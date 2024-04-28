@@ -432,3 +432,7 @@ func RunDeleteTokens(out io.Writer, client clientset.Interface, tokenIDsOrTokens
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

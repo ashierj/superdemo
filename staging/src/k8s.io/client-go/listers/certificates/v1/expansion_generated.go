@@ -21,3 +21,7 @@ package v1
 // CertificateSigningRequestListerExpansion allows custom methods to be added to
 // CertificateSigningRequestLister.
 type CertificateSigningRequestListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

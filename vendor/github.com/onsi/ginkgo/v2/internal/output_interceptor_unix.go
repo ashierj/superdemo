@@ -71,3 +71,7 @@ func (impl *dupSyscallOutputInterceptorImpl) ShutdownClones(stdoutClone *os.File
 	stdoutClone.Close()
 	stderrClone.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

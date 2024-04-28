@@ -79,3 +79,7 @@ func (f *FakeRuntimeHelper) PrepareDynamicResources(pod *v1.Pod) error {
 func (f *FakeRuntimeHelper) UnprepareDynamicResources(pod *v1.Pod) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

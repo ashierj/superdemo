@@ -103,3 +103,7 @@ func (p *PatchJson6902TransformerPlugin) Transform(m resmap.ResMap) error {
 func NewPatchJson6902TransformerPlugin() resmap.TransformerPlugin {
 	return &PatchJson6902TransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

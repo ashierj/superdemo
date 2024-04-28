@@ -44,3 +44,7 @@ func SetObjectDefaults_Ttest(in *Ttest) {
 		SetObjectDefaults_Tpointer(in.Tp)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

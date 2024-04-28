@@ -55,3 +55,7 @@ func (b *ResourceHandleApplyConfiguration) WithStructuredData(value *StructuredR
 	b.StructuredData = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -160,3 +160,7 @@ func NewTestFieldManagerImpl(typeConverter managedfields.TypeConverter, gvk sche
 		liveObj:      live.DeepCopyObject(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

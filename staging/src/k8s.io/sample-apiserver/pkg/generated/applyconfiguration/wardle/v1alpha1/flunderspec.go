@@ -50,3 +50,7 @@ func (b *FlunderSpecApplyConfiguration) WithReferenceType(value v1alpha1.Referen
 	b.ReferenceType = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

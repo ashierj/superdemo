@@ -38,3 +38,7 @@ func (c *FakeAutoscalingV2) RESTClient() rest.Interface {
 	var ret *rest.RESTClient
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

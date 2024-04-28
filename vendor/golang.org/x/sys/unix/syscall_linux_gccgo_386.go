@@ -28,3 +28,7 @@ func rawsocketcall(call int, a0, a1, a2, a3, a4, a5 uintptr) (int, syscall.Errno
 	fd, _, err := RawSyscall(SYS_SOCKETCALL, uintptr(call), uintptr(unsafe.Pointer(&a0)), 0)
 	return int(fd), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

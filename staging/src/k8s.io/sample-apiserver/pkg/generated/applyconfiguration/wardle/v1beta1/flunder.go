@@ -218,3 +218,7 @@ func (b *FlunderApplyConfiguration) WithStatus(value wardlev1beta1.FlunderStatus
 	b.Status = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

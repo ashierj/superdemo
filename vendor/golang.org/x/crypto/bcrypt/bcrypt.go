@@ -302,3 +302,7 @@ func checkCost(cost int) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

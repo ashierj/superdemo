@@ -1069,3 +1069,7 @@ func getOpenAPISpecFromFile() (*spec.Swagger, error) {
 
 	return staticSpec, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

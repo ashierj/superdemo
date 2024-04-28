@@ -284,3 +284,7 @@ func TestRolloutStatusEmptyList(t *testing.T) {
 		t.Errorf("expected output: %s, but got: %s", expectedMsg, err.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

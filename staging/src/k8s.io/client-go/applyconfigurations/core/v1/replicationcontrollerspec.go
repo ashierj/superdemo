@@ -70,3 +70,7 @@ func (b *ReplicationControllerSpecApplyConfiguration) WithTemplate(value *PodTem
 	b.Template = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

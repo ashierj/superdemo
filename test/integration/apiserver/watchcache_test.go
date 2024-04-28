@@ -228,3 +228,7 @@ func BenchmarkListFromWatchCache(b *testing.B) {
 		b.Logf("Number of secrets: %d", len(secrets.Items))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

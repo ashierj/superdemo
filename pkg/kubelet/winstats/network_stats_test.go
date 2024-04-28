@@ -174,3 +174,7 @@ func TestNetworkGetDataFailures(t *testing.T) {
 		t.Fatalf("expected error message `%s` but got `%v`", expectedMsg, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

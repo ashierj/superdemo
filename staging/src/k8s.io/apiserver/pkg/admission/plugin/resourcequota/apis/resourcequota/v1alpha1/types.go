@@ -67,3 +67,7 @@ type LimitedResource struct {
 	// +optional
 	MatchScopes []v1.ScopedResourceSelectorRequirement `json:"matchScopes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

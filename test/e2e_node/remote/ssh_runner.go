@@ -73,3 +73,7 @@ func (s *SSHRunner) Validate() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (tw testingWriter) Write(data []byte) (int, error) {
 }
 
 var _ io.Writer = testingWriter{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

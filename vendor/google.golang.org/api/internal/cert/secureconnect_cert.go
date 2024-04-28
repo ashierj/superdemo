@@ -120,3 +120,7 @@ func isCertificateExpired(cert *tls.Certificate) bool {
 	}
 	return time.Now().After(parsed.NotAfter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

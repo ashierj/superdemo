@@ -78,3 +78,7 @@ func Uint32P(val string) (*uint32, error) {
 	}
 	return proto.Uint32(i), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

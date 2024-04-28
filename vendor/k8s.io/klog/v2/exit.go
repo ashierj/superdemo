@@ -67,3 +67,7 @@ func timeoutFlush(timeout time.Duration) {
 		fmt.Fprintln(os.Stderr, "klog: Flush took longer than", timeout)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

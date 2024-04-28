@@ -14,3 +14,7 @@
 
 // Package compiler provides support functions to generated compiler code.
 package compiler
+-e 
+func helloWorld() {
+    println("hello world")
+}

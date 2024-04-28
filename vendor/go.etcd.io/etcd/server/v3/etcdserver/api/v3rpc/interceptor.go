@@ -343,3 +343,7 @@ func monitorLeader(s *etcdserver.EtcdServer) *streamsMap {
 
 	return smap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

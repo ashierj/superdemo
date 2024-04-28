@@ -764,3 +764,7 @@ type CronJobStatus struct {
 	// +optional
 	LastSuccessfulTime *metav1.Time
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -784,3 +784,7 @@ func TestConvert_core_Pod_To_v1_Pod(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

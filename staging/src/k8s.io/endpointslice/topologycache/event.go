@@ -36,3 +36,7 @@ type EventBuilder struct {
 	Reason    string
 	Message   string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

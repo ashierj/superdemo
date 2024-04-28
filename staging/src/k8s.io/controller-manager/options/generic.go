@@ -138,3 +138,7 @@ func (o *GenericControllerManagerConfigurationOptions) Validate(allControllers [
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

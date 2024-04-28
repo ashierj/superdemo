@@ -2028,3 +2028,7 @@ func (ctrl *PersistentVolumeController) getProvisionerName(plugin vol.Provisiona
 	}
 	return storageClass.Provisioner
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

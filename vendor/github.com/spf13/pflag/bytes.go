@@ -207,3 +207,7 @@ func BytesBase64(name string, value []byte, usage string) *[]byte {
 func BytesBase64P(name, shorthand string, value []byte, usage string) *[]byte {
 	return CommandLine.BytesBase64P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -140,3 +140,7 @@ func TreesDescendants(t ParseTree) []ParseTree {
 	}
 	return nodes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

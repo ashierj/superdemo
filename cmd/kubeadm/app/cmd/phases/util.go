@@ -31,3 +31,7 @@ func SetKubernetesVersion(cfg *kubeadmapiv1.ClusterConfiguration) {
 	}
 	cfg.KubernetesVersion = version.Get().String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

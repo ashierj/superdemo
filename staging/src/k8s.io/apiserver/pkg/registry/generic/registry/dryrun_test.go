@@ -307,3 +307,7 @@ func TestDryRunDeletePreconditions(t *testing.T) {
 		t.Fatalf("Failed to delete with valid precondition: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

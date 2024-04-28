@@ -259,3 +259,7 @@ func TestDeepCopyOfRuntimeObject(t *testing.T) {
 		t.Errorf("expected \n%v\n, got \n%v", string(originalData), string(copiedData))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

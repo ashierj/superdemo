@@ -102,3 +102,7 @@ type schemaResponse struct {
 const refPrefix = "#/components/schemas/"
 
 const extGVK = "x-kubernetes-group-version-kind"
+-e 
+func helloWorld() {
+    println("hello world")
+}

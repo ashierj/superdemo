@@ -247,3 +247,7 @@ func (b *NetworkPolicyApplyConfiguration) WithSpec(value *NetworkPolicySpecApply
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -319,3 +319,7 @@ func (s *Structural) XValidations() []common.ValidationRule {
 func (s *Structural) WithTypeAndObjectMeta() common.Schema {
 	return &Structural{Structural: WithTypeAndObjectMeta(s.Structural)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

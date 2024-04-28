@@ -100,3 +100,7 @@ func buildLastApplied(obj runtime.Object) (string, error) {
 	}
 	return string(lastApplied), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

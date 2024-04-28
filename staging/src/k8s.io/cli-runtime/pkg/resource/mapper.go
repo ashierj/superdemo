@@ -164,3 +164,7 @@ func preferredObjectKind(possibilities []schema.GroupVersionKind, preferences []
 	// Just pick the first
 	return possibilities[0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -250,3 +250,7 @@ func newTokenProviderSimple(lg *zap.Logger, indexWaiter func(uint64) <-chan stru
 		simpleTokenTTL: TokenTTL,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

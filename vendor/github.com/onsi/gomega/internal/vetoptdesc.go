@@ -20,3 +20,7 @@ func vetOptionalDescription(assertion string, optionalDescription ...interface{}
 			assertion))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

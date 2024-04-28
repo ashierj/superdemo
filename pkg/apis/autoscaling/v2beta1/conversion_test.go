@@ -82,3 +82,7 @@ func TestNilOrEmptyConversion(t *testing.T) {
 		assert.NoError(t, scheme.Convert(testCase.obj2, testCase.obj1, nil))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

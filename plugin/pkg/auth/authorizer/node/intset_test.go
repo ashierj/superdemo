@@ -63,3 +63,7 @@ func TestIntSet(t *testing.T) {
 	assert.False(t, i.has(3))
 	assert.False(t, i.has(4))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

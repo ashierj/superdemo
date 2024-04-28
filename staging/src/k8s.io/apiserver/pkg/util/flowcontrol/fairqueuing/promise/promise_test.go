@@ -117,3 +117,7 @@ func expectGotValue(t *testing.T, gots <-chan interface{}, expected interface{})
 		t.Error("Get did not return")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

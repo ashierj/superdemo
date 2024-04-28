@@ -34,3 +34,7 @@ func RecommendedDefaultDeploymentControllerConfiguration(obj *kubectrlmgrconfigv
 		obj.ConcurrentDeploymentSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

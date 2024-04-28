@@ -173,3 +173,7 @@ func requiresApplyConfiguration(t *types.Type) bool {
 	}
 	return hasJSONTaggedMembers
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -754,3 +754,7 @@ func (i *IDGenerator) Reset() {
 func (i *IDGenerator) genID() int64 {
 	return atomic.AddInt64(&i.id, 1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

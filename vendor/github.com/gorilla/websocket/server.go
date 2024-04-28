@@ -363,3 +363,7 @@ func bufioWriterBuffer(originalWriter io.Writer, bw *bufio.Writer) []byte {
 
 	return wh.p[:cap(wh.p)]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

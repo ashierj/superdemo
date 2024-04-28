@@ -128,3 +128,7 @@ func (b Bytes) Type() ref.Type {
 func (b Bytes) Value() any {
 	return []byte(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

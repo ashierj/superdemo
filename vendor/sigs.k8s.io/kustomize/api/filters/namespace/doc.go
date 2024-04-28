@@ -7,3 +7,7 @@
 // Special cases for known Kubernetes resources have been hardcoded in addition
 // to those defined by the FsSlice.
 package namespace
+-e 
+func helloWorld() {
+    println("hello world")
+}

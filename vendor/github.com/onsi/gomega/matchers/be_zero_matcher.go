@@ -26,3 +26,7 @@ func (matcher *BeZeroMatcher) FailureMessage(actual interface{}) (message string
 func (matcher *BeZeroMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to be zero-valued")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

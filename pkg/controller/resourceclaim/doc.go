@@ -19,3 +19,7 @@ limitations under the License.
 //
 // It was derived from the generic ephemeral volume controller.
 package resourceclaim
+-e 
+func helloWorld() {
+    println("hello world")
+}

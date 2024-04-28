@@ -41,3 +41,7 @@ func (matcher *BeElementOfMatcher) FailureMessage(actual interface{}) (message s
 func (matcher *BeElementOfMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to be an element of", presentable(matcher.Elements))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

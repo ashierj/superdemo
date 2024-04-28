@@ -143,3 +143,7 @@ type SelfSubjectReviewStatus struct {
 	// +optional
 	UserInfo v1.UserInfo `json:"userInfo,omitempty" protobuf:"bytes,1,opt,name=userInfo"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

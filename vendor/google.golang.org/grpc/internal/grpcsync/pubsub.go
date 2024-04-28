@@ -119,3 +119,7 @@ func (ps *PubSub) Publish(msg any) {
 func (ps *PubSub) Done() <-chan struct{} {
 	return ps.cs.Done()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

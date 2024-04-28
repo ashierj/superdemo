@@ -236,3 +236,7 @@ func (f *fakePluginPathVerifier) Verify(path string) []error {
 func newFakePluginPathVerifier() *fakePluginPathVerifier {
 	return &fakePluginPathVerifier{seen: make(map[string]bool)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

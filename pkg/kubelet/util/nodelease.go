@@ -53,3 +53,7 @@ func SetNodeOwnerFunc(c clientset.Interface, nodeName string) func(lease *coordi
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

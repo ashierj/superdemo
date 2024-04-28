@@ -184,3 +184,7 @@ func (cmd *setReportingPeriodReq) handleCommand(w *worker) {
 	}
 	cmd.c <- true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ func (ls Set) Get(field string) string {
 func (ls Set) AsSelector() Selector {
 	return SelectorFromSet(ls)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

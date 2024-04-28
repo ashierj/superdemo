@@ -89,3 +89,7 @@ func TestSparse(t *testing.T) {
 		t.Fatal(cmp.Diff(srcObj2, uncastDstObj2))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

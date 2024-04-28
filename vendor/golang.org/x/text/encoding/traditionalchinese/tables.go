@@ -37140,3 +37140,7 @@ const encode7Low, encode7High = 175615, 175616
 var encode7 = [...]uint16{
 	175615 - 175615: 0x87DC,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

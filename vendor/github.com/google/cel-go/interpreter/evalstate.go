@@ -77,3 +77,7 @@ func (s *evalState) SetValue(exprID int64, val ref.Val) {
 func (s *evalState) Reset() {
 	s.values = map[int64]ref.Val{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

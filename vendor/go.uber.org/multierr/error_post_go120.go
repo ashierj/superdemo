@@ -46,3 +46,7 @@ func extractErrors(err error) []error {
 
 	return append(([]error)(nil), eg.Unwrap()...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

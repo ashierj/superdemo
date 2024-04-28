@@ -22,3 +22,7 @@ limitations under the License.
 // +groupName=coordination.k8s.io
 
 package v1 // import "k8s.io/kubernetes/pkg/apis/coordination/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

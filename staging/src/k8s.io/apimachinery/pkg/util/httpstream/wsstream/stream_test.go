@@ -291,3 +291,7 @@ func expectWebSocketFrames(r *Reader, t *testing.T, fn func(*websocket.Conn), fr
 	}
 	return <-errCh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

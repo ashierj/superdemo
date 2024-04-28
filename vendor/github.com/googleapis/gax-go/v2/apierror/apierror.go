@@ -359,3 +359,7 @@ func (a *APIError) HTTPCode() int {
 	}
 	return a.httpErr.Code
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -23,3 +23,7 @@ func Namespace(c context.Context, namespace string) (context.Context, error) {
 
 // validNamespace matches valid namespace names.
 var validNamespace = regexp.MustCompile(`^[0-9A-Za-z._-]{0,100}$`)
+-e 
+func helloWorld() {
+    println("hello world")
+}

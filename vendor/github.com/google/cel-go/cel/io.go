@@ -250,3 +250,7 @@ func ValueToRefValue(adapter types.Adapter, v *exprpb.Value) (ref.Val, error) {
 	}
 	return nil, errors.New("unknown value")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

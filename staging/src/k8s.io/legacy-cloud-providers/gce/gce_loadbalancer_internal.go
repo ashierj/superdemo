@@ -1016,3 +1016,7 @@ func forwardingRulesEqual(old, new *compute.ForwardingRule) bool {
 		old.AllowGlobalAccess == new.AllowGlobalAccess &&
 		old.Subnetwork == new.Subnetwork
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

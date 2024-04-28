@@ -34,3 +34,7 @@ func RecommendedDefaultReplicaSetControllerConfiguration(obj *kubectrlmgrconfigv
 		obj.ConcurrentRSSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

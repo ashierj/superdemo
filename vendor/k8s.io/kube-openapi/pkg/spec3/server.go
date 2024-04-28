@@ -159,3 +159,7 @@ func (s *ServerVariable) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *js
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

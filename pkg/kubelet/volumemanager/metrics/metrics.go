@@ -149,3 +149,7 @@ func (c *totalVolumesCollector) getVolumeCount() volumeCount {
 	}
 	return counter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

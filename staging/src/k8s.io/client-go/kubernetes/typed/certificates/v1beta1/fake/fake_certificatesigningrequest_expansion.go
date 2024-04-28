@@ -32,3 +32,7 @@ func (c *FakeCertificateSigningRequests) UpdateApproval(ctx context.Context, cer
 	}
 	return obj.(*certificates.CertificateSigningRequest), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

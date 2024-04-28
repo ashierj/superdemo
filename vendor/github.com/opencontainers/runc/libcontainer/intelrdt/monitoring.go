@@ -81,3 +81,7 @@ func getMonitoringStats(containerPath string, stats *Stats) error {
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

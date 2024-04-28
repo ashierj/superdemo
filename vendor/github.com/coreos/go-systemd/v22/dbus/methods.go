@@ -862,3 +862,7 @@ func (c *Conn) FreezeUnit(ctx context.Context, unit string) error {
 func (c *Conn) ThawUnit(ctx context.Context, unit string) error {
 	return c.sysobj.CallWithContext(ctx, "org.freedesktop.systemd1.Manager.ThawUnit", 0, unit).Store()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

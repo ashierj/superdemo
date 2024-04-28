@@ -63,3 +63,7 @@ func (c *Config) Complete() *CompletedConfig {
 
 	return &CompletedConfig{&cc}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func (realExec) Run(cmd *exec.Cmd) (string, error) {
 	}
 	return string(out), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

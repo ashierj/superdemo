@@ -46,3 +46,7 @@ func (b *ServiceAccountSubjectApplyConfiguration) WithName(value string) *Servic
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

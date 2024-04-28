@@ -80,3 +80,7 @@ func WithPublicEndpointFn(fn func(*http.Request) bool) Option {
 		c.PublicEndpointFn = fn
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

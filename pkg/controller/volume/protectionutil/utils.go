@@ -32,3 +32,7 @@ func NeedToAddFinalizer(obj metav1.Object, finalizer string) bool {
 	return obj.GetDeletionTimestamp() == nil && !slice.ContainsString(obj.GetFinalizers(),
 		finalizer, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

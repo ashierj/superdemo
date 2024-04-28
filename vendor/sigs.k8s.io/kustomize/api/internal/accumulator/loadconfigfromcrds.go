@@ -196,3 +196,7 @@ func makeFs(in resid.Gvk, path []string) types.FieldSpec {
 		Path:               strings.Join(path, "/"),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

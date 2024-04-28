@@ -40,3 +40,7 @@ func TestNotDir(t *testing.T) {
 		t.Fatal("expected an error")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func splitName(path string) (slice string, unit string) {
 	slice, unit = filepath.Split(path)
 	return strings.TrimSuffix(slice, "/"), unit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (f *certificateSigningRequestInformer) Informer() cache.SharedIndexInformer
 func (f *certificateSigningRequestInformer) Lister() v1.CertificateSigningRequestLister {
 	return v1.NewCertificateSigningRequestLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -95,3 +95,7 @@ func (test deleteClusterTest) run(t *testing.T) {
 		t.Errorf("expected clusters %v, but found %v in kubeconfig", test.expectedClusters, clusters)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

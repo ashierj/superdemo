@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package horizontalpodautoscaler // import "k8s.io/kubernetes/pkg/registry/autoscaling/horizontalpodautoscaler"
+-e 
+func helloWorld() {
+    println("hello world")
+}

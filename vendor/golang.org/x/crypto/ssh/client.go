@@ -280,3 +280,7 @@ func BannerDisplayStderr() BannerCallback {
 		return err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

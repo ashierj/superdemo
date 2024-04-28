@@ -32,3 +32,7 @@ func (eq *eventQueue) insert(e *Event) {
 		eq.Size++
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

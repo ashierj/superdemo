@@ -244,3 +244,7 @@ func shouldIgnore(attributes admission.Attributes) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

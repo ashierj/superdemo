@@ -68,3 +68,7 @@ type ReplicationControllerNamespaceLister interface {
 type replicationControllerNamespaceLister struct {
 	listers.ResourceIndexer[*v1.ReplicationController]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

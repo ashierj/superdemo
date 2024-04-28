@@ -36,3 +36,7 @@ func (p *LabelTransformerPlugin) Transform(m resmap.ResMap) error {
 func NewLabelTransformerPlugin() resmap.TransformerPlugin {
 	return &LabelTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -924,3 +924,7 @@ func unrollInterfaceSlice(args interface{}) []interface{} {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

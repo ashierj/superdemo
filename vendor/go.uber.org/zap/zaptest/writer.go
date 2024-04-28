@@ -42,3 +42,7 @@ type (
 	// on newlines.
 	Buffer = ztest.Buffer
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

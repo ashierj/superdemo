@@ -143,3 +143,7 @@ func GetKubeletServerBin() string {
 	}
 	return bin
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

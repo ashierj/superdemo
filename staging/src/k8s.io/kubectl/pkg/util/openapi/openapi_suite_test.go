@@ -27,3 +27,7 @@ func TestOpenapi(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Openapi Suite")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

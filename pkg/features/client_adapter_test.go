@@ -97,3 +97,7 @@ func TestClientAdapterAdd(t *testing.T) {
 		t.Error("expected panic when adding feature with unknown prerelease")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

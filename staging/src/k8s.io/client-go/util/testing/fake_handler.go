@@ -137,3 +137,7 @@ func (f *FakeHandler) ValidateRequest(t TestInterface, expectedPath, expectedMet
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

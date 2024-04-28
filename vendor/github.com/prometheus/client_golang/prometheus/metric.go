@@ -255,3 +255,7 @@ func MustNewMetricWithExemplars(m Metric, exemplars ...Exemplar) Metric {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func preallocFixed(f *os.File, sizeInBytes int64) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

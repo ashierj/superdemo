@@ -21,3 +21,7 @@ package roundtrip
 
 // in non-race-detection mode, a higher number of iterations is reasonable
 const defaultFuzzIters = 20
+-e 
+func helloWorld() {
+    println("hello world")
+}

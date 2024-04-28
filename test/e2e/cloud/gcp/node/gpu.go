@@ -82,3 +82,7 @@ var _ = SIGDescribe("gpu Upgrade", feature.GPUUpgrade, func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

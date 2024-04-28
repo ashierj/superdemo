@@ -32,3 +32,7 @@ func (p Pointer) IsNil() bool {
 func (p Pointer) Uintptr() uintptr {
 	return uintptr(p.p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

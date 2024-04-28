@@ -1955,3 +1955,7 @@ func TestStdinMultiUseError(t *testing.T) {
 		t.Errorf("got: %q, want: %q", got, want)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

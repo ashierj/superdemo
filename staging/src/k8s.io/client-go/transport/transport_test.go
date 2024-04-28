@@ -556,3 +556,7 @@ func Test_contextCanceller_RoundTrip(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

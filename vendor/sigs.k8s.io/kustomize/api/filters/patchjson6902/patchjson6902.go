@@ -63,3 +63,7 @@ func (pf Filter) run(node *yaml.RNode) (*yaml.RNode, error) {
 	err = node.UnmarshalJSON(res)
 	return node, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

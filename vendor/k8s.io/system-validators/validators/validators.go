@@ -82,3 +82,7 @@ func ValidateSpec(spec SysSpec, containerRuntime string) ([]error, []error) {
 
 	return Validate(spec, validators)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

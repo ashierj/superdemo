@@ -316,3 +316,7 @@ func autoConvert_discovery_ForZone_To_v1beta1_ForZone(in *discovery.ForZone, out
 func Convert_discovery_ForZone_To_v1beta1_ForZone(in *discovery.ForZone, out *v1beta1.ForZone, s conversion.Scope) error {
 	return autoConvert_discovery_ForZone_To_v1beta1_ForZone(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

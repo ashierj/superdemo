@@ -171,3 +171,7 @@ func GetQuotaServiceType(service *corev1.Service) corev1.ServiceType {
 	}
 	return corev1.ServiceType("")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

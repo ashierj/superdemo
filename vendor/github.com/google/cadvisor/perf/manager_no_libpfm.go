@@ -29,3 +29,7 @@ func NewManager(configFile string, topology []info.Node) (stats.Manager, error) 
 	klog.V(1).Info("cAdvisor is build without cgo and/or libpfm support. Perf event counters are not available.")
 	return &stats.NoopManager{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

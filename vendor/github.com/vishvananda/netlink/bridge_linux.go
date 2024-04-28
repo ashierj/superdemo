@@ -110,3 +110,7 @@ func (h *Handle) bridgeVlanModify(cmd int, link Link, vid uint16, pvid, untagged
 	_, err := req.Execute(unix.NETLINK_ROUTE, 0)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

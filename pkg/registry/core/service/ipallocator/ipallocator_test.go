@@ -960,3 +960,7 @@ func BenchmarkIPAllocatorAllocateNextIPv6Size65535(b *testing.B) {
 		r.AllocateNext()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

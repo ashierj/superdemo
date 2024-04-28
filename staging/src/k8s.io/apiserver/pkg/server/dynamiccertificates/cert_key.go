@@ -57,3 +57,7 @@ func (c *sniCertKeyContent) Equal(rhs *sniCertKeyContent) bool {
 
 	return c.certKeyContent.Equal(&rhs.certKeyContent)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

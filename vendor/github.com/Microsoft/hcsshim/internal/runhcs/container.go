@@ -69,3 +69,7 @@ func GetErrorFromPipe(pipe io.Reader, p *os.Process) error {
 func VMPipePath(hostUniqueID guid.GUID) string {
 	return SafePipePath("runhcs-vm-" + hostUniqueID.String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

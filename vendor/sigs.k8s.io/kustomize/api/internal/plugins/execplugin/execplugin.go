@@ -189,3 +189,7 @@ func (p *ExecPlugin) getEnv() []string {
 		"KUSTOMIZE_PLUGIN_CONFIG_ROOT="+p.h.Loader().Root())
 	return env
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

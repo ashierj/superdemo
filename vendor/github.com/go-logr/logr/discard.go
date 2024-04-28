@@ -22,3 +22,7 @@ package logr
 func Discard() Logger {
 	return New(nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -488,3 +488,7 @@ func TestUnknownStateContainerGC(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, remain)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

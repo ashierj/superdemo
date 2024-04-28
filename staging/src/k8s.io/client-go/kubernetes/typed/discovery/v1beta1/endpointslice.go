@@ -206,3 +206,7 @@ func (c *endpointSlices) Apply(ctx context.Context, endpointSlice *discoveryv1be
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

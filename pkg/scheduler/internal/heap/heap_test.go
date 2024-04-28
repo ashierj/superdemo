@@ -293,3 +293,7 @@ func TestHeapWithRecorder(t *testing.T) {
 		t.Errorf("expected count to be 0 but got %d", *metricRecorder)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

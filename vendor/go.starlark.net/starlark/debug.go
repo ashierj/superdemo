@@ -40,3 +40,7 @@ type DebugFrame interface {
 // This function is intended for use in debugging tools.
 // Most applications should have no need for it; use CallFrame instead.
 func (thread *Thread) DebugFrame(depth int) DebugFrame { return thread.frameAt(depth) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

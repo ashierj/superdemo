@@ -456,3 +456,7 @@ func containsValue(values []CompareType, value CompareType) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

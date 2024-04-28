@@ -78,3 +78,7 @@ func TestSetUpAt(tt *testing.T) {
 	mounterArgs.FsGroup = &group
 	m.SetUpAt(rootDir+"/mount-dir", mounterArgs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

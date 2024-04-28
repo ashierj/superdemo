@@ -195,3 +195,7 @@ func (c *FakeResourceClaims) ApplyStatus(ctx context.Context, resourceClaim *res
 	}
 	return obj.(*v1alpha2.ResourceClaim), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

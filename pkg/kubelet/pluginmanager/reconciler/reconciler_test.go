@@ -335,3 +335,7 @@ func Test_Run_Positive_ReRegister(t *testing.T) {
 		t.Fatalf("Test_Run_Positive_RegisterThenUnregister: expected\n%s\nin actual state of world, but got\n%v\n", socketPath, aswPlugins[0])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

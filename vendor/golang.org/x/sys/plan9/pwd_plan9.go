@@ -21,3 +21,7 @@ func Getwd() (wd string, err error) {
 func Chdir(path string) error {
 	return chdir(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

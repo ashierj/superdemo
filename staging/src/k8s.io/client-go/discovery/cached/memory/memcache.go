@@ -330,3 +330,7 @@ func NewMemCacheClient(delegate discovery.DiscoveryInterface) discovery.CachedDi
 		receivedAggregatedDiscovery: false,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

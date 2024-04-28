@@ -286,3 +286,7 @@ func checkPodAge(pod *corev1.Pod) error {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

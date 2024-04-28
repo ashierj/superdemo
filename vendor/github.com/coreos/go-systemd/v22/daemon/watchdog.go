@@ -71,3 +71,7 @@ func SdWatchdogEnabled(unsetEnvironment bool) (time.Duration, error) {
 
 	return interval, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

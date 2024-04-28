@@ -119,3 +119,7 @@ func RdmaSet(path string, r *configs.Resources) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

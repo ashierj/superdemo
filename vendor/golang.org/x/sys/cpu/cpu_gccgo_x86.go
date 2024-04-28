@@ -29,3 +29,7 @@ func xgetbv() (eax, edx uint32) {
 func darwinSupportsAVX512() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

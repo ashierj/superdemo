@@ -255,3 +255,7 @@ func assertListOrDie(expected, actual []*unstructured.Unstructured, t *testing.T
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

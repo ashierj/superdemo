@@ -64,3 +64,7 @@ func (b *SELinuxOptionsApplyConfiguration) WithLevel(value string) *SELinuxOptio
 	b.Level = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

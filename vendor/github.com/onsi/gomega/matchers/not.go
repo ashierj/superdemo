@@ -27,3 +27,7 @@ func (m *NotMatcher) NegatedFailureMessage(actual interface{}) (message string) 
 func (m *NotMatcher) MatchMayChangeInTheFuture(actual interface{}) bool {
 	return types.MatchMayChangeInTheFuture(m.Matcher, actual) // just return m.Matcher's value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

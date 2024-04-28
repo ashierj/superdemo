@@ -25,3 +25,7 @@ type PSAPI_WORKING_SET_INFORMATION struct {
 type PSAPI_WORKING_SET_BLOCK struct {
 	Flags uintptr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

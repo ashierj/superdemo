@@ -253,3 +253,7 @@ func (m *maintenance) MoveLeader(ctx context.Context, transfereeID uint64) (*Mov
 	resp, err := m.remote.MoveLeader(ctx, &pb.MoveLeaderRequest{TargetID: transfereeID}, m.callOpts...)
 	return (*MoveLeaderResponse)(resp), toErr(ctx, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

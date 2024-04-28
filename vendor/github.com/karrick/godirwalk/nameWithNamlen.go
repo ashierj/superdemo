@@ -27,3 +27,7 @@ func nameFromDirent(de *syscall.Dirent) []byte {
 
 	return name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -80,3 +80,7 @@ func GetK8sBuildOutputDir(isDockerizedBuild bool, targetArch string) (string, er
 	}
 	return buildOutputDir, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

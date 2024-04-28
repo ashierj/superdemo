@@ -119,3 +119,7 @@ func TestStreamWatcherRace(t *testing.T) {
 		t.Fatalf("unexpected pending send")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

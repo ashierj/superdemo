@@ -42,3 +42,7 @@ func Bytes(b []byte) string {
 	pool.Put(m)
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

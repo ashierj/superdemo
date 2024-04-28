@@ -64,3 +64,7 @@ func (b *ResourceRequirementsApplyConfiguration) WithClaims(values ...*ResourceC
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

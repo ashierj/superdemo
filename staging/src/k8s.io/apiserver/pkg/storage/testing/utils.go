@@ -357,3 +357,7 @@ func (s sortablePodList) Less(i, j int) bool {
 func (s sortablePodList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

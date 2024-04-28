@@ -88,3 +88,7 @@ func TurnOffNullableForNativeTypesWithoutDefaultsOnly(field *descriptor.FieldDes
 	}
 	SetBoolFieldOption(gogoproto.E_Nullable, false)(field)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

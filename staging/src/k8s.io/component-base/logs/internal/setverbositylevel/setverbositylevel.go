@@ -32,3 +32,7 @@ var (
 
 	Callbacks []func(v uint32) error
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

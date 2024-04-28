@@ -81,3 +81,7 @@ func NewNamePrintFlags(operation string) *NamePrintFlags {
 		Operation: operation,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

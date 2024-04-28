@@ -38,3 +38,7 @@ func (m MapNodeSlice) Values() []*RNode {
 	}
 	return values
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

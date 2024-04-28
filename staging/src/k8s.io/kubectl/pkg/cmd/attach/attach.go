@@ -354,3 +354,7 @@ func (o *AttachOptions) reattachMessage(containerName string, rawTTY bool) strin
 	}
 	return fmt.Sprintf("Session ended, resume using '%s %s -c %s -i -t' command when the pod is running", o.CommandName, o.Pod.Name, containerName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

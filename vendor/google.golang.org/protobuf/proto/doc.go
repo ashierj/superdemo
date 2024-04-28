@@ -84,3 +84,7 @@
 // This module contains additional packages for more specialized use cases.
 // Consult the individual package documentation for details.
 package proto
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func (csiDriverStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.
 func (csiDriverStrategy) AllowUnconditionalUpdate() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

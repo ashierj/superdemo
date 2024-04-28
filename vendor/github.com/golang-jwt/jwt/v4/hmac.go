@@ -93,3 +93,7 @@ func (m *SigningMethodHMAC) Sign(signingString string, key interface{}) (string,
 
 	return "", ErrInvalidKeyType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

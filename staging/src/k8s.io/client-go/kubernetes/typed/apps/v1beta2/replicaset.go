@@ -254,3 +254,7 @@ func (c *replicaSets) ApplyStatus(ctx context.Context, replicaSet *appsv1beta2.R
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

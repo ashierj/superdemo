@@ -317,3 +317,7 @@ func createEmptyKeySecretForTest(ctx context.Context, f *framework.Framework) (*
 	ginkgo.By(fmt.Sprintf("Creating projection with secret that has name %s", secret.Name))
 	return f.ClientSet.CoreV1().Secrets(f.Namespace.Name).Create(ctx, secret, metav1.CreateOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

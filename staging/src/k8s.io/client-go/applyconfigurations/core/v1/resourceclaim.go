@@ -37,3 +37,7 @@ func (b *ResourceClaimApplyConfiguration) WithName(value string) *ResourceClaimA
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

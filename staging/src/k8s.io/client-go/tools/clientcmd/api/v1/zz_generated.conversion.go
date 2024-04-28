@@ -456,3 +456,7 @@ func autoConvert_api_Preferences_To_v1_Preferences(in *api.Preferences, out *Pre
 func Convert_api_Preferences_To_v1_Preferences(in *api.Preferences, out *Preferences, s conversion.Scope) error {
 	return autoConvert_api_Preferences_To_v1_Preferences(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

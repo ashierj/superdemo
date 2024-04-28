@@ -82,3 +82,7 @@ func WriteFormatted(src []byte, out io.Writer) error {
 
 	return nel
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

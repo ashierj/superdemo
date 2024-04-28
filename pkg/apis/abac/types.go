@@ -72,3 +72,7 @@ type PolicySpec struct {
 	// certain podTemplates.
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

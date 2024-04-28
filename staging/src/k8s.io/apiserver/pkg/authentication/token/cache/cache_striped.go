@@ -58,3 +58,7 @@ func fnvHashFunc(key string) uint32 {
 	f.Write([]byte(key))
 	return f.Sum32()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

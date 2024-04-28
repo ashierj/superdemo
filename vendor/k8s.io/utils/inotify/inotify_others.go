@@ -52,3 +52,7 @@ func (w *Watcher) Watch(path string) error {
 func (w *Watcher) RemoveWatch(path string) error {
 	return errNotSupported
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -212,3 +212,7 @@ func unescape(path string) (string, error) {
 
 	return string(buf[:bufLen]), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

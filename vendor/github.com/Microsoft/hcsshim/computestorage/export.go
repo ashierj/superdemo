@@ -44,3 +44,7 @@ func ExportLayer(ctx context.Context, layerPath, exportFolderPath string, layerD
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

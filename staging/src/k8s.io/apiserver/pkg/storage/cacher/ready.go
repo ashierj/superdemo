@@ -155,3 +155,7 @@ func (r *ready) stop() {
 		close(r.waitCh)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

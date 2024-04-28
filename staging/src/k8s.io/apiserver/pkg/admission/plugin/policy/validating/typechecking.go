@@ -484,3 +484,7 @@ func (c *typeCheckingCompiler) CompileCELExpression(expressionAccessor plugincel
 }
 
 var _ plugincel.Compiler = (*typeCheckingCompiler)(nil)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -97,3 +97,7 @@ func (matcher *HaveFieldMatcher) NegatedFailureMessage(actual interface{}) (mess
 
 	return message
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

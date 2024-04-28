@@ -101,3 +101,7 @@ func unmarshalYaml(data string) map[interface{}]interface{} {
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

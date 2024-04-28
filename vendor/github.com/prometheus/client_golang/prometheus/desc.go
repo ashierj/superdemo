@@ -205,3 +205,7 @@ func (d *Desc) String() string {
 		strings.Join(vlStrings, ","),
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

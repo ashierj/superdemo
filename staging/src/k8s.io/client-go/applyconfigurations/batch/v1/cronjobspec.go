@@ -104,3 +104,7 @@ func (b *CronJobSpecApplyConfiguration) WithFailedJobsHistoryLimit(value int32) 
 	b.FailedJobsHistoryLimit = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

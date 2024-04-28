@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package api
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -199,3 +199,7 @@ func TestIsConnectionReset(t *testing.T) {
 		t.Fatalf("expected HTTP2ConnectionLost error, got %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

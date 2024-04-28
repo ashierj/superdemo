@@ -195,3 +195,7 @@ func (c *priorityClasses) Apply(ctx context.Context, priorityClass *schedulingv1
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

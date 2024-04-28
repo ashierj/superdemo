@@ -54,3 +54,7 @@ func (ug unionGauge) SetToCurrentTime() {
 		gauge.SetToCurrentTime()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

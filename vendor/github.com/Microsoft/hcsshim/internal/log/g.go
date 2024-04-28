@@ -21,3 +21,7 @@ func G(ctx context.Context) *logrus.Entry {
 	}
 	return logrus.NewEntry(logrus.StandardLogger())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

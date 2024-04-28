@@ -11,3 +11,7 @@ var (
 	ErrNotRunning = errors.New("container not running")
 	ErrNotPaused  = errors.New("container not paused")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

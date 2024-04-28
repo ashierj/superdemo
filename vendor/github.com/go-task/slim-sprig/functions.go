@@ -315,3 +315,7 @@ var genericMap = map[string]interface{}{
 	"urlParse": urlParse,
 	"urlJoin":  urlJoin,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

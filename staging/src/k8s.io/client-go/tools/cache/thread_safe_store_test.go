@@ -193,3 +193,7 @@ func BenchmarkIndexer(b *testing.B) {
 		store.Update(objects[i%objectCount], objects[i%objectCount])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

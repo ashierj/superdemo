@@ -369,3 +369,7 @@ func validateContext(contextName string, context clientcmdapi.Context, config cl
 
 	return validationErrors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

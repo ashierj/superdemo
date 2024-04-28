@@ -264,3 +264,7 @@ func evalComponentDevices(deviceFields []string) []string {
 
 	return mdComponentDevices
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

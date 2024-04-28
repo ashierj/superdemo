@@ -245,3 +245,7 @@ func unmarshalPerCPUValue(slicePtr interface{}, elemLength int, buf []byte) erro
 	reflect.ValueOf(slicePtr).Elem().Set(slice)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

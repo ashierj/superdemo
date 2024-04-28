@@ -62,3 +62,7 @@ func (s *errWrappingTokenSource) Token() (*oauth2.Token, error) {
 	}
 	return t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

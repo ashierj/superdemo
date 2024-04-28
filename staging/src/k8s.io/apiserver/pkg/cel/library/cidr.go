@@ -285,3 +285,7 @@ func parseCIDR(raw string) (netip.Prefix, error) {
 
 	return net, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

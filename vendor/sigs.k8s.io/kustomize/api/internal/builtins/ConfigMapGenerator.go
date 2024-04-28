@@ -37,3 +37,7 @@ func (p *ConfigMapGeneratorPlugin) Generate() (resmap.ResMap, error) {
 func NewConfigMapGeneratorPlugin() resmap.GeneratorPlugin {
 	return &ConfigMapGeneratorPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

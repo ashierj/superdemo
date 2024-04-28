@@ -69,3 +69,7 @@ func (b *HorizontalPodAutoscalerSpecApplyConfiguration) WithMetrics(values ...*M
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

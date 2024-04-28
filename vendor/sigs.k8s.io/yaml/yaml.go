@@ -378,3 +378,7 @@ func jsonToYAMLValue(j interface{}) interface{} {
 	}
 	return j
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

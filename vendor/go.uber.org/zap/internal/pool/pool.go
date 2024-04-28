@@ -56,3 +56,7 @@ func (p *Pool[T]) Get() T {
 func (p *Pool[T]) Put(x T) {
 	p.pool.Put(x)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

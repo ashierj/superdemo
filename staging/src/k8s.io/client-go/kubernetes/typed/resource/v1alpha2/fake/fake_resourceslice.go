@@ -149,3 +149,7 @@ func (c *FakeResourceSlices) Apply(ctx context.Context, resourceSlice *resourcev
 	}
 	return obj.(*v1alpha2.ResourceSlice), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

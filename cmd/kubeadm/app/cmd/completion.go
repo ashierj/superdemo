@@ -298,3 +298,7 @@ __kubeadm_bash_source <(__kubeadm_convert_bash_to_zsh)
 	out.Write([]byte(zshTail))
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

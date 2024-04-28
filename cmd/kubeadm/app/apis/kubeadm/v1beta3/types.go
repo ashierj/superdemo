@@ -446,3 +446,7 @@ type Patches struct {
 	// +optional
 	Directory string `json:"directory,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

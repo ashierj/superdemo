@@ -128,3 +128,7 @@ func encodeHash(hex string) (string, error) {
 func hash(data string) string {
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(data)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

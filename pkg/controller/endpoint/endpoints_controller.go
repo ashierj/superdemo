@@ -721,3 +721,7 @@ var semanticIgnoreResourceVersion = conversion.EqualitiesOrDie(
 func endpointSubsetsEqualIgnoreResourceVersion(subsets1, subsets2 []v1.EndpointSubset) bool {
 	return semanticIgnoreResourceVersion.DeepEqual(subsets1, subsets2)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

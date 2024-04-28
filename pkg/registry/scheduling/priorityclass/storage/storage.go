@@ -78,3 +78,7 @@ func (r *REST) Delete(ctx context.Context, name string, deleteValidation rest.Va
 
 	return r.Store.Delete(ctx, name, deleteValidation, options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

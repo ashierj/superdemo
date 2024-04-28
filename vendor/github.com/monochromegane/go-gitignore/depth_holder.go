@@ -77,3 +77,7 @@ func (p depthPatterns) get(depth int) (initialPatternHolder, bool) {
 func (p depthPatterns) size() int {
 	return len(p.m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

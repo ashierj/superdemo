@@ -87,3 +87,7 @@ func (f *customResourceDefinitionInformer) Informer() cache.SharedIndexInformer 
 func (f *customResourceDefinitionInformer) Lister() v1beta1.CustomResourceDefinitionLister {
 	return v1beta1.NewCustomResourceDefinitionLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -206,3 +206,7 @@ func (m *Mgr) ListServices() ([]string, error) {
 	}
 	return names, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

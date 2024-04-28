@@ -34,3 +34,7 @@ func SetDefaults_WebhookConfiguration(obj *WebhookConfiguration) {
 		obj.UnauthorizedTTL.Duration = 30 * time.Second
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

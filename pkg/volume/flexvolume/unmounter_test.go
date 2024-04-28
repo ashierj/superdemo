@@ -40,3 +40,7 @@ func TestTearDownAt(tt *testing.T) {
 	u, _ := plugin.newUnmounterInternal("volName", types.UID("poduid"), mounter, plugin.runner)
 	u.TearDownAt(rootDir + "/mount-dir")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ var (
 	EACCES       = syscall.NewError("access permission denied")
 	EAFNOSUPPORT = syscall.NewError("address family not supported by protocol")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

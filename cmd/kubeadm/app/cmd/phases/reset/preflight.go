@@ -62,3 +62,7 @@ func runPreflight(c workflow.RunData) error {
 	fmt.Println("[preflight] Running pre-flight checks")
 	return preflight.RunRootCheckOnly(r.IgnorePreflightErrors())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

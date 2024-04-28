@@ -224,3 +224,7 @@ func nextMinor(v api.Version) api.Version {
 	}
 	return api.MajorMinorVersion(v.Major(), v.Minor()+1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

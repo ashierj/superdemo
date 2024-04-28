@@ -144,3 +144,7 @@ func (f *FakeIPSet) ListSets() ([]string, error) {
 }
 
 var _ = ipset.Interface(&FakeIPSet{})
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -84,3 +84,7 @@ func OTelFilter(service string, opts ...Option) restful.FilterFunction {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

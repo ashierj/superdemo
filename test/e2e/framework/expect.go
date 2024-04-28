@@ -349,3 +349,7 @@ func ExpectNoErrorWithOffset(offset int, err error, explain ...interface{}) {
 	}
 	Fail(prefix+err.Error(), 1+offset)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

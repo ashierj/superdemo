@@ -54,3 +54,7 @@ var defaultKubernetesFeatureGates = map[featuregate.Feature]featuregate.FeatureS
 	CRDValidationRatcheting:      {Default: true, PreRelease: featuregate.Beta},
 	CustomResourceFieldSelectors: {Default: false, PreRelease: featuregate.Alpha},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

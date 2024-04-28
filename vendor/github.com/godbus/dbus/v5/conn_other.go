@@ -88,3 +88,7 @@ func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

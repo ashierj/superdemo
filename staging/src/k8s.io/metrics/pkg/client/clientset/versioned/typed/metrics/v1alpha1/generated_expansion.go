@@ -21,3 +21,7 @@ package v1alpha1
 type NodeMetricsExpansion interface{}
 
 type PodMetricsExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

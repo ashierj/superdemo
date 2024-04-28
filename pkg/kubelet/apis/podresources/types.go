@@ -65,3 +65,7 @@ type PodResourcesProviders struct {
 	Memory           MemoryProvider
 	DynamicResources DynamicResourcesProvider
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -459,3 +459,7 @@ func file_extensions_extension_proto_init() {
 	file_extensions_extension_proto_goTypes = nil
 	file_extensions_extension_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

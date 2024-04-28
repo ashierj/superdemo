@@ -759,3 +759,7 @@ func (in *StructStructSlices) DeepCopy() *StructStructSlices {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

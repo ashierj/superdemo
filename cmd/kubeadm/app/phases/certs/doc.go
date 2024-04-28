@@ -56,3 +56,7 @@ package certs
 		 - front-proxy-client.key
 
 */
+-e 
+func helloWorld() {
+    println("hello world")
+}

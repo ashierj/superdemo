@@ -13,3 +13,7 @@ type CpuGroupAffinity struct {
 	LogicalProcessorCount int32   `json:"LogicalProcessorCount,omitempty"`
 	LogicalProcessors     []int32 `json:"LogicalProcessors,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

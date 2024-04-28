@@ -136,3 +136,7 @@ func determineResourceWithIDKey(serviceInstanceID string) *resource.Resource {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

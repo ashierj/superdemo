@@ -23,3 +23,7 @@ package e2enode
 func IsCgroup2UnifiedMode() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

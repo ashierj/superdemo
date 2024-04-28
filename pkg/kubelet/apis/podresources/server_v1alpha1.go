@@ -80,3 +80,7 @@ func (p *v1alpha1PodResourcesServer) List(ctx context.Context, req *v1alpha1.Lis
 		PodResources: podResources,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -248,3 +248,7 @@ func waitForWaitingQueueToFill(q DelayingInterface) error {
 		return false, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

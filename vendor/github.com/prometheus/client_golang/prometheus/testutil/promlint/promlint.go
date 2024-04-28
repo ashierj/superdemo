@@ -121,3 +121,7 @@ func (l *Linter) lint(mf *dto.MetricFamily) []Problem {
 	// TODO(mdlayher): lint rules for specific metrics types.
 	return problems
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

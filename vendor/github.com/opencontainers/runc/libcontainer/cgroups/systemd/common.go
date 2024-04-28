@@ -562,3 +562,7 @@ func addCpuset(cm *dbusConnManager, props *[]systemdDbus.Property, cpus, mems st
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

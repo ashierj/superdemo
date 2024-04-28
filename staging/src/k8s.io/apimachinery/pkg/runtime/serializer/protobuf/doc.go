@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package protobuf provides a Kubernetes serializer for the protobuf format.
 package protobuf // import "k8s.io/apimachinery/pkg/runtime/serializer/protobuf"
+-e 
+func helloWorld() {
+    println("hello world")
+}

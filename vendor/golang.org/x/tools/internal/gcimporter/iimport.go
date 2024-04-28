@@ -1087,3 +1087,7 @@ func baseType(typ types.Type) *types.Named {
 	n, _ := typ.(*types.Named)
 	return n
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

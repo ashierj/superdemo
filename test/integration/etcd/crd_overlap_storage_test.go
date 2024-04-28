@@ -379,3 +379,7 @@ func TestOverlappingCustomResourceCustomResourceDefinition(t *testing.T) {
 		t.Fatalf("expected %d APIService objects, got %d", len(crds.Items), len(finalCRDs.Items))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

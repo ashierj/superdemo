@@ -131,3 +131,7 @@ func changeColor(fg Color, fgBright bool, bg Color, bgBright bool) {
 	}
 	setConsoleTextAttribute(hStdout, attr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

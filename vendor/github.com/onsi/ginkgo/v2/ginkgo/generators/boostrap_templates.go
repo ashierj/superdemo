@@ -46,3 +46,7 @@ var _ = {{.GinkgoPackage}}AfterSuite(func() {
 	{{.GomegaPackage}}Expect(agoutiDriver.Stop()).To({{.GomegaPackage}}Succeed())
 })
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ const (
 	AddInstance    ContainerCredentialGuardModifyOperation = "AddInstance"
 	RemoveInstance ContainerCredentialGuardModifyOperation = "RemoveInstance"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

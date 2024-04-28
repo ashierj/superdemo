@@ -74,3 +74,7 @@ func NaturalLess(str1, str2 string) bool {
 	// it sorts last.
 	return len(str1) < len(str2)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

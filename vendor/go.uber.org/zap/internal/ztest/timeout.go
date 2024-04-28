@@ -57,3 +57,7 @@ func init() {
 		log.Printf("Scaling timeouts by %vx.\n", _timeoutScale)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

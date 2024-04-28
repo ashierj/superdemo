@@ -848,3 +848,7 @@ type staticURLServiceResolver string
 func (u staticURLServiceResolver) ResolveEndpoint(namespace, name string, port int32) (*url.URL, error) {
 	return url.Parse(string(u))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

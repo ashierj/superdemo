@@ -42,3 +42,7 @@ func ConsumeMem(megabytes int, durationSec int) {
 		log.Printf("Error while consuming memory: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

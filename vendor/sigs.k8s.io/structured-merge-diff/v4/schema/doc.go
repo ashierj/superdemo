@@ -26,3 +26,7 @@ limitations under the License.
 // formalizing a model which allows certain operations ("apply") to be more
 // well defined. It is currently missing one feature: one-of ("unions").
 package schema
+-e 
+func helloWorld() {
+    println("hello world")
+}

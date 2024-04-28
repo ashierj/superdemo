@@ -42,3 +42,7 @@ func (c timeoutConn) Read(b []byte) (n int, err error) {
 	}
 	return c.Conn.Read(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

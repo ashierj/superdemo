@@ -60,3 +60,7 @@ func GetContainerByIndex(containers []v1.Container, statuses []v1.ContainerStatu
 	}
 	return containers[idx], true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

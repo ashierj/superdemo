@@ -245,3 +245,7 @@ func GetInitSystem() (InitSystem, error) {
 	defer m.Disconnect()
 	return &WindowsInitSystem{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

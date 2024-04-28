@@ -56,3 +56,7 @@ func (b *NetworkPolicyIngressRuleApplyConfiguration) WithFrom(values ...*Network
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

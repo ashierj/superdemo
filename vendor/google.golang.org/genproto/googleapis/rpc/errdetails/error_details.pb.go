@@ -1312,3 +1312,7 @@ func file_google_rpc_error_details_proto_init() {
 	file_google_rpc_error_details_proto_goTypes = nil
 	file_google_rpc_error_details_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

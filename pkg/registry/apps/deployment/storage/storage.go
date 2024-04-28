@@ -478,3 +478,7 @@ func (i *scaleUpdatedObjectInfo) UpdatedObject(ctx context.Context, oldObj runti
 
 	return deployment, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -331,3 +331,7 @@ type ResMap interface {
 	// and use of (slow) k8s metadata annotations inside the RNode.
 	ApplyFilter(f kio.Filter) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

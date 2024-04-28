@@ -168,3 +168,7 @@ func SetDefaults_HTTPIngressPath(obj *extensionsv1beta1.HTTPIngressPath) {
 		obj.PathType = &defaultPathType
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

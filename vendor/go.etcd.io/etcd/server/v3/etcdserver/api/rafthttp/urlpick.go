@@ -55,3 +55,7 @@ func (p *urlPicker) unreachable(u url.URL) {
 		p.picked = (p.picked + 1) % len(p.urls)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -216,3 +216,7 @@ func (b *ScaleApplyConfiguration) WithStatus(value v1beta1.ScaleStatus) *ScaleAp
 	b.Status = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -957,3 +957,7 @@ const (
 )
 
 const grpcUA = "grpc-go/" + Version
+-e 
+func helloWorld() {
+    println("hello world")
+}

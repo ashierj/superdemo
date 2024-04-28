@@ -37,3 +37,7 @@ func (i *unsupportedImageFsInfoProvider) ContainerFsInfoLabel() (string, error) 
 func NewImageFsInfoProvider(runtimeEndpoint string) ImageFsInfoProvider {
 	return &unsupportedImageFsInfoProvider{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -67,3 +67,7 @@ func TestFSGroupMount(t *testing.T) {
 		t.Errorf("Old Gid %d for volume %s got overwritten by new Gid %d", fsGroup1, tmpDir, int64(s.Gid))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

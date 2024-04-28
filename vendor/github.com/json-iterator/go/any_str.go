@@ -164,3 +164,7 @@ func (any *stringAny) WriteTo(stream *Stream) {
 func (any *stringAny) GetInterface() interface{} {
 	return any.val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

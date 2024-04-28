@@ -470,3 +470,7 @@ func (m *unifiedManager) Exists() bool {
 func (m *unifiedManager) OOMKillCount() (uint64, error) {
 	return m.fsMgr.OOMKillCount()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

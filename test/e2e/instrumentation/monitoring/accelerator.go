@@ -140,3 +140,7 @@ func checkForAcceleratorMetrics(projectID string, gcmService *gcm.Service, start
 		return true, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

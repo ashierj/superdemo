@@ -365,3 +365,7 @@ func file_opentelemetry_proto_collector_trace_v1_trace_service_proto_init() {
 	file_opentelemetry_proto_collector_trace_v1_trace_service_proto_goTypes = nil
 	file_opentelemetry_proto_collector_trace_v1_trace_service_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

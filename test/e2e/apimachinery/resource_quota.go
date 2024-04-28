@@ -2193,3 +2193,7 @@ func unstructuredToResourceQuota(obj *unstructured.Unstructured) (*v1.ResourceQu
 
 	return rq, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

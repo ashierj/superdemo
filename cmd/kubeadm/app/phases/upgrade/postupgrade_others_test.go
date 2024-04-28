@@ -22,3 +22,7 @@ package upgrade
 const (
 	missingKubeletConfig = "no kubelet component config found.*no such file or directory"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

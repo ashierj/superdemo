@@ -117,3 +117,7 @@ func TestAddPodMetrics(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

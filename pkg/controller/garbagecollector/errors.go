@@ -41,3 +41,7 @@ func (r *restMappingError) Message() string {
 func newRESTMappingError(kind, version string) *restMappingError {
 	return &restMappingError{kind: kind, version: version}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

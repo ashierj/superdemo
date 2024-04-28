@@ -487,3 +487,7 @@ func (u *Unstructured) SetManagedFields(managedFields []metav1.ManagedFieldsEntr
 	}
 	u.setNestedSlice(items, "metadata", "managedFields")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

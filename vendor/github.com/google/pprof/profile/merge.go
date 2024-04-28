@@ -479,3 +479,7 @@ func (p *Profile) compatible(pb *Profile) error {
 func equalValueType(st1, st2 *ValueType) bool {
 	return st1.Type == st2.Type && st1.Unit == st2.Unit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -148,3 +148,7 @@ limitedResources:
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

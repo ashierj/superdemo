@@ -347,3 +347,7 @@ func TestDecode(t *testing.T) {
 		group(t, "unrecognized", []test{})
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

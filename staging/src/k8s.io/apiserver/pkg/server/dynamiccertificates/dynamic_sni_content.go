@@ -47,3 +47,7 @@ func NewDynamicSNIContentFromFiles(purpose, certFile, keyFile string, sniNames .
 func (c *DynamicFileSNIContent) SNINames() []string {
 	return c.sniNames
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

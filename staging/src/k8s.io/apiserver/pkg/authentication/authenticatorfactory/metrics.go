@@ -67,3 +67,7 @@ func RecordRequestTotal(ctx context.Context, code string) {
 func RecordRequestLatency(ctx context.Context, code string, latency float64) {
 	requestLatency.WithContext(ctx).WithLabelValues(code).Observe(latency)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

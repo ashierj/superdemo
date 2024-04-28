@@ -81,3 +81,7 @@ func (m *fakeManager) Admit(attrs *lifecycle.PodAdmitAttributes) lifecycle.PodAd
 	klog.InfoS("Topology Admit Handler")
 	return admission.GetPodAdmitResult(nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

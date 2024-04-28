@@ -46,3 +46,7 @@ func SetDefaults_HorizontalPodAutoscaler(obj *autoscalingv2beta1.HorizontalPodAu
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

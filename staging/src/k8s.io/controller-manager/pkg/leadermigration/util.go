@@ -23,3 +23,7 @@ import config "k8s.io/controller-manager/config"
 func Enabled(genericConfig *config.GenericControllerManagerConfiguration) bool {
 	return genericConfig.LeaderElection.LeaderElect && genericConfig.LeaderMigrationEnabled
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

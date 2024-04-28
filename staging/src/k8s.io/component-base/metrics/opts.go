@@ -378,3 +378,7 @@ func SetLabelAllowListFromManifest(manifest string) {
 	}
 	SetLabelAllowListFromCLI(allowListMapping)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

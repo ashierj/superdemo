@@ -46,3 +46,7 @@ type customResourceDefinitionLister struct {
 func NewCustomResourceDefinitionLister(indexer cache.Indexer) CustomResourceDefinitionLister {
 	return &customResourceDefinitionLister{listers.New[*v1.CustomResourceDefinition](indexer, v1.Resource("customresourcedefinition"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

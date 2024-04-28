@@ -22,3 +22,7 @@ package e2enode
 func isXfs(dir string) bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

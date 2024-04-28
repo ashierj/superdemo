@@ -42,3 +42,7 @@ func quoted(l []string) []string {
 func commaOr(q []string) string {
 	return strings.Join(q[:len(q)-1], ", ") + " or " + q[len(q)-1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -341,3 +341,7 @@ func New(_ context.Context, _ runtime.Object, handle framework.Handle, fts featu
 		sharedLister: sharedLister,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

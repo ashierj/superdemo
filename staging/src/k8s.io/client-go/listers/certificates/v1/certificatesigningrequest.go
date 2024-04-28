@@ -46,3 +46,7 @@ type certificateSigningRequestLister struct {
 func NewCertificateSigningRequestLister(indexer cache.Indexer) CertificateSigningRequestLister {
 	return &certificateSigningRequestLister{listers.New[*v1.CertificateSigningRequest](indexer, v1.Resource("certificatesigningrequest"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

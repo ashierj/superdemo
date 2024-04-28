@@ -265,3 +265,7 @@ func (cm *containerManagerImpl) validateNodeAllocatable() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

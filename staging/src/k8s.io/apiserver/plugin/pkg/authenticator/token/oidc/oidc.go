@@ -1136,3 +1136,7 @@ func convertUserInfoToUnstructured(info user.Info) (*unstructured.Unstructured, 
 	}
 	return userInfoUnstructured, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

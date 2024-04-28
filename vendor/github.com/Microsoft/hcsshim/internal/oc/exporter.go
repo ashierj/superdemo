@@ -41,3 +41,7 @@ func (le *LogrusExporter) ExportSpan(s *trace.SpanData) {
 	}
 	baseEntry.Log(level, "Span")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

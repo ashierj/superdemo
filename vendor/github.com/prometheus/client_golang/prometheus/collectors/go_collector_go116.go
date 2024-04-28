@@ -47,3 +47,7 @@ import "github.com/prometheus/client_golang/prometheus"
 func NewGoCollector() prometheus.Collector {
 	return prometheus.NewGoCollector()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

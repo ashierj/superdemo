@@ -48,3 +48,7 @@ func typeFromMethodInfo(mInfo *grpc.MethodInfo) grpcType {
 	}
 	return BidiStream
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

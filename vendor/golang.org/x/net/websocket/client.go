@@ -137,3 +137,7 @@ func (config *Config) DialContext(ctx context.Context) (*Conn, error) {
 		return ws, wsErr
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

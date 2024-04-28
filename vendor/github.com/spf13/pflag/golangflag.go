@@ -103,3 +103,7 @@ func (f *FlagSet) AddGoFlagSet(newSet *goflag.FlagSet) {
 	}
 	f.addedGoFlagSets = append(f.addedGoFlagSets, newSet)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ func (b *CustomResourceValidationApplyConfiguration) WithOpenAPIV3Schema(value *
 	b.OpenAPIV3Schema = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

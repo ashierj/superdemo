@@ -39,3 +39,7 @@ func flowSchemaSpecEqual(expected, actual *flowcontrolv1.FlowSchema) bool {
 	flowcontrolapisv1.SetDefaults_FlowSchemaSpec(copiedExpectedSpec)
 	return equality.Semantic.DeepEqual(copiedExpectedSpec, &actual.Spec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

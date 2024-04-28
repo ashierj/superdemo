@@ -197,3 +197,7 @@ func IsAllocatedWithStructuredParameters(claim *resourcev1alpha2.ResourceClaim) 
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

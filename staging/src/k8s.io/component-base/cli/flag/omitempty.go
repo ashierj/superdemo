@@ -22,3 +22,7 @@ package flag
 type OmitEmpty interface {
 	Empty() bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

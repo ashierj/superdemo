@@ -1334,3 +1334,7 @@ func (as *authStore) setupMetricsReporter() {
 	}
 	reportCurrentAuthRevMu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

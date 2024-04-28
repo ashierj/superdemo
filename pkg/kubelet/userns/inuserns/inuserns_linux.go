@@ -22,3 +22,7 @@ import libcontaineruserns "github.com/opencontainers/runc/libcontainer/userns"
 func RunningInUserNS() bool {
 	return libcontaineruserns.RunningInUserNS()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

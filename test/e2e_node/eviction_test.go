@@ -1103,3 +1103,7 @@ func getMemhogPod(podName string, ctnName string, res v1.ResourceRequirements) *
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

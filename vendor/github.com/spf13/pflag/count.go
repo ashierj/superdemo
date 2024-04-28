@@ -94,3 +94,7 @@ func Count(name string, usage string) *int {
 func CountP(name, shorthand string, usage string) *int {
 	return CommandLine.CountP(name, shorthand, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

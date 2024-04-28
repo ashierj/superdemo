@@ -158,3 +158,7 @@ func min(currentMin, newValue time.Time) time.Time {
 	}
 	return currentMin
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

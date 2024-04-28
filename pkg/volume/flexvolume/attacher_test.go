@@ -87,3 +87,7 @@ func TestIsVolumeAttached(tt *testing.T) {
 	specs := []*volume.Spec{spec}
 	a.VolumesAreAttached(specs, "localhost")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

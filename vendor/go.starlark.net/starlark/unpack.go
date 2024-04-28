@@ -353,3 +353,7 @@ func (is *intset) len() int {
 	}
 	return len(is.large)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

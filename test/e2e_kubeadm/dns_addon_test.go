@@ -82,3 +82,7 @@ var _ = Describe("DNS addon", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

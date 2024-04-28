@@ -74,3 +74,7 @@ func (matcher *MatchYAMLMatcher) toStrings(actual interface{}) (actualFormatted,
 
 	return actualString, expectedString, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

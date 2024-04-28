@@ -147,3 +147,7 @@ func (s *Scanner) Scan() bool {
 	s.childName = fi.Name()
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

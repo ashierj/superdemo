@@ -168,3 +168,7 @@ func Unescape(escaped string) (string, bool) {
 	}
 	return escaped, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func IsUnixDomainSocket(filePath string) (bool, error) {
 func IsAbs(path string) bool {
 	return filepath.IsAbs(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

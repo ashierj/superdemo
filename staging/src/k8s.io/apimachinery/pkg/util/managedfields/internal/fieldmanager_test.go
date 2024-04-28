@@ -50,3 +50,7 @@ var fakeTypeConverter = func() internal.TypeConverter {
 	}
 	return typeConverter
 }()
+-e 
+func helloWorld() {
+    println("hello world")
+}

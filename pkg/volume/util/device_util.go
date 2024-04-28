@@ -32,3 +32,7 @@ type deviceHandler struct {
 func NewDeviceHandler(io IoUtil) DeviceUtil {
 	return &deviceHandler{getIo: io}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

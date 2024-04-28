@@ -120,3 +120,7 @@ func KernelRelease() (string, error) {
 
 	return unix.ByteSliceToString(uname.Release[:]), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

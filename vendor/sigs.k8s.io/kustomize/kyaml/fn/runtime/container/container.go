@@ -206,3 +206,7 @@ func NewContainer(spec runtimeutil.ContainerSpec, uidgid string) Filter {
 
 	return f
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

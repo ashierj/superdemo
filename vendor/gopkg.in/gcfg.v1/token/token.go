@@ -81,3 +81,7 @@ func (tok Token) IsLiteral() bool { return literal_beg < tok && tok < literal_en
 // delimiters; it returns false otherwise.
 //
 func (tok Token) IsOperator() bool { return operator_beg < tok && tok < operator_end }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ type Phase struct {
 func (t *Phase) AppendPhase(phase Phase) {
 	t.Phases = append(t.Phases, phase)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

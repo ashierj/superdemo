@@ -60,3 +60,7 @@ func (b *SecretProjectionApplyConfiguration) WithOptional(value bool) *SecretPro
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

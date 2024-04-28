@@ -32,3 +32,7 @@ var (
 	// ErrStreamClosed is when the streaming connection is closed.
 	ErrStreamClosed = errors.New("ttrpc: stream closed")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

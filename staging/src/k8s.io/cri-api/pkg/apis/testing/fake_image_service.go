@@ -254,3 +254,7 @@ type pulledImage struct {
 	imageSpec  *runtimeapi.ImageSpec
 	authConfig *runtimeapi.AuthConfig
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

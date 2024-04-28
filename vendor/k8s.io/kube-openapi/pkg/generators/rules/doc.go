@@ -21,3 +21,7 @@ limitations under the License.
 // Implementations of APIRule should be added to API linter under openAPIGen code-
 // generator to get integrated in the generation process.
 package rules
+-e 
+func helloWorld() {
+    println("hello world")
+}

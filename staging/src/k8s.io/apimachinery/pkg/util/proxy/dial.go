@@ -120,3 +120,7 @@ func supportsHTTP11(nextProtos []string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

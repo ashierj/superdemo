@@ -96,3 +96,7 @@ func (process *process) CloseStdin() error {
 func (process *process) Close() error {
 	return convertProcessError(process.p.Close(), process)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

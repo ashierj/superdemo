@@ -111,3 +111,7 @@ func (n *simpleNegotiatedSerializer) EncoderForVersion(e Encoder, _ GroupVersion
 func (n *simpleNegotiatedSerializer) DecoderToVersion(d Decoder, _gv GroupVersioner) Decoder {
 	return d
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

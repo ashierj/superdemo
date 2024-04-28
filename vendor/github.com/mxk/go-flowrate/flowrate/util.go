@@ -65,3 +65,7 @@ func (p Percent) String() string {
 	b[n] = '.'
 	return string(append(b, '%'))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -668,3 +668,7 @@ func (s *store) getRole(name string, quorum bool) (Role, error) {
 	err = json.Unmarshal([]byte(*resp.Event.Node.Value), &r)
 	return r, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

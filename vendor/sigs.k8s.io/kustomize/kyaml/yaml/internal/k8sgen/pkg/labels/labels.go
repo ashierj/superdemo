@@ -190,3 +190,7 @@ func ConvertSelectorToLabelsMap(selector string) (Set, error) {
 	}
 	return labelsMap, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

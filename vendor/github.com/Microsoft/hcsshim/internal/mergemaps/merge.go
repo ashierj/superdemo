@@ -50,3 +50,7 @@ func MergeJSON(object interface{}, additionalJSON []byte) (interface{}, error) {
 	}
 	return Merge(newMap, objectMap), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

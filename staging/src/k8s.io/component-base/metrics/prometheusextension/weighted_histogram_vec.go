@@ -104,3 +104,7 @@ func (hv *WeightedHistogramVec) MustCurryWith(labels prometheus.Labels) Weighted
 	}
 	return vec
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

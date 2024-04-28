@@ -117,3 +117,7 @@ func (s *S2AAuthInfo) IsHandshakeResumed() bool {
 func (s *S2AAuthInfo) SecurityLevel() credentials.SecurityLevel {
 	return s.commonAuthInfo.SecurityLevel
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

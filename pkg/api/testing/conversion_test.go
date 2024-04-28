@@ -117,3 +117,7 @@ func BenchmarkReplicationControllerConversion(b *testing.B) {
 		b.Fatalf("Incorrect conversion: expected %v, got %v", replicationController, *result)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

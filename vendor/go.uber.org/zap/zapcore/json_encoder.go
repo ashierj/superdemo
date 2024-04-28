@@ -581,3 +581,7 @@ func safeAppendStringLike[S []byte | string](
 	// add remaining
 	appendTo(buf, s[last:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -78,3 +78,7 @@ func (b *CustomResourceDefinitionConditionApplyConfiguration) WithMessage(value 
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

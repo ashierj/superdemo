@@ -35,3 +35,7 @@ type Event struct {
 	// Time at which this event was recorded.
 	Time time.Time
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

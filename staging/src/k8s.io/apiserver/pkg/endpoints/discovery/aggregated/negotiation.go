@@ -41,3 +41,7 @@ func IsAggregatedDiscoveryGVK(gvk *schema.GroupVersionKind) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

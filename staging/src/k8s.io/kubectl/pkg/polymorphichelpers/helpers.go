@@ -189,3 +189,7 @@ func SelectorsForObject(object runtime.Object) (namespace string, selector label
 
 	return namespace, selector, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

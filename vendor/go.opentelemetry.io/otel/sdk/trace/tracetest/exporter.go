@@ -83,3 +83,7 @@ func (imsb *InMemoryExporter) GetSpans() SpanStubs {
 	copy(ret, imsb.ss)
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

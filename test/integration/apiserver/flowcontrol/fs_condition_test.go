@@ -139,3 +139,7 @@ func fmtFS(t *testing.T, fs *flowcontrol.FlowSchema) string {
 	}
 	return string(asBytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

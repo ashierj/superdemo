@@ -116,3 +116,7 @@ func base64decode(v string) (string, error) {
 	}
 	return string(data), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

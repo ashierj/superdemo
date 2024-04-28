@@ -75,3 +75,7 @@ func (st SimpleTarget) Header(filename string) []byte {
 var (
 	_ = Target(SimpleTarget{})
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

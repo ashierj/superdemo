@@ -19,3 +19,7 @@ type ProcessStatus struct {
 
 	LastWaitResult int32 `json:"LastWaitResult,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

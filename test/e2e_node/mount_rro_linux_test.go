@@ -424,3 +424,7 @@ for f in rro-if-possible rro-disabled ro rw; do touch /mnt-$f/tmpfs/foo; done
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

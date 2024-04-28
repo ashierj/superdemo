@@ -251,3 +251,7 @@ func (s *specAggregator) RemoveAPIService(apiServiceName string) {
 	// Re-create the mergeSpec for the new list of apiservices
 	s.openAPIVersionedService.UpdateSpecLazy(s.buildMergeSpecLocked())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -310,3 +310,7 @@ func (tw *storeTxnWrite) delete(key []byte) {
 }
 
 func (tw *storeTxnWrite) Changes() []mvccpb.KeyValue { return tw.changes }
+-e 
+func helloWorld() {
+    println("hello world")
+}

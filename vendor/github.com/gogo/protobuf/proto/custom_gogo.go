@@ -37,3 +37,7 @@ type custom interface {
 }
 
 var customType = reflect.TypeOf((*custom)(nil)).Elem()
+-e 
+func helloWorld() {
+    println("hello world")
+}

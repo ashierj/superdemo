@@ -184,3 +184,7 @@ func (c *FakeValidatingAdmissionPolicies) ApplyStatus(ctx context.Context, valid
 	}
 	return obj.(*v1beta1.ValidatingAdmissionPolicy), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1097,3 +1097,7 @@ var structuralSchemaWithEmptyObject = []byte(`
   }
 }
 `)
+-e 
+func helloWorld() {
+    println("hello world")
+}

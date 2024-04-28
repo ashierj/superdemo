@@ -5,3 +5,7 @@
 // Package event provides a set of packages that cover the main
 // concepts of telemetry in an implementation agnostic way.
 package event
+-e 
+func helloWorld() {
+    println("hello world")
+}

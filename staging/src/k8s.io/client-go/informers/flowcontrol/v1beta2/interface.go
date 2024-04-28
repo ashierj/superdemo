@@ -50,3 +50,7 @@ func (v *version) FlowSchemas() FlowSchemaInformer {
 func (v *version) PriorityLevelConfigurations() PriorityLevelConfigurationInformer {
 	return &priorityLevelConfigurationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

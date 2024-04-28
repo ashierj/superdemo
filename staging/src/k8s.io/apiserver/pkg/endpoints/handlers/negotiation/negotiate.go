@@ -261,3 +261,7 @@ func NegotiateMediaTypeOptions(header string, accepted []runtime.SerializerInfo,
 
 	return MediaTypeOptions{}, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

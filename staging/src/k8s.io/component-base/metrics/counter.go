@@ -240,3 +240,7 @@ func (vc *CounterVecWithContext) WithLabelValues(lvs ...string) CounterMetric {
 func (vc *CounterVecWithContext) With(labels map[string]string) CounterMetric {
 	return vc.CounterVec.With(labels)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

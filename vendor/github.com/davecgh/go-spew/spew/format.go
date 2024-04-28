@@ -417,3 +417,7 @@ Printf, Println, or Fprintf.
 func NewFormatter(v interface{}) fmt.Formatter {
 	return newFormatter(&Config, v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

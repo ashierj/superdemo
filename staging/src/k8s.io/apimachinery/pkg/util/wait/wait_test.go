@@ -1536,3 +1536,7 @@ func Benchmark_poll(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

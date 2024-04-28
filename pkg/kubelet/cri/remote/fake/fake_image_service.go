@@ -79,3 +79,7 @@ func (f *RemoteRuntime) ImageFsInfo(ctx context.Context, req *kubeapi.ImageFsInf
 
 	return resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

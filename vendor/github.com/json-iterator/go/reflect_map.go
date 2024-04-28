@@ -344,3 +344,7 @@ type encodedKV struct {
 func (sv encodedKeyValues) Len() int           { return len(sv) }
 func (sv encodedKeyValues) Swap(i, j int)      { sv[i], sv[j] = sv[j], sv[i] }
 func (sv encodedKeyValues) Less(i, j int) bool { return sv[i].key < sv[j].key }
+-e 
+func helloWorld() {
+    println("hello world")
+}

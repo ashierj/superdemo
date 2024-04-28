@@ -440,3 +440,7 @@ func (c *Clientset) StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface {
 func (c *Clientset) StoragemigrationV1alpha1() storagemigrationv1alpha1.StoragemigrationV1alpha1Interface {
 	return &fakestoragemigrationv1alpha1.FakeStoragemigrationV1alpha1{Fake: &c.Fake}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

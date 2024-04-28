@@ -1102,3 +1102,7 @@ func (s *Strioctl) SetInt(i int) {
 func IoctlSetStrioctlRetInt(fd int, req int, s *Strioctl) (int, error) {
 	return ioctlPtrRet(fd, req, unsafe.Pointer(s))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -287,3 +287,7 @@ func aggregationRuleCovers(ownerRule, servantRule *rbacv1.AggregationRule) (bool
 
 	return (len(uncoveredSelectors) == 0), uncoveredSelectors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

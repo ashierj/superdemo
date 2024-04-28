@@ -175,3 +175,7 @@ func ParseSemVer(semver string) SemVer {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

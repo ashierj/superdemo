@@ -115,3 +115,7 @@ func parseArgument(arg string) (string, string, error) {
 
 	return keyvalSlice[0], keyvalSlice[1], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

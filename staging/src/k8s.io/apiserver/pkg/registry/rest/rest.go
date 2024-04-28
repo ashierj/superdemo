@@ -390,3 +390,7 @@ type UpdateResetFieldsStrategy interface {
 	RESTUpdateStrategy
 	ResetFieldsStrategy
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -77,3 +77,7 @@ func (cs urlCredentialSource) subjectToken() (string, error) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

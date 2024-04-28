@@ -64,3 +64,7 @@ func (b *ParentReferenceApplyConfiguration) WithName(value string) *ParentRefere
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

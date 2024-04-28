@@ -191,3 +191,7 @@ var _ = SIGDescribe("ContainerLogRotationWithMultipleWorkers", framework.WithSlo
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

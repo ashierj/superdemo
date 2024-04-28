@@ -671,3 +671,7 @@ func needsHCNodePort(svc *api.Service) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

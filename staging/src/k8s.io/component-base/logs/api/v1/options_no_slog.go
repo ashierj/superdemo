@@ -22,3 +22,7 @@ package v1
 func setSlogDefaultLogger() {
 	// Do nothing when build with Go < 1.21.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

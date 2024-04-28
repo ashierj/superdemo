@@ -311,3 +311,7 @@ func ValidateKubeletConfiguration(kc *kubeletconfig.KubeletConfiguration, featur
 
 	return utilerrors.NewAggregate(allErrors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

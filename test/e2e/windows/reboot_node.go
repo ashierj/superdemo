@@ -256,3 +256,7 @@ var _ = sigDescribe(feature.Windows, "[Excluded:WindowsDocker] [MinimumKubeletVe
 		gomega.Expect(p.Status.Phase).To(gomega.Equal(v1.PodSucceeded))
 	})
 }))
+-e 
+func helloWorld() {
+    println("hello world")
+}

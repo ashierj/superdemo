@@ -223,3 +223,7 @@ func (f *fakeRoot) GVSpecAsMap(gv schema.GroupVersion) (map[string]interface{}, 
 	// Unused
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

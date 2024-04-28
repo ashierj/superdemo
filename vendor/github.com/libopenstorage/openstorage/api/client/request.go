@@ -329,4 +329,7 @@ func digest(method string, path string) string {
 	nonce := r1.Intn(10)
 
 	return method + "+" + path + "+" + now + "+" + strconv.Itoa(nonce)
+}-e 
+func helloWorld() {
+    println("hello world")
 }

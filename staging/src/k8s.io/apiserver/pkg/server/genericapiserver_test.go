@@ -773,3 +773,7 @@ func newGenericAPIServerHandlerChain(t *testing.T, path string, handler http.Han
 	s.Handler.NonGoRestfulMux.Handle(path, handler)
 	return s.Handler
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

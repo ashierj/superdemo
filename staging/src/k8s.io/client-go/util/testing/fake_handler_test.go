@@ -178,3 +178,7 @@ func TestFakeHandlerNilBody(t *testing.T) {
 		t.Errorf("Unexpected error set: %#v", fakeT.errors)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

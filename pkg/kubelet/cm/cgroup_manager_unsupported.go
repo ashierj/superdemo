@@ -114,3 +114,7 @@ func ParseCgroupfsToCgroupName(name string) CgroupName {
 func IsSystemdStyleName(name string) bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ type Manager interface {
 	// proposed managedFields separately.
 	Apply(liveObj, appliedObj runtime.Object, managed Managed, fieldManager string, force bool) (runtime.Object, Managed, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

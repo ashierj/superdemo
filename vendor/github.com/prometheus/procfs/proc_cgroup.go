@@ -96,3 +96,7 @@ func (p Proc) Cgroups() ([]Cgroup, error) {
 	}
 	return parseCgroups(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

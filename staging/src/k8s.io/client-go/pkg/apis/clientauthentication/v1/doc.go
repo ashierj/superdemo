@@ -22,3 +22,7 @@ limitations under the License.
 // +groupName=client.authentication.k8s.io
 
 package v1 // import "k8s.io/client-go/pkg/apis/clientauthentication/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

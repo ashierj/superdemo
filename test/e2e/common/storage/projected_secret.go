@@ -586,3 +586,7 @@ func doProjectedSecretE2EWithMapping(ctx context.Context, f *framework.Framework
 
 	e2epodoutput.TestContainerOutputRegexp(ctx, f, "consume secrets", pod, 0, expectedOutput)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

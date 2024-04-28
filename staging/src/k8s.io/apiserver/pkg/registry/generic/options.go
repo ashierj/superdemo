@@ -54,3 +54,7 @@ type StoreOptions struct {
 	AttrFunc    storage.AttrFunc
 	Indexers    *cache.Indexers
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

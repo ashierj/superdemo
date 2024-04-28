@@ -158,3 +158,7 @@ func (o UnmarshalOptions) UnmarshalFrom(r Reader, m proto.Message) error {
 func UnmarshalFrom(r Reader, m proto.Message) error {
 	return UnmarshalOptions{}.UnmarshalFrom(r, m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

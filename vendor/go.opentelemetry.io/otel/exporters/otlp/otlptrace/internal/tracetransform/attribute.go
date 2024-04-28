@@ -156,3 +156,7 @@ func stringSliceValues(vals []string) []*commonpb.AnyValue {
 	}
 	return converted
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

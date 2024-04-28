@@ -248,3 +248,7 @@ func diffSubjectLists(list1 []rbacv1.Subject, list2 []rbacv1.Subject) (list1Only
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

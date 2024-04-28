@@ -79,3 +79,7 @@ func (b *StatefulSetConditionApplyConfiguration) WithMessage(value string) *Stat
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

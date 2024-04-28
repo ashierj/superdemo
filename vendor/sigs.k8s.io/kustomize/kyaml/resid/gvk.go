@@ -253,3 +253,7 @@ func (x Gvk) AsTypeMeta() yaml.TypeMeta {
 func (x Gvk) IsClusterScoped() bool {
 	return x.isClusterScoped
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

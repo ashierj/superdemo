@@ -131,3 +131,7 @@ func autoConvert_config_LeaderElectionConfiguration_To_v1alpha1_LeaderElectionCo
 	out.ResourceNamespace = in.ResourceNamespace
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

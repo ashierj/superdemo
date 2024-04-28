@@ -78,3 +78,7 @@ func errorResponse(err error, status *metav1.Status) *admissionv1.AdmissionRespo
 		AuditAnnotations: map[string]string{"error": errDetail},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

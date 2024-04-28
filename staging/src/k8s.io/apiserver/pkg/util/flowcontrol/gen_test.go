@@ -664,3 +664,7 @@ func pickSetString(rng *rand.Rand, set sets.String) string {
 	}
 	panic("empty set")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

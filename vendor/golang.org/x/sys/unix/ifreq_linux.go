@@ -139,3 +139,7 @@ func (ifr Ifreq) withData(p unsafe.Pointer) ifreqData {
 		data: p,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

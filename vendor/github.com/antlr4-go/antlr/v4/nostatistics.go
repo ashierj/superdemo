@@ -45,3 +45,7 @@ func WithTopN(topN int) statsOption {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -176,3 +176,7 @@ func convertCELErrorToValidationError(fldPath *field.Path, expression string, er
 func ValidateAllocationResult(result *resource.NamedResourcesAllocationResult, fldPath *field.Path) field.ErrorList {
 	return validateInstanceName(result.Name, fldPath.Child("name"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

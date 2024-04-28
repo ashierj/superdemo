@@ -248,3 +248,7 @@ type ResourceModificationRequestResponse struct {
 	Data     interface{}  `json:"Settings"`
 	Request  RequestType  `json:"RequestType,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

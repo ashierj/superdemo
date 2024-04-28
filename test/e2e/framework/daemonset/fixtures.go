@@ -150,3 +150,7 @@ func CheckDaemonStatus(ctx context.Context, f *framework.Framework, dsName strin
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

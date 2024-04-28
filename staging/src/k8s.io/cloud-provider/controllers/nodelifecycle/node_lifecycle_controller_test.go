@@ -1090,3 +1090,7 @@ func syncNodeStore(ctx context.Context, nodeinformer coreinformers.NodeInformer,
 	}
 	return nodeinformer.Informer().GetStore().Replace(newElems, "newRV")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

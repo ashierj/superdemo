@@ -617,3 +617,7 @@ func cmdHasFlags(cmd *cobra.Command, expectedFlags ...string) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

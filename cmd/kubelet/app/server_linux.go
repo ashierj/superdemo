@@ -50,3 +50,7 @@ func watchForLockfileContention(path string, done chan struct{}) error {
 func isCgroup2UnifiedMode() bool {
 	return libcontainercgroups.IsCgroup2UnifiedMode()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

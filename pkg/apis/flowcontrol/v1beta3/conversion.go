@@ -85,3 +85,7 @@ func copyStringMap(in map[string]string) map[string]string {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ func triFromBool(b bool) Tristate {
 		return False
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

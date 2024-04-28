@@ -97,3 +97,7 @@ func TestSimultaneousMerge(t *testing.T) {
 	<-ch
 	<-ch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -195,3 +195,7 @@ func (c *FakeFlunders) ApplyStatus(ctx context.Context, flunder *wardlev1beta1.F
 	}
 	return obj.(*v1beta1.Flunder), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (b *DriverAllocationResultApplyConfiguration) WithNamedResources(value *Nam
 	b.NamedResources = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

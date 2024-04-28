@@ -40,3 +40,7 @@ func ProbeDialer() *net.Dialer {
 	}
 	return dialer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

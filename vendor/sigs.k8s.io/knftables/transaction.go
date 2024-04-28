@@ -136,3 +136,7 @@ func (tx *Transaction) Flush(obj Object) {
 func (tx *Transaction) Delete(obj Object) {
 	tx.operation(deleteVerb, obj)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

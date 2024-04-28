@@ -124,3 +124,7 @@ func NewEventPrinter(noHeader, allNamespaces bool) *EventPrinter {
 		AllNamespaces: allNamespaces,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

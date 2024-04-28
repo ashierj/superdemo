@@ -300,3 +300,7 @@ func (o *SetResourcesOptions) Run() error {
 	}
 	return utilerrors.NewAggregate(allErrs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

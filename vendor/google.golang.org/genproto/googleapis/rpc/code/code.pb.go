@@ -334,3 +334,7 @@ func file_google_rpc_code_proto_init() {
 	file_google_rpc_code_proto_goTypes = nil
 	file_google_rpc_code_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

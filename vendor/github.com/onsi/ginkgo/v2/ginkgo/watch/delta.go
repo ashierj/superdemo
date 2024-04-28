@@ -20,3 +20,7 @@ func (d Delta) ModifiedSuites() []*Suite {
 	sort.Sort(DescendingByDelta(d.modifiedSuites))
 	return d.modifiedSuites
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

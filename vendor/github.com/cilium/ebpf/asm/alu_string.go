@@ -105,3 +105,7 @@ func (i ALUOp) String() string {
 	}
 	return "ALUOp(" + strconv.FormatInt(int64(i), 10) + ")"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

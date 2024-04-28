@@ -43,3 +43,7 @@ func GetBootTime() (time.Time, error) {
 	sec, nsec := timeval.Unix()
 	return time.Unix(sec, nsec).Truncate(time.Second), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

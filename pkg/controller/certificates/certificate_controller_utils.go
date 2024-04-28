@@ -49,3 +49,7 @@ func GetCertApprovalCondition(status *certificates.CertificateSigningRequestStat
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (f *clusterTrustBundleInformer) Informer() cache.SharedIndexInformer {
 func (f *clusterTrustBundleInformer) Lister() v1alpha1.ClusterTrustBundleLister {
 	return v1alpha1.NewClusterTrustBundleLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

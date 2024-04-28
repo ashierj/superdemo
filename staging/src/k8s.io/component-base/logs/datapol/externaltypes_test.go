@@ -45,3 +45,7 @@ func TestTypes(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

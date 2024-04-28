@@ -1748,3 +1748,7 @@ func initializeCache(endpointSliceCache *EndpointSliceCache, endpointSlices []*d
 		tracker.pending = endpointSliceDataByName{}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

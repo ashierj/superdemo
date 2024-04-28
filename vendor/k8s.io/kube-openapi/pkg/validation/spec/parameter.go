@@ -170,3 +170,7 @@ func (p Parameter) MarshalNextJSON(opts jsonv2.MarshalOptions, enc *jsonv2.Encod
 	x.Ref = p.Refable.Ref.String()
 	return opts.MarshalNext(enc, x)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

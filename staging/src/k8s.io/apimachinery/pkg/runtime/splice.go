@@ -74,3 +74,7 @@ func (sb *spliceBuffer) Bytes() []byte {
 	}
 	return []byte{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func ptsname(f *os.File) (string, error) {
 	}
 	return string(ptm.Sn[:bytes.IndexByte(ptm.Sn[:], 0)]), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

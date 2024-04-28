@@ -72,3 +72,7 @@ func SetupBaseOSVolume(ctx context.Context, layerPath, volumePath string, option
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

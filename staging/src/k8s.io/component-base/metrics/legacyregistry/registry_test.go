@@ -41,3 +41,7 @@ func TestProcessStartTimeHeader(t *testing.T) {
 		t.Errorf("got %d, wanted %d", gotInt, now.Unix())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

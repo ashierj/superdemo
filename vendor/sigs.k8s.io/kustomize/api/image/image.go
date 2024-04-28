@@ -64,3 +64,7 @@ func Split(imageName string) (name string, tag string, digest string) {
 	tag = strings.TrimPrefix(imageName[ic:], ":")
 	return name, tag, ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -70,3 +70,7 @@ func (l ResourceIndexer[T]) Get(name string) (T, error) {
 	}
 	return obj.(T), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

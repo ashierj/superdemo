@@ -223,3 +223,7 @@ func getCurrentAuthInfo(config *clientcmdapi.Config) *clientcmdapi.AuthInfo {
 
 	return config.AuthInfos[user]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

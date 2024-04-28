@@ -54,3 +54,7 @@ func (matcher *BeARegularFileMatcher) FailureMessage(actual interface{}) (messag
 func (matcher *BeARegularFileMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not be a regular file")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

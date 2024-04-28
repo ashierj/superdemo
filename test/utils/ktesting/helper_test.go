@@ -90,3 +90,7 @@ func (l *logBufferT) Logf(format string, args ...any) {
 	l.log.WriteString(fmt.Sprintf(format, args...))
 	l.log.WriteRune('\n')
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

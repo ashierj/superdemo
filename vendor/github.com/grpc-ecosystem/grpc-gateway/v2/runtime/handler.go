@@ -225,3 +225,7 @@ func handleForwardResponseStreamError(ctx context.Context, wroteHeader bool, mar
 func errorChunk(st *status.Status) map[string]proto.Message {
 	return map[string]proto.Message{"error": st.Proto()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

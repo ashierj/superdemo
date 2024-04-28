@@ -27,3 +27,7 @@ import (
 func TestRoundTripTypes(t *testing.T) {
 	roundtrip.RoundTripTestForAPIGroup(t, scheme.AddToScheme, Funcs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

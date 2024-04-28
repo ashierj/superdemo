@@ -114,3 +114,7 @@ func (c *Code) MarshalJSON() ([]byte, error) {
 	}
 	return []byte(fmt.Sprintf("%q", str)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

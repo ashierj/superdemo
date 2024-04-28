@@ -25,3 +25,7 @@ import (
 func SysReadFile(file string) (string, error) {
 	return "", fmt.Errorf("not supported on this platform")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

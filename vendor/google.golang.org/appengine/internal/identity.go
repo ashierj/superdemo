@@ -53,3 +53,7 @@ func IsFlex() bool {
 func IsAppEngine() bool {
 	return IsStandard() || IsFlex()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

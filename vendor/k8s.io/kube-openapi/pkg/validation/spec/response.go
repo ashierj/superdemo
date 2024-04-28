@@ -129,3 +129,7 @@ func ResponseRef(url string) *Response {
 	resp.Ref = MustCreateRef(url)
 	return resp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

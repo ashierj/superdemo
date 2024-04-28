@@ -380,3 +380,7 @@ func NewFIFO(keyFunc KeyFunc) *FIFO {
 	f.cond.L = &f.lock
 	return f
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

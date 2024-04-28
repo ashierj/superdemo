@@ -37,3 +37,7 @@ func (b *DaemonEndpointApplyConfiguration) WithPort(value int32) *DaemonEndpoint
 	b.Port = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

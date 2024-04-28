@@ -102,3 +102,7 @@ func (p RESTStorageProvider) v1beta1Storage(apiResourceConfigSource serverstorag
 func (p RESTStorageProvider) GroupName() string {
 	return authentication.GroupName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

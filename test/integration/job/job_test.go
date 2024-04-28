@@ -4097,3 +4097,7 @@ func failTerminatingPods(ctx context.Context, t *testing.T, clientSet clientset.
 		t.Fatalf("Failed to update pod statuses: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

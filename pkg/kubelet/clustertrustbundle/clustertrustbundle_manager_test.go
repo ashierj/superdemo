@@ -472,3 +472,7 @@ func diffBundles(a, b []byte) string {
 
 	return cmp.Diff(aBlocks, bBlocks)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

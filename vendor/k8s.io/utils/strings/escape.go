@@ -34,3 +34,7 @@ func EscapeQualifiedName(in string) string {
 func UnescapeQualifiedName(in string) string {
 	return strings.Replace(in, "~", "/", -1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

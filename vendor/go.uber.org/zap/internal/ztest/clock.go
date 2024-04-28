@@ -151,3 +151,7 @@ func (c *MockClock) Add(d time.Duration) {
 
 	c.now = newTime
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

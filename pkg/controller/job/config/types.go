@@ -23,3 +23,7 @@ type JobControllerConfiguration struct {
 	// but more CPU (and network) load.
 	ConcurrentJobSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

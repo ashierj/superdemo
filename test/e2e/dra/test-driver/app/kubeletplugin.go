@@ -487,3 +487,7 @@ func (ex *ExamplePlugin) GetGRPCCalls() []GRPCCall {
 	calls = append(calls, ex.gRPCCalls...)
 	return calls
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

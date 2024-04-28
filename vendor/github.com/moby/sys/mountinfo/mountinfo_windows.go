@@ -8,3 +8,7 @@ func parseMountTable(_ FilterFunc) ([]*Info, error) {
 func mounted(_ string) (bool, error) {
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func WaitForSSHTunnels(ctx context.Context, namespace string) {
 		return err == nil, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

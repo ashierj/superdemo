@@ -17,3 +17,7 @@ limitations under the License.
 // Package csistoragecapacity provides Registry interface and its REST
 // implementation for storing csistoragecapacity api objects.
 package csistoragecapacity
+-e 
+func helloWorld() {
+    println("hello world")
+}

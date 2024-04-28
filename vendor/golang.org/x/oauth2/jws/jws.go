@@ -180,3 +180,7 @@ func Verify(token string, key *rsa.PublicKey) error {
 	h.Write([]byte(signedContent))
 	return rsa.VerifyPKCS1v15(key, crypto.SHA256, h.Sum(nil), signatureString)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

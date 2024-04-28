@@ -18,3 +18,7 @@ limitations under the License.
 
 // This is a test package.
 package pointer // import "k8s.io/code-generator/cmd/defaulter-gen/output_tests/pointer"
+-e 
+func helloWorld() {
+    println("hello world")
+}

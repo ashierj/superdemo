@@ -53,3 +53,7 @@ func (w *WarningPrinter) Print(message string) {
 		fmt.Fprintf(w.out, "Warning: %s\n", message)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

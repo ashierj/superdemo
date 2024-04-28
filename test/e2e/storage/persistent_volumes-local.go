@@ -1199,3 +1199,7 @@ func SkipUnlessLocalSSDExists(ctx context.Context, config *localTestConfig, ssdI
 		e2eskipper.Skipf("Requires at least 1 %s %s localSSD ", ssdInterface, filesystemType)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

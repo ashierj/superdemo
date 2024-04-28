@@ -65,3 +65,7 @@ func LoadConfiguration(config io.Reader) (*eventratelimitapi.Configuration, erro
 	}
 	return resourceQuotaConfiguration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

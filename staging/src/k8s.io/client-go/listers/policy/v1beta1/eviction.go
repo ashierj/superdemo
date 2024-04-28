@@ -68,3 +68,7 @@ type EvictionNamespaceLister interface {
 type evictionNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.Eviction]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

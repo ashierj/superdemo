@@ -25,3 +25,7 @@ func (c *Cipher) xorKeyStreamBlocks(dst, src []byte) {
 		c.xorKeyStreamBlocksGeneric(dst, src)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -128,3 +128,7 @@ That implementation is the only one OpenTelemetry authors can guarantee will
 fully implement all the API interfaces when a user updates their API.
 */
 package trace // import "go.opentelemetry.io/otel/trace"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func checkIfReadyForAdditionalControlPlane(initConfiguration *kubeadmapi.Cluster
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

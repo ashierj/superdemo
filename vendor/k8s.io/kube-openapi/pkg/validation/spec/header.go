@@ -116,3 +116,7 @@ func (h *Header) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *jsonv2.Dec
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

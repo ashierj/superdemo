@@ -819,3 +819,7 @@ func (p *Parser) addConstant(u types.Universe, useName *types.Name, in *gotypes.
 	out.ConstValue = &constval
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

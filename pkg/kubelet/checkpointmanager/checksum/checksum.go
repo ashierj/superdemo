@@ -45,3 +45,7 @@ func getChecksum(data interface{}) uint64 {
 	hashutil.DeepHashObject(hash, data)
 	return uint64(hash.Sum32())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

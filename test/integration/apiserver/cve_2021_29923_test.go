@@ -86,3 +86,7 @@ func TestCanaryCVE_2021_29923(t *testing.T) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

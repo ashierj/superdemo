@@ -300,3 +300,7 @@ var clientAuthMarkerFixture = &corev1.Pod{
 		}},
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

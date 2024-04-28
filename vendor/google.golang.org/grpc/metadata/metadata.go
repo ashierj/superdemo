@@ -293,3 +293,7 @@ type rawMD struct {
 	md    MD
 	added [][]string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

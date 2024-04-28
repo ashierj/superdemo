@@ -177,3 +177,7 @@ func (o *NamespaceOptions) Validate() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

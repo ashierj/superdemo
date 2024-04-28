@@ -21,3 +21,7 @@ package v1
 type ClusterTestTypeExpansion interface{}
 
 type TestTypeExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

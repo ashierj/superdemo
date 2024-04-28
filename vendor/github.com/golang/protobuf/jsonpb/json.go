@@ -67,3 +67,7 @@ func isMessageSet(md protoreflect.MessageDescriptor) bool {
 	ms, ok := md.(interface{ IsMessageSet() bool })
 	return ok && ms.IsMessageSet()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

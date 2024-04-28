@@ -395,3 +395,7 @@ func clearStyle(node *yaml.Node) {
 		clearStyle(c)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

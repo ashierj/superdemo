@@ -202,3 +202,7 @@ func printPerfData(p *perftype.PerfData) {
 		framework.Logf("%s %s\n%s", perftype.PerfResultTag, str, perftype.PerfResultEnd)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

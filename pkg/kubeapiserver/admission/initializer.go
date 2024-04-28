@@ -69,3 +69,7 @@ func (i *PluginInitializer) Initialize(plugin admission.Interface) {
 		wants.SetExcludedAdmissionResources(i.excludedAdmissionResources)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

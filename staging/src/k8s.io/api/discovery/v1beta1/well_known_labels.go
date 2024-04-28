@@ -30,3 +30,7 @@ const (
 	// resource with EndpointSlices.
 	LabelSkipMirror = "endpointslice.kubernetes.io/skip-mirror"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

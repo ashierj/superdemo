@@ -11,3 +11,7 @@ const (
 	getTermios = unix.TCGETS
 	setTermios = unix.TCSETS
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

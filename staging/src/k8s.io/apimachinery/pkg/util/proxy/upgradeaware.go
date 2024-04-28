@@ -556,3 +556,7 @@ func removeCORSHeaders(resp *http.Response) {
 	resp.Header.Del("Access-Control-Allow-Methods")
 	resp.Header.Del("Access-Control-Allow-Origin")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -106,3 +106,7 @@ func (mr *MockJWKsHandlerMockRecorder) KeySet() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "KeySet", reflect.TypeOf((*MockJWKsHandler)(nil).KeySet))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

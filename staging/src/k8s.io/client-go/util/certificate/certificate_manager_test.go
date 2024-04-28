@@ -1308,3 +1308,7 @@ func certificateString(c *tls.Certificate) string {
 	}
 	return c.Leaf.Subject.CommonName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

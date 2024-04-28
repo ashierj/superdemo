@@ -77,3 +77,7 @@ func getAttrs(obj runtime.Object) (labels.Set, fields.Set, error) {
 
 	return labels.Set(bundle.Labels), selectableFields, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

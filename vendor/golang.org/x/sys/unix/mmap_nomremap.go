@@ -11,3 +11,7 @@ var mapper = &mmapper{
 	mmap:   mmap,
 	munmap: munmap,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

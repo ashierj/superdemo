@@ -658,3 +658,7 @@ const stringMap = `func (i %[1]s) String() string {
 	return "%[1]s(" + strconv.FormatInt(int64(i), 10) + ")"
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

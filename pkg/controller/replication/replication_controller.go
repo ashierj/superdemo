@@ -66,3 +66,7 @@ func NewReplicationManager(ctx context.Context, podInformer coreinformers.PodInf
 		),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

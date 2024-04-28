@@ -158,3 +158,7 @@ func (c *FakeLeases) Apply(ctx context.Context, lease *coordinationv1.LeaseApply
 	}
 	return obj.(*v1.Lease), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

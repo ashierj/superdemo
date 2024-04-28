@@ -62,3 +62,7 @@ func (c *Config) New(proxyTransport *http.Transport, egressSelector *egressselec
 
 	return []admission.PluginInitializer{webhookPluginInitializer, kubePluginInitializer}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

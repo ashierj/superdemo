@@ -78,3 +78,7 @@ func (d URL) Type() ref.Type {
 func (d URL) Value() interface{} {
 	return d.URL
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

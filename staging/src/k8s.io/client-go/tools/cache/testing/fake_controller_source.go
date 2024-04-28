@@ -289,3 +289,7 @@ func (f *FakeControllerSource) Shutdown() {
 	f.lock.Lock() // Purposely no unlock.
 	f.Broadcaster.Shutdown()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

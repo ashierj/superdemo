@@ -206,3 +206,7 @@ func (c *configMaps) Apply(ctx context.Context, configMap *corev1.ConfigMapApply
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

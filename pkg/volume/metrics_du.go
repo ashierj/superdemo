@@ -83,3 +83,7 @@ func (md *metricsDu) getFsInfo(metrics *Metrics) error {
 	metrics.InodesFree = resource.NewQuantity(inodesFree, resource.BinarySI)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

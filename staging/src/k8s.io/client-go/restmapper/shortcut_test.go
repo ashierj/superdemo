@@ -585,3 +585,7 @@ func (c *fakeCachedDiscoveryClient) Invalidate() {
 		c.invalidateHandler()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

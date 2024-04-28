@@ -433,3 +433,7 @@ func (d *driverDefinition) PrepareTest(ctx context.Context, f *framework.Framewo
 
 	return e2econfig
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

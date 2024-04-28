@@ -111,3 +111,7 @@ func (recorder *recorderImpl) makeEvent(refRegarding *v1.ObjectReference, refRel
 		Type:                eventtype,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

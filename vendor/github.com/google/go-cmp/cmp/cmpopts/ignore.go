@@ -204,3 +204,7 @@ func IgnoreMapEntries(discardFunc interface{}) cmp.Option {
 		return false
 	}, cmp.Ignore())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

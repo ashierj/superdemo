@@ -159,3 +159,7 @@ func rootFsInfoToFsStats(rootFsInfo *cadvisorapiv2.FsInfo) *statsapi.FsStats {
 		Inodes:         rootFsInfo.Inodes,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

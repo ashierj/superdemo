@@ -853,3 +853,7 @@ func getBtrfsMajorMinorIds(mount *mount.Info) (int, int, error) {
 	}
 	return 0, 0, fmt.Errorf("%s is not a block device", mount.Source)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

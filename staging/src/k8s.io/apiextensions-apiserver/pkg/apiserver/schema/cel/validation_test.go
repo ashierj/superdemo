@@ -4596,3 +4596,7 @@ func nilInterfaceOfStringSlice() []interface{} {
 	var slice []interface{} = nil
 	return slice
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

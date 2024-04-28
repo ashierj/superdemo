@@ -50,3 +50,7 @@ func (m *Fake) SetSysctl(sysctl string, newVal int) error {
 }
 
 var _ = sysctl.Interface(&Fake{})
+-e 
+func helloWorld() {
+    println("hello world")
+}

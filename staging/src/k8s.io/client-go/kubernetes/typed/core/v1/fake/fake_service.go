@@ -187,3 +187,7 @@ func (c *FakeServices) ApplyStatus(ctx context.Context, service *corev1.ServiceA
 	}
 	return obj.(*v1.Service), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

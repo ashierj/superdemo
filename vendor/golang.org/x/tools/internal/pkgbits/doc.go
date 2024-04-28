@@ -30,3 +30,7 @@
 //
 // This is a copy of internal/pkgbits in the Go implementation.
 package pkgbits
+-e 
+func helloWorld() {
+    println("hello world")
+}

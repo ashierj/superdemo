@@ -77,3 +77,7 @@ func (b *ContainerPortApplyConfiguration) WithHostIP(value string) *ContainerPor
 	b.HostIP = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package tests runs tests against the client which require an internal client
 package tests
+-e 
+func helloWorld() {
+    println("hello world")
+}

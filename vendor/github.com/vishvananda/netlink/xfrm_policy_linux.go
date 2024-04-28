@@ -261,3 +261,7 @@ func parseXfrmPolicy(m []byte, family int) (*XfrmPolicy, error) {
 
 	return &policy, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

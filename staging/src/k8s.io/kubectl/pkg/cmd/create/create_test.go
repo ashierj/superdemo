@@ -150,3 +150,7 @@ func TestCreateDirectory(t *testing.T) {
 		t.Errorf("unexpected output: %s", buf.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

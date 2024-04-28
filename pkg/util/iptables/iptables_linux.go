@@ -99,3 +99,7 @@ func grabIptablesLocks(lockfilePath14x, lockfilePath16x string) (iptablesLocker,
 func grabIptablesFileLock(f *os.File) error {
 	return unix.Flock(int(f.Fd()), unix.LOCK_EX|unix.LOCK_NB)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

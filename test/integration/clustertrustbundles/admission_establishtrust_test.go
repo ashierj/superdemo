@@ -168,3 +168,7 @@ func buildClusterRoleBindingForUser(name, username, clusterRoleName string) *rba
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

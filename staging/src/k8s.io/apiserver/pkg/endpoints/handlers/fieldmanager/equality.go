@@ -179,3 +179,7 @@ func IgnoreManagedFieldsTimestampsTransformer(
 	outcome = "unequal_objects_slow"
 	return newObj, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

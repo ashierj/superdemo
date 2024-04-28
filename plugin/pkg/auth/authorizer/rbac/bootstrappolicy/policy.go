@@ -673,3 +673,7 @@ func ClusterRoleBindingsToSplit() map[string]rbacv1.ClusterRoleBinding {
 	}
 	return bindingsToSplit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

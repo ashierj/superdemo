@@ -268,3 +268,7 @@ func (p Comment) String() string {
 	}
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

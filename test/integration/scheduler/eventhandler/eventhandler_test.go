@@ -135,3 +135,7 @@ func TestUpdateNodeEvent(t *testing.T) {
 		t.Errorf("Pod %v was not scheduled: %v", pod.Name, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -140,3 +140,7 @@ func TestWatchBasedManager(t *testing.T) {
 	default:
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

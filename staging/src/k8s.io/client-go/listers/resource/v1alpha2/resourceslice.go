@@ -46,3 +46,7 @@ type resourceSliceLister struct {
 func NewResourceSliceLister(indexer cache.Indexer) ResourceSliceLister {
 	return &resourceSliceLister{listers.New[*v1alpha2.ResourceSlice](indexer, v1alpha2.Resource("resourceslice"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

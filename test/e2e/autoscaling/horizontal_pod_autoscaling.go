@@ -418,3 +418,7 @@ func getTargetValueByType(averageValueTarget, averageUtilizationTarget int, targ
 	}
 	return int32(averageValueTarget)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

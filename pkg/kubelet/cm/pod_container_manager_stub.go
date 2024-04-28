@@ -73,3 +73,7 @@ func (m *podContainerManagerStub) SetPodCgroupMemoryLimit(_ *v1.Pod, _ int64) er
 func (m *podContainerManagerStub) SetPodCgroupCpuLimit(_ *v1.Pod, _ *int64, _, _ *uint64) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

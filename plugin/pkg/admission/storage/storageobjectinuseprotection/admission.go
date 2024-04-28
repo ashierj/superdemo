@@ -119,3 +119,7 @@ func (c *storageProtectionPlugin) admitPVC(a admission.Attributes) error {
 	pvc.Finalizers = append(pvc.Finalizers, volumeutil.PVCProtectionFinalizer)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

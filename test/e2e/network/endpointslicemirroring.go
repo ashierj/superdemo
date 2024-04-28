@@ -333,3 +333,7 @@ var _ = common.SIGDescribe("EndpointSliceMirroring", func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

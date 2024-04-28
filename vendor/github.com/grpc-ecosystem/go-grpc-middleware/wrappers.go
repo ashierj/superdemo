@@ -28,3 +28,7 @@ func WrapServerStream(stream grpc.ServerStream) *WrappedServerStream {
 	}
 	return &WrappedServerStream{ServerStream: stream, WrappedContext: stream.Context()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func (v *validatingAdmissionPolicyStrategy) authorize(ctx context.Context, polic
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

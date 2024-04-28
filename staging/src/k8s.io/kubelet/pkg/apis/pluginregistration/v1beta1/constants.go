@@ -22,3 +22,7 @@ const (
 	// DevicePlugin identifier for registered device plugins
 	DevicePlugin = "DevicePlugin"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

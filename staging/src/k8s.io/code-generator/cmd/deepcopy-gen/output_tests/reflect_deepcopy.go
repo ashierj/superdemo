@@ -79,3 +79,7 @@ func reflectDeepCopy(src reflect.Value) reflect.Value {
 		return src
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

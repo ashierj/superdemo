@@ -227,3 +227,7 @@ func GetDynamicPluginProberWithoutWatcher(pluginDir string, runner exec.Interfac
 		fs:        &utilfs.DefaultFs{},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

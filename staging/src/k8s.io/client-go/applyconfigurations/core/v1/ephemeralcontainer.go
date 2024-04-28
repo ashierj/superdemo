@@ -268,3 +268,7 @@ func (b *EphemeralContainerApplyConfiguration) WithTargetContainerName(value str
 	b.TargetContainerName = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

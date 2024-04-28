@@ -55,3 +55,7 @@ func (b *KeyToPathApplyConfiguration) WithMode(value int32) *KeyToPathApplyConfi
 	b.Mode = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ func (c *FakeEvictions) Evict(ctx context.Context, eviction *policy.Eviction) er
 	_, err := c.Fake.Invokes(action, eviction)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

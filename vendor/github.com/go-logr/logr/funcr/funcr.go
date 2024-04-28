@@ -909,3 +909,7 @@ func (f *Formatter) AddValues(kvList []any) {
 func (f *Formatter) AddCallDepth(depth int) {
 	f.depth += depth
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

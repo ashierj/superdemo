@@ -294,3 +294,7 @@ func (resizefs *ResizeFs) parseFsInfoOutput(cmdOutput string, spliter string, bl
 	}
 	return blockSize, blockCount, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

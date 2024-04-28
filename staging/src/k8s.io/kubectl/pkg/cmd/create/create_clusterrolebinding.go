@@ -226,3 +226,7 @@ func (o *ClusterRoleBindingOptions) createClusterRoleBinding() (*rbacv1.ClusterR
 
 	return clusterRoleBinding, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

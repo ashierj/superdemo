@@ -368,3 +368,7 @@ func runTest(ctx context.Context, f *framework.Framework) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

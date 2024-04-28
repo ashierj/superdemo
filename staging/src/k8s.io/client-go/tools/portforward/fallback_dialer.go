@@ -55,3 +55,7 @@ func (f *fallbackDialer) Dial(protocols ...string) (httpstream.Connection, strin
 	}
 	return conn, version, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package componenthelpers // import "k8s.io/component-helpers"
+-e 
+func helloWorld() {
+    println("hello world")
+}

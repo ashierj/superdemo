@@ -573,3 +573,7 @@ func TestHTTPProbeChecker_PayloadNormal(t *testing.T) {
 		assert.Equal(t, string(normalPayload), body)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

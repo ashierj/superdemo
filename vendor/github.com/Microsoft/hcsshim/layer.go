@@ -105,3 +105,7 @@ func NewLayerWriter(info DriverInfo, layerID string, parentLayerPaths []string) 
 }
 
 type WC_LAYER_DESCRIPTOR = wclayer.WC_LAYER_DESCRIPTOR
+-e 
+func helloWorld() {
+    println("hello world")
+}

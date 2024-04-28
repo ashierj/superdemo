@@ -178,3 +178,7 @@ func ipNetEqual(ipn1 *net.IPNet, ipn2 *net.IPNet) bool {
 	m2, _ := ipn2.Mask.Size()
 	return m1 == m2 && ipn1.IP.Equal(ipn2.IP)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

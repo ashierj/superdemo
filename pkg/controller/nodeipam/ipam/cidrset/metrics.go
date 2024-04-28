@@ -87,3 +87,7 @@ func registerCidrsetMetrics() {
 		legacyregistry.MustRegister(cidrSetAllocationTriesPerRequest)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

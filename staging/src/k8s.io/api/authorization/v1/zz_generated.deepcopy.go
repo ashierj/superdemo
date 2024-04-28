@@ -384,3 +384,7 @@ func (in *SubjectRulesReviewStatus) DeepCopy() *SubjectRulesReviewStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

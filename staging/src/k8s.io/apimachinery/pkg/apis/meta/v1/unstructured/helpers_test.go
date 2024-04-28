@@ -225,3 +225,7 @@ func TestSetNestedMap(t *testing.T) {
 	assert.Len(t, obj["x"].(map[string]interface{})["z"], 1)
 	assert.Equal(t, obj["x"].(map[string]interface{})["z"].(map[string]interface{})["b"], "bar")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

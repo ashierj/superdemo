@@ -270,3 +270,7 @@ func maybeOptimizeSetMembership(i Interpretable, inlist InterpretableCall) (Inte
 		valueSet: valueSet,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

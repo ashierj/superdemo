@@ -297,3 +297,7 @@ func (e *iso2022JPEncoder) Transform(dst, src []byte, atEOF bool) (nDst, nSrc in
 	}
 	return nDst, nSrc, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

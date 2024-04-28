@@ -206,3 +206,7 @@ func (c *roleBindings) Apply(ctx context.Context, roleBinding *rbacv1.RoleBindin
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -163,3 +163,7 @@ func readFile(test, file string) string {
 	}
 	return commonutils.SubstituteImageName(string(data))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

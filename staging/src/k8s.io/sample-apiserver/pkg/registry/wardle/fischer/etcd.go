@@ -49,3 +49,7 @@ func NewREST(scheme *runtime.Scheme, optsGetter generic.RESTOptionsGetter) (*reg
 	}
 	return &registry.REST{Store: store}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

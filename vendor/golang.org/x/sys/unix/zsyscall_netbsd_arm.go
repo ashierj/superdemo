@@ -1846,3 +1846,7 @@ func mremapNetBSD(oldp uintptr, oldsize uintptr, newp uintptr, newsize uintptr, 
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

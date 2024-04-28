@@ -291,3 +291,7 @@ func (c *controller[T]) reconcile(key string) error {
 
 	return c.reconciler(namespace, name, newObj)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

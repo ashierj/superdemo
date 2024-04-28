@@ -41,3 +41,7 @@ func OutDir(path string) (string, error) {
 	outDir = outDir + "/"
 	return outDir, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

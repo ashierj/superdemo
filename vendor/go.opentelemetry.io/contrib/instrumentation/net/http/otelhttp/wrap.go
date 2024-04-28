@@ -97,3 +97,7 @@ func (w *respWriterWrapper) WriteHeader(statusCode int) {
 	}
 	w.ResponseWriter.WriteHeader(statusCode)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

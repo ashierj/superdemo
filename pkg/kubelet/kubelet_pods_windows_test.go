@@ -153,3 +153,7 @@ func TestMakeMountsWindows(t *testing.T) {
 	}
 	assert.Equal(t, expectedMounts, mounts, "mounts of container %+v", container)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

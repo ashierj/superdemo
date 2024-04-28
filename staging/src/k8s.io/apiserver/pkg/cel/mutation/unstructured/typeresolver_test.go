@@ -154,3 +154,7 @@ func mustCreateEnv(t testing.TB, envOptions ...cel.EnvOption) *cel.Env {
 	}
 	return env
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -254,3 +254,7 @@ func (c *flunders) ApplyStatus(ctx context.Context, flunder *wardlev1beta1.Flund
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

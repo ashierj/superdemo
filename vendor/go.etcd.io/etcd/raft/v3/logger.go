@@ -140,3 +140,7 @@ func (l *DefaultLogger) Panicf(format string, v ...interface{}) {
 func header(lvl, msg string) string {
 	return fmt.Sprintf("%s: %s", lvl, msg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

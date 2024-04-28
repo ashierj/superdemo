@@ -203,3 +203,7 @@ func writeKeyPair(tmpDirPath, key, cert string, t *testing.T) (keyPath, certPath
 	write(certPath, cert, t)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

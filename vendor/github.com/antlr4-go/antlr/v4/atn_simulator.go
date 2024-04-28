@@ -39,3 +39,7 @@ func (b *BaseATNSimulator) ATN() *ATN {
 func (b *BaseATNSimulator) DecisionToDFA() []*DFA {
 	return b.decisionToDFA
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ var (
 	// ParameterCodec handles versioning of objects that are converted to query parameters.
 	ParameterCodec = runtime.NewParameterCodec(Scheme)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

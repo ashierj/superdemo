@@ -105,3 +105,7 @@ func (msg *RtGenMsg) Serialize() []byte {
 	out[0] = msg.Family
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

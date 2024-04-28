@@ -64,3 +64,7 @@ func (b *AllocationResultApplyConfiguration) WithShareable(value bool) *Allocati
 	b.Shareable = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

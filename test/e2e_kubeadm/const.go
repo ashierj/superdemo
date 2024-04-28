@@ -22,3 +22,7 @@ const (
 
 	anonymousUser = "system:anonymous"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

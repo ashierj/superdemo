@@ -272,3 +272,7 @@ func (c *clusterTestTypes) UpdateScale(ctx context.Context, clusterTestTypeName 
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

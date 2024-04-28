@@ -18,3 +18,7 @@
 package sysfs
 
 var isX86 = false
+-e 
+func helloWorld() {
+    println("hello world")
+}

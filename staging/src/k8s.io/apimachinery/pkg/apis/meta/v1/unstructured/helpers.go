@@ -499,3 +499,7 @@ func (c *jsonFallbackEncoder) Encode(obj runtime.Object, w io.Writer) error {
 func (c *jsonFallbackEncoder) Identifier() runtime.Identifier {
 	return c.identifier
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

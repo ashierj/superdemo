@@ -68,3 +68,7 @@ type ResourceClassParametersNamespaceLister interface {
 type resourceClassParametersNamespaceLister struct {
 	listers.ResourceIndexer[*v1alpha2.ResourceClassParameters]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ type Interface interface {
 	// List retrieves all nfacct counters.
 	List() ([]*Counter, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

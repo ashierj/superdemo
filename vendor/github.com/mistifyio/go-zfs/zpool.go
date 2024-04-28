@@ -110,3 +110,7 @@ func ListZpools() ([]*Zpool, error) {
 	}
 	return pools, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

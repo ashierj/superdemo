@@ -46,3 +46,7 @@ type componentStatusLister struct {
 func NewComponentStatusLister(indexer cache.Indexer) ComponentStatusLister {
 	return &componentStatusLister{listers.New[*v1.ComponentStatus](indexer, v1.Resource("componentstatus"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func (i pluginInitializer) Initialize(plugin admission.Interface) {
 		wants.SetInternalWardleInformerFactory(i.informers)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

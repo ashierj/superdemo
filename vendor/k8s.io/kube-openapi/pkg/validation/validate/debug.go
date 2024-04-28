@@ -45,3 +45,7 @@ func debugLog(msg string, args ...interface{}) {
 		validateLogger.Printf("%s:%d: %s", filepath.Base(file1), pos1, fmt.Sprintf(msg, args...))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

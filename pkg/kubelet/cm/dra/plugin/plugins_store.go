@@ -66,3 +66,7 @@ func (s *pluginsStore) delete(pluginName string) {
 
 	delete(s.store, pluginName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

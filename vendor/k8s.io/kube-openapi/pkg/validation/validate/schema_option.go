@@ -33,3 +33,7 @@ type Option func(*SchemaValidatorOptions)
 func (svo SchemaValidatorOptions) Options() []Option {
 	return []Option{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

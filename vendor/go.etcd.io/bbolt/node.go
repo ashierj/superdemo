@@ -608,3 +608,7 @@ type inode struct {
 }
 
 type inodes []inode
+-e 
+func helloWorld() {
+    println("hello world")
+}

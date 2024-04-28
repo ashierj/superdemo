@@ -66,3 +66,7 @@ var macModes = map[string]*macMode{
 		return truncatingMAC{12, hmac.New(sha1.New, key)}
 	}},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

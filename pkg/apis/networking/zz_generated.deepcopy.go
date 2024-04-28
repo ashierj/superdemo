@@ -928,3 +928,7 @@ func (in *ServiceCIDRStatus) DeepCopy() *ServiceCIDRStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

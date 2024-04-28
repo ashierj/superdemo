@@ -9,3 +9,7 @@ func (r *Route) ListFlags() []string {
 func (n *NexthopInfo) ListFlags() []string {
 	return []string{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

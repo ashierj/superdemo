@@ -173,3 +173,7 @@ func TestProxyWatcher(t *testing.T) {
 	// Test double close
 	w.Stop()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

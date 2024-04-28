@@ -40,3 +40,7 @@ func TestGetSocketPath(t *testing.T) {
 	socketPath := "/tmp/foo/lish.sock"
 	assert.Equal(t, socketPath, getSocketPath(socketPath))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

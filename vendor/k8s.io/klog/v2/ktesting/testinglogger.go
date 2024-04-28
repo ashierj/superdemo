@@ -382,3 +382,7 @@ func (l tlogger) GetBuffer() Buffer {
 var _ logr.LogSink = &tlogger{}
 var _ logr.CallStackHelperLogSink = &tlogger{}
 var _ Underlier = &tlogger{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -95,3 +95,7 @@ func deeper(dst, src reflect.Value, visited map[uintptr]*visit, depth int) (err 
 	}
 	return // TODO refactor
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ type CpuGroupConfig struct {
 	// Hypervisor CPU group IDs exposed to clients
 	HypervisorGroupId int32 `json:"HypervisorGroupId,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

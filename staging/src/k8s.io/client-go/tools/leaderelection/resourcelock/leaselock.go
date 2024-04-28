@@ -137,3 +137,7 @@ func LeaderElectionRecordToLeaseSpec(ler *LeaderElectionRecord) coordinationv1.L
 		LeaseTransitions:     &leaseTransitions,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

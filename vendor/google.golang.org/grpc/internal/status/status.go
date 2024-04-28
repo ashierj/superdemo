@@ -202,3 +202,7 @@ func IsRestrictedControlPlaneCode(s *Status) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

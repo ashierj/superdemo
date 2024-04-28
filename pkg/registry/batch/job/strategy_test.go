@@ -3569,3 +3569,7 @@ func getValidPodTemplateSpecForSelector(validSelector *metav1.LabelSelector) api
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

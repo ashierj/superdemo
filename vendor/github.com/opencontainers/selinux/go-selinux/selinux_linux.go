@@ -1293,3 +1293,7 @@ func getDefaultContextWithLevel(user, level, scon string) (string, error) {
 
 	return getDefaultContextFromReaders(&c)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

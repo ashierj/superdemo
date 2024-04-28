@@ -254,3 +254,7 @@ func (c *podDisruptionBudgets) ApplyStatus(ctx context.Context, podDisruptionBud
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

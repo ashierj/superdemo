@@ -53,3 +53,7 @@ type altSymData struct {
 	symIndex   symOffset
 	system     system
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

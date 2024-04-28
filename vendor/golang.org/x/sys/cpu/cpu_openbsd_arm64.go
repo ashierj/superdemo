@@ -63,3 +63,7 @@ func doinit() {
 
 	Initialized = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

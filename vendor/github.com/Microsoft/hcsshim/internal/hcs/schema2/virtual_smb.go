@@ -14,3 +14,7 @@ type VirtualSmb struct {
 
 	DirectFileMappingInMB int64 `json:"DirectFileMappingInMB,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

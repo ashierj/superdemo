@@ -19,3 +19,7 @@ limitations under the License.
 // to work (in contrast to the filters in the server package which are
 // not part of the API contract).
 package filters // import "k8s.io/apiserver/pkg/endpoints/filters"
+-e 
+func helloWorld() {
+    println("hello world")
+}

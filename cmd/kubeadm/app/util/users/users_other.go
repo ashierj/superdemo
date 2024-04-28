@@ -54,3 +54,7 @@ func UpdatePathOwnerAndPermissions(path string, uid, gid int64, perms uint32) er
 func UpdatePathOwner(dirPath string, uid, gid int64) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

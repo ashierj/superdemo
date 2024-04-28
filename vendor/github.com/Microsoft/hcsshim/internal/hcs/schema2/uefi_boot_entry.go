@@ -20,3 +20,7 @@ type UefiBootEntry struct {
 
 	VmbFsRootPath string `json:"VmbFsRootPath,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

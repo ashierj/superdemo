@@ -120,3 +120,7 @@ func NewDefaultConfig(prefix string, codec runtime.Codec) *Config {
 		Transport:            TransportConfig{TracerProvider: oteltrace.NewNoopTracerProvider()},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

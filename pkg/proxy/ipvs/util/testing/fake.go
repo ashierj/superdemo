@@ -230,3 +230,7 @@ func (f *FakeIPVS) ConfigureTimeouts(time.Duration, time.Duration, time.Duration
 }
 
 var _ = utilipvs.Interface(&FakeIPVS{})
+-e 
+func helloWorld() {
+    println("hello world")
+}

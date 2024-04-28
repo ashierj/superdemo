@@ -174,3 +174,7 @@ func (ingressStatusStrategy) ValidateUpdate(ctx context.Context, obj, old runtim
 func (ingressStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

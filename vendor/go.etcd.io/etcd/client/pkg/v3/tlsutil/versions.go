@@ -45,3 +45,7 @@ func GetTLSVersion(version string) (uint16, error) {
 
 	return v, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

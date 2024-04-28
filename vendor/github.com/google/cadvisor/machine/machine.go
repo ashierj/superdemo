@@ -302,3 +302,7 @@ func getNumCores() int {
 
 	return numCPU
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

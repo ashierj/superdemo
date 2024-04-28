@@ -256,3 +256,7 @@ func (b *PodApplyConfiguration) WithStatus(value *PodStatusApplyConfiguration) *
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

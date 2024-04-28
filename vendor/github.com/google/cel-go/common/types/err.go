@@ -167,3 +167,7 @@ func IsError(val ref.Val) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

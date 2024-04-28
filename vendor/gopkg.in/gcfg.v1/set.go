@@ -327,3 +327,7 @@ func set(c *warnings.Collector, cfg interface{}, sect, sub, name string,
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

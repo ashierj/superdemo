@@ -108,3 +108,7 @@ func (w *waitWithResponse) Trigger(id uint64, x interface{}) {}
 func (w *waitWithResponse) IsRegistered(id uint64) bool {
 	panic("waitWithResponse.IsRegistered() shouldn't be called")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

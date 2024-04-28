@@ -469,3 +469,7 @@ func testV1beta1PodMetricsData() []metricsv1beta1api.PodMetrics {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

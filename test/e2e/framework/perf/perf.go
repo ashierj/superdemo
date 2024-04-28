@@ -98,3 +98,7 @@ func CPUUsageToPerfDataWithLabels(usagePerNode e2ekubelet.NodesCPUSummary, label
 		Labels:    labels,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

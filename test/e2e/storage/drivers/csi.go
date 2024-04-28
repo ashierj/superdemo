@@ -1033,3 +1033,7 @@ func generateDriverCleanupFunc(
 
 	return cleanupFunc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *cronJobInformer) Informer() cache.SharedIndexInformer {
 func (f *cronJobInformer) Lister() v1beta1.CronJobLister {
 	return v1beta1.NewCronJobLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

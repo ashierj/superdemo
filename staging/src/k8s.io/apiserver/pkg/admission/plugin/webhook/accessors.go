@@ -374,3 +374,7 @@ func hookClientConfigForWebhook(w WebhookAccessor) webhookutil.ClientConfig {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

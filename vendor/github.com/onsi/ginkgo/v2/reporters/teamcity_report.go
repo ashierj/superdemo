@@ -103,3 +103,7 @@ func MergeAndCleanupTeamcityReports(sources []string, dst string) ([]string, err
 	}
 	return messages, os.WriteFile(dst, merged, 0666)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

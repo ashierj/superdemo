@@ -354,3 +354,7 @@ func MustParseMemberIDFromKey(lg *zap.Logger, key string) types.ID {
 func RemovedMemberStoreKey(id types.ID) string {
 	return path.Join(storeRemovedMembersPrefix, id.String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

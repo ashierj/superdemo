@@ -111,3 +111,7 @@ func ConvertStringToArch(in string) (string, error) {
 	}
 	return "", fmt.Errorf("string %s is not a valid arch for seccomp", in)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

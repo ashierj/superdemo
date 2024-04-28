@@ -60,3 +60,7 @@ func (p initialPatterns) get(initial byte) (*patterns, bool) {
 func (p initialPatterns) size() int {
 	return len(p.m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

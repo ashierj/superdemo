@@ -1319,3 +1319,7 @@ func (e internalError) Error() string { return "gcimporter: " + string(e) }
 func internalErrorf(format string, args ...interface{}) error {
 	return internalError(fmt.Sprintf(format, args...))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

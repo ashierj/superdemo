@@ -61,3 +61,7 @@ func macroTargetMatchesNamespace(ns string, target ast.Expr) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

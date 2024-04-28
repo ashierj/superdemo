@@ -394,3 +394,7 @@ func (c *Command) GenBashCompletionFileV2(filename string, includeDesc bool) err
 func (c *Command) GenBashCompletionV2(w io.Writer, includeDesc bool) error {
 	return c.genBashCompletion(w, includeDesc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

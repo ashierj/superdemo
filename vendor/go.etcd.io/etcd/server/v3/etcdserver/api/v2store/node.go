@@ -394,3 +394,7 @@ func (n *node) recoverAndclean() {
 		n.store.ttlKeyHeap.push(n)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

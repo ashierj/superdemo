@@ -41,3 +41,7 @@ func addToScheme(scheme *runtime.Scheme) {
 	utilruntime.Must(admissionv1.AddToScheme(scheme))
 	utilruntime.Must(admissionregistrationv1.AddToScheme(scheme))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

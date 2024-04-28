@@ -86,3 +86,7 @@ func (b *ConditionApplyConfiguration) WithMessage(value string) *ConditionApplyC
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -571,3 +571,7 @@ func MultipleOfMustBePositive(name, in string, factor interface{}) *Validation {
 		message: fmt.Sprintf(multipleOfMustBePositive, name, factor),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -38,3 +38,7 @@ func (matcher *ContainSubstringMatcher) FailureMessage(actual interface{}) (mess
 func (matcher *ContainSubstringMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to contain substring", matcher.stringToMatch())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

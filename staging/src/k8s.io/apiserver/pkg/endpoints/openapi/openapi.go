@@ -189,3 +189,7 @@ func (d *DefinitionNamer) GetDefinitionName(name string) (string, spec.Extension
 	}
 	return friendlyName(name), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

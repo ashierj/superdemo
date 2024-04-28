@@ -118,3 +118,7 @@ func (c *staticSNICertKeyContent) SNINames() []string {
 }
 
 func (c *staticSNICertKeyContent) AddListener(Listener) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

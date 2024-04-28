@@ -395,3 +395,7 @@ func (err alreadyExistsError) Error() string {
 		"Failed to create operation with name %+v. An operation with that name is already executing.",
 		err.operationKey)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

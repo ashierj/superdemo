@@ -1248,3 +1248,7 @@ func NewValidationDurationTestCases(url *url.URL) []DurationTest {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

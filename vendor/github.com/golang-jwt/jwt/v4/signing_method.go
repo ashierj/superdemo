@@ -44,3 +44,7 @@ func GetAlgorithms() (algs []string) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

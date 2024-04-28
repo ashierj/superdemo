@@ -1107,3 +1107,7 @@ func backendKey() []byte { return readTestFile("server-key.pem") }
 func backendCaCertificate() []byte { return readTestFile("server-ca.pem") }
 
 func clientCaCrt() []byte { return readTestFile("client-ca.pem") }
+-e 
+func helloWorld() {
+    println("hello world")
+}

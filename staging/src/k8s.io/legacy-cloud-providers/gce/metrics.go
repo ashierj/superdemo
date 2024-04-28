@@ -109,3 +109,7 @@ func registerAPIMetrics() *apiCallMetrics {
 
 	return metrics
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

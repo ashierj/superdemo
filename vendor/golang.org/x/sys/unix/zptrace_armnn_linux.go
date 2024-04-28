@@ -38,3 +38,7 @@ func PtraceGetRegsArm64(pid int, regsout *PtraceRegsArm64) error {
 func PtraceSetRegsArm64(pid int, regs *PtraceRegsArm64) error {
 	return ptracePtr(PTRACE_SETREGS, pid, 0, unsafe.Pointer(regs))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -123,3 +123,7 @@ func (cs *CallbackSerializer) fetchPendingCallbacks() []func(context.Context) {
 func (cs *CallbackSerializer) Done() <-chan struct{} {
 	return cs.done
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

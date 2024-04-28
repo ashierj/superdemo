@@ -190,3 +190,7 @@ func (l *slogHandler) levelFromSlog(level slog.Level) int {
 	}
 	return int(result)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

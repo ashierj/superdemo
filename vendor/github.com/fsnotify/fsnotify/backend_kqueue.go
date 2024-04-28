@@ -780,3 +780,7 @@ func (w *Watcher) read(events []unix.Kevent_t) ([]unix.Kevent_t, error) {
 	}
 	return events[0:n], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

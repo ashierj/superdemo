@@ -69,3 +69,7 @@ func (b *ReplicaSetSpecApplyConfiguration) WithTemplate(value *corev1.PodTemplat
 	b.Template = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

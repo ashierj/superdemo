@@ -211,3 +211,7 @@ func marshalBytes(b []byte) (string, bool) {
 	}
 	return string(s), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

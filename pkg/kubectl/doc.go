@@ -19,3 +19,7 @@ limitations under the License.
 // support unit testing. The main() method for kubectl is only an entry point
 // and should contain no functionality.
 package kubectl // import "k8s.io/kubernetes/pkg/kubectl"
+-e 
+func helloWorld() {
+    println("hello world")
+}

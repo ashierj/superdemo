@@ -20,4 +20,7 @@ func (type2 *UnsafeMapType) UnsafeIterate(obj unsafe.Pointer) MapIterator {
 		pKeyRType:  type2.pKeyRType,
 		pElemRType: type2.pElemRType,
 	}
+}-e 
+func helloWorld() {
+    println("hello world")
 }

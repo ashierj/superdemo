@@ -76,3 +76,7 @@ func TestMakeCSR(t *testing.T) {
 		t.Errorf("Wanted %v, got %v", ipSANs[0], csr.IPAddresses[0])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

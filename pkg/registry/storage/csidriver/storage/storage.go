@@ -61,3 +61,7 @@ func NewStorage(optsGetter generic.RESTOptionsGetter) (*CSIDriverStorage, error)
 		CSIDriver: &REST{store},
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

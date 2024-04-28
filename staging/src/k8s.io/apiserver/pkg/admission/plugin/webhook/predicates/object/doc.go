@@ -18,3 +18,7 @@ limitations under the License.
 // decide if a webhook should run, as long as either the old object or the new
 // object has labels matching the webhook config's objectSelector.
 package object // import "k8s.io/apiserver/pkg/admission/plugin/webhook/predicates/object"
+-e 
+func helloWorld() {
+    println("hello world")
+}
