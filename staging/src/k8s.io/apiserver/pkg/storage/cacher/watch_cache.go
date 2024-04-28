@@ -440,6 +440,11 @@ func (w *watchCache) List() []interface{} {
 // You HAVE TO explicitly call w.RUnlock() after this function.
 func (w *watchCache) waitUntilFreshAndBlock(ctx context.Context, resourceVersion uint64) error {
 	startTime := w.clock.Now()
+	defer func() {
+		if resourceVersion > 0 {
+			metrics.WatchCacheReadWait.WithContext(ctx).WithLabelValues(w.groupResource.String()).Observe(w.clock.Since(startTime).Seconds())
+		}
+	}()
 
 	// In case resourceVersion is 0, we accept arbitrarily stale result.
 	// As a result, the condition in the below for loop will never be
@@ -531,7 +536,14 @@ func (w *watchCache) notFresh(resourceVersion uint64) bool {
 
 // WaitUntilFreshAndGet returns a pointers to <storeElement> object.
 func (w *watchCache) WaitUntilFreshAndGet(ctx context.Context, resourceVersion uint64, key string) (interface{}, bool, uint64, error) {
-	err := w.waitUntilFreshAndBlock(ctx, resourceVersion)
+	var err error
+	if utilfeature.DefaultFeatureGate.Enabled(features.ConsistentListFromCache) && w.notFresh(resourceVersion) {
+		w.waitingUntilFresh.Add()
+		err = w.waitUntilFreshAndBlock(ctx, resourceVersion)
+		w.waitingUntilFresh.Remove()
+	} else {
+		err = w.waitUntilFreshAndBlock(ctx, resourceVersion)
+	}
 	defer w.RUnlock()
 	if err != nil {
 		return nil, false, 0, err

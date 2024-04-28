@@ -223,13 +223,6 @@ const (
 	// TLSBootstrapRetryInterval specifies how long kubeadm should wait before retrying the TLS Bootstrap check
 	TLSBootstrapRetryInterval = 1 * time.Second
 
-	// StaticPodMirroringTimeout specifies how much time kubeadm should wait for the static pods
-	// to be mirrored on the API server.
-	StaticPodMirroringTimeout = 30 * time.Second
-	// StaticPodMirroringRetryInterval specifies how often to check if static pods are mirrored at the
-	// API server.
-	StaticPodMirroringRetryInterval = 500 * time.Millisecond
-
 	// EtcdAPICallTimeout specifies how much time to wait for completion of requests against the etcd API.
 	EtcdAPICallTimeout = 2 * time.Minute
 	// EtcdAPICallRetryInterval specifies how frequently to retry requests against the etcd API.
@@ -240,6 +233,9 @@ const (
 
 	// KubeletHealthCheckTimeout specifies the default kubelet timeout
 	KubeletHealthCheckTimeout = 4 * time.Minute
+
+	// UpgradeManifestsTimeout specifies the default timeout for upgradring static Pod manifests
+	UpgradeManifestsTimeout = 5 * time.Minute
 
 	// PullImageRetry specifies how many times ContainerRuntime retries when pulling image failed
 	PullImageRetry = 5
@@ -324,7 +320,7 @@ const (
 	MinExternalEtcdVersion = "3.4.13-4"
 
 	// DefaultEtcdVersion indicates the default etcd version that kubeadm uses
-	DefaultEtcdVersion = "3.5.12-0"
+	DefaultEtcdVersion = "3.5.13-0"
 
 	// Etcd defines variable used internally when referring to etcd component
 	Etcd = "etcd"
@@ -483,24 +479,25 @@ var (
 
 	// SupportedEtcdVersion lists officially supported etcd versions with corresponding Kubernetes releases
 	SupportedEtcdVersion = map[uint8]string{
-		22: "3.5.12-0",
-		23: "3.5.12-0",
-		24: "3.5.12-0",
-		25: "3.5.12-0",
-		26: "3.5.12-0",
-		27: "3.5.12-0",
-		28: "3.5.12-0",
-		29: "3.5.12-0",
-		30: "3.5.12-0",
+		22: "3.5.13-0",
+		23: "3.5.13-0",
+		24: "3.5.13-0",
+		25: "3.5.13-0",
+		26: "3.5.13-0",
+		27: "3.5.13-0",
+		28: "3.5.13-0",
+		29: "3.5.13-0",
+		30: "3.5.13-0",
+		31: "3.5.13-0",
 	}
 
 	// KubeadmCertsClusterRoleName sets the name for the ClusterRole that allows
 	// the bootstrap tokens to access the kubeadm-certs Secret during the join of a new control-plane
 	KubeadmCertsClusterRoleName = fmt.Sprintf("kubeadm:%s", KubeadmCertsSecret)
 
-	// defaultKubernetesPlaceholderVersion is a placeholder version in case the component-base
+	// DefaultKubernetesPlaceholderVersion is a placeholder version in case the component-base
 	// version was not populated during build.
-	defaultKubernetesPlaceholderVersion = version.MustParseSemantic("v1.0.0-placeholder-version")
+	DefaultKubernetesPlaceholderVersion = version.MustParseSemantic("v1.0.0-placeholder-version")
 )
 
 // getSkewedKubernetesVersion returns the current MAJOR.(MINOR+n).0 Kubernetes version with a skew of 'n'
@@ -518,7 +515,7 @@ func getSkewedKubernetesVersionImpl(versionInfo *apimachineryversion.Info, n int
 	// More changes would be required if the kubelet version one day decouples from that of Kubernetes.
 	var ver *version.Version
 	if len(versionInfo.Major) == 0 {
-		return defaultKubernetesPlaceholderVersion
+		return DefaultKubernetesPlaceholderVersion
 	}
 	ver = version.MustParseSemantic(versionInfo.GitVersion)
 	// Append the MINOR version skew.
