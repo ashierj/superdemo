@@ -42,7 +42,7 @@ type completedConfig struct {
 	Options options.CompletedOptions
 
 	Aggregator    aggregatorapiserver.CompletedConfig
-	KubeAPIs      controlplane.CompletedConfig
+	KubeAPIs      controlplane.Completed
 	ApiExtensions apiextensionsapiserver.CompletedConfig
 
 	ExtraConfig
