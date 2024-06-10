@@ -67,7 +67,6 @@ type PodTopologySpread struct {
 	replicationCtrls                             corelisters.ReplicationControllerLister
 	replicaSets                                  appslisters.ReplicaSetLister
 	statefulSets                                 appslisters.StatefulSetLister
-	enableMinDomainsInPodTopologySpread          bool
 	enableNodeInclusionPolicyInPodTopologySpread bool
 	enableMatchLabelKeysInPodTopologySpread      bool
 }
@@ -99,10 +98,9 @@ func New(_ context.Context, plArgs runtime.Object, h framework.Handle, fts featu
 		return nil, err
 	}
 	pl := &PodTopologySpread{
-		parallelizer:                        h.Parallelizer(),
-		sharedLister:                        h.SnapshotSharedLister(),
-		defaultConstraints:                  args.DefaultConstraints,
-		enableMinDomainsInPodTopologySpread: fts.EnableMinDomainsInPodTopologySpread,
+		parallelizer:       h.Parallelizer(),
+		sharedLister:       h.SnapshotSharedLister(),
+		defaultConstraints: args.DefaultConstraints,
 		enableNodeInclusionPolicyInPodTopologySpread: fts.EnableNodeInclusionPolicyInPodTopologySpread,
 		enableMatchLabelKeysInPodTopologySpread:      fts.EnableMatchLabelKeysInPodTopologySpread,
 	}
@@ -148,7 +146,16 @@ func (pl *PodTopologySpread) EventsToRegister() []framework.ClusterEventWithHint
 		{Event: framework.ClusterEvent{Resource: framework.Pod, ActionType: framework.All}, QueueingHintFn: pl.isSchedulableAfterPodChange},
 		// Node add|delete|update maybe lead an topology key changed,
 		// and make these pod in scheduling schedulable or unschedulable.
-		{Event: framework.ClusterEvent{Resource: framework.Node, ActionType: framework.Add | framework.Delete | framework.Update}, QueueingHintFn: pl.isSchedulableAfterNodeChange},
+		//
+		// A note about UpdateNodeTaint event:
+		// NodeAdd QueueingHint isn't always called because of the internal feature called preCheck.
+		// As a common problematic scenario,
+		// when a node is added but not ready, NodeAdd event is filtered out by preCheck and doesn't arrive.
+		// In such cases, this plugin may miss some events that actually make pods schedulable.
+		// As a workaround, we add UpdateNodeTaint event to catch the case.
+		// We can remove UpdateNodeTaint when we remove the preCheck feature.
+		// See: https://github.com/kubernetes/kubernetes/issues/110175
+		{Event: framework.ClusterEvent{Resource: framework.Node, ActionType: framework.Add | framework.Delete | framework.UpdateNodeLabel | framework.UpdateNodeTaint}, QueueingHintFn: pl.isSchedulableAfterNodeChange},
 	}
 }
 
@@ -196,25 +203,25 @@ func (pl *PodTopologySpread) isSchedulableAfterPodChange(logger klog.Logger, pod
 	}
 
 	// Pod is added. Return Queue when the added Pod has a label that matches with topologySpread's selector.
-	if originalPod != nil {
-		if podLabelsMatchSpreadConstraints(constraints, originalPod.Labels) {
+	if modifiedPod != nil {
+		if podLabelsMatchSpreadConstraints(constraints, modifiedPod.Labels) {
 			logger.V(5).Info("a scheduled pod was created and it matches with the pod's topology spread constraints",
-				"pod", klog.KObj(pod), "createdPod", klog.KObj(originalPod))
+				"pod", klog.KObj(pod), "createdPod", klog.KObj(modifiedPod))
 			return framework.Queue, nil
 		}
 		logger.V(5).Info("a scheduled pod was created, but it doesn't matches with the pod's topology spread constraints",
-			"pod", klog.KObj(pod), "createdPod", klog.KObj(originalPod))
+			"pod", klog.KObj(pod), "createdPod", klog.KObj(modifiedPod))
 		return framework.QueueSkip, nil
 	}
 
 	// Pod is deleted. Return Queue when the deleted Pod has a label that matches with topologySpread's selector.
-	if podLabelsMatchSpreadConstraints(constraints, modifiedPod.Labels) {
+	if podLabelsMatchSpreadConstraints(constraints, originalPod.Labels) {
 		logger.V(5).Info("a scheduled pod which matches with the pod's topology spread constraints was deleted, and the pod may be schedulable now",
-			"pod", klog.KObj(pod), "deletedPod", klog.KObj(modifiedPod))
+			"pod", klog.KObj(pod), "deletedPod", klog.KObj(originalPod))
 		return framework.Queue, nil
 	}
 	logger.V(5).Info("a scheduled pod was deleted, but it's unrelated to the pod's topology spread constraints",
-		"pod", klog.KObj(pod), "deletedPod", klog.KObj(modifiedPod))
+		"pod", klog.KObj(pod), "deletedPod", klog.KObj(originalPod))
 
 	return framework.QueueSkip, nil
 }

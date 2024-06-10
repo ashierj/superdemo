@@ -115,7 +115,6 @@ func createAggregatorConfig(
 		ExtraConfig: aggregatorapiserver.ExtraConfig{
 			ProxyClientCertFile:       commandOptions.ProxyClientCertFile,
 			ProxyClientKeyFile:        commandOptions.ProxyClientKeyFile,
-			PeerCAFile:                commandOptions.PeerCAFile,
 			PeerAdvertiseAddress:      commandOptions.PeerAdvertiseAddress,
 			ServiceResolver:           serviceResolver,
 			ProxyTransport:            proxyTransport,
@@ -142,9 +141,17 @@ func createAggregatorServer(aggregatorConfig aggregatorapiserver.CompletedConfig
 	}
 	autoRegistrationController := autoregister.NewAutoRegisterController(aggregatorServer.APIRegistrationInformers.Apiregistration().V1().APIServices(), apiRegistrationClient)
 	apiServices := apiServicesToRegister(delegateAPIServer, autoRegistrationController)
-	crdRegistrationController := crdregistration.NewCRDRegistrationController(
-		apiExtensionInformers.Apiextensions().V1().CustomResourceDefinitions(),
-		autoRegistrationController)
+
+	type controller interface {
+		Run(workers int, stopCh <-chan struct{})
+		WaitForInitialSync()
+	}
+	var crdRegistrationController controller
+	if crdAPIEnabled {
+		crdRegistrationController = crdregistration.NewCRDRegistrationController(
+			apiExtensionInformers.Apiextensions().V1().CustomResourceDefinitions(),
+			autoRegistrationController)
+	}
 
 	// Imbue all builtin group-priorities onto the aggregated discovery
 	if aggregatorConfig.GenericConfig.AggregatedDiscoveryGroupManager != nil {
@@ -154,7 +161,9 @@ func createAggregatorServer(aggregatorConfig aggregatorapiserver.CompletedConfig
 	}
 
 	err = aggregatorServer.GenericAPIServer.AddPostStartHook("kube-apiserver-autoregistration", func(context genericapiserver.PostStartHookContext) error {
-		go crdRegistrationController.Run(5, context.StopCh)
+		if crdAPIEnabled {
+			go crdRegistrationController.Run(5, context.StopCh)
+		}
 		go func() {
 			// let the CRD controller process the initial set of CRDs before starting the autoregistration controller.
 			// this prevents the autoregistration controller's initial sync from deleting APIServices for CRDs that still exist.
@@ -304,6 +313,7 @@ var apiVersionPriorities = map[schema.GroupVersion]priority{
 	{Group: "flowcontrol.apiserver.k8s.io", Version: "v1alpha1"}: {group: 16100, version: 9},
 	{Group: "internal.apiserver.k8s.io", Version: "v1alpha1"}:    {group: 16000, version: 9},
 	{Group: "resource.k8s.io", Version: "v1alpha2"}:              {group: 15900, version: 9},
+	{Group: "storagemigration.k8s.io", Version: "v1alpha1"}:      {group: 15800, version: 9},
 	// Append a new group to the end of the list if unsure.
 	// You can use min(existing group)-100 as the initial value for a group.
 	// Version can be set to 9 (to have space around) for a new group.

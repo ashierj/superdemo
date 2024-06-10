@@ -59,6 +59,7 @@ type TestServerSetup struct {
 type TearDownFunc func()
 
 // StartTestServer runs a kube-apiserver, optionally calling out to the setup.ModifyServerRunOptions and setup.ModifyServerConfig functions
+// TODO (pohly): convert to ktesting contexts
 func StartTestServer(ctx context.Context, t testing.TB, setup TestServerSetup) (client.Interface, *rest.Config, TearDownFunc) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -181,7 +182,7 @@ func StartTestServer(ctx context.Context, t testing.TB, setup TestServerSetup) (
 	}()
 
 	// Adjust the loopback config for external use (external server name and CA)
-	kubeAPIServerClientConfig := rest.CopyConfig(kubeAPIServerConfig.GenericConfig.LoopbackClientConfig)
+	kubeAPIServerClientConfig := rest.CopyConfig(kubeAPIServerConfig.ControlPlane.Generic.LoopbackClientConfig)
 	kubeAPIServerClientConfig.CAFile = path.Join(certDir, "apiserver.crt")
 	kubeAPIServerClientConfig.CAData = nil
 	kubeAPIServerClientConfig.ServerName = ""

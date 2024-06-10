@@ -53,6 +53,9 @@ type Extender interface {
 	// IsPrioritizer returns whether this extender is configured for the Prioritize method.
 	IsPrioritizer() bool
 
+	// IsFilter returns whether this extender is configured for the Filter method.
+	IsFilter() bool
+
 	// ProcessPreemption returns nodes with their victim pods processed by extender based on
 	// given:
 	//   1. Pod to schedule
@@ -71,5 +74,6 @@ type Extender interface {
 
 	// IsIgnorable returns true indicates scheduling should not fail when this extender
 	// is unavailable. This gives scheduler ability to fail fast and tolerate non-critical extenders as well.
+	// Both Filter and Bind actions are supported.
 	IsIgnorable() bool
 }

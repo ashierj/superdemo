@@ -28,7 +28,7 @@ import (
 	clientset "k8s.io/client-go/kubernetes"
 
 	"k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow"
-	kubeadmconstants "k8s.io/kubernetes/cmd/kubeadm/app/constants"
+	"k8s.io/kubernetes/cmd/kubeadm/app/features"
 	"k8s.io/kubernetes/cmd/kubeadm/app/util/apiclient"
 	dryrunutil "k8s.io/kubernetes/cmd/kubeadm/app/util/dryrun"
 )
@@ -58,9 +58,12 @@ var (
 // NewWaitControlPlanePhase is a hidden phase that runs after the control-plane and etcd phases
 func NewWaitControlPlanePhase() workflow.Phase {
 	phase := workflow.Phase{
-		Name:   "wait-control-plane",
-		Run:    runWaitControlPlanePhase,
+		Name:  "wait-control-plane",
+		Short: "Wait for the control plane to start",
+		// TODO: unhide this phase once WaitForAllControlPlaneComponents goes GA:
+		// https://github.com/kubernetes/kubeadm/issues/2907
 		Hidden: true,
+		Run:    runWaitControlPlanePhase,
 	}
 	return phase
 }
@@ -90,7 +93,6 @@ func runWaitControlPlanePhase(c workflow.RunData) error {
 		return errors.Wrap(err, "error creating waiter")
 	}
 
-	controlPlaneTimeout := data.Cfg().ClusterConfiguration.APIServer.TimeoutForControlPlane.Duration
 	fmt.Printf("[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods"+
 		" from directory %q\n",
 		data.ManifestDir())
@@ -108,13 +110,18 @@ func runWaitControlPlanePhase(c workflow.RunData) error {
 		return errors.New("couldn't initialize a Kubernetes cluster")
 	}
 
-	waiter.SetTimeout(kubeadmconstants.DefaultKubeletTimeout)
+	waiter.SetTimeout(data.Cfg().Timeouts.KubeletHealthCheck.Duration)
 	if err := waiter.WaitForKubelet(); err != nil {
 		return handleError(err)
 	}
 
-	waiter.SetTimeout(controlPlaneTimeout)
-	if err := waiter.WaitForAPI(); err != nil {
+	waiter.SetTimeout(data.Cfg().Timeouts.ControlPlaneComponentHealthCheck.Duration)
+	if features.Enabled(data.Cfg().ClusterConfiguration.FeatureGates, features.WaitForAllControlPlaneComponents) {
+		err = waiter.WaitForControlPlaneComponents(&data.Cfg().ClusterConfiguration)
+	} else {
+		err = waiter.WaitForAPI()
+	}
+	if err != nil {
 		return handleError(err)
 	}
 
