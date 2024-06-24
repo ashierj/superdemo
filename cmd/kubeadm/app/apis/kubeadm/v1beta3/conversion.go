@@ -150,3 +150,7 @@ func convertFromArgs(in []kubeadm.Arg) map[string]string {
 func Convert_v1beta3_APIServer_To_kubeadm_APIServer(in *APIServer, out *kubeadm.APIServer, s conversion.Scope) error {
 	return autoConvert_v1beta3_APIServer_To_kubeadm_APIServer(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

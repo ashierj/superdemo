@@ -46,3 +46,7 @@ func SetErrorHandler(h ErrorHandler) { global.SetErrorHandler(h) }
 
 // Handle is a convenience function for ErrorHandler().Handle(err).
 func Handle(err error) { global.Handle(err) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

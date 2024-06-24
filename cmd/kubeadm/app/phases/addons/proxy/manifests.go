@@ -114,3 +114,7 @@ spec:
         kubernetes.io/os: linux
 `
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

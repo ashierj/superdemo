@@ -387,3 +387,7 @@ func (c *connection) Close() error {
 func (l *listener) Addr() net.Addr {
 	return l.addr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

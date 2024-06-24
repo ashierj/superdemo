@@ -55,3 +55,7 @@ func (b *TypedLocalObjectReferenceApplyConfiguration) WithName(value string) *Ty
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

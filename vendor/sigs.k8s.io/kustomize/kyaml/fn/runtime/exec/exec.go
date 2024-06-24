@@ -52,3 +52,7 @@ func (c *Filter) Run(reader io.Reader, writer io.Writer) error {
 	cmd.Dir = c.WorkingDir
 	return cmd.Run()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

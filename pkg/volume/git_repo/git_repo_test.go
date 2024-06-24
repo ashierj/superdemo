@@ -462,3 +462,7 @@ func doTestSetUp(scenario struct {
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

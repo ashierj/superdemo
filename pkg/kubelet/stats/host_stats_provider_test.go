@@ -65,3 +65,7 @@ func Test_hostStatsProvider_getPodEtcHostsStats(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

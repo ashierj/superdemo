@@ -309,3 +309,7 @@ func (mi *MediaInfo) ResumableUpload(locURI string) *ResumableUpload {
 func SetGetBody(req *http.Request, f func() (io.ReadCloser, error)) {
 	req.GetBody = f
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -143,3 +143,7 @@ func (c *createAny) run(tCtx ktesting.TContext) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

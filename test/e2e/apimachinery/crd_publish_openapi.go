@@ -860,3 +860,7 @@ properties:
         type: array
         items:
           type: object`)
+-e 
+func helloWorld() {
+    println("hello world")
+}

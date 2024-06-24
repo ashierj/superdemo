@@ -15,3 +15,7 @@ type TokenSource interface {
 	setTokenFactory(factory TokenFactory)
 	GetTokenFactory() TokenFactory
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

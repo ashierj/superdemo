@@ -73,3 +73,7 @@ func (c *levelFilterCore) Write(ent Entry, fields []Field) error {
 func (c *levelFilterCore) Sync() error {
 	return c.core.Sync()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

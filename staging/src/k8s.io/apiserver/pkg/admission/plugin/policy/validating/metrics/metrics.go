@@ -121,3 +121,7 @@ func (m *ValidatingAdmissionPolicyMetrics) ObserveWarn(ctx context.Context, elap
 	m.policyCheck.WithContext(ctx).WithLabelValues(policy, binding, "warn", state).Inc()
 	m.policyLatency.WithContext(ctx).WithLabelValues(policy, binding, "warn", state).Observe(elapsed.Seconds())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

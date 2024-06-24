@@ -161,3 +161,7 @@ func main(cmd *cobra.Command, args []string) {
 
 	fmt.Println("Done")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

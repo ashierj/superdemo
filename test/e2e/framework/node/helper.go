@@ -165,3 +165,7 @@ func taintExists(taints []v1.Taint, taintToFind *v1.Taint) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

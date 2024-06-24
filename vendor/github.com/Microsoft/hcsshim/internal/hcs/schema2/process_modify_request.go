@@ -17,3 +17,7 @@ type ProcessModifyRequest struct {
 
 	CloseHandle *CloseHandle `json:"CloseHandle,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

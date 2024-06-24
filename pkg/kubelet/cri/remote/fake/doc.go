@@ -17,3 +17,7 @@ limitations under the License.
 // Package fake containers a fake gRPC implementation of internalapi.RuntimeService
 // and internalapi.ImageManagerService.
 package fake
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -69,3 +69,7 @@ func (authHandler *unionAuthTokenHandler) AuthenticateToken(ctx context.Context,
 
 	return nil, false, utilerrors.NewAggregate(errlist)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

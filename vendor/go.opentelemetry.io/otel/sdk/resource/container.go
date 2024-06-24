@@ -98,3 +98,7 @@ func getContainerIDFromLine(line string) string {
 	}
 	return matches[1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -241,3 +241,7 @@ func (s *DelegatingAuthorizationOptions) getClient() (kubernetes.Interface, erro
 
 	return kubernetes.NewForConfig(clientConfig)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func IssueVMRequest(pipepath string, req *VMRequest) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

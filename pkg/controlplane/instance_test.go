@@ -480,3 +480,7 @@ func TestNewBetaResourcesEnabledByDefault(t *testing.T) {
 		t.Errorf("no new beta resources can be enabled by default, see https://github.com/kubernetes/enhancements/blob/0ad0fc8269165ca300d05ca51c7ce190a79976a5/keps/sig-architecture/3136-beta-apis-off-by-default/README.md: %v", gvr)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

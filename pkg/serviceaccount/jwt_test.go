@@ -502,3 +502,7 @@ func generateECDSATokenWithMalformedIss(t *testing.T, serviceAccount *v1.Service
 
 	return string(out)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

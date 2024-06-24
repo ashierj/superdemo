@@ -85,3 +85,7 @@ func (s *Suite) dt(packagePath string, includeTests bool) time.Duration {
 
 	return modifiedTime.Sub(s.RunTime)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

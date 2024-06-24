@@ -54,3 +54,7 @@ type Policy struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

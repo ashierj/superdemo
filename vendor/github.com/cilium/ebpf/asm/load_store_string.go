@@ -78,3 +78,7 @@ func (i Size) String() string {
 		return "Size(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

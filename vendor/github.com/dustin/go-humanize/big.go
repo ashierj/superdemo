@@ -29,3 +29,7 @@ func oom(n, b *big.Int) (float64, int) {
 	}
 	return float64(n.Int64()) + (float64(m.Int64()) / float64(b.Int64())), mag
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

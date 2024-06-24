@@ -1028,3 +1028,7 @@ func (gb *GraphBuilder) GetMonitor(ctx context.Context, resource schema.GroupVer
 func (gb *GraphBuilder) Name() string {
 	return "dependencygraphbuilder"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

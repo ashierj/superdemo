@@ -273,3 +273,7 @@ type Marshaler interface {
 	// MarshalStarlark marshal a custom type to starlark object.
 	MarshalStarlark() (starlark.Value, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

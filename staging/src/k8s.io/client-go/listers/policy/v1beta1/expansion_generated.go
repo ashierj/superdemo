@@ -25,3 +25,7 @@ type EvictionListerExpansion interface{}
 // EvictionNamespaceListerExpansion allows custom methods to be added to
 // EvictionNamespaceLister.
 type EvictionNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

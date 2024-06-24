@@ -72,3 +72,7 @@ func durationFromEnvironment(env string, defaultValue time.Duration) time.Durati
 	}
 	return defaultValue
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

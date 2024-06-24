@@ -45,3 +45,7 @@ func (escState escapeState) Enter() error {
 	escState.parser.clear()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

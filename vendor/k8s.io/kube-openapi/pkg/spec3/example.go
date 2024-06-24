@@ -108,3 +108,7 @@ type ExampleProps struct {
 	// A URL that points to the literal example. This provides the capability to reference examples that cannot easily be included in JSON or YAML documents.
 	ExternalValue string `json:"externalValue,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

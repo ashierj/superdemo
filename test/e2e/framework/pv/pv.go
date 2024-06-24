@@ -901,3 +901,7 @@ func GetDefaultFSType() string {
 	}
 	return "ext4"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

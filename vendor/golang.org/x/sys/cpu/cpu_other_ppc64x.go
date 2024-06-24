@@ -10,3 +10,7 @@ func archInit() {
 	PPC64.IsPOWER8 = true
 	Initialized = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

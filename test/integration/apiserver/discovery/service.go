@@ -141,3 +141,7 @@ func (f *fakeService) Port() *int32 {
 func (f *fakeService) Name() string {
 	return f.name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -494,3 +494,7 @@ func convertToClusterVersion(v string) (*semver.Version, error) {
 	ver = &semver.Version{Major: ver.Major, Minor: ver.Minor}
 	return ver, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

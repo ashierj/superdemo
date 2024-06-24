@@ -172,3 +172,7 @@ func (cmsg *Cmsghdr) SetLen(length int) {
 func (rsa *RawSockaddrNFCLLCP) SetServiceNameLen(length int) {
 	rsa.Service_name_len = uint32(length)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

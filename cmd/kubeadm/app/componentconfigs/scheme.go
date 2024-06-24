@@ -41,3 +41,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 		utilruntime.Must(handler.AddToScheme(scheme))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -299,3 +299,7 @@ func pendingFromCallExpr(ce *ast.CallExpr) bool {
 	}
 	return pending
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -566,3 +566,7 @@ func kprobeToken(args probeArgs) string {
 
 	return po
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

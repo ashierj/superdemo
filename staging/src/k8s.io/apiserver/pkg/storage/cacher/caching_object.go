@@ -410,3 +410,7 @@ func (o *cachingObject) SetManagedFields(managedFields []metav1.ManagedFieldsEnt
 		func() { o.object.SetManagedFields(managedFields) },
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ const (
 func Print(priority Priority, format string, a ...interface{}) error {
 	return Send(fmt.Sprintf(format, a...), priority, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

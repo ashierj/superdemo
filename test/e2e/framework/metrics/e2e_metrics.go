@@ -125,3 +125,7 @@ func (m *ComponentCollection) ComputeClusterAutoscalerMetricsDelta(before Collec
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

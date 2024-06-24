@@ -14,3 +14,7 @@ type Topology struct {
 
 	Processor *Processor2 `json:"Processor,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

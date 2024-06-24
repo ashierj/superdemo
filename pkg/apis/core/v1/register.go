@@ -44,3 +44,7 @@ var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1"}
 func Resource(resource string) schema.GroupResource {
 	return SchemeGroupVersion.WithResource(resource).GroupResource()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

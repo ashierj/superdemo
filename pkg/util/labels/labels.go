@@ -122,3 +122,7 @@ func AddLabelToSelector(selector *metav1.LabelSelector, labelKey, labelValue str
 func SelectorHasLabel(selector *metav1.LabelSelector, labelKey string) bool {
 	return len(selector.MatchLabels[labelKey]) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

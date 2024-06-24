@@ -206,3 +206,7 @@ func decodePods(respBody []byte) (*v1.PodList, error) {
 
 	return &pods, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

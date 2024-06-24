@@ -157,3 +157,7 @@ type nopSync struct {
 func (f nopSync) Sync() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

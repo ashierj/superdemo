@@ -20,3 +20,7 @@ limitations under the License.
 // +groupName=node.k8s.io
 
 package v1beta1 // import "k8s.io/kubernetes/pkg/apis/node/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -202,3 +202,7 @@ func getServiceIPWithLeadingZeros(ctx context.Context, cs clientset.Interface) (
 	}
 	return "", ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

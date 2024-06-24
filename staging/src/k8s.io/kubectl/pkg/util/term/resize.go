@@ -130,3 +130,7 @@ func (s *sizeQueue) Next() *remotecommand.TerminalSize {
 func (s *sizeQueue) stop() {
 	close(s.stopResizing)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

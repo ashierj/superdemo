@@ -486,3 +486,7 @@ func setNodeOwnerFunc(logger klog.Logger, c clientset.Interface, nodeName string
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

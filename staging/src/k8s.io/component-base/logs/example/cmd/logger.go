@@ -71,3 +71,7 @@ func NewLoggerCommand() *cobra.Command {
 	logsapi.AddFlags(c, cmd.Flags())
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

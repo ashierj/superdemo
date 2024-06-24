@@ -1544,3 +1544,7 @@ func newPodNominator(podLister listersv1.PodLister) *nominator {
 func podInfoKeyFunc(obj interface{}) (string, error) {
 	return cache.MetaNamespaceKeyFunc(obj.(*framework.QueuedPodInfo).Pod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -340,3 +340,7 @@ func expectConflict(objRet *unstructured.Unstructured, err error, dynamicClient 
 	}
 	return fmt.Errorf("instead got error %w; %s object is %s", err, which, gotten)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

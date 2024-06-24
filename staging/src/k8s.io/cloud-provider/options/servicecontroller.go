@@ -55,3 +55,7 @@ func (o *ServiceControllerOptions) Validate() []error {
 	errs := []error{}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

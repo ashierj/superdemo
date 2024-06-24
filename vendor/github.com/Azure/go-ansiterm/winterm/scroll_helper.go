@@ -116,3 +116,7 @@ func (h *windowsAnsiEventHandler) scrollLine(columns int, position COORD, info *
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

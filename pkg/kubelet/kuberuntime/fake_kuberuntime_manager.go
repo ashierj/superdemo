@@ -154,3 +154,7 @@ func newFakeKubeRuntimeManager(runtimeService internalapi.RuntimeService, imageS
 
 	return kubeRuntimeManager, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

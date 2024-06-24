@@ -867,3 +867,7 @@ func getPatchedPodNames(client *fake.Clientset) sets.String {
 	}
 	return patchedPodNames
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

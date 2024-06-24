@@ -239,3 +239,7 @@ func parseIPPort(s string) (net.IP, uint16, error) {
 
 	return ip, uint16(port), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

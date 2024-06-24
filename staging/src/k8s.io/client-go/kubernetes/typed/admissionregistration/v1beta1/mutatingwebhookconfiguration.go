@@ -195,3 +195,7 @@ func (c *mutatingWebhookConfigurations) Apply(ctx context.Context, mutatingWebho
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -180,3 +180,7 @@ func (t Time) MarshalQueryParameter() (string, error) {
 
 	return t.UTC().Format(time.RFC3339), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

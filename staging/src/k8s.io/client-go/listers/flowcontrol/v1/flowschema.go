@@ -46,3 +46,7 @@ type flowSchemaLister struct {
 func NewFlowSchemaLister(indexer cache.Indexer) FlowSchemaLister {
 	return &flowSchemaLister{listers.New[*v1.FlowSchema](indexer, v1.Resource("flowschema"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

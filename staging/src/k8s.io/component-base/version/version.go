@@ -40,3 +40,7 @@ func Get() apimachineryversion.Info {
 		Platform:     fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

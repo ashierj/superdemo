@@ -30,3 +30,7 @@ import (
 func UnstructuredToVal(unstructured interface{}, schema *structuralschema.Structural) ref.Val {
 	return celopenapi.UnstructuredToVal(unstructured, &model.Structural{Structural: schema})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

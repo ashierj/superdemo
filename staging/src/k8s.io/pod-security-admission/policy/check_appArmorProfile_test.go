@@ -202,3 +202,7 @@ func TestCheckAppArmor_Forbidden(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

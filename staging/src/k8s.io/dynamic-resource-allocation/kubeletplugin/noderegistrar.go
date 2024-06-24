@@ -58,3 +58,7 @@ func (s *nodeRegistrar) stop() {
 	}
 	s.server.stop()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

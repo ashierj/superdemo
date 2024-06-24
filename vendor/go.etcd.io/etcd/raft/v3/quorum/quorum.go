@@ -56,3 +56,7 @@ const (
 	// VoteWon indicates that the quorum has voted "yes".
 	VoteWon
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -362,3 +362,7 @@ func TestPatchScale(t *testing.T) {
 		assert.Equal(t, expectedScale, scale, "should have returned the expected scale for %s", gvr.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

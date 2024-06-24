@@ -1627,3 +1627,7 @@ func (b *builder) listTestPods(ctx context.Context) ([]v1.Pod, error) {
 	}
 	return testPods, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

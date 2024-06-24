@@ -46,3 +46,7 @@ func (b *TokenRequestApplyConfiguration) WithExpirationSeconds(value int64) *Tok
 	b.ExpirationSeconds = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

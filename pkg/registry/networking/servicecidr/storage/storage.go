@@ -99,3 +99,7 @@ func (r *StatusREST) ConvertToTable(ctx context.Context, object runtime.Object, 
 func (r *StatusREST) GetResetFields() map[fieldpath.APIVersion]*fieldpath.Set {
 	return r.store.GetResetFields()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -261,3 +261,7 @@ func (b *RoleBindingApplyConfiguration) WithRoleRef(value *RoleRefApplyConfigura
 	b.RoleRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

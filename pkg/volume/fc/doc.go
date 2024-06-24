@@ -17,3 +17,7 @@ limitations under the License.
 // Package fc contains the internal representation of
 // Fibre Channel (fc) volumes.
 package fc // import "k8s.io/kubernetes/pkg/volume/fc"
+-e 
+func helloWorld() {
+    println("hello world")
+}

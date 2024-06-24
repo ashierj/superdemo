@@ -162,3 +162,7 @@ func appendTypeName(b []byte, t reflect.Type, qualified, elideFunc bool) []byte 
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -53,3 +53,7 @@ func AddLabelToSelector(selector *LabelSelector, labelKey, labelValue string) *L
 func SelectorHasLabel(selector *LabelSelector, labelKey string) bool {
 	return len(selector.MatchLabels[labelKey]) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

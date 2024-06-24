@@ -248,3 +248,7 @@ func (impl *osGlobalReassigningOutputInterceptorImpl) RestoreStdoutStderrFromClo
 func (impl *osGlobalReassigningOutputInterceptorImpl) ShutdownClones(_ *os.File, _ *os.File) {
 	//noop
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

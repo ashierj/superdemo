@@ -92,3 +92,7 @@ func IP(name string, value net.IP, usage string) *net.IP {
 func IPP(name, shorthand string, value net.IP, usage string) *net.IP {
 	return CommandLine.IPP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

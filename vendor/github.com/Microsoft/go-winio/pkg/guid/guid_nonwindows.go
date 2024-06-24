@@ -14,3 +14,7 @@ type GUID struct {
 	Data3 uint16
 	Data4 [8]byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

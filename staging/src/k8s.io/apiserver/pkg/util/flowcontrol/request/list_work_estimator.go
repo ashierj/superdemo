@@ -177,3 +177,7 @@ func shouldListFromStorage(query url.Values, opts *metav1.ListOptions) bool {
 
 	return consistentReadFromStorage || hasContinuation || hasLimit || unsupportedMatch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

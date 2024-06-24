@@ -299,3 +299,7 @@ func (m *manager) Close() {
 	m.timer = nil
 	m.idleMu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

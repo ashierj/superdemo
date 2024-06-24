@@ -123,3 +123,7 @@ func (mr *MockpodsGetterMockRecorder) GetPods(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPods", reflect.TypeOf((*MockpodsGetter)(nil).GetPods), arg0, arg1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

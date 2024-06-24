@@ -367,3 +367,7 @@ func (schema *Schema) JSONString() string {
 	node := schema.nodeValue()
 	return Render(node)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

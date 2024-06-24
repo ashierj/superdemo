@@ -104,3 +104,7 @@ func (c *ReasonCache) Get(uid types.UID, name string) (*ReasonItem, bool) {
 	info := value.(ReasonItem)
 	return &info, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

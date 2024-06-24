@@ -133,3 +133,7 @@ func WithAPICallFunc(ctx context.Context, f APICallFunc) context.Context {
 func APICall(ctx context.Context, service, method string, in, out proto.Message) error {
 	return internal.Call(ctx, service, method, in, out)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

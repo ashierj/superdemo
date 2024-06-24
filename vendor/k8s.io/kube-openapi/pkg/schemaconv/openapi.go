@@ -258,3 +258,7 @@ func (c *convert) parseList(s *spec.Schema) *schema.List {
 		ElementType:         elementType,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

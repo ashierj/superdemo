@@ -767,3 +767,7 @@ func formatSchedule(cj *batchv1.CronJob, recorder record.EventRecorder) string {
 
 	return cj.Spec.Schedule
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

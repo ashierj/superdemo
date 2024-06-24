@@ -917,3 +917,7 @@ func editorEnvs() []string {
 		"EDITOR",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

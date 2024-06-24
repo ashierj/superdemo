@@ -157,3 +157,7 @@ func AssertHistogramTotalCount(t TB, name string, labelFilter map[string]string,
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func (s *ecpSource) getClientCertificate(info *tls.CertificateRequestInfo) (*tls
 	cert.Certificate = s.key.CertificateChain()
 	return &cert, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

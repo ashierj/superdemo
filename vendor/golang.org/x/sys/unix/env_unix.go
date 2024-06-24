@@ -29,3 +29,7 @@ func Environ() []string {
 func Unsetenv(key string) error {
 	return syscall.Unsetenv(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

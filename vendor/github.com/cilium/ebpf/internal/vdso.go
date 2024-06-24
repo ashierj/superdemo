@@ -148,3 +148,7 @@ func vdsoLinuxVersionCode(r io.ReaderAt) (uint32, error) {
 
 	return 0, fmt.Errorf("no Linux note in ELF")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

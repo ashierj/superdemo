@@ -1747,3 +1747,7 @@ func autoConvert_resource_VendorParameters_To_v1alpha2_VendorParameters(in *reso
 func Convert_resource_VendorParameters_To_v1alpha2_VendorParameters(in *resource.VendorParameters, out *v1alpha2.VendorParameters, s conversion.Scope) error {
 	return autoConvert_resource_VendorParameters_To_v1alpha2_VendorParameters(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

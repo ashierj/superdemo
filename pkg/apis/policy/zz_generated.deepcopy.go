@@ -184,3 +184,7 @@ func (in *PodDisruptionBudgetStatus) DeepCopy() *PodDisruptionBudgetStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

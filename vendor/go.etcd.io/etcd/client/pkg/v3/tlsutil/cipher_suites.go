@@ -54,3 +54,7 @@ func GetCipherSuites(ss []string) ([]uint16, error) {
 
 	return cs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

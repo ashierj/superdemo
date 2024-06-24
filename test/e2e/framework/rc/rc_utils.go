@@ -90,3 +90,7 @@ func RunRC(ctx context.Context, config testutils.RCConfig) error {
 	config.ContainerDumpFunc = e2ekubectl.LogFailedContainers
 	return testutils.RunRC(ctx, config)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

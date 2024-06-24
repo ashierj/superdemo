@@ -215,3 +215,7 @@ func decodeConfigz(respBody []byte) (*kubeletconfig.KubeletConfiguration, error)
 
 	return &kubeCfg, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

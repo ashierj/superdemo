@@ -18,3 +18,7 @@ namespace:
   kind: CustomResourceDefinition
 `
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

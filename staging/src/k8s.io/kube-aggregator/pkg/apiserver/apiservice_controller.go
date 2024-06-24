@@ -207,3 +207,7 @@ func (c *APIServiceRegistrationController) Enqueue() {
 		c.addAPIService(apiService)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -141,3 +141,7 @@ func (t *tracker) Close() error {
 	t.end()
 	return t.body.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

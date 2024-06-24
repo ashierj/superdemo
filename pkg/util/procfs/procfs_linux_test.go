@@ -114,3 +114,7 @@ func BenchmarkGetPids(b *testing.B) {
 		b.StartTimer()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

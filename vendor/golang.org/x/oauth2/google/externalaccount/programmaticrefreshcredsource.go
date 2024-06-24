@@ -19,3 +19,7 @@ func (cs programmaticRefreshCredentialSource) credentialSourceType() string {
 func (cs programmaticRefreshCredentialSource) subjectToken() (string, error) {
 	return cs.subjectTokenSupplier.SubjectToken(cs.ctx, cs.supplierOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

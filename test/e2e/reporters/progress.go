@@ -162,3 +162,7 @@ func (reporter *ProgressReporter) SetEndMsg() {
 	reporter.LastMsg = "Test Suite completed"
 	reporter.SendUpdates()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

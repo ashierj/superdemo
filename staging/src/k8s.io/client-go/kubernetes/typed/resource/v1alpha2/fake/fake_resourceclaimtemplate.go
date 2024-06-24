@@ -158,3 +158,7 @@ func (c *FakeResourceClaimTemplates) Apply(ctx context.Context, resourceClaimTem
 	}
 	return obj.(*v1alpha2.ResourceClaimTemplate), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

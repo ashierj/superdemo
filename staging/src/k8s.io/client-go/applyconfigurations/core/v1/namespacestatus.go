@@ -55,3 +55,7 @@ func (b *NamespaceStatusApplyConfiguration) WithConditions(values ...*NamespaceC
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

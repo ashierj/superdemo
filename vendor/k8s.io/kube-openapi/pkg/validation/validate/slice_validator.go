@@ -102,3 +102,7 @@ func (s *schemaSliceValidator) Validate(data interface{}) *Result {
 	result.Inc()
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

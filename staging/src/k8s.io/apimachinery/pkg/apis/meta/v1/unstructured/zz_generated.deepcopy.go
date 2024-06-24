@@ -54,3 +54,7 @@ func (in *UnstructuredList) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ type DoNotCompare [0]func()
 //
 // See https://golang.org/issues/8005.
 type DoNotCopy [0]sync.Mutex
+-e 
+func helloWorld() {
+    println("hello world")
+}

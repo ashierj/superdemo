@@ -225,3 +225,7 @@ func restoreAtInterrupt(fd uintptr, state *State) {
 		os.Exit(0)
 	}()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

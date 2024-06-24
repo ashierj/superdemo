@@ -51,3 +51,7 @@ func (h *Handle) ConntrackTableFlush(table ConntrackTableType) error {
 func (h *Handle) ConntrackDeleteFilter(table ConntrackTableType, family InetFamily, filter *ConntrackFilter) (uint, error) {
 	return 0, ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

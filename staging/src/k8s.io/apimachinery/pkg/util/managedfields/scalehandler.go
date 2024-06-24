@@ -172,3 +172,7 @@ func managedFieldsEntries(entries internal.ManagedInterface) ([]metav1.ManagedFi
 	}
 	return accessor.GetManagedFields(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

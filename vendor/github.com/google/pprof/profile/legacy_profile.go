@@ -1223,3 +1223,7 @@ var lockRxStr = strings.Join([]string{
 	`(SpinLock::)?SlowUnlock.*`,
 	`(SpinLockHolder::)?~SpinLockHolder.*`,
 }, `|`)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -31,3 +31,7 @@ type Ttest struct {
 	NTP Tpointer
 	Tp  *Tpointer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

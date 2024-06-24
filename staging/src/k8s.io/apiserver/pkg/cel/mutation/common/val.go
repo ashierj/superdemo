@@ -138,3 +138,7 @@ func convertField(value ref.Val) (any, error) {
 	}
 	return value.Value(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

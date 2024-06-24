@@ -626,3 +626,7 @@ func isPhaseInSkipPhases(phase string, skipPhases []string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

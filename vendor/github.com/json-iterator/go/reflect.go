@@ -335,3 +335,7 @@ func (encoder *placeholderEncoder) Encode(ptr unsafe.Pointer, stream *Stream) {
 func (encoder *placeholderEncoder) IsEmpty(ptr unsafe.Pointer) bool {
 	return encoder.encoder.IsEmpty(ptr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

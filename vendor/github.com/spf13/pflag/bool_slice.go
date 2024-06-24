@@ -183,3 +183,7 @@ func BoolSlice(name string, value []bool, usage string) *[]bool {
 func BoolSliceP(name, shorthand string, value []bool, usage string) *[]bool {
 	return CommandLine.BoolSliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

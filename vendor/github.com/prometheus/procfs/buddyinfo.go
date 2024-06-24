@@ -83,3 +83,7 @@ func parseBuddyInfo(r io.Reader) ([]BuddyInfo, error) {
 
 	return buddyInfo, scanner.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -83,3 +83,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

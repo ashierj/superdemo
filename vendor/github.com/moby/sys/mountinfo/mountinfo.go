@@ -65,3 +65,7 @@ type Info struct {
 	// VFSOptions is a comma-separated list of superblock options.
 	VFSOptions string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

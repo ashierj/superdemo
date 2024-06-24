@@ -618,3 +618,7 @@ func (tc *Controller) emitCancelPodDeletionEvent(nsName types.NamespacedName) {
 	}
 	tc.recorder.Eventf(ref, v1.EventTypeNormal, "TaintManagerEviction", "Cancelling deletion of Pod %s", nsName.String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

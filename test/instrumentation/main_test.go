@@ -686,3 +686,7 @@ var _ = metrics.NewHistogram(
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

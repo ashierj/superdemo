@@ -167,3 +167,7 @@ func generateDummyCredSpecs(domain string) *string {
 
 	return &credSpecs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

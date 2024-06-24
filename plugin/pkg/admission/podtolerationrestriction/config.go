@@ -71,3 +71,7 @@ func loadConfiguration(config io.Reader) (*internalapi.Configuration, error) {
 
 	return externalConfig, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

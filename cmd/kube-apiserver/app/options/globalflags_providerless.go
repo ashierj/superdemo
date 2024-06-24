@@ -26,3 +26,7 @@ import (
 func registerLegacyGlobalFlags(fs *pflag.FlagSet) {
 	// no-op when no legacy providers are compiled in
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

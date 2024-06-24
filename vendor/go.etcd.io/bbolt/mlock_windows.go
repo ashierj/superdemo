@@ -9,3 +9,7 @@ func mlock(_ *DB, _ int) error {
 func munlock(_ *DB, _ int) error {
 	panic("munlock is supported only on UNIX systems")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

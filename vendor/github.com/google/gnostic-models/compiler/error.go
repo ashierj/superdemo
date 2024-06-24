@@ -68,3 +68,7 @@ func (group *ErrorGroup) Error() string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

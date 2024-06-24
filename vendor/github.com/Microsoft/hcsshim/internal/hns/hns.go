@@ -21,3 +21,7 @@ type NetworkNotFoundError struct {
 func (e NetworkNotFoundError) Error() string {
 	return fmt.Sprintf("Network %s not found", e.NetworkName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

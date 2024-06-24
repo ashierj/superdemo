@@ -132,3 +132,7 @@ func WarningMessage(obj runtime.Object) string {
 
 	return deprecationWarning
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

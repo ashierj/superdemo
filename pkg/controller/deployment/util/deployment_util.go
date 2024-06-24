@@ -933,3 +933,7 @@ func (o ReplicaSetsByRevision) Less(i, j int) bool {
 	}
 	return revision1 < revision2
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -179,3 +179,7 @@ var _ = SIGDescribe("Lease", func() {
 		framework.ExpectNoError(err, "couldn't list Leases from all namespace")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

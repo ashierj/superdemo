@@ -156,3 +156,7 @@ func (l *LexerDFASerializer) String() string {
 
 	return buf
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

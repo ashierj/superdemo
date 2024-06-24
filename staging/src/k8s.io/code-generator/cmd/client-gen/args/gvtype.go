@@ -108,3 +108,7 @@ func parseGroupVersionType(gvtString string) (gvString string, typeStr string, e
 		return "", "", invalidFormatErr
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

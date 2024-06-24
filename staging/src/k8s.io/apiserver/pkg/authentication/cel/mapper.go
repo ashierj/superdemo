@@ -95,3 +95,7 @@ func (m *mapper) eval(ctx context.Context, input map[string]interface{}) ([]Eval
 
 	return evaluations, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

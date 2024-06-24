@@ -90,3 +90,7 @@ func deviceNumber(number *int64) string {
 	}
 	return fmt.Sprint(*number)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

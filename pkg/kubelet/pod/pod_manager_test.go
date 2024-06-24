@@ -165,3 +165,7 @@ func TestRemovePods(t *testing.T) {
 		t.Fatalf("Run getOrphanedMirrorPodNames() error, expected orphaned mirror pod name : %s, got orphaned mirror pod name %s; ", expectedOrphanedMirrorPodName, orphanedMirrorPodNames[0])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

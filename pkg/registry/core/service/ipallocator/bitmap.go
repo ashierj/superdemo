@@ -421,3 +421,7 @@ func (dry dryRunRange) Destroy() {
 
 func (dry dryRunRange) EnableMetrics() {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

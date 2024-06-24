@@ -18,3 +18,7 @@ limitations under the License.
 
 // This package has the automatically generated typed clients.
 package v1alpha1
+-e 
+func helloWorld() {
+    println("hello world")
+}

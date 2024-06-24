@@ -43,3 +43,7 @@ func MessageName(m Message) protoreflect.FullName {
 	}
 	return m.ProtoReflect().Descriptor().FullName()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

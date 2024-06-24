@@ -171,3 +171,7 @@ func TestIsControlledBy(t *testing.T) {
 		t.Error("Incorrect IsControlledBy result: true")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

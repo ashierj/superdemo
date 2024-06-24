@@ -40,3 +40,7 @@ func Stacks(all bool) []byte {
 	}
 	return trace
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

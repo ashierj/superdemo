@@ -18,3 +18,7 @@ limitations under the License.
 // with support for separate stdin, stdout, and stderr streams, as well as
 // TTY.
 package remotecommand // import "k8s.io/client-go/tools/remotecommand"
+-e 
+func helloWorld() {
+    println("hello world")
+}

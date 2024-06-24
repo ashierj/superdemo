@@ -88,3 +88,7 @@ func (f *statefulSetInformer) Informer() cache.SharedIndexInformer {
 func (f *statefulSetInformer) Lister() v1beta1.StatefulSetLister {
 	return v1beta1.NewStatefulSetLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

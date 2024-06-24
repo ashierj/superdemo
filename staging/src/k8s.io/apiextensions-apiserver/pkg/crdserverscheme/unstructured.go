@@ -65,3 +65,7 @@ func (d *UnstructuredObjectTyper) Recognizes(gvk schema.GroupVersionKind) bool {
 }
 
 var _ runtime.ObjectTyper = &UnstructuredObjectTyper{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

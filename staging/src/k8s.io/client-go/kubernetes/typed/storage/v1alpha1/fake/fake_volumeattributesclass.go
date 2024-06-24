@@ -149,3 +149,7 @@ func (c *FakeVolumeAttributesClasses) Apply(ctx context.Context, volumeAttribute
 	}
 	return obj.(*v1alpha1.VolumeAttributesClass), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

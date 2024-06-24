@@ -323,3 +323,7 @@ func (c *Command) GenPowerShellCompletionFileWithDesc(filename string) error {
 func (c *Command) GenPowerShellCompletionWithDesc(w io.Writer) error {
 	return c.genPowerShellCompletion(w, true)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func (f *fakeNamespacedScaleClient) Patch(ctx context.Context, gvr schema.GroupV
 
 	return obj.(*autoscalingapi.Scale), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

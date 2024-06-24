@@ -263,3 +263,7 @@ func (s *Span) String() string {
 	}
 	return s.internal.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

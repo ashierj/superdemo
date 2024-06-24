@@ -58,3 +58,7 @@ func (c *Conn) ReadJSON(v interface{}) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

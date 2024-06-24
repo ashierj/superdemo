@@ -236,3 +236,7 @@ func (c *namespacedScaleClient) Patch(ctx context.Context, gvr schema.GroupVersi
 
 	return convertToScale(&result)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

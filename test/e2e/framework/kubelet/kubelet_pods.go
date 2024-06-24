@@ -47,3 +47,7 @@ func getKubeletPods(ctx context.Context, c clientset.Interface, node, resource s
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

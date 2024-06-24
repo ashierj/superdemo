@@ -340,3 +340,7 @@ scanAgain:
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package storage contains the plumbing to setup the etcd storage of the apiserver.
 package storage // import "k8s.io/apiserver/pkg/server/storage"
+-e 
+func helloWorld() {
+    println("hello world")
+}

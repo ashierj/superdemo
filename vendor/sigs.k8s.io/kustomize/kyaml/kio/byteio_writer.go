@@ -196,3 +196,7 @@ func upWrapBareSequenceNode(node *yaml.Node) *yaml.Node {
 	}
 	return node
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

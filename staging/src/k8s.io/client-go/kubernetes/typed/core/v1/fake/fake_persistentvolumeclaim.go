@@ -195,3 +195,7 @@ func (c *FakePersistentVolumeClaims) ApplyStatus(ctx context.Context, persistent
 	}
 	return obj.(*v1.PersistentVolumeClaim), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

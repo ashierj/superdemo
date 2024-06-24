@@ -6931,3 +6931,7 @@ func TestPrintStorageVersionMigrationList(t *testing.T) {
 		t.Errorf("mismatch: %s", cmp.Diff(expected, rows))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

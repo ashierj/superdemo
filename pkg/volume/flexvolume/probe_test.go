@@ -374,3 +374,7 @@ func (m fakePluginFactory) NewFlexVolumePlugin(_, driverName string, _ exec.Inte
 	// Dummy Flexvolume plugin. Prober never interacts with the plugin.
 	return &flexVolumePlugin{driverName: driverName}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

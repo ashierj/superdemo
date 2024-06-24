@@ -728,3 +728,7 @@ func testRSStatus(ctx context.Context, f *framework.Framework) {
 	framework.ExpectNoError(err, "failed to locate replicaset %v in namespace %v", testReplicaSet.ObjectMeta.Name, ns)
 	framework.Logf("Replicaset %s has a patched status", rsName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

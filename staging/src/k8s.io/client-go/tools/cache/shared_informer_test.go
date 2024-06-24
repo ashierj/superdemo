@@ -1072,3 +1072,7 @@ func TestAddWhileActive(t *testing.T) {
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

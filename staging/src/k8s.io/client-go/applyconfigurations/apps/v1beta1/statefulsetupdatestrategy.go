@@ -50,3 +50,7 @@ func (b *StatefulSetUpdateStrategyApplyConfiguration) WithRollingUpdate(value *R
 	b.RollingUpdate = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

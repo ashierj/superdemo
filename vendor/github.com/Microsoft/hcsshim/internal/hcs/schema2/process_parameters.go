@@ -44,3 +44,7 @@ type ProcessParameters struct {
 	//  if set, use the legacy console instead of conhost
 	UseLegacyConsole bool `json:"UseLegacyConsole,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

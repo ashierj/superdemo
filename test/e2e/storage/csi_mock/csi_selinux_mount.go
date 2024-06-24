@@ -605,3 +605,7 @@ func addLabels(metricNames sets.Set[string], volumePluginLabel string, accessMod
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

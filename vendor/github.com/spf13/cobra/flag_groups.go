@@ -222,3 +222,7 @@ func (c *Command) enforceFlagGroupsForCompletion() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

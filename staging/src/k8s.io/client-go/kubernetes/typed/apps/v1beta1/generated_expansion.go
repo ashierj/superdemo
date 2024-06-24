@@ -23,3 +23,7 @@ type ControllerRevisionExpansion interface{}
 type DeploymentExpansion interface{}
 
 type StatefulSetExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

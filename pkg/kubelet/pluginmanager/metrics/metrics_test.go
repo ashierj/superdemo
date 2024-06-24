@@ -71,3 +71,7 @@ func TestMetricCollection(t *testing.T) {
 			fakePluginCount)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

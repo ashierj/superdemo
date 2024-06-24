@@ -38,3 +38,7 @@ func DiskUsage(path string) (UsageInfo, error) {
 	var usage UsageInfo
 	return usage, fmt.Errorf("directory disk usage not supported for this build.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

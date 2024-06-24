@@ -175,3 +175,7 @@ func MakeMapList(sts Schema, items []interface{}) (rv MapList) {
 		unkeyedItems: items,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

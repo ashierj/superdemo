@@ -269,3 +269,7 @@ func rowForRequestDetails(username, verb, path, namespace, name, apiVersion, res
 func row(columns ...string) string {
 	return strings.Join(columns, ",\t")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

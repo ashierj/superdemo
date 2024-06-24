@@ -86,3 +86,7 @@ func main() {
 		time.Sleep(10 * time.Second)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

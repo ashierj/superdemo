@@ -210,3 +210,7 @@ func makeDeployment(ns, name, pvcName string, labels map[string]string) *appsv1.
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

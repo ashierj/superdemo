@@ -159,3 +159,7 @@ func Write(resp *plugin.CodeGeneratorResponse) {
 		g.Error(err, "failed to write output proto")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

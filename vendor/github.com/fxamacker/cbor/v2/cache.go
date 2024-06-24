@@ -322,3 +322,7 @@ func hasToArrayOption(tag string) bool {
 	idx := strings.Index(tag, s)
 	return idx >= 0 && (len(tag) == idx+len(s) || tag[idx+len(s)] == ',')
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

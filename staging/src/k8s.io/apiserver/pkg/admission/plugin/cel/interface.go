@@ -93,3 +93,7 @@ type Filter interface {
 	// CompilationErrors returns a list of errors from the compilation of the evaluator
 	CompilationErrors() []error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

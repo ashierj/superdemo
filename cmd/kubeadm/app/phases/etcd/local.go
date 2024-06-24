@@ -322,3 +322,7 @@ func prepareAndWriteEtcdStaticPod(manifestDir string, patchesDir string, cfg *ku
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

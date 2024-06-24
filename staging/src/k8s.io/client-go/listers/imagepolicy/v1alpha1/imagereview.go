@@ -46,3 +46,7 @@ type imageReviewLister struct {
 func NewImageReviewLister(indexer cache.Indexer) ImageReviewLister {
 	return &imageReviewLister{listers.New[*v1alpha1.ImageReview](indexer, v1alpha1.Resource("imagereview"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

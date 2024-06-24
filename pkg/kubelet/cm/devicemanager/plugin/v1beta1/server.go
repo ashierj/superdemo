@@ -188,3 +188,7 @@ func (s *server) visitClients(visit func(r string, c Client)) {
 	}
 	s.mutex.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

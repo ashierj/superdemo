@@ -57,3 +57,7 @@ func UnsafeReadScheduledCompact(tx backend.ReadTx) (int64, bool) {
 	}
 	return 0, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

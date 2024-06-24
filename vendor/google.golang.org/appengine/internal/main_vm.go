@@ -67,3 +67,7 @@ func installHealthChecker(mux *http.ServeMux) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

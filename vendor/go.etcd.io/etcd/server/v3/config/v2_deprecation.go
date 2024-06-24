@@ -48,3 +48,7 @@ func (e V2DeprecationEnum) level() int {
 	}
 	panic("Unknown V2DeprecationEnum: " + e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

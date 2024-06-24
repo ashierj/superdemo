@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package persistentvolumeclaim // import "k8s.io/kubernetes/pkg/registry/core/persistentvolumeclaim"
+-e 
+func helloWorld() {
+    println("hello world")
+}

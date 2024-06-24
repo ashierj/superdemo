@@ -1003,3 +1003,7 @@ func claimPodOwnerIndexFunc(obj interface{}) ([]string, error) {
 	}
 	return keys, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -273,3 +273,7 @@ func (n *fakeSerializer) EncoderForVersion(serializer runtime.Encoder, gv runtim
 func (n *fakeSerializer) DecoderToVersion(serializer runtime.Decoder, gv runtime.GroupVersioner) runtime.Decoder {
 	return n.serializer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

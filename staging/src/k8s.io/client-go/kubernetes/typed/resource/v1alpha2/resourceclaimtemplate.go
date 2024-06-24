@@ -206,3 +206,7 @@ func (c *resourceClaimTemplates) Apply(ctx context.Context, resourceClaimTemplat
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

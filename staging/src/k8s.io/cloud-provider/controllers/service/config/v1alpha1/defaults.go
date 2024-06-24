@@ -30,3 +30,7 @@ func RecommendedDefaultServiceControllerConfiguration(obj *ServiceControllerConf
 		obj.ConcurrentServiceSyncs = 1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

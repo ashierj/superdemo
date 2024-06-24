@@ -289,3 +289,7 @@ func NewFramer(w io.Writer, r io.Reader) (*Framer, error) {
 	}
 	return framer, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

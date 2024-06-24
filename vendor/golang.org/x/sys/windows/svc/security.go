@@ -98,3 +98,7 @@ func IsWindowsService() (bool, error) {
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

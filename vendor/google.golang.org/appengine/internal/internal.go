@@ -108,3 +108,7 @@ func (e *CallError) IsTimeout() bool {
 // The function should be prepared to be called on the same message more than once; it should only modify the
 // RPC request the first time.
 var NamespaceMods = make(map[string]func(m proto.Message, namespace string))
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -236,3 +236,7 @@ var invalidManagedFieldsMarkerFixture = &corev1.Pod{
 		}},
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

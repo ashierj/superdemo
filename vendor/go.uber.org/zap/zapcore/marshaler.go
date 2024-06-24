@@ -59,3 +59,7 @@ type ArrayMarshalerFunc func(ArrayEncoder) error
 func (f ArrayMarshalerFunc) MarshalLogArray(enc ArrayEncoder) error {
 	return f(enc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

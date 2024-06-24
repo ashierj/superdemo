@@ -83,3 +83,7 @@ func BenchmarkScaledValueLarge(b *testing.B) {
 		scaledValue(s, 10, 0)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

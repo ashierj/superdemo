@@ -69,3 +69,7 @@ func ExampleHandleErrorWithContext() {
 	// Output:
 	// xxx runtime_stack_test.go:60] "test" err="fake error" logger="UnhandledError" request=42
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

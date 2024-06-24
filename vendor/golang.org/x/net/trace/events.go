@@ -530,3 +530,7 @@ const eventsHTML = `
 	</body>
 </html>
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

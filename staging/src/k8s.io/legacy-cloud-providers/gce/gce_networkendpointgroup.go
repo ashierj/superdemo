@@ -136,3 +136,7 @@ func (g *Cloud) ListNetworkEndpoints(name, zone string, showHealthStatus bool) (
 	l, err := g.c.BetaNetworkEndpointGroups().ListNetworkEndpoints(ctx, meta.ZonalKey(name, zone), req, filter.None)
 	return l, mc.Observe(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *serviceInformer) Informer() cache.SharedIndexInformer {
 func (f *serviceInformer) Lister() v1.ServiceLister {
 	return v1.NewServiceLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

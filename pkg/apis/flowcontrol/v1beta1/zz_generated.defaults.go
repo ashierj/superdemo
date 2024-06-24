@@ -70,3 +70,7 @@ func SetObjectDefaults_PriorityLevelConfigurationList(in *v1beta1.PriorityLevelC
 		SetObjectDefaults_PriorityLevelConfiguration(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

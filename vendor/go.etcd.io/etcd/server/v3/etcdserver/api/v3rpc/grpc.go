@@ -90,3 +90,7 @@ func Server(s *etcdserver.EtcdServer, tls *tls.Config, interceptor grpc.UnarySer
 
 	return grpcServer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

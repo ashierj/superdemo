@@ -252,3 +252,7 @@ func resourceSlice(driverName, nodeName string, capacity int) *resourcev1alpha2.
 
 	return slice
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

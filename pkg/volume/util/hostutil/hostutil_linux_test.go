@@ -261,3 +261,7 @@ func TestGetSELinuxMountContext(t *testing.T) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

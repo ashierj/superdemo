@@ -259,3 +259,7 @@ type SharedInformerFactory interface {
 func (f *sharedInformerFactory) Apiextensions() apiextensions.Interface {
 	return apiextensions.New(f, f.namespace, f.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

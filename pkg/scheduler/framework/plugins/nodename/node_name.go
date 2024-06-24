@@ -70,3 +70,7 @@ func Fits(pod *v1.Pod, nodeInfo *framework.NodeInfo) bool {
 func New(_ context.Context, _ runtime.Object, _ framework.Handle) (framework.Plugin, error) {
 	return &NodeName{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -608,3 +608,7 @@ func RegisterFile(filename string, fileDescriptor []byte) {
 
 // FileDescriptor returns the compressed FileDescriptorProto for a .proto file.
 func FileDescriptor(filename string) []byte { return protoFiles[filename] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

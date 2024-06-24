@@ -241,3 +241,7 @@ func (c *customResourceDefinitions) ApplyStatus(ctx context.Context, customResou
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -32,3 +32,7 @@ import (
 	_ "k8s.io/code-generator/cmd/lister-gen"
 	_ "k8s.io/code-generator/cmd/register-gen"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

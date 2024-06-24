@@ -46,3 +46,7 @@ type clusterRoleBindingLister struct {
 func NewClusterRoleBindingLister(indexer cache.Indexer) ClusterRoleBindingLister {
 	return &clusterRoleBindingLister{listers.New[*v1beta1.ClusterRoleBinding](indexer, v1beta1.Resource("clusterrolebinding"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

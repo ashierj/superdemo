@@ -82,3 +82,7 @@ func Float64(name string, value float64, usage string) *float64 {
 func Float64P(name, shorthand string, value float64, usage string) *float64 {
 	return CommandLine.Float64P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -127,3 +127,7 @@ type referenceDecoder struct {
 func (decoder *referenceDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	decoder.decoder.Decode(unsafe.Pointer(&ptr), iter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

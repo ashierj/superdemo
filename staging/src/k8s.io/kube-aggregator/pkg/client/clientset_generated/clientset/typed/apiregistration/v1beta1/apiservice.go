@@ -182,3 +182,7 @@ func (c *aPIServices) Patch(ctx context.Context, name string, pt types.PatchType
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

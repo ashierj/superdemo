@@ -322,3 +322,7 @@ func SpecificationExtensionToMap(e []*openapi_v3.NamedAny) map[string]interface{
 
 	return values
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -127,3 +127,7 @@ func (timer *TestPhaseTimer) PrintJSON() string {
 	}
 	return framework.PrettyPrintJSON(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

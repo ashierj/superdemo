@@ -32,3 +32,7 @@ const (
 	Duration_Seconds_field_number protoreflect.FieldNumber = 1
 	Duration_Nanos_field_number   protoreflect.FieldNumber = 2
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

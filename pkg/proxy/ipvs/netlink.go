@@ -46,3 +46,7 @@ type NetLinkHandle interface {
 	// https://github.com/kubernetes/kubernetes/issues/114815
 	GetAllLocalAddressesExcept(dev string) (sets.Set[string], error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

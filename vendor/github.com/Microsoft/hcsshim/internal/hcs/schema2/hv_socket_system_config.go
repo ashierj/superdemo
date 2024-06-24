@@ -20,3 +20,7 @@ type HvSocketSystemConfig struct {
 
 	ServiceTable map[string]HvSocketServiceConfig `json:"ServiceTable,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

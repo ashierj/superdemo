@@ -150,3 +150,7 @@ func getIPs() []net.IP {
 	}
 	return ips
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

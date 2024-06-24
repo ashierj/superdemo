@@ -199,3 +199,7 @@ func shouldRemoveResourceAndSubresources(resourcesToRemove sets.String, resource
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

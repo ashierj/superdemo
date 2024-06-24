@@ -31,3 +31,7 @@ func GetConformanceTestdataFS() testfiles.EmbeddedFileSource {
 		Root:       "test/conformance/testdata",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -256,3 +256,7 @@ func createListenerOnFreePort() (net.Listener, int, error) {
 
 	return ln, tcpAddr.Port, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

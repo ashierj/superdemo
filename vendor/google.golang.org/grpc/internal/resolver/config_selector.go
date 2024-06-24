@@ -165,3 +165,7 @@ func (scs *SafeConfigSelector) SelectConfig(r RPCInfo) (*RPCConfig, error) {
 	defer scs.mu.RUnlock()
 	return scs.cs.SelectConfig(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -270,3 +270,7 @@ func (h *Handle) DevLinkSetEswitchMode(Dev *DevlinkDevice, NewMode string) error
 func DevLinkSetEswitchMode(Dev *DevlinkDevice, NewMode string) error {
 	return pkgHandle.DevLinkSetEswitchMode(Dev, NewMode)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

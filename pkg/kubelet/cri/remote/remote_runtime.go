@@ -880,3 +880,7 @@ func (r *remoteRuntimeService) RuntimeConfig(ctx context.Context) (*runtimeapi.R
 
 	return resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

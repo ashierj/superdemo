@@ -79,3 +79,7 @@ func (strategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) [
 func (strategy) AllowUnconditionalUpdate() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -40,3 +40,7 @@ directory, typically much more quickly than using `os.ReadDir` or
     // ...
 */
 package godirwalk
+-e 
+func helloWorld() {
+    println("hello world")
+}

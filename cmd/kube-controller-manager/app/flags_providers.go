@@ -30,3 +30,7 @@ func registerLegacyGlobalFlags(namedFlagSets cliflag.NamedFlagSets) {
 	globalflag.Register(namedFlagSets.FlagSet("generic"), "cloud-provider-gce-lb-src-cidrs")
 	namedFlagSets.FlagSet("generic").MarkDeprecated("cloud-provider-gce-lb-src-cidrs", "This flag will be removed once the GCE Cloud Provider is removed from kube-controller-manager")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

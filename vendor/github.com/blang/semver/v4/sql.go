@@ -28,3 +28,7 @@ func (v *Version) Scan(src interface{}) (err error) {
 func (v Version) Value() (driver.Value, error) {
 	return v.String(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

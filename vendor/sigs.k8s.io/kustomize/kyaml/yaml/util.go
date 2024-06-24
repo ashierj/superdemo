@@ -68,3 +68,7 @@ func keyLineBeforeSeqElem(lines []string, seqElemIndex int) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

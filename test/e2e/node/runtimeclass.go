@@ -179,3 +179,7 @@ func newRuntimeClass(namespace, name string) *nodev1.RuntimeClass {
 	uniqueName := fmt.Sprintf("%s-%s", namespace, name)
 	return runtimeclasstest.NewRuntimeClass(uniqueName, e2eruntimeclass.PreconfiguredRuntimeClassHandler)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2,3 +2,7 @@
 //
 // The API for this package is not finalized yet.
 package types
+-e 
+func helloWorld() {
+    println("hello world")
+}

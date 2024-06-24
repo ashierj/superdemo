@@ -562,3 +562,7 @@ type dialFailure struct {
 func (df *dialFailure) Error() string {
 	return df.msg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

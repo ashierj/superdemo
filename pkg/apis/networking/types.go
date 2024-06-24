@@ -692,3 +692,7 @@ type ServiceCIDRList struct {
 	// items is the list of ServiceCIDRs.
 	Items []ServiceCIDR
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -510,3 +510,7 @@ func (u *utf16Encoder) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, e
 	}
 	return nDst, nSrc, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

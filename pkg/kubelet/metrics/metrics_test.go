@@ -75,3 +75,7 @@ func TestImagePullDurationMetric(t *testing.T) {
 func clearMetrics() {
 	ImagePullDuration.Reset()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 func (v *version) Leases() LeaseInformer {
 	return &leaseInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

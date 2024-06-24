@@ -60,3 +60,7 @@ type Subtractor interface {
 	// value.
 	Subtract(subtrahend ref.Val) ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

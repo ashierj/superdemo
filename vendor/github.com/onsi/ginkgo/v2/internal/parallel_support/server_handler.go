@@ -232,3 +232,7 @@ func (handler *ServerHandler) ShouldAbort(_ Void, shouldAbort *bool) error {
 	*shouldAbort = handler.shouldAbort
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

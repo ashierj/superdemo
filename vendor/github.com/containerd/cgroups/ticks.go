@@ -24,3 +24,7 @@ func getClockTicks() uint64 {
 	// more details.
 	return 100
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

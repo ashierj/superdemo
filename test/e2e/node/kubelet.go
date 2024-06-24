@@ -737,3 +737,7 @@ func trimSpaceNewlineInString(s string) string {
 	// Replace spaces to account for cases like "\r\n " that could lead to false negatives
 	return strings.ReplaceAll(s, " ", "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

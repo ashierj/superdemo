@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package admission contains PodSecurity admission logic
 package admission // import "k8s.io/pod-security-admission/admission"
+-e 
+func helloWorld() {
+    println("hello world")
+}

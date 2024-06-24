@@ -218,3 +218,7 @@ func (m *GracefulTerminationManager) MoveRSOutofGracefulDeleteList(uniqueRS stri
 func (m *GracefulTerminationManager) Run() {
 	go wait.Until(m.tryDeleteRs, rsCheckDeleteInterval, wait.NeverStop)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

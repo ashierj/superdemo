@@ -86,3 +86,7 @@ func serveDefaultColumnsIfEmpty(columns []apiextensionsv1.CustomResourceColumnDe
 		{Name: "Age", Type: "date", Description: swaggerMetadataDescriptions["creationTimestamp"], JSONPath: ".metadata.creationTimestamp"},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -982,3 +982,7 @@ func (p *printer) doPrintln(a []interface{}) {
 	}
 	p.WriteByte('\n')
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

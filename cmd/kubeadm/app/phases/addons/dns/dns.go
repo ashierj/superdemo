@@ -377,3 +377,7 @@ func setCorefile(client clientset.Interface, coreDNSCorefileName string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -246,3 +246,7 @@ func (tp *templatePart) expandString(w *pairWriter, t templateTerm, s string) {
 	tp.expandName(w, t.name, len(s) == 0)
 	w.Escape(s, tp.allowReserved)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

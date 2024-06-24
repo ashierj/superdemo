@@ -28,3 +28,7 @@ type ConnPool interface {
 	// ConnPool implements grpc.ClientConnInterface to enable it to be used directly with generated proto stubs.
 	grpc.ClientConnInterface
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

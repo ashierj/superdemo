@@ -77,3 +77,7 @@ func (p *JSONPrinter) PrintObj(obj runtime.Object, w io.Writer) error {
 	_, err = w.Write(data)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

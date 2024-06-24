@@ -602,3 +602,7 @@ func (sh *authHandler) enableDisable(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -63,3 +63,7 @@ func SanitizeExtensions(e map[string]interface{}) map[string]interface{} {
 func IsExtensionKey(k string) bool {
 	return len(k) > 1 && (k[0] == 'x' || k[0] == 'X') && k[1] == '-'
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

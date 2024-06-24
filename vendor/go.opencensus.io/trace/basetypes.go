@@ -127,3 +127,7 @@ type Status struct {
 	Code    int32
 	Message string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

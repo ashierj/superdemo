@@ -111,3 +111,7 @@ const (
 	SyncLabel
 	SyncOptLabel
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

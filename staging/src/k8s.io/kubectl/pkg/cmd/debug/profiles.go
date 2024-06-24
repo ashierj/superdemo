@@ -407,3 +407,7 @@ func setSeccompProfile(p *corev1.Pod, containerName string) {
 		return false
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

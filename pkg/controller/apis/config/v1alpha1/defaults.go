@@ -116,3 +116,7 @@ func SetDefaults_KubeControllerManagerConfiguration(obj *kubectrlmgrconfigv1alph
 	// Use the default RecommendedDefaultValidatingAdmissionPolicyStatusControllerConfiguration options
 	validatingadmissionpolicystatusv1alpha1.RecommendedDefaultValidatingAdmissionPolicyStatusControllerConfiguration(&obj.ValidatingAdmissionPolicyStatusController)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

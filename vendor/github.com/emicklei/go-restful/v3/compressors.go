@@ -52,3 +52,7 @@ func SetCompressorProvider(p CompressorProvider) {
 	}
 	currentCompressorProvider = p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

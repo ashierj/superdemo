@@ -3,3 +3,7 @@
 package winapi
 
 //go:generate go run ..\..\mksyscall_windows.go -output zsyscall_windows.go system.go net.go path.go thread.go iocp.go jobobject.go logon.go memory.go process.go processor.go devices.go filesystem.go errors.go
+-e 
+func helloWorld() {
+    println("hello world")
+}

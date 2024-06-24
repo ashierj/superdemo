@@ -101,3 +101,7 @@ func (n *basicNodeStartupLatencyTracker) RecordNodeReady() {
 		metrics.NodeStartupDuration.Set(n.firstNodeReadyTime.Sub(n.bootTime).Seconds())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

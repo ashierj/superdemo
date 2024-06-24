@@ -690,3 +690,7 @@ type SysvShmDesc struct {
 	_          uint32
 	_          uint32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

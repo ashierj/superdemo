@@ -1075,3 +1075,7 @@ func execPluginMemoryAddress(t *testing.T, config *rest.Config, i int) string {
 	t.Fatal("unable to find authenticator in rest config")
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

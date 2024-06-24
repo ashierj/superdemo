@@ -231,3 +231,7 @@ func (w *watchTracker) GetInterestedWatchCount(requestInfo *request.RequestInfo)
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

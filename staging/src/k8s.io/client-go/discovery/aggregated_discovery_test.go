@@ -1900,3 +1900,7 @@ func TestSplitGroupsAndResourcesV2Beta1(t *testing.T) {
 		assert.Equal(t, test.expectedGVResources, resourcesByGV)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

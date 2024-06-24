@@ -190,3 +190,7 @@ func addrNames(items interface{}) []string {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

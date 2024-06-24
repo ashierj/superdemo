@@ -193,3 +193,7 @@ func dial(unixSocketPath string, timeout time.Duration) (registerapi.Registratio
 
 	return registerapi.NewRegistrationClient(c), c, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -675,3 +675,7 @@ func NewSimState() *SimState {
 func (s *SimState) reset() {
 	resetSimState(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

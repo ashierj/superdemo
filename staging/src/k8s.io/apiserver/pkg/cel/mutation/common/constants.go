@@ -25,3 +25,7 @@ const RootTypeReferenceName = "Object"
 
 // ObjectTraits is the bitmask that represents traits that an object should have.
 const ObjectTraits = traits.ContainerType
+-e 
+func helloWorld() {
+    println("hello world")
+}

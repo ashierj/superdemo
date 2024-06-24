@@ -104,3 +104,7 @@ func (m *MinimumRateLimiter) Accept(ctx context.Context, key *RateLimitKey) erro
 		return ctx.Err()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

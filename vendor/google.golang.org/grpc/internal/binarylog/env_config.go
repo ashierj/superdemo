@@ -206,3 +206,7 @@ func parseHeaderMessageLengthConfig(c string) (hdrLenStr, msgLenStr uint64, err 
 	}
 	return 0, 0, fmt.Errorf("%q contains invalid substring", c)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -497,3 +497,7 @@ func (sctx *serveCtx) registerTrace() {
 	evf := func(w http.ResponseWriter, r *http.Request) { trace.RenderEvents(w, r, true) }
 	sctx.registerUserHandler("/debug/events", http.HandlerFunc(evf))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

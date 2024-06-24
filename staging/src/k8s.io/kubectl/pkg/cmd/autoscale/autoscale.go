@@ -291,3 +291,7 @@ func (o *AutoscaleOptions) createHorizontalPodAutoscaler(refName string, mapping
 
 	return &scaler
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

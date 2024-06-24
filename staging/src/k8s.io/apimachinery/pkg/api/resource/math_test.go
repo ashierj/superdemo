@@ -209,3 +209,7 @@ func TestNegativeScaleInt64(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

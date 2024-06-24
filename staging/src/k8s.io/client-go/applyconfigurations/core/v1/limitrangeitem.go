@@ -86,3 +86,7 @@ func (b *LimitRangeItemApplyConfiguration) WithMaxLimitRequestRatio(value v1.Res
 	b.MaxLimitRequestRatio = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -203,3 +203,7 @@ func (w *Watcher) AddWith(name string, opts ...addOpt) error { return nil }
 //
 // Returns nil if [Watcher.Close] was called.
 func (w *Watcher) Remove(name string) error { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

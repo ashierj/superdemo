@@ -14,3 +14,7 @@ type RegistryChanges struct {
 
 	DeleteKeys []RegistryKey `json:"DeleteKeys,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

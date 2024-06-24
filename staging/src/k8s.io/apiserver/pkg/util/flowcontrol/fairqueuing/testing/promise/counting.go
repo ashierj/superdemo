@@ -103,3 +103,7 @@ func (p *countingPromise) Set(value interface{}) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

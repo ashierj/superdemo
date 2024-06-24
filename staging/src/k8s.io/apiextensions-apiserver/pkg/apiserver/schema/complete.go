@@ -80,3 +80,7 @@ func validateNestedValueValidationCompleteness(v *NestedValueValidation, s *Stru
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

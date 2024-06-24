@@ -380,3 +380,7 @@ func computeValue(parameter interface{}, t reflect.Type) reflect.Value {
 		return reflect.ValueOf(parameter)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

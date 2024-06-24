@@ -2960,3 +2960,7 @@ func replicationControllersScaleSubresourceTableObjBody(codec runtime.Codec, rep
 	}
 	return cmdtesting.ObjBody(codec, table)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

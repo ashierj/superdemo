@@ -157,3 +157,7 @@ func NewWatchingSecretManager(kubeClient clientset.Interface, resyncInterval tim
 		manager: manager.NewWatchBasedManager(listSecret, watchSecret, newSecret, isImmutable, gr, resyncInterval, getSecretNames),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -187,3 +187,7 @@ func getRawVolumeInfo() *csipbv1.NodeGetVolumeStatsResponse {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

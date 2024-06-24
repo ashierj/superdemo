@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package codegenerator // import "k8s.io/code-generator"
+-e 
+func helloWorld() {
+    println("hello world")
+}

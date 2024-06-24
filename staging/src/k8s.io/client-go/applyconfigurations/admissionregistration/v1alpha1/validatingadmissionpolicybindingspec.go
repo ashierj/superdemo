@@ -70,3 +70,7 @@ func (b *ValidatingAdmissionPolicyBindingSpecApplyConfiguration) WithValidationA
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

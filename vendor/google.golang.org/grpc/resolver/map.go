@@ -136,3 +136,7 @@ func (a *AddressMap) Values() []any {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

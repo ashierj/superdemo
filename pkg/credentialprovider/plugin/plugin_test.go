@@ -879,3 +879,7 @@ func validate(expected, actual []string) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

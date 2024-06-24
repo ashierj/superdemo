@@ -60,3 +60,7 @@ var ignoredResources = map[schema.GroupResource]struct{}{
 func DefaultIgnoredResources() map[schema.GroupResource]struct{} {
 	return ignoredResources
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

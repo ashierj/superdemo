@@ -235,3 +235,7 @@ values: `+strings.Repeat("[", 3*1024*1024), apiVersion, kind))
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

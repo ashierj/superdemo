@@ -184,3 +184,7 @@ func (c *FakeCustomResourceDefinitions) ApplyStatus(ctx context.Context, customR
 	}
 	return obj.(*v1.CustomResourceDefinition), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

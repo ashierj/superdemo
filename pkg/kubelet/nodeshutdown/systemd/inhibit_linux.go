@@ -198,3 +198,7 @@ InhibitDelayMaxSec=%.0f
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

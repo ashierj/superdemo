@@ -1265,3 +1265,7 @@ func IsSELinuxMountMismatchError(err error) bool {
 	_, ok := err.(seLinuxMountMismatchError)
 	return ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

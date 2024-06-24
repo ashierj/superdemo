@@ -44,3 +44,7 @@ type TimeSeries struct {
 	Points      []Point      // points sequence
 	StartTime   time.Time    // time we started recording this time series
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

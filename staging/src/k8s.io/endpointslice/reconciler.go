@@ -645,3 +645,7 @@ func (r *Reconciler) ManagedByController(endpointSlice *discovery.EndpointSlice)
 	managedBy := endpointSlice.Labels[discovery.LabelManagedBy]
 	return managedBy == r.controllerName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

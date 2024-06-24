@@ -37,3 +37,7 @@ func (b *StatefulSetOrdinalsApplyConfiguration) WithStart(value int32) *Stateful
 	b.Start = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

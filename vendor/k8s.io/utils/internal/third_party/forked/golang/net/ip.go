@@ -234,3 +234,7 @@ func indexByteString(s string, c byte) int {
 	}
 	return -1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

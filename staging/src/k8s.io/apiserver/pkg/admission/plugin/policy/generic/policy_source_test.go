@@ -242,3 +242,7 @@ func (fb *FakeBinding) DeepCopyObject() runtime.Object {
 	*newFB = *fb
 	return newFB
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

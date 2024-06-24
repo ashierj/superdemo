@@ -97,3 +97,7 @@ func Test_processEnvFileLine_readEnvironment(t *testing.T) {
 		t.Errorf(`expected value %q, received %q`, realValue, value)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

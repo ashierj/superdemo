@@ -198,3 +198,7 @@ func runDiff(fs *pflag.FlagSet, flags *diffFlags, args []string, fetchInitConfig
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

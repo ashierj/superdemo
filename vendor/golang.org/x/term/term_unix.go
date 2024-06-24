@@ -89,3 +89,7 @@ func readPassword(fd int) ([]byte, error) {
 
 	return readPasswordLine(passwordReader(fd))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

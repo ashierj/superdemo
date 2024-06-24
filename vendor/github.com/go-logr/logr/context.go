@@ -31,3 +31,7 @@ func (notFoundError) Error() string {
 func (notFoundError) IsNotFound() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

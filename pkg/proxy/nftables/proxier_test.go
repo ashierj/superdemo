@@ -4890,3 +4890,7 @@ func TestProxier_OnServiceCIDRsChanged(t *testing.T) {
 	proxier.OnServiceCIDRsChanged([]string{"172.30.0.0/16", "172.50.0.0/16", "fd00:10:96::/112", "fd00:172:30::/112"})
 	assert.Equal(t, proxier.serviceCIDRs, "fd00:10:96::/112,fd00:172:30::/112")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

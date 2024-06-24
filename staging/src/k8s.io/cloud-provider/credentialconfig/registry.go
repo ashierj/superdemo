@@ -29,3 +29,7 @@ type RegistryConfigEntry struct {
 	Password string
 	Email    string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

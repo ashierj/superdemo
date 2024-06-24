@@ -195,3 +195,7 @@ func newNamespacedCustomResourceClient(ns string, client dynamic.Interface, crd 
 	return client.Resource(gvr), nil
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

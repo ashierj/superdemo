@@ -47,3 +47,7 @@ func TestDefaultsYAML(t *testing.T) {
 	}
 	componentconfigtesting.DefaultingTest(t, scheme, *codec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

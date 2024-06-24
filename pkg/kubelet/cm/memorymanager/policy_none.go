@@ -70,3 +70,7 @@ func (p *none) GetPodTopologyHints(s state.State, pod *v1.Pod) map[string][]topo
 func (p *none) GetAllocatableMemory(s state.State) []state.Block {
 	return []state.Block{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

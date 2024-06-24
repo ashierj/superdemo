@@ -38,3 +38,7 @@ type LegacySATokenCleanerConfiguration struct {
 	// auto-generated service account token before it can be deleted.
 	CleanUpPeriod metav1.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

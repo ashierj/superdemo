@@ -21,3 +21,7 @@ package v1
 // APIServiceListerExpansion allows custom methods to be added to
 // APIServiceLister.
 type APIServiceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -119,3 +119,7 @@ func (s Audience) Contains(v string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

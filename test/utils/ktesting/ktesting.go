@@ -46,3 +46,7 @@ func NewTestContext(tb testing.TB) (klog.Logger, TContext) {
 	tCtx := Init(tb)
 	return tCtx.Logger(), tCtx
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

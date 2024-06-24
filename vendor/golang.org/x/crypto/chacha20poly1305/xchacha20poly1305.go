@@ -84,3 +84,7 @@ func (x *xchacha20poly1305) Open(dst, nonce, ciphertext, additionalData []byte) 
 
 	return c.open(dst, cNonce[:], ciphertext, additionalData)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

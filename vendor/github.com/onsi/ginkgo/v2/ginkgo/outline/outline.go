@@ -108,3 +108,7 @@ func (o *outline) StringIndent(width int) string {
 	}
 	return b.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

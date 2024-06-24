@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package cliruntime // import "k8s.io/cli-runtime"
+-e 
+func helloWorld() {
+    println("hello world")
+}

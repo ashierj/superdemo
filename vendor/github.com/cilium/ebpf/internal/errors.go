@@ -204,3 +204,7 @@ func (le *VerifierError) Format(f fmt.State, verb rune) {
 		fmt.Fprintf(f, "%%!%c(BADVERB)", verb)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -212,3 +212,7 @@ func deleteTaint(taints []corev1.Taint, taintToDelete *corev1.Taint) ([]corev1.T
 	}
 	return newTaints, len(taints) != len(newTaints)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

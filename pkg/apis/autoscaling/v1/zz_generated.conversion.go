@@ -858,3 +858,7 @@ func autoConvert_autoscaling_ScaleStatus_To_v1_ScaleStatus(in *autoscaling.Scale
 func Convert_autoscaling_ScaleStatus_To_v1_ScaleStatus(in *autoscaling.ScaleStatus, out *v1.ScaleStatus, s conversion.Scope) error {
 	return autoConvert_autoscaling_ScaleStatus_To_v1_ScaleStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

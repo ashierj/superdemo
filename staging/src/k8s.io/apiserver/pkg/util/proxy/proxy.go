@@ -161,3 +161,7 @@ func NewRequestForProxy(location *url.URL, req *http.Request) (*http.Request, co
 
 	return newReq, cancelFn
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

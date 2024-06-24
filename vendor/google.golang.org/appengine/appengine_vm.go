@@ -18,3 +18,7 @@ import (
 func BackgroundContext() context.Context {
 	return internal.BackgroundContext()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

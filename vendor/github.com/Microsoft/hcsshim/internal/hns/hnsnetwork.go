@@ -139,3 +139,7 @@ func (network *HNSNetwork) CreateRemoteEndpoint(endpoint *HNSEndpoint) (*HNSEndp
 	endpoint.IsRemoteEndpoint = true
 	return network.CreateEndpoint(endpoint)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

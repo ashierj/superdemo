@@ -84,3 +84,7 @@ func TestEmptyCreationTimestampIsOmitted(t *testing.T) {
 		t.Errorf("unexpected creation timestamp field: %q", creationTimestamp)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -816,3 +816,7 @@ type PluginsRunner interface {
 	// status other than Success.
 	RunPreFilterExtensionRemovePod(ctx context.Context, state *CycleState, podToSchedule *v1.Pod, podInfoToRemove *PodInfo, nodeInfo *NodeInfo) *Status
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

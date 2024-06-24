@@ -60,3 +60,7 @@ func (b *NetworkPolicyPortApplyConfiguration) WithEndPort(value int32) *NetworkP
 	b.EndPort = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

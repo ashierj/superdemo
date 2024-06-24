@@ -120,3 +120,7 @@ func (in *IngressList) APILifecycleReplacement() schema.GroupVersionKind {
 func (in *IngressList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

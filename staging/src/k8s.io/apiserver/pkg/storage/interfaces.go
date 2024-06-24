@@ -303,3 +303,7 @@ type ListOptions struct {
 	// continues streaming events.
 	SendInitialEvents *bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

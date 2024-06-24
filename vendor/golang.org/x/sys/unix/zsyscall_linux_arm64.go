@@ -550,3 +550,7 @@ func kexecFileLoad(kernelFd int, initrdFd int, cmdlineLen int, cmdline string, f
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

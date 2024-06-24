@@ -532,3 +532,7 @@ func mergeStringMapsWithBuildAnnotations(maps ...map[string]string) map[string]s
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -505,3 +505,7 @@ func AddImagesCommonConfigFlags(flagSet *flag.FlagSet, cfg *kubeadmapiv1old.Clus
 	options.AddImageMetaFlags(flagSet, &cfg.ImageRepository)
 	options.AddConfigFlag(flagSet, cfgPath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

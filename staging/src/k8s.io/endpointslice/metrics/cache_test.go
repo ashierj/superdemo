@@ -228,3 +228,7 @@ func BenchmarkUpdateServicePortCache100000(b *testing.B) {
 func ptrTo[T any](obj T) *T {
 	return &obj
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

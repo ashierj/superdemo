@@ -177,3 +177,7 @@ func TestSetDefaultSELinuxMountReadWriteOncePodDisabled(t *testing.T) {
 		t.Errorf("Expected SELinuxMount remain nil, got: %+v", outSELinuxMount)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

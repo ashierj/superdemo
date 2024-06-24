@@ -96,3 +96,7 @@ func (r *listReflectRange) Item() (index int, value Value) {
 	v := r.list.Index(r.i)
 	return r.i, r.vr.mustReuse(v, r.entry, nil, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

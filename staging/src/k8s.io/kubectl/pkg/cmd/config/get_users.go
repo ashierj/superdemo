@@ -88,3 +88,7 @@ func (o *GetUsersOptions) Run() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

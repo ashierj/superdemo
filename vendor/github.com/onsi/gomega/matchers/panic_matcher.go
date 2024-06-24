@@ -112,3 +112,7 @@ func (matcher *PanicMatcher) NegatedFailureMessage(actual interface{}) (message 
 		return format.Message(actual, "not to panic with", matcher.Expected)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

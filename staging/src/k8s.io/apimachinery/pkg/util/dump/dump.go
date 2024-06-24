@@ -52,3 +52,7 @@ func ForHash(a interface{}) string {
 func OneLine(a interface{}) string {
 	return prettyPrintConfig.Sprintf("%#v", a)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -98,3 +98,7 @@ func (b *NodeSpecApplyConfiguration) WithDoNotUseExternalID(value string) *NodeS
 	b.DoNotUseExternalID = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

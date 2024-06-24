@@ -1520,3 +1520,7 @@ func (p *namespacePreparer) cleanup(tCtx ktesting.TContext) error {
 	}
 	return errRet
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

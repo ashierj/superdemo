@@ -232,3 +232,7 @@ metadata:
   namespace: kube-system
 `
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

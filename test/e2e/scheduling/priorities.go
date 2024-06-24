@@ -559,3 +559,7 @@ func addTaintToNode(ctx context.Context, cs clientset.Interface, nodeName string
 	e2enode.AddOrUpdateTaintOnNode(ctx, cs, nodeName, testTaint)
 	e2enode.ExpectNodeHasTaint(ctx, cs, nodeName, &testTaint)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

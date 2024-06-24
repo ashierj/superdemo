@@ -77,3 +77,7 @@ func AuthInfoFromContext(ctx context.Context) (AuthInfo, error) {
 	}
 	return AuthInfoFromPeer(p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

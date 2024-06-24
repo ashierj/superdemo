@@ -39,3 +39,7 @@ func (b *ServiceCIDRSpecApplyConfiguration) WithCIDRs(values ...string) *Service
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

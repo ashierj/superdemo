@@ -77,3 +77,7 @@ func (b *ConfigMapNodeConfigSourceApplyConfiguration) WithKubeletConfigKey(value
 	b.KubeletConfigKey = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

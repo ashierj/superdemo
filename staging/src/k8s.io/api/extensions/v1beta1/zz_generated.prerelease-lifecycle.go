@@ -300,3 +300,7 @@ func (in *Scale) APILifecycleDeprecated() (major, minor int) {
 func (in *Scale) APILifecycleRemoved() (major, minor int) {
 	return 1, 16
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

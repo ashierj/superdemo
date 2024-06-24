@@ -130,3 +130,7 @@ func testRecreate(ctx context.Context, c clientset.Interface, ps *testutils.PodS
 		framework.Failf("At least one pod wasn't running and ready after the restart.")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -383,3 +383,7 @@ type UserDefinedMetric struct {
 	// We do not foresee any metrics exceeding that value.
 	Value float64 `json:"value"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

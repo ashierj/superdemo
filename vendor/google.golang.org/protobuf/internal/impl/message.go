@@ -282,3 +282,7 @@ func (mt mapEntryType) Message(i int) protoreflect.MessageType {
 	}
 	return Export{}.MessageTypeOf(mt.valType)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

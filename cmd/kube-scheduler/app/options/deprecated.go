@@ -52,3 +52,7 @@ func (o *DeprecatedOptions) AddFlags(fs *pflag.FlagSet) {
 	// TODO: remove this flag once https://github.com/kubernetes/kubernetes/issues/110175 is done.
 	fs.DurationVar(&o.PodMaxInUnschedulablePodsDuration, "pod-max-in-unschedulable-pods-duration", 5*time.Minute, "DEPRECATED: the maximum time a pod can stay in unschedulablePods. If a pod stays in unschedulablePods for longer than this value, the pod will be moved from unschedulablePods to backoffQ or activeQ. This flag is deprecated and will be removed in a future version.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

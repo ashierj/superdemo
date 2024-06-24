@@ -243,3 +243,7 @@ func (e *hzGB2312Encoder) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int
 	// concatenate two HZ-GB2312-encoded strings?
 	return nDst, nSrc, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

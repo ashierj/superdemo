@@ -134,3 +134,7 @@ func (e *errArrayElem) Free() {
 	e.err = nil
 	_errArrayElemPool.Put(e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

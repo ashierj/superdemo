@@ -131,3 +131,7 @@ func TestDefaultWrap(t *testing.T) {
 		t.Errorf("Got:\n%v\nWant:\n%v\n", buf.String(), want)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

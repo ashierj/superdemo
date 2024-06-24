@@ -27,3 +27,7 @@ import (
 func (i *internalContainerLifecycleImpl) PreCreateContainer(pod *v1.Pod, container *v1.Container, containerConfig *runtimeapi.ContainerConfig) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

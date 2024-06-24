@@ -71,3 +71,7 @@ func requestedToCapacityRatioScorer(resources []config.ResourceSpec, shape []con
 
 	return buildRequestedToCapacityRatioScorerFunction(shapes, resources)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

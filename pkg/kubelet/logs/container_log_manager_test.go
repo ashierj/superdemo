@@ -438,3 +438,7 @@ func TestRotateLatestLog(t *testing.T) {
 		assert.NoError(t, f.AssertCalls([]string{"ReopenContainerLog"}))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

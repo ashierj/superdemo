@@ -57,3 +57,7 @@ func (p Proc) IO() (ProcIO, error) {
 
 	return pio, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

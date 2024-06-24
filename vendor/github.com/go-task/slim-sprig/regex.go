@@ -81,3 +81,7 @@ func mustRegexSplit(regex string, s string, n int) ([]string, error) {
 func regexQuoteMeta(s string) string {
 	return regexp.QuoteMeta(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

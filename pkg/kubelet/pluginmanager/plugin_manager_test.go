@@ -168,3 +168,7 @@ func newTestPluginManager(sockDir string) PluginManager {
 	)
 	return pm
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

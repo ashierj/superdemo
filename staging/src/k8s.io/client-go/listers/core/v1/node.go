@@ -46,3 +46,7 @@ type nodeLister struct {
 func NewNodeLister(indexer cache.Indexer) NodeLister {
 	return &nodeLister{listers.New[*v1.Node](indexer, v1.Resource("node"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

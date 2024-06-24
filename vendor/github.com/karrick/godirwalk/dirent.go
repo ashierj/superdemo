@@ -102,3 +102,7 @@ func (l Dirents) Less(i, j int) bool { return l[i].name < l[j].name }
 
 // Swap exchanges the two Dirent entries specified by the two provided indexes.
 func (l Dirents) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

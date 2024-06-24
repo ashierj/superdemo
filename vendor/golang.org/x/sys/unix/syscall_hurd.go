@@ -27,3 +27,7 @@ func ioctlPtr(fd int, req uint, arg unsafe.Pointer) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

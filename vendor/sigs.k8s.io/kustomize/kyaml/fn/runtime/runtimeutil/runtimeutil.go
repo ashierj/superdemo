@@ -279,3 +279,7 @@ func (c *FunctionFilter) doResults(r *kio.ByteReader) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

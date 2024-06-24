@@ -18,3 +18,7 @@ const hasProtoMethods = false
 func protoMethods(m protoreflect.Message) *protoiface.Methods {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

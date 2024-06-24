@@ -4469,3 +4469,7 @@ func benchmarkItems(b *testing.B) []example.Pod {
 	}
 	return items
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

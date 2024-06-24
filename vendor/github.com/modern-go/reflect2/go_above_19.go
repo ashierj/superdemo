@@ -15,3 +15,7 @@ func makemap(rtype unsafe.Pointer, cap int) (m unsafe.Pointer)
 func makeMapWithSize(rtype unsafe.Pointer, cap int) unsafe.Pointer {
 	return makemap(rtype, cap)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -241,3 +241,7 @@ func (wcib *watchCacheIntervalBuffer) isFull() bool {
 func (wcib *watchCacheIntervalBuffer) isEmpty() bool {
 	return wcib.startIndex == wcib.endIndex
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

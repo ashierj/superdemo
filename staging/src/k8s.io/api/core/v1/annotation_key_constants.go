@@ -157,3 +157,7 @@ const (
 	// is not a requirement.
 	AnnotationTopologyMode = "service.kubernetes.io/topology-mode"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

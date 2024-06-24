@@ -11,3 +11,7 @@ func isTerminal(fd int) bool {
 	_, err := unix.IoctlGetTermios(fd, ioctlReadTermios)
 	return err == nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

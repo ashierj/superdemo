@@ -471,3 +471,7 @@ func (m *manager) setPodPendingAdmission(pod *v1.Pod) {
 
 	m.pendingAdmissionPod = pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

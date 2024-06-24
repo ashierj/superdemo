@@ -207,3 +207,7 @@ func (p *union) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewUnion())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

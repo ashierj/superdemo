@@ -537,3 +537,7 @@ var (
 	ErrIntOverflowTimestamp          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupTimestamp = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

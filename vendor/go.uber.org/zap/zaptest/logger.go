@@ -138,3 +138,7 @@ func (w testingWriter) Write(p []byte) (n int, err error) {
 func (w testingWriter) Sync() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

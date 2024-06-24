@@ -156,3 +156,7 @@ func (w *withCreds) Apply(o *internal.DialSettings) {
 type EmbeddableAdapter struct{}
 
 func (*EmbeddableAdapter) Apply(_ *internal.DialSettings) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

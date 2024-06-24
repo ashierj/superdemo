@@ -50,3 +50,7 @@ func (b *RollingUpdateDaemonSetApplyConfiguration) WithMaxSurge(value intstr.Int
 	b.MaxSurge = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

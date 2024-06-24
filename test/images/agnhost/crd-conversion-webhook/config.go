@@ -48,3 +48,7 @@ func configTLS(config Config, clientset *kubernetes.Clientset) *tls.Config {
 		// ClientAuth:   tls.RequireAndVerifyClientCert,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

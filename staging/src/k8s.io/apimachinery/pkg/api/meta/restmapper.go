@@ -527,3 +527,7 @@ func MaybeResetRESTMapper(mapper RESTMapper) {
 		m.Reset()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

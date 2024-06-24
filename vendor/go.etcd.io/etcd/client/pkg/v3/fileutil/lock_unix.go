@@ -28,3 +28,7 @@ func TryLockFile(path string, flag int, perm os.FileMode) (*LockedFile, error) {
 func LockFile(path string, flag int, perm os.FileMode) (*LockedFile, error) {
 	return flockLockFile(path, flag, perm)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

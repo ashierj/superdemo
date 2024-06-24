@@ -149,3 +149,7 @@ func (c *FakePriorityClasses) Apply(ctx context.Context, priorityClass *scheduli
 	}
 	return obj.(*v1.PriorityClass), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

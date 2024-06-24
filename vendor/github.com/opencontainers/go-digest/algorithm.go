@@ -191,3 +191,7 @@ func (a Algorithm) Validate(encoded string) error {
 	}
 	return ErrDigestInvalidFormat
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

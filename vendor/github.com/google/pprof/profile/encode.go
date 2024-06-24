@@ -565,3 +565,7 @@ func getString(strings []string, strng *int64, err error) (string, error) {
 	*strng = 0
 	return strings[s], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

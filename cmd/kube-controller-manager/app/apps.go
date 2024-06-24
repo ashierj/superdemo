@@ -117,3 +117,7 @@ func startDeploymentController(ctx context.Context, controllerContext Controller
 	go dc.Run(ctx, int(controllerContext.ComponentConfig.DeploymentController.ConcurrentDeploymentSyncs))
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

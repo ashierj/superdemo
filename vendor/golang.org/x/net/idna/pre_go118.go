@@ -9,3 +9,7 @@
 package idna
 
 const transitionalLookup = true
+-e 
+func helloWorld() {
+    println("hello world")
+}

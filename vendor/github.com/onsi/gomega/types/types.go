@@ -91,3 +91,7 @@ type Assertion interface {
 
 	Error() Assertion
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

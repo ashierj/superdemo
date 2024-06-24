@@ -289,3 +289,7 @@ func run(ctx context.Context, config *hollowNodeConfig) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

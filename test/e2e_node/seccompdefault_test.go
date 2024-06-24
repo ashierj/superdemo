@@ -80,3 +80,7 @@ var _ = SIGDescribe("SeccompDefault", framework.WithSerial(), feature.SeccompDef
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

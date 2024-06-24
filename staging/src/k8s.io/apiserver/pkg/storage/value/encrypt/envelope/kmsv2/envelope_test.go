@@ -1432,3 +1432,7 @@ func errString(err error) string {
 }
 
 func randomBool() bool { return utilrand.Int()%2 == 1 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

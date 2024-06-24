@@ -42,3 +42,7 @@ func NewUUID() (UUID, error) {
 
 	return uuid, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

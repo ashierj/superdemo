@@ -72,3 +72,7 @@ func init() {
 	resolver.Register(&builder{scheme: unixScheme})
 	resolver.Register(&builder{scheme: unixAbstractScheme})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

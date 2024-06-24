@@ -360,3 +360,7 @@ func (r *Ref) Accept(v SchemaVisitor) {
 func (r *Ref) GetName() string {
 	return fmt.Sprintf("Reference to %q", r.reference)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

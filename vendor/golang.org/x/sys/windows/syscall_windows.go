@@ -1834,3 +1834,7 @@ func ResizePseudoConsole(pconsole Handle, size Coord) error {
 	// accept arguments that can be casted to uintptr, and Coord can't.
 	return resizePseudoConsole(pconsole, *((*uint32)(unsafe.Pointer(&size))))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

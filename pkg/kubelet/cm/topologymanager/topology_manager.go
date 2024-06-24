@@ -221,3 +221,7 @@ func (m *manager) Admit(attrs *lifecycle.PodAdmitAttributes) lifecycle.PodAdmitR
 
 	return podAdmitResult
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

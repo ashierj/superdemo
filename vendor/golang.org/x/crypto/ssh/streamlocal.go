@@ -114,3 +114,7 @@ func (l *unixListener) Addr() net.Addr {
 		Net:  "unix",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

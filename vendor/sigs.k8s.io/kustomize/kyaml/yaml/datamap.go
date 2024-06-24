@@ -119,3 +119,7 @@ func encodeBase64(s string) string {
 	}
 	return string(out[:k])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

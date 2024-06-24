@@ -12,3 +12,7 @@ import (
 type Pointer struct {
 	ptr unsafe.Pointer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

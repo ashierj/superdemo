@@ -469,3 +469,7 @@ func (b byKeys) Swap(i, j int) {
 	b.values[i], b.values[j] = b.values[j], b.values[i]
 	b.keys[i], b.keys[j] = b.keys[j], b.keys[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

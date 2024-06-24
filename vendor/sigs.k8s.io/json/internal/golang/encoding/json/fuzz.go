@@ -40,3 +40,7 @@ func Fuzz(data []byte) (score int) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

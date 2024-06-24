@@ -119,3 +119,7 @@ func PrintError(w io.Writer, err error) {
 		fmt.Fprintf(w, "%s\n", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

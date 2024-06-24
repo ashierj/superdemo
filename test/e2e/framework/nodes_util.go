@@ -24,3 +24,7 @@ func AppendContainerCommandGroupIfNeeded(args []string) []string {
 	}
 	return args
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -584,3 +584,7 @@ fake1,fake2
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

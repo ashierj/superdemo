@@ -134,3 +134,7 @@ func TestResetWatch(t *testing.T) {
 	source.Shutdown()
 	wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

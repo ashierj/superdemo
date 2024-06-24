@@ -56,3 +56,7 @@ func init() {
 	prometheus.MustRegister(streamFailures)
 	prometheus.MustRegister(clientRequests)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1666,3 +1666,7 @@ func (p *ParserATNSimulator) ReportAmbiguity(dfa *DFA, _ *DFAState, startIndex, 
 		p.parser.GetErrorListenerDispatch().ReportAmbiguity(p.parser, dfa, startIndex, stopIndex, exact, ambigAlts, configs)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

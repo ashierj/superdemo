@@ -143,3 +143,7 @@ func pemWithTemplate(template *x509.CertificateRequest, key crypto.PrivateKey) [
 
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

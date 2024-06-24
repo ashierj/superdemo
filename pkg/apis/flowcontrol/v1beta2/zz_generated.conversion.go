@@ -853,3 +853,7 @@ func autoConvert_flowcontrol_UserSubject_To_v1beta2_UserSubject(in *flowcontrol.
 func Convert_flowcontrol_UserSubject_To_v1beta2_UserSubject(in *flowcontrol.UserSubject, out *v1beta2.UserSubject, s conversion.Scope) error {
 	return autoConvert_flowcontrol_UserSubject_To_v1beta2_UserSubject(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

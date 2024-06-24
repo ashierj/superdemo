@@ -34150,3 +34150,7 @@ var encode6 = [...]uint16{
 	65509 - 65281: 0xA1CD,
 	65510 - 65281: 0xA3DC,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

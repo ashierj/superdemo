@@ -81,3 +81,7 @@ func (g *Cloud) RemoveInstancesFromTargetPool(name, region string, instanceRefs 
 	mc := newTargetPoolMetricContext("remove_instances", region)
 	return mc.Observe(g.c.TargetPools().RemoveInstance(ctx, meta.RegionalKey(name, region), req))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -72,3 +72,7 @@ func (p *NamespaceTransformerPlugin) Transform(m resmap.ResMap) error {
 func NewNamespaceTransformerPlugin() resmap.TransformerPlugin {
 	return &NamespaceTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

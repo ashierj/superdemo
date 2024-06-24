@@ -46,3 +46,7 @@ type serviceCIDRLister struct {
 func NewServiceCIDRLister(indexer cache.Indexer) ServiceCIDRLister {
 	return &serviceCIDRLister{listers.New[*v1alpha1.ServiceCIDR](indexer, v1alpha1.Resource("servicecidr"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

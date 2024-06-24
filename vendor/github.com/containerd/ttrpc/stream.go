@@ -82,3 +82,7 @@ func (s *stream) receive(ctx context.Context, msg *streamMessage) error {
 type sender interface {
 	send(uint32, messageType, uint8, []byte) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

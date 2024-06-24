@@ -68,3 +68,7 @@ type PodSchedulingContextNamespaceLister interface {
 type podSchedulingContextNamespaceLister struct {
 	listers.ResourceIndexer[*v1alpha2.PodSchedulingContext]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -532,3 +532,7 @@ func TestStatefulSetStartOrdinalEnablement(t *testing.T) {
 		t.Errorf("Generation = %v, want = 3 for StatefulSet: %v", ssWhenEnabled.Generation, ssWhenEnabled)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

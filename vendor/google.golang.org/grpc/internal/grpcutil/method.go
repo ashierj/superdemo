@@ -86,3 +86,7 @@ func ContentType(contentSubtype string) string {
 	}
 	return baseContentType + "+" + contentSubtype
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func Timeout(base time.Duration) time.Duration {
 func Sleep(base time.Duration) {
 	ztest.Sleep(base)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

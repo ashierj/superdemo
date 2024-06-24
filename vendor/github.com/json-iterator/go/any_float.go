@@ -81,3 +81,7 @@ func (any *floatAny) WriteTo(stream *Stream) {
 func (any *floatAny) GetInterface() interface{} {
 	return any.val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

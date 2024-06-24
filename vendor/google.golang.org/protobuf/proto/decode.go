@@ -292,3 +292,7 @@ func (o UnmarshalOptions) unmarshalMap(b []byte, wtyp protowire.Type, mapv proto
 var errUnknown = errors.New("BUG: internal error (unknown)")
 
 var errDecode = errors.New("cannot parse invalid wire-format data")
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -848,3 +848,7 @@ func (in *StatefulSetUpdateStrategy) DeepCopy() *StatefulSetUpdateStrategy {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -105,3 +105,7 @@ func resolveRelativePaths(paths []*string, root string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

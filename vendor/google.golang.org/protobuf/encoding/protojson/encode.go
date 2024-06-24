@@ -376,3 +376,7 @@ func (e encoder) marshalMap(mmap protoreflect.Map, fd protoreflect.FieldDescript
 	})
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

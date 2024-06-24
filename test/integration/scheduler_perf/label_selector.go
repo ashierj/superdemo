@@ -48,3 +48,7 @@ func containsStr(hay []string, needle string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

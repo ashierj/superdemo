@@ -173,3 +173,7 @@ func TestInitializationOrder(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

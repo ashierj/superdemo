@@ -179,3 +179,7 @@ func unmarshalMessageSet(buf []byte, exts interface{}) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

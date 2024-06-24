@@ -66,3 +66,7 @@ func (f FieldValidator) ErrIfInvalidKey(s string) error {
 func (f FieldValidator) IsEnvVarName(k string) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

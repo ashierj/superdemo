@@ -1104,3 +1104,7 @@ func cmdDebugStr(cmd *exec.Cmd) string {
 	}
 	return fmt.Sprintf("GOROOT=%v GOPATH=%v GO111MODULE=%v GOPROXY=%v PWD=%v %v", env["GOROOT"], env["GOPATH"], env["GO111MODULE"], env["GOPROXY"], env["PWD"], strings.Join(args, " "))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

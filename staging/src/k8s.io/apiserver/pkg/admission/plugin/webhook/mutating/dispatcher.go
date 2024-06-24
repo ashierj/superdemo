@@ -494,3 +494,7 @@ func jsonPatchAnnotationValue(configuration, webhook string, patch interface{}) 
 	bytes, err := utiljson.Marshal(p)
 	return string(bytes), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

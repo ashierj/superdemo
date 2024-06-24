@@ -26,3 +26,7 @@ import (
 func copyDirectory(source string, dest string) error {
 	return fileutils.CopyDirectory(source, dest)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

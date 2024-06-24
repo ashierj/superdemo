@@ -53,3 +53,7 @@ type HealthCheckable interface {
 	// health check is desired.
 	HealthChecker() healthz.UnnamedHealthChecker
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -144,3 +144,7 @@ func convertBoolToFloat64(boolVal bool) float64 {
 
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

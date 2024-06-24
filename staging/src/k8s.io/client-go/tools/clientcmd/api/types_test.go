@@ -128,3 +128,7 @@ func Example_ofOptionsConfig() {
 	//     client-certificate: path/to/my/client-cert-filename
 	//     client-key: path/to/my/client-key-filename
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

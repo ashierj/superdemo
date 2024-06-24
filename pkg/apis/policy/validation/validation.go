@@ -111,3 +111,7 @@ func IsValidSysctlPattern(name string) bool {
 	}
 	return sysctlContainSlashPatternRegexp.MatchString(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

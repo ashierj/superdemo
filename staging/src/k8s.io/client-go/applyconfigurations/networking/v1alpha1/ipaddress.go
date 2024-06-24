@@ -245,3 +245,7 @@ func (b *IPAddressApplyConfiguration) WithSpec(value *IPAddressSpecApplyConfigur
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

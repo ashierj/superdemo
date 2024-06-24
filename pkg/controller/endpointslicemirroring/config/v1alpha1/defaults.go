@@ -39,3 +39,7 @@ func RecommendedDefaultEndpointSliceMirroringControllerConfiguration(obj *kubect
 		obj.MirroringMaxEndpointsPerSubset = 1000
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

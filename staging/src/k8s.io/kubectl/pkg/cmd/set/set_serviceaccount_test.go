@@ -405,3 +405,7 @@ func TestServiceAccountValidation(t *testing.T) {
 func objBody(obj runtime.Object) io.ReadCloser {
 	return cmdtesting.BytesBody([]byte(runtime.EncodeOrDie(scheme.DefaultJSONEncoder(), obj)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

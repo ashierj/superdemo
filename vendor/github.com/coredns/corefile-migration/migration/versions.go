@@ -850,3 +850,7 @@ var plugins_1_6_0 = map[string]plugin{
 	"hosts":        plugins["hosts"]["v1"],
 	"rewrite":      plugins["rewrite"]["v2"],
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

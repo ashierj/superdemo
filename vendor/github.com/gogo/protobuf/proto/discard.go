@@ -348,3 +348,7 @@ func discardLegacy(m Message) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

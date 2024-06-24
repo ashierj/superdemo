@@ -66,3 +66,7 @@ func (rc *webhookReinvokeContext) RequireReinvokingPreviouslyInvokedPlugins() {
 		rc.previouslyInvokedReinvocableWebhooks = sets.NewString()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

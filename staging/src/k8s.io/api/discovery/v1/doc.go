@@ -20,3 +20,7 @@ limitations under the License.
 // +groupName=discovery.k8s.io
 
 package v1 // import "k8s.io/api/discovery/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

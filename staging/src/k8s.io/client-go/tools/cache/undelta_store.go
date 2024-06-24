@@ -87,3 +87,7 @@ func NewUndeltaStore(pushFunc func([]interface{}), keyFunc KeyFunc) *UndeltaStor
 		PushFunc: pushFunc,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

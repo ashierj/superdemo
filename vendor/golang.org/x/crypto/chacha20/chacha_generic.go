@@ -396,3 +396,7 @@ func hChaCha20(out, key, nonce []byte) ([]byte, error) {
 	binary.LittleEndian.PutUint32(out[28:32], x15)
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

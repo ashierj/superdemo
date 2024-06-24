@@ -31,3 +31,7 @@ func (n *Namespaces) CloneFlags() uintptr {
 	}
 	return uintptr(flag)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

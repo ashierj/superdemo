@@ -51,3 +51,7 @@ type Dispatcher interface {
 	// match. A non-nil error means the request is rejected.
 	Dispatch(ctx context.Context, a admission.Attributes, o admission.ObjectInterfaces, hooks []webhook.WebhookAccessor) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

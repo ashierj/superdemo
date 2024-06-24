@@ -196,3 +196,7 @@ func autoConvert_config_VolumeConfiguration_To_v1alpha1_VolumeConfiguration(in *
 func Convert_config_VolumeConfiguration_To_v1alpha1_VolumeConfiguration(in *config.VolumeConfiguration, out *v1alpha1.VolumeConfiguration, s conversion.Scope) error {
 	return autoConvert_config_VolumeConfiguration_To_v1alpha1_VolumeConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

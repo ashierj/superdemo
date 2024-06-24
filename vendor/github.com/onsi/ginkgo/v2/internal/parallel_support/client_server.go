@@ -70,3 +70,7 @@ func NewClient(serverHost string) Client {
 		return newRPCClient(serverHost)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

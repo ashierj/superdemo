@@ -26,3 +26,7 @@ func PushClone() error {
 func PopClone() {
 	Suite = backupSuite
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

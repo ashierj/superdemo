@@ -37,3 +37,7 @@ func LevelFlag(name string, defaultLevel zapcore.Level, usage string) *zapcore.L
 	flag.Var(&lvl, name, usage)
 	return &lvl
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

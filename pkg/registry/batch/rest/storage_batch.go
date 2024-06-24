@@ -72,3 +72,7 @@ func (p RESTStorageProvider) v1Storage(apiResourceConfigSource serverstorage.API
 func (p RESTStorageProvider) GroupName() string {
 	return batch.GroupName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

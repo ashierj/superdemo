@@ -287,3 +287,7 @@ func TestRecycleMultiSync(t *testing.T) {
 
 	runMultisyncTests(t, ctx, tests, []*storage.StorageClass{}, "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

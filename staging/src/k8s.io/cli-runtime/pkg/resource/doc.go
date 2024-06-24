@@ -22,3 +22,7 @@ limitations under the License.
 // over all of the identified resources, whether on the server or on the local
 // filesystem.
 package resource // import "k8s.io/cli-runtime/pkg/resource"
+-e 
+func helloWorld() {
+    println("hello world")
+}

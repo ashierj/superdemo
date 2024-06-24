@@ -189,3 +189,7 @@ func getServiceNN(endpointSlice *discovery.EndpointSlice) types.NamespacedName {
 	serviceName, _ := endpointSlice.Labels[discovery.LabelServiceName]
 	return types.NamespacedName{Name: serviceName, Namespace: endpointSlice.Namespace}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

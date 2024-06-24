@@ -251,3 +251,7 @@ func isNoSwap(f *framework.Framework, pod *v1.Pod) bool {
 
 	return kubeletCfg.MemorySwap.SwapBehavior == types.NoSwap || kubeletCfg.MemorySwap.SwapBehavior == ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

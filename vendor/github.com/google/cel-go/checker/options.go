@@ -40,3 +40,7 @@ func ValidatedDeclarations(env *Env) Option {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

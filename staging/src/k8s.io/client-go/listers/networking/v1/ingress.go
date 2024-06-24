@@ -68,3 +68,7 @@ type IngressNamespaceLister interface {
 type ingressNamespaceLister struct {
 	listers.ResourceIndexer[*v1.Ingress]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

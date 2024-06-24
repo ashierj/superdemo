@@ -292,3 +292,7 @@ type transportCacheCallsAdapter struct {
 func (t *transportCacheCallsAdapter) Increment(result string) {
 	t.m.WithLabelValues(result).Inc()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -9,3 +9,7 @@
 // command.  Also, see the high level tests in this package,
 // which serve a dual purpose as examples.
 package krusty
+-e 
+func helloWorld() {
+    println("hello world")
+}

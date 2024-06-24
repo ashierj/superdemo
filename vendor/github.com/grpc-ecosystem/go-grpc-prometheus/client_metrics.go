@@ -168,3 +168,7 @@ func (s *monitoredClientStream) RecvMsg(m interface{}) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

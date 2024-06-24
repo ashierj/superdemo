@@ -480,3 +480,7 @@ func (ctx symmetricMac) hmac(payload []byte, alg SignatureAlgorithm) ([]byte, er
 	_, _ = hmac.Write(payload)
 	return hmac.Sum(nil), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

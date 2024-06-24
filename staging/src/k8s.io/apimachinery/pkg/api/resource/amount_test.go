@@ -203,3 +203,7 @@ func TestInt64AmountAsScaledInt64(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

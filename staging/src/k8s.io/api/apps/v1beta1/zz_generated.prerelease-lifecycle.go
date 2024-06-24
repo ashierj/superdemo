@@ -216,3 +216,7 @@ func (in *StatefulSetList) APILifecycleReplacement() schema.GroupVersionKind {
 func (in *StatefulSetList) APILifecycleRemoved() (major, minor int) {
 	return 1, 16
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

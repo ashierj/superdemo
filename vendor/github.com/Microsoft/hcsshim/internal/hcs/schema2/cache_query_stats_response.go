@@ -16,3 +16,7 @@ type CacheQueryStatsResponse struct {
 
 	L3LocalBwBytes int32 `json:"L3LocalBwBytes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

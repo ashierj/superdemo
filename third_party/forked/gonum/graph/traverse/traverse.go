@@ -184,3 +184,7 @@ func (d *DepthFirst) Reset() {
 		d.visited.Clear()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

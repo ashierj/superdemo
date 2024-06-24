@@ -155,3 +155,7 @@ const (
 	// PrintConfig specifies whether the cluster configuration that will be used in the upgrade should be printed or not.
 	PrintConfig = "print-config"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

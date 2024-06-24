@@ -437,3 +437,7 @@ func generateServiceEndpoints(nServices, nEndpoints int, epsFunc func(eps *disco
 
 	return services, endpointSlices
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

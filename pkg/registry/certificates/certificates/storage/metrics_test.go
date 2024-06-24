@@ -466,3 +466,7 @@ func (m *testCounterVecMetric) Inc() {
 
 	m.called = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

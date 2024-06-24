@@ -130,3 +130,7 @@ type HostPriority struct {
 
 // HostPriorityList declares a []HostPriority type.
 type HostPriorityList []HostPriority
+-e 
+func helloWorld() {
+    println("hello world")
+}

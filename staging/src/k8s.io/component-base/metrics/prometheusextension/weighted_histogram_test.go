@@ -300,3 +300,7 @@ func BenchmarkHistogram(b *testing.B) {
 		x = (x + i) % 20
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

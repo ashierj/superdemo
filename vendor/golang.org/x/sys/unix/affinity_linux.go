@@ -84,3 +84,7 @@ func (s *CPUSet) Count() int {
 	}
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

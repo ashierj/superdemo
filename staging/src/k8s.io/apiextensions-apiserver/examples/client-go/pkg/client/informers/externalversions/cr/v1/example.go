@@ -88,3 +88,7 @@ func (f *exampleInformer) Informer() cache.SharedIndexInformer {
 func (f *exampleInformer) Lister() v1.ExampleLister {
 	return v1.NewExampleLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

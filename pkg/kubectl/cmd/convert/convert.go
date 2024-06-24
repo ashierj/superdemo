@@ -296,3 +296,7 @@ func tryConvert(converter runtime.ObjectConvertor, object runtime.Object, versio
 	}
 	return nil, last
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

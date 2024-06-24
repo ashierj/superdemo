@@ -50,3 +50,7 @@ func (b *ResourceMetricStatusApplyConfiguration) WithCurrent(value *MetricValueS
 	b.Current = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

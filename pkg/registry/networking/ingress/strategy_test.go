@@ -138,3 +138,7 @@ func TestIngressStatusStrategy(t *testing.T) {
 		t.Errorf("Unexpected error %v", errs)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

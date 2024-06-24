@@ -184,3 +184,7 @@ func init() {
 
 	prometheus.MustRegister(rttSec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

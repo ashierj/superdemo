@@ -64,3 +64,7 @@ func (b *SubjectApplyConfiguration) WithNamespace(value string) *SubjectApplyCon
 	b.Namespace = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

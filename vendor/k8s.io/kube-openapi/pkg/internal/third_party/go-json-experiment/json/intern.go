@@ -84,3 +84,7 @@ func hash64(lo, hi uint32) uint32 {
 	}
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

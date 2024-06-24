@@ -235,3 +235,7 @@ func unhex(b byte) (rune, bool) {
 var (
 	newlineNormalizer = strings.NewReplacer("\r\n", "\n", "\r", "\n")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

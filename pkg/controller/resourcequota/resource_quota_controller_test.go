@@ -1319,3 +1319,7 @@ func (f *fakeActionHandler) ServeHTTP(response http.ResponseWriter, request *htt
 		time.Sleep(30 * time.Second)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

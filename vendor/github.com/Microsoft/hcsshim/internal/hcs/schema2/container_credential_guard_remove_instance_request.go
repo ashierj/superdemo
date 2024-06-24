@@ -12,3 +12,7 @@ package hcsschema
 type ContainerCredentialGuardRemoveInstanceRequest struct {
 	Id string `json:"Id,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

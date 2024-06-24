@@ -69,3 +69,7 @@ func (plugin *flexVolumePlugin) NodeExpand(rsOpt volume.NodeResizeOptions) (bool
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -220,3 +220,7 @@ func baseTransport() *http.Transport {
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

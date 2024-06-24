@@ -267,3 +267,7 @@ func checkNodesVersions(ctx context.Context, cs clientset.Interface, want string
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

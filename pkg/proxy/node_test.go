@@ -149,3 +149,7 @@ func TestNodePodCIDRHandlerUpdate(t *testing.T) {
 func customExit(exitCode int) {
 	panic(strconv.Itoa(exitCode))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

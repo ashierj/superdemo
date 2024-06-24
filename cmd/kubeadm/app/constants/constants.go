@@ -681,3 +681,7 @@ func GetAPIServerVirtualIP(svcSubnetList string) (net.IP, error) {
 	}
 	return internalAPIServerVirtualIP, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

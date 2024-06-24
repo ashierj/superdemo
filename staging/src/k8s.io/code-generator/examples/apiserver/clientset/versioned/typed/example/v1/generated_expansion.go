@@ -19,3 +19,7 @@ limitations under the License.
 package v1
 
 type TestTypeExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

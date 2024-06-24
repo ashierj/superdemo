@@ -64,3 +64,7 @@ func NewURLsValue(s string) *URLsValue {
 func URLsFromFlag(fs *flag.FlagSet, urlsFlagName string) []url.URL {
 	return []url.URL(*fs.Lookup(urlsFlagName).Value.(*URLsValue))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

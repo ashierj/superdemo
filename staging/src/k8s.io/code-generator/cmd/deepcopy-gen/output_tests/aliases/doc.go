@@ -87,3 +87,7 @@ type Ttest struct {
 	AliasInterfaceMap   AliasInterfaceMap
 	AliasInterfaceSlice AliasInterfaceSlice
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

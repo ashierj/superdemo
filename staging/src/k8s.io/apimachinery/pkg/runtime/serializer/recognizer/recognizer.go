@@ -126,3 +126,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 	}
 	return nil, nil, lastErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

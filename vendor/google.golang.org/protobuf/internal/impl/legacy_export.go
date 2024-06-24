@@ -90,3 +90,7 @@ func (Export) CompressGZIP(in []byte) (out []byte) {
 	out = append(out, gzipFooter[:]...)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

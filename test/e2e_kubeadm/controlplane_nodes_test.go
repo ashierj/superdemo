@@ -70,3 +70,7 @@ func getControlPlaneNodes(ctx context.Context, c clientset.Interface) *corev1.No
 	framework.ExpectNoError(err, "error reading control-plane nodes")
 	return cpNodes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

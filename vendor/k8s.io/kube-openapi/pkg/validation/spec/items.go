@@ -178,3 +178,7 @@ func (i Items) MarshalNextJSON(opts jsonv2.MarshalOptions, enc *jsonv2.Encoder) 
 	x.Extensions = internal.SanitizeExtensions(i.Extensions)
 	return opts.MarshalNext(enc, x)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

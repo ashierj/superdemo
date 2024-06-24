@@ -965,3 +965,7 @@ func (manager *gceServiceManager) getProjectsAPIEndpoint() string {
 
 	return projectsAPIEndpoint
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

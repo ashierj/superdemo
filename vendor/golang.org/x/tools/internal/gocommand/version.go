@@ -69,3 +69,7 @@ func ParseGoVersionOutput(data string) string {
 	}
 	return m[1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

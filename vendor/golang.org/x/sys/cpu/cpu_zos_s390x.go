@@ -23,3 +23,7 @@ func initS390Xbase() {
 		S390X.HasVXE = facilities.Has(vxe)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

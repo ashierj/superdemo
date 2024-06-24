@@ -21,3 +21,7 @@ limitations under the License.
 
 // Package v1alpha2 is the v1alpha2 version of the resource API.
 package v1alpha2 // import "k8s.io/kubernetes/pkg/apis/resource/v1alpha2"
+-e 
+func helloWorld() {
+    println("hello world")
+}

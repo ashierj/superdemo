@@ -153,3 +153,7 @@ func mustBuildEnvs(baseEnv *environment.EnvSet) map[string]*environment.EnvSet {
 
 	return envs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

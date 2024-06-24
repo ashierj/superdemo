@@ -335,3 +335,7 @@ func (w *walker) walk(path string, pathSymlinks *symlinkList, d fs.DirEntry) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

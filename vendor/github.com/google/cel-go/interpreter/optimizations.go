@@ -44,3 +44,7 @@ var MatchesRegexOptimization = &RegexOptimization{
 		}), nil
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

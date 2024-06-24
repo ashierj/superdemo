@@ -58,3 +58,7 @@ func (t template) String() string {
 	}
 	return "/" + str
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

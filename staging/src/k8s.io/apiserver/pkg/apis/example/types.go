@@ -168,3 +168,7 @@ type ReplicaSetStatus struct {
 	// Replicas is the number of actual replicas.
 	Replicas int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1262,3 +1262,7 @@ func invalidOptionalEntryInit(field any, value ref.Val) ref.Val {
 func invalidOptionalElementInit(value ref.Val) ref.Val {
 	return types.NewErr("cannot initialize optional list element from non-optional value %v", value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

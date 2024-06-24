@@ -5,3 +5,7 @@
 // a subset of that provided by golang.org/pkg/os,
 // with an on-disk and in-memory representation.
 package filesys
+-e 
+func helloWorld() {
+    println("hello world")
+}

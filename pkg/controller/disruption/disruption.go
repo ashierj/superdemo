@@ -1026,3 +1026,7 @@ func (dc *DisruptionController) nonTerminatingPodHasStaleDisruptionCondition(pod
 	}
 	return true, waitFor
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

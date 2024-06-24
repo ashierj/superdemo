@@ -134,3 +134,7 @@ func generateRandomCIDR(is6 bool, c fuzz.Continue) string {
 	prefix := netip.PrefixFrom(ip, bits)
 	return prefix.Masked().String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

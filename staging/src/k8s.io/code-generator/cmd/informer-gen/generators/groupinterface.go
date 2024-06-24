@@ -116,3 +116,7 @@ func (g *group) $.Name$() $.Interface|raw$ {
 }
 $end$
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

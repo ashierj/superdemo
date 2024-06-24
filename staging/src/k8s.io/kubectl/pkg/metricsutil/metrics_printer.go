@@ -234,3 +234,7 @@ func printPodResourcesSum(out io.Writer, total v1.ResourceList, columnWidth int)
 	})
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -66,3 +66,7 @@ func TestDefaultNodeIdentifier_NodeIdentity(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

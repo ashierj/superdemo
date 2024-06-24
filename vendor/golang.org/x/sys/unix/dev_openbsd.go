@@ -27,3 +27,7 @@ func Mkdev(major, minor uint32) uint64 {
 	dev |= (uint64(minor) << 0) & 0x000000ff
 	return dev
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

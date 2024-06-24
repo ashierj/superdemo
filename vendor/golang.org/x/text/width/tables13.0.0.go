@@ -1359,3 +1359,7 @@ var inverseData = [150][4]byte{
 }
 
 // Total table size 15448 bytes (15KiB)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -230,3 +230,7 @@ func (config *KubeletManagedHostConfig) createPodSpecWithHostNetwork(podName str
 	}
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -117,3 +117,7 @@ func toMetaObjectSliceOrDie[T any](s []T) []metav1.Object {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

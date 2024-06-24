@@ -711,3 +711,7 @@ func TestDeletionHandlingObjectToName(t *testing.T) {
 		t.Errorf("Expected %#v, got %#v", expected, actual)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

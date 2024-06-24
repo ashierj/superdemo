@@ -75,3 +75,7 @@ func Process(filename string, src []byte, opt *Options) ([]byte, error) {
 func VendorlessPath(ipath string) string {
 	return intimp.VendorlessPath(ipath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -322,3 +322,7 @@ func toSemVer(version string) string {
 	}
 	return strings.Join(subs, ".")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

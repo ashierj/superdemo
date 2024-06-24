@@ -129,3 +129,7 @@ func getHash(data string) string {
 	hashPool.Put(h)
 	return dataHash
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -150,3 +150,7 @@ func (sc *stateCheckpoint) store(claimInfoStateList ClaimInfoStateList) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

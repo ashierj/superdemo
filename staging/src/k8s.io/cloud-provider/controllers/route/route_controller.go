@@ -474,3 +474,7 @@ func equalNodeAddrs(addrs0 []v1.NodeAddress, addrs1 []v1.NodeAddress) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

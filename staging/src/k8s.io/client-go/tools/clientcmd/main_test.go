@@ -31,3 +31,7 @@ func TestMain(m *testing.M) {
 	os.Setenv("KUBECONFIG", filepath.Join(tmp, "dummy-nonexistent-kubeconfig"))
 	os.Exit(m.Run())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

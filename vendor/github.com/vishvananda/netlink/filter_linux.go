@@ -805,3 +805,7 @@ func SerializeRtab(rtab [256]uint32) []byte {
 	_ = binary.Write(&w, native, rtab)
 	return w.Bytes()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

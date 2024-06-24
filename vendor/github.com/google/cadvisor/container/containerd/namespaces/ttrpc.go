@@ -62,3 +62,7 @@ func withTTRPCNamespaceHeader(ctx context.Context, namespace string) context.Con
 func fromTTRPCHeader(ctx context.Context) (string, bool) {
 	return ttrpc.GetMetadataValue(ctx, TTRPCHeader)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -313,3 +313,7 @@ var eventBits = []struct {
 	{InQOverflow, "IN_Q_OVERFLOW"},
 	{InUnmount, "IN_UNMOUNT"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

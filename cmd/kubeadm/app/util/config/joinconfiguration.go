@@ -165,3 +165,7 @@ func DefaultedJoinConfiguration(defaultversionedcfg *kubeadmapiv1.JoinConfigurat
 
 	return internalcfg, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

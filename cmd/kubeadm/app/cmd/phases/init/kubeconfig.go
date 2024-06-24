@@ -161,3 +161,7 @@ func runKubeConfigFile(kubeConfigFileName string) func(workflow.RunData) error {
 		return kubeconfigphase.CreateKubeConfigFile(kubeConfigFileName, data.KubeConfigDir(), data.Cfg())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

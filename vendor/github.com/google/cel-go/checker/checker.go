@@ -694,3 +694,7 @@ var (
 		types.UintKind:      "google.protobuf.UInt64Value",
 	}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

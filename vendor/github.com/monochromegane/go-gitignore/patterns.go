@@ -20,3 +20,7 @@ func (ps patterns) match(path string, isDir bool) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

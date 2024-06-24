@@ -41,3 +41,7 @@ func parseRelease(rel string) (major, minor, patch int, ok bool) {
 	patch, ok = next()
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

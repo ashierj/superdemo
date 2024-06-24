@@ -50,3 +50,7 @@ func (b *VolumeErrorApplyConfiguration) WithMessage(value string) *VolumeErrorAp
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

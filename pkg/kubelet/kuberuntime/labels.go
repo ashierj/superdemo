@@ -293,3 +293,7 @@ func getJSONObjectFromLabel(labels map[string]string, label string, value interf
 	// If the label is not found, return not found.
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

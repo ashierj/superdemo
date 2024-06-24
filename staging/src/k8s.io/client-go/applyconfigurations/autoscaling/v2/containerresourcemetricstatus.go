@@ -59,3 +59,7 @@ func (b *ContainerResourceMetricStatusApplyConfiguration) WithContainer(value st
 	b.Container = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

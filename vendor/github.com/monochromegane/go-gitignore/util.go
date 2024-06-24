@@ -43,3 +43,7 @@ func cutLastN(path string, n int) (string, bool) {
 func hasMeta(path string) bool {
 	return strings.IndexAny(path, "*?[") >= 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

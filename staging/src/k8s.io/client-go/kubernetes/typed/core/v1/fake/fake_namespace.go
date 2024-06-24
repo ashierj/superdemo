@@ -176,3 +176,7 @@ func (c *FakeNamespaces) ApplyStatus(ctx context.Context, namespace *corev1.Name
 	}
 	return obj.(*v1.Namespace), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

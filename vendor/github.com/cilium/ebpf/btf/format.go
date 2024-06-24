@@ -317,3 +317,7 @@ func skipQualifiers(typ Type) Type {
 	}
 	return &cycle{typ}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

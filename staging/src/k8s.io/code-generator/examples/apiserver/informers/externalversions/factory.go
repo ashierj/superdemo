@@ -271,3 +271,7 @@ func (f *sharedInformerFactory) SecondExample() example2.Interface {
 func (f *sharedInformerFactory) ThirdExample() example3io.Interface {
 	return example3io.New(f, f.namespace, f.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

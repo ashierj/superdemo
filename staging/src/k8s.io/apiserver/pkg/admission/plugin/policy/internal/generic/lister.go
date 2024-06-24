@@ -98,3 +98,7 @@ func (w lister[T]) Namespaced(namespace string) NamespacedLister[T] {
 func NewLister[T runtime.Object](indexer cache.Indexer) lister[T] {
 	return lister[T]{indexer: indexer}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

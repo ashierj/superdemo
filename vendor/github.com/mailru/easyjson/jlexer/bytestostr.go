@@ -22,3 +22,7 @@ func bytesToStr(data []byte) string {
 	shdr := reflect.StringHeader{Data: h.Data, Len: h.Len}
 	return *(*string)(unsafe.Pointer(&shdr))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

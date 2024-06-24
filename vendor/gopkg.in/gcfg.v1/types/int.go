@@ -84,3 +84,7 @@ func ParseInt(intptr interface{}, val string, mode IntMode) error {
 	}
 	return ScanFully(intptr, val, verb)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

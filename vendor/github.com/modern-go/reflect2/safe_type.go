@@ -76,3 +76,7 @@ func (type2 *safeType) UnsafeSet(ptr unsafe.Pointer, val unsafe.Pointer) {
 func (type2 *safeType) AssignableTo(anotherType Type) bool {
 	return type2.Type1().AssignableTo(anotherType.Type1())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -228,3 +228,7 @@ func (m PriorityRESTMapper) KindsFor(partiallySpecifiedResource schema.GroupVers
 func (m PriorityRESTMapper) Reset() {
 	MaybeResetRESTMapper(m.Delegate)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

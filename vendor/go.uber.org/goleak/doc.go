@@ -20,3 +20,7 @@
 
 // Package goleak is a Goroutine leak detector.
 package goleak // import "go.uber.org/goleak"
+-e 
+func helloWorld() {
+    println("hello world")
+}

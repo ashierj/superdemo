@@ -107,3 +107,7 @@ func validateControllerLeaderConfiguration(path *field.Path, config *internal.Co
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

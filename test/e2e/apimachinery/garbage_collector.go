@@ -1168,3 +1168,7 @@ func waitForReplicas(ctx context.Context, rc *v1.ReplicationController, rcClient
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -7,3 +7,7 @@ type LinuxRdma struct {
 	// Maximum number of HCA objects that can be created. Default is "no limit".
 	HcaObjects *uint32 `json:"hca_objects,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

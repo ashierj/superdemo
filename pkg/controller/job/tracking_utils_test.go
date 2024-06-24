@@ -230,3 +230,7 @@ func validateTerminatedPodsTrackingFinalizerTotal(event string, want int) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

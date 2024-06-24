@@ -528,3 +528,7 @@ func TestErrConfigurationInvalidWithErrorsIsShortCircuitsOnFirstMatch(t *testing
 		t.Errorf("expected exactly one error to get accessed, got %d", numAccessed)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

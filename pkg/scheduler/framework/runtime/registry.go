@@ -99,3 +99,7 @@ func (r Registry) Merge(in Registry) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -178,3 +178,7 @@ func (g *GinkgoTBWrapper) Skipped() bool {
 func (g *GinkgoTBWrapper) TempDir() string {
 	return g.GinkgoT.TempDir()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

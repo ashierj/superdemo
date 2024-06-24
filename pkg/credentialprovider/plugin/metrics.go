@@ -59,3 +59,7 @@ func registerMetrics() {
 		legacyregistry.MustRegister(kubeletCredentialProviderPluginDuration)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

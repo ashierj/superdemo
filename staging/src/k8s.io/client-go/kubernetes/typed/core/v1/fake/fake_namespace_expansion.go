@@ -38,3 +38,7 @@ func (c *FakeNamespaces) Finalize(ctx context.Context, namespace *v1.Namespace, 
 
 	return obj.(*v1.Namespace), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

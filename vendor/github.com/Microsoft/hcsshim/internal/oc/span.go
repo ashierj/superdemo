@@ -15,3 +15,7 @@ func SetSpanStatus(span *trace.Span, err error) {
 	}
 	span.SetStatus(status)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

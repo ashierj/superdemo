@@ -329,3 +329,7 @@ func isDelayedBinding(sc *storagev1.StorageClass) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -225,3 +225,7 @@ func TestFindAndRemoveNonattachableVolumes(t *testing.T) {
 			volumeExists)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

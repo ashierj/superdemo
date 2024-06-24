@@ -941,3 +941,7 @@ func (f *fakeRESTMapper) RESTMappings(gk schema.GroupKind, versions ...string) (
 func (f *fakeRESTMapper) ResourceSingularizer(resource string) (singular string, err error) {
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

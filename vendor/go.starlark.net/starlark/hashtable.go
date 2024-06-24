@@ -388,3 +388,7 @@ func softHashString(s string) uint32 {
 	}
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -232,3 +232,7 @@ var _ = SIGDescribe("Sysctls [LinuxOnly]", framework.WithNodeConformance(), func
 		gomega.Expect(log).To(gomega.ContainSubstring("kernel.shm_rmid_forced = 1"))
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

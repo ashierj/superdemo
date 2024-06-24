@@ -556,3 +556,7 @@ func writeUint(w enhancedWriter, u uint64) (int, error) {
 	numBufPool.Put(bp)
 	return written, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *networkPolicyInformer) Informer() cache.SharedIndexInformer {
 func (f *networkPolicyInformer) Lister() v1.NetworkPolicyLister {
 	return v1.NewNetworkPolicyLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

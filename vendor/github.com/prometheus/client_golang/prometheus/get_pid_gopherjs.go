@@ -21,3 +21,7 @@ func getPIDFn() func() (int, error) {
 		return 1, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

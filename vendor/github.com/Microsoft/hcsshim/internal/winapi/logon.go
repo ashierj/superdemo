@@ -28,3 +28,7 @@ const (
 	LOGON32_PROVIDER_WINNT40 uint32 = 2
 	LOGON32_PROVIDER_WINNT50 uint32 = 3
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

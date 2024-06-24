@@ -34,3 +34,7 @@ func countSRIOVDevices() (int, error) {
 	}
 	return strconv.Atoi(strings.TrimSpace(string(outData)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -933,3 +933,7 @@ func checkUmountError(target string, command *exec.Cmd, output []byte, err error
 	}
 	return fmt.Errorf("unmount failed: %v\nUnmounting arguments: %s\nOutput: %s", err, target, string(output))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -66,3 +66,7 @@ func NewRuntimeClass(name, handler string) *nodev1.RuntimeClass {
 		Handler: handler,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

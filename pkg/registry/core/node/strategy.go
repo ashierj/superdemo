@@ -295,3 +295,7 @@ func fieldIsDeprecatedWarnings(obj runtime.Object) []string {
 	}
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

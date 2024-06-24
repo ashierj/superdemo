@@ -67,3 +67,7 @@ func AddIndexerIfNotPresent(indexer cache.Indexer, indexName string, indexFunc c
 	}
 	return indexer.AddIndexers(cache.Indexers{indexName: indexFunc})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

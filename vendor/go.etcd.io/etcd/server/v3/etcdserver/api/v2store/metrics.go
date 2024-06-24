@@ -128,3 +128,7 @@ func reportWatcherAdded() {
 func reportWatcherRemoved() {
 	watcherCount.Dec()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

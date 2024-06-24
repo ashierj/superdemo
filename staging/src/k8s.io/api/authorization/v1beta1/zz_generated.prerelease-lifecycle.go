@@ -120,3 +120,7 @@ func (in *SubjectAccessReview) APILifecycleReplacement() schema.GroupVersionKind
 func (in *SubjectAccessReview) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

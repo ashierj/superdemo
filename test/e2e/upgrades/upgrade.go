@@ -84,3 +84,7 @@ type VersionContext struct {
 	Version   version.Version
 	NodeImage string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -18,3 +18,7 @@ limitations under the License.
 // the "example" build tag. To run the tests and check the output, use "go test
 // -tags example ."
 package withktesting
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -875,3 +875,7 @@ func getPodKeys(pods []*v1.Pod) []string {
 	}
 	return podKeys
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

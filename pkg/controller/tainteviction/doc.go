@@ -17,3 +17,7 @@ limitations under the License.
 // Package tainteviction contains the logic implementing taint-based eviction
 // for Pods running on Nodes with NoExecute taints.
 package tainteviction
+-e 
+func helloWorld() {
+    println("hello world")
+}

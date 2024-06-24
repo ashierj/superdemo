@@ -31,3 +31,7 @@ func (p *IAMPolicyGeneratorPlugin) Generate() (resmap.ResMap, error) {
 func NewIAMPolicyGeneratorPlugin() resmap.GeneratorPlugin {
 	return &IAMPolicyGeneratorPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -165,3 +165,7 @@ func processFallbackAddr(fallbackAddr string) (string, error) {
 	}
 	return fallbackServerAddr, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

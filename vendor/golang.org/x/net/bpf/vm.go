@@ -148,3 +148,7 @@ func (v *VM) Run(in []byte) (int, error) {
 
 	return 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

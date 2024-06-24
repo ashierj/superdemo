@@ -26,3 +26,7 @@ func kindIs(target string, src interface{}) bool {
 func kindOf(src interface{}) string {
 	return reflect.ValueOf(src).Kind().String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

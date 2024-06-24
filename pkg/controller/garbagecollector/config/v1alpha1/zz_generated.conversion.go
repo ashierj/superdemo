@@ -100,3 +100,7 @@ func autoConvert_config_GroupResource_To_v1alpha1_GroupResource(in *config.Group
 func Convert_config_GroupResource_To_v1alpha1_GroupResource(in *config.GroupResource, out *v1alpha1.GroupResource, s conversion.Scope) error {
 	return autoConvert_config_GroupResource_To_v1alpha1_GroupResource(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

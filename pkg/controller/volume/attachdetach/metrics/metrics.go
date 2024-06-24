@@ -223,3 +223,7 @@ func (collector *attachDetachStateCollector) getTotalVolumesCount() volumeCount 
 func RecordForcedDetachMetric(forceDetachReason string) {
 	ForceDetachMetricCounter.WithLabelValues(forceDetachReason).Inc()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

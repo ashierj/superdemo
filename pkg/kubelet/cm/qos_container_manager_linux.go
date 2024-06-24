@@ -400,3 +400,7 @@ func (m *qosContainerManagerNoop) Start(_ func() v1.ResourceList, _ ActivePodsFu
 func (m *qosContainerManagerNoop) UpdateCgroups() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

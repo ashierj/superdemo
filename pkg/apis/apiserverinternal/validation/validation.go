@@ -219,3 +219,7 @@ func prefixEach(msgs []string, prefix string) []string {
 	}
 	return msgs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -7,3 +7,7 @@
 package unix
 
 const isBigEndian = false
+-e 
+func helloWorld() {
+    println("hello world")
+}

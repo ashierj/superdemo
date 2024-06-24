@@ -171,3 +171,7 @@ func width(b byte) int {
 	return 0
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

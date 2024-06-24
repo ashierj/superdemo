@@ -179,3 +179,7 @@ func (t MicroTime) MarshalQueryParameter() (string, error) {
 
 	return t.UTC().Format(RFC3339Micro), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

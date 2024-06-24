@@ -129,3 +129,7 @@ func TestNotExemptClusterScopedResource(t *testing.T) {
 		t.Errorf("cluster scoped resources (but not a namespace) should not be exempted from webhooks")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

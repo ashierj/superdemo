@@ -365,3 +365,7 @@ func Test_getHintsByZone(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

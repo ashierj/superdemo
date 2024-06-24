@@ -52,3 +52,7 @@ func eventOccurred(c clientset.Interface, namespace, eventSelector, msg string) 
 		return false, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

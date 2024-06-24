@@ -177,3 +177,7 @@ func denySpecificAttachment(ar v1.AdmissionReview) *v1.AdmissionResponse {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ type Route struct {
 	// InterfaceName specifies the device to set this route up for, for example eth0.
 	InterfaceName string `json:"interface_name"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

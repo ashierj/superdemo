@@ -64,3 +64,7 @@ func (tl *timeList) Trigger(deadline uint64) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

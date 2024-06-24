@@ -39,3 +39,7 @@ func (NoOp) Set(val string) error {
 func (NoOp) Type() string {
 	return "NoOp"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

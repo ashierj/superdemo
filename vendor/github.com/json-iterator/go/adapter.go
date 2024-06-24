@@ -148,3 +148,7 @@ func (adapter *Encoder) SetEscapeHTML(escapeHTML bool) {
 func Valid(data []byte) bool {
 	return ConfigDefault.Valid(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -275,3 +275,7 @@ var _ = SIGDescribe("Generated clientset", func() {
 		gomega.Expect(cronJobs.Items).To(gomega.BeEmpty())
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

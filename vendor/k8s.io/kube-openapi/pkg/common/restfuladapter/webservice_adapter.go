@@ -32,3 +32,7 @@ func (r *WebServiceAdapter) Routes() []common.Route {
 	}
 	return routes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

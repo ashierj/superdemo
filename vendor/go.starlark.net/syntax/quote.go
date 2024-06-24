@@ -307,3 +307,7 @@ func Quote(s string, b bool) string {
 	buf = append(buf, '"')
 	return string(buf)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

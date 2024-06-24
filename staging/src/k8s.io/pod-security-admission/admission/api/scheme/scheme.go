@@ -46,3 +46,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	utilruntime.Must(podsecurityv1.AddToScheme(scheme))
 	utilruntime.Must(scheme.SetVersionPriority(podsecurityv1.SchemeGroupVersion, podsecurityv1beta1.SchemeGroupVersion, podsecurityv1alpha1.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

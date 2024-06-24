@@ -107,3 +107,7 @@ func (d *CachingDockerConfigProvider) Provide(image string) DockerConfig {
 	}
 	return config
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

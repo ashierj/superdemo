@@ -70,3 +70,7 @@ func (b *EndpointSubsetApplyConfiguration) WithPorts(values ...*EndpointPortAppl
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

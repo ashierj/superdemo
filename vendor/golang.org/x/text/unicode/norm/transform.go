@@ -86,3 +86,7 @@ func (f Form) transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err error)
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

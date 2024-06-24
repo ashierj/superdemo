@@ -56,3 +56,7 @@ func MakeDockerKeyring(passedSecrets []v1.Secret, defaultKeyring credentialprovi
 
 	return defaultKeyring, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

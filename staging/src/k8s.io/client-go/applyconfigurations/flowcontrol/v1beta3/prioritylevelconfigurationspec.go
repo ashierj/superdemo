@@ -59,3 +59,7 @@ func (b *PriorityLevelConfigurationSpecApplyConfiguration) WithExempt(value *Exe
 	b.Exempt = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

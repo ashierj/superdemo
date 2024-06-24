@@ -731,3 +731,7 @@ type Timeouts struct {
 	// UpgradeManifests is the timeout for upgradring static Pod manifests
 	UpgradeManifests *metav1.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

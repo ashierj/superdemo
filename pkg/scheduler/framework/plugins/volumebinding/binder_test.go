@@ -2453,3 +2453,7 @@ func TestGetEligibleNodes(t *testing.T) {
 		t.Run(name, func(t *testing.T) { run(t, scenario) })
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

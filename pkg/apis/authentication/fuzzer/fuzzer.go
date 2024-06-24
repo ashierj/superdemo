@@ -24,3 +24,7 @@ import (
 var Funcs = func(codecs runtimeserializer.CodecFactory) []interface{} {
 	return []interface{}{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -74,3 +74,7 @@ func (a *Plugin) ValidateInitialization() error {
 func (a *Plugin) Admit(ctx context.Context, attr admission.Attributes, o admission.ObjectInterfaces) error {
 	return a.Webhook.Dispatch(ctx, attr, o)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

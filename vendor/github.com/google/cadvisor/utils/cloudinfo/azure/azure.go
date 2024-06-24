@@ -56,3 +56,7 @@ func (provider) GetInstanceID() info.InstanceID {
 	}
 	return info.InstanceID(strings.TrimSuffix(string(data), "\n"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

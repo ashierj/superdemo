@@ -55,3 +55,7 @@ func mismatchUnitStatus(u1, u2 *UnitStatus) bool {
 		u1.ActiveState != u2.ActiveState ||
 		u1.SubState != u2.SubState
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

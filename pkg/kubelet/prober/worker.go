@@ -335,3 +335,7 @@ func deepCopyPrometheusLabels(m metrics.Labels) metrics.Labels {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

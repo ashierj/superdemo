@@ -57,3 +57,7 @@ func (v *version) IngressClasses() IngressClassInformer {
 func (v *version) NetworkPolicies() NetworkPolicyInformer {
 	return &networkPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

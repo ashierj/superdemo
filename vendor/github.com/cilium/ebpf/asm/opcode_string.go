@@ -28,3 +28,7 @@ func (i Class) String() string {
 	}
 	return _Class_name[_Class_index[i]:_Class_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

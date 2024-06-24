@@ -15,3 +15,7 @@ type ComPort struct {
 
 	OptimizeForDebugger bool `json:"OptimizeForDebugger,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

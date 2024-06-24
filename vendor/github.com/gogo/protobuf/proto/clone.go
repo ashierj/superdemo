@@ -256,3 +256,7 @@ func mergeExtension(out, in map[int32]Extension) {
 		out[extNum] = eOut
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

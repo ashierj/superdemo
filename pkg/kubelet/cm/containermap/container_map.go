@@ -76,3 +76,7 @@ func (cm ContainerMap) Visit(visitor func(podUID, containerName, containerID str
 		visitor(v.podUID, v.containerName, k)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

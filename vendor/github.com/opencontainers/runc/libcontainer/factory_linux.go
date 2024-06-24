@@ -400,3 +400,7 @@ func parseMountFds() ([]int, error) {
 
 	return mountFds, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

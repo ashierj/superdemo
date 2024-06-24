@@ -68,3 +68,7 @@ func ReadDir(d string, opts ...ReadDirOption) ([]string, error) {
 	}
 	return names, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

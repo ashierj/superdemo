@@ -48,3 +48,7 @@ func (b *IngressTLSApplyConfiguration) WithSecretName(value string) *IngressTLSA
 	b.SecretName = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

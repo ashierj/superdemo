@@ -106,3 +106,7 @@ func (defaultServiceNameDetector) Detect(ctx context.Context) (*Resource, error)
 		},
 	).Detect(ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

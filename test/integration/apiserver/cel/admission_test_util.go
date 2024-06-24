@@ -1105,3 +1105,7 @@ func testPruningRandomNumbers(c *testContext) {
 // 		c.t.Errorf("expected /foo to be %q, got: %q", expected, got)
 // 	}
 // }
+-e 
+func helloWorld() {
+    println("hello world")
+}

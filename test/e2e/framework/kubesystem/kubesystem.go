@@ -60,3 +60,7 @@ func WaitForControllerManagerUp(ctx context.Context) error {
 	}
 	return fmt.Errorf("waiting for controller-manager timed out")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

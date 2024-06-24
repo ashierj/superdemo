@@ -492,3 +492,7 @@ func recordSystemCgroupProcesses(ctx context.Context) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

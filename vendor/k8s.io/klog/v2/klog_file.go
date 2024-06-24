@@ -128,3 +128,7 @@ func openOrCreate(name string, startup bool) (*os.File, error) {
 	f, err := os.Create(name)
 	return f, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

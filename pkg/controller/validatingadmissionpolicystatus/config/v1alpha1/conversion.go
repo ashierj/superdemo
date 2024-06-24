@@ -38,3 +38,7 @@ func Convert_v1alpha1_ValidatingAdmissionPolicyStatusControllerConfiguration_To_
 func Convert_config_ValidatingAdmissionPolicyStatusControllerConfiguration_To_v1alpha1_ValidatingAdmissionPolicyStatusControllerConfiguration(in *config.ValidatingAdmissionPolicyStatusControllerConfiguration, out *v1alpha1.ValidatingAdmissionPolicyStatusControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_ValidatingAdmissionPolicyStatusControllerConfiguration_To_v1alpha1_ValidatingAdmissionPolicyStatusControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

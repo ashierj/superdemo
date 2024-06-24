@@ -48,3 +48,7 @@ const (
 	AuditViolationsAnnotationKey = "audit-violations"
 	EnforcedPolicyAnnotationKey  = "enforce-policy"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

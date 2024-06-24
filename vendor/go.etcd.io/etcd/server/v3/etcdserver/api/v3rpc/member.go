@@ -122,3 +122,7 @@ func membersToProtoMembers(membs []*membership.Member) []*pb.Member {
 	}
 	return protoMembs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

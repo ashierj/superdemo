@@ -11,3 +11,7 @@ type HNSAclFeatures = hns.HNSAclFeatures
 func GetHNSSupportedFeatures() HNSSupportedFeatures {
 	return hns.GetHNSSupportedFeatures()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

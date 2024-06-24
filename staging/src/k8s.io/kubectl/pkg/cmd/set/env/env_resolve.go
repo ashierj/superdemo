@@ -295,3 +295,7 @@ func GetEnvVarRefString(from *corev1.EnvVarSource) string {
 func IsHugePageResourceName(name corev1.ResourceName) bool {
 	return strings.HasPrefix(string(name), corev1.ResourceHugePagesPrefix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

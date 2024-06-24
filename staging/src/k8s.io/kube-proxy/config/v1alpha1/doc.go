@@ -19,3 +19,7 @@ limitations under the License.
 // +groupName=kubeproxy.config.k8s.io
 
 package v1alpha1 // import "k8s.io/kube-proxy/config/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

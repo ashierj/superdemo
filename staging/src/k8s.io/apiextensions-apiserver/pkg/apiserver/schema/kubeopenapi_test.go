@@ -100,3 +100,7 @@ func TestStructuralKubeOpenAPIRoundtrip(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

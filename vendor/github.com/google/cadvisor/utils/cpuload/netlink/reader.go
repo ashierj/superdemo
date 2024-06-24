@@ -78,3 +78,7 @@ func (r *NetlinkReader) GetCpuLoad(name string, path string) (info.LoadStats, er
 	klog.V(4).Infof("Task stats for %q: %+v", path, stats)
 	return stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

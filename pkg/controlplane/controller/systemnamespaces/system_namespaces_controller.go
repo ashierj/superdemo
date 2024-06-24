@@ -102,3 +102,7 @@ func (c *Controller) createNamespaceIfNeeded(ns string) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

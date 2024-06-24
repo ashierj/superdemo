@@ -127,3 +127,7 @@ type Cluster struct {
 	// +optional
 	Config runtime.Object
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

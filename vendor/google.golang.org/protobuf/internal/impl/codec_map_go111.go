@@ -36,3 +36,7 @@ func (i *mapIter) Key() reflect.Value {
 func (i *mapIter) Value() reflect.Value {
 	return i.v.MapIndex(i.keys[0])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

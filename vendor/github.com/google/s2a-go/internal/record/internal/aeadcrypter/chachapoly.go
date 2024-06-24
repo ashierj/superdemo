@@ -65,3 +65,7 @@ func (s *chachapoly) Decrypt(dst, ciphertext, nonce, aad []byte) ([]byte, error)
 func (s *chachapoly) TagSize() int {
 	return TagSize
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

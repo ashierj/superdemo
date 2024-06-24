@@ -256,3 +256,7 @@ func Grow[S ~[]E, E any](s S, n int) S {
 func Clip[S ~[]E, E any](s S) S {
 	return s[:len(s):len(s)]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

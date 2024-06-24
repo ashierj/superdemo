@@ -398,3 +398,7 @@ func sampleLabelID(element interface{}) string {
 	el := element.(*model.Sample)
 	return el.Metric.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

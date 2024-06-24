@@ -96,3 +96,7 @@ func cloudInitializer(config *config.CompletedConfig) cloudprovider.Interface {
 	}
 	return cloud
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

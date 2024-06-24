@@ -23,3 +23,7 @@ type FakeEvictions struct {
 	Fake *FakePolicyV1beta1
 	ns   string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

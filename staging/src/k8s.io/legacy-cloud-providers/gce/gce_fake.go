@@ -89,3 +89,7 @@ func NewFakeGCECloud(vals TestClusterValues) *Cloud {
 func UpdateFakeGCECloud(g *Cloud, vals TestClusterValues) {
 	g.onXPN = vals.OnXPN
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

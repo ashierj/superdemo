@@ -121,3 +121,7 @@ func (dbg *debugger) print(d time.Duration) {
 	fmt.Print(dbg)
 	time.Sleep(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

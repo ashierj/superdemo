@@ -9,3 +9,7 @@ package internal
 func init() {
 	appengineFlex = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

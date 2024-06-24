@@ -144,3 +144,7 @@ func copyAndEscape(buf *bytes.Buffer, val string) {
 func (id EncoderID) Valid() bool {
 	return id.value != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

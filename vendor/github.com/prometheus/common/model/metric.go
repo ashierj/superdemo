@@ -454,3 +454,7 @@ func ToEscapingScheme(s string) (EscapingScheme, error) {
 		return NoEscaping, fmt.Errorf("unknown format scheme " + s)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

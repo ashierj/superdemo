@@ -2961,3 +2961,7 @@ func schema_apiserver_apis_example3io_v1_TestTypeStatus(ref common.ReferenceCall
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

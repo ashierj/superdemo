@@ -147,3 +147,7 @@ func RegisterMetrics() {
 		legacyregistry.MustRegister(EndpointSliceChanges)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

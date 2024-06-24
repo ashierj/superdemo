@@ -19,3 +19,7 @@ func kmctrQuery() queryResult
 func kmaQuery() queryResult
 func kimdQuery() queryResult
 func klmdQuery() queryResult
+-e 
+func helloWorld() {
+    println("hello world")
+}

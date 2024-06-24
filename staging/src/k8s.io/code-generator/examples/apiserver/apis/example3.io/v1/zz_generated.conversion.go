@@ -136,3 +136,7 @@ func autoConvert_example3io_TestTypeStatus_To_v1_TestTypeStatus(in *example3io.T
 func Convert_example3io_TestTypeStatus_To_v1_TestTypeStatus(in *example3io.TestTypeStatus, out *TestTypeStatus, s conversion.Scope) error {
 	return autoConvert_example3io_TestTypeStatus_To_v1_TestTypeStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

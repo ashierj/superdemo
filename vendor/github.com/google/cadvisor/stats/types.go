@@ -33,3 +33,7 @@ type Collector interface {
 	Destroy()
 	UpdateStats(*info.ContainerStats) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

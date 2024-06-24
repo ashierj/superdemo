@@ -33,3 +33,7 @@ const (
 
 // FilterFunc takes a name of controller, returning a FilterResult indicating how to start controller.
 type FilterFunc func(controllerName string) FilterResult
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -62,3 +62,7 @@ type ReplicaSetStatus struct {
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller
 	Replicas int32 `json:"replicas" protobuf:"varint,1,opt,name=replicas"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

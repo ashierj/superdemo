@@ -99,3 +99,7 @@ func mounted(path string) (bool, error) {
 	// Fallback to parsing mountinfo.
 	return mountedByMountinfo(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

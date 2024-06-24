@@ -52,3 +52,7 @@ type Properties struct {
 	// return the full cgroup metrics from the guest.
 	Metrics *v1.Metrics `json:"LCOWMetrics,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

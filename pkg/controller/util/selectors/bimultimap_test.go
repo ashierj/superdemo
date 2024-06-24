@@ -639,3 +639,7 @@ func unorderedEqual(as, bs []Key) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

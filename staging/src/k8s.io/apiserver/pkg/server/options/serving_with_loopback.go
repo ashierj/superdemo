@@ -79,3 +79,7 @@ func (s *SecureServingOptionsWithLoopback) ApplyTo(secureServingInfo **server.Se
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

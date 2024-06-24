@@ -15,3 +15,7 @@ func eaccess(path string) error {
 	// and older CLs linked from there.
 	return unix.Faccessat(unix.AT_FDCWD, path, unix.X_OK, unix.AT_EACCESS)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

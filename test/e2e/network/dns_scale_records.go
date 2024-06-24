@@ -120,3 +120,7 @@ func generateServicesInNamespaces(namespaces []string, num int) []*v1.Service {
 	}
 	return services
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

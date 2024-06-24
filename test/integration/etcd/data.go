@@ -669,3 +669,7 @@ func gvkP(g, v, k string) *schema.GroupVersionKind {
 func gvk(g, v, k string) schema.GroupVersionKind {
 	return schema.GroupVersionKind{Group: g, Version: v, Kind: k}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

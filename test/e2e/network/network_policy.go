@@ -20,3 +20,7 @@ import (
 	// synthetic import of netpol suite, until these tests are replaced entirely, so that its included properly
 	_ "k8s.io/kubernetes/test/e2e/network/netpol"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

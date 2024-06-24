@@ -44,3 +44,7 @@ func ToProtoModels(openAPISpec *spec.Swagger) (proto.Models, error) {
 
 	return models, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ func EnableClientHandlingTimeHistogram(opts ...HistogramOption) {
 	DefaultClientMetrics.EnableClientHandlingTimeHistogram(opts...)
 	prom.Register(DefaultClientMetrics.clientHandledHistogram)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

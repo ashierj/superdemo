@@ -151,3 +151,7 @@ func (l *lexer) next() bool {
 		val = append(val, ch)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ type TestTypeNamespaceLister interface {
 type testTypeNamespaceLister struct {
 	listers.ResourceIndexer[*v1.TestType]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

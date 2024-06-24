@@ -97,3 +97,7 @@ func (a *TokenAuthenticator) AuthenticateToken(ctx context.Context, value string
 	}
 	return &authenticator.Response{User: user}, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -379,3 +379,7 @@ func unescape(s string, mode UnescapingMode, multisegment bool) (string, error) 
 
 	return t.String(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

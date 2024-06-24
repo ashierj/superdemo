@@ -626,3 +626,7 @@ func TestDecode(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

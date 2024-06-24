@@ -2187,3 +2187,7 @@ func Test_dropEndpointSlicesPendingDeletion(t *testing.T) {
 		t.Errorf("EndpointSlice was unexpectedly mutated. Expected: %+v, Mutated: %+v", epSlice3, result[1])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

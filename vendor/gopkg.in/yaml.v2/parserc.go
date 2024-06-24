@@ -1093,3 +1093,7 @@ func yaml_parser_append_tag_directive(parser *yaml_parser_t, value yaml_tag_dire
 	parser.tag_directives = append(parser.tag_directives, value_copy)
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

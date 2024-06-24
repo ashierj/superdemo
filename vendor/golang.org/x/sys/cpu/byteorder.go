@@ -64,3 +64,7 @@ func hostByteOrder() byteOrder {
 	}
 	panic("unknown architecture")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

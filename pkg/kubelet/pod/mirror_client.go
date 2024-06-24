@@ -162,3 +162,7 @@ func getPodHash(pod *v1.Pod) string {
 	// The annotation exists for all static pods.
 	return pod.Annotations[kubetypes.ConfigHashAnnotationKey]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

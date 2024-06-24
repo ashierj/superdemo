@@ -233,3 +233,7 @@ func (dc *DeploymentController) scaleDownOldReplicaSetsForRollingUpdate(ctx cont
 
 	return totalScaledDown, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

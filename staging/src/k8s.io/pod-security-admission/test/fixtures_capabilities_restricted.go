@@ -95,3 +95,7 @@ func init() {
 		fixtureData_1_22,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

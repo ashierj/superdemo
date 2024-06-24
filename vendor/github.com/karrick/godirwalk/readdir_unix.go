@@ -129,3 +129,7 @@ func readDirnames(osDirname string, scratchBuffer []byte) ([]string, error) {
 		entries = append(entries, string(nameSlice))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

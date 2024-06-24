@@ -38,3 +38,7 @@ func (d *digester) Hash() hash.Hash {
 func (d *digester) Digest() Digest {
 	return NewDigest(d.alg, d.hash)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

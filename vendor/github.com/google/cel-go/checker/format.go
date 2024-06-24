@@ -214,3 +214,7 @@ func kindOf(t *exprpb.Type) int {
 	}
 	return kindUnknown
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

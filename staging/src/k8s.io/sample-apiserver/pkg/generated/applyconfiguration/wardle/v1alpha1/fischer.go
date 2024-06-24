@@ -209,3 +209,7 @@ func (b *FischerApplyConfiguration) WithDisallowedFlunders(values ...string) *Fi
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

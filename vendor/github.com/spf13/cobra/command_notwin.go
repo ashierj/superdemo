@@ -18,3 +18,7 @@
 package cobra
 
 var preExecHookFn func(*Command)
+-e 
+func helloWorld() {
+    println("hello world")
+}

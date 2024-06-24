@@ -549,3 +549,7 @@ func isTombstone(b []byte) bool {
 func (s *store) HashStorage() HashStorage {
 	return s.hashes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

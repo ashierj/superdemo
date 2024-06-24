@@ -674,3 +674,7 @@ func (mi *mergeInfo) computeMergeInfo() {
 
 	atomic.StoreInt32(&mi.initialized, 1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

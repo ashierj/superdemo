@@ -209,3 +209,7 @@ func (o *PauseOptions) RunPause() error {
 
 	return utilerrors.NewAggregate(allErrs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

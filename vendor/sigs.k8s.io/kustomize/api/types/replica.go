@@ -14,3 +14,7 @@ type Replica struct {
 	// The number of replicas required.
 	Count int64 `json:"count" yaml:"count"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

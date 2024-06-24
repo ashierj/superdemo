@@ -28,3 +28,7 @@ func (s IdSet) Contains(id resid.ResId) bool {
 func (s IdSet) Size() int {
 	return len(s.ids)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

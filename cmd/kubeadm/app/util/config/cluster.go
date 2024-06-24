@@ -253,3 +253,7 @@ func getRawAPIEndpointFromPodAnnotationWithoutRetry(ctx context.Context, client 
 	}
 	return "", errors.Errorf("API server pod for node name %q hasn't got a %q annotation, cannot retrieve API endpoint", nodeName, constants.KubeAPIServerAdvertiseAddressEndpointAnnotationKey)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

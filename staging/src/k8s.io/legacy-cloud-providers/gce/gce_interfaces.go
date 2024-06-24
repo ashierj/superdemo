@@ -52,3 +52,7 @@ type CloudForwardingRuleService interface {
 	// Needed for the "Network Tiers" feature.
 	getNetworkTierFromForwardingRule(name, region string) (string, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

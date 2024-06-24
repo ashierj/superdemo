@@ -135,3 +135,7 @@ func newReplicaSet(name, namespace string, replicas int32, podLabels map[string]
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

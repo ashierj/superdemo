@@ -120,3 +120,7 @@ func verifyChecksumWithoutResourceHandles(dc *DRAManagerCheckpoint, checkSum che
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

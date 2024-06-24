@@ -51,3 +51,7 @@ func ConsumeMem(megabytes int, durationSec int) {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

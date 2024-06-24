@@ -175,3 +175,7 @@ func GreaterEqual(arg1, arg2 interface{}) (bool, error) {
 	}
 	return !lessThan, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

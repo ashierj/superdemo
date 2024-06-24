@@ -111,3 +111,7 @@ func v1beta1ExtraToV1Extra(in map[string]authorizationv1beta1.ExtraValue) map[st
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

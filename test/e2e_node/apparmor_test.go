@@ -257,3 +257,7 @@ func isAppArmorEnabled() bool {
 	}
 	return apparmor.IsEnabled()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

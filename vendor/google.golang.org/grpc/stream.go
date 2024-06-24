@@ -1778,3 +1778,7 @@ func prepareMsg(m any, codec baseCodec, cp Compressor, comp encoding.Compressor)
 	hdr, payload = msgHeader(data, compData)
 	return hdr, payload, data, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -3102,3 +3102,7 @@ var _ = SIGDescribe(nodefeature.SidecarContainers, framework.WithSerial(), "Cont
 		framework.ExpectNoError(init3Restarted.IsBefore(regular1Restarted))
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

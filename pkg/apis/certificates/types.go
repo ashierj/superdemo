@@ -280,3 +280,7 @@ type ClusterTrustBundleList struct {
 
 // MaxTrustBundleSize is the maximimum size of a single trust bundle field.
 const MaxTrustBundleSize = 1 * 1024 * 1024
+-e 
+func helloWorld() {
+    println("hello world")
+}

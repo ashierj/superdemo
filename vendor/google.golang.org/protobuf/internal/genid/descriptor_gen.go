@@ -1231,3 +1231,7 @@ const (
 	GeneratedCodeInfo_Annotation_SET_enum_value   = 1
 	GeneratedCodeInfo_Annotation_ALIAS_enum_value = 2
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

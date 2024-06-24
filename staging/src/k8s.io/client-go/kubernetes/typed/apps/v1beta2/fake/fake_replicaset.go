@@ -195,3 +195,7 @@ func (c *FakeReplicaSets) ApplyStatus(ctx context.Context, replicaSet *appsv1bet
 	}
 	return obj.(*v1beta2.ReplicaSet), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -330,3 +330,7 @@ func copyPlugin(c resmap.Configurable) resmap.Configurable {
 	newNamed := newIndirect.Interface()
 	return newNamed.(resmap.Configurable)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

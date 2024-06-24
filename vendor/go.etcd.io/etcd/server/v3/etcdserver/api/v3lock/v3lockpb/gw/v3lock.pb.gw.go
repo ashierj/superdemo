@@ -240,3 +240,7 @@ var (
 
 	forward_Lock_Unlock_0 = runtime.ForwardResponseMessage
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

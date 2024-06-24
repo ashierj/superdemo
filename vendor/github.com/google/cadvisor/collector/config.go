@@ -99,3 +99,7 @@ func (ec *EndpointConfig) UnmarshalJSON(b []byte) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func (b *HorizontalPodAutoscalerConditionApplyConfiguration) WithMessage(value s
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

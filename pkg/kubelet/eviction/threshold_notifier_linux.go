@@ -198,3 +198,7 @@ type disabledThresholdNotifier struct{}
 
 func (*disabledThresholdNotifier) Start(_ chan<- struct{}) {}
 func (*disabledThresholdNotifier) Stop()                   {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

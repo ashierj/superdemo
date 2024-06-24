@@ -41,3 +41,7 @@ func StderrIsJournalStream() (bool, error) {
 func StdoutIsJournalStream() (bool, error) {
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

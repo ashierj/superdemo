@@ -495,3 +495,7 @@ func CreateDefaultKeysAndCSRFiles(out io.Writer, config *kubeadmapi.InitConfigur
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

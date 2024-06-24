@@ -87,3 +87,7 @@ func NewCmdApplyEditLastApplied(f cmdutil.Factory, ioStreams genericiooptions.IO
 
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

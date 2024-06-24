@@ -61,3 +61,7 @@ func EncodeDuration(t time.Duration) string {
 	// Note that maxTimeoutValue * time.Hour > MaxInt64.
 	return strconv.FormatInt(div(t, time.Hour), 10) + "H"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

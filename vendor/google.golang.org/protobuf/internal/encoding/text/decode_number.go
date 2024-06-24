@@ -209,3 +209,7 @@ func parseNumber(input []byte) number {
 
 	return number{kind: kind, neg: neg, size: size, sep: sep}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -185,3 +185,7 @@ type KlogBufferWriter interface {
 var _ logr.LogSink = &tlogger{}
 var _ logr.CallDepthLogSink = &tlogger{}
 var _ KlogBufferWriter = &tlogger{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

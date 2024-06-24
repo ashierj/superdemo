@@ -893,3 +893,7 @@ LiAGaec8xjl6QK/DdXmFuQBKqyKJ14rljFODP4QuE9WJid94bGqjpf3j99ltznZP
 KR8NJEkK99Vh/tew6jAMll70xFrE7aF8VLXJVE7w4sQzuvHxl9Q=
 -----END RSA PRIVATE KEY-----
 `)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -117,3 +117,7 @@ func (g *Cloud) RemoveRuleFromBetaSecurityPolicy(name string) error {
 	mc := newSecurityPolicyMetricContextWithVersion("remove_rule", computeBetaVersion)
 	return mc.Observe(g.c.BetaSecurityPolicies().RemoveRule(ctx, meta.GlobalKey(name)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

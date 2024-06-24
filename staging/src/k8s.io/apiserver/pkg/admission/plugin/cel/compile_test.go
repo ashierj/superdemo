@@ -291,3 +291,7 @@ func (v *fakeAuditAnnotationCondition) GetExpression() string {
 func (v *fakeAuditAnnotationCondition) ReturnTypes() []*celgo.Type {
 	return []*celgo.Type{celgo.StringType, celgo.NullType}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

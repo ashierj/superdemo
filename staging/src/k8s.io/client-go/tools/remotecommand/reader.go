@@ -39,3 +39,7 @@ type readerWrapper struct {
 func (r readerWrapper) Read(p []byte) (int, error) {
 	return r.reader.Read(p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

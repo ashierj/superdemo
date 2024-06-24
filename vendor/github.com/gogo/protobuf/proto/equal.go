@@ -298,3 +298,7 @@ func equalExtMap(base reflect.Type, em1, em2 map[int32]Extension) bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ type HorizontalPodAutoscalerNamespaceLister interface {
 type horizontalPodAutoscalerNamespaceLister struct {
 	listers.ResourceIndexer[*v2beta1.HorizontalPodAutoscaler]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

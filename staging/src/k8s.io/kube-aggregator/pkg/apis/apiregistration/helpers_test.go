@@ -195,3 +195,7 @@ func makeNewAPIService(version string, priority int32, conditions ...APIServiceC
 func makeNewAPIServiceCondition(conditionType APIServiceConditionType, reason string, message string, status ConditionStatus) APIServiceCondition {
 	return APIServiceCondition{Type: conditionType, Reason: reason, Message: message, Status: status}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -244,3 +244,7 @@ func getFlexVolumePod(volumeSource v1.VolumeSource, nodeName string) *v1.Pod {
 	}
 	return clientPod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

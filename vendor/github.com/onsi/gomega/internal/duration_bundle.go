@@ -69,3 +69,7 @@ func toDuration(input interface{}) (time.Duration, error) {
 
 	return 0, fmt.Errorf("%#v is not a valid interval. Must be a time.Duration, a parsable duration string, or a number.", input)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

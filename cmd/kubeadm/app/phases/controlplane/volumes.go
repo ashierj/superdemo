@@ -228,3 +228,7 @@ func isExtraVolumeMountNeeded(caCertsExtraVolumePath string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

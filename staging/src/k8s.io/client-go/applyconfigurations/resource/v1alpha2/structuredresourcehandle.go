@@ -73,3 +73,7 @@ func (b *StructuredResourceHandleApplyConfiguration) WithResults(values ...*Driv
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

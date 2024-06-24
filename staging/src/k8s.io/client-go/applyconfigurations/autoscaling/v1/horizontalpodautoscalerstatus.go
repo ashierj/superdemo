@@ -77,3 +77,7 @@ func (b *HorizontalPodAutoscalerStatusApplyConfiguration) WithCurrentCPUUtilizat
 	b.CurrentCPUUtilizationPercentage = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

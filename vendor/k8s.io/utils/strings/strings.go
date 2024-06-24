@@ -44,3 +44,7 @@ func ShortenString(str string, n int) string {
 	}
 	return str[:n]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

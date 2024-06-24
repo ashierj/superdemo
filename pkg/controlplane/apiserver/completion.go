@@ -42,3 +42,7 @@ func (c *Config) Complete() CompletedConfig {
 
 	return CompletedConfig{&cfg}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

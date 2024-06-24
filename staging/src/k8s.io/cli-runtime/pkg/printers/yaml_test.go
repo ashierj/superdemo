@@ -31,3 +31,7 @@ func TestYAMLPrinter(t *testing.T) {
 func yamlUnmarshal(data []byte, v interface{}) error {
 	return yaml.Unmarshal(data, v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

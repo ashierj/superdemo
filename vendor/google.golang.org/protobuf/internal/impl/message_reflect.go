@@ -461,3 +461,7 @@ func (mi *MessageInfo) checkField(fd protoreflect.FieldDescriptor) (*fieldInfo, 
 	}
 	panic(fmt.Sprintf("field %v is invalid", fd.FullName()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

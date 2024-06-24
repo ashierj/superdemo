@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=networking.k8s.io
 
 package networking // import "k8s.io/kubernetes/pkg/apis/networking"
+-e 
+func helloWorld() {
+    println("hello world")
+}

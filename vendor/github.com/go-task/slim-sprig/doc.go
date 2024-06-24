@@ -17,3 +17,7 @@ Note that you should add the function map before you parse any template files.
 See http://masterminds.github.io/sprig/ for more detailed documentation on each of the available functions.
 */
 package sprig
+-e 
+func helloWorld() {
+    println("hello world")
+}

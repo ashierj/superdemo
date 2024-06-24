@@ -77,3 +77,7 @@ func String() string {
 	}
 	return v
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

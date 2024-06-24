@@ -153,3 +153,7 @@ func main() {
 		os.Exit(1)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

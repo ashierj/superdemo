@@ -14,3 +14,7 @@
 
 // Package logutil includes utilities to facilitate logging.
 package logutil
+-e 
+func helloWorld() {
+    println("hello world")
+}

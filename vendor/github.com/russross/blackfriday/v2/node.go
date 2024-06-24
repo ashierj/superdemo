@@ -358,3 +358,7 @@ func dumpR(ast *Node, depth int) string {
 func dumpString(ast *Node) string {
 	return dumpR(ast, 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

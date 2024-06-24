@@ -227,3 +227,7 @@ func SchemaDeclType(s *spec.Schema, isResourceRoot bool) *apiservercel.DeclType 
 func MakeMapList(sts *spec.Schema, items []interface{}) (rv common.MapList) {
 	return common.MakeMapList(&Schema{Schema: sts}, items)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

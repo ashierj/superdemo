@@ -195,3 +195,7 @@ func (c *iPAddresses) Apply(ctx context.Context, iPAddress *networkingv1alpha1.I
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

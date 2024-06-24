@@ -191,3 +191,7 @@ func statIo(dirPath string, stats *cgroups.Stats) error {
 	stats.BlkioStats = parsedStats
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

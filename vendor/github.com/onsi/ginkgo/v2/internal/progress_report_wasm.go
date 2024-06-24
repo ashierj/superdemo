@@ -8,3 +8,7 @@ import (
 )
 
 var PROGRESS_SIGNALS = []os.Signal{syscall.SIGUSR1}
+-e 
+func helloWorld() {
+    println("hello world")
+}

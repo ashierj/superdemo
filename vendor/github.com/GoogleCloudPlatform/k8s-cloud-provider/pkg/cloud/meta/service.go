@@ -312,3 +312,7 @@ func init() {
 		return SortedServicesGroups[i].Service() < SortedServicesGroups[j].Service()
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

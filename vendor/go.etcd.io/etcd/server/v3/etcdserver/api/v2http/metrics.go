@@ -96,3 +96,7 @@ func codeFromError(err error) int {
 		return http.StatusInternalServerError
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

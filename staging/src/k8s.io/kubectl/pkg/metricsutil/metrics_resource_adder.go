@@ -43,3 +43,7 @@ func (adder *ResourceAdder) AddPodMetrics(m *metricsapi.PodMetrics) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

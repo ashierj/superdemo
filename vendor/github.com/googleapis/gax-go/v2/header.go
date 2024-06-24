@@ -117,3 +117,7 @@ func XGoogHeader(keyval ...string) string {
 	}
 	return buf.String()[1:]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

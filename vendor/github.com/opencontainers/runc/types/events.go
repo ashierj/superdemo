@@ -153,3 +153,7 @@ type NetworkInterface struct {
 	TxErrors  uint64
 	TxDropped uint64
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

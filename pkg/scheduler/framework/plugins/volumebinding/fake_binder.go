@@ -79,3 +79,7 @@ func (b *FakeVolumeBinder) BindPodVolumes(ctx context.Context, assumedPod *v1.Po
 	b.BindCalled = true
 	return b.config.BindErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

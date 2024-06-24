@@ -423,3 +423,7 @@ func HasAnyRegularContainerStarted(spec *v1.PodSpec, statuses []v1.ContainerStat
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

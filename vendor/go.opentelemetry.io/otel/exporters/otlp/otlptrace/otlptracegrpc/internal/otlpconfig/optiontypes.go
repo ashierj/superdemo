@@ -49,3 +49,7 @@ const (
 	// MarshalJSON tells the driver to send using json format.
 	MarshalJSON
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *replicaSetInformer) Informer() cache.SharedIndexInformer {
 func (f *replicaSetInformer) Lister() v1beta2.ReplicaSetLister {
 	return v1beta2.NewReplicaSetLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -56,3 +56,7 @@ func (bs *Ints) Clear(n uint64) {
 	}
 	delete(bs.hi, n)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

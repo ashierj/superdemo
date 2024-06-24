@@ -109,3 +109,7 @@ func (p *streamProtocolV3) stream(conn streamCreator) error {
 type errorDecoderV3 struct {
 	errorDecoderV2
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

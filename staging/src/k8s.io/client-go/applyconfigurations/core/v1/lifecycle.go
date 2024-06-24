@@ -46,3 +46,7 @@ func (b *LifecycleApplyConfiguration) WithPreStop(value *LifecycleHandlerApplyCo
 	b.PreStop = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

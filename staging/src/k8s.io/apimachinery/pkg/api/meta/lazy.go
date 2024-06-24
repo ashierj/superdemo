@@ -110,3 +110,7 @@ func (o *lazyObject) Reset() {
 		MaybeResetRESTMapper(o.mapper)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

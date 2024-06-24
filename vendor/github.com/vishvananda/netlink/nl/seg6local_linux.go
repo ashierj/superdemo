@@ -74,3 +74,7 @@ func SEG6LocalActionString(action int) string {
 	}
 	return "unknown"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

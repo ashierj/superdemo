@@ -122,3 +122,7 @@ func getPodWithProfile(profile string) *v1.Pod {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

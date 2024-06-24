@@ -78,3 +78,7 @@ func String(name string, value string, usage string) *string {
 func StringP(name, shorthand string, value string, usage string) *string {
 	return CommandLine.StringP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

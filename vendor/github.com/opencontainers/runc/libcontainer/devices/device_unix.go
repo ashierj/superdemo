@@ -118,3 +118,7 @@ func GetDevices(path string) ([]*Device, error) {
 	}
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

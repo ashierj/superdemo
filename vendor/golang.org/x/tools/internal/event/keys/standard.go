@@ -20,3 +20,7 @@ var (
 	// Metric is a key used to indicate an event records metrics.
 	Metric = NewTag("metric", "a metric event marker")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

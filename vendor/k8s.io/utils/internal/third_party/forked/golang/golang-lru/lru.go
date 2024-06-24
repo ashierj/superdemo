@@ -131,3 +131,7 @@ func (c *Cache) Clear() {
 	c.ll = nil
 	c.cache = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

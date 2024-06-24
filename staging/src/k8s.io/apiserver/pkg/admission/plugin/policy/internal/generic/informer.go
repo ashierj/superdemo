@@ -38,3 +38,7 @@ func NewInformer[T runtime.Object](informe cache.SharedIndexInformer) Informer[T
 		lister:              NewLister[T](informe.GetIndexer()),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

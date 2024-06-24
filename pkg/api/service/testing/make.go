@@ -235,3 +235,7 @@ func SetExternalName(val string) Tweak {
 		svc.Spec.ExternalName = val
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

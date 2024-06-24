@@ -62,3 +62,7 @@ func (m Message) CloseWithError(err error) {
 		m.closeC <- false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -405,3 +405,7 @@ func contains[T comparable](list []T, value T) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func (b *IngressServiceBackendApplyConfiguration) WithPort(value *ServiceBackend
 	b.Port = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

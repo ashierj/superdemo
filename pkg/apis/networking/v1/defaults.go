@@ -50,3 +50,7 @@ func SetDefaults_IngressClass(obj *networkingv1.IngressClass) {
 		obj.Spec.Parameters.Scope = utilpointer.String(networkingv1.IngressClassParametersReferenceScopeCluster)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

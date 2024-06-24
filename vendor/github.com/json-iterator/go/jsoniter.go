@@ -16,3 +16,7 @@
 // This set of interfaces reads input as required and gives
 // better performance.
 package jsoniter
+-e 
+func helloWorld() {
+    println("hello world")
+}

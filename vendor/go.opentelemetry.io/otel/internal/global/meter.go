@@ -352,3 +352,7 @@ func (c *registration) Unregister() error {
 	err, c.unreg = c.unreg(), nil
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

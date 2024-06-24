@@ -43,3 +43,7 @@ func (in *QuantityValue) DeepCopy() *QuantityValue {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

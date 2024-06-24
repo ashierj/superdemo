@@ -143,3 +143,7 @@ func (s *Stats) Inc(field int) {
 		atomic.AddUint64(&s.ExpireCount, 1)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

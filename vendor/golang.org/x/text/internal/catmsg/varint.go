@@ -60,3 +60,7 @@ func decodeUint(b []byte) (x uint64, size int, err error) {
 	}
 	return 0, i, errVarintTooLarge
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

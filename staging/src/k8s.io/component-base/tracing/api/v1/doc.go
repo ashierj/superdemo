@@ -27,3 +27,7 @@ limitations under the License.
 // not an indication of the stability of all features covered by it.
 
 package v1 // import "k8s.io/component-base/tracing/api/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

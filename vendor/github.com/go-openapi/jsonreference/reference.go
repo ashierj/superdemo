@@ -156,3 +156,7 @@ func (r *Ref) Inherits(child Ref) (*Ref, error) {
 	}
 	return &ref, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

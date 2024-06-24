@@ -54,3 +54,7 @@ func (c *CommonTokenFactory) createThin(ttype int, text string) Token {
 
 	return t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

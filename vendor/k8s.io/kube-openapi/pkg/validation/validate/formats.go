@@ -61,3 +61,7 @@ func (f *formatValidator) Validate(val interface{}) *Result {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

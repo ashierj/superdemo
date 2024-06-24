@@ -112,3 +112,7 @@ func (podTemplateStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtim
 func (podTemplateStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

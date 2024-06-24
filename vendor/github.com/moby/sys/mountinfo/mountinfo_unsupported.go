@@ -17,3 +17,7 @@ func parseMountTable(_ FilterFunc) ([]*Info, error) {
 func mounted(path string) (bool, error) {
 	return false, errNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

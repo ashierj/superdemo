@@ -43,3 +43,7 @@ func (r *combinedSchemaResolver) ResolveSchema(gvk schema.GroupVersionKind) (*sp
 	}
 	return r.secondary.ResolveSchema(gvk)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

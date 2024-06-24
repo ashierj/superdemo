@@ -31,3 +31,7 @@ func getsystemcfg(label int) (n uint64) {
 	n = uint64(r0)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

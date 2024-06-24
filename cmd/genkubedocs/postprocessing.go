@@ -71,3 +71,7 @@ func cleanupForInclude(md string) string {
 
 	return cleanMd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

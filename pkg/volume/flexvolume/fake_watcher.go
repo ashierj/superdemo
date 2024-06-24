@@ -51,3 +51,7 @@ func (w *fakeWatcher) AddWatch(path string) error {
 func (w *fakeWatcher) TriggerEvent(op fsnotify.Op, filename string) {
 	w.eventHandler(fsnotify.Event{Op: op, Name: filename})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

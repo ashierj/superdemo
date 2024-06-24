@@ -254,3 +254,7 @@ func (b *ImageReviewApplyConfiguration) WithStatus(value *ImageReviewStatusApply
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

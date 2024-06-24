@@ -64,3 +64,7 @@ func (provider) GetInstanceID() info.InstanceID {
 	}
 	return info.InstanceID(info.InstanceType(instanceID))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

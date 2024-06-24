@@ -28,3 +28,7 @@ func NewManager(conf *Config) (Manager, lifecycle.PodAdmitHandler) {
 	m := managerStub{}
 	return m, m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

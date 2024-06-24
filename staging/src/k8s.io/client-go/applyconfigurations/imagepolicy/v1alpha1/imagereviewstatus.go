@@ -61,3 +61,7 @@ func (b *ImageReviewStatusApplyConfiguration) WithAuditAnnotations(entries map[s
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

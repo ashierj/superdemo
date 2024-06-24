@@ -194,3 +194,7 @@ func runEtcdAsNonRoot(pod *v1.Pod, runAsUser, runAsGroup *int64, updatePathOwner
 	pod.Spec.SecurityContext.RunAsGroup = runAsGroup
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

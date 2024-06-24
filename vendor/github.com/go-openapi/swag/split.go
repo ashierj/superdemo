@@ -260,3 +260,7 @@ func (s *splitter) breakCasualString(str []rune) []nameLexem {
 
 	return segments
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

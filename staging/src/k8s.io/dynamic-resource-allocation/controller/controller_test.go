@@ -708,3 +708,7 @@ func fakeK8s(objs []runtime.Object) (kubernetes.Interface, informers.SharedInfor
 	informerFactory := informers.NewSharedInformerFactory(client, 0)
 	return client, informerFactory
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

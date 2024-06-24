@@ -12,3 +12,7 @@ func withCancelCause(parent context.Context) (context.Context, func(error)) {
 	ctx, cancel := context.WithCancel(parent)
 	return ctx, func(error) { cancel() }
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

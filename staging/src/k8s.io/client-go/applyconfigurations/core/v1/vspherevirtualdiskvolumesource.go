@@ -64,3 +64,7 @@ func (b *VsphereVirtualDiskVolumeSourceApplyConfiguration) WithStoragePolicyID(v
 	b.StoragePolicyID = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

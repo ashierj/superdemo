@@ -249,3 +249,7 @@ func (o *RoleBindingOptions) createRoleBinding() (*rbacv1.RoleBinding, error) {
 	}
 	return roleBinding, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

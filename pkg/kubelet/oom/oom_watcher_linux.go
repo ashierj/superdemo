@@ -92,3 +92,7 @@ func (ow *realWatcher) Start(ref *v1.ObjectReference) error {
 	}()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -31,3 +31,7 @@ func (i *StringArrayFlags) Set(value string) error {
 	*i = append(*i, value)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

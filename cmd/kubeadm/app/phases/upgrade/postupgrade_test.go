@@ -230,3 +230,7 @@ func rollbackFiles(files map[string]string, originalErr error) error {
 	}
 	return errors.Errorf("couldn't move these files: %v. Got errors: %v", files, errorsutil.NewAggregate(errs))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

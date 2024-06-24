@@ -767,3 +767,7 @@ func celBool(pred bool) ref.Val {
 }
 
 var unknownType = &DeclType{name: "unknown", MinSerializedSize: 1}
+-e 
+func helloWorld() {
+    println("hello world")
+}

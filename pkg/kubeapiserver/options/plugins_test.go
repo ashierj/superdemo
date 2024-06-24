@@ -29,3 +29,7 @@ func TestAdmissionPluginOrder(t *testing.T) {
 		t.Fatalf("AllOrderedPlugins must end with ...%s", expectSuffix)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -257,3 +257,7 @@ func (r Response) CloseNotify() <-chan bool {
 func (r Response) Error() error {
 	return r.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

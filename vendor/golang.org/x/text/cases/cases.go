@@ -160,3 +160,7 @@ func handleFinalSigma(o options) options {
 	o.ignoreFinalSigma = false
 	return o
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -113,3 +113,7 @@ func (oe *operationExecutor) UnregisterPlugin(
 	return oe.pendingOperations.Run(
 		pluginInfo.SocketPath, generatedOperation)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -356,3 +356,7 @@ func getNUMAField(stats *cgroups.PageUsageByNUMA, name string) *cgroups.PageStat
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

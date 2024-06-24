@@ -91,3 +91,7 @@ func defaultMutatingWorkEstimatorConfig() *MutatingWorkEstimatorConfig {
 func (c *MutatingWorkEstimatorConfig) eventAdditionalDuration() time.Duration {
 	return c.EventAdditionalDuration.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

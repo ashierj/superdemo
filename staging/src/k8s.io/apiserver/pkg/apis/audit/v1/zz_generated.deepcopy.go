@@ -295,3 +295,7 @@ func (in *PolicyRule) DeepCopy() *PolicyRule {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

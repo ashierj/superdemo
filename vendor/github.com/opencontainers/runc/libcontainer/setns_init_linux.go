@@ -138,3 +138,7 @@ func (l *linuxSetnsInit) Init() error {
 	}
 	return system.Exec(name, l.config.Args[0:], os.Environ())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

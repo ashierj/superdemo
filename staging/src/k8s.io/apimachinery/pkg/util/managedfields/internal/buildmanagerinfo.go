@@ -72,3 +72,7 @@ func (f *buildManagerInfoManager) buildManagerInfo(prefix string, operation meta
 	}
 	return BuildManagerIdentifier(&managerInfo)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

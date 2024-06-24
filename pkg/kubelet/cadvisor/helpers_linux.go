@@ -61,3 +61,7 @@ func detectCrioWorkaround(i *imageFsInfoProvider) bool {
 func NewImageFsInfoProvider(runtimeEndpoint string) ImageFsInfoProvider {
 	return &imageFsInfoProvider{runtimeEndpoint: runtimeEndpoint}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

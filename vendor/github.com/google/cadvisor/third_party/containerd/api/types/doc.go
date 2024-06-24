@@ -15,3 +15,7 @@
 */
 
 package types
+-e 
+func helloWorld() {
+    println("hello world")
+}

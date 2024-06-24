@@ -65,3 +65,7 @@ func (c *localSubjectAccessReviews) Create(ctx context.Context, localSubjectAcce
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

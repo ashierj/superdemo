@@ -114,3 +114,7 @@ func InterpretWatchError(err error, resource schema.GroupResource, name string) 
 		return err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

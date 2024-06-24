@@ -49,3 +49,7 @@ func FromContext(ctx context.Context) (p *Peer, ok bool) {
 	p, ok = ctx.Value(peerKey{}).(*Peer)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

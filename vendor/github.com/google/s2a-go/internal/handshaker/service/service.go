@@ -64,3 +64,7 @@ func Dial(ctx context.Context, handshakerServiceAddress string, transportCreds c
 	}
 	return hsConn, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -108,3 +108,7 @@ func GetPersistentVolumeClaimClass(claim *v1.PersistentVolumeClaim) string {
 
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

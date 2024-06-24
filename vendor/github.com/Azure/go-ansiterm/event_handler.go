@@ -88,3 +88,7 @@ type AnsiEventHandler interface {
 	// Flush updates from previous commands
 	Flush() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

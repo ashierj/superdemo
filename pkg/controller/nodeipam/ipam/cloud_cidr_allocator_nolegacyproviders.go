@@ -32,3 +32,7 @@ import (
 func NewCloudCIDRAllocator(ctx context.Context, client clientset.Interface, cloud cloudprovider.Interface, nodeInformer informers.NodeInformer) (CIDRAllocator, error) {
 	return nil, errors.New("legacy cloud provider support not built")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

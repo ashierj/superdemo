@@ -184,3 +184,7 @@ func ReadBundle(in io.Reader, fset *token.FileSet, imports map[string]*types.Pac
 func WriteBundle(out io.Writer, fset *token.FileSet, pkgs []*types.Package) error {
 	return gcimporter.IExportBundle(out, fset, pkgs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

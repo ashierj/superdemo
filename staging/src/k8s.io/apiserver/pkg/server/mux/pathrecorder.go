@@ -277,3 +277,7 @@ func (s byPrefixPriority) Less(i, j int) bool {
 
 	return strings.Compare(s[i], s[j]) < 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

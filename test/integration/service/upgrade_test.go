@@ -78,3 +78,7 @@ func Test_UpgradeService(t *testing.T) {
 		t.Error(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

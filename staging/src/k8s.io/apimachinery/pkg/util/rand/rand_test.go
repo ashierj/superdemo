@@ -112,3 +112,7 @@ func BenchmarkRandomStringGeneration(b *testing.B) {
 		b.Fatal(s)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

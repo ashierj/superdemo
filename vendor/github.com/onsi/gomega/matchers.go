@@ -698,3 +698,7 @@ func WithTransform(transform interface{}, matcher types.GomegaMatcher) types.Gom
 func Satisfy(predicate interface{}) types.GomegaMatcher {
 	return matchers.NewSatisfyMatcher(predicate)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

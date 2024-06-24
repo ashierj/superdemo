@@ -99,3 +99,7 @@ func NormalizeMetricFamilies(metricFamiliesByName map[string]*dto.MetricFamily) 
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -195,3 +195,7 @@ func (c *storageClasses) Apply(ctx context.Context, storageClass *storagev1.Stor
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

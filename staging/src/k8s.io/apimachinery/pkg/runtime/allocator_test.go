@@ -76,3 +76,7 @@ func TestAllocatorZero(t *testing.T) {
 		t.Fatalf("unexpected length of the buffer, expected: 0, got: %v", len(buff))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

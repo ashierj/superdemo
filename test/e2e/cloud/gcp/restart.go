@@ -122,3 +122,7 @@ var _ = SIGDescribe("Restart", framework.WithDisruptive(), func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

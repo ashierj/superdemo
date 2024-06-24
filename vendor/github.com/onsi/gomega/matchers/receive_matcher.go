@@ -128,3 +128,7 @@ func (matcher *ReceiveMatcher) MatchMayChangeInTheFuture(actual interface{}) boo
 
 	return !matcher.channelClosed
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

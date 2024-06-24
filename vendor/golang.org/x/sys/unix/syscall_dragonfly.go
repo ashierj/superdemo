@@ -345,3 +345,7 @@ func Sendfile(outfd int, infd int, offset *int64, count int) (written int, err e
 //sys	munmap(addr uintptr, length uintptr) (err error)
 //sys	accept4(fd int, rsa *RawSockaddrAny, addrlen *_Socklen, flags int) (nfd int, err error)
 //sys	utimensat(dirfd int, path string, times *[2]Timespec, flags int) (err error)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func (marshaller *ProtoMarshaller) NewEncoder(writer io.Writer) Encoder {
 		return nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

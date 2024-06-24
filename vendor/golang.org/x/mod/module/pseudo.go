@@ -248,3 +248,7 @@ func parsePseudoVersion(v string) (base, timestamp, rev, build string, err error
 	}
 	return base, timestamp, rev, build, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

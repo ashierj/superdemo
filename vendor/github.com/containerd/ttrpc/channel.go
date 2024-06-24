@@ -180,3 +180,7 @@ func (ch *channel) getmbuf(size int) []byte {
 func (ch *channel) putmbuf(p []byte) {
 	buffers.Put(&p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

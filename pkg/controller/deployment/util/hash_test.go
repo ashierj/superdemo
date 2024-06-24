@@ -143,3 +143,7 @@ func BenchmarkFnv(b *testing.B) {
 		controller.ComputeHash(&spec, nil)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

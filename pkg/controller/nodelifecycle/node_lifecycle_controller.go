@@ -1336,3 +1336,7 @@ func (nc *Controller) reconcileNodeLabels(ctx context.Context, nodeName string) 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

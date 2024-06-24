@@ -1336,3 +1336,7 @@ func getCRIContainerStatsStrictlyFromCRI(seed int, containerName string) statsap
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -163,3 +163,7 @@ func (rc *reconciler) reconcile() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

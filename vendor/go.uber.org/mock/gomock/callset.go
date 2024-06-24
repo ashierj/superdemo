@@ -162,3 +162,7 @@ func (cs callSet) Satisfied() bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

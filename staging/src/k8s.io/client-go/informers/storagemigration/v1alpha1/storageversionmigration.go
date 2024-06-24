@@ -87,3 +87,7 @@ func (f *storageVersionMigrationInformer) Informer() cache.SharedIndexInformer {
 func (f *storageVersionMigrationInformer) Lister() v1alpha1.StorageVersionMigrationLister {
 	return v1alpha1.NewStorageVersionMigrationLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

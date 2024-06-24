@@ -30,3 +30,7 @@ const (
 	// See the documentation of DefaultQPS, same caveats apply.
 	DefaultBurstTokens = 10
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

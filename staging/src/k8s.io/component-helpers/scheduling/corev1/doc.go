@@ -21,3 +21,7 @@ limitations under the License.
 //
 // And be a scheduling feature.
 package corev1 // import "k8s.io/component-helpers/scheduling/corev1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

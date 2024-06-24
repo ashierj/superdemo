@@ -169,3 +169,7 @@ func (e *spdyStreamExecutor) StreamWithContext(ctx context.Context, options Stre
 		return ctx.Err()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

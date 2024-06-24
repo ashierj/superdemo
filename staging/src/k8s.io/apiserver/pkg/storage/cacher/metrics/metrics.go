@@ -195,3 +195,7 @@ func RecordsWatchCacheCapacityChange(objType string, old, new int) {
 	}
 	watchCacheCapacityDecreaseTotal.WithLabelValues(objType).Inc()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

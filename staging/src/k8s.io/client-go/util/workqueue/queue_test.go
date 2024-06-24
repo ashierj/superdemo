@@ -460,3 +460,7 @@ func mustGarbageCollect(t *testing.T, i interface{}) {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

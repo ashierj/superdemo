@@ -520,3 +520,7 @@ func (g *Grabber) getSecureMetricsFromPod(ctx context.Context, podName string, n
 	}
 	return string(rawOutput), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

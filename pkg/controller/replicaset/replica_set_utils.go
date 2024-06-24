@@ -175,3 +175,7 @@ func filterOutCondition(conditions []apps.ReplicaSetCondition, condType apps.Rep
 	}
 	return newConditions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

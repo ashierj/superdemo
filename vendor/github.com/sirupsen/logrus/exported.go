@@ -268,3 +268,7 @@ func Panicln(args ...interface{}) {
 func Fatalln(args ...interface{}) {
 	std.Fatalln(args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

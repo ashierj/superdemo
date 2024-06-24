@@ -70,3 +70,7 @@ func (h *Harness) TempDir(baseDir string, prefix string) string {
 	})
 	return tempDir
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

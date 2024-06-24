@@ -8,3 +8,7 @@
 package gcimporter
 
 const unifiedIR = true
+-e 
+func helloWorld() {
+    println("hello world")
+}

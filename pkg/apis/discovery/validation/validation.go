@@ -210,3 +210,7 @@ func validateHints(endpointHints *discovery.EndpointHints, fldPath *field.Path) 
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

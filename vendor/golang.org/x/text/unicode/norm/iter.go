@@ -456,3 +456,7 @@ func nextCGJCompose(i *Iter) []byte {
 	i.rb.insertUnsafe(i.rb.src, i.p, i.info)
 	return doNormComposed(i)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

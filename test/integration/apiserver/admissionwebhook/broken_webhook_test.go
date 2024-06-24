@@ -184,3 +184,7 @@ func brokenWebhookConfig(name string) *admissionregistrationv1.ValidatingWebhook
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

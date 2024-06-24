@@ -296,3 +296,7 @@ func TestLazyError(t *testing.T) {
 		t.Fatalf("unexpected error")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

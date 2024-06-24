@@ -2674,3 +2674,7 @@ var _ warning.Recorder = &warningRecorder{}
 func (w *warningRecorder) AddWarning(_, text string) {
 	w.warnings = append(w.warnings, text)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -367,3 +367,7 @@ func getSchedulerCommand(cfg *kubeadmapi.ClusterConfiguration) []string {
 	command = append(command, kubeadmutil.ArgumentsToCommand(defaultArguments, cfg.Scheduler.ExtraArgs)...)
 	return command
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

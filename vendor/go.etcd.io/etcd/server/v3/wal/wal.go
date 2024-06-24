@@ -1007,3 +1007,7 @@ func closeAll(lg *zap.Logger, rcs ...io.ReadCloser) error {
 	}
 	return errors.New(strings.Join(stringArr, ", "))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

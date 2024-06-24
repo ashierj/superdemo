@@ -882,3 +882,7 @@ func mustParseCPUSet(t *testing.T, s string) cpuset.CPUSet {
 	}
 	return cpus
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

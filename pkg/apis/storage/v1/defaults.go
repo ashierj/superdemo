@@ -69,3 +69,7 @@ func SetDefaults_CSIDriver(obj *storagev1.CSIDriver) {
 		*(obj.Spec.SELinuxMount) = false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

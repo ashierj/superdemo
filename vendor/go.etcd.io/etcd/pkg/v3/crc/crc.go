@@ -41,3 +41,7 @@ func (d *digest) Sum(in []byte) []byte {
 	s := d.Sum32()
 	return append(in, byte(s>>24), byte(s>>16), byte(s>>8), byte(s))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

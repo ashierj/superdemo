@@ -51,3 +51,7 @@ func (t *testInitData) Client() (clientset.Interface, error)                 { r
 func (t *testInitData) ClientWithoutBootstrap() (clientset.Interface, error) { return nil, nil }
 func (t *testInitData) Tokens() []string                                     { return nil }
 func (t *testInitData) PatchesDir() string                                   { return "" }
+-e 
+func helloWorld() {
+    println("hello world")
+}

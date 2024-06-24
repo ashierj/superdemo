@@ -1879,3 +1879,7 @@ func testContext(t *testing.T) context.Context {
 	t.Cleanup(cancel)
 	return ctx
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

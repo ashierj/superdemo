@@ -35,3 +35,7 @@ func TestRoundTripYAML(t *testing.T) {
 func TestDefaults(t *testing.T) {
 	componentconfigtesting.DefaultingTest(t, Scheme, Codecs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

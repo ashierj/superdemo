@@ -232,3 +232,7 @@ func (h *Handle) RuleList(family int) ([]Rule, error) {
 
 	return res, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

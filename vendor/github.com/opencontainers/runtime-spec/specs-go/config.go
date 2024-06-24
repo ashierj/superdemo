@@ -773,3 +773,7 @@ type ZOSDevice struct {
 	// Gid of the device.
 	GID *uint32 `json:"gid,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

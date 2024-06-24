@@ -158,3 +158,7 @@ func (c *FakeCSIStorageCapacities) Apply(ctx context.Context, cSIStorageCapacity
 	}
 	return obj.(*v1alpha1.CSIStorageCapacity), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

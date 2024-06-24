@@ -55,3 +55,7 @@ func GetChainsFromTable(save []byte) sets.Set[Chain] {
 	}
 	return chainsSet
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

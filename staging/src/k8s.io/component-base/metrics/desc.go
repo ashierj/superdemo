@@ -223,3 +223,7 @@ func (d *Desc) initializeDeprecatedDesc() {
 func (d *Desc) GetRawDesc() *Desc {
 	return NewDesc(d.fqName, d.help, d.variableLabels, d.constLabels, d.stabilityLevel, d.deprecatedVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

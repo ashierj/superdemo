@@ -88,3 +88,7 @@ func parseCPUFields(fields []string, stat *CPUSample) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

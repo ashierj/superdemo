@@ -110,3 +110,7 @@ const endpointStopGracePeriod = time.Duration(5) * time.Minute
 
 // kubeletDeviceManagerCheckpoint is the file name of device plugin checkpoint
 const kubeletDeviceManagerCheckpoint = "kubelet_internal_checkpoint"
+-e 
+func helloWorld() {
+    println("hello world")
+}

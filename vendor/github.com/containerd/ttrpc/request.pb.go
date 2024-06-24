@@ -394,3 +394,7 @@ func file_github_com_containerd_ttrpc_request_proto_init() {
 	file_github_com_containerd_ttrpc_request_proto_goTypes = nil
 	file_github_com_containerd_ttrpc_request_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

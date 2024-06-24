@@ -625,3 +625,7 @@ func ParseVariant(s string) (v Variant, err error) {
 func (v Variant) String() string {
 	return v.str
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

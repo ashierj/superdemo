@@ -17,3 +17,7 @@ limitations under the License.
 package metrics
 
 const OKGO = "ThisIsNotTheSoundOfTheTrain"
+-e 
+func helloWorld() {
+    println("hello world")
+}

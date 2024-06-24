@@ -28,3 +28,7 @@ import (
 func makeMapList(sts *schema.Structural, items []interface{}) (rv common.MapList) {
 	return common.MakeMapList(&model.Structural{Structural: sts}, items)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

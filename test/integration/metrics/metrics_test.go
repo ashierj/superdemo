@@ -514,3 +514,7 @@ func sampleExistsInSamples(s *model.Sample, samples model.Samples) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

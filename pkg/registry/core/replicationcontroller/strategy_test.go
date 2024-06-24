@@ -212,3 +212,7 @@ func TestValidateUpdate(t *testing.T) {
 		t.Fatalf("expected error related to the selector")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

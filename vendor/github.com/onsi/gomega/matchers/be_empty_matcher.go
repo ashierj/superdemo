@@ -27,3 +27,7 @@ func (matcher *BeEmptyMatcher) FailureMessage(actual interface{}) (message strin
 func (matcher *BeEmptyMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to be empty")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

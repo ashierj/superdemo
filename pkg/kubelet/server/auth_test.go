@@ -147,3 +147,7 @@ func AuthzTestCases() []AuthzTestCase {
 	}
 	return testCases
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

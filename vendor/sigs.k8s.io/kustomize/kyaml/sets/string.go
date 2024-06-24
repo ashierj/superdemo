@@ -62,3 +62,7 @@ func (s String) Intersection(s2 String) String {
 	}
 	return s3
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

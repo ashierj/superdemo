@@ -50,3 +50,7 @@ func (s byNameIn) Less(i, j int) bool {
 func sortParameters(p []*spec3.Parameter) {
 	sort.Sort(byNameIn{p})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

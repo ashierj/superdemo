@@ -156,3 +156,7 @@ func (in *VolumeAttributesClassList) APILifecycleDeprecated() (major, minor int)
 func (in *VolumeAttributesClassList) APILifecycleRemoved() (major, minor int) {
 	return 1, 35
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

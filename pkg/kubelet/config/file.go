@@ -243,3 +243,7 @@ func (s *sourceFile) replaceStore(pods ...*v1.Pod) (err error) {
 	}
 	return s.store.Replace(objs, "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

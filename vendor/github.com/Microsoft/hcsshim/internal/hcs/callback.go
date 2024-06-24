@@ -159,3 +159,7 @@ func notificationWatcher(notificationType hcsNotification, callbackNumber uintpt
 
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

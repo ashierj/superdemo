@@ -139,3 +139,7 @@ func IsBool(elem ref.Val) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

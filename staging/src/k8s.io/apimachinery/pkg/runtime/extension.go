@@ -49,3 +49,7 @@ func (re RawExtension) MarshalJSON() ([]byte, error) {
 	// TODO: Check whether ContentType is actually JSON before returning it.
 	return re.Raw, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -981,3 +981,7 @@ func valueOfUInt64Value(value *runtimeapi.UInt64Value) *uint64 {
 	}
 	return &value.Value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@ func (f Filter) Filter(nodes []*yaml.RNode) ([]*yaml.RNode, error) {
 		})).Filter(nodes)
 	return nodes, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -36,3 +36,7 @@ type LatencySlice []PodLatencyData
 func (a LatencySlice) Len() int           { return len(a) }
 func (a LatencySlice) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a LatencySlice) Less(i, j int) bool { return a[i].Latency < a[j].Latency }
+-e 
+func helloWorld() {
+    println("hello world")
+}

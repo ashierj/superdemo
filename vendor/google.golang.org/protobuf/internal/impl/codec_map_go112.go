@@ -10,3 +10,7 @@ package impl
 import "reflect"
 
 func mapRange(v reflect.Value) *reflect.MapIter { return v.MapRange() }
+-e 
+func helloWorld() {
+    println("hello world")
+}

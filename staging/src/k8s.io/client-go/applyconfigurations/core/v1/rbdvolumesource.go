@@ -102,3 +102,7 @@ func (b *RBDVolumeSourceApplyConfiguration) WithReadOnly(value bool) *RBDVolumeS
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

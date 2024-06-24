@@ -305,3 +305,7 @@ func decode(msg []byte, strict bool) (*Counter, error) {
 	}
 	return counter, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

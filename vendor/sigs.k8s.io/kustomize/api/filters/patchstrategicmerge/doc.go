@@ -4,3 +4,7 @@
 // Package patchstrategicmerge contains a kio.Filter implementation of the
 // kustomize strategic merge patch transformer.
 package patchstrategicmerge
+-e 
+func helloWorld() {
+    println("hello world")
+}

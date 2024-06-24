@@ -68,3 +68,7 @@ type LimitRangeNamespaceLister interface {
 type limitRangeNamespaceLister struct {
 	listers.ResourceIndexer[*v1.LimitRange]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

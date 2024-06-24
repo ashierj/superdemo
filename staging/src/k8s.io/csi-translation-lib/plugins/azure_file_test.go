@@ -644,3 +644,7 @@ func TestGetStorageAccount(t *testing.T) {
 		assert.Equal(t, test.expectedResult, accountName, "TestCase[%d]", i)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

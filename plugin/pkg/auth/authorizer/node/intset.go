@@ -60,3 +60,7 @@ func (s *intSet) decrement(i int) {
 		s.members[i]--
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -12,3 +12,7 @@ package hcsschema
 type GuestCrashReporting struct {
 	WindowsCrashSettings *WindowsCrashReporting `json:"WindowsCrashSettings,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

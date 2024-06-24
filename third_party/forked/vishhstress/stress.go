@@ -97,3 +97,7 @@ func allocateMemory(total, stepSize resource.Quantity) {
 		time.Sleep(argMemSleepDuration)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

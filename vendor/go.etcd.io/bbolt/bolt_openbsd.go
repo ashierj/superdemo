@@ -14,3 +14,7 @@ func fdatasync(db *DB) error {
 	}
 	return db.file.Sync()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

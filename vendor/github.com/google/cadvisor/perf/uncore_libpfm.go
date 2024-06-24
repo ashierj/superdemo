@@ -517,3 +517,7 @@ func readPerfUncoreStat(file readerCloser, group group, cpu int, pmu string, cpu
 
 	return perfUncoreStats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=admission.k8s.io
 
 package v1 // import "k8s.io/api/admission/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

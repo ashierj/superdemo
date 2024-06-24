@@ -103,3 +103,7 @@ func (ingressClassStrategy) WarningsOnUpdate(ctx context.Context, obj, old runti
 func (ingressClassStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

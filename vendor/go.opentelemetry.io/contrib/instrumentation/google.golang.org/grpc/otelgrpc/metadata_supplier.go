@@ -96,3 +96,7 @@ func extract(ctx context.Context, propagators propagation.TextMapPropagator) con
 		metadata: &md,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

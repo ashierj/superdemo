@@ -92,3 +92,7 @@ func deepEqual(a interface{}, b interface{}) (bool, []interface{}) {
 		return a == b, errorPath
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

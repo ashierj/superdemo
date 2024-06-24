@@ -275,3 +275,7 @@ func (b *ResourceClassParametersApplyConfiguration) WithFilters(values ...*Resou
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

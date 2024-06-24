@@ -175,3 +175,7 @@ func (cc *cadvisorClient) ContainerFsInfo() (cadvisorapiv2.FsInfo, error) {
 	}
 	return cc.getFsInfo(label)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

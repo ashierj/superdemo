@@ -291,3 +291,7 @@ var voidElements = map[string]bool{
 	"track":  true,
 	"wbr":    true,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

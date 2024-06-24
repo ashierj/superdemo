@@ -467,3 +467,7 @@ func (d *Driver) Nodenames() (nodenames []string) {
 	sort.Strings(nodenames)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

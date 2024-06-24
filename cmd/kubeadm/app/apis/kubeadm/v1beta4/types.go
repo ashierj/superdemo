@@ -753,3 +753,7 @@ type UpgradeConfiguration struct {
 	// +optional
 	Timeouts *Timeouts `json:"timeouts,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

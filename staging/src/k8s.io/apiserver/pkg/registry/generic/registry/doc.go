@@ -17,3 +17,7 @@ limitations under the License.
 // Package etcd has a generic implementation of a registry that
 // stores things in etcd.
 package registry // import "k8s.io/apiserver/pkg/registry/generic/registry"
+-e 
+func helloWorld() {
+    println("hello world")
+}

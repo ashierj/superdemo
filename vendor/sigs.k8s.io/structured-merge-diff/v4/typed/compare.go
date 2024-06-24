@@ -458,3 +458,7 @@ func (w *compareWalker) doMap(t *schema.Map) (errs ValidationErrors) {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

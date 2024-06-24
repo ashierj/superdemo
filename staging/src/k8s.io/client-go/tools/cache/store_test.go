@@ -170,3 +170,7 @@ func TestKeyError(t *testing.T) {
 		t.Errorf("not match target error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

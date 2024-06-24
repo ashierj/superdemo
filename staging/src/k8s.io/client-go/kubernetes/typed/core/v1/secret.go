@@ -206,3 +206,7 @@ func (c *secrets) Apply(ctx context.Context, secret *corev1.SecretApplyConfigura
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

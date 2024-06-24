@@ -47,3 +47,7 @@ func (c *simpleCache) set(key string, value *cacheRecord, ttl time.Duration) {
 func (c *simpleCache) remove(key string) {
 	c.cache.Delete(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

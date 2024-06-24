@@ -491,3 +491,7 @@ func (s componentStatusStorage) serversToValidate() map[string]componentstatus.S
 	}
 	return serversToValidate
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

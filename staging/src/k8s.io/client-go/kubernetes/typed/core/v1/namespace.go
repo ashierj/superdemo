@@ -225,3 +225,7 @@ func (c *namespaces) ApplyStatus(ctx context.Context, namespace *corev1.Namespac
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

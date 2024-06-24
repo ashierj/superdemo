@@ -416,3 +416,7 @@ func sameLoadBalancerClass(oldSvc, newSvc *api.Service) bool {
 func sameExternalTrafficPolicy(oldSvc, newSvc *api.Service) bool {
 	return oldSvc.Spec.ExternalTrafficPolicy == newSvc.Spec.ExternalTrafficPolicy
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

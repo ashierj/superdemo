@@ -89,3 +89,7 @@ func reserveAddresses(len int) uintptr {
 	}
 	return uintptr(unsafe.Pointer(&b[0]))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

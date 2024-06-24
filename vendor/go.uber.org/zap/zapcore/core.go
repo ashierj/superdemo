@@ -120,3 +120,7 @@ func (c *ioCore) clone() *ioCore {
 		out:          c.out,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

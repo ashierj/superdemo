@@ -55,3 +55,7 @@ func register() {
 	peerproxymetrics.Register()
 	handlersmetrics.Register()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

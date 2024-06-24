@@ -1830,3 +1830,7 @@ func (config *DaemonConfig) Run(ctx context.Context) error {
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

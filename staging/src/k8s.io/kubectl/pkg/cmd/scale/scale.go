@@ -276,3 +276,7 @@ func scaler(f cmdutil.Factory) (scale.Scaler, error) {
 
 	return scale.NewScaler(scalesGetter), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

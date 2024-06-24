@@ -46,3 +46,7 @@ func (b *SecretReferenceApplyConfiguration) WithNamespace(value string) *SecretR
 	b.Namespace = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

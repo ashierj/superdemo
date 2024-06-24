@@ -79,3 +79,7 @@ func TestGetEnvAsFloat64OrFallback(t *testing.T) {
 	assert.Equal(expected, returnVal)
 	assert.EqualError(err, "strconv.ParseFloat: parsing \"not-a-float\": invalid syntax")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

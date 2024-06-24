@@ -295,3 +295,7 @@ func makeTmpPolicy(t *testing.T) string {
 	require.NoError(t, f.Close())
 	return f.Name()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -423,3 +423,7 @@ func extract$.ApplyConfig.Type|public$($.Struct|private$ *$.Struct|raw$, fieldMa
 }
 `, typeParams)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

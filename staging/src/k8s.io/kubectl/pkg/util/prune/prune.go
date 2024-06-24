@@ -117,3 +117,7 @@ func ParseResources(mapper meta.RESTMapper, gvks []string) ([]Resource, error) {
 	}
 	return pruneResources, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

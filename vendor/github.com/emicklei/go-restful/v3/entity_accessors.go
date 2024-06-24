@@ -160,3 +160,7 @@ func writeJSON(resp *Response, status int, contentType string, v interface{}) er
 	resp.WriteHeader(status)
 	return NewEncoder(resp).Encode(v)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

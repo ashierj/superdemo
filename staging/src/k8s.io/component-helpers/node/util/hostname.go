@@ -44,3 +44,7 @@ func GetHostname(hostnameOverride string) (string, error) {
 
 	return strings.ToLower(hostName), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

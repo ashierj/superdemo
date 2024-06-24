@@ -606,3 +606,7 @@ func nextExtension(s string, p int) int {
 	}
 	return len(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1424,3 +1424,7 @@ func getCgroupDriverFromCRI(ctx context.Context, s *options.KubeletServer, kubeD
 	klog.InfoS("Using cgroup driver setting received from the CRI runtime", "cgroupDriver", s.CgroupDriver)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

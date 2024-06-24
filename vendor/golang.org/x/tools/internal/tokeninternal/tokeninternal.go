@@ -149,3 +149,7 @@ func CloneFileSet(fset *token.FileSet) *token.FileSet {
 	AddExistingFiles(newFileSet, files)
 	return newFileSet
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

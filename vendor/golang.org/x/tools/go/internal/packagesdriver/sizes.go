@@ -51,3 +51,7 @@ func GetSizesForArgsGolist(ctx context.Context, inv gocommand.Invocation, gocmdR
 	}
 	return compiler, goarch, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *flunderInformer) Informer() cache.SharedIndexInformer {
 func (f *flunderInformer) Lister() v1alpha1.FlunderLister {
 	return v1alpha1.NewFlunderLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

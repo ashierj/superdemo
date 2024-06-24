@@ -775,3 +775,7 @@ func deltaTimeAfterTopOfTheHour(duration time.Duration) *time.Time {
 	t := T1.Add(duration)
 	return &t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

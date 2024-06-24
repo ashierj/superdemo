@@ -265,3 +265,7 @@ func setVolumes(podSpec *v1.PodSpec, pvcs []*v1.PersistentVolumeClaim, inlineVol
 	podSpec.Containers[0].VolumeDevices = volumeDevices
 	podSpec.Volumes = volumes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

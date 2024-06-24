@@ -131,3 +131,7 @@ type FsInfo interface {
 	// Returns the mountpoint associated with a particular device.
 	GetMountpointForDevice(device string) (string, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

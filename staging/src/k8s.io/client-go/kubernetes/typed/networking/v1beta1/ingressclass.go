@@ -195,3 +195,7 @@ func (c *ingressClasses) Apply(ctx context.Context, ingressClass *networkingv1be
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

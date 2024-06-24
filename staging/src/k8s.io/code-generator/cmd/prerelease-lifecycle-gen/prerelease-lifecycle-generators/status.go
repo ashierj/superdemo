@@ -467,3 +467,7 @@ func (g *genPreleaseLifecycle) GenerateType(c *generator.Context, t *types.Type,
 
 	return sw.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

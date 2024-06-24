@@ -1027,3 +1027,7 @@ func OnRequestDispatched(r fq.Request) {
 		qs.totRequestsDispatched++
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

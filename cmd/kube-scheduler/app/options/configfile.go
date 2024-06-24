@@ -108,3 +108,7 @@ func LogOrWriteConfig(logger klog.Logger, fileName string, cfg *config.KubeSched
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

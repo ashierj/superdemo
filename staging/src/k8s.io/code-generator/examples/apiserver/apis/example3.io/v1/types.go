@@ -45,3 +45,7 @@ type TestTypeList struct {
 type TestTypeStatus struct {
 	Blah string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

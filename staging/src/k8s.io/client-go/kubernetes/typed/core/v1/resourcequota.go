@@ -254,3 +254,7 @@ func (c *resourceQuotas) ApplyStatus(ctx context.Context, resourceQuota *corev1.
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

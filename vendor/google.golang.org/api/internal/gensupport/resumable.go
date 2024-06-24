@@ -267,3 +267,7 @@ func (rx *ResumableUpload) Upload(ctx context.Context) (resp *http.Response, err
 		return prepareReturn(resp, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

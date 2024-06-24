@@ -337,3 +337,7 @@ func (f *TextFormatter) appendValue(b *bytes.Buffer, value interface{}) {
 		b.WriteString(fmt.Sprintf("%q", stringVal))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

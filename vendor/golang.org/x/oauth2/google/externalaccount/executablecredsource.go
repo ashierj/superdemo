@@ -311,3 +311,7 @@ func (cs executableCredentialSource) getTokenFromExecutableCommand() (string, er
 	}
 	return cs.parseSubjectTokenFromSource(output, executableSource, cs.env.now().Unix())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

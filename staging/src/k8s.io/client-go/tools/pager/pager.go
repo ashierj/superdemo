@@ -287,3 +287,7 @@ func (p *ListPager) eachListChunk(ctx context.Context, options metav1.ListOption
 		options.Continue = m.GetContinue()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

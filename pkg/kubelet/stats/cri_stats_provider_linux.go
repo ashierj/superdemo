@@ -108,3 +108,7 @@ func addCRIPodProcessStats(ps *statsapi.PodStats, criPodStat *runtimeapi.PodSand
 func (p *criStatsProvider) listContainerNetworkStats() (map[string]*statsapi.NetworkStats, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

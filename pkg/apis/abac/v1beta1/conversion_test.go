@@ -62,3 +62,7 @@ func TestV1Beta1Conversion(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

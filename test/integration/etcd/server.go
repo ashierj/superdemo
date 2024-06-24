@@ -414,3 +414,7 @@ func crdVersionExistsInDiscovery(client apiextensionsclientset.Interface, crd *a
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

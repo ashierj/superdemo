@@ -781,3 +781,7 @@ const atomText = "abbradiogrouparamainavalueaccept-charsetbodyaccesskeygenobrb" 
 	"handledrejectionbeforeprintonunloadonvolumechangeonwaitingon" +
 	"wheeloptimumanifestrongoptionbeforeunloaddressrcsetstylesumm" +
 	"arysupsvgsystemplateworkertypewrap"
+-e 
+func helloWorld() {
+    println("hello world")
+}

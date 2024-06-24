@@ -46,3 +46,7 @@ func (b *AuditAnnotationApplyConfiguration) WithValueExpression(value string) *A
 	b.ValueExpression = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -82,3 +82,7 @@ func GetAuthProvider(clusterAddress string, apc *clientcmdapi.AuthProviderConfig
 	}
 	return p(clusterAddress, apc.Config, persister)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

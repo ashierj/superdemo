@@ -35,3 +35,7 @@ func CreateTLSConfig(certBytes []byte) (*tls.Config, error) {
 		RootCAs: cp,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

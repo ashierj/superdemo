@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package runtimeclass // import "k8s.io/kubernetes/pkg/registry/node/runtimeclass"
+-e 
+func helloWorld() {
+    println("hello world")
+}

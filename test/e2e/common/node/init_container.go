@@ -577,3 +577,7 @@ func toDebugJSON(obj interface{}) string {
 	}
 	return string(m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

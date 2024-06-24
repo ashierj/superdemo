@@ -368,3 +368,7 @@ func encodeHeaders(enc *hpack.Encoder, h http.Header, keys []string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -725,3 +725,7 @@ func (c *channelTrace) dumpData() *ChannelTrace {
 	c.mu.Unlock()
 	return ct
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

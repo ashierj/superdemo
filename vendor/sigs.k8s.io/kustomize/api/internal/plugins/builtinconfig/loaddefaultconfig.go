@@ -40,3 +40,7 @@ func makeTransformerConfigFromBytes(data []byte) (*TransformerConfig, error) {
 	t.sortFields()
 	return &t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -70,3 +70,7 @@ func hasADependencyMsg(path, depkey string) errors.Error {
 func arrayDoesNotAllowAdditionalItemsMsg() errors.Error {
 	return errors.New(errors.CompositeErrorCode, ArrayDoesNotAllowAdditionalItemsError)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

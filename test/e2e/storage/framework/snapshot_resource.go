@@ -335,3 +335,7 @@ func getPreProvisionedSnapshotContentName(uuid types.UID) string {
 func getPreProvisionedSnapshotName(uuid types.UID) string {
 	return fmt.Sprintf("pre-provisioned-snapshot-%s", string(uuid))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

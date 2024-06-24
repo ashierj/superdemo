@@ -41,3 +41,7 @@ func TestApiserverExportsSymbols(t *testing.T) {
 		GenericAPIServer: &genericapiserver.GenericAPIServer{},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

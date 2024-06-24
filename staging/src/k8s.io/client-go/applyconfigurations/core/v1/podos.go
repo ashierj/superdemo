@@ -41,3 +41,7 @@ func (b *PodOSApplyConfiguration) WithName(value v1.OSName) *PodOSApplyConfigura
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

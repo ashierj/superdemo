@@ -92,3 +92,7 @@ func autoConvert_config_NamespaceControllerConfiguration_To_v1alpha1_NamespaceCo
 	out.ConcurrentNamespaceSyncs = in.ConcurrentNamespaceSyncs
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

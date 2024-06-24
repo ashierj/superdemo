@@ -724,3 +724,7 @@ func assembleLoad(dst Register, loadSize int, mode uint16, k uint32) (RawInstruc
 		K:  k,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

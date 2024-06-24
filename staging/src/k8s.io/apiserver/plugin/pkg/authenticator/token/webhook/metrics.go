@@ -33,3 +33,7 @@ type noopMetrics struct{}
 
 func (noopMetrics) RequestTotal(context.Context, string)            {}
 func (noopMetrics) RequestLatency(context.Context, string, float64) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

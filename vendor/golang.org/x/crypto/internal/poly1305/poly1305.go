@@ -97,3 +97,7 @@ func (h *MAC) Verify(expected []byte) bool {
 	h.finalized = true
 	return subtle.ConstantTimeCompare(expected, mac[:]) == 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

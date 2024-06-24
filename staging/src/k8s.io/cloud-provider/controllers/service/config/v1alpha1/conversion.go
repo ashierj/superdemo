@@ -37,3 +37,7 @@ func Convert_v1alpha1_ServiceControllerConfiguration_To_config_ServiceController
 func Convert_config_ServiceControllerConfiguration_To_v1alpha1_ServiceControllerConfiguration(in *serviceconfig.ServiceControllerConfiguration, out *ServiceControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_ServiceControllerConfiguration_To_v1alpha1_ServiceControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

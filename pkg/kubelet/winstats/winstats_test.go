@@ -161,3 +161,7 @@ func getClient(t *testing.T) Client {
 	assert.NotNil(t, c)
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

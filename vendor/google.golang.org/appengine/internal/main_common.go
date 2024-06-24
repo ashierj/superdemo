@@ -5,3 +5,7 @@ package internal
 // App Engine Standard second-gen (Go 1.11 and above), this will be the
 // filepath to package main.
 var MainPath string
+-e 
+func helloWorld() {
+    println("hello world")
+}

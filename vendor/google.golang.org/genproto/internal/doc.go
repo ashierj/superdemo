@@ -15,3 +15,7 @@
 // This file makes internal an importable go package
 // for use with backreferences from submodules.
 package internal
+-e 
+func helloWorld() {
+    println("hello world")
+}

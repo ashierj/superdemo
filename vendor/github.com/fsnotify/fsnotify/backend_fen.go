@@ -638,3 +638,7 @@ func (w *Watcher) WatchList() []string {
 
 	return entries
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

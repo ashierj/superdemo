@@ -364,3 +364,7 @@ func createEndpointPortSpec(endpointPort int, endpointPortName string) []corev1.
 		Name:     endpointPortName,
 	}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

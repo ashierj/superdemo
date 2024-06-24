@@ -87,3 +87,7 @@ func (f *priorityClassInformer) Informer() cache.SharedIndexInformer {
 func (f *priorityClassInformer) Lister() v1.PriorityClassLister {
 	return v1.NewPriorityClassLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -225,3 +225,7 @@ func newPodList(count, isUnready, isUnhealthy int, labels map[string]string) *co
 		Items: pods,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

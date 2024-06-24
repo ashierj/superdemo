@@ -1542,3 +1542,7 @@ func verifyAttachedVolume(
 		expectedMountedByNode,
 		expectNonZeroDetachRequestedTime)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

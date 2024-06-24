@@ -34,3 +34,7 @@ func (escState escapeIntermediateState) Transition(s state) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

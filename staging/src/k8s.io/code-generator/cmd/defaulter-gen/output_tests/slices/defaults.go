@@ -31,3 +31,7 @@ func SetDefaults_Ttest(obj *Ttest) {
 		*obj.BoolField = true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

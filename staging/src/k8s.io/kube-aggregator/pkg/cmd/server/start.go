@@ -173,3 +173,7 @@ func (o AggregatorOptions) RunAggregator(stopCh <-chan struct{}) error {
 	}
 	return prepared.Run(stopCh)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

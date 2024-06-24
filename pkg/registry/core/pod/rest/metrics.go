@@ -91,3 +91,7 @@ func registerMetrics() {
 		legacyregistry.MustRegister(deprecatedPodLogsTLSFailure)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

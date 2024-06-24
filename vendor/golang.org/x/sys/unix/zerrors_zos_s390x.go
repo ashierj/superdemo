@@ -857,3 +857,7 @@ var signalList = [...]struct {
 	{38, "", "DCE"},
 	{39, "SIGDUMP", "dump"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

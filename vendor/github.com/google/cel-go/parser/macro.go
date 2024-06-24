@@ -402,3 +402,7 @@ func extractIdent(e ast.Expr) (string, bool) {
 	}
 	return "", false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

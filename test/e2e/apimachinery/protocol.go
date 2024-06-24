@@ -96,3 +96,7 @@ var _ = SIGDescribe("client-go should negotiate", func() {
 		})
 	}
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

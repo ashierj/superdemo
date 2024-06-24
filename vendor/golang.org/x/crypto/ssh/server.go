@@ -800,3 +800,7 @@ func (c *sshClientKeyboardInteractive) Challenge(name, instruction string, quest
 
 	return answers, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

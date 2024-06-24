@@ -33,3 +33,7 @@ func HumanDuration(d time.Duration) string {
 	}
 	return fmt.Sprintf("%d years", int(d.Hours())/24/365)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

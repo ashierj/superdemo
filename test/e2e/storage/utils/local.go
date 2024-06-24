@@ -359,3 +359,7 @@ func (l *ltrMgr) Remove(ctx context.Context, ltr *LocalTestResource) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

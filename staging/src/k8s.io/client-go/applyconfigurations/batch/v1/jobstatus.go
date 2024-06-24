@@ -136,3 +136,7 @@ func (b *JobStatusApplyConfiguration) WithReady(value int32) *JobStatusApplyConf
 	b.Ready = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

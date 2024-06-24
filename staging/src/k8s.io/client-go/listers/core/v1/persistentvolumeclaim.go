@@ -68,3 +68,7 @@ type PersistentVolumeClaimNamespaceLister interface {
 type persistentVolumeClaimNamespaceLister struct {
 	listers.ResourceIndexer[*v1.PersistentVolumeClaim]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

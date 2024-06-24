@@ -102,3 +102,7 @@ func (p *plugin) NodeListAndWatchResources(
 	nodeClient := drapb.NewNodeClient(conn)
 	return nodeClient.NodeListAndWatchResources(ctx, req, opts...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

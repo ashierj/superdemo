@@ -136,3 +136,7 @@ type CarpList struct {
 
 	Items []Carp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

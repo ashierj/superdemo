@@ -90,3 +90,7 @@ step: hello world
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

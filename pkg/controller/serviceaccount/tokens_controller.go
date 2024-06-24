@@ -621,3 +621,7 @@ func parseSecretQueueKey(key interface{}) (secretQueueKey, error) {
 func makeCacheKey(namespace, name string) string {
 	return namespace + "/" + name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

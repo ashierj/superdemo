@@ -71,3 +71,7 @@ var namespacedExpansionInterfaceTemplate = `
 // $.|public$NamespaceLister.
 type $.|public$NamespaceListerExpansion interface {}
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

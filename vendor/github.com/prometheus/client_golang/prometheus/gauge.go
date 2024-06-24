@@ -309,3 +309,7 @@ func NewGaugeFunc(opts GaugeOpts, function func() float64) GaugeFunc {
 		opts.ConstLabels,
 	), GaugeValue, function)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

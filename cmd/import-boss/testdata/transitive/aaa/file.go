@@ -10,3 +10,7 @@ import (
 )
 
 var X = "aaa"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func (snap *snapshotCache) FindSnapshot(k, v string) (int, Snapshot) {
 
 	return snapshotIdx, Snapshot{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

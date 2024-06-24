@@ -507,3 +507,7 @@ func consumeTagOption(in string) (string, int, error) {
 func isLetterOrDigit(r rune) bool {
 	return r == '_' || unicode.IsLetter(r) || unicode.IsNumber(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

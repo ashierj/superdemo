@@ -106,3 +106,7 @@ type HTTPFormat interface {
 }
 
 // TODO(jbd): Find a more representative but short name for HTTPFormat.
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -26969,3 +26969,7 @@ var encode5 = [...]uint16{
 	65508 - 65281: jis0208<<14 | 0x5B<<7 | 0x5B,
 	65509 - 65281: jis0208<<14 | 0x00<<7 | 0x4E,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

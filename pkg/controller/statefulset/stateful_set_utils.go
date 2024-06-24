@@ -646,3 +646,7 @@ func getStatefulSetMaxUnavailable(maxUnavailable *intstr.IntOrString, replicaCou
 	}
 	return maxUnavailableNum, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

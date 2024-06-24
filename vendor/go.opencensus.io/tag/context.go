@@ -41,3 +41,7 @@ func NewContext(ctx context.Context, m *Map) context.Context {
 type ctxKey struct{}
 
 var mapCtxKey = ctxKey{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

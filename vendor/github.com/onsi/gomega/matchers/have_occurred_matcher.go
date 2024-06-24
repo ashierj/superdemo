@@ -33,3 +33,7 @@ func (matcher *HaveOccurredMatcher) FailureMessage(actual interface{}) (message 
 func (matcher *HaveOccurredMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return fmt.Sprintf("Unexpected error:\n%s\n%s", format.Object(actual, 1), "occurred")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

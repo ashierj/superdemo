@@ -185,3 +185,7 @@ func CheckDeprecatedFlags(f *FeatureList, features map[string]bool) map[string]s
 
 	return deprecatedMsg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

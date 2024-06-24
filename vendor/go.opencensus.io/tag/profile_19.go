@@ -30,3 +30,7 @@ func do(ctx context.Context, f func(ctx context.Context)) {
 	}
 	pprof.Do(ctx, pprof.Labels(keyvals...), f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -146,3 +146,7 @@ func getAddonPhaseFlags(name string) []string {
 	}
 	return flags
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

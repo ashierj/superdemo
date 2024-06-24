@@ -44,3 +44,7 @@ func Install(scheme *runtime.Scheme) {
 	utilruntime.Must(scheme.SetVersionPriority(flowcontrolv1.SchemeGroupVersion, flowcontrolv1beta3.SchemeGroupVersion,
 		flowcontrolv1beta2.SchemeGroupVersion, flowcontrolv1beta1.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

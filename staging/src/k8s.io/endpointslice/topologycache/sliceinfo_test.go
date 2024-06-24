@@ -116,3 +116,7 @@ func countEndpoints(slices []*discovery.EndpointSlice) int {
 	}
 	return total
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

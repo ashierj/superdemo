@@ -41,3 +41,7 @@ var (
 	metav1Object                = types.Name{Package: "k8s.io/apimachinery/pkg/apis/meta/v1", Name: "Object"}
 	watchInterface              = types.Name{Package: "k8s.io/apimachinery/pkg/watch", Name: "Interface"}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

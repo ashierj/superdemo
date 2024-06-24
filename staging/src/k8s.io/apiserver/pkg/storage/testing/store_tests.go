@@ -2591,3 +2591,7 @@ func RunTestCount(ctx context.Context, t *testing.T, store storage.Interface) {
 		t.Fatalf("store.Count for resource %s: expected %d but got %d", resourceA, resourceACountExpected, resourceACountGot)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

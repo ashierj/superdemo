@@ -256,3 +256,7 @@ func (b *PodSchedulingContextApplyConfiguration) WithStatus(value *PodScheduling
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

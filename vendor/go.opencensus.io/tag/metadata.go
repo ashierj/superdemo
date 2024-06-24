@@ -50,3 +50,7 @@ func WithTTL(ttl TTL) Metadata {
 		m.ttl = ttl
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

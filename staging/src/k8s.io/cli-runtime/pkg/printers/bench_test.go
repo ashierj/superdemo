@@ -150,3 +150,7 @@ func benchmarkPrinter(b *testing.B, printerFunc func() ResourcePrinter, data run
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

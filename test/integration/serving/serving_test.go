@@ -289,3 +289,7 @@ func fakeCloudProviderFactory(io.Reader) (cloudprovider.Interface, error) {
 		DisableRoutes: true, // disable routes for server tests, otherwise --cluster-cidr is required
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

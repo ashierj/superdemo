@@ -35,3 +35,7 @@ var (
 	millicores  = flag.Int("millicores", 0, "millicores number")
 	durationSec = flag.Int("duration-sec", 0, "duration time in seconds")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

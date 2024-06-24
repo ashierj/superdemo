@@ -402,3 +402,7 @@ func (p *ExecOptions) Run() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

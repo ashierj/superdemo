@@ -219,3 +219,7 @@ func (s IPSet) Equal(s2 IPSet) bool {
 func (s IPSet) Len() int {
 	return len(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

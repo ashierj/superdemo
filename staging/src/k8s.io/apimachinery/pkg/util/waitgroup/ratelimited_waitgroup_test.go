@@ -318,3 +318,7 @@ func (f *factory) NewRateLimiter(count int) (RateLimiter, context.Context, conte
 	f.limiter.delegate = rate.NewLimiter(rate.Limit(count/int(f.grace.Seconds())), 20)
 	return f.limiter, f.ctx, f.cancel
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

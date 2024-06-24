@@ -81,3 +81,7 @@ func getKubeadmPath() string {
 	}
 	return kubeadmPath
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

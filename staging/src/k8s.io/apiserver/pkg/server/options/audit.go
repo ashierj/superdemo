@@ -610,3 +610,7 @@ func defaultLogBatchConfig() pluginbuffered.BatchConfig {
 		AsyncDelegate: false,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

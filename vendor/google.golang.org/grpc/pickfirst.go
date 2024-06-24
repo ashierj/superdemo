@@ -261,3 +261,7 @@ func (i *idlePicker) Pick(balancer.PickInfo) (balancer.PickResult, error) {
 func init() {
 	balancer.Register(newPickfirstBuilder())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -281,3 +281,7 @@ func testHitNodesFromOutsideWithCount(externalIP string, httpPort int32, timeout
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

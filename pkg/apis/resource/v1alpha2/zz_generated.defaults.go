@@ -60,3 +60,7 @@ func SetObjectDefaults_ResourceClaimTemplateList(in *v1alpha2.ResourceClaimTempl
 		SetObjectDefaults_ResourceClaimTemplate(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

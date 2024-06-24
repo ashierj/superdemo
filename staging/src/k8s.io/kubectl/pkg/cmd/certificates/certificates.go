@@ -304,3 +304,7 @@ func addConditionIfNeeded(mustNotHaveConditionType, conditionType, reason, messa
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

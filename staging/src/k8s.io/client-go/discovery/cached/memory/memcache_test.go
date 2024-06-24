@@ -1499,3 +1499,7 @@ func failedGroupVersions(gvs map[schema.GroupVersion]error) []string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

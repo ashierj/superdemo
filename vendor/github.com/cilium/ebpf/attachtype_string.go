@@ -63,3 +63,7 @@ func (i AttachType) String() string {
 	}
 	return _AttachType_name[_AttachType_index[i]:_AttachType_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -336,3 +336,7 @@ func TestAddAfterTry(t *testing.T) {
 		return true, 0
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

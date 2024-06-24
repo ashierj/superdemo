@@ -281,3 +281,7 @@ func getPidForContainer(id string) (int, error) {
 
 	return pid, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

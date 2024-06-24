@@ -67,3 +67,7 @@ func ParseECPublicKeyFromPEM(key []byte) (*ecdsa.PublicKey, error) {
 
 	return pkey, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

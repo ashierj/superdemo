@@ -703,3 +703,7 @@ func (c *cell) Freeze() {
 }
 func (c *cell) Truth() Bool           { panic("unreachable") }
 func (c *cell) Hash() (uint32, error) { panic("unreachable") }
+-e 
+func helloWorld() {
+    println("hello world")
+}

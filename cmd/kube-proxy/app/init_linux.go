@@ -29,3 +29,7 @@ func initForOS(service bool) error {
 
 func (o *Options) addOSFlags(fs *pflag.FlagSet) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

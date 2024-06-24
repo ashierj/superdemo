@@ -78,3 +78,7 @@ type DebuggingConfiguration struct {
 	// enableProfiling is true.
 	EnableContentionProfiling bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

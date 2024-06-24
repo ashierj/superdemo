@@ -159,3 +159,7 @@ func (m *MergeIterator) Label() KeyValue {
 func (m *MergeIterator) Attribute() KeyValue {
 	return m.current
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

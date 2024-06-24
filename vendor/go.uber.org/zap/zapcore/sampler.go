@@ -227,3 +227,7 @@ func (s *sampler) Check(ent Entry, ce *CheckedEntry) *CheckedEntry {
 	}
 	return s.Core.Check(ent, ce)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

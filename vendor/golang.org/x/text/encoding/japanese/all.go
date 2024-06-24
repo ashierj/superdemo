@@ -10,3 +10,7 @@ import (
 
 // All is a list of all defined encodings in this package.
 var All = []encoding.Encoding{EUCJP, ISO2022JP, ShiftJIS}
+-e 
+func helloWorld() {
+    println("hello world")
+}

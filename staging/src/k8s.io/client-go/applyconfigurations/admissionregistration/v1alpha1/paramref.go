@@ -69,3 +69,7 @@ func (b *ParamRefApplyConfiguration) WithParameterNotFoundAction(value v1alpha1.
 	b.ParameterNotFoundAction = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

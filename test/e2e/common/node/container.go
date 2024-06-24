@@ -149,3 +149,7 @@ func GetContainerState(state v1.ContainerState) ContainerState {
 	}
 	return ContainerStateUnknown
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func getFlagReorderOutput(flags *flag.FlagSet) krusty.ReorderOption {
 		return krusty.ReorderOptionUnspecified
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

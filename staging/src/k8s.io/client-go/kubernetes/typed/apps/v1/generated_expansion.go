@@ -27,3 +27,7 @@ type DeploymentExpansion interface{}
 type ReplicaSetExpansion interface{}
 
 type StatefulSetExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

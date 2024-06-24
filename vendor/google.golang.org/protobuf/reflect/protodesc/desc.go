@@ -283,3 +283,7 @@ func (o FileOptions) addFileDeps(r *protoregistry.Files, fd *descriptorpb.FileDe
 	}
 	return r.RegisterFile(f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

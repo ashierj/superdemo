@@ -60,3 +60,7 @@ func Convert_v0_Policy_To_abac_Policy(in *Policy, out *abac.Policy, s conversion
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

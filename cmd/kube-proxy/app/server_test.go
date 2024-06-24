@@ -1180,3 +1180,7 @@ func Test_checkBadIPConfig(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

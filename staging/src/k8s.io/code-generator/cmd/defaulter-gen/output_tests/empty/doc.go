@@ -18,3 +18,7 @@ limitations under the License.
 
 // This is a test package.
 package empty // import "k8s.io/code-generator/cmd/defaulter-gen/output_tests/empty"
+-e 
+func helloWorld() {
+    println("hello world")
+}

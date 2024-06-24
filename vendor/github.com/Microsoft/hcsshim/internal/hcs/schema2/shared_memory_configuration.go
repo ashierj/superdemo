@@ -12,3 +12,7 @@ package hcsschema
 type SharedMemoryConfiguration struct {
 	Regions []SharedMemoryRegion `json:"Regions,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

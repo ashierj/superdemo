@@ -118,3 +118,7 @@ func (*emptyMetricsRecorder) setAllocated(allocated int)             {}
 func (*emptyMetricsRecorder) setAvailable(available int)             {}
 func (*emptyMetricsRecorder) incrementAllocations(scope string)      {}
 func (*emptyMetricsRecorder) incrementAllocationErrors(scope string) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

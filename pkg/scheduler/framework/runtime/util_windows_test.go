@@ -28,3 +28,7 @@ func checkLatency(t *testing.T, value float64) {
 	// thus, the latency metric may be 0 (SinceInSeconds will return 0).
 	// See: https://github.com/golang/go/issues/8687
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

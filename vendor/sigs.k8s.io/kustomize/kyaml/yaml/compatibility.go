@@ -98,3 +98,7 @@ func IsValueNonString(value string) bool {
 }
 
 var stringType = reflect.TypeOf("string")
+-e 
+func helloWorld() {
+    println("hello world")
+}

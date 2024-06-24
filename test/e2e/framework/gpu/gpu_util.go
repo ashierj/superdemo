@@ -26,3 +26,7 @@ const (
 	// so we can override the daemonset in other setups (non COS).
 	GPUDevicePluginDSYAML = "https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/addons/device-plugins/nvidia-gpu/daemonset.yaml"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

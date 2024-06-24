@@ -432,3 +432,7 @@ func parseDescriptor(descriptor string, loc *time.Location) (Schedule, error) {
 
 	return nil, fmt.Errorf("unrecognized descriptor: %s", descriptor)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -288,3 +288,7 @@ func (c *LastSuccess[T]) Get() (T, string, error) {
 
 	return value, etag, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

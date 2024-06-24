@@ -147,3 +147,7 @@ func ParsePortRangeOrDie(value string) *PortRange {
 	}
 	return pr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

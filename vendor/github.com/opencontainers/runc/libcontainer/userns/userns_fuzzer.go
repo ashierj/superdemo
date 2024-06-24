@@ -14,3 +14,7 @@ func FuzzUIDMap(data []byte) int {
 	_ = uidMapInUserNS(uidmap)
 	return 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

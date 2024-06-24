@@ -1039,3 +1039,7 @@ func grYAMLString(gr schema.GroupResource) string {
 
 	return gr.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

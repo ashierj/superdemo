@@ -106,3 +106,7 @@ func (a *ProtocolAuthenticator) AuthenticateRequest(req *http.Request) (*authent
 
 	return resp, ok, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

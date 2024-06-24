@@ -254,3 +254,7 @@ func (c *testTypes) ApplyStatus(ctx context.Context, testType *example2v1.TestTy
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

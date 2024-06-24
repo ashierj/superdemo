@@ -142,3 +142,7 @@ func (s SortableRuleSlice) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 func (s SortableRuleSlice) Less(i, j int) bool {
 	return strings.Compare(s[i].String(), s[j].String()) < 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -13,3 +13,7 @@ type ProcessorTopology struct {
 	LogicalProcessorCount uint32             `json:"LogicalProcessorCount,omitempty"`
 	LogicalProcessors     []LogicalProcessor `json:"LogicalProcessors,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

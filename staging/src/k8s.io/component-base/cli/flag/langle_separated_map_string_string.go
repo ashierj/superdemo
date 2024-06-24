@@ -80,3 +80,7 @@ func (*LangleSeparatedMapStringString) Type() string {
 func (m *LangleSeparatedMapStringString) Empty() bool {
 	return len(*m.Map) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -278,3 +278,7 @@ func LlistxattrNS(link string, nsid int, dest []byte) (sz int, err error) {
 
 	return s, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

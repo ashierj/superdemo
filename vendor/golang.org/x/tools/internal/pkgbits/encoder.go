@@ -381,3 +381,7 @@ func (w *Encoder) bigFloat(v *big.Float) {
 	b := v.Append(nil, 'p', -1)
 	w.String(string(b)) // TODO: More efficient encoding.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

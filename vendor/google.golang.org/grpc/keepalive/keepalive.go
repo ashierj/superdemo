@@ -83,3 +83,7 @@ type EnforcementPolicy struct {
 	// streams, server will send GOAWAY and close the connection.
 	PermitWithoutStream bool // false by default.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

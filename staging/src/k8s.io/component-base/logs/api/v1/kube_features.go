@@ -70,3 +70,7 @@ func featureGates() map[featuregate.Feature]featuregate.FeatureSpec {
 func AddFeatureGates(mutableFeatureGate featuregate.MutableFeatureGate) error {
 	return mutableFeatureGate.Add(featureGates())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

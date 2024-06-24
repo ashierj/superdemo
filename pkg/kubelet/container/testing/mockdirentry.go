@@ -105,3 +105,7 @@ func (mr *MockDirEntryMockRecorder) Type() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Type", reflect.TypeOf((*MockDirEntry)(nil).Type))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

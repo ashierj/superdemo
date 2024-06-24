@@ -54,3 +54,7 @@ func NewProcessCollector(opts ProcessCollectorOpts) prometheus.Collector {
 		ReportErrors: opts.ReportErrors,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

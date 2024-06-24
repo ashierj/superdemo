@@ -17,3 +17,7 @@ func setReusePort(network, address string, c syscall.RawConn) error {
 func setReuseAddress(network, addr string, conn syscall.RawConn) error {
 	return fmt.Errorf("address reuse is not supported on Windows")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

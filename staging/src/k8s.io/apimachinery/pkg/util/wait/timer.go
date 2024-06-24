@@ -119,3 +119,7 @@ var (
 	// internalClock is used for test injection of clocks
 	internalClock = clock.RealClock{}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

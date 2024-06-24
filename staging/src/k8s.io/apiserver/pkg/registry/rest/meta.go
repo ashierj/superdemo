@@ -79,3 +79,7 @@ func ExpectedNamespaceForResource(requestNamespace string, resource schema.Group
 	}
 	return requestNamespace
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

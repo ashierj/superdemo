@@ -56,3 +56,7 @@ func (rl *ResourceList) Name(name ResourceName, defaultFormat resource.Format) *
 	}
 	return &resource.Quantity{Format: defaultFormat}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

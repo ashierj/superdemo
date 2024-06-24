@@ -84,3 +84,7 @@ func Duration(name string, value time.Duration, usage string) *time.Duration {
 func DurationP(name, shorthand string, value time.Duration, usage string) *time.Duration {
 	return CommandLine.DurationP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

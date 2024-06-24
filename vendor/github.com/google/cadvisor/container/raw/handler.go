@@ -302,3 +302,7 @@ func (n *fsNamer) DeviceName(major, minor uint64) (string, bool) {
 	}
 	return n.info.DeviceName(major, minor)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

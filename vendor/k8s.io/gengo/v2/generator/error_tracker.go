@@ -48,3 +48,7 @@ func (et *ErrorTracker) Write(p []byte) (n int, err error) {
 func (et *ErrorTracker) Error() error {
 	return et.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

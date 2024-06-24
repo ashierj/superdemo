@@ -76,3 +76,7 @@ func fieldPath(pod *v1.Pod, container *v1.Container) (string, error) {
 	}
 	return "", fmt.Errorf("container %q not found in pod %s/%s", container.Name, pod.Namespace, pod.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

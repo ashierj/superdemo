@@ -218,3 +218,7 @@ func getTPUParentName(project, zone string) string {
 func getTPUName(project, zone, name string) string {
 	return fmt.Sprintf("projects/%s/locations/%s/nodes/%s", project, zone, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

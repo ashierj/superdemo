@@ -316,3 +316,7 @@ func credsCheck(secrets map[string]string, secretVal string) (bool, error) {
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

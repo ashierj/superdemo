@@ -43,3 +43,7 @@ type SingleProjectRouter struct {
 func (r *SingleProjectRouter) ProjectID(ctx context.Context, version meta.Version, service string) string {
 	return r.ID
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

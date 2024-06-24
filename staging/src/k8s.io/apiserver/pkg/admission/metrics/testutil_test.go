@@ -114,3 +114,7 @@ func expectCounterValue(t *testing.T, name string, labelFilter map[string]string
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

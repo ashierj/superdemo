@@ -206,3 +206,7 @@ func (c *leases) Apply(ctx context.Context, lease *coordinationv1beta1.LeaseAppl
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

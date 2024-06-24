@@ -119,3 +119,7 @@ func validateEmbeddedResource(pth *field.Path, x map[string]interface{}, s *stru
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

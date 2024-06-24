@@ -140,3 +140,7 @@ func (ms MembersByPeerURLs) Less(i, j int) bool {
 	return ms[i].PeerURLs[0] < ms[j].PeerURLs[0]
 }
 func (ms MembersByPeerURLs) Swap(i, j int) { ms[i], ms[j] = ms[j], ms[i] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

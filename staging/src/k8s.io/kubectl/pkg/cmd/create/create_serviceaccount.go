@@ -200,3 +200,7 @@ func (o *ServiceAccountOpts) createServiceAccount() (*corev1.ServiceAccount, err
 	serviceAccount.Name = o.Name
 	return serviceAccount, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

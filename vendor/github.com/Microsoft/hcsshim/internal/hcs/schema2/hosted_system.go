@@ -14,3 +14,7 @@ type HostedSystem struct {
 
 	Container *Container `json:"Container,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

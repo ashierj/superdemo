@@ -1024,3 +1024,7 @@ func (cm *containerManagerImpl) UnprepareDynamicResources(pod *v1.Pod) error {
 func (cm *containerManagerImpl) PodMightNeedToUnprepareResources(UID types.UID) bool {
 	return cm.draManager.PodMightNeedToUnprepareResources(UID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

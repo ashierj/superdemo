@@ -258,3 +258,7 @@ func GetTargetNodeName(pod *v1.Pod) (string, error) {
 
 	return "", fmt.Errorf("no node name found for pod %s/%s", pod.Namespace, pod.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

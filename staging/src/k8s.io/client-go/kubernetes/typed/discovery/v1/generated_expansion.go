@@ -19,3 +19,7 @@ limitations under the License.
 package v1
 
 type EndpointSliceExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

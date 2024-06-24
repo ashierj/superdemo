@@ -51,3 +51,7 @@ func TestIntegrator(t *testing.T) {
 		t.Errorf("expected %#+v, got %#+v", e, results)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

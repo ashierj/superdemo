@@ -191,3 +191,7 @@ func (c CrossOriginResourceSharing) isValidAccessControlRequestHeader(header str
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

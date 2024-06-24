@@ -88,3 +88,7 @@ type FischerList struct {
 	// Items is a list of Fischers
 	Items []Fischer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

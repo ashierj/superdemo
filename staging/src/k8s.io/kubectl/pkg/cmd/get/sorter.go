@@ -421,3 +421,7 @@ func findJSONPathResults(parser *jsonpath.JSONPath, from runtime.Object) ([][]re
 	}
 	return parser.FindResults(reflect.ValueOf(from).Elem().Interface())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

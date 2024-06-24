@@ -41,3 +41,7 @@ func (e Error) Error() string {
 
 	return errName + ": " + e.Err.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

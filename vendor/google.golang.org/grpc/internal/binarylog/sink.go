@@ -168,3 +168,7 @@ func NewBufferedSink(o io.WriteCloser) Sink {
 		done:   make(chan struct{}),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

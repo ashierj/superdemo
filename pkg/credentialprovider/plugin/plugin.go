@@ -499,3 +499,7 @@ func mergeEnvVars(sysEnvVars, credProviderVars []string) []string {
 	mergedEnvVars = append(mergedEnvVars, credProviderVars...)
 	return mergedEnvVars
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

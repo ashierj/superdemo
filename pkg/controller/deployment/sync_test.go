@@ -592,3 +592,7 @@ func TestDeploymentController_cleanupDeploymentOrder(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

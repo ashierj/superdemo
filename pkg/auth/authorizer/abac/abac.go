@@ -277,3 +277,7 @@ func getVerbs(isReadOnly bool) []string {
 	}
 	return []string{"*"}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

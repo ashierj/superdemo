@@ -32,3 +32,7 @@ func CreateScratchLayer(ctx context.Context, path string, parentLayerPaths []str
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

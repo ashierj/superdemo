@@ -268,3 +268,7 @@ func (p *Profile) FilterSamplesByTag(focus, ignore TagMatch) (fm, im bool) {
 	p.Sample = samples
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

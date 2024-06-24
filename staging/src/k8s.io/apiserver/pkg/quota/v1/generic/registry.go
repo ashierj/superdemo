@@ -79,3 +79,7 @@ func evaluatorsList(input map[schema.GroupResource]quota.Evaluator) []quota.Eval
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

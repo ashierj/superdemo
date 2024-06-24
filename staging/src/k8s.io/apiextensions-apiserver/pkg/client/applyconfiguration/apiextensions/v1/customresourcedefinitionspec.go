@@ -91,3 +91,7 @@ func (b *CustomResourceDefinitionSpecApplyConfiguration) WithPreserveUnknownFiel
 	b.PreserveUnknownFields = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -206,3 +206,7 @@ func (c *Controller) syncStatus(serviceCIDR *networkingapiv1alpha1.ServiceCIDR) 
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

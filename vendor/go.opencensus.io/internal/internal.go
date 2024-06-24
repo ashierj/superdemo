@@ -35,3 +35,7 @@ var UserAgent = fmt.Sprintf("opencensus-go/%s", opencensus.Version())
 func MonotonicEndTime(start time.Time) time.Time {
 	return start.Add(time.Since(start))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

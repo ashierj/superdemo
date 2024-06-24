@@ -149,3 +149,7 @@ func projectedAllVolumeBasePod(podName string, secretName string, configMapName 
 
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

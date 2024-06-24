@@ -59,3 +59,7 @@ func (je *PathActions) Add(action DecodeAction, path ...interface{}) {
 	}
 	node.action = action
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -30,3 +30,7 @@ type GoCollectorOptions struct {
 	RuntimeMetricSumForHist    map[string]string
 	RuntimeMetricRules         []GoCollectorRule
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ var ma map[string]int = []int{0}
 func main() {
 	fmt.Println("hello, world!")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

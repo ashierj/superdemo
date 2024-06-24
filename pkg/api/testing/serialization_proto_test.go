@@ -249,3 +249,7 @@ func BenchmarkDecodeIntoProtobuf(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -173,3 +173,7 @@ func toKubeContainerResources(statusResources *runtimeapi.ContainerResources) *k
 	}
 	return cStatusResources
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

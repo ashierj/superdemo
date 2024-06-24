@@ -102,3 +102,7 @@ func OptionsUsageTemplate() string {
 
 {{flagsUsages .InheritedFlags}}{{end}}`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

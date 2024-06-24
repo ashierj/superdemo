@@ -39,3 +39,7 @@ func configTLS(config Config) *tls.Config {
 		// ClientAuth:   tls.RequireAndVerifyClientCert,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

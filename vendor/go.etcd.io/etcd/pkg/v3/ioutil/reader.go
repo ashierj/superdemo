@@ -38,3 +38,7 @@ func (r *limitedBufferReader) Read(p []byte) (n int, err error) {
 	}
 	return r.r.Read(np)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

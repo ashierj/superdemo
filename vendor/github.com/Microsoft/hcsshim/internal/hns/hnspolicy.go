@@ -107,3 +107,7 @@ type ACLPolicy struct {
 type Policy struct {
 	Type PolicyType `json:"Type"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

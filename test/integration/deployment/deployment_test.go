@@ -1305,3 +1305,7 @@ func TestReplicaSetOrphaningAndAdoptionWhenLabelsChange(t *testing.T) {
 		t.Fatalf("failed waiting for replicaset adoption by deployment %q to complete: %v", deploymentName, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

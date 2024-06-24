@@ -194,3 +194,7 @@ type CarpList struct {
 	// More info: http://kubernetes.io/docs/user-guide/carps
 	Items []Carp `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -316,3 +316,7 @@ func BytesValue(val string) (*wrappers.BytesValue, error) {
 	parsedVal, err := Bytes(val)
 	return &wrappers.BytesValue{Value: parsedVal}, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

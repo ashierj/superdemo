@@ -45,3 +45,7 @@ func NewSpecContext(suite *Suite) *specContext {
 func (sc *specContext) SpecReport() types.SpecReport {
 	return sc.suite.CurrentSpecReport()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

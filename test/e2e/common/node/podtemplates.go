@@ -231,3 +231,7 @@ func checkPodTemplateListQuantity(ctx context.Context, f *framework.Framework, l
 		return true, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

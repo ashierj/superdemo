@@ -101,3 +101,7 @@ func AddFromEnvFile(filePath string, addTo func(key, value string) error) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

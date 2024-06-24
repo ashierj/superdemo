@@ -541,3 +541,7 @@ func (o *EnvOptions) RunEnv() error {
 	}
 	return utilerrors.NewAggregate(allErrs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

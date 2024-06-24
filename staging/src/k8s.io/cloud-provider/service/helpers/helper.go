@@ -185,3 +185,7 @@ func ingressEqual(lhs, rhs *v1.LoadBalancerIngress) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -188,3 +188,7 @@ func serviceErrorHandler(s runtime.NegotiatedSerializer, serviceErr restful.Serv
 func (a *APIServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.FullHandlerChain.ServeHTTP(w, r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

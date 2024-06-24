@@ -130,3 +130,7 @@ func IsSet(fs *flag.FlagSet, name string) bool {
 	})
 	return set
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

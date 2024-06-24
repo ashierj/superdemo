@@ -737,3 +737,7 @@ func doTestCleanAndTeardown(plugin volume.VolumePlugin, podUID types.UID, testVo
 func hasPathSuffix(s, suffix string) bool {
 	return strings.HasSuffix(s, filepath.FromSlash(suffix))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

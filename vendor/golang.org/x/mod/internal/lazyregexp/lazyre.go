@@ -76,3 +76,7 @@ func New(str string) *Regexp {
 	}
 	return lr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

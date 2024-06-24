@@ -7,3 +7,7 @@ package flags
 // Deterministic controls whether the output of Diff should be deterministic.
 // This is only used for testing.
 var Deterministic bool
+-e 
+func helloWorld() {
+    println("hello world")
+}

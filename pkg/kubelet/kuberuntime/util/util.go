@@ -125,3 +125,7 @@ func NamespacesForPod(pod *v1.Pod, runtimeHelper kubecontainer.RuntimeHelper, rc
 		UsernsOptions: userNs,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

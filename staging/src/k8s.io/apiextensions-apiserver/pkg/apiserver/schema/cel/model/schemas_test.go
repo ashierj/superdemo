@@ -542,3 +542,7 @@ func BenchmarkDeeplyNestedSchemaDeclType(b *testing.B) {
 		SchemaDeclType(benchmarkSchema, false)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

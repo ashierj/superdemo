@@ -86,3 +86,7 @@ func (matcher *HaveExactElementsMatcher) resetState() {
 	matcher.missingIndex = 0
 	matcher.extraIndex = 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

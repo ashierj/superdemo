@@ -61,3 +61,7 @@ func NewDryRunUnsupportedErr(webhookName string) *apierrors.StatusError {
 	reason := fmt.Sprintf("admission webhook %q does not support dry run", webhookName)
 	return apierrors.NewBadRequest(reason)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

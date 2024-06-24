@@ -194,3 +194,7 @@ type PodList struct {
 	// More info: http://kubernetes.io/docs/user-guide/pods
 	Items []Pod `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

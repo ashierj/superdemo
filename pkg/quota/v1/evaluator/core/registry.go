@@ -47,3 +47,7 @@ func NewEvaluators(f quota.ListerForResourceFunc) []quota.Evaluator {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

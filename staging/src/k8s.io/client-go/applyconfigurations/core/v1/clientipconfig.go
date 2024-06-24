@@ -37,3 +37,7 @@ func (b *ClientIPConfigApplyConfiguration) WithTimeoutSeconds(value int32) *Clie
 	b.TimeoutSeconds = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

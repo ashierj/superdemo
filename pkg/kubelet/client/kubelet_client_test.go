@@ -120,3 +120,7 @@ func TestMakeInsecureTransport(t *testing.T) {
 		t.Fatal(string(dump))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -158,3 +158,7 @@ func (c *FakeRoleBindings) Apply(ctx context.Context, roleBinding *rbacv1beta1.R
 	}
 	return obj.(*v1beta1.RoleBinding), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

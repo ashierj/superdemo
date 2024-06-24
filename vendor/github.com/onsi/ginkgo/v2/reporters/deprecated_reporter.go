@@ -147,3 +147,7 @@ func failureFor(spec types.SpecReport) types.DeprecatedSpecFailure {
 		ComponentCodeLocation: spec.Failure.FailureNodeLocation,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

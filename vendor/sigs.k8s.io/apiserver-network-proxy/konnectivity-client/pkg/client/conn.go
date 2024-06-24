@@ -155,3 +155,7 @@ func (c *conn) Close() error {
 
 	return errConnCloseTimeout
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

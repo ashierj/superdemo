@@ -1067,3 +1067,7 @@ func onePVCPod(filterName string) *v1.Pod {
 func splitPVCPod(filterName string) *v1.Pod {
 	return st.MakePod().PVC(fmt.Sprintf("someNon%sVol", filterName)).PVC(fmt.Sprintf("some%sVol", filterName)).Obj()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

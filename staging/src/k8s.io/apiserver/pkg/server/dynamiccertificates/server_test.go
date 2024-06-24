@@ -218,3 +218,7 @@ func (c *nullCAContent) CurrentCABundleContent() (cabundle []byte) {
 func (c *nullCAContent) VerifyOptions() (x509.VerifyOptions, bool) {
 	return x509.VerifyOptions{}, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

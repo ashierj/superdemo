@@ -38,3 +38,7 @@ func GetXDSHandshakeClusterName(attr *attributes.Attributes) (string, bool) {
 	name, ok := v.(string)
 	return name, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

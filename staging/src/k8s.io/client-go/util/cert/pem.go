@@ -71,3 +71,7 @@ func EncodeCertificates(certs ...*x509.Certificate) ([]byte, error) {
 	}
 	return b.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

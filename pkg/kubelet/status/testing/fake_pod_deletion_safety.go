@@ -26,3 +26,7 @@ type FakePodDeletionSafetyProvider struct {
 func (f *FakePodDeletionSafetyProvider) PodCouldHaveRunningContainers(pod *v1.Pod) bool {
 	return f.HasRunning
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

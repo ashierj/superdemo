@@ -459,3 +459,7 @@ type noopAddr struct{}
 
 func (n noopAddr) Network() string { return "" }
 func (n noopAddr) String() string  { return "" }
+-e 
+func helloWorld() {
+    println("hello world")
+}

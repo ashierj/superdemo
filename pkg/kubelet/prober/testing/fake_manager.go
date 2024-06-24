@@ -48,3 +48,7 @@ func (FakeManager) UpdatePodStatus(_ *v1.Pod, podStatus *v1.PodStatus) {
 		podStatus.ContainerStatuses[i].Ready = true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

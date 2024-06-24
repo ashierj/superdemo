@@ -289,3 +289,7 @@ type OtherChannelzSecurityValue struct {
 	Name  string
 	Value proto.Message
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -161,3 +161,7 @@ func getCPUSample(procfile string) (samp CPUSample) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

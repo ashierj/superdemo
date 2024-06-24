@@ -407,3 +407,7 @@ func NewVolTypeMap(types ...TestVolType) map[TestVolType]bool {
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

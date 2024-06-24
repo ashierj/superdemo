@@ -6608,3 +6608,7 @@ func schema_k8sio_apimachinery_pkg_version_Info(ref common.ReferenceCallback) co
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -206,3 +206,7 @@ func (c *events) Apply(ctx context.Context, event *eventsv1.EventApplyConfigurat
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -388,3 +388,7 @@ func expectPodSuccess(ctx context.Context, f *framework.Framework, pod *v1.Pod) 
 	framework.ExpectNoError(e2epod.WaitForPodSuccessInNamespace(
 		ctx, f.ClientSet, pod.Name, f.Namespace.Name))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

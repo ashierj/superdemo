@@ -107,3 +107,7 @@ func healthCheck(client *http.Client, url string) bool {
 	}
 	return err == nil && resp.StatusCode == http.StatusOK
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

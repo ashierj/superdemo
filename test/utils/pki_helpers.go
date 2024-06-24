@@ -85,3 +85,7 @@ func NewSignedCert(cfg *certutil.Config, key crypto.Signer, caCert *x509.Certifi
 	}
 	return x509.ParseCertificate(certDERBytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

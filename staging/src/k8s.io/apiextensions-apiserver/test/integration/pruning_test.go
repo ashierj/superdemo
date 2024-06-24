@@ -602,3 +602,7 @@ embeddedNested:
 		t.Errorf("unexpected diff: %s", cmp.Diff(expected, x))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

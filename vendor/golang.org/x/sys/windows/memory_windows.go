@@ -46,3 +46,7 @@ type MemoryBasicInformation struct {
 	Protect           uint32
 	Type              uint32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

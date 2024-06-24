@@ -34,3 +34,7 @@ func RecommendedDefaultCronJobControllerConfiguration(obj *kubectrlmgrconfigv1al
 		obj.ConcurrentCronJobSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

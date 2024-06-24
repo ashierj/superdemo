@@ -108,3 +108,7 @@ func bytesForGV(t *testing.T, gvPath string) []byte {
 	require.NoError(t, err)
 	return gvBytes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

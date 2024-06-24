@@ -68,3 +68,7 @@ func (t *NvidiaGPUUpgradeTest) Test(ctx context.Context, f *framework.Framework,
 func (t *NvidiaGPUUpgradeTest) Teardown(ctx context.Context, f *framework.Framework) {
 	// rely on the namespace deletion to clean up everything
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

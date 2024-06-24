@@ -22,3 +22,7 @@ limitations under the License.
 
 // Package v1alpha1 is the v1alpha1 version of the metrics API.
 package v1alpha1 // import "k8s.io/metrics/pkg/apis/metrics/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

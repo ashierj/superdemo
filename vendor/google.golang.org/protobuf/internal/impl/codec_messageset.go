@@ -121,3 +121,7 @@ func unmarshalMessageSet(mi *MessageInfo, b []byte, p pointer, opts unmarshalOpt
 	out.initialized = initialized
 	return out, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

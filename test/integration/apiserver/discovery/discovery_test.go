@@ -1021,3 +1021,7 @@ func makeCRDSpec(group string, kind string, namespaced bool, versions []string, 
 	}
 	return res
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

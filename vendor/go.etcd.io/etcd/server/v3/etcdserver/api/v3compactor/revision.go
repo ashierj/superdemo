@@ -128,3 +128,7 @@ func (rc *Revision) Resume() {
 	rc.paused = false
 	rc.mu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

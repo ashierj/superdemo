@@ -27,3 +27,7 @@ var (
 	jsonStructType    = reflect.TypeOf(&structpb.Struct{})
 	jsonNullType      = reflect.TypeOf(structpb.NullValue_NULL_VALUE)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

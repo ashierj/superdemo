@@ -50,3 +50,7 @@ func (m_i *Message) less(m_j *Message) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

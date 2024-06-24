@@ -247,3 +247,7 @@ func (b *LeaseApplyConfiguration) WithSpec(value *LeaseSpecApplyConfiguration) *
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

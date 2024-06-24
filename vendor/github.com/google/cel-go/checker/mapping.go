@@ -47,3 +47,7 @@ func (m *mapping) copy() *mapping {
 	}
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

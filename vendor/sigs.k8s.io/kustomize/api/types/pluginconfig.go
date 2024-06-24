@@ -45,3 +45,7 @@ func MakePluginConfig(pr PluginRestrictions,
 		BpLoadingOptions:   b,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

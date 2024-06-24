@@ -1182,3 +1182,7 @@ func verifyList(b []byte, expectedList []interface{}) {
 		framework.Failf("Expected list %s, got %s", expectedList, listString)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

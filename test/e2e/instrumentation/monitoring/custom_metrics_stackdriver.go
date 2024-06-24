@@ -284,3 +284,7 @@ func createSDExporterPods(ctx context.Context, f *framework.Framework, cs client
 	_, err = cs.CoreV1().Pods(f.Namespace.Name).Create(ctx, StackdriverExporterPod(stackdriverExporterPod2, f.Namespace.Name, stackdriverExporterLabel, UnusedMetricName, UnusedMetricValue), metav1.CreateOptions{})
 	return pod, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -165,3 +165,7 @@ func newTestPath(t *testing.T) string {
 	}
 	return path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

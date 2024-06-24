@@ -375,3 +375,7 @@ func (c readyOnChanClose) Check(_ *http.Request) error {
 	}
 	return fmt.Errorf("the provided channel hasn't been closed")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

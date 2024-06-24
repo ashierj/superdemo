@@ -362,3 +362,7 @@ func (spc *StatefulPodControl) createPersistentVolumeClaims(set *apps.StatefulSe
 	}
 	return errorutils.NewAggregate(errs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

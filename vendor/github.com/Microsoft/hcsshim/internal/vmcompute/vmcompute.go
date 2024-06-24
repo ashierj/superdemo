@@ -608,3 +608,7 @@ func HcsSaveComputeSystem(ctx gcontext.Context, computeSystem HcsSystem, options
 		return err
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

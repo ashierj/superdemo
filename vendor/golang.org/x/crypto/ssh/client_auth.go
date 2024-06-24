@@ -777,3 +777,7 @@ func (g *gssAPIWithMICCallback) auth(session []byte, user string, c packetConn, 
 func (g *gssAPIWithMICCallback) method() string {
 	return "gssapi-with-mic"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

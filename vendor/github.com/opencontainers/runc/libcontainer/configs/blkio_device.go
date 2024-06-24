@@ -64,3 +64,7 @@ func (td *ThrottleDevice) String() string {
 func (td *ThrottleDevice) StringName(name string) string {
 	return fmt.Sprintf("%d:%d %s=%d", td.Major, td.Minor, name, td.Rate)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

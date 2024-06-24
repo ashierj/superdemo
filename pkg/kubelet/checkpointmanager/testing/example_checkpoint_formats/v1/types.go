@@ -63,3 +63,7 @@ func (cp *CheckpointData) UnmarshalCheckpoint(blob []byte) error {
 func (cp *CheckpointData) VerifyChecksum() error {
 	return cp.Checksum.Verify(*cp.Data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

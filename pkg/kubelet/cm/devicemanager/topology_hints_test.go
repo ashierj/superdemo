@@ -1686,3 +1686,7 @@ func getPodScopeTestCases() []topologyHintTestCase {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

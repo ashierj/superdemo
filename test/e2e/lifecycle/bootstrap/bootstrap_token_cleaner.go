@@ -86,3 +86,7 @@ var _ = lifecycle.SIGDescribe(feature.BootstrapTokens, func() {
 		framework.ExpectNoError(err)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

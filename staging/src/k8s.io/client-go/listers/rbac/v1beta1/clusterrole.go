@@ -46,3 +46,7 @@ type clusterRoleLister struct {
 func NewClusterRoleLister(indexer cache.Indexer) ClusterRoleLister {
 	return &clusterRoleLister{listers.New[*v1beta1.ClusterRole](indexer, v1beta1.Resource("clusterrole"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

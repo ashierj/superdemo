@@ -20,3 +20,7 @@ var ForTest int    // must be set as a LoadMode to call GetForTest
 
 var SetModFlag = func(config interface{}, value string) {}
 var SetModFile = func(config interface{}, value string) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

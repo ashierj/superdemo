@@ -21,3 +21,7 @@ var platformHostIDReader hostIDReader = &hostIDReaderBSD{
 	execCommand: execCommand,
 	readFile:    readFile,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

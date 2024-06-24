@@ -112,3 +112,7 @@ func csrSigningFilesValid(config csrsigningconfig.CSRSigningConfiguration) error
 
 	return fmt.Errorf("math broke")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

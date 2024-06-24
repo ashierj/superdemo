@@ -82,3 +82,7 @@ func (v Provenance) Short() string {
 func (v Provenance) Semver() string {
 	return strings.TrimPrefix(v.Version, "kustomize/")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

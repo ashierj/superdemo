@@ -68,3 +68,7 @@ type ResourceClaimTemplateNamespaceLister interface {
 type resourceClaimTemplateNamespaceLister struct {
 	listers.ResourceIndexer[*v1alpha2.ResourceClaimTemplate]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

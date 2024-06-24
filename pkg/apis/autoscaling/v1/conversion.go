@@ -565,3 +565,7 @@ func Convert_autoscaling_ContainerResourceMetricSource_To_v1_ContainerResourceMe
 	out.TargetAverageValue = in.Target.AverageValue
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

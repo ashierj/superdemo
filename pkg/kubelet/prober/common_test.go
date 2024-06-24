@@ -161,3 +161,7 @@ func (p *syncExecProber) Probe(cmd exec.Cmd) (probe.Result, string, error) {
 	defer p.RUnlock()
 	return p.fakeExecProber.Probe(cmd)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -191,3 +191,7 @@ const (
 	TypeCumulativeDistribution
 	TypeSummary
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

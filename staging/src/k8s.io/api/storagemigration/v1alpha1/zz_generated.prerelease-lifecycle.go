@@ -56,3 +56,7 @@ func (in *StorageVersionMigrationList) APILifecycleDeprecated() (major, minor in
 func (in *StorageVersionMigrationList) APILifecycleRemoved() (major, minor int) {
 	return 1, 36
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

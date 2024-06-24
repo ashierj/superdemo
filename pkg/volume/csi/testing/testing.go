@@ -81,3 +81,7 @@ func NewTestPlugin(t *testing.T, client *fakeclient.Clientset) (*volume.VolumePl
 
 	return plugMgr, &plug, tmpDir
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

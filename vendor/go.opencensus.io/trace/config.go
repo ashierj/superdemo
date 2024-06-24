@@ -84,3 +84,7 @@ func ApplyConfig(cfg Config) {
 	}
 	config.Store(&c)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

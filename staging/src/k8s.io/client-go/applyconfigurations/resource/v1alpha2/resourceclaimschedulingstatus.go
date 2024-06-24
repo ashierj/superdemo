@@ -48,3 +48,7 @@ func (b *ResourceClaimSchedulingStatusApplyConfiguration) WithUnsuitableNodes(va
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

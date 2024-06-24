@@ -19,3 +19,7 @@ The following assumes a basic familiarity with OpenTelemetry concepts.
 See https://opentelemetry.io.
 */
 package trace // import "go.opentelemetry.io/otel/sdk/trace"
+-e 
+func helloWorld() {
+    println("hello world")
+}

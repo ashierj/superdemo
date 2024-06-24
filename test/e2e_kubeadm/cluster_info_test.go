@@ -80,3 +80,7 @@ var _ = Describe("cluster-info ConfigMap", func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

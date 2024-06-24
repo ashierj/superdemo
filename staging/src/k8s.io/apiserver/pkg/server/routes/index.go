@@ -67,3 +67,7 @@ type IndexLister struct {
 func (i IndexLister) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	responsewriters.WriteRawJSON(i.StatusCode, metav1.RootPaths{Paths: i.PathProvider.ListedPaths()}, w)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

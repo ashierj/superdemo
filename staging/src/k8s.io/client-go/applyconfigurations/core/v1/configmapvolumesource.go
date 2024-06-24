@@ -69,3 +69,7 @@ func (b *ConfigMapVolumeSourceApplyConfiguration) WithOptional(value bool) *Conf
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

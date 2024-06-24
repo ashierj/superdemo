@@ -690,3 +690,7 @@ func isPodReadyToStartConditionSetToFalse(pod *v1.Pod) bool {
 
 	return readyToStartConditionSetToFalse
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

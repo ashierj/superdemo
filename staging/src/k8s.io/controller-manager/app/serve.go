@@ -70,3 +70,7 @@ func NewBaseHandler(c *componentbaseconfig.DebuggingConfiguration, healthzHandle
 
 	return mux
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

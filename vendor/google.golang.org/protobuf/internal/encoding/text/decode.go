@@ -684,3 +684,7 @@ func isDelim(c byte) bool {
 		('A' <= c && c <= 'Z') ||
 		('0' <= c && c <= '9'))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

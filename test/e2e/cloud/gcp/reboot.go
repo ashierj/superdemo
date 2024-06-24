@@ -343,3 +343,7 @@ func dropPacketsScript(chainName, logPath string) string {
 		' >%v 2>&1 &
 		`, logPath), "${CHAIN}", chainName, -1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func watchErrorStream(errorStream io.Reader, d errorStreamDecoder) chan error {
 
 	return errorChan
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

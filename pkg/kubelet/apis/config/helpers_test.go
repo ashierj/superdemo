@@ -302,3 +302,7 @@ var (
 		"LocalStorageCapacityIsolation",
 	)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

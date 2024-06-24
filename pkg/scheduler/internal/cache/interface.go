@@ -121,3 +121,7 @@ type Dump struct {
 	AssumedPods sets.Set[string]
 	Nodes       map[string]*framework.NodeInfo
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

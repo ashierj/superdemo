@@ -54,3 +54,7 @@ func foldRune(r rune) rune {
 		r = r2
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

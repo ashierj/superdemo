@@ -71,3 +71,7 @@ func caseSensitiveJsonIterator() jsoniter.API {
 	config.RegisterExtension(&customNumberExtension{})
 	return config
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

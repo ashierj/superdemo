@@ -255,3 +255,7 @@ func HasVersionServed(crd *CustomResourceDefinition, version string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

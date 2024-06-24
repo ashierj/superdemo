@@ -78,3 +78,7 @@ func IsControllerEnabled(name string, disabledByDefaultControllers sets.String, 
 
 	return !disabledByDefaultControllers.Has(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

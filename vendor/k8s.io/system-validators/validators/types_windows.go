@@ -55,3 +55,7 @@ func (o *KernelValidatorHelperImpl) GetKernelReleaseVersion() (string, error) {
 	}
 	return strings.TrimSpace(string(releaseVersion)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

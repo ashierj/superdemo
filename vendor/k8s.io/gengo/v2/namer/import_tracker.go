@@ -119,3 +119,7 @@ func (tracker *DefaultImportTracker) PathOf(localName string) (string, bool) {
 	name, ok := tracker.nameToPath[localName]
 	return name, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

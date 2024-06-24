@@ -742,3 +742,7 @@ kubelet_running_pods 2
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

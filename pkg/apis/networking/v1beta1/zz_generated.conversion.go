@@ -676,3 +676,7 @@ func autoConvert_networking_IngressTLS_To_v1beta1_IngressTLS(in *networking.Ingr
 func Convert_networking_IngressTLS_To_v1beta1_IngressTLS(in *networking.IngressTLS, out *v1beta1.IngressTLS, s conversion.Scope) error {
 	return autoConvert_networking_IngressTLS_To_v1beta1_IngressTLS(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

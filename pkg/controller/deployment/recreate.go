@@ -130,3 +130,7 @@ func (dc *DeploymentController) scaleUpNewReplicaSetForRecreate(ctx context.Cont
 	scaled, _, err := dc.scaleReplicaSetAndRecordEvent(ctx, newRS, *(deployment.Spec.Replicas), deployment)
 	return scaled, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

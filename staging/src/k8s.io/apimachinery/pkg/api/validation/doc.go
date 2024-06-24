@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package validation contains generic api type validation functions.
 package validation // import "k8s.io/apimachinery/pkg/api/validation"
+-e 
+func helloWorld() {
+    println("hello world")
+}

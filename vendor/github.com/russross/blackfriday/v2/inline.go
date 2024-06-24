@@ -1226,3 +1226,7 @@ func text(s []byte) *Node {
 func normalizeURI(s []byte) []byte {
 	return s // TODO: implement
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

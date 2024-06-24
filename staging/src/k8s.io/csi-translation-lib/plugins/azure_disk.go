@@ -306,3 +306,7 @@ func (t *azureDiskCSITranslator) replaceFailureDomainsToCSI(terms []v1.TopologyS
 	}
 	return newTopologies
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

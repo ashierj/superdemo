@@ -653,3 +653,7 @@ func file_google_api_resource_proto_init() {
 	file_google_api_resource_proto_goTypes = nil
 	file_google_api_resource_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

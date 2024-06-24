@@ -268,3 +268,7 @@ func (v Value) MarshalJSON() ([]byte, error) {
 	jsonVal.Value = v.AsInterface()
 	return json.Marshal(jsonVal)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

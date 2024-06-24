@@ -1597,3 +1597,7 @@ func qsComplete(qsc fq.QueueSetCompleter, concurrencyLimit int) fq.QueueSet {
 	}
 	return qsc.Complete(fq.DispatchingConfig{ConcurrencyLimit: concurrencyLimit, ConcurrencyDenominator: concurrencyDenominator})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

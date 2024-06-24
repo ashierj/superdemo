@@ -60,3 +60,7 @@ func (r *monitor) ObserveMetricComputationResult(action ActionLabel, err ErrorLa
 	metricComputationTotal.WithLabelValues(string(action), string(err), string(metricType)).Inc()
 	metricComputationDuration.WithLabelValues(string(action), string(err), string(metricType)).Observe(duration.Seconds())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

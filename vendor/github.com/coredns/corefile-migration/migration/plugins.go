@@ -645,3 +645,7 @@ func breakForwardStubDomainsIntoServerBlocks(cf *corefile.Corefile) (*corefile.C
 	}
 	return cf, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

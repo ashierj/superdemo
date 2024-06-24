@@ -217,3 +217,7 @@ const (
 	SYS___SET_TCB      = 329 // { void sys___set_tcb(void *tcb); }
 	SYS___GET_TCB      = 330 // { void *sys___get_tcb(void); }
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

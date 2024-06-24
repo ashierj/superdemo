@@ -73,3 +73,7 @@ func NeverSample() Sampler {
 		return SamplingDecision{Sample: false}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

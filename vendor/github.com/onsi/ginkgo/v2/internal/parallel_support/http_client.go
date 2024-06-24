@@ -167,3 +167,7 @@ func (client *httpClient) Write(p []byte) (int, error) {
 	}
 	return len(p), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

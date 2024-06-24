@@ -1442,3 +1442,7 @@ func min(a, b int32) int32 {
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

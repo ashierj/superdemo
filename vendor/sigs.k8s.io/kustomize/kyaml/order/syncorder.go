@@ -119,3 +119,7 @@ func rearrangeHeadCommentOfSeqNode(node *yaml.Node) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -12,3 +12,7 @@ func (t *Transformer) isFinal() bool {
 	}
 	return t.state == ruleLTRFinal || t.state == ruleRTLFinal || t.state == ruleInitial
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

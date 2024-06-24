@@ -28,3 +28,7 @@ func TestLookupPtrToStruct(t *testing.T) {
 		t.Errorf("patchMergeKey = %v, want: %v", patchMergeKey, "key")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

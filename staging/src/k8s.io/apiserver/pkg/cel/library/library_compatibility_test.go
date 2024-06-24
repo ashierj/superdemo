@@ -64,3 +64,7 @@ func TestLibraryCompatibility(t *testing.T) {
 		t.Errorf("Expected all functions in the libraries to be assigned to a kubernetes release, but found the missing function names: %v", missing)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

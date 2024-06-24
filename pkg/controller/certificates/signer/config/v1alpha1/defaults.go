@@ -38,3 +38,7 @@ func RecommendedDefaultCSRSigningControllerConfiguration(obj *kubectrlmgrconfigv
 		obj.ClusterSigningDuration = metav1.Duration{Duration: 365 * 24 * time.Hour}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

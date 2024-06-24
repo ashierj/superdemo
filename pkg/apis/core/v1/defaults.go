@@ -490,3 +490,7 @@ func SetDefaults_HostPathVolumeSource(obj *v1.HostPathVolumeSource) {
 		obj.Type = &typeVol
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

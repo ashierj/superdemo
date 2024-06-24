@@ -131,3 +131,7 @@ func generateBootstrap(conf GeneratorsConfig) {
 
 	internal.GoFmt(targetFile)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

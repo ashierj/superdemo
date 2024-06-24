@@ -47,3 +47,7 @@ func RegisterMetrics() {
 		legacyregistry.MustRegister(graphActionsDuration)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -230,3 +230,7 @@ func getIntOrPercentValueSafely(intOrStr *IntOrString) (int, bool, error) {
 	}
 	return 0, false, fmt.Errorf("invalid type: neither int nor percentage")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

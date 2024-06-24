@@ -42,3 +42,7 @@ func (i *SimpleIntervalClock) Now() time.Time {
 func (i *SimpleIntervalClock) Since(ts time.Time) time.Duration {
 	return i.Time.Sub(ts)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

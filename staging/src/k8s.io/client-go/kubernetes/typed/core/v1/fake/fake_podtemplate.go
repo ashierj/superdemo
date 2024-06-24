@@ -158,3 +158,7 @@ func (c *FakePodTemplates) Apply(ctx context.Context, podTemplate *corev1.PodTem
 	}
 	return obj.(*v1.PodTemplate), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

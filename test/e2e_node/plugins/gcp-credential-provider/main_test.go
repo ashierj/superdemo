@@ -53,3 +53,7 @@ func Test_getCredentials(t *testing.T) {
 		t.Errorf("unexpected credential provider response")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

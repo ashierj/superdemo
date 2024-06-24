@@ -604,3 +604,7 @@ func getTokenRequest() *authenticationv1.TokenRequest {
 func getInt64Point(v int64) *int64 {
 	return &v
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -104,3 +104,7 @@ func ParseUnixRights(m *SocketControlMessage) ([]int, error) {
 	}
 	return fds, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

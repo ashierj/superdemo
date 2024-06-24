@@ -432,3 +432,7 @@ func TestGetPatchManagerForPathCache(t *testing.T) {
 		t.Logf("path %q was not cached, expected pointer: %p, got: %p", tempDir, pmOld, pmNew)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -164,3 +164,7 @@ func fuzzUpgradeConfiguration(obj *kubeadm.UpgradeConfiguration, c fuzz.Continue
 	obj.Node.CertificateRenewal = ptr.To(false)
 	kubeadm.SetDefaultTimeouts(&obj.Timeouts)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

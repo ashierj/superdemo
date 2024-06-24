@@ -362,3 +362,7 @@ func parseCSR(pemData []byte) (*x509.CertificateRequest, error) {
 	}
 	return x509.ParseCertificateRequest(block.Bytes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

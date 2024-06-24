@@ -88,3 +88,7 @@ func (f *cSIStorageCapacityInformer) Informer() cache.SharedIndexInformer {
 func (f *cSIStorageCapacityInformer) Lister() v1.CSIStorageCapacityLister {
 	return v1.NewCSIStorageCapacityLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

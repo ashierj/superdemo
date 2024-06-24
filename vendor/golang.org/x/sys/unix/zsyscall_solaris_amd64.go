@@ -2101,3 +2101,7 @@ func getmsg(fd int, clptr *strbuf, dataptr *strbuf, flags *int) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -679,3 +679,7 @@ func expectAllowed(t *testing.T, f func() error) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

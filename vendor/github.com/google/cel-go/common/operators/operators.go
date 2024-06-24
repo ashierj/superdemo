@@ -155,3 +155,7 @@ func Arity(symbol string) int {
 	}
 	return op.arity
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

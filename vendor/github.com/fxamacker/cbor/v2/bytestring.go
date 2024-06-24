@@ -61,3 +61,7 @@ func (bs *ByteString) UnmarshalCBOR(data []byte) error {
 	*bs = ByteString(b)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

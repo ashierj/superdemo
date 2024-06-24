@@ -67,3 +67,7 @@ func (any *nilAny) Parse() *Iterator {
 func (any *nilAny) GetInterface() interface{} {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

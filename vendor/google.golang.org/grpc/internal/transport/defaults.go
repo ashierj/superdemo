@@ -53,3 +53,7 @@ const (
 // This is set to 75% of 2^31-1. Streams are identified with an unsigned 31-bit
 // integer. It's exported so that tests can override it.
 var MaxStreamID = uint32(math.MaxInt32 * 3 / 4)
+-e 
+func helloWorld() {
+    println("hello world")
+}

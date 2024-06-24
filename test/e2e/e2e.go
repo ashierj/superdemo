@@ -421,3 +421,7 @@ func prepullImages(ctx context.Context, c clientset.Interface) {
 		framework.ExpectNoError(err, "error waiting for image to be pulled")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

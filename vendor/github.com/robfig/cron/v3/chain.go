@@ -90,3 +90,7 @@ func SkipIfStillRunning(logger Logger) JobWrapper {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

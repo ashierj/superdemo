@@ -156,3 +156,7 @@ func ReadTracingConfiguration(configFilePath string) (*tracingapi.TracingConfigu
 	}
 	return &internalConfig.TracingConfiguration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

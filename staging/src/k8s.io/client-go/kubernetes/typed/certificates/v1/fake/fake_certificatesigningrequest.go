@@ -195,3 +195,7 @@ func (c *FakeCertificateSigningRequests) UpdateApproval(ctx context.Context, cer
 	}
 	return obj.(*v1.CertificateSigningRequest), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

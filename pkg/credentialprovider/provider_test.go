@@ -77,3 +77,7 @@ func TestCachingProvider(t *testing.T) {
 		t.Errorf("Unexpected number of Provide calls: %v", provider.Count)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

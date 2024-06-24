@@ -761,3 +761,7 @@ func (c *$.type|privatePlural$) Apply(ctx context.Context, $.type|private$Name s
 	return
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -354,3 +354,7 @@ func addImportSpaces(r io.Reader, breaks []string) ([]byte, error) {
 	}
 	return out.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -381,3 +381,7 @@ func (g generation) equal(b generation) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

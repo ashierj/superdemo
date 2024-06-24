@@ -27,3 +27,7 @@ func dialWithDialer(ctx context.Context, dialer *net.Dialer, config *Config) (co
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

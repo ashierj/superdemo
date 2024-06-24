@@ -31,3 +31,7 @@ func Install(scheme *runtime.Scheme) {
 	utilruntime.Must(examplev1.AddToScheme(scheme))
 	utilruntime.Must(scheme.SetVersionPriority(examplev1.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

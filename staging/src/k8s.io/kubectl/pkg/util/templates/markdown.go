@@ -114,3 +114,7 @@ func (r *ASCIIRenderer) RenderHeader(w io.Writer, ast *blackfriday.Node) {
 func (r *ASCIIRenderer) RenderFooter(w io.Writer, ast *blackfriday.Node) {
 	io.WriteString(w, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

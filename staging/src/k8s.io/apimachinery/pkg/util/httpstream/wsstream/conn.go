@@ -450,3 +450,7 @@ func (p *websocketChannel) Read(data []byte) (int, error) {
 func (p *websocketChannel) Close() error {
 	return p.w.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

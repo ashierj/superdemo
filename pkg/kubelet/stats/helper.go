@@ -467,3 +467,7 @@ func makePodStorageStats(s *statsapi.PodStats, rootFsInfo *cadvisorapiv2.FsInfo,
 	}
 	s.EphemeralStorage = calcEphemeralStorage(s.Containers, ephemeralStats, rootFsInfo, logStats, etcHostsStats, isCRIStatsProvider)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

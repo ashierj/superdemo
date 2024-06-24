@@ -70,3 +70,7 @@ func expectNumEndpointsAndSlices(t *testing.T, c *Cache, desired int, actual int
 		t.Errorf("Expected numEndpoints to be %d, got %d", numEndpoints, c.numEndpoints)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

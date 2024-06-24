@@ -46,3 +46,7 @@ func (b *StorageVersionMigrationSpecApplyConfiguration) WithContinueToken(value 
 	b.ContinueToken = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

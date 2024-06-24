@@ -119,3 +119,7 @@ func (it *HandleIterator) Next(handle **Handle) bool {
 func (it *HandleIterator) Err() error {
 	return it.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

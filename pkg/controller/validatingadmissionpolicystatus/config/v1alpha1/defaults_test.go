@@ -29,3 +29,7 @@ func TestRecommendedDefaultValidatingAdmissionPolicyStatusControllerConfiguratio
 		t.Errorf("incorrect default value, expected 5 but got %v", config.ConcurrentPolicySyncs)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

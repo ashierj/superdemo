@@ -103,3 +103,7 @@ var encodings = [numEncodings]encoding.Encoding{
 	utf16le:           unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM),
 	xUserDefined:      charmap.XUserDefined,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

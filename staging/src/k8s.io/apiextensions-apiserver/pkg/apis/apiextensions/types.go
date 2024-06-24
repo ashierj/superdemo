@@ -445,3 +445,7 @@ type CustomResourceSubresourceScale struct {
 	// +optional
 	LabelSelectorPath *string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

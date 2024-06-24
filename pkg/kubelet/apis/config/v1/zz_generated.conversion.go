@@ -142,3 +142,7 @@ func autoConvert_config_ExecEnvVar_To_v1_ExecEnvVar(in *config.ExecEnvVar, out *
 func Convert_config_ExecEnvVar_To_v1_ExecEnvVar(in *config.ExecEnvVar, out *v1.ExecEnvVar, s conversion.Scope) error {
 	return autoConvert_config_ExecEnvVar_To_v1_ExecEnvVar(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

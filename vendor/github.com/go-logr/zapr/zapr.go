@@ -305,3 +305,7 @@ func DPanicOnBugs(enabled bool) Option {
 
 var _ logr.LogSink = &zapLogger{}
 var _ logr.CallDepthLogSink = &zapLogger{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

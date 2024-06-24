@@ -44,3 +44,7 @@ func RecommendedDefaultLegacySATokenCleanerConfiguration(obj *kubectrlmgrconfigv
 		obj.CleanUpPeriod = metav1.Duration{Duration: 365 * 24 * time.Hour}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

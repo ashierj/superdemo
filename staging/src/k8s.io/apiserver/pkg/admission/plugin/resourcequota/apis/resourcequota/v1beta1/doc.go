@@ -21,3 +21,7 @@ limitations under the License.
 
 // Package v1beta1 is the v1beta1 version of the API.
 package v1beta1 // import "k8s.io/apiserver/pkg/admission/plugin/resourcequota/apis/resourcequota/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

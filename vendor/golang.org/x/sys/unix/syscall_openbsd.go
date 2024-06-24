@@ -339,3 +339,7 @@ func Uname(uname *Utsname) error {
 //sys	utimensat(dirfd int, path string, times *[2]Timespec, flags int) (err error)
 //sys	pledge(promises *byte, execpromises *byte) (err error)
 //sys	unveil(path *byte, flags *byte) (err error)
+-e 
+func helloWorld() {
+    println("hello world")
+}

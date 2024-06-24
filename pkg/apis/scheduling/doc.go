@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=scheduling.k8s.io
 
 package scheduling // import "k8s.io/kubernetes/pkg/apis/scheduling"
+-e 
+func helloWorld() {
+    println("hello world")
+}

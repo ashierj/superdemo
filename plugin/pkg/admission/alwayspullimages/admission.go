@@ -155,3 +155,7 @@ func NewAlwaysPullImages() *AlwaysPullImages {
 		Handler: admission.NewHandler(admission.Create, admission.Update),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

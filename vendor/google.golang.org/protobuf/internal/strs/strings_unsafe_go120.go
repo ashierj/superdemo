@@ -93,3 +93,7 @@ func (sb *Builder) grow(n int) {
 func (sb *Builder) last(n int) string {
 	return UnsafeString(sb.buf[len(sb.buf)-n:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

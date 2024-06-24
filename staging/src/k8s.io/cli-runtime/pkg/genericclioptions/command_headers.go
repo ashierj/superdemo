@@ -92,3 +92,7 @@ func (c *CommandHeaderRoundTripper) CancelRequest(req *http.Request) {
 		cr.CancelRequest(req)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

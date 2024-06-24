@@ -145,3 +145,7 @@ type Watchable interface {
 	// watch events happened or happening on the KV.
 	NewWatchStream() WatchStream
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

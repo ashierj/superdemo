@@ -213,3 +213,7 @@ func (c *Plugin[H]) shouldIgnoreResource(attr admission.Attributes) bool {
 	gr := gvr.GroupResource()
 	return c.excludedResources.Has(gr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

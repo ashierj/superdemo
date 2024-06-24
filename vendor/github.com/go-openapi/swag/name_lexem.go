@@ -85,3 +85,7 @@ func (l *initialismNameLexem) IsInitialism() bool {
 func (l *casualNameLexem) IsInitialism() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

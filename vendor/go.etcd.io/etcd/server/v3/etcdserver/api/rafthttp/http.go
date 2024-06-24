@@ -529,3 +529,7 @@ func (n *closeNotifier) Close() error {
 }
 
 func (n *closeNotifier) closeNotify() <-chan struct{} { return n.done }
+-e 
+func helloWorld() {
+    println("hello world")
+}

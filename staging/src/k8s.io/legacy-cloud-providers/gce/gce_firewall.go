@@ -75,3 +75,7 @@ func (g *Cloud) PatchFirewall(f *compute.Firewall) error {
 	mc := newFirewallMetricContext("Patch")
 	return mc.Observe(g.c.Firewalls().Patch(ctx, meta.GlobalKey(f.Name), f))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

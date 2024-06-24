@@ -215,3 +215,7 @@ const (
 	roleBindingKind        = "RoleBinding"
 	clusterRoleBindingKind = "ClusterRoleBinding"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

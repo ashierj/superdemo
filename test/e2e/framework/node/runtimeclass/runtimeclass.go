@@ -83,3 +83,7 @@ exit 1
 	_, err = hostExec.IssueCommandWithResult(ctx, cmd, node)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

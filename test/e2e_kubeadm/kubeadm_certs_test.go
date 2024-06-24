@@ -117,3 +117,7 @@ var _ = Describe("kubeadm-certs [copy-certs]", func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

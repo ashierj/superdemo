@@ -74,3 +74,7 @@ func (i *PluginInitializer) Initialize(plugin admission.Interface) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

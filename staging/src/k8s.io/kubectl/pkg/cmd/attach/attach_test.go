@@ -588,3 +588,7 @@ func TestCreateExecutor(t *testing.T) {
 		t.Errorf("expected fallback executor, got %#v", executor)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

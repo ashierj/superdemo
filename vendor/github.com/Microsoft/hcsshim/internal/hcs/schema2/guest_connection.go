@@ -17,3 +17,7 @@ type GuestConnection struct {
 	//  Don't disconnect the guest connection when pausing the virtual machine.
 	UseConnectedSuspend bool `json:"UseConnectedSuspend,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

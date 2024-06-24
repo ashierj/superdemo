@@ -37,3 +37,7 @@ func (b *IPAddressSpecApplyConfiguration) WithParentRef(value *ParentReferenceAp
 	b.ParentRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

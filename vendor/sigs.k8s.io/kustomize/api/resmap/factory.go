@@ -143,3 +143,7 @@ func (rmF *Factory) NewResMapFromRNodeSlice(s []*yaml.RNode) (ResMap, error) {
 	}
 	return newResMapFromResourceSlice(rs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

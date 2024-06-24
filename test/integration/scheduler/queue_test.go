@@ -706,3 +706,7 @@ func (p *fakePermitPlugin) EventsToRegister() []framework.ClusterEventWithHint {
 		{Event: framework.ClusterEvent{Resource: framework.Node, ActionType: framework.UpdateNodeLabel}, QueueingHintFn: p.schedulingHint},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

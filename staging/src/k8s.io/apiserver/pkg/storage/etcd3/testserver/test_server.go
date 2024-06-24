@@ -124,3 +124,7 @@ func RunEtcd(t testing.TB, cfg *embed.Config) *clientv3.Client {
 	}
 	return client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

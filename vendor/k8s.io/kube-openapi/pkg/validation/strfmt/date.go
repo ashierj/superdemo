@@ -101,3 +101,7 @@ func (d *Date) DeepCopy() *Date {
 	d.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

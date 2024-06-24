@@ -253,3 +253,7 @@ func ValidateRoleBindingSubject(subject rbac.Subject, isNamespaced bool, fldPath
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

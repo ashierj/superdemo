@@ -219,3 +219,7 @@ func calcNSPidsList(nspidsString string) []uint64 {
 
 	return nspids
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -142,3 +142,7 @@ func streamXML(writer io.Writer, in *junitxml.JUnitTestSuites) error {
 	}
 	return encoder.Flush()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

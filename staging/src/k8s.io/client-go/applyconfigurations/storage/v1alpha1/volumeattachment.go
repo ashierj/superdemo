@@ -254,3 +254,7 @@ func (b *VolumeAttachmentApplyConfiguration) WithStatus(value *VolumeAttachmentS
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

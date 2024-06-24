@@ -87,3 +87,7 @@ func (b *DaemonSetSpecApplyConfiguration) WithRevisionHistoryLimit(value int32) 
 	b.RevisionHistoryLimit = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -75,3 +75,7 @@ func Unpin(pinnedPath string) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

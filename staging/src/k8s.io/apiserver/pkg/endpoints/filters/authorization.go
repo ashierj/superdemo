@@ -119,3 +119,7 @@ func GetAuthorizerAttributes(ctx context.Context) (authorizer.Attributes, error)
 
 	return &attribs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

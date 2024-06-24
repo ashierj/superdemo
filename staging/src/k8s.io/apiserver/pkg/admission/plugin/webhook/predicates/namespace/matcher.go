@@ -129,3 +129,7 @@ func (m *Matcher) MatchNamespaceSelector(p NamespaceSelectorProvider, attr admis
 	}
 	return selector.Matches(labels.Set(namespaceLabels)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

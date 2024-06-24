@@ -507,3 +507,7 @@ get the formatted result as a string.
 func Dump(a ...interface{}) {
 	fdump(&Config, os.Stdout, a...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

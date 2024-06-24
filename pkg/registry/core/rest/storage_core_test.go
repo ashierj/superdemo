@@ -55,3 +55,7 @@ func (f fakeStorageFactory) Backends() []storage.Backend {
 func (f fakeStorageFactory) Configs() []storagebackend.Config {
 	return []storagebackend.Config{{Transport: storagebackend.TransportConfig{ServerList: []string{"etcd-0"}}}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -190,3 +190,7 @@ func waitForDeploymentRevision(ctx context.Context, c clientset.Interface, d *ap
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

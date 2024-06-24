@@ -97,3 +97,7 @@ See 'kubectl completion -h' for help and examples`,
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

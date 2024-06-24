@@ -508,3 +508,7 @@ var _KeyManagementService_serviceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "api.proto",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func (d *lazyWithCore) Check(e Entry, ce *CheckedEntry) *CheckedEntry {
 	d.initOnce()
 	return d.Core.Check(e, ce)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

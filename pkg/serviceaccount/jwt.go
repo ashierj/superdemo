@@ -355,3 +355,7 @@ func (j *jwtTokenAuthenticator) hasCorrectIssuer(tokenData string) bool {
 	}
 	return j.issuers[claims.Issuer]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

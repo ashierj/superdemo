@@ -64,3 +64,7 @@ func (e *exactReadCloser) Close() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

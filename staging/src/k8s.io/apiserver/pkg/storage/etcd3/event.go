@@ -80,3 +80,7 @@ func progressNotifyEvent(rev int64) *event {
 		isProgressNotify: true,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

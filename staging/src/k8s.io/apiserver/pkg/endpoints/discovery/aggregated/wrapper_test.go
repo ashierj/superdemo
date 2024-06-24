@@ -112,3 +112,7 @@ func TestAggregationEnabled(t *testing.T) {
 		assert.Equal(t, tc.expected, body)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

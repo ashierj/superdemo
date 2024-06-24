@@ -148,3 +148,7 @@ func (c *completedStorageFactoryConfig) New() (*serverstorage.DefaultStorageFact
 	}
 	return storageFactory, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

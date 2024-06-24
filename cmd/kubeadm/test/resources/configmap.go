@@ -40,3 +40,7 @@ func (c *FakeConfigMap) Create(client clientset.Interface) error {
 		Data: c.Data,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

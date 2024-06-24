@@ -108,3 +108,7 @@ func (ipAddressStrategy) WarningsOnCreate(ctx context.Context, obj runtime.Objec
 func (ipAddressStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

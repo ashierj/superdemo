@@ -87,3 +87,7 @@ func (f *componentStatusInformer) Informer() cache.SharedIndexInformer {
 func (f *componentStatusInformer) Lister() v1.ComponentStatusLister {
 	return v1.NewComponentStatusLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -184,3 +184,7 @@ func stringify(rls []*metav1.APIResourceList) []string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

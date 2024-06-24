@@ -46,3 +46,7 @@ func (matcher *BeClosedMatcher) FailureMessage(actual interface{}) (message stri
 func (matcher *BeClosedMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "to be open")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

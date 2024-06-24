@@ -156,3 +156,7 @@ type Resources struct {
 	// methods may be relatively slow, thus this flag.
 	SkipFreezeOnSet bool `json:"-"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

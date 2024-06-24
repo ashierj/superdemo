@@ -72,3 +72,7 @@ func (m *MockCSIDriver) Close() {
 	m.conn.Close()
 	m.server.Stop()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -147,3 +147,7 @@ type KMSConfiguration struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

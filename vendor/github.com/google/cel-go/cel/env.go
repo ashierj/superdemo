@@ -879,3 +879,7 @@ var (
 	stdEnv     *Env
 	stdEnvErr  error
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func cloneRequest(r *http.Request) *http.Request {
 	}
 	return r2
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

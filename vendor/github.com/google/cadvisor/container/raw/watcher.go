@@ -241,3 +241,7 @@ func (w *rawContainerWatcher) processEvent(event *inotify.Event, events chan wat
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

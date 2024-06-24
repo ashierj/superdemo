@@ -132,3 +132,7 @@ func numLess(a, b reflect.Value) bool {
 	}
 	panic("not a number")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

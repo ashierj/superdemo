@@ -55,3 +55,7 @@ func (kl *Kubelet) defaultPodLimitsForDownwardAPI(pod *v1.Pod, container *v1.Con
 	}
 	return outputPod, outputContainer, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

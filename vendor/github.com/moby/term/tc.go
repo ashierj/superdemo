@@ -18,3 +18,7 @@ func tcget(fd uintptr) (*Termios, error) {
 func tcset(fd uintptr, p *Termios) error {
 	return unix.IoctlSetTermios(int(fd), setTermios, p)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

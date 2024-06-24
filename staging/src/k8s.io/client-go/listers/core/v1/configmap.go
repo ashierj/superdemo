@@ -68,3 +68,7 @@ type ConfigMapNamespaceLister interface {
 type configMapNamespaceLister struct {
 	listers.ResourceIndexer[*v1.ConfigMap]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

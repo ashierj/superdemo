@@ -17,3 +17,7 @@ limitations under the License.
 package storage
 
 // Keep CI happy; it is unhappy if a directory only contains tests
+-e 
+func helloWorld() {
+    println("hello world")
+}

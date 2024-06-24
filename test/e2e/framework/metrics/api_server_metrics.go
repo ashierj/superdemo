@@ -40,3 +40,7 @@ func parseAPIServerMetrics(data string) (APIServerMetrics, error) {
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

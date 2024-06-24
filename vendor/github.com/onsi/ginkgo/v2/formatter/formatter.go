@@ -228,3 +228,7 @@ func (f Formatter) style(s string) string {
 
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -254,3 +254,7 @@ func (b *NodeApplyConfiguration) WithStatus(value *NodeStatusApplyConfiguration)
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

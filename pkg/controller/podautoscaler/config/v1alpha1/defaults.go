@@ -59,3 +59,7 @@ func RecommendedDefaultHPAControllerConfiguration(obj *kubectrlmgrconfigv1alpha1
 		obj.HorizontalPodAutoscalerTolerance = 0.1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

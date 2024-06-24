@@ -44,3 +44,7 @@ func init() {
 	legacyregistry.MustRegister(regenerationCounter)
 	legacyregistry.MustRegister(regenerationDurationGauge)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

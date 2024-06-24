@@ -101,3 +101,7 @@ func addOrUpdateLabelsOnNode(kubeClient clientset.Interface, nodeName string, la
 		return nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

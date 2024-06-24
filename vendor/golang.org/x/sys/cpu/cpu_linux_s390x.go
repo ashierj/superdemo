@@ -38,3 +38,7 @@ func initS390Xbase() {
 		S390X.HasVXE = has(hwcap_VXE)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

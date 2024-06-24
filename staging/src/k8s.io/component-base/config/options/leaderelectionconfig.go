@@ -51,3 +51,7 @@ func BindLeaderElectionFlags(l *config.LeaderElectionConfiguration, fs *pflag.Fl
 		"The namespace of resource object that is used for locking during "+
 		"leader election.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

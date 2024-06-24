@@ -78,3 +78,7 @@ func TestSelectableFieldLabelConversionsOfKind(t *testing.T, apiVersion string, 
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

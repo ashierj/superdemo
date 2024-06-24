@@ -102,3 +102,7 @@ func (p *enumstringer) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewEnumStringer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -210,3 +210,7 @@ var _ = SIGDescribe("Kubectl logs", func() {
 	})
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

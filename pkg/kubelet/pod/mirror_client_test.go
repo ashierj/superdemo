@@ -156,3 +156,7 @@ func (f *fakeNodeGetter) Get(nodeName string) (*v1.Node, error) {
 	require.Equal(f.t, f.expectNodeName, nodeName)
 	return f.node, f.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

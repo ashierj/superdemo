@@ -341,3 +341,7 @@ func (s *Stream) closeRemoteChannels() {
 		close(s.closeChan)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

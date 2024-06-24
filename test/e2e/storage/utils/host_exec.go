@@ -195,3 +195,7 @@ func (h *hostExecutor) Cleanup(ctx context.Context) {
 	}
 	h.nodeExecPods = make(map[string]*v1.Pod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

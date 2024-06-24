@@ -56,3 +56,7 @@ func (field *safeField) Get(obj interface{}) interface{} {
 func (field *safeField) UnsafeGet(obj unsafe.Pointer) unsafe.Pointer {
 	panic("does not support unsafe operation")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

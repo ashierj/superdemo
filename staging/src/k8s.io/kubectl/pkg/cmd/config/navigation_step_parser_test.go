@@ -106,3 +106,7 @@ func (test stepParserTest) run(t *testing.T) {
 		t.Errorf("expected: %#v\n actual:   %#v", test.expectedNavigationSteps, *actualSteps)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

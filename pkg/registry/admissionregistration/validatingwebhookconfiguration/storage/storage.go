@@ -64,3 +64,7 @@ var _ rest.CategoriesProvider = &REST{}
 func (r *REST) Categories() []string {
 	return []string{"api-extensions"}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

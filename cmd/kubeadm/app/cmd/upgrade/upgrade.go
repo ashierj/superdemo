@@ -74,3 +74,7 @@ func addApplyPlanFlags(fs *pflag.FlagSet, flags *applyPlanFlags) {
 	options.AddFeatureGatesStringFlag(fs, &flags.featureGatesString)
 	options.AddIgnorePreflightErrorsFlag(fs, &flags.ignorePreflightErrors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

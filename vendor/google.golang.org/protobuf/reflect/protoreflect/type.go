@@ -664,3 +664,7 @@ type MethodDescriptors interface {
 
 	doNotImplement
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

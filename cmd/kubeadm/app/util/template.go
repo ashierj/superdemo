@@ -36,3 +36,7 @@ func ParseTemplate(strtmpl string, obj interface{}) ([]byte, error) {
 	}
 	return buf.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

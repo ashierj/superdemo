@@ -247,3 +247,7 @@ func waitForTLSBootstrappedClient(timeout time.Duration) error {
 			return (err == nil), nil
 		})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

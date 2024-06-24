@@ -167,3 +167,7 @@ func (s *Server) ServeConn(conn net.Conn) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

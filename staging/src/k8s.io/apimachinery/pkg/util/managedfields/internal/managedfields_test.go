@@ -518,3 +518,7 @@ func parseTimeOrPanic(s string) *metav1.Time {
 	}
 	return &metav1.Time{Time: t.UTC()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -546,3 +546,7 @@ func riscvHWProbe(pairs []RISCVHWProbePairs, cpuCount uintptr, cpus *CPUSet, fla
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

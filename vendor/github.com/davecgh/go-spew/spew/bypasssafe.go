@@ -36,3 +36,7 @@ const (
 func unsafeReflectValue(v reflect.Value) reflect.Value {
 	return v
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

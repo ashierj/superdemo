@@ -158,3 +158,7 @@ func (c *FakeEndpointSlices) Apply(ctx context.Context, endpointSlice *discovery
 	}
 	return obj.(*v1.EndpointSlice), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

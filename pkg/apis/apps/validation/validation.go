@@ -752,3 +752,7 @@ func ValidatePodTemplateSpecForReplicaSet(template *api.PodTemplateSpec, selecto
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

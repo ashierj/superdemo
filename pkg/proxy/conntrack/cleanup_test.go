@@ -261,3 +261,7 @@ func TestCleanStaleEntries(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

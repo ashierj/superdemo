@@ -256,3 +256,7 @@ func (b *PersistentVolumeClaimApplyConfiguration) WithStatus(value *PersistentVo
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

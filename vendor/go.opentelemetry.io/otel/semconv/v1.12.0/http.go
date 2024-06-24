@@ -112,3 +112,7 @@ func SpanStatusFromHTTPStatusCode(code int) (codes.Code, string) {
 func SpanStatusFromHTTPStatusCodeAndSpanKind(code int, spanKind trace.SpanKind) (codes.Code, string) {
 	return internal.SpanStatusFromHTTPStatusCodeAndSpanKind(code, spanKind)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

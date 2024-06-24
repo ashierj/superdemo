@@ -36,3 +36,7 @@ func (in *EphemeralVolumeControllerConfiguration) DeepCopy() *EphemeralVolumeCon
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -991,3 +991,7 @@ func TestMultiSinkCache(t *testing.T) {
 	sinkWatcher.Stop()
 	sinkWatcher2.Stop()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

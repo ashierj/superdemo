@@ -399,3 +399,7 @@ func autoConvert_authentication_UserInfo_To_v1_UserInfo(in *authentication.UserI
 	out.Extra = *(*map[string]v1.ExtraValue)(unsafe.Pointer(&in.Extra))
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

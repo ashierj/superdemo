@@ -43,3 +43,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 func (v *version) ClusterTrustBundles() ClusterTrustBundleInformer {
 	return &clusterTrustBundleInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

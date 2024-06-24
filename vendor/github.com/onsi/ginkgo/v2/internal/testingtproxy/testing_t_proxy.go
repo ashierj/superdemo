@@ -208,3 +208,7 @@ func (t *ginkgoTestingTProxy) ParallelTotal() int {
 func (t *ginkgoTestingTProxy) AttachProgressReporter(f func() string) func() {
 	return t.attachProgressReporter(f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

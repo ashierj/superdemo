@@ -527,3 +527,7 @@ func getContainer(pid int) (string, error) {
 
 	return cpu, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

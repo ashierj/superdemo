@@ -37,3 +37,7 @@ func (m *IgnoreMatcher) FailureMessage(_ interface{}) (message string) {
 func (m *IgnoreMatcher) NegatedFailureMessage(_ interface{}) (message string) {
 	return "Unconditional success"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

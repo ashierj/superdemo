@@ -1160,3 +1160,7 @@ func setRecAttr(m *configs.Mount, rootfs string) error {
 		return unix.MountSetattr(-1, procfd, unix.AT_RECURSIVE, m.RecAttr)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

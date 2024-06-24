@@ -95,3 +95,7 @@ func printModelDescriptionWithGenerator(
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

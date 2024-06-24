@@ -351,3 +351,7 @@ func (c *ctStateInvalidPacketsCollector) CollectWithStability(ch chan<- metrics.
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

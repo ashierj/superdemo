@@ -406,3 +406,7 @@ func initStoreData(ctx context.Context, store storage.Interface) ([]interface{},
 	}
 	return created, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

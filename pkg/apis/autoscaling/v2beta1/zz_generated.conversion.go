@@ -810,3 +810,7 @@ func autoConvert_autoscaling_ResourceMetricStatus_To_v2beta1_ResourceMetricStatu
 	// WARNING: in.Current requires manual conversion: does not exist in peer-type
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -213,3 +213,7 @@ func (m *atomicNilMessage) Init(mi *MessageInfo) *messageReflectWrapper {
 	atomic.CompareAndSwapPointer(&m.p, nil, (unsafe.Pointer)(w))
 	return (*messageReflectWrapper)(atomic.LoadPointer(&m.p))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

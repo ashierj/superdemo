@@ -65,3 +65,7 @@ func (b *Timeout) Next() time.Duration {
 	}
 	return b.current
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

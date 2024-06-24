@@ -23,3 +23,7 @@ func getHomeDir() string {
 	}
 	return "/"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

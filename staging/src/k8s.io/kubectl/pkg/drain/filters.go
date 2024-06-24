@@ -256,3 +256,7 @@ func (d *Helper) skipDeletedFilter(pod corev1.Pod) PodDeleteStatus {
 	}
 	return MakePodDeleteStatusOkay()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

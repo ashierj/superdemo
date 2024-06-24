@@ -37,3 +37,7 @@ import (
 	// tools like cpu
 	_ "go.uber.org/automaxprocs"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

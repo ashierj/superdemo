@@ -171,3 +171,7 @@ func Open(out, box []byte, nonce *[24]byte, key *[32]byte) ([]byte, bool) {
 
 	return ret, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -101,3 +101,7 @@ func toSelectableFields(class *resource.ResourceClassParameters) fields.Set {
 	fields := generic.ObjectMetaFieldsSet(&class.ObjectMeta, true)
 	return fields
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

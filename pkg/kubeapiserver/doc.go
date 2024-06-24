@@ -19,3 +19,7 @@ limitations under the License.
 // For instance, the non-delegated authorization options are used by those two
 // servers, but no generic API server is likely to use them.
 package kubeapiserver
+-e 
+func helloWorld() {
+    println("hello world")
+}

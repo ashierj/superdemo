@@ -1922,3 +1922,7 @@ func (fcomp *fcomp) ifelse(cond syntax.Expr, t, f *block) {
 	fcomp.expr(cond)
 	fcomp.condjump(CJMP, t, f)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

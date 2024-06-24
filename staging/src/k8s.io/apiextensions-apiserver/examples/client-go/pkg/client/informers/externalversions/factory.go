@@ -259,3 +259,7 @@ type SharedInformerFactory interface {
 func (f *sharedInformerFactory) Cr() cr.Interface {
 	return cr.New(f, f.namespace, f.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

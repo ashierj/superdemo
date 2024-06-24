@@ -70,3 +70,7 @@ func uint64FromEnv(envVar string, def, min, max uint64) uint64 {
 	}
 	return v
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

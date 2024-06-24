@@ -10,3 +10,7 @@ type CharStream interface {
 	GetTextFromTokens(start, end Token) string
 	GetTextFromInterval(Interval) string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -967,3 +967,7 @@ func (r *resolver) lookupLexical(use use, env *block) (bind *Binding) {
 	}
 	return bind
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

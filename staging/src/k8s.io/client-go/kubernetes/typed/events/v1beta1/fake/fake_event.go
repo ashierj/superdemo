@@ -158,3 +158,7 @@ func (c *FakeEvents) Apply(ctx context.Context, event *eventsv1beta1.EventApplyC
 	}
 	return obj.(*v1beta1.Event), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -129,3 +129,7 @@ func NormalizeName(val string) string {
 	}
 	return strings.Map(f, val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

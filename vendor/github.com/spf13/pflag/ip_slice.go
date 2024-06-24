@@ -184,3 +184,7 @@ func IPSlice(name string, value []net.IP, usage string) *[]net.IP {
 func IPSliceP(name, shorthand string, value []net.IP, usage string) *[]net.IP {
 	return CommandLine.IPSliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

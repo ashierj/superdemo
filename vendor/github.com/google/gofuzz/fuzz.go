@@ -603,3 +603,7 @@ func randString(r *rand.Rand) string {
 func randUint64(r *rand.Rand) uint64 {
 	return uint64(r.Uint32())<<32 | uint64(r.Uint32())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

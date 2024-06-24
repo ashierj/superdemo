@@ -129,3 +129,7 @@ type CertificateExpirationInfo struct {
 	// CertificateAuthorities holds a list of certificate authorities to show expiration information for.
 	CertificateAuthorities []Certificate `json:"certificateAuthorities"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

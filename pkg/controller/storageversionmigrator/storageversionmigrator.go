@@ -316,3 +316,7 @@ func (svmc *SVMController) sync(ctx context.Context, key string) error {
 	logger.V(4).Info("Finished syncing svm resource", "key", key, "gvr", gvr.String(), "elapsed", time.Since(startTime))
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

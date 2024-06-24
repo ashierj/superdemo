@@ -109,3 +109,7 @@ func (c *CordonHelper) PatchOrReplaceWithContext(clientCtx context.Context, clie
 	}
 	return err, patchErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

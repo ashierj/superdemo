@@ -209,3 +209,7 @@ func (hfsc *HfscClass) Attrs() *ClassAttrs {
 func (hfsc *HfscClass) Type() string {
 	return "hfsc"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

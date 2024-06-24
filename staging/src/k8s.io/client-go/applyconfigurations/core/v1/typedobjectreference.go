@@ -64,3 +64,7 @@ func (b *TypedObjectReferenceApplyConfiguration) WithNamespace(value string) *Ty
 	b.Namespace = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

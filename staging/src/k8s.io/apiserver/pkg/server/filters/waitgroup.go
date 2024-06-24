@@ -95,3 +95,7 @@ func waitGroupWriteRetryAfterToResponse(w http.ResponseWriter) {
 	w.WriteHeader(int(statusErr.Code))
 	fmt.Fprintln(w, runtime.EncodeOrDie(scheme.Codecs.LegacyCodec(v1.SchemeGroupVersion), &statusErr))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

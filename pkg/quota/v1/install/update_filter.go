@@ -44,3 +44,7 @@ func DefaultUpdateFilter() func(resource schema.GroupVersionResource, oldObj, ne
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

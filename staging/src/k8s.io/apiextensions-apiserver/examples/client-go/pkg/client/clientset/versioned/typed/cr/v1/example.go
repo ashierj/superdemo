@@ -206,3 +206,7 @@ func (c *examples) Apply(ctx context.Context, example *crv1.ExampleApplyConfigur
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

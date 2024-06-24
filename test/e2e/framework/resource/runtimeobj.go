@@ -137,3 +137,7 @@ func GetReplicasFromRuntimeObject(obj runtime.Object) (int32, error) {
 		return -1, fmt.Errorf("Unsupported kind when getting number of replicas: %v", obj)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

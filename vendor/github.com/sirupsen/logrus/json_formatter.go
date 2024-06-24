@@ -126,3 +126,7 @@ func (f *JSONFormatter) Format(entry *Entry) ([]byte, error) {
 
 	return b.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

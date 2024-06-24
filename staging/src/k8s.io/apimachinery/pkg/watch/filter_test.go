@@ -112,3 +112,7 @@ func TestRecorder(t *testing.T) {
 		t.Errorf("got %v, expected %v", recordedEvents, events)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

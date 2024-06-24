@@ -134,3 +134,7 @@ func (sw *StreamWatcher) receive() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

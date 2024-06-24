@@ -127,3 +127,7 @@ func getEtcdDataDir(manifestPath string, cfg *kubeadmapi.InitConfiguration) (str
 	}
 	return dataDir, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

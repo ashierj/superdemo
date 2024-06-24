@@ -132,3 +132,7 @@ func (wg *RateLimitedSafeWaitGroup) Wait(limiterFactory RateLimiterFactoryFunc) 
 	}()
 	return countNow, countAfter, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

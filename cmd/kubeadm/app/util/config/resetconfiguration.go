@@ -169,3 +169,7 @@ func DefaultedResetConfiguration(defaultversionedcfg *kubeadmapiv1.ResetConfigur
 
 	return internalcfg, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

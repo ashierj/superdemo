@@ -535,3 +535,7 @@ func parsePortRange(portRange string) (beginPort int, endPort int, err error) {
 }
 
 var _ = Interface(&runner{})
+-e 
+func helloWorld() {
+    println("hello world")
+}

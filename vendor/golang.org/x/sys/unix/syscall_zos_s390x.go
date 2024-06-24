@@ -1976,3 +1976,7 @@ func direntNamlen(buf []byte) (uint64, bool) {
 	}
 	return reclen - uint64(unsafe.Offsetof(Dirent{}.Name)), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

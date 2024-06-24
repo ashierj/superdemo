@@ -263,3 +263,7 @@ type CallSettings struct {
 	// Unexported so it cannot be changed by the code in an APICall.
 	timeout time.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

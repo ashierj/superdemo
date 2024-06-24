@@ -949,3 +949,7 @@ func TestStep(t *testing.T) {
 		t,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

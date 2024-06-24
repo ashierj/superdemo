@@ -152,3 +152,7 @@ func SetDefaults_ReplicaSet(obj *appsv1beta2.ReplicaSet) {
 		*obj.Spec.Replicas = 1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

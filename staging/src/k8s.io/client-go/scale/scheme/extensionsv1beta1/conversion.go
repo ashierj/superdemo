@@ -71,3 +71,7 @@ func Convert_v1beta1_ScaleStatus_To_scheme_ScaleStatus(in *v1beta1.ScaleStatus, 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

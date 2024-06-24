@@ -386,3 +386,7 @@ func init() {
 	// This prevents adding additional ad-hoc features in tests.
 	framework.ValidFeatures.Freeze()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

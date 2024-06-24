@@ -72,3 +72,7 @@ type Function struct {
 	Locals          []*Binding // this function's local/cell variables, parameters first
 	FreeVars        []*Binding // enclosing cells to capture in closure
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

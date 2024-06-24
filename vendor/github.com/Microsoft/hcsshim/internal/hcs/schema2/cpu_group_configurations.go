@@ -13,3 +13,7 @@ package hcsschema
 type CpuGroupConfigurations struct {
 	CpuGroups []CpuGroupConfig `json:"CpuGroups,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

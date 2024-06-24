@@ -367,3 +367,7 @@ func retryAfterResponseWithCodeAndDelay(code int, delay string) *http.Response {
 		Header:     http.Header{"Retry-After": []string{delay}},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

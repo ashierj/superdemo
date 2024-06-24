@@ -797,3 +797,7 @@ func checkApiServiceListQuantity(ctx context.Context, aggrclient *aggregatorclie
 		return true, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

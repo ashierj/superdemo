@@ -20,3 +20,7 @@
 // [ETW]: https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/event-tracing-for-windows--etw-
 // [Windows Image files]: https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/work-with-windows-images
 package winio
+-e 
+func helloWorld() {
+    println("hello world")
+}

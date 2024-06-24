@@ -54,3 +54,7 @@ func (ls *lockServer) Unlock(ctx context.Context, req *v3lockpb.UnlockRequest) (
 	}
 	return &v3lockpb.UnlockResponse{Header: resp.Header}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -128,3 +128,7 @@ func latencyBucketBounds(index int) (lower time.Duration, upper time.Duration) {
 	}
 	return defaultLatencies[index-1], defaultLatencies[index]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

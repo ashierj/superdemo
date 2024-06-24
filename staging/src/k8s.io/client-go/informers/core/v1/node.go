@@ -87,3 +87,7 @@ func (f *nodeInformer) Informer() cache.SharedIndexInformer {
 func (f *nodeInformer) Lister() v1.NodeLister {
 	return v1.NewNodeLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

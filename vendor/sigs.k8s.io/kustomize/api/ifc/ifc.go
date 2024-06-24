@@ -54,3 +54,7 @@ type KustHasher interface {
 
 // See core.v1.SecretTypeOpaque
 const SecretTypeOpaque = "Opaque"
+-e 
+func helloWorld() {
+    println("hello world")
+}

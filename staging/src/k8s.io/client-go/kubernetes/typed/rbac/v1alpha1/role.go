@@ -206,3 +206,7 @@ func (c *roles) Apply(ctx context.Context, role *rbacv1alpha1.RoleApplyConfigura
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

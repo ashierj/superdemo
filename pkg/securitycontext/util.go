@@ -234,3 +234,7 @@ func ConvertToRuntimeReadonlyPaths(opt *v1.ProcMountType) []string {
 	// Otherwise, add the default readonly paths to the runtime security context.
 	return defaultReadonlyPaths
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

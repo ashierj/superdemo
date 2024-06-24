@@ -379,3 +379,7 @@ func Setup(ctx context.Context, opts *options.Options, outOfTreeRegistryOptions 
 
 	return &cc, sched, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

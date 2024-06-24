@@ -1208,3 +1208,7 @@ func TestAddOrUpdateTaintOnNode(t *testing.T) {
 			test.name, test.requestCount, test.nodeHandler.RequestCount)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

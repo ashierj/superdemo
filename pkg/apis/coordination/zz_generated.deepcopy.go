@@ -123,3 +123,7 @@ func (in *LeaseSpec) DeepCopy() *LeaseSpec {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

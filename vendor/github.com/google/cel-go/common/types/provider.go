@@ -756,3 +756,7 @@ var (
 		protoreflect.StringKind:   StringType,
 	}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

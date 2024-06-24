@@ -42,3 +42,7 @@ func (b *NodeSelectorApplyConfiguration) WithNodeSelectorTerms(values ...*NodeSe
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

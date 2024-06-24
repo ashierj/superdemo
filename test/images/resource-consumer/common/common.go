@@ -38,3 +38,7 @@ const (
 	IncorrectFunctionArgument = "incorrect function argument"
 	NotGivenFunctionArgument  = "not given function argument"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

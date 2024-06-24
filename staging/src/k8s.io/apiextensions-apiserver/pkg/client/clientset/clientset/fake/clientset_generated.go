@@ -90,3 +90,7 @@ func (c *Clientset) ApiextensionsV1() apiextensionsv1.ApiextensionsV1Interface {
 func (c *Clientset) ApiextensionsV1beta1() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
 	return &fakeapiextensionsv1beta1.FakeApiextensionsV1beta1{Fake: &c.Fake}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

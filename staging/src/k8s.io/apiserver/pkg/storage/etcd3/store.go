@@ -1079,3 +1079,7 @@ func notFound(key string) clientv3.Cmp {
 func getTypeName(obj interface{}) string {
 	return reflect.TypeOf(obj).String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

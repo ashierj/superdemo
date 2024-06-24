@@ -21,3 +21,7 @@ type License struct {
 	Name string `json:"name,omitempty"`
 	URL  string `json:"url,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

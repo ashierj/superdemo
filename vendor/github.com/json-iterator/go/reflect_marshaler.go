@@ -223,3 +223,7 @@ func (decoder *textUnmarshalerDecoder) Decode(ptr unsafe.Pointer, iter *Iterator
 		iter.ReportError("textUnmarshalerDecoder", err.Error())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

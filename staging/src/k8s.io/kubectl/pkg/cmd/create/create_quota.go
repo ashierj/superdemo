@@ -266,3 +266,7 @@ func parseScopes(spec string) ([]corev1.ResourceQuotaScope, error) {
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

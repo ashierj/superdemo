@@ -177,3 +177,7 @@ func (i ErrorCode) String() string {
 		return "ErrorCode(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

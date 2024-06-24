@@ -44,3 +44,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 		configv1.SchemeGroupVersion,
 	))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

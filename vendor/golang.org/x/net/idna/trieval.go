@@ -117,3 +117,7 @@ func (c info) isModifier() bool {
 func (c info) isViramaModifier() bool {
 	return c&(attributesMask|catSmallMask) == viramaModifier
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

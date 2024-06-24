@@ -578,3 +578,7 @@ func setupSecretBinaryFile(data []byte) func(*testing.T, *CreateSecretOptions) f
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

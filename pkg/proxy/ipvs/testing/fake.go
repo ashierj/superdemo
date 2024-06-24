@@ -184,3 +184,7 @@ func (h *FakeNetlinkHandle) isValidForSet(ipString string) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

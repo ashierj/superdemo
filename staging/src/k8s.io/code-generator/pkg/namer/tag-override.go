@@ -57,3 +57,7 @@ func extractTag(key string, lines []string) string {
 
 	return val[0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

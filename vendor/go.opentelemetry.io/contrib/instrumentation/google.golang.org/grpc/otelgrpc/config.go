@@ -227,3 +227,7 @@ func (o spanStartOption) apply(c *config) {
 func WithSpanOptions(opts ...trace.SpanStartOption) Option {
 	return spanStartOption{opts}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

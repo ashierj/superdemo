@@ -368,3 +368,7 @@ func decodeBool(b *buffer, x *bool) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

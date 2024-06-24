@@ -61,3 +61,7 @@ func setDefaults(m protoreflect.Message) {
 		return true
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

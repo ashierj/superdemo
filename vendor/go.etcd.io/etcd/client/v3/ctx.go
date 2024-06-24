@@ -48,3 +48,7 @@ func withVersion(ctx context.Context) context.Context {
 	copied.Set(rpctypes.MetadataClientAPIVersionKey, version.APIVersion)
 	return metadata.NewOutgoingContext(ctx, copied)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

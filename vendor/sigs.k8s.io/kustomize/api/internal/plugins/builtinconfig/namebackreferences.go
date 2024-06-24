@@ -97,3 +97,7 @@ func (s nbrSlice) mergeOne(other NameBackReferences) (nbrSlice, error) {
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

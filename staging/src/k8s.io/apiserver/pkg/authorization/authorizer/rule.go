@@ -71,3 +71,7 @@ func (i *DefaultNonResourceRuleInfo) GetVerbs() []string {
 func (i *DefaultNonResourceRuleInfo) GetNonResourceURLs() []string {
 	return i.NonResourceURLs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

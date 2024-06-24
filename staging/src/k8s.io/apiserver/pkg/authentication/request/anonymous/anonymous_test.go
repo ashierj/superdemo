@@ -41,3 +41,7 @@ func TestAnonymous(t *testing.T) {
 		t.Fatalf("Expected group %s, got %v", user.AllUnauthenticated, r.User.GetGroups())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -54,3 +54,7 @@ func copyFile(source, dest string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

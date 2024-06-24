@@ -177,3 +177,7 @@ func (a *ATN) getExpectedTokens(stateNumber int, ctx RuleContext) *IntervalSet {
 
 	return expected
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

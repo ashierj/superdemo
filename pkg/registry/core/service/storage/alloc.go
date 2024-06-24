@@ -1102,3 +1102,7 @@ func familyOf(ip string) api.IPFamily {
 	}
 	return api.IPFamily("unknown")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

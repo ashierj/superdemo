@@ -186,3 +186,7 @@ func applyKubeletConfigPatches(kubeletBytes []byte, patchesDir string, output io
 	}
 	return kubeletBytes, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ type device struct {
 type containerEdits struct {
 	Env []string `json:"env,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

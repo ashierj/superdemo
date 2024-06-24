@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package clusterbootstrap // import "k8s.io/cluster-bootstrap"
+-e 
+func helloWorld() {
+    println("hello world")
+}

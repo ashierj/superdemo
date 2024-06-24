@@ -32,3 +32,7 @@ func getUserName() string {
 
 	return userName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

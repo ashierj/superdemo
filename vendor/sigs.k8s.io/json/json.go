@@ -148,3 +148,7 @@ type FieldError interface {
 	// SetFieldPath updates the path of the erroneous field output in the error message.
 	SetFieldPath(path string)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

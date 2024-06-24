@@ -630,3 +630,7 @@ func NotePriorityLevelConcurrencyAdjustment(priorityLevel string, seatDemandHWM,
 func SetFairFrac(fairFrac float64) {
 	apiserverFairFracs.Set(fairFrac)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

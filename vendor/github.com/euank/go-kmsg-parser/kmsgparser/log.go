@@ -53,3 +53,7 @@ func (s *StandardLogger) Errorf(fmt string, args ...interface{}) {
 	}
 	s.Logger.Printf("[INFO] "+fmt, args)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

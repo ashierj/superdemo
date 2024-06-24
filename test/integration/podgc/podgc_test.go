@@ -439,3 +439,7 @@ func setup(t *testing.T, name string) *testutils.TestContext {
 	go podgc.Run(testCtx.Ctx)
 	return testCtx
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

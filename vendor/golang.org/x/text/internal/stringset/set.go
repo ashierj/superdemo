@@ -84,3 +84,7 @@ func (b *Builder) Add(ss ...string) {
 		b.set.Index = append(b.set.Index, uint16(x))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

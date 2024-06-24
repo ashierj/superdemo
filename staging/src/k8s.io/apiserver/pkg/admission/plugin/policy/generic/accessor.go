@@ -40,3 +40,7 @@ type BindingAccessor interface {
 
 	GetMatchResources() *v1.MatchResources
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

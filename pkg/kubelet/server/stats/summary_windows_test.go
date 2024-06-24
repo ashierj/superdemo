@@ -119,3 +119,7 @@ func getPodStats() *statsapi.PodStats {
 
 	return &podStats
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

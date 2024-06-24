@@ -95,3 +95,7 @@ type GroupInstallPackage struct {
 	Group               Group
 	InstallPackageAlias string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

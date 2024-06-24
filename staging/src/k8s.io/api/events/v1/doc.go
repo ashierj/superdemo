@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=events.k8s.io
 
 package v1 // import "k8s.io/api/events/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

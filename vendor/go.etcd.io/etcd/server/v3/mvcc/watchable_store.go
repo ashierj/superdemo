@@ -576,3 +576,7 @@ func (w *watcher) send(wr WatchResponse) bool {
 		return false
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

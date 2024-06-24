@@ -37,3 +37,7 @@ func (b *ForZoneApplyConfiguration) WithName(value string) *ForZoneApplyConfigur
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

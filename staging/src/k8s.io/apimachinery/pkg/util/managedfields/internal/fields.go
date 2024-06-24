@@ -45,3 +45,7 @@ func SetToFields(s fieldpath.Set) (f metav1.FieldsV1, err error) {
 	f.Raw, err = s.ToJSON()
 	return f, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

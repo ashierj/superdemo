@@ -159,3 +159,7 @@ func getErrorCode(err error) string {
 
 	return st.Code().String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

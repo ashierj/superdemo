@@ -61,3 +61,7 @@ func activeHelpEnvVar(name string) string {
 	activeHelpEnvVar := strings.ToUpper(fmt.Sprintf("%s%s", name, activeHelpEnvVarSuffix))
 	return strings.ReplaceAll(activeHelpEnvVar, "-", "_")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

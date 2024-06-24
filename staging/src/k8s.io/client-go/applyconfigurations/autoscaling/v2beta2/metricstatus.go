@@ -86,3 +86,7 @@ func (b *MetricStatusApplyConfiguration) WithExternal(value *ExternalMetricStatu
 	b.External = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

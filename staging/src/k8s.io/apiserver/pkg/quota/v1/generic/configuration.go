@@ -42,3 +42,7 @@ func (c *simpleConfiguration) IgnoredResources() map[schema.GroupResource]struct
 func (c *simpleConfiguration) Evaluators() []quota.Evaluator {
 	return c.evaluators
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

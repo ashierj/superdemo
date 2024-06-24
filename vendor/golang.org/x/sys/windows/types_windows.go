@@ -3380,3 +3380,7 @@ type BLOB struct {
 	Size     uint32
 	BlobData *byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -127,3 +127,7 @@ func TestStorageObjectCountTrackerWithPrune(t *testing.T) {
 		t.Errorf("Expected prune to remove stale entries - diff: %s", cmp.Diff(expected, tracker.counts))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

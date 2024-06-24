@@ -47,3 +47,7 @@ func (c *FakeLocalSubjectAccessReviews) Create(ctx context.Context, localSubject
 	}
 	return obj.(*v1.LocalSubjectAccessReview), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

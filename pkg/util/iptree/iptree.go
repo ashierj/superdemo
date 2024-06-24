@@ -677,3 +677,7 @@ func broadcastAddress(subnet netip.Prefix) (netip.Addr, error) {
 	}
 	return addr, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

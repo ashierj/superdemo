@@ -404,3 +404,7 @@ func (cs *EgressSelector) Lookup(networkContext NetworkContext) (utilnet.DialFun
 
 	return cs.egressToDialer[networkContext.EgressSelectionName], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

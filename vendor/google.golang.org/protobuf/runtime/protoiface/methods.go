@@ -166,3 +166,7 @@ type CheckInitializedInput = struct {
 type CheckInitializedOutput = struct {
 	pragma.NoUnkeyedLiterals
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

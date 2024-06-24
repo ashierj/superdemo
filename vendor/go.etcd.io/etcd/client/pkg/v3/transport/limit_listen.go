@@ -84,3 +84,7 @@ func (l *limitListenerConn) SetKeepAlivePeriod(d time.Duration) error {
 	}
 	return tcpc.SetKeepAlivePeriod(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

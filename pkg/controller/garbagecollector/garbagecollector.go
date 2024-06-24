@@ -858,3 +858,7 @@ func (gc *GarbageCollector) Name() string {
 func (gc *GarbageCollector) GetDependencyGraphBuilder() *GraphBuilder {
 	return gc.dependencyGraphBuilder
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

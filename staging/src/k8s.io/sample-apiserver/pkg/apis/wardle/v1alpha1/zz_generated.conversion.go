@@ -247,3 +247,7 @@ func autoConvert_wardle_FlunderStatus_To_v1alpha1_FlunderStatus(in *wardle.Flund
 func Convert_wardle_FlunderStatus_To_v1alpha1_FlunderStatus(in *wardle.FlunderStatus, out *FlunderStatus, s conversion.Scope) error {
 	return autoConvert_wardle_FlunderStatus_To_v1alpha1_FlunderStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

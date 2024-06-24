@@ -238,3 +238,7 @@ func generateService(genericParams map[string]interface{}) (runtime.Object, erro
 	}
 	return &service, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

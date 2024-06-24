@@ -30,3 +30,7 @@ type RESTClient interface {
 	Delete() *client.Request
 	Put() *client.Request
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

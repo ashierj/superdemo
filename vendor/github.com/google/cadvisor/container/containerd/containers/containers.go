@@ -123,3 +123,7 @@ type Store interface {
 	// store, ErrNotFound will be returned.
 	Delete(ctx context.Context, id string) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -300,3 +300,7 @@ func makeFakeOutput(output string, err error) testingexec.FakeAction {
 		return []byte(o), nil, err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

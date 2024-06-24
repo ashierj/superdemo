@@ -34,3 +34,7 @@ func (*hostIDReaderUnsupported) read() (string, error) {
 }
 
 var platformHostIDReader hostIDReader = &hostIDReaderUnsupported{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

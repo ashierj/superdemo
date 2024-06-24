@@ -88,3 +88,7 @@ func NewQuotaLeaseServer(s *etcdserver.EtcdServer) pb.LeaseServer {
 		quotaAlarmer{etcdserver.NewBackendQuota(s, "lease"), s, s.ID()},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

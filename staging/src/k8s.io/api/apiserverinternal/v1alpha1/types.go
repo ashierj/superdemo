@@ -132,3 +132,7 @@ type StorageVersionList struct {
 	// Items holds a list of StorageVersion
 	Items []StorageVersion `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

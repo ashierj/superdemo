@@ -175,3 +175,7 @@ func BenchmarkReplicationControllerCopy(b *testing.B) {
 		b.Fatalf("Incorrect copy: expected %v, got %v", replicationController, *result)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

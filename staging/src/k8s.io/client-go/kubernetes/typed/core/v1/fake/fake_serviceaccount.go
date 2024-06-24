@@ -171,3 +171,7 @@ func (c *FakeServiceAccounts) CreateToken(ctx context.Context, serviceAccountNam
 	}
 	return obj.(*authenticationv1.TokenRequest), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

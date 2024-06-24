@@ -95,3 +95,7 @@ func (b *ContainerStateTerminatedApplyConfiguration) WithContainerID(value strin
 	b.ContainerID = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

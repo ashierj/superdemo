@@ -18,3 +18,7 @@ type Uefi struct {
 
 	Console string `json:"Console,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

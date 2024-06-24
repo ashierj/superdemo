@@ -288,3 +288,7 @@ func OpenForBackup(path string, access uint32, share uint32, createmode uint32) 
 	}
 	return os.NewFile(uintptr(h), path), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

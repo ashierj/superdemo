@@ -103,3 +103,7 @@ func Examples(s string) string {
 
 	return strings.Join(outLines, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

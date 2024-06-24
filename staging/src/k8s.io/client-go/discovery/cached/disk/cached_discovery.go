@@ -323,3 +323,7 @@ func newCachedDiscoveryClient(delegate discovery.DiscoveryInterface, cacheDirect
 		fresh:          true,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

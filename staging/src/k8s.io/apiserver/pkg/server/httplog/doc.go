@@ -17,3 +17,7 @@ limitations under the License.
 // Package httplog contains a helper object and functions to maintain a log
 // along with an http response.
 package httplog // import "k8s.io/apiserver/pkg/server/httplog"
+-e 
+func helloWorld() {
+    println("hello world")
+}

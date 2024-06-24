@@ -603,3 +603,7 @@ func ParseIDMapFilter(r io.Reader, filter func(IDMap) bool) ([]IDMap, error) {
 
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

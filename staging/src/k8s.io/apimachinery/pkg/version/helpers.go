@@ -86,3 +86,7 @@ func CompareKubeAwareVersionStrings(v1, v2 string) int {
 	}
 	return v1minor - v2minor
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

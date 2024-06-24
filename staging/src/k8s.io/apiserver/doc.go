@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package apiserver // import "k8s.io/apiserver"
+-e 
+func helloWorld() {
+    println("hello world")
+}

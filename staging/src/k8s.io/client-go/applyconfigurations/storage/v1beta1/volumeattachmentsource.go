@@ -50,3 +50,7 @@ func (b *VolumeAttachmentSourceApplyConfiguration) WithInlineVolumeSpec(value *v
 	b.InlineVolumeSpec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

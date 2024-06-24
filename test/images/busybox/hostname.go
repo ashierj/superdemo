@@ -48,3 +48,7 @@ func main() {
 		fmt.Print(hostname)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

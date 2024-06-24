@@ -147,3 +147,7 @@ func TestMigrationFeatureFlagStatus(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

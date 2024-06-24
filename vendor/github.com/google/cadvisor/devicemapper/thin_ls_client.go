@@ -91,3 +91,7 @@ func parseThinLsOutput(output []byte) map[string]uint64 {
 	return cache
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

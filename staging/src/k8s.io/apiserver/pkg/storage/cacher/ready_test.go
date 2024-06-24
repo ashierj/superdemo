@@ -193,3 +193,7 @@ func Test_newReadyCancelPending(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

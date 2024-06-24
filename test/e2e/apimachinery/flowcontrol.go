@@ -933,3 +933,7 @@ func uniformQPSLoadConcurrent(f *framework.Framework, username string, concurren
 	wg.Wait()
 	return completed
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

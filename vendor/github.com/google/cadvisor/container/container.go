@@ -77,3 +77,7 @@ type ContainerHandler interface {
 	// Type of handler
 	Type() ContainerType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

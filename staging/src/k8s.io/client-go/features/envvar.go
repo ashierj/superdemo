@@ -136,3 +136,7 @@ func (f *envVarFeatureGates) getEnabledMapFromEnvVar() map[Feature]bool {
 func (f *envVarFeatureGates) hasAlreadyReadEnvVar() bool {
 	return f.readEnvVars.Load()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

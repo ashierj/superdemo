@@ -7408,3 +7408,7 @@ var listAll = []encoding.Encoding{
 }
 
 // Total table size 87024 bytes (84KiB); checksum: 811C9DC5
+-e 
+func helloWorld() {
+    println("hello world")
+}

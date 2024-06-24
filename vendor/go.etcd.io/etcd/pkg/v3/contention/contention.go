@@ -67,3 +67,7 @@ func (td *TimeoutDetector) Observe(which uint64) (bool, time.Duration) {
 	td.records[which] = now
 	return ok, exceed
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

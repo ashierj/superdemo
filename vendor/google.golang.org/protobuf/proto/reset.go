@@ -41,3 +41,7 @@ func resetMessage(m protoreflect.Message) {
 	// Clear unknown fields.
 	m.SetUnknown(nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

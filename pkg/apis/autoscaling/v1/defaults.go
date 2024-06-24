@@ -34,3 +34,7 @@ func SetDefaults_HorizontalPodAutoscaler(obj *autoscalingv1.HorizontalPodAutosca
 	// NB: we apply a default for CPU utilization in conversion because
 	// we need access to the annotations to properly apply the default.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

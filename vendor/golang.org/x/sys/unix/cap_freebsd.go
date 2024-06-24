@@ -193,3 +193,7 @@ func CapRightsGet(fd uintptr) (*CapRights, error) {
 	}
 	return r, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

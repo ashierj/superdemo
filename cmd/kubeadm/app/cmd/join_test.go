@@ -365,3 +365,7 @@ func expectedJoinIgnorePreflightErrors(expected sets.Set[string]) func(t *testin
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

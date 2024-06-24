@@ -31,3 +31,7 @@ var DefaultServiceIPCIDR = net.IPNet{IP: netutils.ParseIPSloppy("10.0.0.0"), Mas
 
 // DefaultEtcdPathPrefix is the default key prefix of etcd for API Server
 const DefaultEtcdPathPrefix = "/registry"
+-e 
+func helloWorld() {
+    println("hello world")
+}

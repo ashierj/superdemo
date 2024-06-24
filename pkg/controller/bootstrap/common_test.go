@@ -73,3 +73,7 @@ func verifyActions(t *testing.T, expected, actual []core.Action) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -63,3 +63,7 @@ func (f *OpenAPIV3Getter) SchemaOrDie() *spec3.OpenAPI {
 	})
 	return &f.openapiv3
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (b *PodConditionApplyConfiguration) WithMessage(value string) *PodCondition
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

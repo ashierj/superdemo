@@ -50,3 +50,7 @@ func RetrieveValidatedConfigInfo(httpsURL string, discoveryTimeout time.Duration
 	}
 	return file.ValidateConfigInfo(config, discoveryTimeout)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

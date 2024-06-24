@@ -280,3 +280,7 @@ func newKubeletStatsTestPods(numPods int, image imageutils.Config, nodeName stri
 
 	return pods
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

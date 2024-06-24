@@ -579,3 +579,7 @@ func resourceCovers(resource string, action Action) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

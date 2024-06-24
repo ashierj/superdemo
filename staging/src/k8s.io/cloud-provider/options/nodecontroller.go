@@ -60,3 +60,7 @@ func (o *NodeControllerOptions) Validate() []error {
 	}
 	return errors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

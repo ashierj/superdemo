@@ -19,3 +19,7 @@ type Fou struct {
 	Protocol  int
 	EncapType int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

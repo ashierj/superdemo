@@ -132,3 +132,7 @@ func (matcher *BeNumericallyMatcher) matchFloats(actual, compareTo, threshold fl
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

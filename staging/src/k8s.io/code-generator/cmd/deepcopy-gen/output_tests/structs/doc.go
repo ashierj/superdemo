@@ -38,3 +38,7 @@ type Ttest struct {
 	Inner1 Inner
 	Inner2 Inner
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

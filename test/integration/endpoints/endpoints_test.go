@@ -462,3 +462,7 @@ func newExternalNameService(namespace, name string) *v1.Service {
 	svc.Spec.ExternalName = "google.com"
 	return svc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

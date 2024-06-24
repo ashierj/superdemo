@@ -132,3 +132,7 @@ func (k Key) StringSlice(v []string) KeyValue {
 func (k Key) Defined() bool {
 	return len(k) != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

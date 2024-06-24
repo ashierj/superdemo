@@ -758,3 +758,7 @@ func (key rawJSONWebKey) symmetricKey() ([]byte, error) {
 	}
 	return key.K.bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

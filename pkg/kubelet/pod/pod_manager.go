@@ -338,3 +338,7 @@ func (pm *basicManager) GetPodAndMirrorPod(aPod *v1.Pod) (pod, mirrorPod *v1.Pod
 	return aPod, pm.mirrorPodByFullName[fullName], false
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

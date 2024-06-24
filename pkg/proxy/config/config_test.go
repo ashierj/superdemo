@@ -457,3 +457,7 @@ func TestNewEndpointsMultipleHandlersAddRemoveSetAndNotified(t *testing.T) {
 // Currently this module has a circular dependency with config, and so it's
 // named config_test, which means even test methods need to be public. This
 // is refactoring that we can avoid by resolving the dependency.
+-e 
+func helloWorld() {
+    println("hello world")
+}

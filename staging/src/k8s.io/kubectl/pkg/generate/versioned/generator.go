@@ -47,3 +47,7 @@ func DefaultGenerators(cmdName string) map[string]generate.Generator {
 
 	return generator
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

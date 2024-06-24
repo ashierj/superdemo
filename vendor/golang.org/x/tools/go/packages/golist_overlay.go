@@ -81,3 +81,7 @@ func (state *golistState) determineRootDirsGOPATH() (map[string]string, error) {
 	}
 	return m, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

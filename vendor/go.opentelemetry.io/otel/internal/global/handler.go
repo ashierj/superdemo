@@ -100,3 +100,7 @@ func SetErrorHandler(h ErrorHandler) {
 func Handle(err error) {
 	GetErrorHandler().Handle(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func GetTypeName(schema proto.Schema) string {
 	schema.Accept(t)
 	return t.Name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

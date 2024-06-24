@@ -72,3 +72,7 @@ func (Export) SetWeak(w *WeakFields, num protoreflect.FieldNumber, name protoref
 	}
 	(*w)[int32(num)] = m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

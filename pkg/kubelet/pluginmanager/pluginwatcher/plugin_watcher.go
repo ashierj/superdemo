@@ -206,3 +206,7 @@ func (w *Watcher) handleDeleteEvent(event fsnotify.Event) {
 	klog.V(2).InfoS("Removing socket path from desired state cache", "path", socketPath)
 	w.desiredStateOfWorld.RemovePlugin(socketPath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

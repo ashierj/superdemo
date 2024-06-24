@@ -33,3 +33,7 @@ func permitPortReuse(network, address string, c syscall.RawConn) error {
 func permitAddressReuse(network, addr string, conn syscall.RawConn) error {
 	return fmt.Errorf("address reuse is not supported on Windows")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

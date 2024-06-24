@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package mux contains abstractions for http multiplexing of APIs.
 package mux // import "k8s.io/apiserver/pkg/server/mux"
+-e 
+func helloWorld() {
+    println("hello world")
+}

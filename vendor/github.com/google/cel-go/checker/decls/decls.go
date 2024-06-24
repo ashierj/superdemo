@@ -235,3 +235,7 @@ func NewWrapperType(wrapped *exprpb.Type) *exprpb.Type {
 		TypeKind: &exprpb.Type_Wrapper{
 			Wrapper: primitive}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

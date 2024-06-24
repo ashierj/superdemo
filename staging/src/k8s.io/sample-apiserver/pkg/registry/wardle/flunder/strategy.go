@@ -103,3 +103,7 @@ func (flunderStrategy) ValidateUpdate(ctx context.Context, obj, old runtime.Obje
 func (flunderStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

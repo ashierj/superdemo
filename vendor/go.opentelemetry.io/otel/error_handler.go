@@ -36,3 +36,7 @@ var _ ErrorHandler = ErrorHandlerFunc(nil)
 func (f ErrorHandlerFunc) Handle(err error) {
 	f(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

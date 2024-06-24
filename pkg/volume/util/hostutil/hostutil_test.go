@@ -228,3 +228,7 @@ func TestGetFileType(t *testing.T) {
 func isOperationNotPermittedError(err error) bool {
 	return strings.Contains(err.Error(), "Operation not permitted")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -18,3 +18,7 @@ limitations under the License.
 
 // Package api contains PodSecurity admission configuration file types
 package api // import "k8s.io/pod-security-admission/admission/api"
+-e 
+func helloWorld() {
+    println("hello world")
+}

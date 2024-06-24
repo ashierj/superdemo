@@ -161,3 +161,7 @@ func ForKind(kind {{.schemaGroupVersionKind|raw}}) interface{} {
 	return nil
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -59,3 +59,7 @@ func mapKeyFromParam(param common.Parameter) interface{} {
 		Kind: param.Kind(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

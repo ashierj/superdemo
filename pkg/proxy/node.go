@@ -109,3 +109,7 @@ func (n *NodeEligibleHandler) OnNodeDelete(node *v1.Node) { n.HealthServer.SyncN
 
 // OnNodeSynced is a handler for Node syncs.
 func (n *NodeEligibleHandler) OnNodeSynced() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -93,3 +93,7 @@ func TestGenericHttpResponseCheckerLimitReader(t *testing.T) {
 		t.Errorf("expected length of error message: %d, saw: %d", maxReadLength, len(err.Error()))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

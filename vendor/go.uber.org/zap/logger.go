@@ -430,3 +430,7 @@ func (log *Logger) check(lvl zapcore.Level, msg string) *zapcore.CheckedEntry {
 
 	return ce
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

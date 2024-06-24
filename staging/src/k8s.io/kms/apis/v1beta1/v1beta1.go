@@ -22,3 +22,7 @@ package v1beta1
 func IsVersionCheckMethod(method string) bool {
 	return method == "/v1beta1.KeyManagementService/Version"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

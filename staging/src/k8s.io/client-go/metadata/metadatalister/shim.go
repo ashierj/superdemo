@@ -85,3 +85,7 @@ func (ns *metadataNamespaceListerShim) List(selector labels.Selector) (ret []run
 func (ns *metadataNamespaceListerShim) Get(name string) (runtime.Object, error) {
 	return ns.namespaceLister.Get(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

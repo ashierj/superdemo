@@ -714,3 +714,7 @@ func WithRecvBufferPool(bufferPool SharedBufferPool) DialOption {
 		o.recvBufferPool = bufferPool
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -260,3 +260,7 @@ func AssumeColonVerbOpt(val bool) PatternOpt {
 		o.assumeColonVerb = val
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

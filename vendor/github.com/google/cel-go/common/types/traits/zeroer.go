@@ -19,3 +19,7 @@ type Zeroer interface {
 	// IsZeroValue indicates whether the object is the zero value for the type.
 	IsZeroValue() bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

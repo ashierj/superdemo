@@ -45,3 +45,7 @@ func TestErrorChannel(t *testing.T) {
 		t.Errorf("expect context canceled, but got %v", ctxErr)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

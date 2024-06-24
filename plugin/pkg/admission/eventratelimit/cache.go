@@ -54,3 +54,7 @@ func (c *lruCache) get(key interface{}) flowcontrol.RateLimiter {
 	}
 	return value.(flowcontrol.RateLimiter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

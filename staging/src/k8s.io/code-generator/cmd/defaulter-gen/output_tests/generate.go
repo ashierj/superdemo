@@ -25,3 +25,7 @@ import (
 	// For go-generate
 	_ "k8s.io/code-generator/cmd/defaulter-gen/generators"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

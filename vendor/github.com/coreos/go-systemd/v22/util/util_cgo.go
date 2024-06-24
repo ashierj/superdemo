@@ -174,3 +174,7 @@ func currentUnitName() (unit string, err error) {
 	unit = C.GoString(u)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

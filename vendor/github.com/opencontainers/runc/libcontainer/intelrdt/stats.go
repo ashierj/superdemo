@@ -55,3 +55,7 @@ type Stats struct {
 func newStats() *Stats {
 	return &Stats{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -115,3 +115,7 @@ func (s *Stopwatch) Resume() *Stopwatch {
 	s.pauseDuration = s.pauseDuration + time.Since(s.pauseT)
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

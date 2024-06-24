@@ -25,3 +25,7 @@ type Socket struct {
 	UID     uint32
 	INode   uint32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

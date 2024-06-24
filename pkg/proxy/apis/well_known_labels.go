@@ -21,3 +21,7 @@ const (
 	// proxy will implement this Service.
 	LabelServiceProxyName = "service.kubernetes.io/service-proxy-name"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

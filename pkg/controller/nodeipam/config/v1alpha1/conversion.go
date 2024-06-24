@@ -38,3 +38,7 @@ func Convert_v1alpha1_NodeIPAMControllerConfiguration_To_config_NodeIPAMControll
 func Convert_config_NodeIPAMControllerConfiguration_To_v1alpha1_NodeIPAMControllerConfiguration(in *config.NodeIPAMControllerConfiguration, out *v1alpha1.NodeIPAMControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_NodeIPAMControllerConfiguration_To_v1alpha1_NodeIPAMControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -170,3 +170,7 @@ func (config *DeferredLoadingClientConfig) Namespace() (string, bool, error) {
 func (config *DeferredLoadingClientConfig) ConfigAccess() ConfigAccess {
 	return config.loader
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

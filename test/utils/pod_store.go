@@ -80,3 +80,7 @@ func (s *PodStore) List() []*v1.Pod {
 func (s *PodStore) Stop() {
 	close(s.stopCh)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

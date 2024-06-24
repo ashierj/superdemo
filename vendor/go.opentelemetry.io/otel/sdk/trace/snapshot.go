@@ -142,3 +142,7 @@ func (s snapshot) DroppedEvents() int {
 func (s snapshot) ChildSpanCount() int {
 	return s.childSpanCount
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -254,3 +254,7 @@ func (b *CertificateSigningRequestApplyConfiguration) WithStatus(value *Certific
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

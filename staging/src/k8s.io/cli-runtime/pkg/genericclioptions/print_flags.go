@@ -169,3 +169,7 @@ func NewPrintFlags(operation string) *PrintFlags {
 		TemplatePrinterFlags: NewKubeTemplatePrintFlags(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

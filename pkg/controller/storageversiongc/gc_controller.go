@@ -284,3 +284,7 @@ func (c *Controller) updateOrDeleteStorageVersion(ctx context.Context, sv *apise
 		ctx, sv, metav1.UpdateOptions{})
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

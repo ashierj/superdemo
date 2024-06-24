@@ -46,3 +46,7 @@ type priorityLevelConfigurationLister struct {
 func NewPriorityLevelConfigurationLister(indexer cache.Indexer) PriorityLevelConfigurationLister {
 	return &priorityLevelConfigurationLister{listers.New[*v1.PriorityLevelConfiguration](indexer, v1.Resource("prioritylevelconfiguration"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

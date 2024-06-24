@@ -144,3 +144,7 @@ func (c *requestCache) gc() {
 		delete(c.tokens, entry.token)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -92,3 +92,7 @@ func Get() Capabilities {
 	}
 	return *capInstance.capabilities
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

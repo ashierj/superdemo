@@ -50,3 +50,7 @@ type ContainerInfo struct {
 	// CDI Devices for the container
 	CDIDevices []kubecontainer.CDIDevice
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

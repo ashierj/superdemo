@@ -492,3 +492,7 @@ func TestStartupProbeDisabledByStarted(t *testing.T) {
 	expectContinue(t, w, w.doProbe(ctx), msg)
 	expectResult(t, w, results.Success, msg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

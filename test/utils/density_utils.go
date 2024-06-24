@@ -104,3 +104,7 @@ func VerifyLabelsRemoved(c clientset.Interface, nodeName string, labelKeys []str
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

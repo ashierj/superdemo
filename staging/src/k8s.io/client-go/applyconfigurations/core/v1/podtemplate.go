@@ -247,3 +247,7 @@ func (b *PodTemplateApplyConfiguration) WithTemplate(value *PodTemplateSpecApply
 	b.Template = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

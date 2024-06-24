@@ -196,3 +196,7 @@ func (c *Config) DeviceAccessToken(ctx context.Context, da *DeviceAuthResponse, 
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

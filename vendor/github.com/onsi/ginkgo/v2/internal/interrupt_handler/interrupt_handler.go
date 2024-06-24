@@ -175,3 +175,7 @@ func (handler *InterruptHandler) Status() InterruptStatus {
 
 	return status
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

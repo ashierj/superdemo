@@ -293,3 +293,7 @@ func NewIndexer(keyFunc KeyFunc, indexers Indexers) Indexer {
 		keyFunc:      keyFunc,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

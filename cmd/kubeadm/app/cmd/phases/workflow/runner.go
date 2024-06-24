@@ -507,3 +507,7 @@ func cleanName(name string) string {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

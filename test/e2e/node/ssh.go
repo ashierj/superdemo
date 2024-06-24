@@ -116,3 +116,7 @@ var _ = SIGDescribe("SSH", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

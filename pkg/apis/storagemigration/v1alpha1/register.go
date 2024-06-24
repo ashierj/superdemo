@@ -37,3 +37,7 @@ var (
 	localSchemeBuilder = &svmv1alpha1.SchemeBuilder
 	AddToScheme        = localSchemeBuilder.AddToScheme
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

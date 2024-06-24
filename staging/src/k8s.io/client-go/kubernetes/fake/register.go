@@ -156,3 +156,7 @@ func init() {
 	v1.AddToGroupVersion(scheme, schema.GroupVersion{Version: "v1"})
 	utilruntime.Must(AddToScheme(scheme))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

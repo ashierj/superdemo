@@ -703,3 +703,7 @@ func noopAuthenticatorMetrics() AuthenticatorMetrics {
 		RecordRequestLatency: noopMetrics{}.RequestLatency,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

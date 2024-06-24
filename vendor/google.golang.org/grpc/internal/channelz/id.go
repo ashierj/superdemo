@@ -73,3 +73,7 @@ func newIdentifer(typ RefChannelType, id int64, pid *Identifier) *Identifier {
 	}
 	return &Identifier{typ: typ, id: id, str: str, pid: pid}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

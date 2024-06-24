@@ -166,3 +166,7 @@ func occupyServiceCIDR(set *cidrset.CidrSet, clusterCIDR, serviceCIDR *net.IPNet
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

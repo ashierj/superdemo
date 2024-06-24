@@ -700,3 +700,7 @@ func (b *BailErrorStrategy) RecoverInline(recognizer Parser) Token {
 // Sync makes sure we don't attempt to recover from problems in sub-rules.
 func (b *BailErrorStrategy) Sync(_ Parser) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

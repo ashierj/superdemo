@@ -70,3 +70,7 @@ type LimitedResource struct {
 	//	MatchScopes []string `json:"matchScopes,omitempty"`
 	MatchScopes []corev1.ScopedResourceSelectorRequirement `json:"matchScopes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

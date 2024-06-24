@@ -102,3 +102,7 @@ func (r *Recorder) Events() []Event {
 	copy(copied, r.events)
 	return copied
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

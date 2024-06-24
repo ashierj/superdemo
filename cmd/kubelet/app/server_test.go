@@ -272,3 +272,7 @@ readOnlyPort: 10255
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@ func CountSampleDeviceAllocatable(node *v1.Node) int64 {
 	}
 	return val.Value()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

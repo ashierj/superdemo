@@ -351,3 +351,7 @@ func insert(q *waitForPriorityQueue, knownEntries map[t]*waitFor, entry *waitFor
 	heap.Push(q, entry)
 	knownEntries[entry.data] = entry
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

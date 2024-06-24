@@ -67,3 +67,7 @@ func Default(x interface{}, s *structuralschema.Structural) {
 		// scalars, do nothing
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1558,3 +1558,7 @@ const (
 	_ // not used anymore
 
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

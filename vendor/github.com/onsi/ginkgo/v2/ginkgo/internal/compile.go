@@ -159,3 +159,7 @@ func (opc *OrderedParallelCompiler) StopAndDrain() {
 	opc.stopped = true
 	opc.mutex.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

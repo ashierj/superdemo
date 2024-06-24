@@ -37,3 +37,7 @@ func (b *NamedResourcesAllocationResultApplyConfiguration) WithName(value string
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

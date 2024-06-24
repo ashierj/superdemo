@@ -66,3 +66,7 @@ func (m *indexOfInitialisms) sorted() (result []string) {
 	sort.Sort(sort.Reverse(byInitialism(result)))
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -45,3 +45,7 @@ func RegisteredCompressors() string {
 	}
 	return strings.Join(RegisteredCompressorNames, ",")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

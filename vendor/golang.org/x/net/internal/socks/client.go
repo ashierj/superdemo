@@ -166,3 +166,7 @@ func splitHostPort(address string) (string, int, error) {
 	}
 	return host, portnum, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

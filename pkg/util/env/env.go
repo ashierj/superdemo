@@ -55,3 +55,7 @@ func GetEnvAsFloat64OrFallback(key string, defaultValue float64) (float64, error
 	}
 	return defaultValue, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

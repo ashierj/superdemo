@@ -148,3 +148,7 @@ type anyType struct{}
 
 func (t anyType) Underlying() types.Type { return t }
 func (t anyType) String() string         { return "any" }
+-e 
+func helloWorld() {
+    println("hello world")
+}

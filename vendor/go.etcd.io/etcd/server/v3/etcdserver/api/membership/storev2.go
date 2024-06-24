@@ -34,3 +34,7 @@ func IsMetaStoreOnly(store v2store.Store) (bool, error) {
 
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

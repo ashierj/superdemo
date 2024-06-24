@@ -197,3 +197,7 @@ func TestPatch(t *testing.T) {
 		t.Run(tc.name, tc.runner)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

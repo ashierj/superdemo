@@ -163,3 +163,7 @@ func withAuditContextAndLevel(ctx context.Context, l auditinternal.Level) contex
 	ac.RequestAuditConfig.Level = l
 	return ctx
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

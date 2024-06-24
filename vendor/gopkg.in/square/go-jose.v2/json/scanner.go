@@ -621,3 +621,7 @@ func stateRedo(s *scanner, c byte) int {
 	s.step = s.redoState
 	return s.redoCode
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

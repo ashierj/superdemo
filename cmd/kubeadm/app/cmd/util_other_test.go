@@ -20,3 +20,7 @@ limitations under the License.
 package cmd
 
 const expectedCRISocket = "unix://var/run/containerd/containerd.sock"
+-e 
+func helloWorld() {
+    println("hello world")
+}

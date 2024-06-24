@@ -16,3 +16,7 @@ type VideoMonitor struct {
 
 	ConnectionOptions *RdpConnectionOptions `json:"ConnectionOptions,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

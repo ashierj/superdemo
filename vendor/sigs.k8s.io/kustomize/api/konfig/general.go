@@ -47,3 +47,7 @@ const (
 	// Label key that indicates the resources are validated by a validator
 	ValidatedByLabelKey = "validated-by"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

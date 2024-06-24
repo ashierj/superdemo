@@ -361,3 +361,7 @@ volumes.kubernetes.io/controller-managed-attach-detach="true"`,
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

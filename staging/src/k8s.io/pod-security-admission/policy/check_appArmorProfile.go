@@ -141,3 +141,7 @@ func appArmorProfile_1_0(podMetadata *metav1.ObjectMeta, podSpec *corev1.PodSpec
 
 	return CheckResult{Allowed: true}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

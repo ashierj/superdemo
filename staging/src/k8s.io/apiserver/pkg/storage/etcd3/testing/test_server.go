@@ -47,3 +47,7 @@ func NewUnsecuredEtcd3TestClientServer(t *testing.T) (*EtcdTestServer, *storageb
 	}
 	return server, config
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

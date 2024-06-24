@@ -64,3 +64,7 @@ func (c *processCollector) processCollect(ch chan<- Metric) {
 		c.reportError(ch, nil, err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

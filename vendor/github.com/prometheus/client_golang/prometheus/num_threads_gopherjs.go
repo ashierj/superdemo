@@ -20,3 +20,7 @@ package prometheus
 func getRuntimeNumThreads() float64 {
 	return 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -341,3 +341,7 @@ func readTypes(r io.Reader, bo binary.ByteOrder, typeLen uint32) ([]rawType, err
 		types = append(types, rawType{header, data})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -113,3 +113,7 @@ func RunTransactionOnce(c netcontext.Context, f func(netcontext.Context) error, 
 	}
 	return &t.transaction, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

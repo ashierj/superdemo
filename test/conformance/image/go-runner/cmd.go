@@ -108,3 +108,7 @@ Executable path: %v
 Args (comma-delimited): %v`, cmd.Env, cmd.Dir, cmd.Path, strings.Join(cmd.Args, ","),
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

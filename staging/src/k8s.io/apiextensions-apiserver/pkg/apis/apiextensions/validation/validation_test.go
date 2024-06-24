@@ -10733,3 +10733,7 @@ func TestPerCRDEstimatedCost(t *testing.T) {
 func int64ptr(i int64) *int64 {
 	return &i
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

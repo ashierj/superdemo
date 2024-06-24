@@ -356,3 +356,7 @@ type FilesystemStats struct {
 	// and does not include inodes used in mounted directories.
 	InodeUsage *uint64 `json:"containter_inode_usage,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

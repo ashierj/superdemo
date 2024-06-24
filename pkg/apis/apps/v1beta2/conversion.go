@@ -223,3 +223,7 @@ func Convert_apps_StatefulSetSpec_To_v1beta2_StatefulSetSpec(in *apps.StatefulSe
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

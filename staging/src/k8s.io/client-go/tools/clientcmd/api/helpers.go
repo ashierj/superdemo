@@ -263,3 +263,7 @@ func redactSecrets(curr reflect.Value, redact bool) error {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

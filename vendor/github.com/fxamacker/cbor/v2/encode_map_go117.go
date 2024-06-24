@@ -49,3 +49,7 @@ func getEncodeMapFunc(t reflect.Type) encodeFunc {
 		e: mkv.encodeKeyValues,
 	}.encode
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -29,3 +29,7 @@ func HasAdmissionReviewVersion(a string, w webhook.WebhookAccessor) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

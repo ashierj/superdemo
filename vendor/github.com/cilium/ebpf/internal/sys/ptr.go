@@ -36,3 +36,7 @@ func NewStringPointer(str string) Pointer {
 
 	return Pointer{ptr: unsafe.Pointer(p)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

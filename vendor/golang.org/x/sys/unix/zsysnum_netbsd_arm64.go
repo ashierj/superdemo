@@ -272,3 +272,7 @@ const (
 	SYS_RECVMMSG             = 475 // { int|sys||recvmmsg(int s, struct mmsghdr *mmsg, unsigned int vlen, unsigned int flags, struct timespec *timeout); }
 	SYS_SENDMMSG             = 476 // { int|sys||sendmmsg(int s, struct mmsghdr *mmsg, unsigned int vlen, unsigned int flags); }
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@
 //		// handle error!
 //	}
 package v3client
+-e 
+func helloWorld() {
+    println("hello world")
+}

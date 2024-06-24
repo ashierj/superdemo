@@ -211,3 +211,7 @@ func (k *NodeConnectionInfoGetter) GetConnectionInfo(ctx context.Context, nodeNa
 		InsecureSkipTLSVerifyTransport: k.insecureSkipTLSVerifyTransport,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

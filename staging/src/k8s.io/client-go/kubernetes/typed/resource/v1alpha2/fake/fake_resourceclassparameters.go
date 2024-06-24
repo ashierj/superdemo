@@ -158,3 +158,7 @@ func (c *FakeResourceClassParameters) Apply(ctx context.Context, resourceClassPa
 	}
 	return obj.(*v1alpha2.ResourceClassParameters), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

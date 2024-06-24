@@ -76,3 +76,7 @@ func CreateGCECloudWithCloud(config *CloudConfig, c cloud.Cloud) (*Cloud, error)
 	}
 	return gceCloud, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

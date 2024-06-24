@@ -385,3 +385,7 @@ func wrapSkipFunc(err error, what string) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

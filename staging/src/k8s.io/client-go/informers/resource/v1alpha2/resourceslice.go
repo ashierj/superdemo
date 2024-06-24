@@ -87,3 +87,7 @@ func (f *resourceSliceInformer) Informer() cache.SharedIndexInformer {
 func (f *resourceSliceInformer) Lister() v1alpha2.ResourceSliceLister {
 	return v1alpha2.NewResourceSliceLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

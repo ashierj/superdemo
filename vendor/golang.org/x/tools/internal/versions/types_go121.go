@@ -18,3 +18,7 @@ func FileVersions(info *types.Info, file *ast.File) string { return "" }
 
 // InitFileVersions is a noop at this Go version.
 func InitFileVersions(*types.Info) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

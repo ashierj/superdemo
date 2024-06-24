@@ -3279,3 +3279,7 @@ func (sc *serverConn) countError(name string, err error) error {
 	f(fmt.Sprintf("%s_%s_%s", typ, codeStr, name))
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -117,3 +117,7 @@ func IsStatusConditionPresentAndEqual(conditions []metav1.Condition, conditionTy
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

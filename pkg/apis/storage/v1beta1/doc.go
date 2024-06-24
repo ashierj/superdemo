@@ -21,3 +21,7 @@ limitations under the License.
 // +k8s:defaulter-gen-input=k8s.io/api/storage/v1beta1
 
 package v1beta1 // import "k8s.io/kubernetes/pkg/apis/storage/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

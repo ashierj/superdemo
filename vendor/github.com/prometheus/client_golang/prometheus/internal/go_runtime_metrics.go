@@ -140,3 +140,7 @@ func reBucketExp(buckets []float64, base float64) []float64 {
 	}
 	return append(newBuckets, bucket)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

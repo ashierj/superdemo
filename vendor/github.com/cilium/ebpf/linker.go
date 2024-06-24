@@ -236,3 +236,7 @@ func maybeLoadKernelBTF(spec *btf.Spec) (*btf.Spec, error) {
 	kernelBTF.spec, err = btf.LoadKernelSpec()
 	return kernelBTF.spec, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

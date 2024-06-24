@@ -27,3 +27,7 @@ func TestMain(m *testing.M) {
 	setNoUmask()
 	pkiutiltesting.RunWithPrivateKeyFixtureDirectory(m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

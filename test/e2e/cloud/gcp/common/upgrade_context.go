@@ -87,3 +87,7 @@ func realVersion(s string) (string, error) {
 	framework.Logf("Version for %q is %q", s, v)
 	return strings.TrimPrefix(strings.TrimSpace(v), "v"), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -76,3 +76,7 @@ func UserFrom(ctx context.Context) (user.Info, bool) {
 	user, ok := ctx.Value(userKey).(user.Info)
 	return user, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

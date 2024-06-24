@@ -28,3 +28,7 @@ func init() {
 		klog.Fatalf("Failed to register containerd plugin: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

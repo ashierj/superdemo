@@ -199,3 +199,7 @@ func GetMinutePercentiles(stats []*secondSample) info.Usage {
 		Memory:          memory.GetAllPercentiles(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

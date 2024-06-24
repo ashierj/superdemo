@@ -306,3 +306,7 @@ func isDigit(c rune) bool {
 func isAlphaNumeric(c rune) bool {
 	return isLetter(c) || isDigit(c)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

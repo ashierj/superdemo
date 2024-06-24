@@ -161,3 +161,7 @@ func (iter *Iterator) findStringEnd() (int, bool) {
 	}
 	return -1, true // end with \
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

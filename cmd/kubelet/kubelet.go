@@ -36,3 +36,7 @@ func main() {
 	code := cli.Run(command)
 	os.Exit(code)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

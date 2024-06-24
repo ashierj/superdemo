@@ -655,3 +655,7 @@ func (p *Plugin) admitResourceSlice(nodeName string, a admission.Attributes) err
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

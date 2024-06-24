@@ -2386,3 +2386,7 @@ func expectPodNames(actualPods *v1.PodList, expectedPodNames []string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -89,3 +89,7 @@ func (d *decoratedWatcher) Stop() {
 func (d *decoratedWatcher) ResultChan() <-chan watch.Event {
 	return d.resultCh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

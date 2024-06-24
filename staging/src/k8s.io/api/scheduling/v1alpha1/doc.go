@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=scheduling.k8s.io
 
 package v1alpha1 // import "k8s.io/api/scheduling/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

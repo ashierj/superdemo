@@ -734,3 +734,7 @@ func createConfigChangeEnts(lg *zap.Logger, ids []uint64, self uint64, term, ind
 
 	return ents
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ func GetPodAdmitResult(err error) lifecycle.PodAdmitResult {
 		Admit:   false,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

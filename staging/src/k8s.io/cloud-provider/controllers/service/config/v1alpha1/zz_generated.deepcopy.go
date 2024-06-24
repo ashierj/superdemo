@@ -36,3 +36,7 @@ func (in *ServiceControllerConfiguration) DeepCopy() *ServiceControllerConfigura
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

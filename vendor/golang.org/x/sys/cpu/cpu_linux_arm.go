@@ -37,3 +37,7 @@ func doinit() {
 func isSet(hwc uint, value uint) bool {
 	return hwc&value != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

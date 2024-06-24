@@ -88,3 +88,7 @@ func (f *podTemplateInformer) Informer() cache.SharedIndexInformer {
 func (f *podTemplateInformer) Lister() v1.PodTemplateLister {
 	return v1.NewPodTemplateLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

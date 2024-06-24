@@ -137,3 +137,7 @@ func carpWithPayload(carpPayload []byte) *testapigroupv1.Carp {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

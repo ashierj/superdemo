@@ -39,3 +39,7 @@ func (t TestType) GroupVersionKind() schema.GroupVersionKind {
 		Kind:    "TestType",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

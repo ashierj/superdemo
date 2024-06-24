@@ -869,3 +869,7 @@ func ParseInClusterClientLogs(logs string) (int, error) {
 
 	return len(seenTokens), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

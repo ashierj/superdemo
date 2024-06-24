@@ -43,3 +43,7 @@ func TestSimpleMetaFactoryInterpret(t *testing.T) {
 		t.Errorf("unexpected non-error")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

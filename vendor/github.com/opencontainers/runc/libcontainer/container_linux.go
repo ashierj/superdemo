@@ -2281,3 +2281,7 @@ func requiresRootOrMappingTool(c *configs.Config) bool {
 	}
 	return !reflect.DeepEqual(c.GidMappings, gidMap)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

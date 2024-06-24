@@ -70,3 +70,7 @@ func getsockname(s windows.Handle, name unsafe.Pointer, namelen *int32) (err err
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

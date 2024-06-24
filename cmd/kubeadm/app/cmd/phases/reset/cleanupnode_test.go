@@ -236,3 +236,7 @@ func TestRemoveContainers(t *testing.T) {
 
 	removeContainers(fexec, "unix:///var/run/crio/crio.sock")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

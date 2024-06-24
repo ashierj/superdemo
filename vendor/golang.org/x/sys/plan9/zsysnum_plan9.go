@@ -47,3 +47,7 @@ const (
 	SYS_TSEMACQUIRE = 52
 	SYS_NSEC        = 53
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

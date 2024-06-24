@@ -37,3 +37,7 @@ var ParameterCodec = runtime.NewParameterCodec(Scheme)
 func DefaultJSONEncoder() runtime.Encoder {
 	return unstructured.NewJSONFallbackEncoder(Codecs.LegacyCodec(Scheme.PrioritizedVersionsAllGroups()...))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

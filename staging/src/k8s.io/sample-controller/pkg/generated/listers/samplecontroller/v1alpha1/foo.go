@@ -68,3 +68,7 @@ type FooNamespaceLister interface {
 type fooNamespaceLister struct {
 	listers.ResourceIndexer[*v1alpha1.Foo]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

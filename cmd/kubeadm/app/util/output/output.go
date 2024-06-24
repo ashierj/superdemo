@@ -223,3 +223,7 @@ func (rpw *ResourcePrinterWrapper) Printf(format string, args ...interface{}) (n
 func (rpw *ResourcePrinterWrapper) Println(args ...interface{}) (n int, err error) {
 	return 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

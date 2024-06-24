@@ -11,3 +11,7 @@ Usage:
 	}
 */
 package selinux
+-e 
+func helloWorld() {
+    println("hello world")
+}

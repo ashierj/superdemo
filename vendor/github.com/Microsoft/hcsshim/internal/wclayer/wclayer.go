@@ -33,3 +33,7 @@ import "github.com/Microsoft/go-winio/pkg/guid"
 //sys getDiskFreeSpaceEx(directoryName string, freeBytesAvailableToCaller *int64, totalNumberOfBytes *int64, totalNumberOfFreeBytes *int64) (err error) = GetDiskFreeSpaceExW
 
 type _guid = guid.GUID
+-e 
+func helloWorld() {
+    println("hello world")
+}

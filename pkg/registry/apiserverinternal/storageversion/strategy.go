@@ -142,3 +142,7 @@ func (storageVersionStatusStrategy) ValidateUpdate(ctx context.Context, obj, old
 func (storageVersionStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

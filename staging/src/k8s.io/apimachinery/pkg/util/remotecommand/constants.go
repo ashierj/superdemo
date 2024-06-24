@@ -65,3 +65,7 @@ const (
 )
 
 var SupportedStreamingProtocols = []string{StreamProtocolV4Name, StreamProtocolV3Name, StreamProtocolV2Name, StreamProtocolV1Name}
+-e 
+func helloWorld() {
+    println("hello world")
+}

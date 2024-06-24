@@ -25,3 +25,7 @@ func Setgid(gid int) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

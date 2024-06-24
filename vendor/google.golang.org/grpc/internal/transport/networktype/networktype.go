@@ -44,3 +44,7 @@ func Get(address resolver.Address) (string, bool) {
 	}
 	return v.(string), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

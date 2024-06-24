@@ -86,3 +86,7 @@ func Uint8(name string, value uint8, usage string) *uint8 {
 func Uint8P(name, shorthand string, value uint8, usage string) *uint8 {
 	return CommandLine.Uint8P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

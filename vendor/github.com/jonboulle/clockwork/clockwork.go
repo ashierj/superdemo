@@ -193,3 +193,7 @@ func (fc *fakeClock) BlockUntil(n int) {
 	fc.l.Unlock()
 	<-b.ch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -341,3 +341,7 @@ func OutgoingTrace(ctx context.Context) []byte {
 	b, _ := ctx.Value(outgoingTraceKey{}).([]byte)
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

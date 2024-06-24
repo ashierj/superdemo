@@ -81,3 +81,7 @@ func ErrorToAPIStatus(err error) *metav1.Status {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

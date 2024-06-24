@@ -77,3 +77,7 @@ func (prm *ProgressReporterManager) QueryProgressReporters(ctx context.Context, 
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

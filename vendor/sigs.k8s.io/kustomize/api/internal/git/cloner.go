@@ -48,3 +48,7 @@ func DoNothingCloner(dir filesys.ConfirmedDir) Cloner {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

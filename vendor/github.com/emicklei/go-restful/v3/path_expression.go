@@ -72,3 +72,7 @@ func templateToRegularExpression(template string) (expression string, literalCou
 	}
 	return strings.TrimRight(buffer.String(), "/") + "(/.*)?$", literalCount, varNames, varCount, tokens
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

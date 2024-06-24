@@ -604,3 +604,7 @@ func Setrlimit(resource int, rlim *Rlimit) error {
 	// it will affect starting a new process.
 	return syscall.Setrlimit(resource, (*syscall.Rlimit)(rlim))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

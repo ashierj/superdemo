@@ -164,3 +164,7 @@ func TestReactorChangesPersisted(t *testing.T) {
 		t.Errorf("expected Action recorded to not be modified by ReactionFunc but it was")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

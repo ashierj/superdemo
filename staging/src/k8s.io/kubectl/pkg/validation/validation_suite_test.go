@@ -27,3 +27,7 @@ func TestOpenapiValidation(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Openapi Validation Suite")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

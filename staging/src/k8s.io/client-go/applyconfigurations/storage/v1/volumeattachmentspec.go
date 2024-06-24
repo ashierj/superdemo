@@ -55,3 +55,7 @@ func (b *VolumeAttachmentSpecApplyConfiguration) WithNodeName(value string) *Vol
 	b.NodeName = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

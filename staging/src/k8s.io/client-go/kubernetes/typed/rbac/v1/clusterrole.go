@@ -195,3 +195,7 @@ func (c *clusterRoles) Apply(ctx context.Context, clusterRole *rbacv1.ClusterRol
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

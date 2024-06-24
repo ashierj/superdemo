@@ -24,3 +24,7 @@ Output:
 For a full guide visit https://github.com/sirupsen/logrus
 */
 package logrus
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -143,3 +143,7 @@ func (id ResId) EffectiveNamespace() string {
 func (id ResId) IsEmpty() bool {
 	return reflect.DeepEqual(id, ResId{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

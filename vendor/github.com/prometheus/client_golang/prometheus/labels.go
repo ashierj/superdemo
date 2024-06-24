@@ -186,3 +186,7 @@ func validateLabelValues(vals []string, expectedNumberOfValues int) error {
 func checkLabelName(l string) bool {
 	return model.LabelName(l).IsValid() && !strings.HasPrefix(l, reservedLabelPrefix)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

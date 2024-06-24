@@ -7,3 +7,7 @@ import "syscall"
 func reclen(de *syscall.Dirent) uint64 {
 	return uint64(de.Reclen)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

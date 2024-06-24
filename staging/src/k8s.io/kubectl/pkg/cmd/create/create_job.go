@@ -273,3 +273,7 @@ func (o *CreateJobOptions) createJobFromCronJob(cronJob *batchv1.CronJob) *batch
 	}
 	return job
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

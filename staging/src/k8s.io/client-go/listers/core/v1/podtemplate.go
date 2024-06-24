@@ -68,3 +68,7 @@ type PodTemplateNamespaceLister interface {
 type podTemplateNamespaceLister struct {
 	listers.ResourceIndexer[*v1.PodTemplate]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

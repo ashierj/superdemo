@@ -167,3 +167,7 @@ func (t *objectCountTracker) prune(threshold time.Duration) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

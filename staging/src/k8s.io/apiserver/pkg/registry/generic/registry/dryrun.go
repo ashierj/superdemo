@@ -121,3 +121,7 @@ func (s *DryRunnableStorage) copyInto(in, out runtime.Object) error {
 	_, _, err = s.Codec.Decode(data, nil, out)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

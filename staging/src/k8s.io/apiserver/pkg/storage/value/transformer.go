@@ -211,3 +211,7 @@ func getRequestInfoFromContext(ctx context.Context) *genericapirequest.RequestIn
 	}
 	return &genericapirequest.RequestInfo{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

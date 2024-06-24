@@ -125,3 +125,7 @@ func SafeEncodeString(s string) string {
 	}
 	return string(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

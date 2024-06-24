@@ -60,3 +60,7 @@ func (m *fakeNamespacedMetrics) List(metricName string, metricSelector labels.Se
 
 	return obj.(*v1beta1.ExternalMetricValueList), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

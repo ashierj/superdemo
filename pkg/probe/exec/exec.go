@@ -83,3 +83,7 @@ func (pr execProber) Probe(e exec.Cmd) (probe.Result, string, error) {
 	}
 	return probe.Success, string(data), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

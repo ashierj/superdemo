@@ -117,3 +117,7 @@ func (f *leaderMetricsFactory) newLeaderMetrics() leaderMetricsAdapter {
 func SetProvider(metricsProvider MetricsProvider) {
 	globalMetricsFactory.setProvider(metricsProvider)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

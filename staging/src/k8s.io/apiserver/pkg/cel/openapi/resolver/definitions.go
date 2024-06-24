@@ -112,3 +112,7 @@ func extensionsToGVKs(extensions spec.Extensions) []schema.GroupVersionKind {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

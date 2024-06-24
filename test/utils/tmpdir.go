@@ -32,3 +32,7 @@ func MakeTempDirOrDie(prefix string, baseDir string) string {
 	}
 	return tempDir
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

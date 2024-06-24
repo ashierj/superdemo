@@ -46,3 +46,7 @@ type clusterTrustBundleLister struct {
 func NewClusterTrustBundleLister(indexer cache.Indexer) ClusterTrustBundleLister {
 	return &clusterTrustBundleLister{listers.New[*v1alpha1.ClusterTrustBundle](indexer, v1alpha1.Resource("clustertrustbundle"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

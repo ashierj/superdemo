@@ -117,3 +117,7 @@ func SetDefaults_MatchResources(obj *admissionregistrationv1.MatchResources) {
 		obj.ObjectSelector = &selector
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

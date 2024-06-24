@@ -46,3 +46,7 @@ var _ = SIGDescribe("Conformance Tests", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

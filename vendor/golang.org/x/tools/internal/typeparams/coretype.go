@@ -120,3 +120,7 @@ func _NormalTerms(typ types.Type) ([]*types.Term, error) {
 		return []*types.Term{types.NewTerm(false, typ)}, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -173,3 +173,7 @@ func startOperationAndBlock(ch chan<- interface{}, quit <-chan interface{}) {
 	ch <- nil
 	<-quit
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

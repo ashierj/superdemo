@@ -80,3 +80,7 @@ func init() {
 	prometheus.MustRegister(snapDBSaveSec)
 	prometheus.MustRegister(snapDBFsyncSec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

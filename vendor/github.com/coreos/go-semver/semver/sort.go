@@ -36,3 +36,7 @@ func (s Versions) Less(i, j int) bool {
 func Sort(versions []*Version) {
 	sort.Sort(Versions(versions))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

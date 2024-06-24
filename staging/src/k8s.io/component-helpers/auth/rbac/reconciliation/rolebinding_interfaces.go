@@ -115,3 +115,7 @@ func (c RoleBindingClientAdapter) Update(in RoleBinding) (RoleBinding, error) {
 func (c RoleBindingClientAdapter) Delete(namespace, name string, uid types.UID) error {
 	return c.Client.RoleBindings(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{Preconditions: &metav1.Preconditions{UID: &uid}})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

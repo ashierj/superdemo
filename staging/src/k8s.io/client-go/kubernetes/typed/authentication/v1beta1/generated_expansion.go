@@ -21,3 +21,7 @@ package v1beta1
 type SelfSubjectReviewExpansion interface{}
 
 type TokenReviewExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

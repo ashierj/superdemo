@@ -19,3 +19,7 @@ package opencensus // import "go.opencensus.io"
 func Version() string {
 	return "0.24.0"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

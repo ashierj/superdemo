@@ -2493,3 +2493,7 @@ var (
 	// unauthenticated
 	RPCConnectRPCErrorCodeUnauthenticated = RPCConnectRPCErrorCodeKey.String("unauthenticated")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

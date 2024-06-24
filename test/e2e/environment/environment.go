@@ -35,3 +35,7 @@ func init() {
 	// This prevents adding additional ad-hoc environments in tests.
 	framework.ValidEnvironments.Freeze()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

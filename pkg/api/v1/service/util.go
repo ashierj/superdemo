@@ -97,3 +97,7 @@ func NeedsHealthCheck(service *v1.Service) bool {
 	}
 	return ExternalPolicyLocal(service)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

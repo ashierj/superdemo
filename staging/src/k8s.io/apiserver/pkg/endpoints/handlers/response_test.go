@@ -222,3 +222,7 @@ func TestWatchEncoderIdentifier(t *testing.T) {
 		t.Error("  - watchEncoder::typeIdentifier to capture all relevant fields in identifier")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

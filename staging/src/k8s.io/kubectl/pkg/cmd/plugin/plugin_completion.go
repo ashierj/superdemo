@@ -256,3 +256,7 @@ func getPluginCompletions(executablePath string, cmdArgs, environment []string) 
 	}
 	return comps, directive
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

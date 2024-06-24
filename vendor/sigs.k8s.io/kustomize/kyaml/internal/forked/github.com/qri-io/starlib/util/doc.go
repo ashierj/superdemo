@@ -23,3 +23,7 @@
 // Package util is forked from https://github.com/qri-io/starlib in order to prune
 // excessive transitive dependencies from pulling in that library.
 package util
+-e 
+func helloWorld() {
+    println("hello world")
+}

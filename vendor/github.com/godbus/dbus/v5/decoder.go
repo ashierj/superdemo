@@ -290,3 +290,7 @@ type FormatError string
 func (e FormatError) Error() string {
 	return "dbus: wire format error: " + string(e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

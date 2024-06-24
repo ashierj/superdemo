@@ -39,3 +39,7 @@ func (o *multiTransformer) Transform(m resmap.ResMap) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

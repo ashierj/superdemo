@@ -75,3 +75,7 @@ func GetTCPUserTimeout(conn net.Conn) (int, error) {
 	log()
 	return -1, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

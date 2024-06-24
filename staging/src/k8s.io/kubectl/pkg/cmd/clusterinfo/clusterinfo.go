@@ -165,3 +165,7 @@ func printService(out io.Writer, name, link string) {
 	ct.ResetColor()
 	fmt.Fprintln(out, "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@ func (c *uidCache) Has(uid types.UID) bool {
 	_, found := c.cache.Get(uid)
 	return found
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

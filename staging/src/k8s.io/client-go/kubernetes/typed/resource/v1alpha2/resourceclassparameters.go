@@ -206,3 +206,7 @@ func (c *resourceClassParameters) Apply(ctx context.Context, resourceClassParame
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

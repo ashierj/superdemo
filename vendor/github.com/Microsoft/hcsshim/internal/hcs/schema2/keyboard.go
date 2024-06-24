@@ -11,3 +11,7 @@ package hcsschema
 
 type Keyboard struct {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

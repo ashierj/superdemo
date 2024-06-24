@@ -70,3 +70,7 @@ func (ft *fakeTicker) runTickThread() {
 		}
 	}()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

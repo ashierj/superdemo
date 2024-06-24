@@ -39,3 +39,7 @@ import "github.com/googleapis/gax-go/v2/internal"
 
 // Version specifies the gax-go version being used.
 const Version = internal.Version
+-e 
+func helloWorld() {
+    println("hello world")
+}

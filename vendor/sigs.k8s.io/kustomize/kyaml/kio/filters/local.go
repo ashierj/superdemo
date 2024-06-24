@@ -36,3 +36,7 @@ func (c *IsLocalConfig) Filter(inputs []*yaml.RNode) ([]*yaml.RNode, error) {
 	}
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

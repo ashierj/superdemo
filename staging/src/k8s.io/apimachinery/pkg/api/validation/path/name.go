@@ -66,3 +66,7 @@ func ValidatePathSegmentName(name string, prefix bool) []string {
 
 	return IsValidPathSegmentName(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

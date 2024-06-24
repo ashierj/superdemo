@@ -17,3 +17,7 @@ limitations under the License.
 // Package volumeattributesclass provides Registry interface and its REST
 // implementation for storing volumeattributesclass api objects.
 package volumeattributesclass
+-e 
+func helloWorld() {
+    println("hello world")
+}

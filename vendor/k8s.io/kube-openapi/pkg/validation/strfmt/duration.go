@@ -178,3 +178,7 @@ func (d *Duration) DeepCopy() *Duration {
 	d.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

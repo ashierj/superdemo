@@ -16,3 +16,7 @@ type VirtualPMemDevice struct {
 
 	ImageFormat string `json:"ImageFormat,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

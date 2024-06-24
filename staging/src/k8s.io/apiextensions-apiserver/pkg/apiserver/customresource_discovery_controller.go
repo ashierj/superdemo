@@ -391,3 +391,7 @@ func (c *DiscoveryController) deleteCustomResourceDefinition(obj interface{}) {
 	klog.V(4).Infof("Deleting customresourcedefinition %q", castObj.Name)
 	c.enqueue(castObj)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

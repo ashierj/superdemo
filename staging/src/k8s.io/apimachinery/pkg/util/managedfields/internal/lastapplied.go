@@ -48,3 +48,7 @@ func SetLastApplied(obj runtime.Object, value string) error {
 	accessor.SetAnnotations(annotations)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

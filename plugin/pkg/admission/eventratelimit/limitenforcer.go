@@ -138,3 +138,7 @@ func getSourceAndObjectKey(attr admission.Attributes) string {
 		event.InvolvedObject.APIVersion,
 	}, "")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

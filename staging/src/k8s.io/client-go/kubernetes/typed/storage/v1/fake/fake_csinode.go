@@ -149,3 +149,7 @@ func (c *FakeCSINodes) Apply(ctx context.Context, cSINode *storagev1.CSINodeAppl
 	}
 	return obj.(*v1.CSINode), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

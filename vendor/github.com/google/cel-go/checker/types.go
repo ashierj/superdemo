@@ -312,3 +312,7 @@ func substituteParams(m *mapping, typeParams []*types.Type, typeParamToDyn bool)
 func newFunctionType(resultType *types.Type, argTypes ...*types.Type) *types.Type {
 	return types.NewOpaqueType("function", append([]*types.Type{resultType}, argTypes...)...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -340,3 +340,7 @@ func (t *testDescriber) Describe(namespace, name string, describerSettings descr
 func (t *testDescriber) describerFor(restClientGetter genericclioptions.RESTClientGetter, mapping *meta.RESTMapping) (describe.ResourceDescriber, error) {
 	return t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

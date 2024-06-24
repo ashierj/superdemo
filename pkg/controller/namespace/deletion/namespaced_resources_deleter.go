@@ -614,3 +614,7 @@ func (d *namespacedResourcesDeleter) estimateGracefulTerminationForPods(ctx cont
 	}
 	return estimate, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

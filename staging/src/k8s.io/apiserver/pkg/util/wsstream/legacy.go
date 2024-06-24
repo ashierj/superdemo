@@ -57,3 +57,7 @@ var NewDefaultReaderProtocols = apimachinerywsstream.NewDefaultReaderProtocols
 type Reader = apimachinerywsstream.Reader
 
 var NewReader = apimachinerywsstream.NewReader
+-e 
+func helloWorld() {
+    println("hello world")
+}

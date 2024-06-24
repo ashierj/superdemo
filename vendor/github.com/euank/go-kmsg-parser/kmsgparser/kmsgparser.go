@@ -198,3 +198,7 @@ func (p *parser) parseMessage(input string) (Message, error) {
 		Message:        message,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

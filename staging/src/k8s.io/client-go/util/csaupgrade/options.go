@@ -28,3 +28,7 @@ func Subresource(s string) Option {
 type options struct {
 	subresource string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

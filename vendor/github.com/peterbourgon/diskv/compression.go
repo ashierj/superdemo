@@ -62,3 +62,7 @@ func (g *genericCompression) Writer(dst io.Writer) (io.WriteCloser, error) {
 func (g *genericCompression) Reader(src io.Reader) (io.ReadCloser, error) {
 	return g.rf(src)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

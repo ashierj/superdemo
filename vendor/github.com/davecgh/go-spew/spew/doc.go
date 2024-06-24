@@ -209,3 +209,7 @@ inline with the output.  Since spew is intended to provide deep pretty printing
 capabilities on structures, it intentionally does not return any errors.
 */
 package spew
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -105,3 +105,7 @@ func Register() {
 		legacyregistry.MustRegister(updateAllNodesHealthDuration)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

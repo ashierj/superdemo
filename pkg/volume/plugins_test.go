@@ -169,3 +169,7 @@ func Test_ValidatePodTemplate(t *testing.T) {
 		t.Errorf("isPodTemplateValid(%v) returned (%v), want (%v)", pod.String(), got, "Error: pod specification does not contain any volume(s).")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

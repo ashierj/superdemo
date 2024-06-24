@@ -1689,3 +1689,7 @@ func (a *azureFileDriver) PrepareTest(ctx context.Context, f *framework.Framewor
 		Framework: f,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

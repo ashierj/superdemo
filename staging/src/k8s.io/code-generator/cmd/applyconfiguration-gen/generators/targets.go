@@ -310,3 +310,7 @@ func hasObjectMetaField(t *types.Type) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

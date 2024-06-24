@@ -23,3 +23,7 @@ type Object interface {
 type List interface {
 	DeepCopyList() List
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

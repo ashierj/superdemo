@@ -2854,3 +2854,7 @@ func maybeDefragBackend(cfg config.ServerConfig, be backend.Backend) error {
 func (s *EtcdServer) CorruptionChecker() CorruptionChecker {
 	return s.corruptionChecker
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

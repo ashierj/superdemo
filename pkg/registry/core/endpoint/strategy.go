@@ -82,3 +82,7 @@ func (endpointsStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.
 func (endpointsStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

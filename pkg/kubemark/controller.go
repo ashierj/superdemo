@@ -399,3 +399,7 @@ func newPodInformer(kubeClient kubeclient.Interface, resyncPeriod time.Duration)
 	podListWatch := cache.NewListWatchFromClient(kubeClient.CoreV1().RESTClient(), "pods", namespaceKubemark, fields.Everything())
 	return cache.NewSharedIndexInformer(podListWatch, &apiv1.Pod{}, resyncPeriod, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

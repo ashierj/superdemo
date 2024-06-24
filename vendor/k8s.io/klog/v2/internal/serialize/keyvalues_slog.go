@@ -153,3 +153,7 @@ func generateJSON(b *bytes.Buffer, v interface{}) {
 		formatAsJSON(b, v)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

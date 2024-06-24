@@ -1138,3 +1138,7 @@ func (p *marshalto) forward(varName string, varInt, protoSizer bool) {
 func init() {
 	generator.RegisterPlugin(NewMarshal())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

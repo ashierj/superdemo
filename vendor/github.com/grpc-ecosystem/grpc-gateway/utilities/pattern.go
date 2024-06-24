@@ -20,3 +20,7 @@ const (
 	// OpEnd is the least positive invalid opcode.
 	OpEnd
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

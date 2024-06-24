@@ -137,3 +137,7 @@ func Parse(bUnit string) (int64, error) {
 
 	return base * multiplier, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

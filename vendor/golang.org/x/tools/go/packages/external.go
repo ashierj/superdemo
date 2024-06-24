@@ -138,3 +138,7 @@ func findExternalDriver(cfg *Config) driver {
 		return &response, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

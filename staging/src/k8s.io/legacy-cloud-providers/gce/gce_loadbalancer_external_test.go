@@ -1746,3 +1746,7 @@ func copyFirewallObj(firewall *compute.Firewall) (*compute.Firewall, error) {
 	}
 	return &fw, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

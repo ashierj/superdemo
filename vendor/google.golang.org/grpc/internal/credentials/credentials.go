@@ -47,3 +47,7 @@ func ClientHandshakeInfoFromContext(ctx context.Context) any {
 func NewClientHandshakeInfoContext(ctx context.Context, chi any) context.Context {
 	return context.WithValue(ctx, clientHandshakeInfoKey{}, chi)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

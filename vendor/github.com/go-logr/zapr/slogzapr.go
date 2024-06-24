@@ -181,3 +181,7 @@ func (zl *zapLogger) WithGroup(name string) slogr.SlogSink {
 	newLogger.l = newLogger.l.With(zap.Namespace(name))
 	return &newLogger
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

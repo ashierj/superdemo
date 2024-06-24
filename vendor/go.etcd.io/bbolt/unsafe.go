@@ -37,3 +37,7 @@ func unsafeSlice(slice, data unsafe.Pointer, len int) {
 	s.Cap = len
 	s.Len = len
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

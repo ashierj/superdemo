@@ -84,3 +84,7 @@ var _ = SIGDescribe("StorageVersion resources", feature.StorageVersionAPI, func(
 		framework.ExpectNoError(err, "garbage-collecting storage version")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

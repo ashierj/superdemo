@@ -301,3 +301,7 @@ type membersError struct {
 func (e membersError) Error() string {
 	return e.Message
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

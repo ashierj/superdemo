@@ -127,3 +127,7 @@ func StringArray(name string, value []string, usage string) *[]string {
 func StringArrayP(name, shorthand string, value []string, usage string) *[]string {
 	return CommandLine.StringArrayP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

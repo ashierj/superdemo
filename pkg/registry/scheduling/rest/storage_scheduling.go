@@ -122,3 +122,7 @@ func AddSystemPriorityClasses() genericapiserver.PostStartHookFunc {
 func (p RESTStorageProvider) GroupName() string {
 	return scheduling.GroupName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -319,3 +319,7 @@ func (m *Helper) replaceResource(c RESTClient, resource, namespace, name string,
 		Do(context.TODO()).
 		Get()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

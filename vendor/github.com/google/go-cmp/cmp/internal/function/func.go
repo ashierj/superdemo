@@ -97,3 +97,7 @@ func NameOf(v reflect.Value) string {
 	}
 	return strings.TrimSuffix(name, ".")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

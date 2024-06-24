@@ -63,3 +63,7 @@ func (h *Handler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 	http.NotFound(rw, req)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

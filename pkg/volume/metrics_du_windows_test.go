@@ -30,3 +30,7 @@ func getExpectedBlockSize(path string) int64 {
 	}
 	return usage.Bytes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -14,3 +14,7 @@ package mousetrap
 func StartedByExplorer() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

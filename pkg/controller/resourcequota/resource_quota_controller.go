@@ -558,3 +558,7 @@ func GetQuotableResources(discoveryFunc NamespacedResourcesFunc) (map[schema.Gro
 	// return the original discovery error (if any) in addition to the list
 	return quotableGroupVersionResources, discoveryErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

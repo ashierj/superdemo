@@ -258,3 +258,7 @@ foo	12m (x3 over 20m)	Normal	ScalingReplicaSet	Deployment/bar	Scaled up replica 
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -104,3 +104,7 @@ func OriginFromCustomPlugin(res *Resource) (*Origin, error) {
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -252,3 +252,7 @@ func (b *EndpointsApplyConfiguration) WithSubsets(values ...*EndpointSubsetApply
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

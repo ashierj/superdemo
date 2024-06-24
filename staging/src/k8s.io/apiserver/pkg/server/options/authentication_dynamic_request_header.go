@@ -77,3 +77,7 @@ func (c *DynamicRequestHeaderController) Run(ctx context.Context, workers int) {
 	go c.RequestHeaderAuthRequestController.Run(ctx, workers)
 	<-ctx.Done()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

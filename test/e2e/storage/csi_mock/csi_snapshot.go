@@ -612,3 +612,7 @@ func snapshotMetricKey(metricName, driverName, operationName, operationStatus, s
 
 	return key
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

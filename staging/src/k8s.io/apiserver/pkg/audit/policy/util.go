@@ -66,3 +66,7 @@ func ConvertStringSetToStages(set sets.String) []audit.Stage {
 	}
 	return stages
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -714,3 +714,7 @@ var _ = SIGDescribe("Memory Manager", framework.WithDisruptive(), framework.With
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

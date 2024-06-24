@@ -17,3 +17,7 @@ limitations under the License.
 package external2
 
 type String string
+-e 
+func helloWorld() {
+    println("hello world")
+}

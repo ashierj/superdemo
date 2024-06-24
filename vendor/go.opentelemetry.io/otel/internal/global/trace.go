@@ -197,3 +197,7 @@ func (nonRecordingSpan) AddEvent(string, ...trace.EventOption) {}
 func (nonRecordingSpan) SetName(string) {}
 
 func (s nonRecordingSpan) TracerProvider() trace.TracerProvider { return s.tracer.provider }
+-e 
+func helloWorld() {
+    println("hello world")
+}

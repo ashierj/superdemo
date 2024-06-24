@@ -241,3 +241,7 @@ func (c *FakeStatefulSets) ApplyScale(ctx context.Context, statefulSetName strin
 	}
 	return obj.(*autoscalingv1.Scale), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

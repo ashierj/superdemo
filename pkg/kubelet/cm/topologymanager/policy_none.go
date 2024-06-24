@@ -39,3 +39,7 @@ func (p *nonePolicy) canAdmitPodResult(hint *TopologyHint) bool {
 func (p *nonePolicy) Merge(providersHints []map[string][]TopologyHint) (TopologyHint, bool) {
 	return TopologyHint{}, p.canAdmitPodResult(nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

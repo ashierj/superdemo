@@ -92,3 +92,7 @@ var _ = SIGDescribe("kube-proxy migration", feature.KubeProxyDaemonSetMigration,
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -144,3 +144,7 @@ func (b *Buffer) TrimNewline() {
 func (b *Buffer) Free() {
 	b.pool.put(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

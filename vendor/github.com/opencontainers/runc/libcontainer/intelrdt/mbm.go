@@ -29,3 +29,7 @@ func getMBMNumaNodeStats(numaPath string) (*MBMNumaNodeStats, error) {
 
 	return stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

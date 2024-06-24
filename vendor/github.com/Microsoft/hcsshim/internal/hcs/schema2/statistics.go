@@ -27,3 +27,7 @@ type Statistics struct {
 
 	Storage *StorageStats `json:"Storage,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

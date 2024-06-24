@@ -1492,3 +1492,7 @@ resources:
 		t.Errorf("kms v2 legacy secret data diff (-want, +got):\n%s", diff)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -332,3 +332,7 @@ func (r *CorrelatedObject) Index(i int) *CorrelatedObject {
 	r.children[i] = res
 	return res
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

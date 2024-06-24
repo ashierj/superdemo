@@ -387,3 +387,7 @@ func getDiff(a, b map[string]interface{}) (map[string]interface{}, error) {
 	}
 	return into, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (b *StatefulSetPersistentVolumeClaimRetentionPolicyApplyConfiguration) With
 	b.WhenScaled = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func TestSetDefaultPreempting(t *testing.T) {
 		t.Errorf("Expected PriorityClass.Preempting value: %+v\ngot: %+v\n", apiv1.PreemptLowerPriority, output.PreemptionPolicy)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

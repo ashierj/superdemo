@@ -118,3 +118,7 @@ func WithUnaryServerChain(interceptors ...grpc.UnaryServerInterceptor) grpc.Serv
 func WithStreamServerChain(interceptors ...grpc.StreamServerInterceptor) grpc.ServerOption {
 	return grpc.StreamInterceptor(ChainStreamServer(interceptors...))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

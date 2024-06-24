@@ -35,3 +35,7 @@ func TestClone(t *testing.T) {
 		t.Fail()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

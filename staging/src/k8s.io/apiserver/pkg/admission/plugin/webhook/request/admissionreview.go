@@ -282,3 +282,7 @@ func CreateV1beta1AdmissionReview(uid types.UID, versionedAttributes *admission.
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

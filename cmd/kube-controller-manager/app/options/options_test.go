@@ -1399,3 +1399,7 @@ func (r sortedGCIgnoredResources) Less(i, j int) bool {
 func (r sortedGCIgnoredResources) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

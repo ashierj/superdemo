@@ -153,3 +153,7 @@ func (p *PerHost) AddHost(host string) {
 	}
 	p.bypassHosts = append(p.bypassHosts, host)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

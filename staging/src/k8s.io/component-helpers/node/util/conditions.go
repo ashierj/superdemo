@@ -55,3 +55,7 @@ func SetNodeCondition(c clientset.Interface, node types.NodeName, condition v1.N
 	_, err = c.CoreV1().Nodes().PatchStatus(context.TODO(), string(node), patch)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

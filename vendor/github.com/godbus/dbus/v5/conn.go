@@ -994,3 +994,7 @@ func (tracker *callTracker) finalizeAllWithError(sequenceGen *sequenceGenerator,
 		call.done()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

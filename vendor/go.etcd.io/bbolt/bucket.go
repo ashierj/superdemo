@@ -797,3 +797,7 @@ func cloneBytes(v []byte) []byte {
 	copy(clone, v)
 	return clone
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

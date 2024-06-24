@@ -227,3 +227,7 @@ func nearlyRemovedBetaMultipleVersionNoxuCRD(scope apiextensionsv1beta1.Resource
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

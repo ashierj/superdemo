@@ -254,3 +254,7 @@ func (c *ingresses) ApplyStatus(ctx context.Context, ingress *extensionsv1beta1.
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

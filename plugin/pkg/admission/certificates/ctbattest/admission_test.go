@@ -350,3 +350,7 @@ func (t *testAttributes) GetOperation() admission.Operation {
 func (t *testAttributes) GetUserInfo() user.Info {
 	return &user.DefaultInfo{Name: "ignored"}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

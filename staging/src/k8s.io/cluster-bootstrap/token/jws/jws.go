@@ -80,3 +80,7 @@ func DetachedTokenIsValid(detachedToken, content, tokenID, tokenSecret string) b
 	}
 	return detachedToken == newToken
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

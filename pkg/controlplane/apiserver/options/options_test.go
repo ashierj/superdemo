@@ -292,3 +292,7 @@ func TestAddFlags(t *testing.T) {
 		t.Errorf("Got different run options than expected.\nDifference detected on:\n%s", cmp.Diff(expected, s, cmpopts.IgnoreUnexported(admission.Plugins{}, kubeoptions.OIDCAuthenticationOptions{})))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

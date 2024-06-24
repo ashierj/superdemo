@@ -55,3 +55,7 @@ func MkdirAllNewAs(path string, mode os.FileMode, ownerUID, ownerGID int) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

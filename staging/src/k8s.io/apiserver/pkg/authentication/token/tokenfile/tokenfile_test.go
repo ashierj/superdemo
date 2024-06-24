@@ -150,3 +150,7 @@ func newWithContents(t *testing.T, contents string) (auth *TokenAuthenticator, e
 
 	return NewCSV(f.Name())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

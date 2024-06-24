@@ -157,3 +157,7 @@ func decryptBlock(l, r uint32, c *Cipher) (uint32, uint32) {
 	xr ^= c.p[0]
 	return xr, xl
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

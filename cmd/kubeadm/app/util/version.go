@@ -263,3 +263,7 @@ func validateStableVersion(remoteVersion, clientVersion string) (string, error) 
 	}
 	return remoteVersion, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

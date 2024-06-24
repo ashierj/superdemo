@@ -41,3 +41,7 @@ func NewAuthenticator() authenticator.Request {
 		}, true, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

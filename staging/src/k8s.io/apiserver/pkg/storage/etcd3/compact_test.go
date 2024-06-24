@@ -82,3 +82,7 @@ func TestCompactConflict(t *testing.T) {
 		t.Errorf("Unexpected curTime (%v) != curTime2 (%v)", curTime, curTime2)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

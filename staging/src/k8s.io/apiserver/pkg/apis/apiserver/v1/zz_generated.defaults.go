@@ -44,3 +44,7 @@ func SetObjectDefaults_EncryptionConfiguration(in *EncryptionConfiguration) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

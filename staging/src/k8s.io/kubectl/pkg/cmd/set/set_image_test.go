@@ -796,3 +796,7 @@ func TestSetImageResolver(t *testing.T) {
 		t.Errorf("expected: %s, found: %s", "custom", out)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

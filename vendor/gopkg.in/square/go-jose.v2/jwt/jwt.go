@@ -167,3 +167,7 @@ func tryJWKS(headers []jose.Header, key interface{}) interface{} {
 
 	return keys[0].Key
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

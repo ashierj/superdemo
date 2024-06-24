@@ -32,3 +32,7 @@ func (f *KubeletFlags) addOSFlags(fs *pflag.FlagSet) {
 		"Set the PriorityClass associated with kubelet process, the default ones are available at "+
 			"https://docs.microsoft.com/en-us/windows/win32/procthread/scheduling-priorities")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

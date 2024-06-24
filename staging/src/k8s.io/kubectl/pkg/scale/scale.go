@@ -212,3 +212,7 @@ func WaitForScaleHasDesiredReplicas(sClient scaleclient.ScalesGetter, gr schema.
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

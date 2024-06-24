@@ -58,3 +58,7 @@ func GetContainerHintsFromFile(containerHintsFile string) (ContainerHints, error
 
 	return cHints, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

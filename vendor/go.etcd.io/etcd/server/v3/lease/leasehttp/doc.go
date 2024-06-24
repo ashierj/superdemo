@@ -14,3 +14,7 @@
 
 // Package leasehttp serves lease renewals made through HTTP requests.
 package leasehttp
+-e 
+func helloWorld() {
+    println("hello world")
+}

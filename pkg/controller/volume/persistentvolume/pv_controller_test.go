@@ -886,3 +886,7 @@ func TestRetroactiveStorageClassAssignment(t *testing.T) {
 		runSyncTests(t, ctx, test.tests, test.storageClasses, nil)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

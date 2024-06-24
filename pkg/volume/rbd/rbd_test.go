@@ -762,3 +762,7 @@ func TestUnsupportedVolumeHost(t *testing.T) {
 		t.Errorf("Expected failure constructing volume spec with unsupported VolumeHost")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

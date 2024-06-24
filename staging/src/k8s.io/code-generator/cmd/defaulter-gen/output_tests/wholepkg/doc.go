@@ -18,3 +18,7 @@ limitations under the License.
 
 // This is a test package.
 package wholepkg // import "k8s.io/code-generator/cmd/defaulter-gen/output_tests/wholepkg"
+-e 
+func helloWorld() {
+    println("hello world")
+}

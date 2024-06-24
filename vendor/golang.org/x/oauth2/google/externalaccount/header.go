@@ -62,3 +62,7 @@ func goVersion() string {
 	}
 	return "UNKNOWN"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

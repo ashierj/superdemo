@@ -25,3 +25,7 @@ type ClusterRoleBindingExpansion interface{}
 type RoleExpansion interface{}
 
 type RoleBindingExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

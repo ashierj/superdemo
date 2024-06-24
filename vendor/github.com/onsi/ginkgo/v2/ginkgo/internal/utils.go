@@ -84,3 +84,7 @@ func FailedSuitesReport(suites TestSuites, f formatter.Formatter) string {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -63,3 +63,7 @@ func (mp *MemoryManagerCheckpoint) VerifyChecksum() error {
 	mp.Checksum = ck
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

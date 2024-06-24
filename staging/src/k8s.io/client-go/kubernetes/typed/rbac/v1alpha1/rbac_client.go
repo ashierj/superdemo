@@ -120,3 +120,7 @@ func (c *RbacV1alpha1Client) RESTClient() rest.Interface {
 	}
 	return c.restClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

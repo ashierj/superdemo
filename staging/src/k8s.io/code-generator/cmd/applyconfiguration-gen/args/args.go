@@ -86,3 +86,7 @@ func (args *Args) Validate() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

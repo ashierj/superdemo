@@ -155,3 +155,7 @@ func supportsQuotas(dir string) bool {
 	supportsQuota, err := fsquota.SupportsQuotas(mount.New(""), dir)
 	return supportsQuota && err == nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

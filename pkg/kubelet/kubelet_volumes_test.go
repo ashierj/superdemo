@@ -736,3 +736,7 @@ func (f *stubBlockVolume) SupportsMetrics() bool {
 func (f *stubBlockVolume) GetMetrics() (*volume.Metrics, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

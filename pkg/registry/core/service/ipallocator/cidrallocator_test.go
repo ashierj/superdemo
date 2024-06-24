@@ -487,3 +487,7 @@ func newServiceCIDR(name, cidr string) *networkingv1alpha1.ServiceCIDR {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

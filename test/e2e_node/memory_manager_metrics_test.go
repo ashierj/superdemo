@@ -153,3 +153,7 @@ var _ = SIGDescribe("Memory Manager Metrics", framework.WithSerial(), feature.Me
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

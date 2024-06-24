@@ -52,3 +52,7 @@ func TestDoWithPanic(t *testing.T) {
 		t.Errorf("Expected counter to be %v, but it was %v", len(tests), counter)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

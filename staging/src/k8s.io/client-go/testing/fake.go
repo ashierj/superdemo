@@ -218,3 +218,7 @@ func (c *Fake) Actions() []Action {
 	copy(fa, c.actions)
 	return fa
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

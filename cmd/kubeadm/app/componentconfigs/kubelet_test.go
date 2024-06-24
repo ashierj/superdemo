@@ -277,3 +277,7 @@ func TestKubeletFromCluster(t *testing.T) {
 		return kubeletHandler.FromCluster(client, testClusterCfg())
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

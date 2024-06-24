@@ -1744,3 +1744,7 @@ type LogFilter interface {
 func SetLogFilter(filter LogFilter) {
 	logging.filter = filter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

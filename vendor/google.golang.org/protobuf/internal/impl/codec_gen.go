@@ -5722,3 +5722,7 @@ var wireTypes = map[protoreflect.Kind]protowire.Type{
 	protoreflect.MessageKind:  protowire.BytesType,
 	protoreflect.GroupKind:    protowire.StartGroupType,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

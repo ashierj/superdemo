@@ -158,3 +158,7 @@ func meetPreconditions(patchObj map[string]interface{}, fns ...mergepatch.Precon
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -950,3 +950,7 @@ func TestContextCanceled(t *testing.T) {
 		t.Errorf("Expected 'operation interrupted' but got %v", validationResult.Decisions)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

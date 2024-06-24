@@ -24,3 +24,7 @@ limitations under the License.
 // MutatingWebhookConfiguration and ValidatingWebhookConfiguration are for the
 // new dynamic admission controller configuration.
 package v1 // import "k8s.io/api/admissionregistration/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (c *FakeRbacV1beta1) RESTClient() rest.Interface {
 	var ret *rest.RESTClient
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

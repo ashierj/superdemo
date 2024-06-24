@@ -96,3 +96,7 @@ func DialSCTPExt(network string, laddr, raddr *SCTPAddr, options InitMsg) (*SCTP
 func dialSCTPExtConfig(network string, laddr, raddr *SCTPAddr, options InitMsg, control func(network, address string, c syscall.RawConn) error) (*SCTPConn, error) {
 	return nil, ErrUnsupported
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

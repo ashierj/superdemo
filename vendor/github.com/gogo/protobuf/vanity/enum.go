@@ -76,3 +76,7 @@ func TurnOffGoEnumStringer(enum *descriptor.EnumDescriptorProto) {
 func TurnOnEnumStringer(enum *descriptor.EnumDescriptorProto) {
 	SetBoolEnumOption(gogoproto.E_EnumStringer, true)(enum)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

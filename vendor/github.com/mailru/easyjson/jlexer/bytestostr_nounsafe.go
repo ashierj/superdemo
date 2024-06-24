@@ -11,3 +11,7 @@ package jlexer
 func bytesToStr(data []byte) string {
 	return string(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

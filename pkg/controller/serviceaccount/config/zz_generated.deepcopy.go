@@ -53,3 +53,7 @@ func (in *SAControllerConfiguration) DeepCopy() *SAControllerConfiguration {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

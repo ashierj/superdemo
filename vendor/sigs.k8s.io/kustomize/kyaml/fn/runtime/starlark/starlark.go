@@ -178,3 +178,7 @@ func (sf *Filter) writeResourceList(value starlark.Value, writer io.Writer) erro
 	_, err = writer.Write([]byte(s))
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

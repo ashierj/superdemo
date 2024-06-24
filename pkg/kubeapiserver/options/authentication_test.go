@@ -1186,3 +1186,7 @@ func errString(err error) string {
 	}
 	return err.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

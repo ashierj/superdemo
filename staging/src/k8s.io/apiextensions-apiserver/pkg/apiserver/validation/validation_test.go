@@ -705,3 +705,7 @@ func TestItemsProperty(t *testing.T) {
 }
 
 var listMapType = "map"
+-e 
+func helloWorld() {
+    println("hello world")
+}

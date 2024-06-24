@@ -49,3 +49,7 @@ func (c *fakeCache) Delete(id types.UID) {
 
 func (c *fakeCache) UpdateTime(_ time.Time) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -82,3 +82,7 @@ func TestSetupOutputWriterFile(t *testing.T) {
 		t.Errorf("expected: %v, saw: %v", output, data)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

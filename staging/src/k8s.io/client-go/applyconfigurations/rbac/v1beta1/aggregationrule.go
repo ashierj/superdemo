@@ -46,3 +46,7 @@ func (b *AggregationRuleApplyConfiguration) WithClusterRoleSelectors(values ...*
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

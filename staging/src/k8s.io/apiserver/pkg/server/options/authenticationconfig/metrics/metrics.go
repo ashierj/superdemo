@@ -86,3 +86,7 @@ func getHash(data string) string {
 	}
 	return fmt.Sprintf("sha256:%x", sha256.Sum256([]byte(data)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

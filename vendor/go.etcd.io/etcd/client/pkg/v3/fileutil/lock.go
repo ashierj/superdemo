@@ -24,3 +24,7 @@ var (
 )
 
 type LockedFile struct{ *os.File }
+-e 
+func helloWorld() {
+    println("hello world")
+}

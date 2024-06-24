@@ -112,3 +112,7 @@ func ensureJobRunning(ctx context.Context, c clientset.Interface, ns, jobName st
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

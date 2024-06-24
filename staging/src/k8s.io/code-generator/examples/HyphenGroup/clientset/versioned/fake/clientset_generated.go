@@ -83,3 +83,7 @@ var (
 func (c *Clientset) ExampleGroupV1() examplegroupv1.ExampleGroupV1Interface {
 	return &fakeexamplegroupv1.FakeExampleGroupV1{Fake: &c.Fake}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

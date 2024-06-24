@@ -187,3 +187,7 @@ func (fs FS) NewXfrmStat() (XfrmStat, error) {
 
 	return x, s.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

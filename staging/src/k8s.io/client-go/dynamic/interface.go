@@ -61,3 +61,7 @@ func LegacyAPIPathResolverFunc(kind schema.GroupVersionKind) string {
 	}
 	return "/apis"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

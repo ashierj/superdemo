@@ -170,3 +170,7 @@ func DefaultOffAdmissionPlugins() sets.String {
 
 	return sets.NewString(AllOrderedPlugins...).Difference(defaultOnPlugins)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

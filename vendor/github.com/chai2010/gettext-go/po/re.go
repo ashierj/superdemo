@@ -56,3 +56,7 @@ func (p *Message) isInvalidLine(s string) bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

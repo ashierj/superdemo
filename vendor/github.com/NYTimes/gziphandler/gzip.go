@@ -530,3 +530,7 @@ func parseCoding(s string) (coding string, qvalue float64, err error) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

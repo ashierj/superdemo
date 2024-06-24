@@ -27,3 +27,7 @@ type Ttest struct {
 type TypeMeta struct {
 	Fortest bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ var (
 func init() {
 	legacyregistry.MustRegister(regenerationCounter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

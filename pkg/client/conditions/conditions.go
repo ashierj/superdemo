@@ -64,3 +64,7 @@ func PodCompleted(event watch.Event) (bool, error) {
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

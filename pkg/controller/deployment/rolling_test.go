@@ -384,3 +384,7 @@ func TestDeploymentController_scaleDownOldReplicaSetsForRollingUpdate(t *testing
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

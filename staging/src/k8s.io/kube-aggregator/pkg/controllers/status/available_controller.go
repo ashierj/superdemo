@@ -623,3 +623,7 @@ func (c *AvailableConditionController) setUnavailableCounter(originalAPIService,
 		c.metrics.UnavailableCounter(newAPIService.Name, reason).Inc()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

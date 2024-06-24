@@ -101,3 +101,7 @@ func TestClear(t *testing.T) {
 		t.Errorf("Expected %v, got %v", 0, fakeRecorder.counter)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

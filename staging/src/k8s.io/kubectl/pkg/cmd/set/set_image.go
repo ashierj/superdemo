@@ -331,3 +331,7 @@ func hasWildcardKey(containerImages map[string]string) bool {
 func resolveImageFunc(in string) (string, error) {
 	return in, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

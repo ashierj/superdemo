@@ -525,3 +525,7 @@ func produceConfigMapEvents(ctx context.Context, f *framework.Framework, stopc <
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

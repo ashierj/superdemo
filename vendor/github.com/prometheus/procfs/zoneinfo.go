@@ -194,3 +194,7 @@ func parseZoneinfo(zoneinfoData []byte) ([]Zoneinfo, error) {
 	}
 	return zoneinfo, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

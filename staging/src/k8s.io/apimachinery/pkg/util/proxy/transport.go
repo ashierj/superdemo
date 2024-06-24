@@ -270,3 +270,7 @@ func (t *Transport) rewriteResponse(req *http.Request, resp *http.Response) (*ht
 
 	return resp, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

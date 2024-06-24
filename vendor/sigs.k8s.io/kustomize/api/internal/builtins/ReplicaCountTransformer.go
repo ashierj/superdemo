@@ -71,3 +71,7 @@ func (p *ReplicaCountTransformerPlugin) createMatcher(fs types.FieldSpec) resmap
 func NewReplicaCountTransformerPlugin() resmap.TransformerPlugin {
 	return &ReplicaCountTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

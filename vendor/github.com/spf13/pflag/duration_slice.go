@@ -164,3 +164,7 @@ func DurationSlice(name string, value []time.Duration, usage string) *[]time.Dur
 func DurationSliceP(name, shorthand string, value []time.Duration, usage string) *[]time.Duration {
 	return CommandLine.DurationSliceP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

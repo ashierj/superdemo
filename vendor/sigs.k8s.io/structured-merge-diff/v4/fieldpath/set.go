@@ -503,3 +503,7 @@ func (s *SetNodeMap) Leaves() *SetNodeMap {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

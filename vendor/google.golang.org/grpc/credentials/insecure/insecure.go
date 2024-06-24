@@ -96,3 +96,7 @@ func (insecureBundle) PerRPCCredentials() credentials.PerRPCCredentials {
 func (insecureBundle) TransportCredentials() credentials.TransportCredentials {
 	return NewCredentials()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

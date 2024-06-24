@@ -102,3 +102,7 @@ func TestEdgeHolder(t *testing.T) {
 		t.Errorf("expected 0")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

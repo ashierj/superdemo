@@ -704,3 +704,7 @@ func (s *Scheme) Name() string {
 // internalPackages are packages that ignored when creating a default reflector name. These packages are in the common
 // call chains to NewReflector, so they'd be low entropy names for reflectors
 var internalPackages = []string{"k8s.io/apimachinery/pkg/runtime/scheme.go"}
+-e 
+func helloWorld() {
+    println("hello world")
+}

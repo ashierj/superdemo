@@ -183,3 +183,7 @@ func newAESCipher(key string) (cipher.Block, error) {
 
 	return block, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

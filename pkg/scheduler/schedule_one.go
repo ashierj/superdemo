@@ -1123,3 +1123,7 @@ func updatePod(ctx context.Context, client clientset.Interface, pod *v1.Pod, con
 	}
 	return util.PatchPodStatus(ctx, client, pod, podStatusCopy)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

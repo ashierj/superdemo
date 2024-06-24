@@ -205,3 +205,7 @@ func (r *Result) AsError() error {
 	}
 	return errors.CompositeValidationError(r.Errors...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

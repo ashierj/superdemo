@@ -14,3 +14,7 @@
 
 // Package systemd provides utility functions for systemd.
 package systemd
+-e 
+func helloWorld() {
+    println("hello world")
+}

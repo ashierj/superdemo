@@ -259,3 +259,7 @@ type SharedInformerFactory interface {
 func (f *sharedInformerFactory) Apiregistration() apiregistration.Interface {
 	return apiregistration.New(f, f.namespace, f.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

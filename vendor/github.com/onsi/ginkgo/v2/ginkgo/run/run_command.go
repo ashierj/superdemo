@@ -230,3 +230,7 @@ func orcMessage(iteration int) string {
 		return "No, seriously... you can probably stop now.\n"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

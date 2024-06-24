@@ -1062,3 +1062,7 @@ func (ipoib *IPoIB) Type() string {
 type LinkNotFoundError struct {
 	error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

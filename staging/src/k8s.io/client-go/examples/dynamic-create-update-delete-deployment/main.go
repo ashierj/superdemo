@@ -204,3 +204,7 @@ func prompt() {
 	}
 	fmt.Println()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

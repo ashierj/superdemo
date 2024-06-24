@@ -248,3 +248,7 @@ func (f *ignoreFatalT) Fatalf(format string, args ...any) {
 	f.fatalRecorded = true
 	f.T.Logf("[IGNORED] "+format, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

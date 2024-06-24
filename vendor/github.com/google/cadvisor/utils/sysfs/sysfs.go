@@ -576,3 +576,7 @@ func GetUniqueCPUPropertyCount(cpuAttributesPath string, propertyName string) in
 	}
 	return len(uniques)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

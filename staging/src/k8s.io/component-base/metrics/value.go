@@ -68,3 +68,7 @@ func NewLazyMetricWithTimestamp(t time.Time, m Metric) Metric {
 
 	return prometheus.NewMetricWithTimestamp(t, m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

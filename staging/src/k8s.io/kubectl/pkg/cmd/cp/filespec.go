@@ -159,3 +159,7 @@ func stripPathShortcuts(p string) string {
 
 	return newPath
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

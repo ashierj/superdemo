@@ -106,3 +106,7 @@ func (mq *LeaseExpiredNotifier) Poll() *LeaseWithTime {
 func (mq *LeaseExpiredNotifier) Len() int {
 	return len(mq.m)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

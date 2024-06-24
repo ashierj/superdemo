@@ -866,3 +866,7 @@ func makeFakeCommandAction(stdout string, err error, cmdFn func()) testexec.Fake
 		return testexec.InitFakeCmd(&c, cmd, args...)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

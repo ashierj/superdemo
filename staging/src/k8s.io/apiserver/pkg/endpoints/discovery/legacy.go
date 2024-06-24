@@ -78,3 +78,7 @@ func (s *legacyRootAPIHandler) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 	responsewriters.WriteObjectNegotiated(s.serializer, negotiation.DefaultEndpointRestrictions, schema.GroupVersion{}, resp, req, http.StatusOK, apiVersions, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -157,3 +157,7 @@ func TestAddRemoveFinalizer(t *testing.T) {
 		t.Errorf("Failed to remove finalizer '%s' in service %s", ILBFinalizerV1, svc.Name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -971,3 +971,7 @@ type InternalMessageInfo struct {
 	merge     *mergeInfo
 	discard   *discardInfo
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

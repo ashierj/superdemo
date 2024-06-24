@@ -187,3 +187,7 @@ func simpleEndpointSlice(name, ip string, addrType discovery.AddressType) *disco
 		}},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

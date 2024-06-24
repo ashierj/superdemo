@@ -7,3 +7,7 @@ import (
 )
 
 var X = "allowed"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -115,3 +115,7 @@ func (p *podContainerDeletor) deleteContainersInPod(filterContainerID string, po
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

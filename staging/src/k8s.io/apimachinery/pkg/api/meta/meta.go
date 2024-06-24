@@ -641,3 +641,7 @@ func extractFromTypeMeta(v reflect.Value, a *genericAccessor) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

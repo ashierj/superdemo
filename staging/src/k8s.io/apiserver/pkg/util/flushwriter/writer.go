@@ -51,3 +51,7 @@ func (fw *flushWriter) Write(p []byte) (n int, err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

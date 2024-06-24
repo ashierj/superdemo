@@ -43,3 +43,7 @@ type Policy interface {
 	// GetAllocatableCPUs returns the total set of CPUs available for allocation.
 	GetAllocatableCPUs(m state.State) cpuset.CPUSet
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

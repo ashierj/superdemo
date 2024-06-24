@@ -13,3 +13,7 @@ package hcsschema
 type HvSocket2 struct {
 	HvSocketConfig *HvSocketSystemConfig `json:"HvSocketConfig,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

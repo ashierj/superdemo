@@ -82,3 +82,7 @@ func strNeedsEscape(val string) int {
 
 	return count
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

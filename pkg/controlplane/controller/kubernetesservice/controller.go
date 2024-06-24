@@ -273,3 +273,7 @@ func checkServiceFormat(s *corev1.Service, ports []corev1.ServicePort, serviceTy
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

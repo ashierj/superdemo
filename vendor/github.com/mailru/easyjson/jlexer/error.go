@@ -13,3 +13,7 @@ type LexerError struct {
 func (l *LexerError) Error() string {
 	return fmt.Sprintf("parse error: %s near offset %d of '%s'", l.Reason, l.Offset, l.Data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

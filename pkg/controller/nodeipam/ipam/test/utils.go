@@ -64,3 +64,7 @@ func WaitForUpdatedNodeWithTimeout(nodeHandler *testutil.FakeNodeHandler, number
 		return false, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

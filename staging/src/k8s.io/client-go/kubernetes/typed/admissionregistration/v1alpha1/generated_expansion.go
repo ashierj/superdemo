@@ -21,3 +21,7 @@ package v1alpha1
 type ValidatingAdmissionPolicyExpansion interface{}
 
 type ValidatingAdmissionPolicyBindingExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

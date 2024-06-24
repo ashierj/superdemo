@@ -10,3 +10,7 @@
 // references if the field is name image and it is underneath a field called
 // either containers or initContainers.
 package imagetag
+-e 
+func helloWorld() {
+    println("hello world")
+}

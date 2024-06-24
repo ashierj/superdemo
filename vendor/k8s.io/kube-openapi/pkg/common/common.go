@@ -287,3 +287,7 @@ func GenerateOpenAPIV3OneOfSchema(types []string) (oneOf []spec.Schema) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

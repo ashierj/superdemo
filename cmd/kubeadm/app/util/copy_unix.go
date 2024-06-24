@@ -27,3 +27,7 @@ import (
 func CopyDir(src string, dst string) ([]byte, error) {
 	return exec.Command("cp", "-r", src, dst).CombinedOutput()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -206,3 +206,7 @@ func parseUnionMembers(t *types.Type) (*union, []error) {
 	}
 	return u, append(errors, u.isValid()...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -22,3 +22,7 @@ package e2enode
 func countSRIOVDevices() (int, error) {
 	return 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

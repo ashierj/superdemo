@@ -325,3 +325,7 @@ func TestListWithIndexer(t *testing.T) {
 	// List them
 	verifyList(ktesting.WithStep(tCtx, "after delete"), cache, objs, objs[0])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -191,3 +191,7 @@ func parsePatchMetadata(extensions map[string]interface{}) (string, []string, er
 	}
 	return mergeKey, patchStrategies, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

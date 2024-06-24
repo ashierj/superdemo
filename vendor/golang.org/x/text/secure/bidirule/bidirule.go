@@ -334,3 +334,7 @@ func (t *Transformer) advanceString(s string) (n int, ok bool) {
 	}
 	return n, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

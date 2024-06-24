@@ -16,3 +16,7 @@ var OpenAPIMustAsset = map[string]func(string) []byte{
 }
 
 const DefaultOpenAPI = "v1.21.2"
+-e 
+func helloWorld() {
+    println("hello world")
+}

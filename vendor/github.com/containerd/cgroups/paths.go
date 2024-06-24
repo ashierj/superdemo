@@ -104,3 +104,7 @@ func errorPath(err error) Path {
 		return "", err
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

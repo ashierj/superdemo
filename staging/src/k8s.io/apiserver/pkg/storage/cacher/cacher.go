@@ -1373,3 +1373,7 @@ func (c *immediateCloseWatcher) ResultChan() <-chan watch.Event {
 func (c *immediateCloseWatcher) Stop() {
 	// no-op
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

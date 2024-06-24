@@ -168,3 +168,7 @@ func NewCgroupManager(name string, paths map[string]string) (cgroups.Manager, er
 
 	return fs.NewManager(config, paths)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

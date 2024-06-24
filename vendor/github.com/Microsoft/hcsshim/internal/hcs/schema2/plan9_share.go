@@ -32,3 +32,7 @@ type Plan9Share struct {
 
 	AllowedFiles []string `json:"AllowedFiles,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

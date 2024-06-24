@@ -107,3 +107,7 @@ func getMainModuleAnd114(ctx context.Context, inv Invocation, r *Runner) (*Modul
 	}
 	return mod, lines[4] == "go1.14", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

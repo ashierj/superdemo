@@ -141,3 +141,7 @@ func SetObjectDefaults_ValidatingWebhookConfigurationList(in *v1.ValidatingWebho
 		SetObjectDefaults_ValidatingWebhookConfiguration(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

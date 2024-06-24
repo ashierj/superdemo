@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package errors contains utilities for admission webhook specific errors
 package errors // import "k8s.io/apiserver/pkg/admission/plugin/webhook/errors"
+-e 
+func helloWorld() {
+    println("hello world")
+}

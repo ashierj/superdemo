@@ -549,3 +549,7 @@ func NewMemoryCacheTransport() *Transport {
 	t := NewTransport(c)
 	return t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

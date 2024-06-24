@@ -19,3 +19,7 @@ var (
 	HTTPSchemeHTTP  = HTTPSchemeKey.String("http")
 	HTTPSchemeHTTPS = HTTPSchemeKey.String("https")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

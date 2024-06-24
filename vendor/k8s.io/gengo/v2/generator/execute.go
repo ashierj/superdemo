@@ -264,3 +264,7 @@ func (c *Context) executeBody(w io.Writer, generator Generator) error {
 	}
 	return et.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

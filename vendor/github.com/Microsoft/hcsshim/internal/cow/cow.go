@@ -95,3 +95,7 @@ type Container interface {
 	// Modify sends a request to modify container resources
 	Modify(ctx context.Context, config interface{}) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

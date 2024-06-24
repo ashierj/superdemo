@@ -381,3 +381,7 @@ func (a *criAdapter) AttachContainer(ctx context.Context, podName string, podUID
 func (a *criAdapter) PortForward(ctx context.Context, podName string, podUID types.UID, port int32, stream io.ReadWriteCloser) error {
 	return a.Runtime.PortForward(ctx, podName, port, stream)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

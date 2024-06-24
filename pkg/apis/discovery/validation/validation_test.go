@@ -841,3 +841,7 @@ func generateTopology(n int) map[string]string {
 	}
 	return topology
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

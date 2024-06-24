@@ -150,3 +150,7 @@ func tryParseClusterInfoFromConfigMap(cm *v1.ConfigMap) (*clientcmdapi.Config, e
 	}
 	return parsedKubeConfig, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -422,3 +422,7 @@ func (w *worker) UnregisterExporter(e Exporter) {
 
 	delete(w.exporters, e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

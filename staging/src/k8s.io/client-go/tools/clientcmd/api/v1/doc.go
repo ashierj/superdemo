@@ -19,3 +19,7 @@ limitations under the License.
 // +k8s:defaulter-gen=Kind
 
 package v1 // import "k8s.io/client-go/tools/clientcmd/api/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

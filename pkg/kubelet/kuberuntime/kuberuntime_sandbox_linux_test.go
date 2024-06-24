@@ -209,3 +209,7 @@ func newTestPodWithLinuxSecurityContext() *v1.Pod {
 
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

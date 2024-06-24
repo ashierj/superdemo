@@ -181,3 +181,7 @@ func (s *String) CopyBytes(out []byte) bool {
 func (s String) Empty() bool {
 	return len(s) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

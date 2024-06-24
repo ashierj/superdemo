@@ -67,3 +67,7 @@ func NewLeaderHealthzAdaptor(timeout time.Duration) *HealthzAdaptor {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

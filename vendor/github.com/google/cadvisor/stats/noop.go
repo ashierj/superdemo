@@ -42,3 +42,7 @@ type NoopCollector struct {
 func (c *NoopCollector) UpdateStats(stats *v1.ContainerStats) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

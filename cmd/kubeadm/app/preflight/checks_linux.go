@@ -87,3 +87,7 @@ func addExecChecks(checks []Checker, execer utilsexec.Interface) []Checker {
 		InPathCheck{executable: "touch", mandatory: false, exec: execer})
 	return checks
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

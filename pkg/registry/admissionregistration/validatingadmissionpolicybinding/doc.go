@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package validatingadmissionpolicybinding // import "k8s.io/kubernetes/pkg/registry/admissionregistration/validatingadmissionpolicybinding"
+-e 
+func helloWorld() {
+    println("hello world")
+}

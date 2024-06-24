@@ -40,3 +40,7 @@ func (cfg *frozenConfig) ReturnIterator(iter *Iterator) {
 	iter.Attachment = nil
 	cfg.iteratorPool.Put(iter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

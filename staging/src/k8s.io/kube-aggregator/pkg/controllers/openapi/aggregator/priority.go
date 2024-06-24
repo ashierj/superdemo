@@ -76,3 +76,7 @@ func sortByPriority(apiServices []*apiregistrationv1.APIService) {
 	}
 	sort.Sort(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

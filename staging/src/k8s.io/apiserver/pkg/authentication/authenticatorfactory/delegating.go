@@ -124,3 +124,7 @@ func (c DelegatingAuthenticatorConfig) New() (authenticator.Request, *spec.Secur
 	}
 	return authenticator, &securityDefinitions, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

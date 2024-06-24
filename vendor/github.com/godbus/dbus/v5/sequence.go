@@ -22,3 +22,7 @@ func (generator *sequenceGenerator) next() Sequence {
 func newSequenceGenerator() *sequenceGenerator {
 	return &sequenceGenerator{nextSequence: 1}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

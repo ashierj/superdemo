@@ -1252,3 +1252,7 @@ func autoConvert_admissionregistration_WebhookClientConfig_To_v1_WebhookClientCo
 func Convert_admissionregistration_WebhookClientConfig_To_v1_WebhookClientConfig(in *admissionregistration.WebhookClientConfig, out *v1.WebhookClientConfig, s conversion.Scope) error {
 	return autoConvert_admissionregistration_WebhookClientConfig_To_v1_WebhookClientConfig(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

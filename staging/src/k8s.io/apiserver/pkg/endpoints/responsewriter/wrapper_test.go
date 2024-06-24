@@ -296,3 +296,7 @@ func (fw *fakeResponseWriterDecorator) CloseNotify() <-chan bool {
 	//nolint:staticcheck // SA1019
 	return fw.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

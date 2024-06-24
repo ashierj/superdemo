@@ -120,3 +120,7 @@ func packageAndName(fn *runtime.Func) (string, string) {
 	name = strings.Replace(name, "·", ".", -1)
 	return pkg, name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

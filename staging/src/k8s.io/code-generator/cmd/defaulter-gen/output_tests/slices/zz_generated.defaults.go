@@ -54,3 +54,7 @@ func SetObjectDefaults_TtestPointerList(in *TtestPointerList) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

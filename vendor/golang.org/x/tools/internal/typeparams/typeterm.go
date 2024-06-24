@@ -167,3 +167,7 @@ func (x *term) disjoint(y *term) bool {
 	}
 	return !types.Identical(ux, uy)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

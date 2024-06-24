@@ -2251,3 +2251,7 @@ var entity2 = map[string][2]rune{
 	"vsupnE;":                  {'\u2ACC', '\uFE00'},
 	"vsupne;":                  {'\u228B', '\uFE00'},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

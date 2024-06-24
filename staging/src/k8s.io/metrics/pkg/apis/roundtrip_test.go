@@ -62,3 +62,7 @@ func TestRoundTripTypes(t *testing.T) {
 	roundtrip.RoundTripExternalTypes(t, scheme, codecs, fuzzer, nil)
 	roundtrip.RoundTripTypes(t, scheme, codecs, fuzzer, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

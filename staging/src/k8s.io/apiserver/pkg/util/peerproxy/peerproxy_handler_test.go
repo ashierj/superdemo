@@ -327,3 +327,7 @@ func createHTTP2ServerWithClient(handler http.Handler, clientTimeout time.Durati
 		return cli.Do(req)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

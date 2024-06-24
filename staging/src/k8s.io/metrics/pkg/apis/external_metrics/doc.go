@@ -19,3 +19,7 @@ limitations under the License.
 
 // Package external_metrics adds support for defining external metrics.
 package external_metrics // import "k8s.io/metrics/pkg/apis/external_metrics"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -174,3 +174,7 @@ func runMarkControlPlanePhase(c workflow.RunData) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

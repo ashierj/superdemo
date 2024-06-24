@@ -116,3 +116,7 @@ func metricUnits(m string) (unit, base string, ok bool) {
 
 	return "", "", false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

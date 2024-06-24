@@ -201,3 +201,7 @@ func (sh *weightedHistogram) Describe(ch chan<- *prometheus.Desc) {
 func (sh *weightedHistogram) Collect(ch chan<- prometheus.Metric) {
 	ch <- sh
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

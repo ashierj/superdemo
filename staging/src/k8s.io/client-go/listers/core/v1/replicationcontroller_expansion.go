@@ -64,3 +64,7 @@ func (s *replicationControllerLister) GetPodControllers(pod *v1.Pod) ([]*v1.Repl
 
 	return controllers, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

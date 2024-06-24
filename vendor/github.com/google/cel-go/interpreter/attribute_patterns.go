@@ -397,3 +397,7 @@ func toPartialActivation(vars Activation) (PartialActivation, bool) {
 	}
 	return nil, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

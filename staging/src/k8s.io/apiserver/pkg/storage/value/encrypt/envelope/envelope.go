@@ -200,3 +200,7 @@ func generateKey(length int) (key []byte, err error) {
 
 	return key, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

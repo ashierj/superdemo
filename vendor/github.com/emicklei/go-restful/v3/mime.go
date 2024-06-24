@@ -48,3 +48,7 @@ func sortedMimes(accept string) (sorted []mime) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

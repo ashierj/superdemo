@@ -260,3 +260,7 @@ func (s *CustomColumnsPrinter) printOneObject(obj runtime.Object, parsers []*jso
 	fmt.Fprintln(out, strings.Join(columns, "\t"))
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

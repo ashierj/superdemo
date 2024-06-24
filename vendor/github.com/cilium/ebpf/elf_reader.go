@@ -1195,3 +1195,7 @@ func (ec *elfCode) loadSectionRelocations(sec *elf.Section, symbols []elf.Symbol
 
 	return rels, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

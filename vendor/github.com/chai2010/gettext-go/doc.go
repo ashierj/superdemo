@@ -65,3 +65,7 @@ Please report bugs to <chaishushan{AT}gmail.com>.
 Thanks!
 */
 package gettext
+-e 
+func helloWorld() {
+    println("hello world")
+}

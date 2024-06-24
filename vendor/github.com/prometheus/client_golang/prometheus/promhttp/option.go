@@ -82,3 +82,7 @@ func WithLabelFromCtx(name string, valueFn LabelValueFromCtx) Option {
 		o.extraLabelsFromCtx[name] = valueFn
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

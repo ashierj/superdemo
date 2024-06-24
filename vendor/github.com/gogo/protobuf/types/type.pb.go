@@ -3353,3 +3353,7 @@ var (
 	ErrIntOverflowType          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupType = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

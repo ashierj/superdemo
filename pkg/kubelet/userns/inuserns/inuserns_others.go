@@ -23,3 +23,7 @@ package inuserns
 func RunningInUserNS() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

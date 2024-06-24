@@ -222,3 +222,7 @@ func Test_nodeLogQuery_validate(t *testing.T) {
 func intPtr(i int) *int {
 	return &i
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

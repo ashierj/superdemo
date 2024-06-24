@@ -62,3 +62,7 @@ func (c *selfSubjectAccessReviews) Create(ctx context.Context, selfSubjectAccess
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

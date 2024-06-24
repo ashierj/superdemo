@@ -47,3 +47,7 @@ func Convert_batch_JobSpec_To_v1_JobSpec(in *batch.JobSpec, out *v1.JobSpec, s c
 func Convert_v1_JobSpec_To_batch_JobSpec(in *v1.JobSpec, out *batch.JobSpec, s conversion.Scope) error {
 	return autoConvert_v1_JobSpec_To_batch_JobSpec(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

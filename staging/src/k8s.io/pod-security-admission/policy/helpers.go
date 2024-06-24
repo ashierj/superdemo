@@ -54,3 +54,7 @@ func RelaxPolicyForUserNamespacePods(relax bool) {
 func relaxPolicyForUserNamespacePod(podSpec *corev1.PodSpec) bool {
 	return relaxPolicyForUserNamespacePods.Load() && podSpec != nil && podSpec.HostUsers != nil && !*podSpec.HostUsers
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

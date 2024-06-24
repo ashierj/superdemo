@@ -70,3 +70,7 @@ func TestIngressClassStrategy(t *testing.T) {
 		t.Errorf("Expected error from update validation for IngressClass, got none")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

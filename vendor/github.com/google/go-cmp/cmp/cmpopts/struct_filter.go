@@ -187,3 +187,7 @@ func canonicalName(t reflect.Type, sel string) ([]string, error) {
 	ssPost, err := canonicalName(sf.Type, sel)
 	return append(ss, ssPost...), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

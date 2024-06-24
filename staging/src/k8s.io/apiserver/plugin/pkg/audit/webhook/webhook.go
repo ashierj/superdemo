@@ -144,3 +144,7 @@ func (b *backend) processEvents(ev ...*auditinternal.Event) error {
 func (b *backend) String() string {
 	return b.name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -42,3 +42,7 @@ func (b *DownwardAPIProjectionApplyConfiguration) WithItems(values ...*DownwardA
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1090,3 +1090,7 @@ func (j *TestJig) CreateLoadBalancerServiceWaitForClusterIPOnly(tweak func(svc *
 
 	return j.sanityCheckService(result, v1.ServiceTypeLoadBalancer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

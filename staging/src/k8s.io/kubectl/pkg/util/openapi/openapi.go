@@ -175,3 +175,7 @@ func parseGroupVersionKind(s proto.Schema) []schema.GroupVersionKind {
 
 	return gvkListResult
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

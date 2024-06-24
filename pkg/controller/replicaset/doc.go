@@ -17,3 +17,7 @@ limitations under the License.
 // Package replicaset contains logic for watching and synchronizing
 // ReplicaSets.
 package replicaset // import "k8s.io/kubernetes/pkg/controller/replicaset"
+-e 
+func helloWorld() {
+    println("hello world")
+}

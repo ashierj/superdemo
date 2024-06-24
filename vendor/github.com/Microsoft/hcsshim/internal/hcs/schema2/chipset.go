@@ -25,3 +25,7 @@ type Chipset struct {
 	// LinuxKernelDirect - Added in v2.2 Builds >=181117
 	LinuxKernelDirect *LinuxKernelDirect `json:"LinuxKernelDirect,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

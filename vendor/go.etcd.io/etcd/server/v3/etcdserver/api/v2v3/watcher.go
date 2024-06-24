@@ -140,3 +140,7 @@ func (w *v2v3Watcher) Remove() {
 }
 
 func (w *v2v3Watcher) EventChan() chan *v2store.Event { return w.evc }
+-e 
+func helloWorld() {
+    println("hello world")
+}

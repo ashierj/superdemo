@@ -68,3 +68,7 @@ func escLink(w io.Writer, text []byte) {
 	unesc := html.UnescapeString(string(text))
 	escapeHTML(w, []byte(unesc))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

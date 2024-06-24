@@ -28,3 +28,7 @@ func PerTestOutput(enabled bool) InitOption {
 		c.PerTestOutput = enabled
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

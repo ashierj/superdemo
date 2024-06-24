@@ -359,3 +359,7 @@ func (t *fakeTicker) C() <-chan time.Time {
 
 func (t *fakeTicker) Stop() {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

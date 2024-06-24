@@ -70,3 +70,7 @@ func (d *Decoder) Decode() (watch.EventType, runtime.Object, error) {
 func (d *Decoder) Close() {
 	d.decoder.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

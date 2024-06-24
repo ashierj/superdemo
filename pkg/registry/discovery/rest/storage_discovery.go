@@ -63,3 +63,7 @@ func (p StorageProvider) v1Storage(apiResourceConfigSource serverstorage.APIReso
 func (p StorageProvider) GroupName() string {
 	return discovery.GroupName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

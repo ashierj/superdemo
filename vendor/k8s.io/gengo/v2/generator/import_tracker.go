@@ -87,3 +87,7 @@ func goTrackerLocalName(tracker namer.ImportTracker, t types.Name) string {
 	}
 	panic("can't find import for " + path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

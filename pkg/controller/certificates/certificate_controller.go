@@ -202,3 +202,7 @@ type ignorableError string
 func (e ignorableError) Error() string {
 	return string(e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

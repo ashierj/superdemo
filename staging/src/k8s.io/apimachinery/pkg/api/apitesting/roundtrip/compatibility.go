@@ -527,3 +527,7 @@ func dumpProto(t *testing.T, data []byte) string {
 	}
 	return string(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

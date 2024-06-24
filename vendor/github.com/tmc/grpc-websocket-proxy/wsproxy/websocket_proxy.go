@@ -348,3 +348,7 @@ func (w *inMemoryResponseWriter) CloseNotify() <-chan bool {
 	return w.closed
 }
 func (w *inMemoryResponseWriter) Flush() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

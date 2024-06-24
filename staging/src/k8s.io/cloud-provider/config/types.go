@@ -101,3 +101,7 @@ type WebhookConfiguration struct {
 	// first item for a particular name wins
 	Webhooks []string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

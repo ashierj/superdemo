@@ -120,3 +120,7 @@ func (e mapEdgeHolder) Get(neighbor int) (graph.Edge, bool) {
 func (e mapEdgeHolder) Len() int {
 	return len(e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -200,3 +200,7 @@ func AdmissionToValidateObjectDeleteFunc(admit admission.Interface, staticAttrib
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

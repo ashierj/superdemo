@@ -37,3 +37,7 @@ func (in *EndpointSliceControllerConfiguration) DeepCopy() *EndpointSliceControl
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -466,3 +466,7 @@ func (pw *prefixingWriter) Write(p []byte) (int, error) {
 	}
 	return n, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1032,3 +1032,7 @@ func testSetNilMapsToEmpties(curr reflect.Value) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

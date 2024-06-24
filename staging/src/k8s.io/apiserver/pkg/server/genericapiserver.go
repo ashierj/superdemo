@@ -1007,3 +1007,7 @@ func getResourceNamesForGroup(apiPrefix string, apiGroupInfo *APIGroupInfo, path
 
 	return resourceNames, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

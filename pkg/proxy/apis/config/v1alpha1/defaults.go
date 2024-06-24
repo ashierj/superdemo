@@ -148,3 +148,7 @@ func getDefaultAddresses(bindAddress string) (defaultHealthzAddress, defaultMetr
 	}
 	return "[::]", "[::1]"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

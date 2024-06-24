@@ -306,3 +306,7 @@ func formatQuoted(names ...string) string {
 	}
 	return strings.Join(quoted, ",")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

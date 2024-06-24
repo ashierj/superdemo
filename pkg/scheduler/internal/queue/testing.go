@@ -53,3 +53,7 @@ func NewTestQueueWithInformerFactory(
 	informerFactory.WaitForCacheSync(ctx.Done())
 	return pq
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

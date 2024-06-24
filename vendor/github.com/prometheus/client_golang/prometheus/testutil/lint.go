@@ -44,3 +44,7 @@ func GatherAndLint(g prometheus.Gatherer, metricNames ...string) ([]promlint.Pro
 	}
 	return promlint.NewWithMetricFamilies(got).Lint()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

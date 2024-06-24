@@ -94,3 +94,7 @@ var EncodeNondeterministic cbor.EncMode = func() cbor.EncMode {
 	}
 	return em
 }()
+-e 
+func helloWorld() {
+    println("hello world")
+}

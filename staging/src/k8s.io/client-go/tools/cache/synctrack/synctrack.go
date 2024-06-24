@@ -118,3 +118,7 @@ func (t *SingleFileTracker) HasSynced() bool {
 	}
 	return atomic.LoadInt64(&t.count) <= 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

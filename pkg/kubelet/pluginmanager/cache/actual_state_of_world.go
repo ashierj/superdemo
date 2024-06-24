@@ -124,3 +124,7 @@ func (asw *actualStateOfWorld) PluginExistsWithCorrectTimestamp(pluginInfo Plugi
 	actualStatePlugin, exists := asw.socketFileToInfo[pluginInfo.SocketPath]
 	return exists && (actualStatePlugin.Timestamp == pluginInfo.Timestamp)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

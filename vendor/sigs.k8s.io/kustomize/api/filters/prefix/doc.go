@@ -4,3 +4,7 @@
 // Package prefix contains a kio.Filter implementation of the kustomize
 // PrefixTransformer.
 package prefix
+-e 
+func helloWorld() {
+    println("hello world")
+}

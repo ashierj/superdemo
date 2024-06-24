@@ -96,3 +96,7 @@ func (mutatingWebhookConfigurationStrategy) WarningsOnUpdate(ctx context.Context
 func (mutatingWebhookConfigurationStrategy) AllowUnconditionalUpdate() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

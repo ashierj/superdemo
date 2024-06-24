@@ -198,3 +198,7 @@ func createWebSocketStreams(req *http.Request, w http.ResponseWriter, opts Optio
 
 	return ctx, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

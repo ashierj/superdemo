@@ -117,3 +117,7 @@ func (fakeObjectConvertorForTestSchema) Convert(_, _, _ interface{}) error {
 func (fakeObjectConvertorForTestSchema) ConvertFieldLabel(_ schema.GroupVersionKind, _, _ string) (string, string, error) {
 	return "", "", fmt.Errorf("function not implemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

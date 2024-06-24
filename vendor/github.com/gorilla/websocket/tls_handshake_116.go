@@ -19,3 +19,7 @@ func doHandshake(ctx context.Context, tlsConn *tls.Conn, cfg *tls.Config) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -856,3 +856,7 @@ func interfaceToUnstructured(sv, dv reflect.Value) error {
 	}
 	return toUnstructured(sv.Elem(), dv)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func MakeRaw(fd uintptr) (*State, error) {
 	}
 	return &oldState, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -80,3 +80,7 @@ func (any *invalidAny) Parse() *Iterator {
 func (any *invalidAny) GetInterface() interface{} {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -200,3 +200,7 @@ func podRequestsAndLimitsByLifecycle(pod *v1.Pod, reuseReqs, reuseLimits v1.Reso
 	limits = v1resource.PodLimits(pod, v1resource.PodResourcesOptions{Reuse: reuseLimits})
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

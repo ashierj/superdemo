@@ -72,3 +72,7 @@ func checkForNativeLogger(ctx context.Context, service string) bool {
 	// hence we search for it in the list of services known to journalctl
 	return strings.Contains(string(output), service+".service")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -300,3 +300,7 @@ func hasLoadBalancerPortsError(service *v1.Service) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

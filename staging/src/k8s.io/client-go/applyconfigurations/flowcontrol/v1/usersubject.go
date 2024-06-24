@@ -37,3 +37,7 @@ func (b *UserSubjectApplyConfiguration) WithName(value string) *UserSubjectApply
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

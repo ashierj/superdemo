@@ -90,3 +90,7 @@ func (in *PodDisruptionBudgetList) APILifecycleReplacement() schema.GroupVersion
 func (in *PodDisruptionBudgetList) APILifecycleRemoved() (major, minor int) {
 	return 1, 25
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

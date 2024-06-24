@@ -50,3 +50,7 @@ func MirrorStreamHandler(stream *Stream) {
 func NoOpStreamHandler(stream *Stream) {
 	stream.SendReply(http.Header{}, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

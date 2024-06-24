@@ -56,3 +56,7 @@ func RegisterMetrics() {
 		legacyregistry.MustRegister(EphemeralVolumeCreateFailures)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

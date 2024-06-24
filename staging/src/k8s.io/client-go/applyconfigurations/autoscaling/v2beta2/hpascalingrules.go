@@ -64,3 +64,7 @@ func (b *HPAScalingRulesApplyConfiguration) WithPolicies(values ...*HPAScalingPo
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

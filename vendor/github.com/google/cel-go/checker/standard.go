@@ -33,3 +33,7 @@ func StandardFunctions() []*exprpb.Decl {
 func StandardTypes() []*exprpb.Decl {
 	return stdlib.TypeExprDecls()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

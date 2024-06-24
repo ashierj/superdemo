@@ -77,3 +77,7 @@ func extractErrors(err error) []error {
 
 	return append(([]error)(nil), eg.Errors()...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

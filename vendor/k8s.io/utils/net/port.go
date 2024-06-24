@@ -127,3 +127,7 @@ func openLocalPort(lp *LocalPort) (Closeable, error) {
 	}
 	return socket, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

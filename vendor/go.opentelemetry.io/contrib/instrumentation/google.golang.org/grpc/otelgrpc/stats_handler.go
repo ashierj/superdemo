@@ -233,3 +233,7 @@ func (w withoutCancelCtx) Value(key any) any {
 func (w withoutCancelCtx) String() string {
 	return "withoutCancel"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

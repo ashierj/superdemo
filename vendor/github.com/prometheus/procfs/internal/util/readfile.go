@@ -35,3 +35,7 @@ func ReadFileNoStat(filename string) ([]byte, error) {
 	reader := io.LimitReader(f, maxBufferSize)
 	return io.ReadAll(reader)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

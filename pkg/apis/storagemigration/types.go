@@ -129,3 +129,7 @@ type StorageVersionMigrationList struct {
 	// +listMapKey=type
 	Items []StorageVersionMigration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -115,3 +115,7 @@ func (f *fakeAuthenticatorMetrics) RequestLatency(_ context.Context, code string
 	f.latency = latency
 	f.latencyCode = code
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

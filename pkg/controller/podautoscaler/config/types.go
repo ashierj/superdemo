@@ -47,3 +47,7 @@ type HPAControllerConfiguration struct {
 	// period.
 	HorizontalPodAutoscalerInitialReadinessDelay metav1.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

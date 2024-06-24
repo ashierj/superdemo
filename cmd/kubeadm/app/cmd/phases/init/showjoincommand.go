@@ -117,3 +117,7 @@ func printJoinCommand(out io.Writer, adminKubeConfigPath, token string, i InitDa
 
 	return initDoneTempl.Execute(out, ctx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

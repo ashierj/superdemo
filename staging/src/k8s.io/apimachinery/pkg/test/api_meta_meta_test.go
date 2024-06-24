@@ -388,3 +388,7 @@ func BenchmarkAccessorSetFastPath(b *testing.B) {
 	}
 	b.StopTimer()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

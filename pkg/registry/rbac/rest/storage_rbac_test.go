@@ -37,3 +37,7 @@ func BenchmarkEnsureRBACPolicy(b *testing.B) {
 		_, _ = ensureRBACPolicy(policy, coreClientSet)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

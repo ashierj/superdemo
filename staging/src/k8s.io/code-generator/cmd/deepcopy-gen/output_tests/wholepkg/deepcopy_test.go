@@ -143,3 +143,7 @@ func TestInterfaceNonPointerDeepCopy(t *testing.T) {
 		t.Error("objects should be equal, but are not")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

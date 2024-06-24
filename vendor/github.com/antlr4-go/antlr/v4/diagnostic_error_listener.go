@@ -108,3 +108,7 @@ func (d *DiagnosticErrorListener) getConflictingAlts(ReportedAlts *BitSet, set *
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

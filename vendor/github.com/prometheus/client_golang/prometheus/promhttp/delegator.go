@@ -372,3 +372,7 @@ func newDelegator(w http.ResponseWriter, observeWriteHeaderFunc func(int)) deleg
 
 	return pickDelegator[id](d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

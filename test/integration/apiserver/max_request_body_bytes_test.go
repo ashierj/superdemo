@@ -320,3 +320,7 @@ values: ` + strings.Repeat("[", 3*1024*1024-1000))
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

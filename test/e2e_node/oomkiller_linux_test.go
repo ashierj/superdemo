@@ -282,3 +282,7 @@ func getOOMTargetContainerWithoutLimit(name string) v1.Container {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

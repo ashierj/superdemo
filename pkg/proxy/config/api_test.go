@@ -252,3 +252,7 @@ func TestInitialSync(t *testing.T) {
 		t.Fatalf("Expected endpoints state: %v\nGot: %v\n", expectedEpsState, gotEpsState)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

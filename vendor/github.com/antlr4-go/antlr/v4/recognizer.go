@@ -239,3 +239,7 @@ func (b *BaseRecognizer) Sempred(_ RuleContext, _ int, _ int) bool {
 func (b *BaseRecognizer) Precpred(_ RuleContext, _ int) bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ func goleakFindRetry(opts ...goleak.Option) error {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

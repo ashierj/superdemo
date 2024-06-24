@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=kubelet.config.k8s.io
 
 package config // import "k8s.io/kubernetes/pkg/kubelet/apis/config"
+-e 
+func helloWorld() {
+    println("hello world")
+}

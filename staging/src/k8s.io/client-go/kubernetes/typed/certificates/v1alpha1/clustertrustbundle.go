@@ -195,3 +195,7 @@ func (c *clusterTrustBundles) Apply(ctx context.Context, clusterTrustBundle *cer
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

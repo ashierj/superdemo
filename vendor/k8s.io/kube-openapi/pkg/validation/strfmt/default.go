@@ -1560,3 +1560,7 @@ func (r *Password) DeepCopy() *Password {
 	r.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

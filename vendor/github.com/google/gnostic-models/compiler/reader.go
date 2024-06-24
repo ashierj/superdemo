@@ -305,3 +305,7 @@ func ReadInfoForRef(basefile string, ref string) (*yaml.Node, error) {
 	}
 	return info, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

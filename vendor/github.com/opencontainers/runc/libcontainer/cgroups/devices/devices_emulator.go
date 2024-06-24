@@ -384,3 +384,7 @@ func wrapErr(err error, text string) error {
 	}
 	return fmt.Errorf(text+": %w", err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

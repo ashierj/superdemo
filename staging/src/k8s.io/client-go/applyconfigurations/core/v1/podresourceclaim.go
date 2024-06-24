@@ -46,3 +46,7 @@ func (b *PodResourceClaimApplyConfiguration) WithSource(value *ClaimSourceApplyC
 	b.Source = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

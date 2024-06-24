@@ -6469,3 +6469,7 @@ func setDurationDuringTest(val *time.Duration, newVal time.Duration) func() {
 		*val = origVal
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

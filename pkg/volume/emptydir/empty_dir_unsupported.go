@@ -34,3 +34,7 @@ type realMountDetector struct {
 func (m *realMountDetector) GetMountMedium(path string, requestedMedium v1.StorageMedium) (v1.StorageMedium, bool, *resource.Quantity, error) {
 	return v1.StorageMediumDefault, false, nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

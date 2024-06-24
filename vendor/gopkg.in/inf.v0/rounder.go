@@ -143,3 +143,7 @@ func init() {
 			return c > 0 || c == 0 && odd == 1
 		})}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

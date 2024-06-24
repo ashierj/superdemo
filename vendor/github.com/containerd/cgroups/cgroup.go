@@ -541,3 +541,7 @@ func (c *cgroup) checkExists() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

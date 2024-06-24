@@ -400,3 +400,7 @@ func (c *AssumeCache) Restore(objName string) {
 		c.logger.V(4).Info("Restored object", "description", c.description, "cacheKey", objName)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

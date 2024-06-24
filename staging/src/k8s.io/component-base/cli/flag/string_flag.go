@@ -54,3 +54,7 @@ func (f StringFlag) Provided() bool {
 func (f *StringFlag) Type() string {
 	return "string"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

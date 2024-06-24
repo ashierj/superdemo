@@ -1786,3 +1786,7 @@ func (t *http2Client) stateForTesting() transportState {
 	defer t.mu.Unlock()
 	return t.state
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

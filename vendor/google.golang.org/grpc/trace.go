@@ -121,3 +121,7 @@ func (f *fmtStringer) String() string {
 type stringer string
 
 func (s stringer) String() string { return string(s) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -164,3 +164,7 @@ func (as *AuthServer) UserChangePassword(ctx context.Context, r *pb.AuthUserChan
 	}
 	return resp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

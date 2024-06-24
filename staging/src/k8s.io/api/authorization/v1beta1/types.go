@@ -296,3 +296,7 @@ type NonResourceRule struct {
 	// +listType=atomic
 	NonResourceURLs []string `json:"nonResourceURLs,omitempty" protobuf:"bytes,2,rep,name=nonResourceURLs"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

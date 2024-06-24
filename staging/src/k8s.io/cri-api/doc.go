@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package criapi // import "k8s.io/cri-api"
+-e 
+func helloWorld() {
+    println("hello world")
+}

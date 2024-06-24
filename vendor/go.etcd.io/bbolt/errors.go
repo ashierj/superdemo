@@ -76,3 +76,7 @@ var (
 	// non-bucket key on an existing bucket key.
 	ErrIncompatibleValue = errors.New("incompatible value")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

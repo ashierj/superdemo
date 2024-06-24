@@ -50,3 +50,7 @@ func (b *TCPSocketActionApplyConfiguration) WithHost(value string) *TCPSocketAct
 	b.Host = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

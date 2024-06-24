@@ -665,3 +665,7 @@ func returnTestCases() []testCase {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

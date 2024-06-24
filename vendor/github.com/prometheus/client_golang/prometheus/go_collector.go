@@ -279,3 +279,7 @@ type memStatsMetrics []struct {
 	eval    func(*runtime.MemStats) float64
 	valType ValueType
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

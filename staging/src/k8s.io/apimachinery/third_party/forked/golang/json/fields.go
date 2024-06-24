@@ -511,3 +511,7 @@ func (o tagOptions) Contains(optionName string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

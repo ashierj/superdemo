@@ -65,3 +65,7 @@ func (s *bufferedReader) reset(snif bool) {
 	s.bufferRead = 0
 	s.bufferSize = s.buffer.Len()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

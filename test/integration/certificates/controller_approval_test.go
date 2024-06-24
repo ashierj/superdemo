@@ -214,3 +214,7 @@ func buildNodeClientRoleForUser(name string, resourceType string) *rbacv1.Cluste
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

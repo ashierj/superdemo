@@ -728,3 +728,7 @@ func TimeValueMap(src map[string]*time.Time) map[string]time.Time {
 	}
 	return dst
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

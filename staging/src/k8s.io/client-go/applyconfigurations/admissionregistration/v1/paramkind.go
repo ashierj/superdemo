@@ -46,3 +46,7 @@ func (b *ParamKindApplyConfiguration) WithKind(value string) *ParamKindApplyConf
 	b.Kind = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

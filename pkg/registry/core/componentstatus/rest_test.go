@@ -181,3 +181,7 @@ func TestGet_BadName(t *testing.T) {
 		t.Fatalf("Got unexpected error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

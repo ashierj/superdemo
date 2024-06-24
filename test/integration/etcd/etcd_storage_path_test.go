@@ -423,3 +423,7 @@ func diffMapKeys(a, b interface{}, stringer func(interface{}) string) []string {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

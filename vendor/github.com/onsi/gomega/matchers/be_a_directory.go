@@ -54,3 +54,7 @@ func (matcher *BeADirectoryMatcher) FailureMessage(actual interface{}) (message 
 func (matcher *BeADirectoryMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not be a directory")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

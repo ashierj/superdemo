@@ -268,3 +268,7 @@ type TimingHistogramVecWithContext struct {
 	*TimingHistogramVec
 	ctx context.Context
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

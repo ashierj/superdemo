@@ -10,3 +10,7 @@ const cacheLineSize = 64
 
 func initOptions() {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

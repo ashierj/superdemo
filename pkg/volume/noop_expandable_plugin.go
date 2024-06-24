@@ -79,3 +79,7 @@ func (n *noopExpandableVolumePluginInstance) RequiresFSResize() bool {
 func (n *noopExpandableVolumePluginInstance) SupportsSELinuxContextMount(spec *Spec) (bool, error) {
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

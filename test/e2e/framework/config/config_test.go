@@ -291,3 +291,7 @@ type simpleFlag struct {
 	defValue string
 	isBool   bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

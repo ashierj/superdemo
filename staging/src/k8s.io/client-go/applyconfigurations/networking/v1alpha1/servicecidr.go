@@ -254,3 +254,7 @@ func (b *ServiceCIDRApplyConfiguration) WithStatus(value *ServiceCIDRStatusApply
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

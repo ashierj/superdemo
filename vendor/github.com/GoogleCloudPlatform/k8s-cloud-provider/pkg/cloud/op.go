@@ -217,3 +217,7 @@ func (o *betaOperation) rateLimitKey() *RateLimitKey {
 func (o *betaOperation) error() error {
 	return o.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

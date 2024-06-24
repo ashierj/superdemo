@@ -306,3 +306,7 @@ func encodeDockerConfigFieldAuth(username, password string) string {
 	fieldValue := username + ":" + password
 	return base64.StdEncoding.EncodeToString([]byte(fieldValue))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

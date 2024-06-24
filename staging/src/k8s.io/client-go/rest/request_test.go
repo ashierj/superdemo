@@ -4065,3 +4065,7 @@ func TestRequestConcurrencyWithRetry(t *testing.T) {
 		t.Errorf("Expected attempts: %d, but got: %d", expected, attempts)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

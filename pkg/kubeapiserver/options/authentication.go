@@ -816,3 +816,7 @@ func loadAuthenticationConfigFromData(data []byte) (*apiserver.AuthenticationCon
 
 	return configuration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

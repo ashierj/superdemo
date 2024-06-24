@@ -56,3 +56,7 @@ func (km *hashedKeyMutex) hash(id string) uint32 {
 	h.Write([]byte(id))
 	return h.Sum32()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

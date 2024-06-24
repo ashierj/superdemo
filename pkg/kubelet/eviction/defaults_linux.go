@@ -27,3 +27,7 @@ var DefaultEvictionHard = map[string]string{
 	"imagefs.available":  "15%",
 	"imagefs.inodesFree": "5%",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

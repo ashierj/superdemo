@@ -274,3 +274,7 @@ func toObject(value interface{}) interface{} {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

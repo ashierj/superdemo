@@ -80,3 +80,7 @@ func (f *freezerController) waitState(path string, state State) error {
 		time.Sleep(1 * time.Millisecond)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

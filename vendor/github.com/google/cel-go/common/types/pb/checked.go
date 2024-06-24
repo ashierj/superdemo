@@ -91,3 +91,7 @@ var (
 				KeyType:   checkedString,
 				ValueType: checkedDyn}}}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

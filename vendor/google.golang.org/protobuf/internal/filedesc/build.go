@@ -155,3 +155,7 @@ func (db *Builder) unmarshalCounts(b []byte, isFile bool) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

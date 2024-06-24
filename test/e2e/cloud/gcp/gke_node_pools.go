@@ -113,3 +113,7 @@ func nodesWithPoolLabel(ctx context.Context, f *framework.Framework, poolName st
 	}
 	return nodeCount
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

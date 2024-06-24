@@ -80,3 +80,7 @@ func parseNetstat(filePath string) (NetStat, error) {
 
 	return netStat, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

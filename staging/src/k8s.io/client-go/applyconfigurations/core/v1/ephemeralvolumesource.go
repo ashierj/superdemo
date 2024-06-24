@@ -37,3 +37,7 @@ func (b *EphemeralVolumeSourceApplyConfiguration) WithVolumeClaimTemplate(value 
 	b.VolumeClaimTemplate = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

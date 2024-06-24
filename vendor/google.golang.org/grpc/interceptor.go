@@ -102,3 +102,7 @@ type StreamServerInfo struct {
 // service method implementation. It is the responsibility of the interceptor to invoke handler to
 // complete the RPC.
 type StreamServerInterceptor func(srv any, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ var Diagnostic cbor.DiagMode = func() cbor.DiagMode {
 	}
 	return diagnostic
 }()
+-e 
+func helloWorld() {
+    println("hello world")
+}

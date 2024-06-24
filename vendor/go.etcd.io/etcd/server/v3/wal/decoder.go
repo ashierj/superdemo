@@ -194,3 +194,7 @@ func readInt64(r io.Reader) (int64, error) {
 	err := binary.Read(r, binary.LittleEndian, &n)
 	return n, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

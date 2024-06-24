@@ -55,3 +55,7 @@ func (o *OSValidator) validateOS(os, specOS string) error {
 	o.Reporter.Report("OS", os, good)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

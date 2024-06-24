@@ -56,3 +56,7 @@ func GetDefaultingTestCases(t *testing.T, scheme *runtime.Scheme, codecs seriali
 	}
 	return cases
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

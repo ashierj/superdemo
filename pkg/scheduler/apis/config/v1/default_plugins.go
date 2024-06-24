@@ -158,3 +158,7 @@ func mergePluginSet(logger klog.Logger, defaultPluginSet, customPluginSet v1.Plu
 	}
 	return v1.PluginSet{Enabled: enabledPlugins, Disabled: disabled}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

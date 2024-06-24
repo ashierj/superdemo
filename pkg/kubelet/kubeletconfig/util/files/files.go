@@ -227,3 +227,7 @@ func ReplaceDir(fs utilfs.Filesystem, path string, files map[string]string) erro
 	// rename over target directory
 	return fs.Rename(tmpPath, path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

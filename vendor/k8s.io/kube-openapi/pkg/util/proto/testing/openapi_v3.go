@@ -68,3 +68,7 @@ func (f *FakeV3) OpenAPIV3Schema(groupVersion string) (*openapi_v3.Document, err
 	f.documents[groupVersion] = result
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

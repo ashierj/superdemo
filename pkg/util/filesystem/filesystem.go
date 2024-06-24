@@ -50,3 +50,7 @@ type File interface {
 	Sync() error
 	Close() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

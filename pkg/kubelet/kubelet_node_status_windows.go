@@ -32,3 +32,7 @@ func getOSSpecificLabels() (map[string]string, error) {
 
 	return map[string]string{v1.LabelWindowsBuild: osInfo.GetBuild()}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

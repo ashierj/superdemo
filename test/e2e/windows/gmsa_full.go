@@ -550,3 +550,7 @@ func getGmsaDomainIP(f *framework.Framework, podName string) string {
 	}
 	return submatchall[0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

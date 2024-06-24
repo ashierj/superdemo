@@ -577,3 +577,7 @@ func TagsEqual(a, b interface{}) bool {
 	}
 	return slices.Equal(al.parts, bl.parts)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -131,3 +131,7 @@ func (c *closableConn) Close() error {
 	go c.onClose()
 	return c.Conn.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

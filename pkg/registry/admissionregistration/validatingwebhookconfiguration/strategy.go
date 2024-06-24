@@ -95,3 +95,7 @@ func (validatingWebhookConfigurationStrategy) WarningsOnUpdate(ctx context.Conte
 func (validatingWebhookConfigurationStrategy) AllowUnconditionalUpdate() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

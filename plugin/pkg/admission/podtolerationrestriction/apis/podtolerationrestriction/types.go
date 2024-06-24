@@ -33,3 +33,7 @@ type Configuration struct {
 	// cluster level whitelist of tolerations
 	Whitelist []api.Toleration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

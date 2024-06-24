@@ -683,3 +683,7 @@ func (vr *VisitRecord) Put(k, v *PredictionContext) (*PredictionContext, bool) {
 	}
 	return v, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

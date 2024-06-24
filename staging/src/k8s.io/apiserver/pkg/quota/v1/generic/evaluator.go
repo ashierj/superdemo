@@ -317,3 +317,7 @@ func NewObjectCountEvaluator(
 		resourceNames:       resourceNames,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

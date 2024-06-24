@@ -307,3 +307,7 @@ func dialSCTPExtConfig(network string, laddr, raddr *SCTPAddr, options InitMsg, 
 	}
 	return NewSCTPConn(sock, nil), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

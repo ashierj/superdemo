@@ -80,3 +80,7 @@ func UnstructuredPlusDefaultContentConfig() rest.ContentConfig {
 		NegotiatedSerializer: serializer.NegotiatedSerializerWrapper(jsonInfo),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

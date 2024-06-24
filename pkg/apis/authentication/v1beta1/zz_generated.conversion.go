@@ -260,3 +260,7 @@ func autoConvert_authentication_UserInfo_To_v1beta1_UserInfo(in *authentication.
 func Convert_authentication_UserInfo_To_v1beta1_UserInfo(in *authentication.UserInfo, out *v1beta1.UserInfo, s conversion.Scope) error {
 	return autoConvert_authentication_UserInfo_To_v1beta1_UserInfo(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

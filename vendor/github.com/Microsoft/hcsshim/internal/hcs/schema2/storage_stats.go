@@ -19,3 +19,7 @@ type StorageStats struct {
 
 	WriteSizeBytes uint64 `json:"WriteSizeBytes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func SetDefaults_PriorityClass(obj *v1alpha1.PriorityClass) {
 		obj.PreemptionPolicy = &preemptLowerPriority
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ type ServiceProperties struct {
 	// remarshal sp.Properties[n] and unmarshal into the type(s) we want.
 	Properties []json.RawMessage `json:"Properties,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

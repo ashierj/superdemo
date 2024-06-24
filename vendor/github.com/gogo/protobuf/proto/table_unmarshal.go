@@ -2247,3 +2247,7 @@ func decodeVarint(b []byte) (uint64, int) {
 bad:
 	return 0, 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

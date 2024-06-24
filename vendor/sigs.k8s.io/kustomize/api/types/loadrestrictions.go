@@ -22,3 +22,7 @@ const (
 	// its own tree.
 	LoadRestrictionsNone
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -370,3 +370,7 @@ func maybeSuffixError(val ref.Val, suffix string) ref.Val {
 	}
 	return val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

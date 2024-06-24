@@ -219,3 +219,7 @@ func TestRolloutRestartSelectorMany(t *testing.T) {
 type RolloutRestartRESTClient struct {
 	*fake.RESTClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -29,3 +29,7 @@ func CreateDataDirectory(dir string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

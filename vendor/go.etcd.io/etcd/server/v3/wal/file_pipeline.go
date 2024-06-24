@@ -103,3 +103,7 @@ func (fp *filePipeline) run() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

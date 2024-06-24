@@ -167,3 +167,7 @@ func CreateServiceForSimpleApp(ctx context.Context, c clientset.Interface, contP
 	framework.ExpectNoError(err)
 	return service
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

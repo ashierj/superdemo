@@ -169,3 +169,7 @@ func (h *Handle) GenlFamilyGet(name string) (*GenlFamily, error) {
 func GenlFamilyGet(name string) (*GenlFamily, error) {
 	return pkgHandle.GenlFamilyGet(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

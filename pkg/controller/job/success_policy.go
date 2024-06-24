@@ -85,3 +85,7 @@ func matchSucceededIndexesRule(ruleIndexes, succeededIndexes orderedIntervals, s
 	}
 	return contains == ruleIndexes.total() || (succeededCount != nil && contains >= int(*succeededCount))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

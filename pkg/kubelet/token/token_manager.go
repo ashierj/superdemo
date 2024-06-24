@@ -204,3 +204,7 @@ func keyFunc(name, namespace string, tr *authenticationv1.TokenRequest) string {
 
 	return fmt.Sprintf("%q/%q/%#v/%#v/%#v", name, namespace, tr.Spec.Audiences, exp, ref)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

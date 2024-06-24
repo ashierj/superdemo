@@ -251,3 +251,7 @@ func newConfig(t *testing.T) *kubeletconfig.KubeletConfiguration {
 	}
 	return kc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

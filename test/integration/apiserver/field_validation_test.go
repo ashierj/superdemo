@@ -4086,3 +4086,7 @@ func benchFieldValidationApplyUpdateCRD(b *testing.B, rest rest.Interface, gvk s
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

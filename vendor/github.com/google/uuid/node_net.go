@@ -31,3 +31,7 @@ func getHardwareInterface(name string) (string, []byte) {
 	}
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

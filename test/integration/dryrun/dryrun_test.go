@@ -302,3 +302,7 @@ func TestDryRun(t *testing.T) {
 func gvr(g, v, r string) schema.GroupVersionResource {
 	return schema.GroupVersionResource{Group: g, Version: v, Resource: r}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

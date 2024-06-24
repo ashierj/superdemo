@@ -48,3 +48,7 @@ func IsDefaultAnnotation(obj metav1.ObjectMeta) bool {
 func IsDefaultAnnotationForVolumeAttributesClass(obj metav1.ObjectMeta) bool {
 	return obj.Annotations[AlphaIsDefaultVolumeAttributesClassAnnotation] == "true"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

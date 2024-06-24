@@ -18,3 +18,7 @@ type MappedDirectory struct {
 
 	ReadOnly bool `json:"ReadOnly,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

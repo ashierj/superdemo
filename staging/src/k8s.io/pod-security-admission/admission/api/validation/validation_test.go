@@ -141,3 +141,7 @@ func defaultsPath(child string) *field.Path {
 func exemptionsPath(child string, i int) *field.Path {
 	return field.NewPath("exemptions", child).Index(i)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

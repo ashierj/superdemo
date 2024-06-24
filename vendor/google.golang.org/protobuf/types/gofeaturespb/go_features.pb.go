@@ -175,3 +175,7 @@ func file_reflect_protodesc_proto_go_features_proto_init() {
 	file_reflect_protodesc_proto_go_features_proto_goTypes = nil
 	file_reflect_protodesc_proto_go_features_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

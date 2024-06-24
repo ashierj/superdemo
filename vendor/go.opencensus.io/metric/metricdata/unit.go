@@ -25,3 +25,7 @@ const (
 	UnitBytes         Unit = "By"
 	UnitMilliseconds  Unit = "ms"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

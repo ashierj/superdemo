@@ -7,3 +7,7 @@
 // requires elevated privileges, so in most cases this code needs to be run
 // as root.
 package netns
+-e 
+func helloWorld() {
+    println("hello world")
+}

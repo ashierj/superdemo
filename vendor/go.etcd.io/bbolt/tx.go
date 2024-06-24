@@ -795,3 +795,7 @@ func atomicAddDuration(ptr *time.Duration, du time.Duration) time.Duration {
 func atomicLoadDuration(ptr *time.Duration) time.Duration {
 	return time.Duration(atomic.LoadInt64((*int64)(unsafe.Pointer(ptr))))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

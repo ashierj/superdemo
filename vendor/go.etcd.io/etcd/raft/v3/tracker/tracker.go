@@ -286,3 +286,7 @@ func (p *ProgressTracker) TallyVotes() (granted int, rejected int, _ quorum.Vote
 	result := p.Voters.VoteResult(p.Votes)
 	return granted, rejected, result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

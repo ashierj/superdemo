@@ -132,3 +132,7 @@ func printIfNotExists(err error) {
 		fmt.Println("[dryrun] The GET request didn't yield any result, the API Server returned a NotFound error.")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

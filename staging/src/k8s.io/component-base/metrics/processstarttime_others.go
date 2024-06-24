@@ -37,3 +37,7 @@ func getProcessStart() (float64, error) {
 	}
 	return 0, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

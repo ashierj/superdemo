@@ -103,3 +103,7 @@ func TestApplyKubeletConfigPatches(t *testing.T) {
 		t.Fatalf("expected output:\n%s\ngot\n%s\n", expectedOutput, output)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

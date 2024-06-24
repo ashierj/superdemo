@@ -76,3 +76,7 @@ func UnmarshalMerge(b []byte, m Message) error {
 	}
 	return checkRequiredNotSet(mi)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

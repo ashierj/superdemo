@@ -72,3 +72,7 @@ func SetObjectDefaults_NetworkPolicyList(in *v1.NetworkPolicyList) {
 		SetObjectDefaults_NetworkPolicy(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

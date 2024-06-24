@@ -100,3 +100,7 @@ func (m *ColonSeparatedMultimapStringString) Type() string {
 func (m *ColonSeparatedMultimapStringString) Empty() bool {
 	return len(*m.Multimap) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

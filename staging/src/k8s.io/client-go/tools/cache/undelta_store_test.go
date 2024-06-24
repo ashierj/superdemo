@@ -129,3 +129,7 @@ func TestReplaceCallsPush(t *testing.T) {
 		t.Errorf("Expected %#v, Got %#v", expected, got)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

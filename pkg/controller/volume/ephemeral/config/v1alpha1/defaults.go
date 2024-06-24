@@ -34,3 +34,7 @@ func RecommendedDefaultEphemeralVolumeControllerConfiguration(obj *kubectrlmgrco
 		obj.ConcurrentEphemeralVolumeSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

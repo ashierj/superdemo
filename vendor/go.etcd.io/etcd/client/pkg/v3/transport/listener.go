@@ -592,3 +592,7 @@ func IsClosedConnError(err error) bool {
 	// 'mux: listener closed' (cmux.ErrListenerClosed)
 	return err != nil && strings.Contains(err.Error(), "closed")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

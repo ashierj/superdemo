@@ -526,3 +526,7 @@ func Test_validateCredentialProviderConfig(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

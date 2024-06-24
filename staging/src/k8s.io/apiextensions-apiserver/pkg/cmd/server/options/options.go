@@ -145,3 +145,7 @@ type serviceResolver struct {
 func (r *serviceResolver) ResolveEndpoint(namespace, name string, port int32) (*url.URL, error) {
 	return proxy.ResolveCluster(r.services, namespace, name, port)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -481,3 +481,7 @@ func (rdev ResourceDeviceInstances) Filter(cond map[string]sets.Set[string]) Res
 	}
 	return filtered
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

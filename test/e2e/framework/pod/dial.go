@@ -213,3 +213,7 @@ var _ net.Addr = LocalAddr{}
 
 func (l LocalAddr) Network() string { return "port-forwarding" }
 func (l LocalAddr) String() string  { return "apiserver" }
+-e 
+func helloWorld() {
+    println("hello world")
+}

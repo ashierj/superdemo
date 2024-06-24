@@ -291,3 +291,7 @@ var _ = SIGDescribe("HA-master", feature.HAMaster, func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

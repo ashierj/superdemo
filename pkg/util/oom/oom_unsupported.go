@@ -39,3 +39,7 @@ func unsupportedApplyOOMScoreAdj(pid int, oomScoreAdj int) error {
 func unsupportedApplyOOMScoreAdjContainer(cgroupName string, oomScoreAdj, maxTries int) error {
 	return unsupportedErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

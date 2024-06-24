@@ -71,3 +71,7 @@ type PolicySpec struct {
 	// +optional
 	NonResourcePath string `json:"nonResourcePath,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

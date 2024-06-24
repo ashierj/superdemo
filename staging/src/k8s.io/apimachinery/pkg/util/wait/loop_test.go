@@ -533,3 +533,7 @@ func Benchmark_loopConditionUntilContext_ShortDuration(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

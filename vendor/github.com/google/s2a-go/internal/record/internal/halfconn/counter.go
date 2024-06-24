@@ -58,3 +58,7 @@ func (c *counter) reset() {
 	c.val = 0
 	c.hasOverflowed = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

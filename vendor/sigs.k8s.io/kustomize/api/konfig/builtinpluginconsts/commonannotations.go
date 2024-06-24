@@ -45,3 +45,7 @@ commonAnnotations:
   kind: CronJob
 
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

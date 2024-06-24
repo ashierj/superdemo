@@ -19,3 +19,7 @@ limitations under the License.
 
 // Package apiregistration is the internal version of the API.
 package apiregistration // import "k8s.io/kube-aggregator/pkg/apis/apiregistration"
+-e 
+func helloWorld() {
+    println("hello world")
+}

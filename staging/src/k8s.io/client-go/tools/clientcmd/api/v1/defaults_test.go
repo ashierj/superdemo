@@ -82,3 +82,7 @@ func TestSetDefaults_Config(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

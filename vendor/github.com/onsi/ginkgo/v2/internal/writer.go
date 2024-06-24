@@ -142,3 +142,7 @@ func GinkgoLogrFunc(writer *Writer) logr.Logger {
 		}
 	}, funcr.Options{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

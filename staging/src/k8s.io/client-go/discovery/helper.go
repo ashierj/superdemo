@@ -144,3 +144,7 @@ type SupportsAllVerbs struct {
 func (p SupportsAllVerbs) Match(groupVersion string, r *metav1.APIResource) bool {
 	return sets.NewString([]string(r.Verbs)...).HasAll(p.Verbs...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

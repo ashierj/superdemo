@@ -278,3 +278,7 @@ func numReadyEndpoints(endpoints []discovery.Endpoint) int {
 func EndpointReady(endpoint discovery.Endpoint) bool {
 	return endpoint.Conditions.Ready != nil && *endpoint.Conditions.Ready
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

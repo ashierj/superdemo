@@ -503,3 +503,7 @@ func isKubeadmConfigPresent(docmap kubeadmapi.DocumentMap) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

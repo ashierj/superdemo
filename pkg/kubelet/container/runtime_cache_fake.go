@@ -48,3 +48,7 @@ func NewTestRuntimeCache(getter podsGetter) *TestRuntimeCache {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

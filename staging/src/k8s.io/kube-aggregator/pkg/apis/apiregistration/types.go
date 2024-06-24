@@ -144,3 +144,7 @@ type APIService struct {
 	// Status contains derived information about an API server
 	Status APIServiceStatus
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

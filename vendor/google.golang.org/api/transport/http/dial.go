@@ -232,3 +232,7 @@ func clonedTransport(rt http.RoundTripper) *http.Transport {
 	}
 	return t.Clone()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

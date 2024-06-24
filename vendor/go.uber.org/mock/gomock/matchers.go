@@ -441,3 +441,7 @@ func AssignableToTypeOf(x any) Matcher {
 func InAnyOrder(x any) Matcher {
 	return inAnyOrderMatcher{x}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

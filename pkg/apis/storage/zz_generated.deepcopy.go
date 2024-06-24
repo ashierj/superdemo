@@ -682,3 +682,7 @@ func (in *VolumeNodeResources) DeepCopy() *VolumeNodeResources {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

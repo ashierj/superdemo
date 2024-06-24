@@ -216,3 +216,7 @@ func (in *RoleList) APILifecycleReplacement() schema.GroupVersionKind {
 func (in *RoleList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -31,3 +31,7 @@ const (
 	// IPAddress objects.
 	LabelManagedBy = "ipaddress.kubernetes.io/managed-by"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -123,3 +123,7 @@ func ValidateAPIServiceStatusUpdate(newAPIService *apiregistration.APIService, o
 	allErrs = append(allErrs, ValidateAPIServiceStatus(&newAPIService.Status, field.NewPath("status"))...)
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

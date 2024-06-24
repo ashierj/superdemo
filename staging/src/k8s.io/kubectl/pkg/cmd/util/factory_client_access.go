@@ -216,3 +216,7 @@ func (f *factoryImpl) OpenAPIV3Client() (openapiclient.Client, error) {
 
 	return cached.NewClient(discovery.OpenAPIV3()), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

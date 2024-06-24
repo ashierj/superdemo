@@ -112,3 +112,7 @@ func TestCapabilitiesRestricted_1_22(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

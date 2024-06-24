@@ -23,3 +23,7 @@ import (
 func groupVersionToOpenAPIV3Path(gv schema.GroupVersion) string {
 	return "apis/" + gv.Group + "/" + gv.Version
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

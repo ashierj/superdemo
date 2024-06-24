@@ -127,3 +127,7 @@ func (v *cfgValidator) validate(cfg config.KubeSchedulerProfile, f framework.Fra
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

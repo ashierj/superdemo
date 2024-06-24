@@ -352,3 +352,7 @@ func (pc podControlAdapter) DeletePod(ctx context.Context, namespace string, pod
 	}
 	return pc.PodControlInterface.DeletePod(ctx, namespace, podID, rc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

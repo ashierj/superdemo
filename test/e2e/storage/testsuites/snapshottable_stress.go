@@ -280,3 +280,7 @@ func (t *snapshottableStressTestSuite) DefineTests(driver storageframework.TestD
 		stressTest.wg.Wait()
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

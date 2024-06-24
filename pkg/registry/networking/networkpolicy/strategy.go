@@ -98,3 +98,7 @@ func (networkPolicyStrategy) WarningsOnUpdate(ctx context.Context, obj, old runt
 func (networkPolicyStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

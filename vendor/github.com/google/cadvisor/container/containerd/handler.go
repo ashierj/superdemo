@@ -249,3 +249,7 @@ func (h *containerdContainerHandler) GetContainerIPAddress() string {
 	// containerd doesnt take care of networking.So it doesnt maintain networking states
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

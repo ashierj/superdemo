@@ -478,3 +478,7 @@ func (m *memoryController) memoryEvent(path string, event MemoryEvent) (uintptr,
 	}
 	return uintptr(efd), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

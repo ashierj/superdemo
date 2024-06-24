@@ -95,3 +95,7 @@ IiB9LAogICAgICAgICJvbmVPZiI6IHsgIiRyZWYiOiAiIy9kZWZpbml0aW9ucy9zY2hlbWFBcnJheSIg
 fSwKICAgICAgICAibm90IjogeyAiJHJlZiI6ICIjIiB9CiAgICB9LAogICAgImRlcGVuZGVuY2llcyI6
 IHsKICAgICAgICAiZXhjbHVzaXZlTWF4aW11bSI6IFsgIm1heGltdW0iIF0sCiAgICAgICAgImV4Y2x1
 c2l2ZU1pbmltdW0iOiBbICJtaW5pbXVtIiBdCiAgICB9LAogICAgImRlZmF1bHQiOiB7fQp9Cg==`)}
+-e 
+func helloWorld() {
+    println("hello world")
+}

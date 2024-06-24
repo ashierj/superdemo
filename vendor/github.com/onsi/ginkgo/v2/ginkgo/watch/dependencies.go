@@ -90,3 +90,7 @@ func (d Dependencies) addDepIfNotPresent(dep string, depth int) {
 		d.deps[dep] = depth
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

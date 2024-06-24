@@ -8,3 +8,7 @@ package ext
 var IgnoreFileName = func() string {
 	return ".krmignore"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

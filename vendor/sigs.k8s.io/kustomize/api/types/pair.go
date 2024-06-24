@@ -8,3 +8,7 @@ type Pair struct {
 	Key   string
 	Value string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

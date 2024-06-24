@@ -116,3 +116,7 @@ func (s *pkcs11RemoteService) Status(ctx context.Context) (*service.StatusRespon
 		KeyID:   s.keyID,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

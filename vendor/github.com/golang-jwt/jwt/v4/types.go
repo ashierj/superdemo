@@ -143,3 +143,7 @@ func (s ClaimStrings) MarshalJSON() (b []byte, err error) {
 
 	return json.Marshal([]string(s))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

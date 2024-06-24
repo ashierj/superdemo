@@ -37,3 +37,7 @@ func (RealNetwork) InterfaceAddrs() ([]net.Addr, error) {
 }
 
 var _ NetworkInterfacer = &RealNetwork{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

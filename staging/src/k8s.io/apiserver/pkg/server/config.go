@@ -1170,3 +1170,7 @@ func SetHostnameFuncForTests(name string) {
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2287,3 +2287,7 @@ func updateDict(dict *Dict, updates Tuple, kwargs []Tuple) error {
 func nameErr(b *Builtin, msg interface{}) error {
 	return fmt.Errorf("%s: %v", b.Name(), msg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

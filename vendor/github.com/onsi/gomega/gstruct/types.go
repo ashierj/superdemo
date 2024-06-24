@@ -13,3 +13,7 @@ const (
 	//with the matcher that is provided for that key.
 	AllowDuplicates
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

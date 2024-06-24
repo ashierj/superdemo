@@ -56,3 +56,7 @@ func PatchNodeCIDRs(ctx context.Context, c clientset.Interface, node types.NodeN
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

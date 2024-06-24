@@ -5646,3 +5646,7 @@ func file_google_protobuf_descriptor_proto_init() {
 	file_google_protobuf_descriptor_proto_goTypes = nil
 	file_google_protobuf_descriptor_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

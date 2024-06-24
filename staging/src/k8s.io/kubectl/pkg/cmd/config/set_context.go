@@ -153,3 +153,7 @@ func (o setContextOptions) validate() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

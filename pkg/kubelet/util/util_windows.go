@@ -154,3 +154,7 @@ func NormalizePath(path string) string {
 	}
 	return path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

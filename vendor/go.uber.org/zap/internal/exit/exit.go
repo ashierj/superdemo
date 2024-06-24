@@ -64,3 +64,7 @@ func (se *StubbedExit) exit(code int) {
 	se.Exited = true
 	se.Code = code
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

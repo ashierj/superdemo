@@ -56,3 +56,7 @@ func BenchmarkListener(b *testing.B) {
 	swg.Wait() // Block until all notifications have been received
 	b.StopTimer()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

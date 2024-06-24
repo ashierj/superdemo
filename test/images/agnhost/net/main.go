@@ -180,3 +180,7 @@ func handleRunRequest(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "ok\noutput:\n\n"+output.b.String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

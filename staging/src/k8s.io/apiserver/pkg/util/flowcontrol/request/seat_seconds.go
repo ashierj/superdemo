@@ -63,3 +63,7 @@ func (ss SeatSeconds) String() string {
 }
 
 const ssScale = 1e8
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -49,3 +49,7 @@ func Register() {
 		legacyregistry.MustRegister(JobDeletionDurationSeconds)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

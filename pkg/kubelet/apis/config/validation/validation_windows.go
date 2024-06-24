@@ -41,3 +41,7 @@ func validateKubeletOSConfiguration(kc *kubeletconfig.KubeletConfiguration) erro
 
 	return utilerrors.NewAggregate(allErrors)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -750,3 +750,7 @@ func (enc *Encoder) scopeObjects(scope *types.Scope) []types.Object {
 	}
 	return objs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

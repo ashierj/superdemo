@@ -1195,3 +1195,7 @@ func cachedTypeFields(t reflect.Type) []field {
 	fieldCache.Unlock()
 	return f
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -298,3 +298,7 @@ func StdBytesUnmarshal(v *[]byte, data []byte) error {
 	*v = pv.Value
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

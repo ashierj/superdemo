@@ -41,3 +41,7 @@ func (b *PodReadinessGateApplyConfiguration) WithConditionType(value v1.PodCondi
 	b.ConditionType = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

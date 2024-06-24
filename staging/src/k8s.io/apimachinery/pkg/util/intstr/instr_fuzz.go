@@ -41,3 +41,7 @@ func (intstr *IntOrString) Fuzz(c fuzz.Continue) {
 
 // ensure IntOrString implements fuzz.Interface
 var _ fuzz.Interface = &IntOrString{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -298,3 +298,7 @@ func (c *valueCtx) Value(key interface{}) interface{} {
 	}
 	return c.Context.Value(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

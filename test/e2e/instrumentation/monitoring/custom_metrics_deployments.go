@@ -307,3 +307,7 @@ func cleanupClusterAdminBinding() {
 		framework.Logf("Failed to delete cluster admin binding: %s", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

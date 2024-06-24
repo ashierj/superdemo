@@ -260,3 +260,7 @@ func tagToID(t language.Tag) compact.ID {
 	id, _ := compact.RegionalID(compact.Tag(t))
 	return id
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

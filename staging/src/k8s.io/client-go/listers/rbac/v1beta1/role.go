@@ -68,3 +68,7 @@ type RoleNamespaceLister interface {
 type roleNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.Role]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

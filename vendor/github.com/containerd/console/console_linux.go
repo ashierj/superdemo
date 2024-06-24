@@ -278,3 +278,7 @@ func (ec *EpollConsole) signalWrite() {
 	ec.writec.Signal()
 	ec.writec.L.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

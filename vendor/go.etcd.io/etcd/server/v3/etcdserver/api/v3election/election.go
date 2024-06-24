@@ -132,3 +132,7 @@ func (es *electionServer) session(ctx context.Context, lease int64) (*concurrenc
 	s.Orphan()
 	return s, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

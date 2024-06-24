@@ -25,3 +25,7 @@ var boltOpenOptions *bolt.Options = nil
 // mmap size for the file, instead of growing it. So, force 0.
 
 func (bcfg *BackendConfig) mmapSize() int { return 0 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

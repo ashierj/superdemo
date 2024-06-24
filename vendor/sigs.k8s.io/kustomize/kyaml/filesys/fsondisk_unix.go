@@ -13,3 +13,7 @@ import (
 func getOSRoot() (string, error) {
 	return string(filepath.Separator), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -601,3 +601,7 @@ func TestRetryWatcherToFinishWithUnreadEvents(t *testing.T) {
 		t.Error("ResultChan is not closed")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

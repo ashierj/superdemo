@@ -127,3 +127,7 @@ func NewUnstructuredDefaulter() runtime.ObjectDefaulter {
 
 func (d unstructuredDefaulter) Default(in runtime.Object) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func toRuntimeAPIImageSpec(imageSpec kubecontainer.ImageSpec) *runtimeapi.ImageS
 
 	return &spec
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

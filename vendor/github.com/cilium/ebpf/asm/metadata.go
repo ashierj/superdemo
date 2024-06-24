@@ -78,3 +78,7 @@ func (m *Metadata) Get(key interface{}) interface{} {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

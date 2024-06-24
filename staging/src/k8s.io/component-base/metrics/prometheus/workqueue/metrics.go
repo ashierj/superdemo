@@ -135,3 +135,7 @@ func (prometheusMetricsProvider) NewLongestRunningProcessorSecondsMetric(name st
 func (prometheusMetricsProvider) NewRetriesMetric(name string) workqueue.CounterMetric {
 	return retries.WithLabelValues(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

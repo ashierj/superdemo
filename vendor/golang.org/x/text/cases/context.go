@@ -374,3 +374,7 @@ func isFoldFull(c *context) bool {
 	c.err = transform.ErrEndOfSpan
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

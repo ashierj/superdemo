@@ -246,3 +246,7 @@ func TestContainerOutputMatcher(ctx context.Context, f *framework.Framework,
 	}
 	framework.ExpectNoError(MatchContainerOutput(ctx, f, pod, pod.Spec.Containers[containerIndex].Name, expectedOutput, matcher))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

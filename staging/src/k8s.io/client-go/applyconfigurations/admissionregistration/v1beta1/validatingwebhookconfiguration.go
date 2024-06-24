@@ -250,3 +250,7 @@ func (b *ValidatingWebhookConfigurationApplyConfiguration) WithWebhooks(values .
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

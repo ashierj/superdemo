@@ -144,3 +144,7 @@ func Permanent(err error) error {
 		Err: err,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

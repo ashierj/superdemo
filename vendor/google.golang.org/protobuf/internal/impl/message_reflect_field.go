@@ -541,3 +541,7 @@ func isZero(v reflect.Value) bool {
 		panic(&reflect.ValueError{Method: "reflect.Value.IsZero", Kind: v.Kind()})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

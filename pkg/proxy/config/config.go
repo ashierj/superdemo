@@ -478,3 +478,7 @@ func (c *ServiceCIDRConfig) handleServiceCIDREvent(oldObj, newObj interface{}) {
 		c.eventHandlers[i].OnServiceCIDRsChanged(c.cidrs.UnsortedList())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -262,3 +262,7 @@ func (fakeExec) CommandContext(ctx context.Context, cmd string, args ...string) 
 
 var _ exec.Interface = fakeExec{}
 var _ exec.Interface = &NSEnter{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

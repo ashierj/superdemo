@@ -282,3 +282,7 @@ func BenchmarkPodDefaulting(b *testing.B) {
 	}
 	b.StopTimer()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

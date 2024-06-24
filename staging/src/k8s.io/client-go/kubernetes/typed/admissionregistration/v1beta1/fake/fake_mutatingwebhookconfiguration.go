@@ -149,3 +149,7 @@ func (c *FakeMutatingWebhookConfigurations) Apply(ctx context.Context, mutatingW
 	}
 	return obj.(*v1beta1.MutatingWebhookConfiguration), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

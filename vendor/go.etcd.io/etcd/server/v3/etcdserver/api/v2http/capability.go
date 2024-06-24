@@ -39,3 +39,7 @@ func notCapable(w http.ResponseWriter, r *http.Request, c api.Capability) {
 		// plog.Debugf("error writing HTTPError (%v) to %s", err, r.RemoteAddr)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

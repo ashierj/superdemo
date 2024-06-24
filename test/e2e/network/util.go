@@ -250,3 +250,7 @@ func testEndpointReachability(ctx context.Context, endpoint string, port int32, 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

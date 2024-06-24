@@ -34,3 +34,7 @@ func (c *FakeDeployments) Rollback(ctx context.Context, deploymentRollback *v1be
 	_, err := c.Fake.Invokes(action, deploymentRollback)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

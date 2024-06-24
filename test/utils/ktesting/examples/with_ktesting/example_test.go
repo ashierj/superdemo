@@ -50,3 +50,7 @@ func TestTimeout(t *testing.T) {
 		tCtx.Errorf("need to stop: %v", context.Cause(tCtx))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

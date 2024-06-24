@@ -31,3 +31,7 @@ package proto
 func NewRequiredNotSetError(field string) *RequiredNotSetError {
 	return &RequiredNotSetError{field}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

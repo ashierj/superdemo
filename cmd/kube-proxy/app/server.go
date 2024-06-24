@@ -1114,3 +1114,7 @@ func getNodeIPs(ctx context.Context, client clientset.Interface, name string) []
 	}
 	return nodeIPs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

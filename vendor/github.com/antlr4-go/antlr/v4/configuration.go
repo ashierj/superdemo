@@ -212,3 +212,7 @@ func WithMemoryManager(use bool) runtimeOption {
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

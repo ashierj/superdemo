@@ -26,3 +26,7 @@ func Resource(r *resource.Resource) *resourcepb.Resource {
 	}
 	return &resourcepb.Resource{Attributes: ResourceAttributes(r)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

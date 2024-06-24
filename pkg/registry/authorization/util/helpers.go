@@ -85,3 +85,7 @@ func matchAllVersionIfEmpty(version string) string {
 	}
 	return version
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

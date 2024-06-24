@@ -16,3 +16,7 @@ limitations under the License.
 
 // openapi generated definitions.
 package openapi
+-e 
+func helloWorld() {
+    println("hello world")
+}

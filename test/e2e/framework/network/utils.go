@@ -1192,3 +1192,7 @@ func WaitForService(ctx context.Context, c clientset.Interface, namespace, name 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

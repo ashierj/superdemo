@@ -659,3 +659,7 @@ func waitForStatefulSetReplicasReady(ctx context.Context, statefulSetName, ns st
 	}
 	return fmt.Errorf("StatefulSet %s still has unready pods within %v", statefulSetName, timeout)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

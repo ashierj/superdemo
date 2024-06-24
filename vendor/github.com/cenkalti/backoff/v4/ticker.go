@@ -95,3 +95,7 @@ func (t *Ticker) send(tick time.Time) <-chan time.Time {
 	t.timer.Start(next)
 	return t.timer.C()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

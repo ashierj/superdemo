@@ -363,3 +363,7 @@ func TestInformerWatcherDeletedFinalStateUnknown(t *testing.T) {
 		t.Fatalf("expected at least 1 watch call, got %d", watchCalls)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

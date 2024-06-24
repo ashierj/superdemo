@@ -2563,3 +2563,7 @@ func mustGetNames(objects []runtime.Object) []string {
 	sort.Strings(names)
 	return names
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

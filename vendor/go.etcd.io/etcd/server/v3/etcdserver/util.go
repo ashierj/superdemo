@@ -200,3 +200,7 @@ func (n panicAlternativeStringer) String() (s string) {
 	s = n.stringer.String()
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

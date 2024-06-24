@@ -89,3 +89,7 @@ var _ = Describe("admin", func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ func main(cmd *cobra.Command, args []string) {
 	http.HandleFunc("/", hello)
 	http.ListenAndServe(":8000", nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

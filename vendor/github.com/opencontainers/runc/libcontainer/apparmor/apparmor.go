@@ -14,3 +14,7 @@ var (
 	// ErrApparmorNotEnabled indicates that AppArmor is not enabled or not supported.
 	ErrApparmorNotEnabled = errors.New("apparmor: config provided but apparmor not supported")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

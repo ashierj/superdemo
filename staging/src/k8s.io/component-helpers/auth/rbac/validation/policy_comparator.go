@@ -171,3 +171,7 @@ func ruleCovers(ownerRule, subRule rbacv1.PolicyRule) bool {
 
 	return verbMatches && groupMatches && resourceMatches && resourceNameMatches && nonResourceURLMatches
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

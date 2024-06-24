@@ -107,3 +107,7 @@ func (b *PodDisruptionBudgetStatusApplyConfiguration) WithConditions(values ...*
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func (b *SuccessPolicyRuleApplyConfiguration) WithSucceededCount(value int32) *S
 	b.SucceededCount = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

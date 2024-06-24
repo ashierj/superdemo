@@ -474,3 +474,7 @@ func FinalizeVersion(s string) (string, error) {
 	finalVer := v.String()
 	return finalVer, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

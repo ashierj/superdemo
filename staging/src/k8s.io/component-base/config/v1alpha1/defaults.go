@@ -96,3 +96,7 @@ func NewRecommendedDebuggingConfiguration() *DebuggingConfiguration {
 	RecommendedDebuggingConfiguration(ret)
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

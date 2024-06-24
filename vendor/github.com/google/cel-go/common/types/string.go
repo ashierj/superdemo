@@ -224,3 +224,7 @@ func StringStartsWith(s, pre ref.Val) ref.Val {
 	}
 	return Bool(strings.HasPrefix(string(str), string(preStr)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

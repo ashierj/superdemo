@@ -498,3 +498,7 @@ func ChooseBindAddressForInterface(intfName string) (net.IP, error) {
 	}
 	return nil, fmt.Errorf("unable to select an IP from %s network interface", intfName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -229,3 +229,7 @@ Upon waking:
  - it goes to sleep until the soonest job.
 */
 package cron
+-e 
+func helloWorld() {
+    println("hello world")
+}

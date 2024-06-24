@@ -250,3 +250,7 @@ func getControlKeysModifier(shift, alt, control bool) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

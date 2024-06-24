@@ -421,3 +421,7 @@ func TestScalePatchConflicts(t *testing.T) {
 	close(stopCh)
 	wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

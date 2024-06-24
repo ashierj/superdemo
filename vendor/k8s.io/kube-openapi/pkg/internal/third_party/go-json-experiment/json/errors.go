@@ -181,3 +181,7 @@ func quoteRune(b []byte) string {
 	}
 	return strconv.QuoteRune(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -161,3 +161,7 @@ func tryGetmntent1024(stat *Statfs_t) (err error) {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

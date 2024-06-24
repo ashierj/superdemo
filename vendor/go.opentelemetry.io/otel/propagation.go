@@ -29,3 +29,7 @@ func GetTextMapPropagator() propagation.TextMapPropagator {
 func SetTextMapPropagator(propagator propagation.TextMapPropagator) {
 	global.SetTextMapPropagator(propagator)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func (ns *NsHandle) Close() error {
 func None() NsHandle {
 	return NsHandle(-1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

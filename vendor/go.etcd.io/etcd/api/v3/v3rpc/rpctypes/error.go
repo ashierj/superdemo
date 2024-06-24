@@ -265,3 +265,7 @@ func ErrorDesc(err error) string {
 	}
 	return err.Error()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -226,3 +226,7 @@ func (d *dummyPortForwarder) PortForward(ctx context.Context, name string, uid t
 	resp.Write(stream) //nolint:errcheck
 	return stream.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

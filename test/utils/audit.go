@@ -268,3 +268,7 @@ func (t *auditEventTracker) Missing() []AuditEvent {
 	}
 	return missing
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func getServiceProtocols(spec corev1.ServiceSpec) map[string]string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

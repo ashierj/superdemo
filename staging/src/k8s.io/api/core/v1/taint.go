@@ -37,3 +37,7 @@ func (t *Taint) ToString() string {
 	}
 	return fmt.Sprintf("%v=%v:%v", t.Key, t.Value, t.Effect)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

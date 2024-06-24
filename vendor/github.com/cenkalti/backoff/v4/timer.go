@@ -33,3 +33,7 @@ func (t *defaultTimer) Stop() {
 		t.timer.Stop()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -267,3 +267,7 @@ func getSRIOVDevicePluginImage() (string, error) {
 	}
 	return ds.Spec.Template.Spec.Containers[0].Image, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

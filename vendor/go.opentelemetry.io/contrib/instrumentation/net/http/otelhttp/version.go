@@ -26,3 +26,7 @@ func Version() string {
 func SemVersion() string {
 	return Version()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -8,3 +8,7 @@
 package flags
 
 const protoLegacy = false
+-e 
+func helloWorld() {
+    println("hello world")
+}

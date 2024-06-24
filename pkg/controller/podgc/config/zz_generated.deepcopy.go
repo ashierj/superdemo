@@ -36,3 +36,7 @@ func (in *PodGCControllerConfiguration) DeepCopy() *PodGCControllerConfiguration
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

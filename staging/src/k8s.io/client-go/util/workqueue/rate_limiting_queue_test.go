@@ -73,3 +73,7 @@ func TestRateLimitingQueue(t *testing.T) {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

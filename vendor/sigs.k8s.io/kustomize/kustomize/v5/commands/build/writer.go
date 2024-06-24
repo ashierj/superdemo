@@ -61,3 +61,7 @@ func fileName(res *resource.Resource) string {
 	return strings.ToLower(res.GetGvk().StringWoEmptyField()) +
 		"_" + strings.ToLower(res.GetName()) + ".yaml"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

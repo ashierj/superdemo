@@ -475,3 +475,7 @@ func getChangeCause(obj runtime.Object) string {
 	}
 	return accessor.GetAnnotations()[ChangeCauseAnnotation]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

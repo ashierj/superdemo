@@ -222,3 +222,7 @@ func ParseAnyReference(ref string) (Reference, error) {
 
 	return ParseNormalizedNamed(ref)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -109,3 +109,7 @@ func AsStringSlice(v interface{}) []string {
 	_ = reflect.Copy(cpy.Elem(), rv)
 	return cpy.Elem().Slice(0, correctLen).Interface().([]string)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

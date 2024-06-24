@@ -213,3 +213,7 @@ func (f *inFlow) onRead(n uint32) uint32 {
 	f.mu.Unlock()
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

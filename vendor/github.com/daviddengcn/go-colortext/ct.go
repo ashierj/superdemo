@@ -51,3 +51,7 @@ func Foreground(cl Color, bright bool) {
 func Background(cl Color, bright bool) {
 	ChangeColor(None, false, cl, bright)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

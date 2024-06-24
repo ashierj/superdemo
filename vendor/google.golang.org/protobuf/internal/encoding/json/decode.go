@@ -338,3 +338,7 @@ func (d *Decoder) Clone() *Decoder {
 	ret.openStack = append([]Kind(nil), ret.openStack...)
 	return &ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

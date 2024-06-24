@@ -196,3 +196,7 @@ func AddSELinuxMountOption(options []string, seLinuxContext string) []string {
 	// For example: dirsync,context="system_u:object_r:container_file_t:s0:c15,c25",noatime
 	return append(options, fmt.Sprintf("context=%q", seLinuxContext))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

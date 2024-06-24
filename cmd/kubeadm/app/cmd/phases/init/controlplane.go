@@ -149,3 +149,7 @@ func runControlPlaneSubphase(component string) func(c workflow.RunData) error {
 		return controlplane.CreateStaticPodFiles(data.ManifestDir(), data.PatchesDir(), &cfg.ClusterConfiguration, &cfg.LocalAPIEndpoint, data.DryRun(), component)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

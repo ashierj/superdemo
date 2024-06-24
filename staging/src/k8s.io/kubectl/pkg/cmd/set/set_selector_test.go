@@ -341,3 +341,7 @@ func TestSelectorTest(t *testing.T) {
 		t.Errorf("did not set selector: %s", buf.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

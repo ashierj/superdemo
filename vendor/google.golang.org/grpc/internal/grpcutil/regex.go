@@ -29,3 +29,7 @@ func FullMatchWithRegex(re *regexp.Regexp, text string) bool {
 	rem := re.FindString(text)
 	return len(rem) == len(text)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

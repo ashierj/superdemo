@@ -137,3 +137,7 @@ func SetDefaults_Deployment(obj *appsv1beta1.Deployment) {
 		*obj.Spec.ProgressDeadlineSeconds = 600
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ type cSIDriverLister struct {
 func NewCSIDriverLister(indexer cache.Indexer) CSIDriverLister {
 	return &cSIDriverLister{listers.New[*v1.CSIDriver](indexer, v1.Resource("csidriver"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

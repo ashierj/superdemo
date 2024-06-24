@@ -48,3 +48,7 @@ func parseVersion(ver apimachineryversion.Info) semver.Version {
 	}
 	return semver.MustParse(matches[0][1])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

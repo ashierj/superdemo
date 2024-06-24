@@ -109,3 +109,7 @@ func (c RoleModifier) Update(in RuleOwner) (RuleOwner, error) {
 	return RoleRuleOwner{Role: ret}, err
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

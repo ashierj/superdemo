@@ -22,3 +22,7 @@ func (s *PerfEventGroup) Set(_ string, _ *configs.Resources) error {
 func (s *PerfEventGroup) GetStats(path string, stats *cgroups.Stats) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

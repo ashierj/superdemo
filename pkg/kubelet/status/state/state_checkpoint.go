@@ -224,3 +224,7 @@ func (sc *noopStateCheckpoint) Delete(_ string, _ string) error {
 func (sc *noopStateCheckpoint) ClearState() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

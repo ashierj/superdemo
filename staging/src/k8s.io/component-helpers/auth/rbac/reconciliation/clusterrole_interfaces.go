@@ -104,3 +104,7 @@ func (c ClusterRoleModifier) Update(in RuleOwner) (RuleOwner, error) {
 	return ClusterRoleRuleOwner{ClusterRole: ret}, err
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

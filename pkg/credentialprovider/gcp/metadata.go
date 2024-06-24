@@ -271,3 +271,7 @@ func registryToDocker(registryConfig credentialconfig.RegistryConfig) credential
 	}
 	return dockerConfig
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -534,3 +534,7 @@ func PredictionModegetSingleViableAlt(altsets []*BitSet) int {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

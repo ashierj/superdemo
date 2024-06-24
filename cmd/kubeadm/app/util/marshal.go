@@ -156,3 +156,7 @@ func GroupVersionKindsHasResetConfiguration(gvks ...schema.GroupVersionKind) boo
 func GroupVersionKindsHasUpgradeConfiguration(gvks ...schema.GroupVersionKind) bool {
 	return GroupVersionKindsHasKind(gvks, constants.UpgradeConfigurationKind)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

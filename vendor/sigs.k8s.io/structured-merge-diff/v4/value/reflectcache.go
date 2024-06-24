@@ -467,3 +467,7 @@ func convertNumber(n json.Number) (interface{}, error) {
 	// An overflow will return an error
 	return n.Float64()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

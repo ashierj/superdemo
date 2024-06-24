@@ -34,3 +34,7 @@ func TestSelectableFieldLabelConversions(t *testing.T) {
 		nil,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

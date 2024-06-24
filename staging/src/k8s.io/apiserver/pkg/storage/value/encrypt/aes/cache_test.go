@@ -135,3 +135,7 @@ func cacheLenEquals(t *testing.T, cache *simpleCache, want int) {
 		t.Errorf("unexpected cache len: want %d, got %d", want, got)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

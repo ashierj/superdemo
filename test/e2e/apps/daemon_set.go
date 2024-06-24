@@ -1269,3 +1269,7 @@ func waitFailedDaemonPodDeleted(c clientset.Interface, pod *v1.Pod) func(ctx con
 		return false, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

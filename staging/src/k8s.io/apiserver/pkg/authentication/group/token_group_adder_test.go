@@ -54,3 +54,7 @@ func toJson(x interface{}) string {
 	b, _ := json.Marshal(x)
 	return string(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

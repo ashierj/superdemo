@@ -59,3 +59,7 @@ func (m *Matcher) MatchObjectSelector(p ObjectSelectorProvider, attr admission.A
 	}
 	return matchObject(attr.GetObject(), selector) || matchObject(attr.GetOldObject(), selector), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

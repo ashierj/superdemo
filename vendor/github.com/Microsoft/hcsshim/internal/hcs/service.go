@@ -47,3 +47,7 @@ func ModifyServiceSettings(ctx context.Context, settings hcsschema.ModificationR
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

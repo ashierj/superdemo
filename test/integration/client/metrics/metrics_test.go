@@ -167,3 +167,7 @@ func checkTransportMetrics(t *testing.T, client *clientset.Clientset) (hits int,
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

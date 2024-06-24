@@ -70,3 +70,7 @@ func (d CIDRRule) ServerAddressByClientCIDRs(clientIP net.IP) []metav1.ServerAdd
 	}
 	return addressCIDRMap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

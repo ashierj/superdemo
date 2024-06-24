@@ -55,3 +55,7 @@ func (b *EndpointConditionsApplyConfiguration) WithTerminating(value bool) *Endp
 	b.Terminating = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

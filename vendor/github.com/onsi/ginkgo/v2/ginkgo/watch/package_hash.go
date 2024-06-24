@@ -106,3 +106,7 @@ func (p *PackageHash) computeHashes() (codeHash string, codeModifiedTime time.Ti
 func (p *PackageHash) hashForFileInfo(info os.FileInfo) string {
 	return fmt.Sprintf("%s_%d_%d", info.Name(), info.Size(), info.ModTime().UnixNano())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

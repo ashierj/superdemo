@@ -136,3 +136,7 @@ func autoConvert_example2_TestTypeStatus_To_v1_TestTypeStatus(in *example2.TestT
 func Convert_example2_TestTypeStatus_To_v1_TestTypeStatus(in *example2.TestTypeStatus, out *TestTypeStatus, s conversion.Scope) error {
 	return autoConvert_example2_TestTypeStatus_To_v1_TestTypeStatus(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

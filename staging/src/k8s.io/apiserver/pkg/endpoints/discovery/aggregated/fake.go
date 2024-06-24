@@ -173,3 +173,7 @@ func (f *recorderResourceManager) ServeHTTP(http.ResponseWriter, *http.Request) 
 func (f *recorderResourceManager) WithSource(source Source) ResourceManager {
 	panic("unimplemented")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

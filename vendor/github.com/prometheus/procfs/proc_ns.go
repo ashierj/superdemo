@@ -66,3 +66,7 @@ func (p Proc) Namespaces() (Namespaces, error) {
 
 	return ns, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

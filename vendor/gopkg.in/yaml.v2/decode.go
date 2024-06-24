@@ -813,3 +813,7 @@ func (d *decoder) merge(n *node, out reflect.Value) {
 func isMerge(n *node) bool {
 	return n.kind == scalarNode && n.value == "<<" && (n.implicit == true || n.tag == yaml_MERGE_TAG)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

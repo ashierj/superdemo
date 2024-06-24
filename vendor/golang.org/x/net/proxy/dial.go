@@ -52,3 +52,7 @@ func dialContext(ctx context.Context, d Dialer, network, address string) (net.Co
 	}
 	return conn, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

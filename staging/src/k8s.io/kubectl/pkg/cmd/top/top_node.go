@@ -227,3 +227,7 @@ func getNodeMetricsFromMetricsAPI(metricsClient metricsclientset.Interface, reso
 	}
 	return metrics, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

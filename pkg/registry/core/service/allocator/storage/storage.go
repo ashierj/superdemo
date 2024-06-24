@@ -240,3 +240,7 @@ func (e *Etcd) Free() int {
 func (e *Etcd) Destroy() {
 	e.destroyFn()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

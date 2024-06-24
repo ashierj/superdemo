@@ -143,3 +143,7 @@ var (
 	TraditionalChinese   Tag = Tag(compact.TraditionalChinese)
 	Zulu                 Tag = Tag(compact.Zulu)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

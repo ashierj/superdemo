@@ -243,3 +243,7 @@ func convertProcessError(err error, p *process) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

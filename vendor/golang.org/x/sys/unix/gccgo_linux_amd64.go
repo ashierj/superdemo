@@ -18,3 +18,7 @@ func gettimeofday(tv *Timeval) (err syscall.Errno) {
 	}
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

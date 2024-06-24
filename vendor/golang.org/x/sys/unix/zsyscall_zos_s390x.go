@@ -1251,3 +1251,7 @@ func Select(nmsgsfds int, r *FdSet, w *FdSet, e *FdSet, timeout *Timeval) (ret i
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

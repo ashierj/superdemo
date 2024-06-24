@@ -115,3 +115,7 @@ func newBool(val bool) *bool {
 	*p = val
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

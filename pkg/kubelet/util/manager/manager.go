@@ -59,3 +59,7 @@ type Store interface {
 	// Get an object from a store.
 	Get(namespace, name string) (runtime.Object, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

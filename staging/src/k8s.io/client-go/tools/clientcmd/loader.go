@@ -667,3 +667,7 @@ func deduplicate(s []string) []string {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

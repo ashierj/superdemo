@@ -207,3 +207,7 @@ func autoConvert_metrics_PodMetricsList_To_v1alpha1_PodMetricsList(in *metrics.P
 func Convert_metrics_PodMetricsList_To_v1alpha1_PodMetricsList(in *metrics.PodMetricsList, out *PodMetricsList, s conversion.Scope) error {
 	return autoConvert_metrics_PodMetricsList_To_v1alpha1_PodMetricsList(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func AcyclicTransformer(name string, xformFunc interface{}) cmp.Option {
 	xf := xformFilter{cmp.Transformer(name, xformFunc)}
 	return cmp.FilterPath(xf.filter, xf.xform)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

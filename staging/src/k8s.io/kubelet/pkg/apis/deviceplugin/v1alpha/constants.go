@@ -31,3 +31,7 @@ const (
 	// KubeletSocket is the path of the Kubelet registry socket
 	KubeletSocket = DevicePluginPath + "kubelet.sock"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

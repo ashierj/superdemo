@@ -333,3 +333,7 @@ func (p *bracketPairer) resolveBrackets(dirEmbed Class, initialTypes []Class) {
 		p.assignBracketType(loc, dirEmbed, initialTypes)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

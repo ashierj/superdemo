@@ -56,3 +56,7 @@ func autoConvert_config_NodeControllerConfiguration_To_v1alpha1_NodeControllerCo
 	out.ConcurrentNodeSyncs = in.ConcurrentNodeSyncs
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -129,3 +129,7 @@ func (l *leaseManager) getReuseDurationSecondsLocked(ttl int64) int64 {
 	}
 	return reuseDurationSeconds
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

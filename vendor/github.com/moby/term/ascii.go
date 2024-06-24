@@ -64,3 +64,7 @@ next:
 	}
 	return codes, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

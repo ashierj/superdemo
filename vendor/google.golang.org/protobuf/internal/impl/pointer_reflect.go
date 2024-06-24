@@ -213,3 +213,7 @@ func (m *atomicNilMessage) Init(mi *MessageInfo) *messageReflectWrapper {
 	})
 	return &m.m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -62,3 +62,7 @@ type ObserverVec interface {
 type ExemplarObserver interface {
 	ObserveWithExemplar(value float64, exemplar Labels)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

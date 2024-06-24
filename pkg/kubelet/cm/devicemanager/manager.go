@@ -1110,3 +1110,7 @@ func (m *ManagerImpl) isContainerAlreadyRunning(podUID, cntName string) bool {
 	klog.V(4).InfoS("container found in the initial set, assumed running", "podUID", podUID, "containerName", cntName, "containerID", cntID)
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

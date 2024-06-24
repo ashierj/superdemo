@@ -804,3 +804,7 @@ func (t *handshakeTransport) client(kex kexAlgorithm, magics *handshakeMagics) (
 
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

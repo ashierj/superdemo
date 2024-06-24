@@ -2104,3 +2104,7 @@ func (cache *cacheImpl) getNodeInfo(nodeName string) (*v1.Node, error) {
 
 	return n.info.Node(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

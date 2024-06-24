@@ -439,3 +439,7 @@ outer:
 
 	return -1, Signature{}, ErrCryptoFailure
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

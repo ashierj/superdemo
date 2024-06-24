@@ -161,3 +161,7 @@ func (xl termlist) subsetOf(yl termlist) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func (b *PreferredSchedulingTermApplyConfiguration) WithPreference(value *NodeSe
 	b.Preference = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

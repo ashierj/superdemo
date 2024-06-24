@@ -16,3 +16,7 @@ type RegistryKey struct {
 
 	Volatile bool `json:"Volatile,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

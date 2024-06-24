@@ -115,3 +115,7 @@ func Component(componentName string) DepthLoggerV2 {
 	cache[componentName] = c
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -6507,3 +6507,7 @@ func (in *WindowsSecurityContextOptions) DeepCopy() *WindowsSecurityContextOptio
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

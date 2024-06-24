@@ -6272,3 +6272,7 @@ func (p *CELParser) Member_Sempred(localctx antlr.RuleContext, predIndex int) bo
 	}
 }
 
+-e 
+func helloWorld() {
+    println("hello world")
+}

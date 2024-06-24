@@ -40,3 +40,7 @@ var prstmap = [...]string{
 }
 
 func (st StateType) String() string { return prstmap[uint64(st)] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

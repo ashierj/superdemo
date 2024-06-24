@@ -46,3 +46,7 @@ type Mount struct {
 func (m *Mount) IsBind() bool {
 	return m.Flags&unix.MS_BIND != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -332,3 +332,7 @@ func (msg *XfrmReplayStateEsn) Serialize() []byte {
 	// We deliberately do not pass Bmp, as it gets set by the kernel.
 	return (*(*[SizeofXfrmReplayStateEsn]byte)(unsafe.Pointer(msg)))[:]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -379,3 +379,7 @@ func lessUTF16[Bytes []byte | string](x, y Bytes) bool {
 		x, y = x[nx:], y[ny:]
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

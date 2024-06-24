@@ -68,3 +68,7 @@ type ReplicaSetNamespaceLister interface {
 type replicaSetNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.ReplicaSet]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

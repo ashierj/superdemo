@@ -695,3 +695,7 @@ var legalHeaderKeyBytes = [127]bool{
 	'|':  true,
 	'~':  true,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

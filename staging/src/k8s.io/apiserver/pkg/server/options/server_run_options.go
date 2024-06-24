@@ -339,3 +339,7 @@ func (s *ServerRunOptions) AddUniversalFlags(fs *pflag.FlagSet) {
 
 	utilfeature.DefaultMutableFeatureGate.AddFlag(fs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

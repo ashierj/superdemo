@@ -140,3 +140,7 @@ func (g *Cloud) ListTargetHTTPSProxies() ([]*compute.TargetHttpsProxy, error) {
 	v, err := g.c.TargetHttpsProxies().List(ctx, filter.None)
 	return v, mc.Observe(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

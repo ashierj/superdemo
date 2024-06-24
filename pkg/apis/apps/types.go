@@ -918,3 +918,7 @@ type ReplicaSetCondition struct {
 	// +optional
 	Message string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

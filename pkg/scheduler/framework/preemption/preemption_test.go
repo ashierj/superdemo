@@ -475,3 +475,7 @@ func TestSelectCandidate(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

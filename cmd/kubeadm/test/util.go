@@ -118,3 +118,7 @@ func GetDefaultInternalConfig(t *testing.T) *kubeadmapi.InitConfiguration {
 	}
 	return internalcfg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

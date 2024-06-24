@@ -57,3 +57,7 @@ func NewErrorChannel() *ErrorChannel {
 		errCh: make(chan error, 1),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

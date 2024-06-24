@@ -196,3 +196,7 @@ type DiskStats struct {
 	// I/O completion time and the backlog that may be accumulating.
 	WeightedIoDuration *time.Duration `json:"weighted_io_duration,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

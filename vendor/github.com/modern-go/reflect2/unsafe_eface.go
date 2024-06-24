@@ -57,3 +57,7 @@ func (type2 *UnsafeEFaceType) Indirect(obj interface{}) interface{} {
 func (type2 *UnsafeEFaceType) UnsafeIndirect(ptr unsafe.Pointer) interface{} {
 	return *(*interface{})(ptr)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

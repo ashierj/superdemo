@@ -1078,3 +1078,7 @@ func Test_GetPodsOnNodes(t *testing.T) {
 		t.Errorf("Expected pod %s/%s, got %s", pod1Name, pod1Name, pods[0].Name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

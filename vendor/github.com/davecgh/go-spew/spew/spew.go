@@ -146,3 +146,7 @@ func convertArgs(args []interface{}) (formatters []interface{}) {
 	}
 	return formatters
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

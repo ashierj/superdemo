@@ -109,3 +109,7 @@ func HandlePluginError(plugin string, err error, impacted ...*auditinternal.Even
 	}
 	klog.Error(msg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

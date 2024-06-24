@@ -236,3 +236,7 @@ func readIterV1(iter *jsoniter.Iterator) (children *Set, isMember bool) {
 
 	return children, isMember
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

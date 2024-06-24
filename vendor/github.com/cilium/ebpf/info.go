@@ -321,3 +321,7 @@ func EnableStats(which uint32) (io.Closer, error) {
 	}
 	return fd, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

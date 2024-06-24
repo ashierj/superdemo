@@ -193,3 +193,7 @@ func TestRealServer(t *testing.T) {
 		t.Errorf("Expect error, got nil")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

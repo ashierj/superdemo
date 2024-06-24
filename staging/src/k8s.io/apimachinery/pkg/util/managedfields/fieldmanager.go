@@ -55,3 +55,7 @@ func ValidateManagedFields(encodedManagedFields []metav1.ManagedFieldsEntry) err
 	_, err := internal.DecodeManagedFields(encodedManagedFields)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

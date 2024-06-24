@@ -38,3 +38,7 @@ func parseSnapshotControllerMetrics(data string) (SnapshotControllerMetrics, err
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ func (b *NetworkPolicySpecApplyConfiguration) WithPolicyTypes(values ...apinetwo
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

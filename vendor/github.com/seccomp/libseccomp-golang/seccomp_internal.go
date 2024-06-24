@@ -882,3 +882,7 @@ func notifIDValid(fd ScmpFd, id uint64) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ func TestOtherGrpcErrorDoesNotTriggerNotFound(t *testing.T) {
 		t.Errorf("%v unexpectedly passed not found check", gerr)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -62,3 +62,7 @@ func defaultObjectResumer(obj runtime.Object) ([]byte, error) {
 		return nil, fmt.Errorf("resuming is not supported")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

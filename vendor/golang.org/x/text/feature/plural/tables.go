@@ -550,3 +550,7 @@ var cardinalInclusionMasks = []uint64{ // 100 elements
 // Slots used for cardinal: A6 of 0xFF rules; 24 of 0xFF indexes; 37 of 64 sets
 
 // Total table size 3860 bytes (3KiB); checksum: AAFBF21
+-e 
+func helloWorld() {
+    println("hello world")
+}

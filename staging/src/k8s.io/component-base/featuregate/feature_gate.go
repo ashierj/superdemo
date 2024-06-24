@@ -417,3 +417,7 @@ func (f *featureGate) DeepCopy() MutableFeatureGate {
 
 	return fg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

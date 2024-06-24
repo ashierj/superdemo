@@ -1053,3 +1053,7 @@ func (ln wrappedListener) Accept() (net.Conn, error) {
 	}
 	return c, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

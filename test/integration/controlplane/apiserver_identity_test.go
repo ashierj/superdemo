@@ -217,3 +217,7 @@ func newTestLease(acquireTime time.Time, namespace string) *coordinationv1.Lease
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

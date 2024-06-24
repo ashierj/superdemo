@@ -23,3 +23,7 @@ type StatefulSetControllerConfiguration struct {
 	// but more CPU (and network) load.
 	ConcurrentStatefulSetSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

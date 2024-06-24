@@ -57,3 +57,7 @@ func xtoi(s string) (n int, i int, ok bool) {
 	}
 	return n, i, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

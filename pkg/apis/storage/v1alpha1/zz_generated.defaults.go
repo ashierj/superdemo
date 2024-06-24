@@ -63,3 +63,7 @@ func SetObjectDefaults_VolumeAttachmentList(in *v1alpha1.VolumeAttachmentList) {
 		SetObjectDefaults_VolumeAttachment(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2234,3 +2234,7 @@ var entities = map[string]bool{
 	"&zwj;":                             true,
 	"&zwnj;":                            true,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

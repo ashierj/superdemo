@@ -19,3 +19,7 @@ limitations under the License.
 package v1
 
 type APIServiceExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

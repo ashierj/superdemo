@@ -57,3 +57,7 @@ func Register(machineInfoFactory info.MachineInfoFactory, fsInfo fs.FsInfo, incl
 	container.RegisterContainerHandlerFactory(factory, []watcher.ContainerWatchSource{watcher.Raw})
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

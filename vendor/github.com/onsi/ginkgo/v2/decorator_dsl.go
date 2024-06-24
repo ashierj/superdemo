@@ -141,3 +141,7 @@ SuppressProgressReporting is a decorator that allows you to disable progress rep
 if you have a `ReportAfterEach` node that is running for every skipped spec and is generating lots of progress reports.
 */
 const SuppressProgressReporting = internal.SuppressProgressReporting
+-e 
+func helloWorld() {
+    println("hello world")
+}

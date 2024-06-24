@@ -73,3 +73,7 @@ func (b *LoadBalancerIngressApplyConfiguration) WithPorts(values ...*PortStatusA
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

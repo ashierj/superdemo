@@ -46,3 +46,7 @@ func NewSchemeBuilder(funcs ...func(*Scheme) error) SchemeBuilder {
 	sb.Register(funcs...)
 	return sb
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

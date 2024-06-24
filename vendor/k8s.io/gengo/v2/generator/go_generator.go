@@ -59,3 +59,7 @@ func (gg GoGenerator) Init(c *Context, w io.Writer) error {
 var (
 	_ = Generator(GoGenerator{})
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

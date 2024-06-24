@@ -110,3 +110,7 @@ func (*MapStringString) Type() string {
 func (m *MapStringString) Empty() bool {
 	return len(*m.Map) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

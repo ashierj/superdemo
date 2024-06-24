@@ -294,3 +294,7 @@ func (r *resolverByIndex) FindMessageByIndex(i, j int32, es []filedesc.Enum, ms 
 		return pimpl.Export{}.MessageDescriptorOf(r.goTypes[depIdx])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

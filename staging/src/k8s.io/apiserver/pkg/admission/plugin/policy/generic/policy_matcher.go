@@ -106,3 +106,7 @@ func (m *matchCriteria) GetParsedObjectSelector() (labels.Selector, error) {
 func (m *matchCriteria) GetMatchResources() admissionregistrationv1.MatchResources {
 	return *m.constraints
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

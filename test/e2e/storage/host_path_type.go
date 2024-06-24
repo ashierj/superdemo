@@ -492,3 +492,7 @@ func verifyPodHostPathType(ctx context.Context, f *framework.Framework, nodeSele
 
 	f.ClientSet.CoreV1().Pods(f.Namespace.Name).Delete(ctx, newPod.Name, *metav1.NewDeleteOptions(0))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

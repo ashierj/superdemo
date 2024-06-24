@@ -717,3 +717,7 @@ func isPDBErroring(pdb *policyv1.PodDisruptionBudget) bool {
 	}
 	return hasFailed
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

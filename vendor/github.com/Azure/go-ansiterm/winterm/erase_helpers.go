@@ -82,3 +82,7 @@ func (h *windowsAnsiEventHandler) clearRect(attributes uint16, fromCoord COORD, 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

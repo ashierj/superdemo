@@ -254,3 +254,7 @@ func (c *persistentVolumeClaims) ApplyStatus(ctx context.Context, persistentVolu
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

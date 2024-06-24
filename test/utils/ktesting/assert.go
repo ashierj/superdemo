@@ -197,3 +197,7 @@ func Consistently[T any](tCtx TContext, cb func(TContext) T) gomega.AsyncAsserti
 		return cb(tCtx), nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

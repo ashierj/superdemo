@@ -185,3 +185,7 @@ func LabelIndex(label string) string {
 func FieldIndex(field string) string {
 	return "f:" + field
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

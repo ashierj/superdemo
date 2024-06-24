@@ -27,3 +27,7 @@ var (
 	Service        pref.ProtoMessage
 	Method         pref.ProtoMessage
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

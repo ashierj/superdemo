@@ -59,3 +59,7 @@ func filterOutCondition(conditions []v1.ReplicationControllerCondition, condType
 	}
 	return newConditions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

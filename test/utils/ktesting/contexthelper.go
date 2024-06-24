@@ -89,3 +89,7 @@ type deadlineContext struct {
 func (d deadlineContext) Deadline() (time.Time, bool) {
 	return d.deadline, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

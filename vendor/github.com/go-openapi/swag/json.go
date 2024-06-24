@@ -310,3 +310,7 @@ func (n *NameProvider) GetGoNameForType(tpe reflect.Type, name string) (string, 
 	nme, ok := names.jsonNames[name]
 	return nme, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

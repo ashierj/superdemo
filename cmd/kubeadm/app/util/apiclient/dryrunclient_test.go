@@ -133,3 +133,7 @@ func TestDiscoveryServerVersion(t *testing.T) {
 		t.Fatalf("GitVersion did not match, expected %s, got %s", gitVersion, ver.GitVersion)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

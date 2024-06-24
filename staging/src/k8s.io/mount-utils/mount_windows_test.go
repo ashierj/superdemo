@@ -376,3 +376,7 @@ func TestIsAccessDeniedError(t *testing.T) {
 			test.err, result, test.expectedResult)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

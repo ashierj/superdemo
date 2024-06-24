@@ -38,3 +38,7 @@ func Convert_v1alpha1_EndpointSliceControllerConfiguration_To_config_EndpointSli
 func Convert_config_EndpointSliceControllerConfiguration_To_v1alpha1_EndpointSliceControllerConfiguration(in *endpointsliceconfig.EndpointSliceControllerConfiguration, out *v1alpha1.EndpointSliceControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_EndpointSliceControllerConfiguration_To_v1alpha1_EndpointSliceControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

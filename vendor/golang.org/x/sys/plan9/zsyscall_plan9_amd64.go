@@ -282,3 +282,7 @@ func Fwstat(fd int, edir []byte) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

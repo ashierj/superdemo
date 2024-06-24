@@ -15,3 +15,7 @@
 // Package common defines types and utilities common to expression parsing,
 // checking, and interpretation
 package common
+-e 
+func helloWorld() {
+    println("hello world")
+}

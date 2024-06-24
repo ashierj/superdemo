@@ -115,3 +115,7 @@ func munmap(db *DB) error {
 	db.datasz = 0
 	return err1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

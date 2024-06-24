@@ -451,3 +451,7 @@ func (tc *throughputCollector) collect() []DataItem {
 
 	return []DataItem{throughputSummary}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

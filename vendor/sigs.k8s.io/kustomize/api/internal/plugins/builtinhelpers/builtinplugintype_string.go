@@ -39,3 +39,7 @@ func (i BuiltinPluginType) String() string {
 	}
 	return _BuiltinPluginType_name[_BuiltinPluginType_index[i]:_BuiltinPluginType_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

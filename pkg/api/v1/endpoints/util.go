@@ -234,3 +234,7 @@ func (sl portsByHash) Less(i, j int) bool {
 	h2 := hashObject(hasher, sl[j])
 	return bytes.Compare(h1, h2) < 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

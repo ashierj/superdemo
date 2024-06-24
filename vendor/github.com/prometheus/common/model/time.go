@@ -338,3 +338,7 @@ func (d *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	*d = dur
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -130,3 +130,7 @@ type SysSpec struct {
 	// versions for an OS distro.
 	PackageSpecOverrides []PackageSpecOverride `json:"packageSpecOverrides,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

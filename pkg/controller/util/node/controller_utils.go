@@ -302,3 +302,7 @@ func GetNodeCondition(status *v1.NodeStatus, conditionType v1.NodeConditionType)
 	}
 	return -1, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

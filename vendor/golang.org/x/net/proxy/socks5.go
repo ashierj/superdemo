@@ -40,3 +40,7 @@ func SOCKS5(network, address string, auth *Auth, forward Dialer) (Dialer, error)
 	}
 	return d, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

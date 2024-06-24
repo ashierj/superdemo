@@ -45,3 +45,7 @@ const (
 	// to user input.  See InternalError().
 	ErrorTypeInternal ErrorType = "InternalError"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

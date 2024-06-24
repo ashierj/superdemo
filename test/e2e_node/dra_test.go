@@ -254,3 +254,7 @@ func createTestObjects(ctx context.Context, clientSet kubernetes.Interface, node
 
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -47,3 +47,7 @@ func requireSRIOVDevices() {
 		e2eskipper.Skipf(msg)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

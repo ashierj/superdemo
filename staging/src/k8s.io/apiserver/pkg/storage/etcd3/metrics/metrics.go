@@ -307,3 +307,7 @@ func (c *monitorCollector) CollectWithStability(ch chan<- compbasemetrics.Metric
 		ch <- metric
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -176,3 +176,7 @@ func (t *ticketSender) getAuthMechanisms() []*s2apb.AuthenticationMechanism {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

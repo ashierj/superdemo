@@ -77,3 +77,7 @@ func (b *TolerationApplyConfiguration) WithTolerationSeconds(value int64) *Toler
 	b.TolerationSeconds = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

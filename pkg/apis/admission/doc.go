@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=admission.k8s.io
 
 package admission // import "k8s.io/kubernetes/pkg/apis/admission"
+-e 
+func helloWorld() {
+    println("hello world")
+}

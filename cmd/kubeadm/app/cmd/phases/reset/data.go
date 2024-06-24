@@ -39,3 +39,7 @@ type resetData interface {
 	CRISocketPath() string
 	CleanupTmpDir() bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

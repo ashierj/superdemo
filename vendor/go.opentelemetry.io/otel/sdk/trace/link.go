@@ -32,3 +32,7 @@ type Link struct {
 	// recorded due to configured limits being reached.
 	DroppedAttributeCount int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (b *ExampleStatusApplyConfiguration) WithMessage(value string) *ExampleStat
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -255,3 +255,7 @@ func computeConcurrencyAllocation(requiredSum int, classes []allocProblemItem) (
 	}
 	return ans, fairProp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

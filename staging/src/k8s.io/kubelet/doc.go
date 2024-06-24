@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package kubelet // import "k8s.io/kubelet"
+-e 
+func helloWorld() {
+    println("hello world")
+}

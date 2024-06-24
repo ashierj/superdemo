@@ -210,3 +210,7 @@ func (t *unixTransport) SendMessage(msg *Message) error {
 func (t *unixTransport) SupportsUnixFDs() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

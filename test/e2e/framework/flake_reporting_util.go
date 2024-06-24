@@ -95,3 +95,7 @@ func (f *FlakeReport) PrintJSON() string {
 func (f *FlakeReport) SummaryKind() string {
 	return "FlakeReport"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

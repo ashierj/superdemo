@@ -217,3 +217,7 @@ func (s *BufferedWriteSyncer) Stop() (err error) {
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

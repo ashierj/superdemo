@@ -178,3 +178,7 @@ func (pc *NetProtocolCapabilities) parseCapabilities(capabilities []string) erro
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

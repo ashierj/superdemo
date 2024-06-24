@@ -149,3 +149,7 @@ func (c *FakeFischers) Apply(ctx context.Context, fischer *wardlev1alpha1.Fische
 	}
 	return obj.(*v1alpha1.Fischer), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

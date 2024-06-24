@@ -158,3 +158,7 @@ func TestRemoveSignature(t *testing.T) {
 
 	verifyActions(t, expected, cl.Actions())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

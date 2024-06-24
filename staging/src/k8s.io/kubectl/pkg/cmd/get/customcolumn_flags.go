@@ -111,3 +111,7 @@ func NewCustomColumnsPrintFlags() *CustomColumnsPrintFlags {
 		TemplateArgument: "",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

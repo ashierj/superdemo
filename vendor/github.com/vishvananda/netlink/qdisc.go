@@ -338,3 +338,7 @@ func (qdisc *FqCodel) Attrs() *QdiscAttrs {
 func (qdisc *FqCodel) Type() string {
 	return "fq_codel"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

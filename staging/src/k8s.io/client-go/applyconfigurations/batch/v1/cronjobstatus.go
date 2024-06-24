@@ -65,3 +65,7 @@ func (b *CronJobStatusApplyConfiguration) WithLastSuccessfulTime(value metav1.Ti
 	b.LastSuccessfulTime = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

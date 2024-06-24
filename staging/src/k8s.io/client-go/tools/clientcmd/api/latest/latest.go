@@ -59,3 +59,7 @@ func init() {
 		runtime.InternalGroupVersioner,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

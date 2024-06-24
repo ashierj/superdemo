@@ -145,3 +145,7 @@ func New(parent *Tracestate, entries ...Entry) (*Tracestate, error) {
 	}
 	return &tracestate, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

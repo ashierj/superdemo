@@ -173,3 +173,7 @@ func genFlagResult(flags *pflag.FlagSet) []cmdOption {
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

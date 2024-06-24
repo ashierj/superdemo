@@ -432,3 +432,7 @@ func DoTestPodScheduling(ns *v1.Namespace, t *testing.T, cs clientset.Interface)
 	}
 	t.Logf("Scheduled pod using extenders")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

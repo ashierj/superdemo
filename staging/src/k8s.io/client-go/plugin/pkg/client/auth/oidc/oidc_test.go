@@ -156,3 +156,7 @@ func assertCacheLen(t *testing.T, cache *clientCache, length int) {
 		t.Errorf("expected cache length %d got %d", length, len(cache.cache))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

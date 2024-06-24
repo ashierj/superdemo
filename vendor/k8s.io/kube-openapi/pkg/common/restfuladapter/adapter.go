@@ -13,3 +13,7 @@ func AdaptWebServices(webServices []*restful.WebService) []common.RouteContainer
 	}
 	return containers
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func PrintableValue(v reflect.Value) (interface{}, bool) {
 	}
 	return v.Interface(), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -174,3 +174,7 @@ func (a customResourceValidator) ValidateScaleStatus(ctx context.Context, obj *u
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

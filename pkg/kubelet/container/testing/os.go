@@ -143,3 +143,7 @@ func (*FakeOS) OpenFile(name string, flag int, perm os.FileMode) (*os.File, erro
 func (*FakeOS) Rename(oldpath, newpath string) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

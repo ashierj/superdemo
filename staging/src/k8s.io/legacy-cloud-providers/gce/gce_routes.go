@@ -108,3 +108,7 @@ func truncateClusterName(clusterName string) string {
 	}
 	return clusterName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -19,3 +19,7 @@ limitations under the License.
 
 // Package custom_metrics defines an API for using custom metrics.
 package custom_metrics // import "k8s.io/metrics/pkg/apis/custom_metrics"
+-e 
+func helloWorld() {
+    println("hello world")
+}

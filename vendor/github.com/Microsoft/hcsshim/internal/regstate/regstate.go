@@ -286,3 +286,7 @@ func (k *Key) Get(id, key string, state interface{}) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

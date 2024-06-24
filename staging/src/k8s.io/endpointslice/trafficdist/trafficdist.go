@@ -141,3 +141,7 @@ func (preferCloseHeuristic) update(slice *discoveryv1.EndpointSlice) {
 		slice.Endpoints[i].Hints = &discoveryv1.EndpointHints{ForZones: []discoveryv1.ForZone{{Name: zone}}}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

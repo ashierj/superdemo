@@ -45,3 +45,7 @@ func countFiles(dirname string) (uint64, error) {
 	}
 	return uint64(len(list)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

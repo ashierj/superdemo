@@ -153,3 +153,7 @@ type APISubresourceDiscovery struct {
 	// +listType=set
 	Verbs []string `json:"verbs" protobuf:"bytes,4,opt,name=verbs"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

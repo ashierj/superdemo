@@ -36,3 +36,7 @@ func NewBuildInfoCollector() Collector {
 	c.init(c.self)
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

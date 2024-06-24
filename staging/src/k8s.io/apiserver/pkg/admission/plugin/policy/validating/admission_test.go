@@ -1998,3 +1998,7 @@ func (r *warningRecorder) len() int {
 	defer r.Unlock()
 	return len(r.warnings)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

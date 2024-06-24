@@ -103,3 +103,7 @@ func (s Status) String() string {
 	}
 	return string(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

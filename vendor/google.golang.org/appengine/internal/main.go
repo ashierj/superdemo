@@ -14,3 +14,7 @@ func Main() {
 	MainPath = ""
 	appengine_internal.Main()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

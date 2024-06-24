@@ -121,3 +121,7 @@ func (r *SubjectAccessEvaluator) AllowedSubjects(requestAttributes authorizer.At
 
 	return subjects, utilerrors.NewAggregate(errorlist)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

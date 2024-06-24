@@ -282,3 +282,7 @@ type BatchOptions struct {
 	ElemFlags uint64
 	Flags     uint64
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

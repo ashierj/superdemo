@@ -21,3 +21,7 @@ func firstInSequence(m []Message) catmsg.Message {
 	}
 	return catmsg.FirstOf(a)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

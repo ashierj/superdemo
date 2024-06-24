@@ -70,3 +70,7 @@ func (tw *metricsTxnWrite) End() {
 	deletes := float64(tw.deletes)
 	deleteCounter.Add(deletes)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

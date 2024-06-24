@@ -213,3 +213,7 @@ func appendRune(p []byte, r rune) []byte {
 		return p
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

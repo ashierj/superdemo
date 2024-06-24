@@ -475,3 +475,7 @@ func (c fakeClient) generateCSR() runtime.Object {
 	}
 	return &csr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

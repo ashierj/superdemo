@@ -21,3 +21,7 @@ This package does not fall under the stability promise of the Go language itself
 so its API may be changed when pressing needs arise.
 */
 package ssh // import "golang.org/x/crypto/ssh"
+-e 
+func helloWorld() {
+    println("hello world")
+}

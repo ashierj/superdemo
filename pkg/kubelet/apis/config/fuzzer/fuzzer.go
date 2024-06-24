@@ -123,3 +123,7 @@ func Funcs(codecs runtimeserializer.CodecFactory) []interface{} {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

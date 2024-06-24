@@ -187,3 +187,7 @@ func ParseBigBytes(s string) (*big.Int, error) {
 
 	return nil, fmt.Errorf("unhandled size name: %v", extra)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

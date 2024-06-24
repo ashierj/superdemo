@@ -109,3 +109,7 @@ func (stream *Stream) WriteFloat64Lossy(val float64) {
 		stream.buf = stream.buf[:len(stream.buf)-1]
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

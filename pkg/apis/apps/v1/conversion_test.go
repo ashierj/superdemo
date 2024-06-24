@@ -598,3 +598,7 @@ func TestV1ReplicaSetSpecConversion(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -32,3 +32,7 @@ type NodeIPAMControllerConfiguration struct {
 	// This can be used only with dual stack clusters and is incompatible with single stack clusters.
 	NodeCIDRMaskSizeIPv6 int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

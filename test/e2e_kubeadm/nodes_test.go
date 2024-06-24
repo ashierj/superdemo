@@ -69,3 +69,7 @@ var _ = Describe("nodes", func() {
 		)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=example.apiserver.code-generator.k8s.io
 
 package v1 // import "k8s.io/code-generator/examples/apiserver/apis/example/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

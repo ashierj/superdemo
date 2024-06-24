@@ -163,3 +163,7 @@ func newLinkCgroup(cgroup *os.File, attach ebpf.AttachType, prog *ebpf.Program) 
 
 	return &linkCgroup{*link}, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

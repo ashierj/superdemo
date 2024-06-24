@@ -192,3 +192,7 @@ func (in *ValidatingWebhookConfigurationList) APILifecycleReplacement() schema.G
 func (in *ValidatingWebhookConfigurationList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

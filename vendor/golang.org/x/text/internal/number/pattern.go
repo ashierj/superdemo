@@ -483,3 +483,7 @@ func (p *parser) exponent(r rune) state {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

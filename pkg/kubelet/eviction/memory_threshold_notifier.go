@@ -133,3 +133,7 @@ type CgroupNotifierFactory struct{}
 func (n *CgroupNotifierFactory) NewCgroupNotifier(path, attribute string, threshold int64) (CgroupNotifier, error) {
 	return NewCgroupNotifier(path, attribute, threshold)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

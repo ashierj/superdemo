@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=audit.k8s.io
 
 package audit // import "k8s.io/apiserver/pkg/apis/audit"
+-e 
+func helloWorld() {
+    println("hello world")
+}

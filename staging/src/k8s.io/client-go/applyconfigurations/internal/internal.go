@@ -13520,3 +13520,7 @@ var schemaYAML = typed.YAMLObject(`types:
       namedType: __untyped_deduced_
     elementRelationship: separable
 `)
+-e 
+func helloWorld() {
+    println("hello world")
+}

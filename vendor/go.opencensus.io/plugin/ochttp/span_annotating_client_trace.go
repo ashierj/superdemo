@@ -167,3 +167,7 @@ func (s spanAnnotator) wroteRequest(info httptrace.WroteRequestInfo) {
 	}
 	s.sp.Annotate(attrs, "WroteRequest")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

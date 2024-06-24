@@ -476,3 +476,7 @@ func (c *Configurer) SetupDNSinContainerizedMounter(mounterPath string) {
 		klog.ErrorS(err, "Could not write dns nameserver in the file", "path", resolvePath)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -98,3 +98,7 @@ func (d *defaultDispatcher) OverloadIds() []string {
 	}
 	return overloads
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

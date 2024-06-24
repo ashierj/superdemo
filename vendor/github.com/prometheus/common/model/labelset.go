@@ -167,3 +167,7 @@ func (l *LabelSet) UnmarshalJSON(b []byte) error {
 	*l = LabelSet(m)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

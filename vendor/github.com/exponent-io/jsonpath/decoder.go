@@ -208,3 +208,7 @@ func (d *Decoder) Scan(ext *PathActions) (bool, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func TestContextFromChannelAndMaxWaitDurationWithMaxWaitElapsed(t *testing.T) {
 		t.Errorf("Expected the context to be canceled with: %v, but got: %v", context.Canceled, ctx.Err())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -17,3 +17,7 @@ type RestoreState struct {
 	//  The ID of the template system to clone this new system off of. An empty  string indicates the system should not be cloned from a template.
 	TemplateSystemId string `json:"TemplateSystemId,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

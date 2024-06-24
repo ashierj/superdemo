@@ -401,3 +401,7 @@ func getEphemeralStorageResourceList(storage string) v1.ResourceList {
 	}
 	return res
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

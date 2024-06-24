@@ -254,3 +254,7 @@ func (c *daemonSets) ApplyStatus(ctx context.Context, daemonSet *appsv1beta2.Dae
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ import (
 func Umask(mask int) (old int, err error) {
 	return unix.Umask(mask), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

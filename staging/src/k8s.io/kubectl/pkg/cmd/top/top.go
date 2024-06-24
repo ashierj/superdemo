@@ -74,3 +74,7 @@ func SupportedMetricsAPIVersionAvailable(discoveredAPIGroups *metav1.APIGroupLis
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -237,3 +237,7 @@ func convertToCM(obj interface{}) (*v1.ConfigMap, error) {
 	}
 	return cm, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

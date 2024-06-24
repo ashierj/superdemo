@@ -49,3 +49,7 @@ type ControllerLeaderConfiguration struct {
 	// Or '*' meaning the controller can be run under any component that participates in the migration
 	Component string `json:"component"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ type ResourceQuotaExpansion interface{}
 type SecretExpansion interface{}
 
 type ServiceAccountExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

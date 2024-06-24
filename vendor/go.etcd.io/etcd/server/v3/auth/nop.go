@@ -33,3 +33,7 @@ func (t *tokenNop) assign(ctx context.Context, username string, revision uint64)
 func newTokenProviderNop() (*tokenNop, error) {
 	return &tokenNop{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

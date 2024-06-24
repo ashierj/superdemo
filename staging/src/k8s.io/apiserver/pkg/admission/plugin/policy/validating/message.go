@@ -34,3 +34,7 @@ func (m *MessageExpressionCondition) GetExpression() string {
 func (m *MessageExpressionCondition) ReturnTypes() []*celgo.Type {
 	return []*celgo.Type{celgo.StringType}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

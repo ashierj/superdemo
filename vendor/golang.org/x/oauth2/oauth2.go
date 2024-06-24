@@ -419,3 +419,7 @@ func ReuseTokenSourceWithExpiry(t *Token, src TokenSource, earlyExpiry time.Dura
 		expiryDelta: earlyExpiry,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

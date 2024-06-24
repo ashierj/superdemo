@@ -234,3 +234,7 @@ func getWaiter(dryRun bool, client clientset.Interface, timeout time.Duration) a
 	}
 	return apiclient.NewKubeWaiter(client, timeout, os.Stdout)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

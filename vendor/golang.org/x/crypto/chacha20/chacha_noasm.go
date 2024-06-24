@@ -11,3 +11,7 @@ const bufSize = blockSize
 func (s *Cipher) xorKeyStreamBlocks(dst, src []byte) {
 	s.xorKeyStreamBlocksGeneric(dst, src)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

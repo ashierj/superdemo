@@ -231,3 +231,7 @@ func encodeStringer(key string, stringer interface{}, enc ObjectEncoder) (retErr
 	enc.AddString(key, stringer.(fmt.Stringer).String())
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func sanitizeRune(r rune) rune {
 	// Everything else turns into an underscore
 	return '_'
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

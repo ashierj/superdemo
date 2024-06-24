@@ -96,3 +96,7 @@ func (s *SamplePair) Equal(o *SamplePair) bool {
 func (s SamplePair) String() string {
 	return fmt.Sprintf("%s @[%s]", s.Value, s.Timestamp)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

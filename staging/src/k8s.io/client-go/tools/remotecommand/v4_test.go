@@ -70,3 +70,7 @@ func TestV4ErrorDecoder(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

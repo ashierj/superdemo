@@ -149,3 +149,7 @@ func (c *FakeCSIDrivers) Apply(ctx context.Context, cSIDriver *storagev1beta1.CS
 	}
 	return obj.(*v1beta1.CSIDriver), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -350,3 +350,7 @@ I output.go:<LINE>] "test" firstKey=1 secondKey=3
 	}
 	return mapping
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

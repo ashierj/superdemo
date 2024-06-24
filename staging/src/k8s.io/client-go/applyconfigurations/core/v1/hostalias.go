@@ -48,3 +48,7 @@ func (b *HostAliasApplyConfiguration) WithHostnames(values ...string) *HostAlias
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

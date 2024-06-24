@@ -51,3 +51,7 @@ func TestCronJob(t *testing.T) {
 		t.Fatal(cmp.Diff(src, uncastDst))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

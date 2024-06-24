@@ -632,3 +632,7 @@ func NodeDescription(n ast.Node) string {
 	}
 	panic(fmt.Sprintf("unexpected node type: %T", n))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

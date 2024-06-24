@@ -280,3 +280,7 @@ func newNetworkStatsProvider(p *criStatsProvider) windowsNetworkStatsProvider {
 	}
 	return statsProvider
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

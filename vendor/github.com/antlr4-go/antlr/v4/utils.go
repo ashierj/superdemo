@@ -326,3 +326,7 @@ func isDirectory(dir string) (bool, error) {
 	}
 	return fileInfo.IsDir(), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

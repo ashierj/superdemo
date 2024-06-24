@@ -62,3 +62,7 @@ func PortPart(s string) (int, error) {
 	}
 	return portNumber, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

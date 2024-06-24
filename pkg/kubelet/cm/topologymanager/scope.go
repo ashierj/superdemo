@@ -156,3 +156,7 @@ func (s *scope) allocateAlignedResources(pod *v1.Pod, container *v1.Container) e
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

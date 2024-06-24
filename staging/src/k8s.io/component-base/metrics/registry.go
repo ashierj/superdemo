@@ -392,3 +392,7 @@ func (r *kubeRegistry) RegisterMetaMetrics() {
 	r.MustRegister(hiddenMetricsTotal)
 	r.MustRegister(cardinalityEnforcementUnexpectedCategorizationsTotal)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

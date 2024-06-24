@@ -165,3 +165,7 @@ func (format Format) ToEscapingScheme() model.EscapingScheme {
 	}
 	return model.NameEscapingScheme
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

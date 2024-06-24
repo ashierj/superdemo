@@ -88,3 +88,7 @@ type SharedInformerFactory interface {
 // TweakListOptionsFunc is a function that transforms a {{.v1ListOptions|raw}}.
 type TweakListOptionsFunc func(*{{.v1ListOptions|raw}})
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@
 // JWTConfigFromJSON, but the Credentials may contain additional information
 // that is useful is some circumstances.
 package google // import "golang.org/x/oauth2/google"
+-e 
+func helloWorld() {
+    println("hello world")
+}

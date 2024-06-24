@@ -64,3 +64,7 @@ func readDirnames(osDirname string, _ []byte) ([]string, error) {
 	}
 	return entries, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

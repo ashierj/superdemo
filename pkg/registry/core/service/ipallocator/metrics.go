@@ -120,3 +120,7 @@ func (*emptyMetricsRecorder) setAllocated(cidr string, allocated int)      {}
 func (*emptyMetricsRecorder) setAvailable(cidr string, available int)      {}
 func (*emptyMetricsRecorder) incrementAllocations(cidr, scope string)      {}
 func (*emptyMetricsRecorder) incrementAllocationErrors(cidr, scope string) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

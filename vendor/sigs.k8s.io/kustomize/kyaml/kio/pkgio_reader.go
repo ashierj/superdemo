@@ -358,3 +358,7 @@ func (r *LocalPackageReader) shouldSkipDir(path string, matcher *ignoreFilesMatc
 	}
 	return matcher.readIgnoreFile(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

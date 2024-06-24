@@ -133,3 +133,7 @@ func Measure(_ ...interface{}) bool {
 	deprecationTracker.TrackDeprecation(types.Deprecations.Measure(), types.NewCodeLocation(1))
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

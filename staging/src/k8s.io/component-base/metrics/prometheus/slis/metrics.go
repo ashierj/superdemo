@@ -73,3 +73,7 @@ func ObserveHealthcheck(ctx context.Context, name string, healthcheckType string
 	healthchecksTotal.WithContext(ctx).WithLabelValues(name, healthcheckType, string(status)).Inc()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

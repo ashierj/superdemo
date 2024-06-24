@@ -22,3 +22,7 @@ limitations under the License.
 
 // Package v1beta1 is the v1beta1 version of the API.
 package v1beta1 // import "k8s.io/sample-apiserver/pkg/apis/wardle/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

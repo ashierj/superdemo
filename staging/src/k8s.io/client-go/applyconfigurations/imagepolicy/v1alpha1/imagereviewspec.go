@@ -66,3 +66,7 @@ func (b *ImageReviewSpecApplyConfiguration) WithNamespace(value string) *ImageRe
 	b.Namespace = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

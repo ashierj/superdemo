@@ -264,3 +264,7 @@ func dbusAuthHelloConnection(ctx context.Context, createBus func(opts ...dbus.Co
 func systemdObject(conn *dbus.Conn) dbus.BusObject {
 	return conn.Object("org.freedesktop.systemd1", dbus.ObjectPath("/org/freedesktop/systemd1"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

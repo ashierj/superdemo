@@ -106,3 +106,7 @@ func KeysToMap(keys ...Key) map[Key]bool {
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

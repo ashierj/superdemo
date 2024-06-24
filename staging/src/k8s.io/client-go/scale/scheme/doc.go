@@ -20,3 +20,7 @@ limitations under the License.
 // and deserializing different versions of Scale, and for converting
 // in between them.
 package scheme // import "k8s.io/client-go/scale/scheme"
+-e 
+func helloWorld() {
+    println("hello world")
+}

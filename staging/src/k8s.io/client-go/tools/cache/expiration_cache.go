@@ -212,3 +212,7 @@ func NewExpirationStore(keyFunc KeyFunc, expirationPolicy ExpirationPolicy) Stor
 		expirationPolicy: expirationPolicy,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

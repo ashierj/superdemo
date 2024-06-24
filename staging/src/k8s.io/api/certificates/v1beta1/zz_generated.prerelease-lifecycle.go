@@ -72,3 +72,7 @@ func (in *CertificateSigningRequestList) APILifecycleReplacement() schema.GroupV
 func (in *CertificateSigningRequestList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

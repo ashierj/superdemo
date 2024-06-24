@@ -163,3 +163,7 @@ func TestFinalizationAndDeletion(t *testing.T) {
 		t.Fatalf("unable to delete crd: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

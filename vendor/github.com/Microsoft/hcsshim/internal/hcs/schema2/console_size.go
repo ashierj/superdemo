@@ -14,3 +14,7 @@ type ConsoleSize struct {
 
 	Width int32 `json:"Width,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

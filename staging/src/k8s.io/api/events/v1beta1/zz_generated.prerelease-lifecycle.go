@@ -56,3 +56,7 @@ func (in *EventList) APILifecycleDeprecated() (major, minor int) {
 func (in *EventList) APILifecycleRemoved() (major, minor int) {
 	return 1, 25
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

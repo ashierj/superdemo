@@ -265,3 +265,7 @@ func makeLabels(kvs ...string) map[string]string {
 	}
 	return labels
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -194,3 +194,7 @@ func newPodWithInitContainers(name string, containers []v1.Container, initContai
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

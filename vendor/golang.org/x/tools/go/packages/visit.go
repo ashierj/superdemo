@@ -57,3 +57,7 @@ func PrintErrors(pkgs []*Package) int {
 	})
 	return n
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

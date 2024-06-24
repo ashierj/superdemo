@@ -162,3 +162,7 @@ func NewPidFileFn(pidFilePath string) func() (int, error) {
 		return pid, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

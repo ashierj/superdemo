@@ -433,3 +433,7 @@ var (
 	ErrIntOverflowPlatform          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupPlatform = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

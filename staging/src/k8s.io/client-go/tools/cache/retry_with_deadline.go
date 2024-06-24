@@ -76,3 +76,7 @@ func (r *retryWithDeadlineImpl) ShouldRetry() bool {
 	r.reset()
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

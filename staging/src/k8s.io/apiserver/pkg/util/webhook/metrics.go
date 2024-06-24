@@ -50,3 +50,7 @@ func init() {
 	legacyregistry.MustRegister(x509MissingSANCounter)
 	legacyregistry.MustRegister(x509InsecureSHA1Counter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

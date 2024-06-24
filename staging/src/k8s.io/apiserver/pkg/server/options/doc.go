@@ -19,3 +19,7 @@ limitations under the License.
 // implementations, in order to ensure it may be reused by multiple components
 // (such as CLI commands that wish to generate or validate config).
 package options // import "k8s.io/apiserver/pkg/server/options"
+-e 
+func helloWorld() {
+    println("hello world")
+}

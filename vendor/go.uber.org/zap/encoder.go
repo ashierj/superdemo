@@ -77,3 +77,7 @@ func newEncoder(name string, encoderConfig zapcore.EncoderConfig) (zapcore.Encod
 	}
 	return constructor(encoderConfig)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

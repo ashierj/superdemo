@@ -27,3 +27,7 @@ const (
 	StrategicMergePatchType PatchType = "application/strategic-merge-patch+json"
 	ApplyPatchType          PatchType = "application/apply-patch+yaml"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

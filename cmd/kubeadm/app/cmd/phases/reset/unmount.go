@@ -28,3 +28,7 @@ func unmountKubeletDirectory(kubeletRunDirectory string, flags []string) error {
 	klog.Warning("Cannot unmount filesystems on current OS, all mounted file systems will need to be manually unmounted")
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -36,3 +36,7 @@ func As(err error, target interface{}) bool { return stderrors.As(err, target) }
 func Unwrap(err error) error {
 	return stderrors.Unwrap(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

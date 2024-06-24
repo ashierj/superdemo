@@ -104,3 +104,7 @@ type ObjectReference struct {
 	ResourceVersion string
 	FieldPath       string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

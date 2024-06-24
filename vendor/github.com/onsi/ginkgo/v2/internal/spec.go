@@ -85,3 +85,7 @@ func (s Specs) AtIndices(indices SpecIndices) Specs {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

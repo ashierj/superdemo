@@ -48,3 +48,7 @@ func (tracker *ImportTracker) AddNullable() {
 		},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

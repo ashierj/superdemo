@@ -88,3 +88,7 @@ func updatePodSpecForObject(obj runtime.Object, fn func(*v1.PodSpec) error) (boo
 		return false, fmt.Errorf("the object is not a pod or does not have a pod template: %T", t)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

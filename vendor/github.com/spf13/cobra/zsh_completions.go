@@ -306,3 +306,7 @@ fi
 		ShellCompDirectiveFilterFileExt, ShellCompDirectiveFilterDirs, ShellCompDirectiveKeepOrder,
 		activeHelpMarker))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

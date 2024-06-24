@@ -67,3 +67,7 @@ func binaryHash() uint64 {
 	}
 	return h.Sum64()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

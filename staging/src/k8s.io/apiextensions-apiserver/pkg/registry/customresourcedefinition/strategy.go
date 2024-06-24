@@ -307,3 +307,7 @@ func specHasSelectableFields(spec *apiextensions.CustomResourceDefinitionSpec) b
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

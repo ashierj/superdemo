@@ -151,3 +151,7 @@ func (c *paramVerifyingSchema) ValidateBytes(data []byte) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

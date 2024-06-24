@@ -41,3 +41,7 @@ type StorageClassListerExpansion interface{}
 // VolumeAttachmentListerExpansion allows custom methods to be added to
 // VolumeAttachmentLister.
 type VolumeAttachmentListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

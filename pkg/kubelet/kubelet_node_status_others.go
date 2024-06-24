@@ -22,3 +22,7 @@ package kubelet
 func getOSSpecificLabels() (map[string]string, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

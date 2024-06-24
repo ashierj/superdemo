@@ -95,3 +95,7 @@ func NewKubeadmCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 
 	return cmds
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

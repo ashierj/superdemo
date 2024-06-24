@@ -285,3 +285,7 @@ func (prober *flexVolumeProber) testAndSetProbeAllNeeded(newval bool) (oldval bo
 	oldval, prober.probeAllNeeded = prober.probeAllNeeded, newval
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

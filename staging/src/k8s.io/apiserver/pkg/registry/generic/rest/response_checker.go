@@ -69,3 +69,7 @@ func (checker GenericHttpResponseChecker) Check(resp *http.Response) error {
 func NewGenericHttpResponseChecker(qualifiedResource schema.GroupResource, name string) GenericHttpResponseChecker {
 	return GenericHttpResponseChecker{QualifiedResource: qualifiedResource, Name: name}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

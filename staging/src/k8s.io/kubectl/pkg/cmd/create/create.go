@@ -470,3 +470,7 @@ func (o *CreateSubcommandOptions) Run() error {
 
 	return o.PrintObj(obj, o.Out)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

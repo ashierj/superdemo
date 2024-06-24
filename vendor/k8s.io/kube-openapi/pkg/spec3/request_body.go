@@ -113,3 +113,7 @@ func (r *RequestBody) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *jsonv
 	r.RequestBodyProps = x.RequestBodyProps
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

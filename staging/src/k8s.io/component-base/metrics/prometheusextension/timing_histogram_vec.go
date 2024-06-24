@@ -109,3 +109,7 @@ func (hv *TimingHistogramVec) MustCurryWith(labels prometheus.Labels) GaugeVecOp
 	}
 	return vec
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

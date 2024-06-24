@@ -24,3 +24,7 @@ func addConversionFuncs(scheme *runtime.Scheme) error {
 	// Add non-generated conversion functions here. Currently there are none.
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

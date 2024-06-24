@@ -260,3 +260,7 @@ var allowUnknownFields = true
 func DisallowUnknownFields() {
 	allowUnknownFields = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

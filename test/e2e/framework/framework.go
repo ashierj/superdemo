@@ -772,3 +772,7 @@ func (cl *ClusterVerification) ForEach(ctx context.Context, podFunc func(v1.Pod)
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

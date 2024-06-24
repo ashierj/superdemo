@@ -516,3 +516,7 @@ func (f *FakeContainerCommandRunner) RunInContainer(_ context.Context, container
 
 	return []byte(f.Stdout), f.Err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

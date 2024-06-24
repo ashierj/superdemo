@@ -62,3 +62,7 @@ func (stdHTTPServerFactory) New(addr string, handler http.Handler) httpServer {
 }
 
 var _ httpServerFactory = stdHTTPServerFactory{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -72,3 +72,7 @@ func autoConvert_podtolerationrestriction_Configuration_To_v1alpha1_Configuratio
 func Convert_podtolerationrestriction_Configuration_To_v1alpha1_Configuration(in *podtolerationrestriction.Configuration, out *Configuration, s conversion.Scope) error {
 	return autoConvert_podtolerationrestriction_Configuration_To_v1alpha1_Configuration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

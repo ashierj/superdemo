@@ -406,3 +406,7 @@ var _ = common.SIGDescribe("IngressClass API", func() {
 	})
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

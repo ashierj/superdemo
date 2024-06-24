@@ -40,3 +40,7 @@ func appendLegacyProviderVolumes(logger klog.Logger, allPlugins []volume.VolumeP
 	// no-op when compiled without legacy cloud providers
 	return allPlugins, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

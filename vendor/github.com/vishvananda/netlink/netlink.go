@@ -38,3 +38,7 @@ func NewIPNet(ip net.IP) *net.IPNet {
 	}
 	return &net.IPNet{IP: ip, Mask: net.CIDRMask(128, 128)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

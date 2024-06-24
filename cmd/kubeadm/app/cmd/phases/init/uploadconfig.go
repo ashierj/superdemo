@@ -147,3 +147,7 @@ func getUploadConfigData(c workflow.RunData) (*kubeadmapi.InitConfiguration, cli
 	}
 	return cfg, client, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

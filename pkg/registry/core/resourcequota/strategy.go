@@ -136,3 +136,7 @@ func (resourcequotaStatusStrategy) ValidateUpdate(ctx context.Context, obj, old 
 func (resourcequotaStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -332,3 +332,7 @@ func (b *nestedBuilder) signAndEncrypt() (*jose.JSONWebEncryption, error) {
 
 	return b.enc.Encrypt([]byte(p2))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

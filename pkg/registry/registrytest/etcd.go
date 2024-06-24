@@ -50,3 +50,7 @@ func NewEtcdStorageForResource(t *testing.T, resource schema.GroupResource) (*st
 	}
 	return resourceConfig, server
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

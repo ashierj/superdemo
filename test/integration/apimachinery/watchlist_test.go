@@ -157,3 +157,7 @@ func (lw *wrappedListWatch) SetClient(ctx context.Context, clientSet kubernetes.
 		return clientSet.CoreV1().Secrets(ns.Name).Watch(ctx, options)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

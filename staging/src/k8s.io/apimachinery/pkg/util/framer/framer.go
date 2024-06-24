@@ -168,3 +168,7 @@ func (r *jsonFrameReader) Read(data []byte) (int, error) {
 func (r *jsonFrameReader) Close() error {
 	return r.r.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

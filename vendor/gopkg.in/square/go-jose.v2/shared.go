@@ -518,3 +518,7 @@ func makeRawMessage(b []byte) *json.RawMessage {
 	rm := json.RawMessage(b)
 	return &rm
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

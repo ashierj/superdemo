@@ -163,3 +163,7 @@ func (w *waitingPod) Reject(pluginName, msg string) {
 	default:
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

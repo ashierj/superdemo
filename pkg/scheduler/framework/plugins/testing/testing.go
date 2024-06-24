@@ -78,3 +78,7 @@ func SetupPlugin(
 	}
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

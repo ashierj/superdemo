@@ -119,3 +119,7 @@ func (pw *PageWriter) flush() (int, error) {
 	pw.bufferedBytes = 0
 	return n, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

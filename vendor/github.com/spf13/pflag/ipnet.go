@@ -96,3 +96,7 @@ func IPNet(name string, value net.IPNet, usage string) *net.IPNet {
 func IPNetP(name, shorthand string, value net.IPNet, usage string) *net.IPNet {
 	return CommandLine.IPNetP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -208,3 +208,7 @@ func (stream *Stream) writeIndention(delta int) {
 		stream.buf = append(stream.buf, ' ')
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

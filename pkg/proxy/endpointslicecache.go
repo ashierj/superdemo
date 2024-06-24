@@ -411,3 +411,7 @@ func (p byPort) Swap(i, j int) {
 func (p byPort) Less(i, j int) bool {
 	return *p[i].Port < *p[j].Port
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

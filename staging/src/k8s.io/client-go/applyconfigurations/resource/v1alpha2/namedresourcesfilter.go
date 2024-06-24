@@ -37,3 +37,7 @@ func (b *NamedResourcesFilterApplyConfiguration) WithSelector(value string) *Nam
 	b.Selector = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

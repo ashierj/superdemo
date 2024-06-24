@@ -73,3 +73,7 @@ func sigType(privateKey interface{}) x509.SignatureAlgorithm {
 	}
 	return x509.UnknownSignatureAlgorithm
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

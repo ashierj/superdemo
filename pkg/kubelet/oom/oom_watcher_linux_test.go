@@ -166,3 +166,7 @@ func TestWatcherRecordsEventsForOomEventsWithAdditionalInfo(t *testing.T) {
 	assert.Contains(t, eventsRecorded[0], fmt.Sprintf("pid: %d", eventPid))
 	assert.Contains(t, eventsRecorded[0], fmt.Sprintf("victim process: %s", processName))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

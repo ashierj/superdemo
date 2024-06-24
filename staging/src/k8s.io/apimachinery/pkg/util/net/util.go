@@ -61,3 +61,7 @@ func IsConnectionRefused(err error) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

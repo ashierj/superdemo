@@ -23,3 +23,7 @@ func (h *httpHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	e := json.NewEncoder(w)
 	e.Encode(health)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

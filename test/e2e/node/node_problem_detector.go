@@ -404,3 +404,7 @@ func getNpdPodStat(ctx context.Context, f *framework.Framework, nodeName string)
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

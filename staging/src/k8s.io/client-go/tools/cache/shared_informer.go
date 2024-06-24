@@ -1016,3 +1016,7 @@ func (p *processorListener) setResyncPeriod(resyncPeriod time.Duration) {
 
 	p.resyncPeriod = resyncPeriod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func openpt() (*os.File, error) {
 	}
 	return os.NewFile(uintptr(fd), ""), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

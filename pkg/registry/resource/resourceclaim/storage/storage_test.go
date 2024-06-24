@@ -180,3 +180,7 @@ func TestUpdateStatus(t *testing.T) {
 		t.Errorf("unexpected object: %s", cmp.Diff(claim.Status, claimOut.Status))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

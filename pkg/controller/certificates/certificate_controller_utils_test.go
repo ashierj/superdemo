@@ -78,3 +78,7 @@ func TestIsCertificateRequestApproved(t *testing.T) {
 		assert.Equalf(t, tc.expectedIsApproved, IsCertificateRequestApproved(csr), "Failed to test: %s", tc.name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func BuildNodeInfos(nodes []*v1.Node) []*framework.NodeInfo {
 	}
 	return res
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

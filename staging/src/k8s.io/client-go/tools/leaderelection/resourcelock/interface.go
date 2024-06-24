@@ -203,3 +203,7 @@ func NewFromKubeconfig(lockType string, ns string, name string, rlc ResourceLock
 	leaderElectionClient := clientset.NewForConfigOrDie(restclient.AddUserAgent(&config, "leader-election"))
 	return New(lockType, ns, name, leaderElectionClient.CoreV1(), leaderElectionClient.CoordinationV1(), rlc)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

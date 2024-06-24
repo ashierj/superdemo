@@ -141,3 +141,7 @@ func pollConditionNoChange(interval, stable, timeout time.Duration, condition fu
 		return passCounter >= requiredNumberOfPasses, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

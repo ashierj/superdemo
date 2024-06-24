@@ -323,3 +323,7 @@ type MachineInfoFactory interface {
 	GetMachineInfo() (*MachineInfo, error)
 	GetVersionInfo() (*VersionInfo, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

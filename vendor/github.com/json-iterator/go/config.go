@@ -373,3 +373,7 @@ func (cfg *frozenConfig) Valid(data []byte) bool {
 	iter.Skip()
 	return iter.Error == nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

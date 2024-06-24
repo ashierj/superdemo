@@ -62,3 +62,7 @@ var _ = SIGDescribe("server version", func() {
 		framework.Logf("Minor version: %v", version.Minor)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

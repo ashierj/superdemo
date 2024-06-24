@@ -414,3 +414,7 @@ func (r *Element) SqrtRatio(u, v *Element) (rr *Element, wasSquare int) {
 	r.Absolute(r) // Choose the nonnegative square root.
 	return r, correctSignSqrt | flippedSignSqrt
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

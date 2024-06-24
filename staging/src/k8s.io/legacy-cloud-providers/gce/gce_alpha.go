@@ -50,3 +50,7 @@ func NewAlphaFeatureGate(features []string) *AlphaFeatureGate {
 	}
 	return &AlphaFeatureGate{featureMap}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

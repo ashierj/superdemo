@@ -206,3 +206,7 @@ func (c *resourceClaimParameters) Apply(ctx context.Context, resourceClaimParame
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

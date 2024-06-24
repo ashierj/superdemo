@@ -459,3 +459,7 @@ func (g *Generator) useTypes() string {
 func (d *FileDescriptor) GoPackageName() string {
 	return string(d.packageName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

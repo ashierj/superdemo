@@ -76,3 +76,7 @@ func main() {
 
 	wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

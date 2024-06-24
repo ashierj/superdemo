@@ -225,3 +225,7 @@ func getFakePersistentVolumeClaim(pvcName, volumeName, statusSize, requestSize s
 
 	return pvc
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -11,3 +11,7 @@ import (
 )
 
 var X = "bbb"
+-e 
+func helloWorld() {
+    println("hello world")
+}

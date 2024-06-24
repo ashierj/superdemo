@@ -96,3 +96,7 @@ func (chachapolysha256) hashFunction() func() hash.Hash { return sha256.New }
 func (chachapolysha256) aeadCrypter(key []byte) (aeadcrypter.S2AAEADCrypter, error) {
 	return aeadcrypter.NewChachaPoly(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

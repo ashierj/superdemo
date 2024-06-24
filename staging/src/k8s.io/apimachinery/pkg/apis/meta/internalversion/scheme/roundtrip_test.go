@@ -26,3 +26,7 @@ import (
 func TestRoundTrip(t *testing.T) {
 	roundtrip.RoundTripTestForScheme(t, scheme, fuzzer.Funcs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

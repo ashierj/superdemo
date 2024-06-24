@@ -68,3 +68,7 @@ type JobNamespaceLister interface {
 type jobNamespaceLister struct {
 	listers.ResourceIndexer[*v1.Job]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

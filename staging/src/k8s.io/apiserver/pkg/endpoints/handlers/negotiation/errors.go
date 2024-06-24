@@ -97,3 +97,7 @@ func (e errUnsupportedMediaType) Status() metav1.Status {
 		Message: e.Error(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

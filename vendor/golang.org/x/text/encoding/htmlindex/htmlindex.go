@@ -84,3 +84,7 @@ func Name(e encoding.Encoding) (string, error) {
 	}
 	return canonical[v], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ type TypeRef interface {
 	// Val creates an instance for the TypeRef, given its fields and their values.
 	Val(fields map[string]ref.Val) ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

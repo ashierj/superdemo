@@ -34,3 +34,7 @@ func FcntlFlock(fd uintptr, cmd int, lk *Flock_t) error {
 	}
 	return errno
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

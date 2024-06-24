@@ -102,3 +102,7 @@ func waitForNodeLabels(ctx context.Context, c v1core.CoreV1Interface, nodeName s
 			return true, nil
 		})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

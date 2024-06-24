@@ -126,3 +126,7 @@ func (p *nonChildProcess) setExternalDescriptors(newFds []string) {
 func (p *nonChildProcess) forwardChildLogs() chan error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

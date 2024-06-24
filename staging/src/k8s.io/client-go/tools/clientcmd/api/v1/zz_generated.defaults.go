@@ -41,3 +41,7 @@ func SetObjectDefaults_Config(in *Config) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

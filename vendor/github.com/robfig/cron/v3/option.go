@@ -43,3 +43,7 @@ func WithLogger(logger Logger) Option {
 		c.logger = logger
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

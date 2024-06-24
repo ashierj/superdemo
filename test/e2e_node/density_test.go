@@ -650,3 +650,7 @@ func logAndVerifyLatency(ctx context.Context, batchLag time.Duration, e2eLags []
 func logPodCreateThroughput(batchLag time.Duration, e2eLags []e2emetrics.PodLatencyData, podsNr int, testInfo map[string]string) {
 	logPerfData(getThroughputPerfData(batchLag, e2eLags, podsNr, testInfo), "throughput")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

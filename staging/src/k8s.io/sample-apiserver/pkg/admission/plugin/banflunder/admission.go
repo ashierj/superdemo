@@ -105,3 +105,7 @@ func New() (*DisallowFlunder, error) {
 		Handler: admission.NewHandler(admission.Create),
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

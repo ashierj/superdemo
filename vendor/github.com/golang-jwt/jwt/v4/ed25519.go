@@ -83,3 +83,7 @@ func (m *SigningMethodEd25519) Sign(signingString string, key interface{}) (stri
 	}
 	return EncodeSegment(sig), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

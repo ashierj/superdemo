@@ -1324,3 +1324,7 @@ func restfulConnectResource(connecter rest.Connecter, scope handlers.RequestScop
 		handlers.ConnectResource(connecter, &scope, admit, restPath, isSubresource)(res.ResponseWriter, req.Request)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

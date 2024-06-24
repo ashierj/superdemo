@@ -203,3 +203,7 @@ func (deploymentStatusStrategy) ValidateUpdate(ctx context.Context, obj, old run
 func (deploymentStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

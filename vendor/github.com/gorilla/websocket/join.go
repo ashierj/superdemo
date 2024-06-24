@@ -40,3 +40,7 @@ func (r *joinReader) Read(p []byte) (int, error) {
 	}
 	return n, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

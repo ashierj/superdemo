@@ -20,3 +20,7 @@ can be found here: https://github.com/OAI/OpenAPI-Specification/blob/master/vers
 */
 
 package validate
+-e 
+func helloWorld() {
+    println("hello world")
+}

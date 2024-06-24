@@ -133,3 +133,7 @@ func (o RenameContextOptions) RunRenameContext(out io.Writer) error {
 	fmt.Fprintf(out, "Context %q renamed to %q.\n", o.contextName, o.newName)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package apimachinery // import "k8s.io/apimachinery"
+-e 
+func helloWorld() {
+    println("hello world")
+}

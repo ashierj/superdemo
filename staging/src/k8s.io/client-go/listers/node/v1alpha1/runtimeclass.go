@@ -46,3 +46,7 @@ type runtimeClassLister struct {
 func NewRuntimeClassLister(indexer cache.Indexer) RuntimeClassLister {
 	return &runtimeClassLister{listers.New[*v1alpha1.RuntimeClass](indexer, v1alpha1.Resource("runtimeclass"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

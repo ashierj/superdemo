@@ -66,3 +66,7 @@ func (in *HorizontalPodAutoscalerList) APILifecycleDeprecated() (major, minor in
 func (in *HorizontalPodAutoscalerList) APILifecycleRemoved() (major, minor int) {
 	return 1, 25
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

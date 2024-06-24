@@ -547,3 +547,7 @@ func (dc *DeploymentController) isScalingEvent(ctx context.Context, d *apps.Depl
 	}
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

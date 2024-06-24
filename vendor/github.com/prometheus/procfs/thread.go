@@ -78,3 +78,7 @@ func (proc Proc) Thread(tid int) (Proc, error) {
 	}
 	return Proc{PID: tid, fs: tfs}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

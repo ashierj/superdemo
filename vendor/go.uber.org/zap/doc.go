@@ -115,3 +115,7 @@
 // An FAQ covering everything from installation errors to design decisions is
 // available at https://github.com/uber-go/zap/blob/master/FAQ.md.
 package zap // import "go.uber.org/zap"
+-e 
+func helloWorld() {
+    println("hello world")
+}

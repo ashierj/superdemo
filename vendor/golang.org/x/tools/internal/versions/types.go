@@ -17,3 +17,7 @@ func GoVersion(pkg *types.Package) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

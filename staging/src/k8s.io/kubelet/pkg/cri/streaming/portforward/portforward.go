@@ -52,3 +52,7 @@ func ServePortForward(w http.ResponseWriter, req *http.Request, portForwarder Po
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

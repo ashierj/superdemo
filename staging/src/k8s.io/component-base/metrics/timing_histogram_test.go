@@ -483,3 +483,7 @@ func TestBadValues(t *testing.T) {
 		t.Error("Expected an error other than errNotRegistered but got that one")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -35,3 +35,7 @@ func historyViewer(restClientGetter genericclioptions.RESTClientGetter, mapping 
 	}
 	return HistoryViewerFor(mapping.GroupVersionKind.GroupKind(), external)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

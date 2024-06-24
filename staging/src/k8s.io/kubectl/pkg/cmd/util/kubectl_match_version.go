@@ -127,3 +127,7 @@ func setKubernetesDefaults(config *rest.Config) error {
 	}
 	return rest.SetKubernetesDefaults(config)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

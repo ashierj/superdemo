@@ -430,3 +430,7 @@ func (s diffStats) String() string {
 type commentString string
 
 func (s commentString) String() string { return string(s) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

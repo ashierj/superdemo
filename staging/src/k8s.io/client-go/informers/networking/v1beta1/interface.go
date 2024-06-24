@@ -50,3 +50,7 @@ func (v *version) Ingresses() IngressInformer {
 func (v *version) IngressClasses() IngressClassInformer {
 	return &ingressClassInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

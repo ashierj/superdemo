@@ -195,3 +195,7 @@ func NewStubContainerManagerWithDevicePluginResource(extendedPluginResources v1.
 		extendedPluginResources:             extendedPluginResources,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -152,3 +152,7 @@ func setVfsCap(path string, data *vfscapData) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

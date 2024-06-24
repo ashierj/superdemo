@@ -204,3 +204,7 @@ func (tk *TestKubeconfig) kubectlExec(namespace string, podName, containerName s
 	err := cmd.Run()
 	return stdout.Bytes(), stderr.Bytes(), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

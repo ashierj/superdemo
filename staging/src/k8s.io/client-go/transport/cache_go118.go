@@ -22,3 +22,7 @@ package transport
 var _ = isComparable[tlsCacheKey]
 
 func isComparable[T comparable]() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -32,3 +32,7 @@ func getExpectedBlockSize(path string) int64 {
 
 	return int64(statfs.Bsize)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

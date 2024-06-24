@@ -70,3 +70,7 @@ func (b *PolicyRulesWithSubjectsApplyConfiguration) WithNonResourceRules(values 
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

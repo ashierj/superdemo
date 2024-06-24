@@ -260,3 +260,7 @@ func (a etcdObjectVersioner) CompareResourceVersion(lhs, rhs runtime.Object) int
 
 	return 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

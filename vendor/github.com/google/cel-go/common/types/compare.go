@@ -95,3 +95,7 @@ func compareUint(a, b Uint) ref.Val {
 	}
 	return IntZero
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

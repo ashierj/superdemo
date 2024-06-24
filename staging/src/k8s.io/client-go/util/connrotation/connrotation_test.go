@@ -123,3 +123,7 @@ func (c closeOnlyConn) Close() error {
 	go c.onClose()
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

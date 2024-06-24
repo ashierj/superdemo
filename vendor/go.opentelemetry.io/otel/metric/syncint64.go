@@ -183,3 +183,7 @@ func (c Int64HistogramConfig) ExplicitBucketBoundaries() []float64 {
 type Int64HistogramOption interface {
 	applyInt64Histogram(Int64HistogramConfig) Int64HistogramConfig
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

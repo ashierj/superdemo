@@ -57,3 +57,7 @@ func MakeSecret(
 	setImmutable(rn, args.Options)
 	return rn, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

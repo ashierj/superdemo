@@ -129,3 +129,7 @@ func (cp *CPUManagerCheckpointV2) VerifyChecksum() error {
 	cp.Checksum = ck
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

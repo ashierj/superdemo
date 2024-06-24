@@ -95,3 +95,7 @@ type ExecEnvVar struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

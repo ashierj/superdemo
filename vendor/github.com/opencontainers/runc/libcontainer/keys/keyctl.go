@@ -43,3 +43,7 @@ func ModKeyringPerm(ringID KeySerial, mask, setbits uint32) error {
 
 	return unix.KeyctlSetperm(int(ringID), perm)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

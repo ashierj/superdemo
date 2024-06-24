@@ -24,3 +24,7 @@ const (
 	cmdTcGet = unix.TCGETS
 	cmdTcSet = unix.TCSETS
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -119,3 +119,7 @@ func (t template) Compile() Template {
 		Template: t.template,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

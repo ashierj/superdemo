@@ -493,3 +493,7 @@ func Alarm(seconds uint) (remaining uint, err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

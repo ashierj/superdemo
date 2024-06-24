@@ -72,3 +72,7 @@ func (o *Options) Validate() []error {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -45,3 +45,7 @@ func IgnoreNotExist(err error) error {
 func errPassthrough(err error) error {
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

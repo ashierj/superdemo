@@ -385,3 +385,7 @@ func WaitForDeploymentWithCondition(c clientset.Interface, ns, deploymentName, r
 	}
 	return pollErr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

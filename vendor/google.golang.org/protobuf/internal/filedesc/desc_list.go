@@ -455,3 +455,7 @@ func newPathKey(p protoreflect.SourcePath) (k pathKey) {
 	}
 	return pathKey{str: p.String()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

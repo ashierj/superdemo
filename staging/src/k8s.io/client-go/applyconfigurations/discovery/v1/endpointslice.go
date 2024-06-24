@@ -275,3 +275,7 @@ func (b *EndpointSliceApplyConfiguration) WithPorts(values ...*EndpointPortApply
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -180,3 +180,7 @@ func (p Program) EmitUsage(writer io.Writer) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

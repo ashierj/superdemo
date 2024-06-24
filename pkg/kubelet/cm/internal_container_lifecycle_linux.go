@@ -49,3 +49,7 @@ func (i *internalContainerLifecycleImpl) PreCreateContainer(pod *v1.Pod, contain
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

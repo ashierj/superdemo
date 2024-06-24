@@ -86,3 +86,7 @@ func CreateOpenAPISchemaFunc(path string) func() (openapi.Resources, error) {
 		return NewFakeResources(path), nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

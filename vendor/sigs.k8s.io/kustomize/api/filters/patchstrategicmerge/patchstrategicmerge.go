@@ -34,3 +34,7 @@ func (pf Filter) Filter(nodes []*yaml.RNode) ([]*yaml.RNode, error) {
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

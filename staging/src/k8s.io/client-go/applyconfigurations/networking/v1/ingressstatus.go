@@ -37,3 +37,7 @@ func (b *IngressStatusApplyConfiguration) WithLoadBalancer(value *IngressLoadBal
 	b.LoadBalancer = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -345,3 +345,7 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewStringer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

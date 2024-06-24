@@ -154,3 +154,7 @@ func f64RelDiff(a, b float64) float64 {
 	}
 	return math.Abs(a-b) / den
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

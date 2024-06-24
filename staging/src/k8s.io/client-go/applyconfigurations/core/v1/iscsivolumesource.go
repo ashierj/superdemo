@@ -129,3 +129,7 @@ func (b *ISCSIVolumeSourceApplyConfiguration) WithInitiatorName(value string) *I
 	b.InitiatorName = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

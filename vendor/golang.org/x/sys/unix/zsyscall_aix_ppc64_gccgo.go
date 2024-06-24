@@ -1067,3 +1067,7 @@ func callmmap64(addr uintptr, length uintptr, prot int, flags int, fd int, offse
 	e1 = syscall.GetErrno()
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

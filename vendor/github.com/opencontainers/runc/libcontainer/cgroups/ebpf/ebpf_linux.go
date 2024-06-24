@@ -251,3 +251,7 @@ func LoadAttachCgroupDeviceFilter(insts asm.Instructions, license string, dirFd 
 	}
 	return closer, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

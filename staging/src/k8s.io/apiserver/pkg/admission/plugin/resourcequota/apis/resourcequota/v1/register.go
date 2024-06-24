@@ -49,3 +49,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypeWithName(SchemeGroupVersion.WithKind("ResourceQuotaConfiguration"), &Configuration{})
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

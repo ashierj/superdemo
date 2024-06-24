@@ -26,3 +26,7 @@ type HvSocketServiceConfig struct {
 	// and can be re-enabled at a future time.
 	Disabled bool `json:"Disabled,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

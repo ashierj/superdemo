@@ -108,3 +108,7 @@ func (n stripVersionNegotiatedSerializer) EncoderForVersion(encoder runtime.Enco
 	versioned := n.NegotiatedSerializer.EncoderForVersion(encoder, gv)
 	return newStripVersionEncoder(versioned, serializer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -69,3 +69,7 @@ func (b *ExternalMetricSourceApplyConfiguration) WithTargetAverageValue(value re
 	b.TargetAverageValue = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

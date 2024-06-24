@@ -186,3 +186,7 @@ func GetAuditIDTruncated(ctx context.Context) string {
 
 	return string(auditID)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

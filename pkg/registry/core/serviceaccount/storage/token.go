@@ -264,3 +264,7 @@ func (r *TokenREST) isKubeAudiences(tokenAudience []string) bool {
 	// tokenAudiences must be a strict subset of apiserver audiences
 	return r.audsSet.HasAll(tokenAudience...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

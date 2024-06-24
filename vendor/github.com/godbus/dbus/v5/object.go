@@ -172,3 +172,7 @@ func (o *Object) Destination() string {
 func (o *Object) Path() ObjectPath {
 	return o.path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

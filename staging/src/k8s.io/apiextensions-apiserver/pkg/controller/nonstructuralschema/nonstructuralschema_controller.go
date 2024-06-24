@@ -269,3 +269,7 @@ func (c *ConditionController) deleteCustomResourceDefinition(obj interface{}) {
 	defer c.lastSeenGenerationLock.Unlock()
 	delete(c.lastSeenGeneration, castObj.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

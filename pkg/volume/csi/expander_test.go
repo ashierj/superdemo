@@ -214,3 +214,7 @@ func TestNodeExpandNoClientError(t *testing.T) {
 		t.Fatalf("expected exitError type: %v got: %v (%v)", reflect.TypeOf(transientError), reflect.TypeOf(err), err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

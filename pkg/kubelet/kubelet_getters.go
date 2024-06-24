@@ -466,3 +466,7 @@ func (kl *Kubelet) setCachedMachineInfo(info *cadvisorapiv1.MachineInfo) {
 	defer kl.machineInfoLock.Unlock()
 	kl.machineInfo = info
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

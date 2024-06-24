@@ -42,3 +42,7 @@ func (cs ConfState) Equivalent(cs2 ConfState) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

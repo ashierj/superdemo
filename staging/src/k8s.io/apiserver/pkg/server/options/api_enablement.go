@@ -115,3 +115,7 @@ type GroupRegistry interface {
 	// IsRegistered returns true if given group is registered.
 	IsGroupRegistered(group string) bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

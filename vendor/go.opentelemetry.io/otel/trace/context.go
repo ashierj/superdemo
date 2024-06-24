@@ -59,3 +59,7 @@ func SpanFromContext(ctx context.Context) Span {
 func SpanContextFromContext(ctx context.Context) SpanContext {
 	return SpanFromContext(ctx).SpanContext()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

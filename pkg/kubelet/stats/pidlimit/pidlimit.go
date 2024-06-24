@@ -24,3 +24,7 @@ const (
 	// PIDs is the (internal) name for this resource
 	PIDs v1.ResourceName = "pid"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

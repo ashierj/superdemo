@@ -280,3 +280,7 @@ var mtlsEndpointEnabledForS2A = func() bool {
 	// TODO(xmenxk): determine this via discovery config.
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

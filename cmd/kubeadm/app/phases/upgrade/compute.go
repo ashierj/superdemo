@@ -349,3 +349,7 @@ func getLatestClusterVersion(kubeAPIServerVersions map[string][]string) (*versio
 
 	return latestVersion, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

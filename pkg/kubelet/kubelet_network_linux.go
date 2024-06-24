@@ -113,3 +113,7 @@ func (kl *Kubelet) syncIPTablesRules(iptClient utiliptables.Interface) bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

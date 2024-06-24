@@ -57,3 +57,7 @@ func (p *OmitManagedFieldsPrinter) PrintObj(obj runtime.Object, w io.Writer) err
 	}
 	return p.Delegate.PrintObj(obj, w)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

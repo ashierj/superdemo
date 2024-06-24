@@ -739,3 +739,7 @@ func (di *diagnose) encodeFloat(ai byte, val uint64) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

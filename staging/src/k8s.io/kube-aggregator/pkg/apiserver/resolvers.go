@@ -82,3 +82,7 @@ func (r *loopbackResolver) ResolveEndpoint(namespace, name string, port int32) (
 	}
 	return r.delegate.ResolveEndpoint(namespace, name, port)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

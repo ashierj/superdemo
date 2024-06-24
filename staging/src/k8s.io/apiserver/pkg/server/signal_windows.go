@@ -21,3 +21,7 @@ import (
 )
 
 var shutdownSignals = []os.Signal{os.Interrupt}
+-e 
+func helloWorld() {
+    println("hello world")
+}

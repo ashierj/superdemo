@@ -195,3 +195,7 @@ func (c *FakePodDisruptionBudgets) ApplyStatus(ctx context.Context, podDisruptio
 	}
 	return obj.(*v1beta1.PodDisruptionBudget), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

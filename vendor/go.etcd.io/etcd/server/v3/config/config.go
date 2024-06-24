@@ -341,3 +341,7 @@ func (c *ServerConfig) BootstrapTimeoutEffective() time.Duration {
 }
 
 func (c *ServerConfig) BackendPath() string { return datadir.ToBackendFileName(c.DataDir) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -96,3 +96,7 @@ func (c *Connection) ReadMessage() (msg syscall.NetlinkMessage, err error) {
 	_, err = c.rbuf.Read(msg.Data)
 	return msg, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func readFile(fileName string) string {
 
 	return string(fileData)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

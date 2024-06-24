@@ -513,3 +513,7 @@ func (h *heartbeat) start() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

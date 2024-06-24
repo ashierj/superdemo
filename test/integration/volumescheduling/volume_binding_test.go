@@ -1400,3 +1400,7 @@ func markNodeSelector(pod *v1.Pod, node string) {
 	}
 	pod.Spec.NodeSelector = ns
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

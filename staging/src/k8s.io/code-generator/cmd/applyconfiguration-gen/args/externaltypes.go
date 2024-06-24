@@ -120,3 +120,7 @@ func parseExternalMapping(mapping string) (typ types.Name, pkg string, err error
 
 	return types.Name{Package: structPkg, Name: structType}, pkg, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

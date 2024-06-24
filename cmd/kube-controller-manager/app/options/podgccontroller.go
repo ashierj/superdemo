@@ -56,3 +56,7 @@ func (o *PodGCControllerOptions) Validate() []error {
 	errs := []error{}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

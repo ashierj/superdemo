@@ -301,3 +301,7 @@ func (c *Controller) enqueue(obj *apiextensionsv1.CustomResourceDefinition) {
 func generateCRDHash(crd *apiextensionsv1.CustomResourceDefinition) string {
 	return fmt.Sprintf("%s,%d", crd.UID, crd.Generation)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

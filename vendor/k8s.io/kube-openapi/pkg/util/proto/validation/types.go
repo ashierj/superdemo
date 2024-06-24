@@ -297,3 +297,7 @@ func itemFactory(path proto.Path, v interface{}) (validationItem, error) {
 	}
 	return nil, InvalidObjectTypeError{Type: kind.String(), Path: path.String()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

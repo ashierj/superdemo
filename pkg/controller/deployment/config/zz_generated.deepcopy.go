@@ -36,3 +36,7 @@ func (in *DeploymentControllerConfiguration) DeepCopy() *DeploymentControllerCon
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

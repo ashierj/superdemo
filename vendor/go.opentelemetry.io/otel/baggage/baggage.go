@@ -550,3 +550,7 @@ func (b Baggage) String() string {
 	}
 	return strings.Join(members, listDelimiter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -414,3 +414,7 @@ func loadLibraryEx(name string, system bool) (*DLL, error) {
 type errString string
 
 func (s errString) Error() string { return string(s) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

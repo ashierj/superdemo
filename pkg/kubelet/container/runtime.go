@@ -736,3 +736,7 @@ const (
 	// log output that the termination message can contain.
 	MaxContainerTerminationMessageLogLines = 80
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

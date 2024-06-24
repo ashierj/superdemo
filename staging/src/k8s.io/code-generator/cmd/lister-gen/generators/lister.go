@@ -331,3 +331,7 @@ type $.type|private$NamespaceLister struct {
 	listers.ResourceIndexer[*$.type|raw$]
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

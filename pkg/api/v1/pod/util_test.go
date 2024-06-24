@@ -1015,3 +1015,7 @@ func TestIsContainersReadyConditionTrue(t *testing.T) {
 		assert.Equal(t, test.expected, isContainersReady, test.desc)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

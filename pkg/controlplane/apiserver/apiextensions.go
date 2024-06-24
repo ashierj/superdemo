@@ -84,3 +84,7 @@ func CreateAPIExtensionsConfig(
 
 	return apiextensionsConfig, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

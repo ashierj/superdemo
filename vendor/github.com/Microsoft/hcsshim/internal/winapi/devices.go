@@ -11,3 +11,7 @@ type DevPropKey struct {
 	Fmtid guid.GUID
 	Pid   uint32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

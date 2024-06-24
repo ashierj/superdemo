@@ -1073,3 +1073,7 @@ type OomKillEventData struct {
 	// The name of the killed process
 	ProcessName string `json:"process_name"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

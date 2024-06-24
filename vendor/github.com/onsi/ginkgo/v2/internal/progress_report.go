@@ -285,3 +285,7 @@ func fetchSource(filename string, lineNumber int, span int, configuredSourceRoot
 	highlightIndex := lineNumber - 1 - startIndex
 	return lines[startIndex:endIndex], highlightIndex
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -193,3 +193,7 @@ func (ts *tsafeSet) Sub(other Set) Set {
 	usResult := ts.us.Sub(other).(*unsafeSet)
 	return &tsafeSet{usResult, sync.RWMutex{}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -234,3 +234,7 @@ func (r *httpAuthRoleAPI) modRole(ctx context.Context, req *authRoleAPIAction) (
 	}
 	return &role, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

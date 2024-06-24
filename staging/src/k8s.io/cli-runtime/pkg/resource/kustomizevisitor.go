@@ -52,3 +52,7 @@ func (v *KustomizeVisitor) Visit(fn VisitorFunc) error {
 		bytes.NewReader(v.yml), v.mapper, v.dirPath, v.schema)
 	return sv.Visit(fn)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

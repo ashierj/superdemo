@@ -107,3 +107,7 @@ func compileErrors(errors []error) error {
 	}
 	return fmt.Errorf("%s", strings.Join(res, ","))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

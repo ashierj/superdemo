@@ -123,3 +123,7 @@ func ForEachEnum(msgs []*descriptor.DescriptorProto, f func(field *descriptor.En
 		ForEachEnum(msg.NestedType, f)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -185,3 +185,7 @@ func NewCoverage(list ...interface{}) Coverage {
 	}
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

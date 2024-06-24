@@ -224,3 +224,7 @@ func autoConvertv2APIVersionDiscoveryTov2beta1APIVersionDiscovery(in *v2.APIVers
 func Convertv2APIVersionDiscoveryTov2beta1APIVersionDiscovery(in *v2.APIVersionDiscovery, out *v2beta1.APIVersionDiscovery, s conversion.Scope) error {
 	return autoConvertv2APIVersionDiscoveryTov2beta1APIVersionDiscovery(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

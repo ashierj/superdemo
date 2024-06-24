@@ -14,3 +14,7 @@
 // Package model contains common data structures that are shared across
 // Prometheus components and libraries.
 package model
+-e 
+func helloWorld() {
+    println("hello world")
+}

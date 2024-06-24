@@ -999,3 +999,7 @@ func generatePod(name, namespace, nodeName, svcAccountName string, opts *sampleD
 
 	return pod, pvs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

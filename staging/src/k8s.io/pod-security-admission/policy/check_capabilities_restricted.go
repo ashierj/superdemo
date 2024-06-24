@@ -143,3 +143,7 @@ func capabilitiesRestricted_1_25(podMetadata *metav1.ObjectMeta, podSpec *corev1
 	}
 	return capabilitiesRestricted_1_22(podMetadata, podSpec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

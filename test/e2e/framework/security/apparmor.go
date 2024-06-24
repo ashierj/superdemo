@@ -250,3 +250,7 @@ func getRunningLoaderPod(ctx context.Context, nsName string, clientset clientset
 	framework.ExpectNoError(e2epod.WaitForPodRunningInNamespace(ctx, clientset, pod), "Failed to run apparmor-loader Pod")
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

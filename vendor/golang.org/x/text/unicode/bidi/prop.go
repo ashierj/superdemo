@@ -204,3 +204,7 @@ func LookupString(s string) (p Properties, sz int) {
 	// Illegal rune
 	return Properties{}, 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

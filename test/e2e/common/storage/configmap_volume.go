@@ -747,3 +747,7 @@ func createConfigMapVolumeMounttestPod(namespace, volumeName, referenceName, mou
 	pod.Spec.RestartPolicy = v1.RestartPolicyNever
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

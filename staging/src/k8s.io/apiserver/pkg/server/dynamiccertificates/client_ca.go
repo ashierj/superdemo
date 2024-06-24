@@ -67,3 +67,7 @@ func (c *caBundleContent) Equal(rhs *caBundleContent) bool {
 
 	return bytes.Equal(c.caBundle, rhs.caBundle)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

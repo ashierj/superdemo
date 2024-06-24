@@ -52,3 +52,7 @@ type FakeResponseWriterFlusherCloseNotifierHijacker struct {
 func (fw *FakeResponseWriterFlusherCloseNotifierHijacker) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return nil, nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

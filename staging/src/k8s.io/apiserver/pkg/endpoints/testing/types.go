@@ -77,3 +77,7 @@ type SimpleXGSubresource struct {
 	SubresourceInfo   string            `json:"subresourceInfo,omitempty"`
 	Labels            map[string]string `json:"labels,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

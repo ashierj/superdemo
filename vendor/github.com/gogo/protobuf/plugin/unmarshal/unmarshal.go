@@ -1655,3 +1655,7 @@ func (p *unmarshal) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewUnmarshal())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

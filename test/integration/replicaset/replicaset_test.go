@@ -1056,3 +1056,7 @@ func TestReplicaSetsAppsV1DefaultGCPolicy(t *testing.T) {
 
 	_ = rsClient.Delete(tCtx, rs.Name, metav1.DeleteOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

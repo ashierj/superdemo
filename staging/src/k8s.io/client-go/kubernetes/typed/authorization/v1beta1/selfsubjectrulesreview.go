@@ -62,3 +62,7 @@ func (c *selfSubjectRulesReviews) Create(ctx context.Context, selfSubjectRulesRe
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

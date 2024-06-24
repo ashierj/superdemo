@@ -75,3 +75,7 @@ func validStorageVersion() *apiserverinternal.StorageVersion {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

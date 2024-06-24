@@ -500,3 +500,7 @@ func validFirstDigit(str string) bool {
 	}
 	return str[0] == '-' || (str[0] == '0' && str == "0") || (str[0] >= '1' && str[0] <= '9')
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

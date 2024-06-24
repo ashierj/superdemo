@@ -387,3 +387,7 @@ func nameOfFunction(f interface{}) string {
 	}
 	return last
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

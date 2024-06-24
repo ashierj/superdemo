@@ -12,3 +12,7 @@ func debug(f string, a ...interface{}) {
 	// fmt.Fprintf(os.Stderr, f, a...)
 	os.Stderr.Write([]byte("godirwalk: " + fmt.Sprintf(f, a...)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

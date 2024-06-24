@@ -120,3 +120,7 @@ func (ws multiWriteSyncer) Sync() error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

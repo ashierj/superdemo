@@ -220,3 +220,7 @@ func (c *externalMetricsClient) GetExternalMetric(metricName, namespace string, 
 	timestamp := metrics.Items[0].Timestamp.Time
 	return res, timestamp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

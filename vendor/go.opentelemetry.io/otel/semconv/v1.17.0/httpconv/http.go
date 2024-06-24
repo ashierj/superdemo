@@ -150,3 +150,7 @@ func RequestHeader(h http.Header) []attribute.KeyValue {
 func ResponseHeader(h http.Header) []attribute.KeyValue {
 	return hc.ResponseHeader(h)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

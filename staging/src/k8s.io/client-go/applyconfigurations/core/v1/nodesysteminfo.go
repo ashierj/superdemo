@@ -118,3 +118,7 @@ func (b *NodeSystemInfoApplyConfiguration) WithArchitecture(value string) *NodeS
 	b.Architecture = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

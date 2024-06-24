@@ -50,3 +50,7 @@ func (v *version) ClusterTestTypes() ClusterTestTypeInformer {
 func (v *version) TestTypes() TestTypeInformer {
 	return &testTypeInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -181,3 +181,7 @@ func (in *FlunderStatus) DeepCopy() *FlunderStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

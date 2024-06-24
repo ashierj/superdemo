@@ -24,3 +24,7 @@ import (
 func statusViewer(mapping *meta.RESTMapping) (StatusViewer, error) {
 	return StatusViewerFor(mapping.GroupVersionKind.GroupKind())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

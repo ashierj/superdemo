@@ -388,3 +388,7 @@ func isExported(id string) bool {
 	r, _ := utf8.DecodeRuneInString(id)
 	return unicode.IsUpper(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

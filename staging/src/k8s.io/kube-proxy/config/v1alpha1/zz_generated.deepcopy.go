@@ -223,3 +223,7 @@ func (in *KubeProxyWinkernelConfiguration) DeepCopy() *KubeProxyWinkernelConfigu
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

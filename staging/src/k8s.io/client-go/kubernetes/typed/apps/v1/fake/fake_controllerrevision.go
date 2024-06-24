@@ -158,3 +158,7 @@ func (c *FakeControllerRevisions) Apply(ctx context.Context, controllerRevision 
 	}
 	return obj.(*v1.ControllerRevision), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

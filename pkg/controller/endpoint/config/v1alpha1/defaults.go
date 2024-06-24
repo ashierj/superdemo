@@ -34,3 +34,7 @@ func RecommendedDefaultEndpointControllerConfiguration(obj *kubectrlmgrconfigv1a
 		obj.ConcurrentEndpointSyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

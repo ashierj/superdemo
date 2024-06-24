@@ -292,3 +292,7 @@ func New() Tree {
 func NewWithRoot(root Value) Tree {
 	return &Node{Value: root}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -152,3 +152,7 @@ func SEG6EncapModeString(mode int) string {
 	}
 	return "unknown"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

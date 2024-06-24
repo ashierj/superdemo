@@ -50,3 +50,7 @@ func (b *RollingUpdateStatefulSetStrategyApplyConfiguration) WithMaxUnavailable(
 	b.MaxUnavailable = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

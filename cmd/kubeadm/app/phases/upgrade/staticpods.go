@@ -670,3 +670,7 @@ func convertImageTagMetadataToSemver(tag string) string {
 	// build metadata information in imagetags.
 	return strings.Replace(tag, "_", "+", 1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

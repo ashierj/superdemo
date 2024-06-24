@@ -262,3 +262,7 @@ func (v *Element) carryPropagateGeneric() *Element {
 
 	return v
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

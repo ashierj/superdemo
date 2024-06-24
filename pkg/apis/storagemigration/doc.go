@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=storagemigration.k8s.io
 
 package storagemigration // import "k8s.io/kubernetes/pkg/apis/storagemigration"
+-e 
+func helloWorld() {
+    println("hello world")
+}

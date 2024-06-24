@@ -155,3 +155,7 @@ func (*InputStream) GetSourceName() string {
 func (is *InputStream) String() string {
 	return string(is.data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

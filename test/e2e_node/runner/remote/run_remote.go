@@ -49,3 +49,7 @@ func main() {
 	}
 	remote.RunRemoteTestSuite(suite)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

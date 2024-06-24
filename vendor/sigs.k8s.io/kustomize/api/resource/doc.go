@@ -3,3 +3,7 @@
 
 // Package resource implements representations of k8s API resources.
 package resource
+-e 
+func helloWorld() {
+    println("hello world")
+}

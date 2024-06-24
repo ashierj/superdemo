@@ -67,3 +67,7 @@ func startTokenCleanerController(ctx context.Context, controllerContext Controll
 	go tcc.Run(ctx)
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

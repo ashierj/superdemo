@@ -34,3 +34,7 @@ const (
 func GetNewTabWriter(output io.Writer) *tabwriter.Writer {
 	return tabwriter.NewWriter(output, tabwriterMinWidth, tabwriterWidth, tabwriterPadding, tabwriterPadChar, tabwriterFlags)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

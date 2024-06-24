@@ -140,3 +140,7 @@ func (volumeAttachmentStatusStrategy) PrepareForUpdate(ctx context.Context, obj,
 	newVolumeAttachment.Spec = oldVolumeAttachment.Spec
 	metav1.ResetObjectMetaForStatus(&newVolumeAttachment.ObjectMeta, &oldVolumeAttachment.ObjectMeta)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

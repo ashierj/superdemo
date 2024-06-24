@@ -48,3 +48,7 @@ func createLegacyIPAM(
 ) (*fakeController, error) {
 	return nil, errors.New("Error trying to Init(): legacy cloud provider support disabled at build time")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

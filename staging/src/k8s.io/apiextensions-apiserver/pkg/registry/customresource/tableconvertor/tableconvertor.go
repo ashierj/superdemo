@@ -187,3 +187,7 @@ func cellForJSONValue(headerType string, value interface{}) interface{} {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

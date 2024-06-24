@@ -394,3 +394,7 @@ func restClient(testServer *httptest.Server) (*RESTClient, error) {
 	})
 	return c, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

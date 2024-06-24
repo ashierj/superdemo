@@ -19,3 +19,7 @@ package cr
 const (
 	GroupName = "cr.example.apiextensions.k8s.io"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

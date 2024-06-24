@@ -91,3 +91,7 @@ func TestPruneNonNullableNullsWithoutDefaults(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

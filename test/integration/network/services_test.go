@@ -302,3 +302,7 @@ func getPatchBytes(oldSvc, newSvc *v1.Service) ([]byte, error) {
 	return patchBytes, nil
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -225,3 +225,7 @@ func maskOf(nodes []ast.Node) uint64 {
 	}
 	return mask
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

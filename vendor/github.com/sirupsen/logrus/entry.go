@@ -440,3 +440,7 @@ func (entry *Entry) sprintlnn(args ...interface{}) string {
 	msg := fmt.Sprintln(args...)
 	return msg[:len(msg)-1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

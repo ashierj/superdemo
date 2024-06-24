@@ -46,3 +46,7 @@ func Test_atomicLastError(t *testing.T) {
 		t.Fatalf("Expected: \"now error\" got: %s", err.Error())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

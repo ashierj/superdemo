@@ -34,3 +34,7 @@ limitations under the License.
 // is for properly upgrading both the upstream SPDY connection and the
 // downstream WebSocket connection before streaming begins.
 package proxy // import "k8s.io/apiserver/pkg/util/proxy"
+-e 
+func helloWorld() {
+    println("hello world")
+}

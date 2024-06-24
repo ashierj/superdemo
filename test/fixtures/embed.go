@@ -31,3 +31,7 @@ func GetTestFixturesFS() testfiles.EmbeddedFileSource {
 		Root:       "test/fixtures",
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

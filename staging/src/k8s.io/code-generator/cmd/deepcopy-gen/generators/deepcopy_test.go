@@ -664,3 +664,7 @@ func Test_extractInterfacesTag(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

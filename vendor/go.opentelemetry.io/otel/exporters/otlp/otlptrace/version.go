@@ -18,3 +18,7 @@ package otlptrace // import "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 func Version() string {
 	return "1.20.0"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

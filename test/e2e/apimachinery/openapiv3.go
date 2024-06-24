@@ -216,3 +216,7 @@ var _ = SIGDescribe("OpenAPIV3", func() {
 		framework.ExpectNoError(err, "should not contain OpenAPI V3 for deleted APIService")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

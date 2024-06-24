@@ -18,3 +18,7 @@ limitations under the License.
 
 // This package has the automatically generated fake clientset.
 package fake
+-e 
+func helloWorld() {
+    println("hello world")
+}

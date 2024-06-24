@@ -34,3 +34,7 @@ func (matcher *BeEquivalentToMatcher) FailureMessage(actual interface{}) (messag
 func (matcher *BeEquivalentToMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to be equivalent to", matcher.Expected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

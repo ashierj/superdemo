@@ -91,3 +91,7 @@ func ParseLiteralSource(source string) (keyName, value string, err error) {
 
 	return items[0], items[1], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

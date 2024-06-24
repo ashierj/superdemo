@@ -117,3 +117,7 @@ func TestGetPodNamespace(t *testing.T) {
 		assert.Equal(t, data.podNamespace, podNamespace)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

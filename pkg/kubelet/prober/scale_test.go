@@ -278,3 +278,7 @@ func (f *fakePod) stop() {
 func (f *fakePod) connections() int {
 	return int(atomic.LoadInt64(&f.numConnection))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

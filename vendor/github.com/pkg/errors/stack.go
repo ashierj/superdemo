@@ -175,3 +175,7 @@ func funcname(name string) string {
 	i = strings.Index(name, ".")
 	return name[i+1:]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

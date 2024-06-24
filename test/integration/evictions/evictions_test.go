@@ -780,3 +780,7 @@ func (n *noRetriesRESTClient) Post() *restclient.Request {
 	n.postCalls++
 	return n.Interface.Post().MaxRetries(0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

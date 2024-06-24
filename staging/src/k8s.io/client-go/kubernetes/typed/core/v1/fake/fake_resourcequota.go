@@ -195,3 +195,7 @@ func (c *FakeResourceQuotas) ApplyStatus(ctx context.Context, resourceQuota *cor
 	}
 	return obj.(*v1.ResourceQuota), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

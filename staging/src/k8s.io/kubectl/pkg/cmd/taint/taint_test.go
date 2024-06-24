@@ -406,3 +406,7 @@ func (m *MyReq) isFor(method string, path string) bool {
 		req.URL.Path == strings.Join([]string{"/apis/extensions/v1beta1", path}, "") ||
 		req.URL.Path == strings.Join([]string{"/apis/batch/v1", path}, ""))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

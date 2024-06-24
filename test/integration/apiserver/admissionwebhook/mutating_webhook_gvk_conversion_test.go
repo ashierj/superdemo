@@ -394,3 +394,7 @@ func versionedCustomResourceDefinition() *apiextensionsv1.CustomResourceDefiniti
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

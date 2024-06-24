@@ -176,3 +176,7 @@ func getHTTPClient(host string) *http.Client {
 
 	return c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

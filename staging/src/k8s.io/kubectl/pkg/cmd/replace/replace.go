@@ -428,3 +428,7 @@ func (o *ReplaceOptions) forceReplace() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

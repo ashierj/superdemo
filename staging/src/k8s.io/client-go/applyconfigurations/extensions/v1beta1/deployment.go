@@ -256,3 +256,7 @@ func (b *DeploymentApplyConfiguration) WithStatus(value *DeploymentStatusApplyCo
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func (matcher *HavePrefixMatcher) FailureMessage(actual interface{}) (message st
 func (matcher *HavePrefixMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to have prefix", matcher.prefix())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

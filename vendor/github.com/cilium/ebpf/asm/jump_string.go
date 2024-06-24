@@ -51,3 +51,7 @@ func (i JumpOp) String() string {
 	}
 	return "JumpOp(" + strconv.FormatInt(int64(i), 10) + ")"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

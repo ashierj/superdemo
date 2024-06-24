@@ -195,3 +195,7 @@ func localUpdateStorageVersion(sv *v1alpha1.StorageVersion, apiserverID, encodin
 	SetCommonEncodingVersion(sv)
 	return sv
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

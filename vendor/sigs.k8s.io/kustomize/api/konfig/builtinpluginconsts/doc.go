@@ -6,3 +6,7 @@
 // configured individually with plugin config files,
 // in which case the constants in this package are ignored.
 package builtinpluginconsts
+-e 
+func helloWorld() {
+    println("hello world")
+}

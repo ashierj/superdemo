@@ -37,3 +37,7 @@ func (ks kobjSlice) LogValue() slog.Value {
 }
 
 var _ slog.LogValuer = kobjSlice{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

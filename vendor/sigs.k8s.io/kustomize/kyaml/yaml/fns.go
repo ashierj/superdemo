@@ -876,3 +876,7 @@ func SplitIndexNameValue(p string) (string, string, error) {
 	}
 	return parts[0], parts[1], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

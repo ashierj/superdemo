@@ -94,3 +94,7 @@ func TestIsContainerFsSeparateFromImageFs(t *testing.T) {
 		runtime.SetImageFsStats(nil)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

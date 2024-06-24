@@ -44,3 +44,7 @@ func (re *RetryError) Error() string {
 func (re *RetryError) RetryAfter() time.Duration {
 	return re.retryAfter
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

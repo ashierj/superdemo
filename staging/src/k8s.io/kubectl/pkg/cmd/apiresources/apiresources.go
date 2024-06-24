@@ -291,3 +291,7 @@ func (s sortableResource) compareValues(i, j int) (string, string) {
 	}
 	return s.resources[i].APIGroup, s.resources[j].APIGroup
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

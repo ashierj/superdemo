@@ -347,3 +347,7 @@ func (in *Preferences) DeepCopy() *Preferences {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

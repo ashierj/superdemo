@@ -371,3 +371,7 @@ func uretprobeBit() (uint64, error) {
 	})
 	return uprobeRetprobeBit.value, uprobeRetprobeBit.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

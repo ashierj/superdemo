@@ -178,3 +178,7 @@ func codeExitToStatusError(exitErr exec.CodeExitError) *apierrors.StatusError {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

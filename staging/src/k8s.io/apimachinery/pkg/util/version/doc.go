@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package version provides utilities for version number comparisons
 package version // import "k8s.io/apimachinery/pkg/util/version"
+-e 
+func helloWorld() {
+    println("hello world")
+}

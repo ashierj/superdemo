@@ -29,3 +29,7 @@ func (ps fullScanPatterns) match(path string, isDir bool) bool {
 	}
 	return ps.relative.match(path, isDir)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

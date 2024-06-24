@@ -23,3 +23,7 @@ type Indexer interface {
 	// Get the value at the specified index or error.
 	Get(index ref.Val) ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

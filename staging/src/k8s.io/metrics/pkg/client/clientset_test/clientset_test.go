@@ -40,3 +40,7 @@ func TestFakeList(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

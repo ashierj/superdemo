@@ -65,3 +65,7 @@ func NewFileStream(fileName string) (*FileStream, error) {
 func (f *FileStream) GetSourceName() string {
 	return f.filename
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

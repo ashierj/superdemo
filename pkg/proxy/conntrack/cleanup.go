@@ -113,3 +113,7 @@ func deleteStaleEndpointConntrackEntries(ct Interface, svcPortMap proxy.ServiceP
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

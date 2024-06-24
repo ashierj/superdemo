@@ -62,3 +62,7 @@ func (ld *LineDelimiter) Flush() (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

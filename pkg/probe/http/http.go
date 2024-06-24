@@ -139,3 +139,7 @@ func RedirectChecker(followNonLocalRedirects bool) func(*http.Request, []*http.R
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

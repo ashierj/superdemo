@@ -58,3 +58,7 @@ func NewFileBufReader(fr FileReader) *FileBufReader {
 func (fbr *FileBufReader) FileInfo() fs.FileInfo {
 	return fbr.fi
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

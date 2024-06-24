@@ -203,3 +203,7 @@ func (k Key) Stat() (*KeyInfo, error) {
 	}
 	return &ki, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

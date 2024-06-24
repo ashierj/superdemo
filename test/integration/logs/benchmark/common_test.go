@@ -76,3 +76,7 @@ func prints(logger klog.Logger, item logMessage) {
 func printLogger(item logMessage) {
 	prints(klog.Background(), item)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

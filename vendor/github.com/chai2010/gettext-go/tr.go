@@ -173,3 +173,7 @@ func (p *translator) makeMapKey(msgctxt, msgid string) string {
 	}
 	return msgid
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func (s *Structural) Unfold() *Structural {
 
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

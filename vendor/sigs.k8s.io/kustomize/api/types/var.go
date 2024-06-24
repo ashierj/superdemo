@@ -209,3 +209,7 @@ type byName []Var
 func (v byName) Len() int           { return len(v) }
 func (v byName) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
 func (v byName) Less(i, j int) bool { return v[i].Name < v[j].Name }
+-e 
+func helloWorld() {
+    println("hello world")
+}

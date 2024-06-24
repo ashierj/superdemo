@@ -217,3 +217,7 @@ func (l *apiLinter) report(w io.Writer) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

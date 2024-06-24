@@ -195,3 +195,7 @@ func releaseThreadToken(h windows.Token) {
 	}
 	h.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -93,3 +93,7 @@ func objectTypeToArgs(obj runtime.Object) []interface{} {
 	// otherwise just return the type
 	return []interface{}{"type", fmt.Sprintf("%T", obj)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

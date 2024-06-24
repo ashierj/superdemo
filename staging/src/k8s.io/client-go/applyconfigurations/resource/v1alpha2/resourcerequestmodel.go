@@ -37,3 +37,7 @@ func (b *ResourceRequestModelApplyConfiguration) WithNamedResources(value *Named
 	b.NamedResources = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

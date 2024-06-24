@@ -45,3 +45,7 @@ func MkdirTemp(dir, pattern string) (string, error) {
 func WriteFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0644)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

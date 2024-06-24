@@ -53,3 +53,7 @@ func Convert_wardle_FlunderSpec_To_v1alpha1_FlunderSpec(in *wardle.FlunderSpec, 
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

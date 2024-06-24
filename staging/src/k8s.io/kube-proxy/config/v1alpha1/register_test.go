@@ -34,3 +34,7 @@ func TestComponentConfigSetup(t *testing.T) {
 		t.Errorf("failed TestComponentConfigSetup: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

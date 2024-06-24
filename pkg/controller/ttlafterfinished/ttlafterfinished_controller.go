@@ -321,3 +321,7 @@ func jobFinishTime(finishedJob *batch.Job) (metav1.Time, error) {
 	// This should never happen if the Jobs has finished
 	return metav1.Time{}, fmt.Errorf("unable to find the status of the finished Job %s/%s", finishedJob.Namespace, finishedJob.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

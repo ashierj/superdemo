@@ -136,3 +136,7 @@ func newBaseEndpointInfo(ip string, port int, isLocal, ready, serving, terminati
 		zoneHints:   zoneHints,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

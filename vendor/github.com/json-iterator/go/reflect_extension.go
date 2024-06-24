@@ -481,3 +481,7 @@ func calcFieldNames(originalFieldName string, tagProvidedFieldName string, whole
 	}
 	return fieldNames
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

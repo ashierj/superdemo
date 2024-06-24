@@ -36,3 +36,7 @@ import (
 	_ "k8s.io/kubernetes/pkg/apis/scheduling/install"
 	_ "k8s.io/kubernetes/pkg/apis/storage/install"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

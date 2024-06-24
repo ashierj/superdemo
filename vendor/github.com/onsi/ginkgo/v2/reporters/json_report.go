@@ -67,3 +67,7 @@ func MergeAndCleanupJSONReports(sources []string, destination string) ([]string,
 	}
 	return messages, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

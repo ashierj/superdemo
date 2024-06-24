@@ -170,3 +170,7 @@ type InitializationValidator interface {
 type ConfigProvider interface {
 	ConfigFor(pluginName string) (io.Reader, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

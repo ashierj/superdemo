@@ -72,3 +72,7 @@ func GetSchemaOrDie(f *Fake, model string) openapi.Schema {
 	}
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

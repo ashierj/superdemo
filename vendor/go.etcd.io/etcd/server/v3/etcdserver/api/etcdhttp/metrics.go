@@ -29,3 +29,7 @@ const (
 func HandleMetrics(mux *http.ServeMux) {
 	mux.Handle(PathMetrics, promhttp.Handler())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

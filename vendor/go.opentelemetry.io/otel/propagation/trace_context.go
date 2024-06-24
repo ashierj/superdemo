@@ -159,3 +159,7 @@ func (tc TraceContext) extract(carrier TextMapCarrier) trace.SpanContext {
 func (tc TraceContext) Fields() []string {
 	return []string{traceparentHeader, tracestateHeader}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

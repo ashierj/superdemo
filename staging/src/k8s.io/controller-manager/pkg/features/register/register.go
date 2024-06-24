@@ -25,3 +25,7 @@ import (
 func init() {
 	runtime.Must(features.SetupCurrentKubernetesSpecificFeatureGates(utilfeature.DefaultMutableFeatureGate))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -570,3 +570,7 @@ func (o *CopyOptions) execute(options *exec.ExecOptions) error {
 
 	return options.Run()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

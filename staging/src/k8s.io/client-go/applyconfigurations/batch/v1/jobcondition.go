@@ -88,3 +88,7 @@ func (b *JobConditionApplyConfiguration) WithMessage(value string) *JobCondition
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

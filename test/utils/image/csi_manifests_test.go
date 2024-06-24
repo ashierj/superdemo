@@ -63,3 +63,7 @@ func TestCSIImageConfigs(t *testing.T) {
 	}
 	assert.ElementsMatch(t, expectedImages, actualImages.UnsortedList(), "found these images: %+v", configs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

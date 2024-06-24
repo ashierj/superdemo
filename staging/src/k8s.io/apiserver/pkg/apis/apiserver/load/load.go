@@ -80,3 +80,7 @@ func LoadFromData(data []byte) (*api.AuthorizationConfiguration, error) {
 	}
 	return configuration, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

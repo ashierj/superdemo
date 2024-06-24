@@ -19,3 +19,7 @@ limitations under the License.
 // The openapi spec contains the object model definitions and extensions metadata
 // such as the patchStrategy and patchMergeKey for creating patches.
 package openapi // import "k8s.io/kubectl/pkg/util/openapi"
+-e 
+func helloWorld() {
+    println("hello world")
+}

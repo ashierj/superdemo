@@ -139,3 +139,7 @@ func requestGroupVersion(ctx context.Context) schema.GroupVersion {
 	}
 	return schema.GroupVersion{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

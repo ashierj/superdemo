@@ -86,3 +86,7 @@ var _ rest.ShortNamesProvider = &REST{}
 func (r *REST) ShortNames() []string {
 	return []string{"sa"}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

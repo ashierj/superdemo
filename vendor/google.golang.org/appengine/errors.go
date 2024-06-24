@@ -44,3 +44,7 @@ func (m MultiError) Error() string {
 	}
 	return fmt.Sprintf("%s (and %d other errors)", s, n-1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

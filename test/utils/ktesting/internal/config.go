@@ -19,3 +19,7 @@ package internal
 type InitConfig struct {
 	PerTestOutput bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

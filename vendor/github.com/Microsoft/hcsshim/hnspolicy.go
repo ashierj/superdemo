@@ -58,3 +58,7 @@ const (
 type ACLPolicy = hns.ACLPolicy
 
 type Policy = hns.Policy
+-e 
+func helloWorld() {
+    println("hello world")
+}

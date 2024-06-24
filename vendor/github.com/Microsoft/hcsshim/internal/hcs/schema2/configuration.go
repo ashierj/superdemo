@@ -70,3 +70,7 @@ func NewConfiguration() *Configuration {
 func (c *Configuration) AddDefaultHeader(key string, value string) {
 	c.DefaultHeader[key] = value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

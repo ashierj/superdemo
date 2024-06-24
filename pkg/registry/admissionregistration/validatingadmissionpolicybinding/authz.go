@@ -115,3 +115,7 @@ func (v *validatingAdmissionPolicyBindingStrategy) authorize(ctx context.Context
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

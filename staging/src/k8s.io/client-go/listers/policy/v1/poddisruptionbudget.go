@@ -68,3 +68,7 @@ type PodDisruptionBudgetNamespaceLister interface {
 type podDisruptionBudgetNamespaceLister struct {
 	listers.ResourceIndexer[*v1.PodDisruptionBudget]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

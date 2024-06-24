@@ -28,3 +28,7 @@ func watchForLockfileContention(path string, done chan struct{}) error {
 func isCgroup2UnifiedMode() bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -111,3 +111,7 @@ func init() {
 	RegisterType((*stringValue)(nil), "gogo.protobuf.proto.StringValue")
 	RegisterType((*bytesValue)(nil), "gogo.protobuf.proto.BytesValue")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

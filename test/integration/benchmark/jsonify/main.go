@@ -101,3 +101,7 @@ func appendIfMeasured(items []DataItem, benchmark *benchparse.Benchmark, metricT
 		Data: map[string]float64{
 			"value": value}})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

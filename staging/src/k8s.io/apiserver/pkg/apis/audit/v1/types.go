@@ -316,3 +316,7 @@ type ObjectReference struct {
 	// +optional
 	Subresource string `json:"subresource,omitempty" protobuf:"bytes,8,opt,name=subresource"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

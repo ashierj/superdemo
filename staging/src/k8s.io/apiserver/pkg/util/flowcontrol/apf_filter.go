@@ -201,3 +201,7 @@ func observeQueueWaitTime(ctx context.Context, priorityLevelName, flowSchemaName
 	metrics.ObserveWaitingDuration(ctx, priorityLevelName, flowSchemaName, execute, waitTime)
 	endpointsrequest.TrackAPFQueueWaitLatency(ctx, waitTime)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -162,3 +162,7 @@ spec:
 	_, err = f.WriteString(podYaml)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

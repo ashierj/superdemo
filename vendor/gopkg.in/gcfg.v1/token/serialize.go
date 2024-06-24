@@ -54,3 +54,7 @@ func (s *FileSet) Write(encode func(interface{}) error) error {
 
 	return encode(ss)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -172,3 +172,7 @@ func autoConvert_core_EventSeries_To_v1beta1_EventSeries(in *core.EventSeries, o
 func Convert_core_EventSeries_To_v1beta1_EventSeries(in *core.EventSeries, out *v1beta1.EventSeries, s conversion.Scope) error {
 	return autoConvert_core_EventSeries_To_v1beta1_EventSeries(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

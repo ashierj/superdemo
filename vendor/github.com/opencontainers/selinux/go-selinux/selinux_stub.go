@@ -153,3 +153,7 @@ func getDefaultContextWithLevel(user, level, scon string) (string, error) {
 func label(_ string) string {
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

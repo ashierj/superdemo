@@ -96,3 +96,7 @@ func (sp *summaryProviderImpl) getSystemPodsCPUAndMemoryStats(nodeConfig cm.Node
 
 	return podsSummary
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

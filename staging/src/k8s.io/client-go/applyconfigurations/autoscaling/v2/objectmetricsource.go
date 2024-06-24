@@ -55,3 +55,7 @@ func (b *ObjectMetricSourceApplyConfiguration) WithMetric(value *MetricIdentifie
 	b.Metric = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -138,3 +138,7 @@ func (b *StatefulSetSpecApplyConfiguration) WithOrdinals(value *StatefulSetOrdin
 	b.Ordinals = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

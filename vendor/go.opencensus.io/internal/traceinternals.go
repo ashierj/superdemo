@@ -51,3 +51,7 @@ type ErrorBucketSummary struct {
 	ErrorCode int32
 	Size      int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

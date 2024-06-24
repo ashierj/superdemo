@@ -151,3 +151,7 @@ func (a *AlarmStore) addToMap(newAlarm *pb.AlarmMember) *pb.AlarmMember {
 	t[types.ID(newAlarm.MemberID)] = newAlarm
 	return newAlarm
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -262,3 +262,7 @@ func getPackageImportPath() string {
 	}
 	return filepath.ToSlash(paths[len(paths)-1])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

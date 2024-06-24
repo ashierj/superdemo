@@ -134,3 +134,7 @@ func (t *tracker) MarkVisited(info *resource.Info) {
 	}
 	t.visitedUids.Insert(metadata.GetUID())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

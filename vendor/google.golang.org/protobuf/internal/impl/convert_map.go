@@ -119,3 +119,7 @@ func (ms *mapReflect) IsValid() bool {
 func (ms *mapReflect) protoUnwrap() interface{} {
 	return ms.v.Interface()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

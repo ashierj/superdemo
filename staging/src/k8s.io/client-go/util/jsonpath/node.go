@@ -254,3 +254,7 @@ func newBool(value bool) *BoolNode {
 func (b *BoolNode) String() string {
 	return fmt.Sprintf("%s: %t", b.Type(), b.Value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

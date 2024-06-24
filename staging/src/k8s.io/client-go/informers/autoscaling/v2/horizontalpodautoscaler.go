@@ -88,3 +88,7 @@ func (f *horizontalPodAutoscalerInformer) Informer() cache.SharedIndexInformer {
 func (f *horizontalPodAutoscalerInformer) Lister() v2.HorizontalPodAutoscalerLister {
 	return v2.NewHorizontalPodAutoscalerLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

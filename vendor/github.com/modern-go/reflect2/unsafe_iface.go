@@ -62,3 +62,7 @@ func (type2 *UnsafeIFaceType) UnsafeIsNil(ptr unsafe.Pointer) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1079,3 +1079,7 @@ func routeSubscribeAt(newNs, curNs netns.NsHandle, ch chan<- RouteUpdate, done <
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

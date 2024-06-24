@@ -207,3 +207,7 @@ func (doNothingAdmission) Validate() error                    { return nil }
 type doNothingPluginInitialization struct{}
 
 func (doNothingPluginInitialization) ValidateInitialization() error { return nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

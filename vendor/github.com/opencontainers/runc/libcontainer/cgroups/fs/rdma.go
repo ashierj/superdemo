@@ -23,3 +23,7 @@ func (s *RdmaGroup) Set(path string, r *configs.Resources) error {
 func (s *RdmaGroup) GetStats(path string, stats *cgroups.Stats) error {
 	return fscommon.RdmaGetStats(path, stats)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -103,3 +103,7 @@ func SetUsageAndHelpFunc(cmd *cobra.Command, fss NamedFlagSets, cols int) {
 		PrintSections(cmd.OutOrStdout(), fss, cols)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

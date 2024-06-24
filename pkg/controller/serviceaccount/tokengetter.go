@@ -74,3 +74,7 @@ func (c clientGetter) GetNode(name string) (*v1.Node, error) {
 	}
 	return c.client.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -630,3 +630,7 @@ func ConstantToVal(c *exprpb.Constant) (ref.Val, error) {
 	}
 	return nil, fmt.Errorf("unsupported constant kind: %v", c.GetConstantKind())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

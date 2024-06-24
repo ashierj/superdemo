@@ -191,3 +191,7 @@ func parseGroupVersionKind(extensions map[string]interface{}) []schema.GroupVers
 
 	return gvkListResult
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

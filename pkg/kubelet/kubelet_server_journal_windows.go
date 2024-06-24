@@ -84,3 +84,7 @@ func checkForNativeLogger(ctx context.Context, service string) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

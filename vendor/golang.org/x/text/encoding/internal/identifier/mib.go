@@ -1625,3 +1625,7 @@ const (
 	// See https://www.iana.org/assignments/charset-reg/CP50220
 	CP50220 MIB = 2260
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

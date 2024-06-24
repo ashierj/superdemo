@@ -73,3 +73,7 @@ func NewMockGCECloud(cloud cloud.Cloud) (*gce.Cloud, error) {
 	}
 	return gce.CreateGCECloudWithCloud(config, cloud)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

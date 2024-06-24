@@ -188,3 +188,7 @@ func (v ReportEntryVisibility) Is(visibilities ...ReportEntryVisibility) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

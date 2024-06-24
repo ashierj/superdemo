@@ -397,3 +397,7 @@ func writeDataToTempFile(t *testing.T, data []byte) string {
 	})
 	return file.Name()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

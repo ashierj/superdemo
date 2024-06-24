@@ -3007,3 +3007,7 @@ func (p *Buffer) grow(n int) {
 	}
 	p.buf = append(make([]byte, 0, newCap), p.buf...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

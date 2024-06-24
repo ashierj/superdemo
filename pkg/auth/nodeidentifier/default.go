@@ -64,3 +64,7 @@ func (defaultNodeIdentifier) NodeIdentity(u user.Info) (string, bool) {
 	nodeName := strings.TrimPrefix(userName, nodeUserNamePrefix)
 	return nodeName, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

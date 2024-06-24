@@ -476,3 +476,7 @@ func isZero(v reflect.Value) bool {
 func FutureLineWrap() {
 	disableLineWrapping = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

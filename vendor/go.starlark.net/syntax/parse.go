@@ -1026,3 +1026,7 @@ func (p *parser) assignComments(n Node) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

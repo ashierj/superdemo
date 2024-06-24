@@ -27,3 +27,7 @@ func (type2 *safeStructType) FieldByNameFunc(match func(string) bool) StructFiel
 	}
 	return &safeField{StructField: field}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ func coTaskMemFree(buffer unsafe.Pointer) {
 	syscall.Syscall(procCoTaskMemFree.Addr(), 1, uintptr(buffer), 0, 0)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

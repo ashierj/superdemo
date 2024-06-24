@@ -24,3 +24,7 @@ const (
 	UnitMilliseconds  = "ms"
 	UnitSeconds       = "s"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

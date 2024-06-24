@@ -25,3 +25,7 @@ type IPAddressListerExpansion interface{}
 // ServiceCIDRListerExpansion allows custom methods to be added to
 // ServiceCIDRLister.
 type ServiceCIDRListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

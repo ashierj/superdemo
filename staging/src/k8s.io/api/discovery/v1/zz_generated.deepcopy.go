@@ -256,3 +256,7 @@ func (in *ForZone) DeepCopy() *ForZone {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -511,3 +511,7 @@ func (n FullName) Append(s Name) FullName {
 	}
 	return n + "." + FullName(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

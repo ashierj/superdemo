@@ -563,3 +563,7 @@ func (p fakeContainerStatsProvider) ImageFsStats(context.Context) (*statsapi.FsS
 func (p fakeContainerStatsProvider) ImageFsDevice(context.Context) (string, error) {
 	return p.device, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

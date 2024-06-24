@@ -415,3 +415,7 @@ func (a Affix) Compile(e *Encoder) (err error) {
 	e.EncodeMessage(a.Message)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

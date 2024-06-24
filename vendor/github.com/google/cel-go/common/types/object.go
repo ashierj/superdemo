@@ -163,3 +163,7 @@ func (o *protoObj) Type() ref.Type {
 func (o *protoObj) Value() any {
 	return o.value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

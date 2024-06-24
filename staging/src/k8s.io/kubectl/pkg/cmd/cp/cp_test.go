@@ -991,3 +991,7 @@ func (t *testWriter) Write(p []byte) (n int, err error) {
 	t.Logf(string(p))
 	return len(p), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

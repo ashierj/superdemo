@@ -1702,3 +1702,7 @@ func rawTemplate(template *v1.PodTemplateSpec) runtime.RawExtension {
 	}
 	return runtime.RawExtension{Raw: buf.Bytes()}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

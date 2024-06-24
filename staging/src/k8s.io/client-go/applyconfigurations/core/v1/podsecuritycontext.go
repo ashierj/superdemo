@@ -138,3 +138,7 @@ func (b *PodSecurityContextApplyConfiguration) WithAppArmorProfile(value *AppArm
 	b.AppArmorProfile = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

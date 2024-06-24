@@ -247,3 +247,7 @@ func (b *EvictionApplyConfiguration) WithDeleteOptions(value *v1.DeleteOptionsAp
 	b.DeleteOptions = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

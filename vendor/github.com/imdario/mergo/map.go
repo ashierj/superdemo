@@ -172,3 +172,7 @@ func _map(dst, src interface{}, opts ...func(*Config)) error {
 	}
 	return deepMap(vDst, vSrc, make(map[uintptr]*visit), 0, config)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

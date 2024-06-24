@@ -209,3 +209,7 @@ func ResetPodLabels(ctx context.Context, k8s *kubeManager, namespace string, nam
 	})
 	framework.ExpectNoError(err, "Unable to wait for pod %s/%s to update labels", namespace, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

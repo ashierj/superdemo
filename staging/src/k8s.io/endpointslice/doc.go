@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package endpointslice contains the core logic of endpointslice controller.
 package endpointslice // import "k8s.io/endpointslice"
+-e 
+func helloWorld() {
+    println("hello world")
+}

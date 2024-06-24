@@ -33,3 +33,7 @@ func newStreamProtocolV5(options StreamOptions) streamProtocolHandler {
 func (p *streamProtocolV5) stream(conn streamCreator) error {
 	return p.streamProtocolV4.stream(conn)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

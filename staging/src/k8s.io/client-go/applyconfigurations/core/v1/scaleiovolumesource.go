@@ -118,3 +118,7 @@ func (b *ScaleIOVolumeSourceApplyConfiguration) WithReadOnly(value bool) *ScaleI
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

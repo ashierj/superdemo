@@ -30,3 +30,7 @@ func SetLogger(customLogger log.StdLogger) {
 func EnableTracing(enabled bool) {
 	trace = enabled
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

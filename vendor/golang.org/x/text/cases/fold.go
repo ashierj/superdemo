@@ -32,3 +32,7 @@ func makeFold(o options) transform.SpanningTransformer {
 	// TODO: Implement Compact options.
 	return &caseFolder{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

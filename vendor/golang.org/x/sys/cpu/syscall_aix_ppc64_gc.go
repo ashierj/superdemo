@@ -33,3 +33,7 @@ func callgetsystemcfg(label int) (r1 uintptr, e1 errno) {
 	r1, _, e1 = syscall6(uintptr(unsafe.Pointer(&libc_getsystemcfg)), 1, uintptr(label), 0, 0, 0, 0, 0)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

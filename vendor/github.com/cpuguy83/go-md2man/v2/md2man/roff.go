@@ -334,3 +334,7 @@ func escapeSpecialChars(w io.Writer, text []byte) {
 		w.Write([]byte{'\\', text[i]}) // nolint: errcheck
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

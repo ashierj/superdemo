@@ -247,3 +247,7 @@ func idToVersion(t *testing.T, id string) string {
 	}
 	return fmt.Sprintf("v%s", strings.TrimPrefix(id, "id-"))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

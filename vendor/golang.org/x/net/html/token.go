@@ -1270,3 +1270,7 @@ func NewTokenizerFragment(r io.Reader, contextTag string) *Tokenizer {
 	}
 	return z
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

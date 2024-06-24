@@ -260,3 +260,7 @@ func (b *VolumeAttributesClassApplyConfiguration) WithParameters(entries map[str
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

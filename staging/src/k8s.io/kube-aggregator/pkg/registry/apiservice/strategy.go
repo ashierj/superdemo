@@ -194,3 +194,7 @@ func MatchAPIService(label labels.Selector, field fields.Selector) storage.Selec
 func ToSelectableFields(obj *apiregistration.APIService) fields.Set {
 	return generic.ObjectMetaFieldsSet(&obj.ObjectMeta, true)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -33,3 +33,7 @@ func TestListTests(t *testing.T) {
 	assert.Equal(t, 0, code)
 	assert.Equal(t, bugs.ListTestsOutput, output)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

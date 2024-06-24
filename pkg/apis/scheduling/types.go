@@ -88,3 +88,7 @@ type PriorityClassList struct {
 	// items is the list of PriorityClasses.
 	Items []PriorityClass
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

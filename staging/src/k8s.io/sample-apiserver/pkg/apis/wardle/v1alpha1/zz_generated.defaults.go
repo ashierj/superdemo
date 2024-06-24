@@ -44,3 +44,7 @@ func SetObjectDefaults_FlunderList(in *FlunderList) {
 		SetObjectDefaults_Flunder(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

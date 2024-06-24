@@ -433,3 +433,7 @@ var _ = SIGDescribe("Certificates API [Privileged:ClusterAdmin]", func() {
 		gomega.Expect(csrs.Items).To(gomega.BeEmpty(), "filtered list should have 0 items")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

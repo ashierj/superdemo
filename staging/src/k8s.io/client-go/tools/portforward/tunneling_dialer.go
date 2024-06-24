@@ -91,3 +91,7 @@ func (d *tunnelingDialer) Dial(protocols ...string) (httpstream.Connection, stri
 
 	return spdyConn, protocol, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -47,3 +47,7 @@ func NewRESTStorage(apiResourceConfigSource serverstorage.APIResourceConfigSourc
 
 	return apiGroupInfo
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

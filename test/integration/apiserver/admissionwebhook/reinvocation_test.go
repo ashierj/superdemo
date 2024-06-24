@@ -644,3 +644,7 @@ func newReinvocationMarkerFixture(namespace string) *corev1.Pod {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

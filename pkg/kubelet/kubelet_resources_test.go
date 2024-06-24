@@ -98,3 +98,7 @@ func getPod(cpuLimit, memoryLimit string) *v1.Pod {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

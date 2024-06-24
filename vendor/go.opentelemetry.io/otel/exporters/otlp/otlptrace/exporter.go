@@ -114,3 +114,7 @@ func (e *Exporter) MarshalLog() interface{} {
 		Client: e.client,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func parseStat(data string) (stat Stat_t, err error) {
 
 	return stat, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

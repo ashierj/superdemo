@@ -575,3 +575,7 @@ type TracerProvider interface {
 	// This method is safe to call concurrently.
 	Tracer(name string, options ...TracerOption) Tracer
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

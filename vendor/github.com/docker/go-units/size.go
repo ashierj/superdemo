@@ -152,3 +152,7 @@ func parseSize(sizeStr string, uMap unitMap) (int64, error) {
 badSuffix:
 	return -1, fmt.Errorf("invalid suffix: '%s'", sfx)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

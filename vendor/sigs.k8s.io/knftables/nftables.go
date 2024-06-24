@@ -469,3 +469,7 @@ func parseElementValue(json interface{}) ([]string, error) {
 
 	return nil, fmt.Errorf("could not parse element value %q", json)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

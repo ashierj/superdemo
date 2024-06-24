@@ -291,3 +291,7 @@ func (s *CidrSet) getIndexForIP(ip net.IP) (int, error) {
 func getMaxCIDRs(subNetMaskSize, clusterMaskSize int) int {
 	return 1 << uint32(subNetMaskSize-clusterMaskSize)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

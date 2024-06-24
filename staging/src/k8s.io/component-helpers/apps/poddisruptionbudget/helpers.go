@@ -63,3 +63,7 @@ func ConditionsAreUpToDate(pdb *policy.PodDisruptionBudget) bool {
 	}
 	return cond.Status == metav1.ConditionFalse && cond.Reason == policy.InsufficientPodsReason
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

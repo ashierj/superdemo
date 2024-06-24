@@ -60,3 +60,7 @@ func (r *lineReader) unreadLine() {
 		r.pos--
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

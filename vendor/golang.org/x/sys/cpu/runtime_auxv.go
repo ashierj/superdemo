@@ -14,3 +14,7 @@ func getAuxv() []uintptr {
 	}
 	return getAuxvFn()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

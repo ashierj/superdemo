@@ -86,3 +86,7 @@ func Test_getSafeSysctlAllowlist(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

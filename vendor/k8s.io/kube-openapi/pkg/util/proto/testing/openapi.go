@@ -56,3 +56,7 @@ type Empty struct{}
 func (Empty) OpenAPISchema() (*openapi_v2.Document, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

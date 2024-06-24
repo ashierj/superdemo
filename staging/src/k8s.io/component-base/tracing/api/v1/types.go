@@ -30,3 +30,7 @@ type TracingConfiguration struct {
 	// +optional
 	SamplingRatePerMillion *int32 `json:"samplingRatePerMillion,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

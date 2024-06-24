@@ -523,3 +523,7 @@ func maxTime(a, b time.Time) time.Time {
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

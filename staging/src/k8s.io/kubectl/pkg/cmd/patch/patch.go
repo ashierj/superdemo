@@ -362,3 +362,7 @@ func patchOperation(didPatch bool) string {
 	}
 	return "patched (no change)"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

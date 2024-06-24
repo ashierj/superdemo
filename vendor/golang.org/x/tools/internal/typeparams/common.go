@@ -202,3 +202,7 @@ func GenericAssignableTo(ctxt *types.Context, V, T types.Type) bool {
 
 	return types.AssignableTo(vinst, tinst)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

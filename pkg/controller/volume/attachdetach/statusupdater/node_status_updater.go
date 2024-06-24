@@ -129,3 +129,7 @@ func (nsu *nodeStatusUpdater) updateNodeStatus(logger klog.Logger, nodeName type
 	logger.V(4).Info("Updating status for node succeeded", "node", klog.KObj(node), "patchBytes", patchBytes, "attachedVolumes", attachedVolumes)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

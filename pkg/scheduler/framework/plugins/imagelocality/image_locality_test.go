@@ -418,3 +418,7 @@ func getImageFakeDigest(fakeContent string) string {
 	hash := sha256.Sum256([]byte(fakeContent))
 	return "sha256:" + hex.EncodeToString(hash[:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -65,3 +65,7 @@ func runMarkControlPlane(c workflow.RunData) error {
 	nodeRegistration := data.Cfg().NodeRegistration
 	return markcontrolplanephase.MarkControlPlane(client, nodeRegistration.Name, nodeRegistration.Taints)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

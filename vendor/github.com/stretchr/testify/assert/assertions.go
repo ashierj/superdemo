@@ -2052,3 +2052,7 @@ func buildErrorChainString(err error) string {
 	}
 	return chain
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

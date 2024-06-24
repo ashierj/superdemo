@@ -60,3 +60,7 @@ not to equal
 	.*/test/e2e/framework/expect_test.go:46`, failure.Backtrace())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

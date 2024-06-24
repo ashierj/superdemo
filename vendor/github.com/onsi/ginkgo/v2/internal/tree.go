@@ -75,3 +75,7 @@ func GenerateSpecsFromTreeRoot(tree *TreeNode) Specs {
 
 	return walkTree(0, Nodes{}, Nodes{}, tree.Children)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

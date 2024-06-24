@@ -247,3 +247,7 @@ func (b *testBuff) Write(p []byte) (int, error) {
 	b.writeCount++
 	return len(p), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

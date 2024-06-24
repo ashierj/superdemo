@@ -109,3 +109,7 @@ func TestHandlePath(t *testing.T) {
 		t.Error("should skip third_party")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

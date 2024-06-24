@@ -58,3 +58,7 @@
 // function. In these cases it is recommended that you pass in your own
 // `TestReporter`.
 package gomock
+-e 
+func helloWorld() {
+    println("hello world")
+}

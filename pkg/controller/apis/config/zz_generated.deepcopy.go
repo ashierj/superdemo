@@ -94,3 +94,7 @@ func (in *KubeControllerManagerConfiguration) DeepCopyObject() runtime.Object {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

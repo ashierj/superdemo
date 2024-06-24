@@ -553,3 +553,7 @@ var (
 		Namespaced: true,
 	}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -53,3 +53,7 @@ func (r gitRunner) run(args ...string) error {
 			return err
 		})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

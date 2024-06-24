@@ -188,3 +188,7 @@ func (stream *Stream) WriteInt(val int) {
 func (stream *Stream) WriteUint(val uint) {
 	stream.WriteUint64(uint64(val))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

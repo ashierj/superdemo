@@ -284,3 +284,7 @@ func SetDefaults_KubeletConfiguration(obj *kubeletconfigv1beta1.KubeletConfigura
 		obj.PodLogsDir = DefaultPodLogsDir
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

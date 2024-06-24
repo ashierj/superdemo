@@ -2709,3 +2709,7 @@ func yaml_parser_scan_plain_scalar(parser *yaml_parser_t, token *yaml_token_t) b
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

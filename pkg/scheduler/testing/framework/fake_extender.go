@@ -400,3 +400,7 @@ func (f *FakeExtender) IsInterested(pod *v1.Pod) bool {
 }
 
 var _ framework.Extender = &FakeExtender{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

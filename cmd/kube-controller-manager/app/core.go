@@ -931,3 +931,7 @@ func startStorageVersionGarbageCollectorController(ctx context.Context, controll
 	).Run(ctx)
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

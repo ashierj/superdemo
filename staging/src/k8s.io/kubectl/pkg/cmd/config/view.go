@@ -185,3 +185,7 @@ func (o *ViewOptions) getStartingConfig() (*clientcmdapi.Config, error) {
 		return o.ConfigAccess.GetStartingConfig()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

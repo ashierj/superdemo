@@ -177,3 +177,7 @@ func (c *Client) httpGetJSONData(data, postData interface{}, url, infoName strin
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

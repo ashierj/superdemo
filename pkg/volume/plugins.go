@@ -1042,3 +1042,7 @@ type dummyPluginProber struct{}
 
 func (*dummyPluginProber) Init() error                  { return nil }
 func (*dummyPluginProber) Probe() ([]ProbeEvent, error) { return nil, nil }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package util holds utility functions.
 package util // import "k8s.io/kubernetes/pkg/kubelet/util"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ func NewReportEntry(name string, cl types.CodeLocation, args ...interface{}) (Re
 
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

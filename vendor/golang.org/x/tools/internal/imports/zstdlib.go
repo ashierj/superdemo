@@ -11404,3 +11404,7 @@ var stdlib = map[string][]string{
 		"StringData",
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

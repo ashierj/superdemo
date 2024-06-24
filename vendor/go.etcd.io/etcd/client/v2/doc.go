@@ -70,3 +70,7 @@ Use a custom context to set timeouts on your operations:
 	}
 */
 package client
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -133,3 +133,7 @@ func (m *cloudResourceSyncManager) syncNodeAddresses() {
 func (m *cloudResourceSyncManager) Run(stopCh <-chan struct{}) {
 	wait.Until(m.syncNodeAddresses, m.syncPeriod, stopCh)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

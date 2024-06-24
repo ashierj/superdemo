@@ -63,3 +63,7 @@ func (ac *AccessController) IsHostWhitelisted(host string) bool {
 	_, ok = ac.HostWhitelist[host]
 	return ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

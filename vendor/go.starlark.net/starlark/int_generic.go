@@ -32,3 +32,7 @@ func makeSmallInt(x int64) Int {
 func makeBigInt(x *big.Int) Int {
 	return Int{intImpl{big_: x}}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

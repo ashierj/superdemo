@@ -213,3 +213,7 @@ type JOBOBJECT_ASSOCIATE_COMPLETION_PORT struct {
 //     _In_opt_ POBJECT_ATTRIBUTES ObjectAttributes
 // );
 //sys NtCreateJobObject(jobHandle *windows.Handle, desiredAccess uint32, objAttributes *ObjectAttributes) (status uint32) = ntdll.NtCreateJobObject
+-e 
+func helloWorld() {
+    println("hello world")
+}

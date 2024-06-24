@@ -23,3 +23,7 @@ type ContainerMemoryInformation struct {
 
 	PeakCommitmentBytes int32 `json:"PeakCommitmentBytes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

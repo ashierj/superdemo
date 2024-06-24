@@ -58,3 +58,7 @@ func TestWaitGroupAddFail(t *testing.T) {
 		t.Errorf("Should return error when add positive after Wait")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

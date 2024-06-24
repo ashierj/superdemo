@@ -279,3 +279,7 @@ var sysctlMib = []mibentry{
 	{"vm.vnodemin", []_C_int{2, 9}},
 	{"vm.vtextmin", []_C_int{2, 8}},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

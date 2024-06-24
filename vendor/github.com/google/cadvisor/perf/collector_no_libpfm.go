@@ -32,3 +32,7 @@ func NewCollector(cgroupPath string, events Events, numCores int) stats.Collecto
 func Finalize() {
 	klog.V(1).Info("cAdvisor is build without cgo and/or libpfm support. Nothing to be finalized")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

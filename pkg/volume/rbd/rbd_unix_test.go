@@ -36,3 +36,7 @@ func (fake *fakeDiskManager) AttachDisk(b rbdMounter) (string, error) {
 func getLoggedSource(devicePath string) (string, error) {
 	return devicePath, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

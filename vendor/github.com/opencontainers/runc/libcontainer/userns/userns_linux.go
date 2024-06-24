@@ -35,3 +35,7 @@ func uidMapInUserNS(uidmap []user.IDMap) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

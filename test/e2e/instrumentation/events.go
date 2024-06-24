@@ -235,3 +235,7 @@ var _ = common.SIGDescribe("Events API", func() {
 		gomega.Expect(eventList.Items).To(gomega.BeEmpty(), "unexpected event list: %#v", eventList)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

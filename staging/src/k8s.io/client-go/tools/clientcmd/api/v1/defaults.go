@@ -35,3 +35,7 @@ func SetDefaults_ExecConfig(exec *ExecConfig) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

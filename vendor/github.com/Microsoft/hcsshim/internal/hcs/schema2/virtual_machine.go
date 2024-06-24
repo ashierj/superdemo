@@ -30,3 +30,7 @@ type VirtualMachine struct {
 
 	GuestConnection *GuestConnection `json:"GuestConnection,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

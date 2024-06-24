@@ -87,3 +87,7 @@ func (f *skipNonAppliedManager) Apply(liveObj, appliedObj runtime.Object, manage
 	}
 	return f.fieldManager.Apply(liveObj, appliedObj, managed, fieldManager, force)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

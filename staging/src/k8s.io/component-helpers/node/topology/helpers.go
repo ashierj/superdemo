@@ -56,3 +56,7 @@ func GetZoneKey(node *v1.Node) string {
 	// As a nice side-benefit, the null character is not printed by fmt.Print or glog
 	return region + ":\x00:" + zone
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

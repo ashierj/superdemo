@@ -505,3 +505,7 @@ var _ = SIGDescribe(feature.HPA, framework.WithSerial(), framework.WithSlow(), "
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

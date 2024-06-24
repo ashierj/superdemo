@@ -223,3 +223,7 @@ func (c *crdRegistrationController) handleVersionUpdate(groupVersion schema.Grou
 	c.apiServiceRegistration.RemoveAPIServiceToSync(apiServiceName)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

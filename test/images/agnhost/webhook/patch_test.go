@@ -178,3 +178,7 @@ func TestJSONPatchForUnstructured(t *testing.T) {
 		t.Errorf("\nexpected %#v\n, got %#v", expectedData, patchedObj.Object["data"])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

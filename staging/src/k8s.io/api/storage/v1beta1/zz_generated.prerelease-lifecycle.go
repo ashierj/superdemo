@@ -264,3 +264,7 @@ func (in *VolumeAttachmentList) APILifecycleReplacement() schema.GroupVersionKin
 func (in *VolumeAttachmentList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

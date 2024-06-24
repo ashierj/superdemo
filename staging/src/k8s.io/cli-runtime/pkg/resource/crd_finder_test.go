@@ -86,3 +86,7 @@ func TestCRDFinder(t *testing.T) {
 		t.Fatalf("Found crd Random that doesn't exist")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

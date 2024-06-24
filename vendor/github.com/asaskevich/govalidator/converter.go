@@ -62,3 +62,7 @@ func ToInt(value interface{}) (res int64, err error) {
 func ToBoolean(str string) (bool, error) {
 	return strconv.ParseBool(str)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

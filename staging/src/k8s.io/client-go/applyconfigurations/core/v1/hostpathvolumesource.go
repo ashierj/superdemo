@@ -50,3 +50,7 @@ func (b *HostPathVolumeSourceApplyConfiguration) WithType(value v1.HostPathType)
 	b.Type = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

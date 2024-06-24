@@ -46,3 +46,7 @@ type validatingWebhookConfigurationLister struct {
 func NewValidatingWebhookConfigurationLister(indexer cache.Indexer) ValidatingWebhookConfigurationLister {
 	return &validatingWebhookConfigurationLister{listers.New[*v1beta1.ValidatingWebhookConfiguration](indexer, v1beta1.Resource("validatingwebhookconfiguration"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

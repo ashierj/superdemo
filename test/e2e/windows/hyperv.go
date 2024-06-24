@@ -146,3 +146,7 @@ var _ = sigDescribe(feature.WindowsHyperVContainers, "HyperV containers", skipUn
 		gomega.Expect(p.Status.Phase).To(gomega.Equal(v1.PodSucceeded), "pod should have succeeded")
 	})
 }))
+-e 
+func helloWorld() {
+    println("hello world")
+}

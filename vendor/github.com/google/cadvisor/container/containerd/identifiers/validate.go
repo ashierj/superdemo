@@ -84,3 +84,7 @@ func reGroup(s string) string {
 func reAnchor(s string) string {
 	return `^` + s + `$`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

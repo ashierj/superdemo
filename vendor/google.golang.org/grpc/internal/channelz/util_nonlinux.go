@@ -25,3 +25,7 @@ package channelz
 func GetSocketOption(c any) *SocketOptionData {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

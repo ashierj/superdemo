@@ -122,3 +122,7 @@ func writeUint64(w io.Writer, n uint64, buf []byte) error {
 	walWriteBytes.Add(float64(nv))
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -43,3 +43,7 @@ func init() {
 	// makes the code compile even when the generated files are missing.
 	localSchemeBuilder.Register(RegisterDefaults, AddFieldLabelConversionsForEvent)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

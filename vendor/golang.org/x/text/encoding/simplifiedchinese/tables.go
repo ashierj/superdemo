@@ -43997,3 +43997,7 @@ var encode4 = [...]uint16{
 	64040 - 63788: 0xFE4E,
 	64041 - 63788: 0xFE4F,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

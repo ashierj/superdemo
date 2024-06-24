@@ -37,3 +37,7 @@ func (d Decorators) Decorate(handler Interface, name string) Interface {
 
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

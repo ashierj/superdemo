@@ -30,3 +30,7 @@ import (
 func RunComponentAsNonRoot(componentName string, pod *v1.Pod, usersAndGroups *users.UsersAndGroups, cfg *kubeadmapi.ClusterConfiguration) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

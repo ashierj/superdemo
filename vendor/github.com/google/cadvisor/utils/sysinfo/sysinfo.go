@@ -586,3 +586,7 @@ func GetOnlineCPUs(topology []info.Node) []int {
 	}
 	return onlineCPUs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

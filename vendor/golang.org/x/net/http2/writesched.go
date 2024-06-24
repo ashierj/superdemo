@@ -249,3 +249,7 @@ func (p *writeQueuePool) get() *writeQueue {
 	*p = (*p)[:x]
 	return q
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

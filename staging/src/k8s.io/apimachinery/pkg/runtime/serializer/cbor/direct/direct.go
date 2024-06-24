@@ -34,3 +34,7 @@ func Unmarshal(src []byte, dst interface{}) error {
 func Diagnose(src []byte) (string, error) {
 	return modes.Diagnostic.Diagnose(src)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

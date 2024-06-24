@@ -125,3 +125,7 @@ func (op JumpOp) Label(label string) Instruction {
 		Offset: -1,
 	}.WithReference(label)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

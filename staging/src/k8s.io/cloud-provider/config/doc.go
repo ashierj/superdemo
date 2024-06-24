@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=cloudcontrollermanager.config.k8s.io
 
 package config // import "k8s.io/cloud-provider/config"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func (imp importer) ImportFrom(importPath, srcDir string, mode types.ImportMode)
 
 	return Read(r, imp.fset, imp.imports, path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

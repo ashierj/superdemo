@@ -47,3 +47,7 @@ import (
 	// Related issue: https://github.com/kubernetes/kubernetes/issues/112682
 	_ "k8s.io/kubernetes/pkg/apis/extensions/install"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func parseProxyURL(proxyURL string) (*url.URL, error) {
 	}
 	return u, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

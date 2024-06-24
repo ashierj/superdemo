@@ -100,3 +100,7 @@ func (g *generator) Render(
 	})
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

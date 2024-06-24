@@ -476,3 +476,7 @@ exemptions:
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

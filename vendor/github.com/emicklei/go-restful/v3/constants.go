@@ -30,3 +30,7 @@ const (
 	ENCODING_GZIP    = "gzip"
 	ENCODING_DEFLATE = "deflate"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

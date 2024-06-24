@@ -135,3 +135,7 @@ func (any *falseAny) ValueType() ValueType {
 func (any *falseAny) MustBeValid() Any {
 	return any
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

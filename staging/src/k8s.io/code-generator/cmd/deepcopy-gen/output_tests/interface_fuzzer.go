@@ -129,3 +129,7 @@ func (i *interfacesInnerInstance) DeepCopyInner() interfaces.Inner {
 func (i *interfacesInnerInstance) Function() float64 {
 	return i.X
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

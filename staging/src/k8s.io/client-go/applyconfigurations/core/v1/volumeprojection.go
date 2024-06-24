@@ -73,3 +73,7 @@ func (b *VolumeProjectionApplyConfiguration) WithClusterTrustBundle(value *Clust
 	b.ClusterTrustBundle = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -40,3 +40,7 @@ func nameFromDirent(de *syscall.Dirent) (name []byte) {
 	sh.Len = sh.Cap
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

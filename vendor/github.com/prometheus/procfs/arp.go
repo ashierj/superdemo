@@ -114,3 +114,7 @@ func parseARPEntry(columns []string) (ARPEntry, error) {
 func (entry *ARPEntry) IsComplete() bool {
 	return entry.Flags&ATFComplete != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

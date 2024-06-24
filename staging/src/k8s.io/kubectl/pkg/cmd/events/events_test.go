@@ -217,3 +217,7 @@ foo         18m (x3 over 28m)   Warning   ScalingReplicaSet   Deployment/bar   S
 		t.Errorf("expected\n%v\ngot\n%v", e, a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

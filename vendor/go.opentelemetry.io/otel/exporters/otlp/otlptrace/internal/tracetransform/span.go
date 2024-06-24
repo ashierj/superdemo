@@ -203,3 +203,7 @@ func spanKind(kind trace.SpanKind) tracepb.Span_SpanKind {
 		return tracepb.Span_SPAN_KIND_UNSPECIFIED
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

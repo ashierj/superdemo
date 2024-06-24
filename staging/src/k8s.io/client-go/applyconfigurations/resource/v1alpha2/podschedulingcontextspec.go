@@ -48,3 +48,7 @@ func (b *PodSchedulingContextSpecApplyConfiguration) WithPotentialNodes(values .
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

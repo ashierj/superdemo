@@ -2132,3 +2132,7 @@ var (
 	ErrIntOverflowApi          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupApi = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

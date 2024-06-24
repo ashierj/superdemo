@@ -151,3 +151,7 @@ func jsonPatchFromBytes(
 func NewPatchTransformerPlugin() resmap.TransformerPlugin {
 	return &PatchTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

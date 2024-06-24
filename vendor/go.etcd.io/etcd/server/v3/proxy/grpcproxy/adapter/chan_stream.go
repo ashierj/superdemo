@@ -165,3 +165,7 @@ func newPipeStream(ctx context.Context, ssHandler func(chanServerStream) error) 
 	}()
 	return cs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

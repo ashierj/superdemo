@@ -127,3 +127,7 @@ func (p *SourcePath) appendRepeatedField(b []byte, name string, f appendFunc) []
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

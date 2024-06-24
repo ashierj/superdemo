@@ -300,3 +300,7 @@ func collectSecretPaths(t *testing.T, path *field.Path, name string, tp reflect.
 
 	return secretPaths
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

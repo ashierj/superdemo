@@ -410,3 +410,7 @@ func (in *Subject) DeepCopy() *Subject {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -984,3 +984,7 @@ func execWithLog(b iscsiDiskMounter, cmd string, args ...string) (string, error)
 	}
 	return string(out), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func TestListTimeout(t *testing.T) {
 	realClient.AppsV1().DaemonSets("").List(context.TODO(), metav1.ListOptions{TimeoutSeconds: &timeout})
 	realClient.AppsV1().DaemonSets("").Watch(context.TODO(), metav1.ListOptions{TimeoutSeconds: &timeout})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

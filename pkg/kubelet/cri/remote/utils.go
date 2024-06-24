@@ -77,3 +77,7 @@ func verifyContainerStatus(status *runtimeapi.ContainerStatus) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

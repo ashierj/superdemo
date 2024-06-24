@@ -375,3 +375,7 @@ func CreateDiffVhd(diffVhdPath, baseVhdPath string, blockSizeInMB uint32) error 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

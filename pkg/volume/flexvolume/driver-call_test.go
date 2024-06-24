@@ -30,3 +30,7 @@ func TestHandleResponseDefaults(t *testing.T) {
 		t.Error("wrong default capabilities: ", *ds.Capabilities)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

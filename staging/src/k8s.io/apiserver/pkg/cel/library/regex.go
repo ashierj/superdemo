@@ -191,3 +191,7 @@ var FindAllRegexOptimization = &interpreter.RegexOptimization{
 		}), nil
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

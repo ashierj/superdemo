@@ -45,3 +45,7 @@ func Win32FromError(err error) uint32 {
 	}
 	return uint32(ERROR_GEN_FAILURE)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

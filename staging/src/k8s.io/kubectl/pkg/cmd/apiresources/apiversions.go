@@ -94,3 +94,7 @@ func (o *APIVersionsOptions) RunAPIVersions() error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

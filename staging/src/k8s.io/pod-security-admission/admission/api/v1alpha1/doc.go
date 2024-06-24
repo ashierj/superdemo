@@ -21,3 +21,7 @@ limitations under the License.
 
 // Package v1alpha1 contains PodSecurity admission configuration file types
 package v1alpha1 // import "k8s.io/pod-security-admission/admission/api/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

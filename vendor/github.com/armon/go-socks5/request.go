@@ -362,3 +362,7 @@ func proxy(dst io.Writer, src io.Reader, errCh chan error) {
 	}
 	errCh <- err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

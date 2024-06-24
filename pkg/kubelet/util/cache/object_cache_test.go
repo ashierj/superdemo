@@ -95,3 +95,7 @@ func TestExpirationBasic(t *testing.T) {
 		t.Errorf("Expected to get cached value: %#v, but got: %s", expectedVal, value.(string))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

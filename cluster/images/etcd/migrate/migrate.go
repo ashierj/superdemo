@@ -120,3 +120,7 @@ func migrate(name string, port uint64, peerListenUrls string, peerAdvertiseUrls 
 		klog.Fatalf("Migration failed: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -63345,3 +63345,7 @@ func schema_pkg_apis_metrics_v1beta1_PodMetricsList(ref common.ReferenceCallback
 			"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta", "k8s.io/metrics/pkg/apis/metrics/v1beta1.PodMetrics"},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

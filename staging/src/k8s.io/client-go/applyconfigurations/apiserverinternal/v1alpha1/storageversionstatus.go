@@ -65,3 +65,7 @@ func (b *StorageVersionStatusApplyConfiguration) WithConditions(values ...*Stora
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

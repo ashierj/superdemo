@@ -378,3 +378,7 @@ func copyLabels(labels map[string]string) map[string]string {
 	}
 	return l
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

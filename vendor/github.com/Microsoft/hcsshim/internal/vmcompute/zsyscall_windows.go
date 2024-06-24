@@ -579,3 +579,7 @@ func hcsUnregisterProcessCallback(callbackHandle HcsCallback) (hr error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

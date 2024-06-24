@@ -1040,3 +1040,7 @@ const (
 	// Examples: 'WildFly Full 21.0.0.Final (WildFly Core 13.0.1.Final) - 2.2.2.Final'
 	WebEngineDescriptionKey = attribute.Key("webengine.description")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

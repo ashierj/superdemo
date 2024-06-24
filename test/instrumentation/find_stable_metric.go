@@ -157,3 +157,7 @@ func getStabilityLevel(opts *ast.CompositeLit, metricsFrameworkImportName string
 	stability := metrics.ALPHA
 	return &stability, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

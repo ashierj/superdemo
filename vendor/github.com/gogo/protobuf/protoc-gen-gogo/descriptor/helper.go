@@ -388,3 +388,7 @@ func (f *FieldDescriptorProto) IsPacked3() bool {
 func (m *DescriptorProto) HasExtension() bool {
 	return len(m.ExtensionRange) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1575,3 +1575,7 @@ func addAndResetCounts(hot, cold *histogramCounts) {
 	atomic.AddUint64(&hot.nativeHistogramZeroBucket, atomic.LoadUint64(&cold.nativeHistogramZeroBucket))
 	atomic.StoreUint64(&cold.nativeHistogramZeroBucket, 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

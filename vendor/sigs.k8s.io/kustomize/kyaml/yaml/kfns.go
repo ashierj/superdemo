@@ -135,3 +135,7 @@ func addMetadataNode(rn *RNode, field, key string, v *RNode) (*RNode, error) {
 func SetLabel(key, value string) LabelSetter {
 	return LabelSetter{Key: key, Value: value}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

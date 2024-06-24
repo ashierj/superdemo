@@ -50,3 +50,7 @@ func CloneTLSConfig(cfg *tls.Config) *tls.Config {
 
 	return cfg.Clone()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

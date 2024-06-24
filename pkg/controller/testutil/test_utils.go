@@ -556,3 +556,7 @@ func GetKey(obj interface{}, t *testing.T) string {
 	}
 	return key
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

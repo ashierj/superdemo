@@ -140,3 +140,7 @@ func LocalEndpoint(path, file string) (string, error) {
 func NormalizePath(path string) string {
 	return path
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

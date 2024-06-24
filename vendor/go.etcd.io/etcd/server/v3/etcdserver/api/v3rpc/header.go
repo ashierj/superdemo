@@ -47,3 +47,7 @@ func (h *header) fill(rh *pb.ResponseHeader) {
 		rh.Revision = h.rev()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

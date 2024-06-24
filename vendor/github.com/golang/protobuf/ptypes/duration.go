@@ -74,3 +74,7 @@ func validateDuration(dur *durationpb.Duration) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

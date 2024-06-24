@@ -37,3 +37,7 @@ func (p *SecretGeneratorPlugin) Generate() (resmap.ResMap, error) {
 func NewSecretGeneratorPlugin() resmap.GeneratorPlugin {
 	return &SecretGeneratorPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

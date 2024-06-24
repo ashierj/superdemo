@@ -28,3 +28,7 @@ func (c info) appendMapping(b []byte, s string) []byte {
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

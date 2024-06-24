@@ -696,3 +696,7 @@ func (a ProxyGetActionImpl) DeepCopy() Action {
 		Params:     params,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

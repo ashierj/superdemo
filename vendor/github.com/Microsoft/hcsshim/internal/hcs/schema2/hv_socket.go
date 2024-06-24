@@ -14,3 +14,7 @@ type HvSocket struct {
 
 	EnablePowerShellDirect bool `json:"EnablePowerShellDirect,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

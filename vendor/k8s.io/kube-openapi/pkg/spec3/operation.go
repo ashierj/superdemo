@@ -122,3 +122,7 @@ type operationPropsOmitZero struct {
 	SecurityRequirement []map[string][]string  `json:"security,omitempty"`
 	Servers             []*Server              `json:"servers,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

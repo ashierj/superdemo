@@ -248,3 +248,7 @@ func (sc *stateCheckpoint) ClearState() {
 		klog.InfoS("Store state to checkpoint error", "err", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

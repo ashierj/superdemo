@@ -491,3 +491,7 @@ func startDBSizeMonitorPerEndpoint(client *clientv3.Client, interval time.Durati
 		cancel()
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

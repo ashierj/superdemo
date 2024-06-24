@@ -393,3 +393,7 @@ func (r *rawNamer) Name(t *types.Type) string {
 	r.Names[t] = name
 	return name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

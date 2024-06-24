@@ -267,3 +267,7 @@ func verifyIss(iss string, cmp string, required bool) bool {
 	}
 	return subtle.ConstantTimeCompare([]byte(iss), []byte(cmp)) != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

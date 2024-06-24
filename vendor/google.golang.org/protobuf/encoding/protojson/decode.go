@@ -683,3 +683,7 @@ func (d decoder) unmarshalMapKey(tok json.Token, fd protoreflect.FieldDescriptor
 
 	return protoreflect.MapKey{}, d.newError(tok.Pos(), "invalid value for %v key: %s", kind, tok.RawString())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

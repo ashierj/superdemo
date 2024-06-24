@@ -364,3 +364,7 @@ func ScopedResourceSelectorRequirementsAsSelector(ssr v1.ScopedResourceSelectorR
 	selector = selector.Add(*r)
 	return selector, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

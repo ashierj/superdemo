@@ -83,3 +83,7 @@ func (p *PackageHashes) StopTrackingUsageAndPrune() {
 
 	p.usedPaths = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

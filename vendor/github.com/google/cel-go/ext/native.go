@@ -630,3 +630,7 @@ var (
 	timestampType      = reflect.TypeOf(time.Now())
 	durationType       = reflect.TypeOf(time.Nanosecond)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

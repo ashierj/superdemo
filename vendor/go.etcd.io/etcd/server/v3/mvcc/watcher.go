@@ -201,3 +201,7 @@ func (ws *watchStream) RequestProgressAll() bool {
 	defer ws.mu.Unlock()
 	return ws.watchable.progressAll(ws.watchers)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

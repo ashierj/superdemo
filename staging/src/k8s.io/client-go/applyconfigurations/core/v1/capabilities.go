@@ -54,3 +54,7 @@ func (b *CapabilitiesApplyConfiguration) WithDrop(values ...v1.Capability) *Capa
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

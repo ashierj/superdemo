@@ -28,3 +28,7 @@ func Fsync(f *os.File) error {
 func Fdatasync(f *os.File) error {
 	return f.Sync()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

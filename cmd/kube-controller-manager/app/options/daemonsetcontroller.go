@@ -54,3 +54,7 @@ func (o *DaemonSetControllerOptions) Validate() []error {
 	errs := []error{}
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

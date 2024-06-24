@@ -711,3 +711,7 @@ func checkStreamSupport(v *semver.Version, t streamType) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

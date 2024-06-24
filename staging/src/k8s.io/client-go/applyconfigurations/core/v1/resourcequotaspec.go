@@ -61,3 +61,7 @@ func (b *ResourceQuotaSpecApplyConfiguration) WithScopeSelector(value *ScopeSele
 	b.ScopeSelector = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

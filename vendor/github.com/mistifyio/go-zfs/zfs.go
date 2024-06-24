@@ -450,3 +450,7 @@ func (d *Dataset) Diff(snapshot string) ([]*InodeChange, error) {
 	}
 	return inodeChanges, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

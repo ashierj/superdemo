@@ -291,3 +291,7 @@ func (pb parentBased) Description() string {
 		pb.config.localParentNotSampled.Description(),
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

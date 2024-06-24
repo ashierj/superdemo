@@ -2492,3 +2492,7 @@ func file_internal_proto_v2_s2a_s2a_proto_init() {
 	file_internal_proto_v2_s2a_s2a_proto_goTypes = nil
 	file_internal_proto_v2_s2a_s2a_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -127,3 +127,7 @@ func (s *CpuGroup) GetStats(path string, stats *cgroups.Stats) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

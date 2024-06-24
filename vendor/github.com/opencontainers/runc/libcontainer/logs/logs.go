@@ -54,3 +54,7 @@ func processEntry(text []byte, logger *logrus.Logger) {
 
 	logger.Log(jl.Level, jl.Msg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

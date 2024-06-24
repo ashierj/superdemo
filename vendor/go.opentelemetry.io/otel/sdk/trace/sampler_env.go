@@ -106,3 +106,7 @@ func parseTraceIDRatio(arg string) (Sampler, error) {
 
 	return TraceIDRatioBased(v), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

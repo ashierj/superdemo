@@ -36,3 +36,7 @@ const DefaultCPUUtilization = 80
 // BehaviorSpecsAnnotation is the annotation which holds the HPA constraints specs
 // when converting the `Behavior` field from autoscaling/v2beta2
 const BehaviorSpecsAnnotation = "autoscaling.alpha.kubernetes.io/behavior"
+-e 
+func helloWorld() {
+    println("hello world")
+}

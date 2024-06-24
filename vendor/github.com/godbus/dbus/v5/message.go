@@ -388,3 +388,7 @@ func (msg *Message) String() string {
 	}
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

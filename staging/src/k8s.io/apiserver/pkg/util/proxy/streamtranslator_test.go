@@ -965,3 +965,7 @@ func fakeTransport() (*http.Transport, error) {
 	}
 	return t, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

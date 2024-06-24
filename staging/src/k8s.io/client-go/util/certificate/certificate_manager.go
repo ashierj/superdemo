@@ -773,3 +773,7 @@ func hasKeyUsage(usages []certificates.KeyUsage, usage certificates.KeyUsage) bo
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

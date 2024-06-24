@@ -285,3 +285,7 @@ func TestConverter_meta(t *testing.T) {
 		t.Errorf("Registered functions did not get called.")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

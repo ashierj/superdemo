@@ -360,3 +360,7 @@ type tstStruct struct {
 	Test  uint64
 	Check uint64
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

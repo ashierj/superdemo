@@ -11,3 +11,7 @@ type Stats struct {
 	CgroupStats   *cgroups.Stats
 	IntelRdtStats *intelrdt.Stats
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -73,3 +73,7 @@ func refRank(ref Reference) uint8 {
 	}
 	return 5
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

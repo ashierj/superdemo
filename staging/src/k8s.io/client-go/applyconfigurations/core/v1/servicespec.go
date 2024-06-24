@@ -231,3 +231,7 @@ func (b *ServiceSpecApplyConfiguration) WithTrafficDistribution(value string) *S
 	b.TrafficDistribution = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

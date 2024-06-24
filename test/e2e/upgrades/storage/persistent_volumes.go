@@ -88,3 +88,7 @@ func (t *PersistentVolumeUpgradeTest) testPod(ctx context.Context, f *framework.
 	expectedOutput := []string{pvTestData}
 	e2eoutput.TestContainerOutput(ctx, f, "pod consumes pv", pod, 0, expectedOutput)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

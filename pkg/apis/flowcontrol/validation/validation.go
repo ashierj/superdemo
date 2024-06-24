@@ -587,3 +587,7 @@ func memberInList(seek string, a ...string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

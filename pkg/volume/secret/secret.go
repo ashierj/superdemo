@@ -333,3 +333,7 @@ func getVolumeSource(spec *volume.Spec) (*v1.SecretVolumeSource, bool) {
 
 	return volumeSource, readOnly
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

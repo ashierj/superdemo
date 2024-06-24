@@ -27,3 +27,7 @@ func FixCpuMask(mask string, cores int) string {
 	}
 	return mask
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

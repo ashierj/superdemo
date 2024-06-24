@@ -57,3 +57,7 @@ func FullGoSearchPath() string {
 	}
 	return allPaths
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

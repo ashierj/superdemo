@@ -262,3 +262,7 @@ var haveBPFToBPFCalls = internal.FeatureTest("bpf2bpf calls", "4.16", func() err
 	_ = fd.Close()
 	return nil
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

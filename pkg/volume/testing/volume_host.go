@@ -465,3 +465,7 @@ func (f *fakeKubeletVolumeHost) GetTrustAnchorsBySigner(signerName string, label
 
 	return fullSet.Bytes(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

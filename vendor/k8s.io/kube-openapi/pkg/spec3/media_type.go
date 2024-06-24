@@ -104,3 +104,7 @@ type mediaTypePropsOmitZero struct {
 	Examples map[string]*Example  `json:"examples,omitempty"`
 	Encoding map[string]*Encoding `json:"encoding,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

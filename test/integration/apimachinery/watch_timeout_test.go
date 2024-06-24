@@ -296,3 +296,7 @@ func testWatchClientTimeout(t *testing.T, config *restclient.Config, timeout, ti
 		t.Fatal("timeout")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

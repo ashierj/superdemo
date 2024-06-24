@@ -124,3 +124,7 @@ func (statsCollector) fetching(ctx context.Context) func(ok bool) {
 		activeFetchCount.WithContext(ctx).WithLabelValues(fetchInFlightTag).Dec()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

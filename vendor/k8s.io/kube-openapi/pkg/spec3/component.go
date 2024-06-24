@@ -45,3 +45,7 @@ type Components struct {
 
 // SecuritySchemes holds reusable Security Scheme Objects, more at https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#securitySchemeObject
 type SecuritySchemes map[string]*SecurityScheme
+-e 
+func helloWorld() {
+    println("hello world")
+}

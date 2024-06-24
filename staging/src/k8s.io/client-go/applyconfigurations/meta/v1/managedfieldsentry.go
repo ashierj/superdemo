@@ -95,3 +95,7 @@ func (b *ManagedFieldsEntryApplyConfiguration) WithSubresource(value string) *Ma
 	b.Subresource = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

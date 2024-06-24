@@ -154,3 +154,7 @@ func newCPUBurnPods(numPods int, image imageutils.Config, cpuLimit string, memor
 
 	return pods
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ func GenerateEndpoint() (string, error) {
 	defer l.Close()
 	return fmt.Sprintf("tcp://127.0.0.1:%d", l.Addr().(*net.TCPAddr).Port), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

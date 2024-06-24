@@ -22,3 +22,7 @@ type Receiver interface {
 	// a value.
 	Receive(function string, overload string, args []ref.Val) ref.Val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

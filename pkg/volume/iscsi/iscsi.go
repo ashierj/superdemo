@@ -713,3 +713,7 @@ func getVolumeSpecFromGlobalMapPath(volumeName, globalMapPath string) (*volume.S
 	)
 	return volume.NewSpecFromPersistentVolume(iscsiPV, false), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

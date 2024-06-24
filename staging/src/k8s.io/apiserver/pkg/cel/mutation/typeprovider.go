@@ -98,3 +98,7 @@ func NewTypeProviderAndEnvOption(resolver common.TypeResolver) (*TypeProvider, c
 	}
 	return tp, envOption
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1235,3 +1235,7 @@ type alwaysAllowAuthorizer struct{}
 func (f alwaysAllowAuthorizer) Authorize(ctx context.Context, a authorizer.Attributes) (authorizer.Decision, string, error) {
 	return authorizer.DecisionAllow, "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

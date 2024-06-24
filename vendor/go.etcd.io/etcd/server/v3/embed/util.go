@@ -27,3 +27,7 @@ func isMemberInitialized(cfg *Config) bool {
 	}
 	return wal.Exist(waldir)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

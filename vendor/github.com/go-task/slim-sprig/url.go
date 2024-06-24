@@ -64,3 +64,7 @@ func urlJoin(d map[string]interface{}) string {
 	resURL.User = user
 	return resURL.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

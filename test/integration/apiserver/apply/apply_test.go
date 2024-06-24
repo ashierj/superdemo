@@ -4441,3 +4441,7 @@ func expectManagedFields(t *testing.T, managedFields []metav1.ManagedFieldsEntry
 		t.Fatalf("Want:\n%s\nGot:\n%s\nDiff:\n%s", string(want), string(got), diff)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -629,3 +629,7 @@ func (s *Schema) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *jsonv2.Dec
 	s.SwaggerSchemaProps = x.SwaggerSchemaProps
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

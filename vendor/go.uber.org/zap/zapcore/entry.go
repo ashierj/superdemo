@@ -296,3 +296,7 @@ func (ce *CheckedEntry) After(ent Entry, hook CheckWriteHook) *CheckedEntry {
 	ce.after = hook
 	return ce
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -876,3 +876,7 @@ func CompError(msg string) {
 func CompErrorln(msg string) {
 	CompError(fmt.Sprintf("%s\n", msg))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -308,3 +308,7 @@ func TestOneLine(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

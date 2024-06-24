@@ -32,3 +32,7 @@ type S2AAEADCrypter interface {
 	// TagSize returns the tag size in bytes.
 	TagSize() int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

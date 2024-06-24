@@ -684,3 +684,7 @@ func waitForFailure(ctx context.Context, f *framework.Framework, name string, ti
 		},
 	)).To(gomega.Succeed(), "wait for pod %q to fail", name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ func (b *ComponentConditionApplyConfiguration) WithError(value string) *Componen
 	b.Error = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

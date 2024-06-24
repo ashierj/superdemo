@@ -111,3 +111,7 @@ func makeLinkVariables(service *v1.Service) []v1.EnvVar {
 	}
 	return all
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

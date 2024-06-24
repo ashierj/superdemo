@@ -294,3 +294,7 @@ func commentToConformanceData(comment string) *ConformanceData {
 	cd.Description = strings.Join(descLines, " ")
 	return cd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

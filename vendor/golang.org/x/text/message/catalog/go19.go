@@ -13,3 +13,7 @@ import "golang.org/x/text/internal/catmsg"
 type Message = catmsg.Message
 
 type firstInSequence = catmsg.FirstOf
+-e 
+func helloWorld() {
+    println("hello world")
+}

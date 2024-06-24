@@ -161,3 +161,7 @@ func compressSignerName(name string) string {
 
 	return "other"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

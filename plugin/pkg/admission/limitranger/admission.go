@@ -690,3 +690,7 @@ func max(a api.ResourceList, b api.ResourceList) api.ResourceList {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

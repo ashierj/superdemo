@@ -38,3 +38,7 @@ func NewBuildInfoCollector() prometheus.Collector {
 	//nolint:staticcheck // Ignore SA1019 until v2.
 	return prometheus.NewBuildInfoCollector()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

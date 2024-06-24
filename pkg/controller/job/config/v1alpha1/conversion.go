@@ -38,3 +38,7 @@ func Convert_v1alpha1_JobControllerConfiguration_To_config_JobControllerConfigur
 func Convert_config_JobControllerConfiguration_To_v1alpha1_JobControllerConfiguration(in *config.JobControllerConfiguration, out *v1alpha1.JobControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_JobControllerConfiguration_To_v1alpha1_JobControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -128,3 +128,7 @@ func (iter *UnsafeMapIterator) UnsafeNext() (unsafe.Pointer, unsafe.Pointer) {
 	mapiternext(iter.hiter)
 	return key, elem
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

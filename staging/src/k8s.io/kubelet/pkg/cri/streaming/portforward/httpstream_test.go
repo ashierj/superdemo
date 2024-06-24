@@ -265,3 +265,7 @@ func (s *fakeHTTPStream) Headers() http.Header {
 func (s *fakeHTTPStream) Identifier() uint32 {
 	return s.id
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

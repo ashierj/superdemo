@@ -97,3 +97,7 @@ func (n *NamespaceController) Stop() error {
 func (n *NamespaceController) Name() string {
 	return ncName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

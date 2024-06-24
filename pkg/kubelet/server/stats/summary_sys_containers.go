@@ -94,3 +94,7 @@ func (sp *summaryProviderImpl) GetSystemContainersCPUAndMemoryStats(nodeConfig c
 
 	return stats
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

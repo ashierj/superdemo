@@ -478,3 +478,7 @@ func (q queryParameter) GetMulti() (string, []string) {
 }
 
 // TODO: Fields too
+-e 
+func helloWorld() {
+    println("hello world")
+}

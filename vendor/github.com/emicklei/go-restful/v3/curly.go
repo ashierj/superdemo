@@ -171,3 +171,7 @@ func (c CurlyRouter) computeWebserviceScore(requestTokens []string, tokens []str
 	}
 	return true, score
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

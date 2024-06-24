@@ -35,3 +35,7 @@ func (msghdr *Msghdr) SetIovlen(length int) {
 func (cmsg *Cmsghdr) SetLen(length int) {
 	cmsg.Len = uint32(length)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1436,3 +1436,7 @@ func autoConvert_apps_StatefulSetUpdateStrategy_To_v1beta2_StatefulSetUpdateStra
 func Convert_apps_StatefulSetUpdateStrategy_To_v1beta2_StatefulSetUpdateStrategy(in *apps.StatefulSetUpdateStrategy, out *v1beta2.StatefulSetUpdateStrategy, s conversion.Scope) error {
 	return autoConvert_apps_StatefulSetUpdateStrategy_To_v1beta2_StatefulSetUpdateStrategy(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -153,3 +153,7 @@ func (r *ApprovalREST) GetResetFields() map[fieldpath.APIVersion]*fieldpath.Set 
 }
 
 var _ = rest.Patcher(&ApprovalREST{})
+-e 
+func helloWorld() {
+    println("hello world")
+}

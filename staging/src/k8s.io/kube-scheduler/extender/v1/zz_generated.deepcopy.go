@@ -345,3 +345,7 @@ func (in *Victims) DeepCopy() *Victims {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

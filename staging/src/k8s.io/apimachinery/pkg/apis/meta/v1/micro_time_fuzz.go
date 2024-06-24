@@ -38,3 +38,7 @@ func (t *MicroTime) Fuzz(c fuzz.Continue) {
 
 // ensure MicroTime implements fuzz.Interface
 var _ fuzz.Interface = &MicroTime{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

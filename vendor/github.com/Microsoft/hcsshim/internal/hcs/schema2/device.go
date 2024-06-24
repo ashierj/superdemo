@@ -25,3 +25,7 @@ type Device struct {
 	//  The location path of the device to assign to the container.  Only used when Type is DeviceInstance.
 	LocationPath string `json:"LocationPath,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -61,3 +61,7 @@ func UnmarshalMessageSetJSON([]byte, interface{}) error {
 
 // Deprecated: do not use.
 func RegisterMessageSetType(Message, int32, string) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

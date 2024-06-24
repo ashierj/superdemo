@@ -80,3 +80,7 @@ func (p *test) Generate(imports generator.PluginImports, file *generator.FileDes
 func init() {
 	testgen.RegisterTestPlugin(NewTest)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

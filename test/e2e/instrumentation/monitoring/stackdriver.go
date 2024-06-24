@@ -190,3 +190,7 @@ func fetchTimeSeries(projectID string, gcmService *gcm.Service, metric string, s
 func fullProjectName(name string) string {
 	return fmt.Sprintf("projects/%s", name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

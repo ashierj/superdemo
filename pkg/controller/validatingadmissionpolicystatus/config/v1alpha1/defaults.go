@@ -34,3 +34,7 @@ func RecommendedDefaultValidatingAdmissionPolicyStatusControllerConfiguration(ob
 		obj.ConcurrentPolicySyncs = 5
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

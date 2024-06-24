@@ -73,3 +73,7 @@ func GetFullContainerPortsByPodUID(eps []discoveryv1.EndpointSlice) FullPortsByP
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

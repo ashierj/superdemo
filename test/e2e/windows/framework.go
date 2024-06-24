@@ -43,3 +43,7 @@ func skipUnlessWindows(cb func()) func() {
 		cb()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

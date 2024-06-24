@@ -42,3 +42,7 @@ func PrepareLayer(ctx context.Context, path string, parentLayerPaths []string) (
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

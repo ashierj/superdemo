@@ -358,3 +358,7 @@ func (z *Zpool) parseLine(line []string) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -2229,3 +2229,7 @@ func Cachestat(fd uint, crange *CachestatRange, cstat *Cachestat_t, flags uint) 
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

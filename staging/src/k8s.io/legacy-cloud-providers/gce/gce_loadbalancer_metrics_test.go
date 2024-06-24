@@ -168,3 +168,7 @@ func newL4ILBServiceState(globalAccess, customSubnet, inSuccess bool) L4ILBServi
 		InSuccess:           inSuccess,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

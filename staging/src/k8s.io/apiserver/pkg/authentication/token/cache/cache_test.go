@@ -100,3 +100,7 @@ func testCache(cache cache, t *testing.T) {
 		t.Errorf("Expected null, false, got %#v, %v", result, ok)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

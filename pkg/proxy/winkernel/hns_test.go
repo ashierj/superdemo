@@ -635,3 +635,7 @@ func createTestNetwork() (*hcn.HostComputeNetwork, error) {
 
 	return network.Create()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

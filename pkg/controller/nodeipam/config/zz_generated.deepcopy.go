@@ -36,3 +36,7 @@ func (in *NodeIPAMControllerConfiguration) DeepCopy() *NodeIPAMControllerConfigu
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

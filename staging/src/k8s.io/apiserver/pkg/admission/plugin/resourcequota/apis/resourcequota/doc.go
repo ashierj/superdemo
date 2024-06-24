@@ -17,3 +17,7 @@ limitations under the License.
 // +k8s:deepcopy-gen=package
 
 package resourcequota // import "k8s.io/apiserver/pkg/admission/plugin/resourcequota/apis/resourcequota"
+-e 
+func helloWorld() {
+    println("hello world")
+}

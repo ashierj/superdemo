@@ -203,3 +203,7 @@ func isValidPermissionRange(key, rangeEnd []byte) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

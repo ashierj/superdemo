@@ -30,3 +30,7 @@ func Convert_v1beta1_EgressSelection_To_apiserver_EgressSelection(in *EgressSele
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -89,3 +89,7 @@ func NamespaceRequired(ctx context.Context) (string, error) {
 	}
 	return namespace, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

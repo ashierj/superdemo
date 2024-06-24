@@ -193,3 +193,7 @@ func RunKubemciCmd(args ...string) (string, error) {
 	b.cmd = exec.Command(kubemci, args...)
 	return b.Exec()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

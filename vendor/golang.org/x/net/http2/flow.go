@@ -118,3 +118,7 @@ func (f *outflow) add(n int32) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -78,3 +78,7 @@ func validValidatingWebhookConfiguration() *admissionregistration.ValidatingWebh
 		}},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

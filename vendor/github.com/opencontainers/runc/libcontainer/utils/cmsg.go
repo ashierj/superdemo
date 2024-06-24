@@ -94,3 +94,7 @@ func SendFds(socket *os.File, msg []byte, fds ...int) error {
 	oob := unix.UnixRights(fds...)
 	return unix.Sendmsg(int(socket.Fd()), msg, oob, nil, 0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

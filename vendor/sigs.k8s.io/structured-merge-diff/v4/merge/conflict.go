@@ -119,3 +119,7 @@ func ConflictsFromManagers(sets fieldpath.ManagedFields) Conflicts {
 
 	return conflicts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

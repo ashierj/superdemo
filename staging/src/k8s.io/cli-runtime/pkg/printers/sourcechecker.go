@@ -58,3 +58,7 @@ func (c *illegalPackageSourceChecker) IsForbidden(pkgPath string) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

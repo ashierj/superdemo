@@ -21,3 +21,7 @@ limitations under the License.
 // +groupName=storagemigration.k8s.io
 
 package v1alpha1 // import "k8s.io/api/storagemigration/v1alpha1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

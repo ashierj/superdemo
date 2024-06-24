@@ -40,3 +40,7 @@ func (dp *DepProvider) GetResourceFactory() *resource.Factory {
 func (dp *DepProvider) GetFieldValidator() ifc.Validator {
 	return dp.fieldValidator
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

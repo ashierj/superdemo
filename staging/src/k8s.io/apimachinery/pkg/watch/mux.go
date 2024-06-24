@@ -318,3 +318,7 @@ func (mw *broadcasterWatcher) Stop() {
 		mw.m.stopWatching(mw.id)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ const (
 	// The common denominator of the modulo that is taken.
 	maxMod = 100
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

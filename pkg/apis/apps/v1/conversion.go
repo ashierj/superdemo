@@ -164,3 +164,7 @@ func Convert_apps_StatefulSetSpec_To_v1_StatefulSetSpec(in *apps.StatefulSetSpec
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

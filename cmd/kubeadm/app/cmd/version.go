@@ -87,3 +87,7 @@ func RunVersion(out io.Writer, cmd *cobra.Command) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

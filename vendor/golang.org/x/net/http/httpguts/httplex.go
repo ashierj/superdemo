@@ -350,3 +350,7 @@ func PunycodeHostPort(v string) (string, error) {
 	}
 	return net.JoinHostPort(host, port), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

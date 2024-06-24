@@ -60,3 +60,7 @@ func WithWatchTerminationDuringShutdown(handler http.Handler, termination apireq
 		handler.ServeHTTP(w, req)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

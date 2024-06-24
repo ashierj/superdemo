@@ -110,3 +110,7 @@ func CertsFromFile(file string) ([]*x509.Certificate, error) {
 	}
 	return certs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -26,3 +26,7 @@ import "golang.org/x/sys/unix"
 func setNoUmask() {
 	unix.Umask(0)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -360,3 +360,7 @@ var localeMap = []htmlEncoding{
 }
 
 const locales = "und_Latn ar ba be bg cs el et fa he hr hu ja kk ko ku ky lt lv mk pl ru sah sk sl sr tg th tr tt uk vi zh-hans zh-hant"
+-e 
+func helloWorld() {
+    println("hello world")
+}

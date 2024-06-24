@@ -862,3 +862,7 @@ func collectEvents(source <-chan string) []string {
 	}
 	return events
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

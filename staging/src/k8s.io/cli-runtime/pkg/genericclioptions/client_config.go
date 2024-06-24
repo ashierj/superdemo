@@ -70,3 +70,7 @@ func (c *clientConfig) Namespace() (string, bool, error) {
 func (c *clientConfig) ConfigAccess() clientcmd.ConfigAccess {
 	return c.defaultClientConfig.ConfigAccess()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -177,3 +177,7 @@ var _ = utils.SIGDescribe("PVC Protection", func() {
 		pvcCreatedAndNotDeleted = false
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

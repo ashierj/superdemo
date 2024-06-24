@@ -359,3 +359,7 @@ func (c *connectionTrackingListener) Close() error {
 func (c *connectionTrackingListener) Addr() net.Addr {
 	return c.delegate.Addr()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -100,3 +100,7 @@ func writeKubeConfigForWardleServerToKASConnection(t *testing.T, kubeClientConfi
 
 	return kubeConfigFile
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

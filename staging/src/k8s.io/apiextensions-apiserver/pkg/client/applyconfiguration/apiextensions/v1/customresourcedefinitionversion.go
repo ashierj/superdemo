@@ -119,3 +119,7 @@ func (b *CustomResourceDefinitionVersionApplyConfiguration) WithSelectableFields
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

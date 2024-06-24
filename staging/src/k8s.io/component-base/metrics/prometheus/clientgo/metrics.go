@@ -21,3 +21,7 @@ import (
 	_ "k8s.io/component-base/metrics/prometheus/restclient"              // load restclient metrics
 	_ "k8s.io/component-base/metrics/prometheus/workqueue"               // load the workqueue metrics
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func TestInvertStages(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

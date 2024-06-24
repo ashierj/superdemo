@@ -45,3 +45,7 @@ type ScaleInterface interface {
 	// Patch patches the scale of the given scalable resource.
 	Patch(ctx context.Context, gvr schema.GroupVersionResource, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions) (*autoscalingapi.Scale, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

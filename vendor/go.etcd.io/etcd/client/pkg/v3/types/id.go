@@ -37,3 +37,7 @@ type IDSlice []ID
 func (p IDSlice) Len() int           { return len(p) }
 func (p IDSlice) Less(i, j int) bool { return uint64(p[i]) < uint64(p[j]) }
 func (p IDSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+-e 
+func helloWorld() {
+    println("hello world")
+}

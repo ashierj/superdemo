@@ -246,3 +246,7 @@ func testStoragedVersionInCRDStatus(t *testing.T, ns string, noxuDefinition *api
 		t.Fatal(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

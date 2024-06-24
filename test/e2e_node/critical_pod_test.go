@@ -202,3 +202,7 @@ func getTestPod(critical bool, name string, resources v1.ResourceRequirements, n
 	}
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

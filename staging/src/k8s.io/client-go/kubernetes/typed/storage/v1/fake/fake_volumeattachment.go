@@ -184,3 +184,7 @@ func (c *FakeVolumeAttachments) ApplyStatus(ctx context.Context, volumeAttachmen
 	}
 	return obj.(*v1.VolumeAttachment), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

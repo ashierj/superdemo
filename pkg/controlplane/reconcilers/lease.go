@@ -345,3 +345,7 @@ func (r *leaseEndpointReconciler) StopReconciling() {
 func (r *leaseEndpointReconciler) Destroy() {
 	r.masterLeases.Destroy()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

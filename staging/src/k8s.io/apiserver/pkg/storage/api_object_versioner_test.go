@@ -92,3 +92,7 @@ func TestCompareResourceVersion(t *testing.T) {
 		t.Errorf("expected %v got %v", e, a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -61,3 +61,7 @@ func TestWithRequestReceivedTimestamp(t *testing.T) {
 		t.Errorf("WithRequestReceivedTimestamp: request received timestamp expected=%s but got=%s", receivedTimestampExpected, receivedTimestampGot)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

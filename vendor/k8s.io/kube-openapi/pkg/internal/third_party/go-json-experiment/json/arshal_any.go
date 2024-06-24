@@ -236,3 +236,7 @@ func unmarshalArrayAny(uo UnmarshalOptions, dec *Decoder) ([]any, error) {
 	}
 	return nil, &SemanticError{action: "unmarshal", JSONKind: k, GoType: sliceAnyType}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

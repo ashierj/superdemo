@@ -116,3 +116,7 @@ func (b *CertificateSigningRequestSpecApplyConfiguration) WithExtra(entries map[
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

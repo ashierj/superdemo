@@ -96,3 +96,7 @@ func (p *plugin) Admit(ctx context.Context, attributes admission.Attributes, o a
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

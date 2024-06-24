@@ -768,3 +768,7 @@ func (a *Admission) exemptNamespaceWarning(exemptNamespace string, policy api.Po
 	return fmt.Sprintf("namespace %q is exempt from Pod Security, and the policy (%s) will be ignored",
 		exemptNamespace, sb.String())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

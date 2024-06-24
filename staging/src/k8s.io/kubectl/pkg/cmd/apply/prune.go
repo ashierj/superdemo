@@ -160,3 +160,7 @@ func asDeleteOptions(cascadingStrategy metav1.DeletionPropagation, gracePeriod i
 	options.PropagationPolicy = &cascadingStrategy
 	return options
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

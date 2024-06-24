@@ -269,3 +269,7 @@ func (s *SchemaValidator) objectValidator() ValueValidator {
 		Options:              s.Options,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

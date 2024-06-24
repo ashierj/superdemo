@@ -26,3 +26,7 @@ import (
 func registerLegacyGlobalFlags(namedFlagSets cliflag.NamedFlagSets) {
 	// no-op when legacy cloud providers are not compiled
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

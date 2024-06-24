@@ -814,3 +814,7 @@ func afnlRewrite(c *context) {
 		c.isMidWord = true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

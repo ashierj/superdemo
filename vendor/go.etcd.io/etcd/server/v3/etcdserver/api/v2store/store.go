@@ -797,3 +797,7 @@ func (s *store) HasTTLKeys() bool {
 	defer s.worldLock.RUnlock()
 	return s.ttlKeyHeap.Len() != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

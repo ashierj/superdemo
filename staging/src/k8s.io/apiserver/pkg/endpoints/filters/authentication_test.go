@@ -665,3 +665,7 @@ func TestUnauthenticatedHTTP2ClientConnectionClose(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

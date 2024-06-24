@@ -635,3 +635,7 @@ func getLogsAction(namespace string, opts *corev1.PodLogOptions) testclient.Acti
 	action.Value = opts
 	return action
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -257,3 +257,7 @@ func replaceSharedParameters(sharedParameterNamesByJSON map[string]string, sp *s
 
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

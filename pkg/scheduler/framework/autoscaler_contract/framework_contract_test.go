@@ -56,3 +56,7 @@ func TestNewCycleState(t *testing.T) {
 	_, ok := state.(*framework.CycleState)
 	assert.True(t, ok)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

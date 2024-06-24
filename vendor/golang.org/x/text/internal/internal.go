@@ -47,3 +47,7 @@ func UniqueTags(tags []language.Tag) []language.Tag {
 	}
 	return tags[:k+1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

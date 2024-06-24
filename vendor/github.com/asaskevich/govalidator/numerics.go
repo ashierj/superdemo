@@ -95,3 +95,7 @@ func IsWhole(value float64) bool {
 func IsNatural(value float64) bool {
 	return IsWhole(value) && IsPositive(value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

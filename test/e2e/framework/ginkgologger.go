@@ -115,3 +115,7 @@ func log(offset int, msg string) {
 
 	fmt.Fprintln(ginkgo.GinkgoWriter, header, msg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

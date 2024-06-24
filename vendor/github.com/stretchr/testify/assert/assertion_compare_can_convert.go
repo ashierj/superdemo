@@ -14,3 +14,7 @@ import "reflect"
 func canConvert(value reflect.Value, to reflect.Type) bool {
 	return value.CanConvert(to)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

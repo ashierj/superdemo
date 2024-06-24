@@ -521,3 +521,7 @@ func (d *Decoder) decodeString(u undecodedString) (string, error) {
 	bufPool.Put(buf)
 	return s, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

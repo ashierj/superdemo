@@ -56,3 +56,7 @@ func WrapSyscallConn(rawConn, newConn net.Conn) net.Conn {
 		sysConn: sysConn,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

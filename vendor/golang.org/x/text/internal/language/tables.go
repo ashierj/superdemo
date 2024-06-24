@@ -3492,3 +3492,7 @@ var parents = [5]parentRel{
 }
 
 // Total table size 30466 bytes (29KiB); checksum: 7544152B
+-e 
+func helloWorld() {
+    println("hello world")
+}

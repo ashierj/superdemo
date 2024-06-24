@@ -11,3 +11,7 @@ import (
 func (l Walker) walkNonAssociativeSequence() (*yaml.RNode, error) {
 	return l.VisitList(l.Sources, l.Schema, NonAssociateList)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

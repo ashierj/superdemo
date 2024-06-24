@@ -314,3 +314,7 @@ func ContainerSpecFromV1(specV1 *v1.ContainerSpec, aliases []string, namespace s
 	specV2.Namespace = namespace
 	return specV2
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

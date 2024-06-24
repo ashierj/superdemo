@@ -47,3 +47,7 @@ func ValidateStorageStrategies(storageMap map[string]rest.Storage) []error {
 
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

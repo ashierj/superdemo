@@ -52,3 +52,7 @@ const (
 	// startup.
 	CloudControllerManagerWebhookPort = cpoptions.CloudControllerManagerWebhookPort
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -200,3 +200,7 @@ func (c *RESTClient) Delete() *Request {
 func (c *RESTClient) APIVersion() schema.GroupVersion {
 	return c.content.GroupVersion
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

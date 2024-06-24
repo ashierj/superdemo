@@ -45,3 +45,7 @@ func AddLoadBalancer(endpoints []HNSEndpoint, isILB bool, sourceVIP, vip string,
 func AddRoute(endpoints []HNSEndpoint, destinationPrefix string, nextHop string, encapEnabled bool) (*PolicyList, error) {
 	return hns.AddRoute(endpoints, destinationPrefix, nextHop, encapEnabled)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

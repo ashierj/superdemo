@@ -68,3 +68,7 @@ func (g *group) V1beta2() v1beta2.Interface {
 func (g *group) V1beta3() v1beta3.Interface {
 	return v1beta3.New(g.factory, g.namespace, g.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

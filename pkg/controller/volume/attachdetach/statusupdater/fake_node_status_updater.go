@@ -48,3 +48,7 @@ func (fnsu *fakeNodeStatusUpdater) UpdateNodeStatusForNode(logger klog.Logger, n
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

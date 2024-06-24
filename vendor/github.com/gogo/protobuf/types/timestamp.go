@@ -128,3 +128,7 @@ func TimestampString(ts *Timestamp) string {
 	}
 	return t.Format(time.RFC3339Nano)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

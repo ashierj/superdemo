@@ -27,3 +27,7 @@ func (f *unmounterDefaults) TearDownAt(dir string) error {
 	klog.Warning(logPrefix(f.plugin), "using default TearDownAt for ", dir)
 	return mount.CleanupMountPoint(dir, f.mounter, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -67,3 +67,7 @@ func validateSecretForSigning(ctx context.Context, secret *v1.Secret) (tokenID, 
 
 	return tokenID, tokenSecret, true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

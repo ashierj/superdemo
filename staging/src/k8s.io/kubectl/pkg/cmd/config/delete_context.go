@@ -88,3 +88,7 @@ func runDeleteContext(out, errOut io.Writer, configAccess clientcmd.ConfigAccess
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

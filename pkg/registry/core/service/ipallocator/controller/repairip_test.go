@@ -582,3 +582,7 @@ func expectEvents(t *testing.T, actual <-chan string, expected []string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

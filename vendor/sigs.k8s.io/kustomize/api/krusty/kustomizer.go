@@ -161,3 +161,7 @@ func (b *Kustomizer) applySortOrder(m resmap.ResMap, kt *target.KustTarget) erro
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

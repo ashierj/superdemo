@@ -48,3 +48,7 @@ func SysReadFile(file string) (string, error) {
 
 	return string(bytes.TrimSpace(b[:n])), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

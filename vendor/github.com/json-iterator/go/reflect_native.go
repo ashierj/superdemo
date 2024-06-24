@@ -451,3 +451,7 @@ func (codec *base64Codec) Encode(ptr unsafe.Pointer, stream *Stream) {
 func (codec *base64Codec) IsEmpty(ptr unsafe.Pointer) bool {
 	return len(*((*[]byte)(ptr))) == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

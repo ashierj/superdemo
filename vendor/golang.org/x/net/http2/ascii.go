@@ -51,3 +51,7 @@ func asciiToLower(s string) (lower string, ok bool) {
 	}
 	return strings.ToLower(s), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

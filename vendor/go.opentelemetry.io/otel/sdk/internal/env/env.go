@@ -175,3 +175,7 @@ func SpanLinkCount(defaultValue int) int {
 func SpanLinkAttributeCount(defaultValue int) int {
 	return IntEnvOr(SpanLinkAttributeCountKey, defaultValue)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

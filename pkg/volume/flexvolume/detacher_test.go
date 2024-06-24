@@ -49,3 +49,7 @@ func TestUnmountDevice(tt *testing.T) {
 	d, _ := plugin.NewDetacher()
 	d.UnmountDevice(rootDir + "/mount-dir")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

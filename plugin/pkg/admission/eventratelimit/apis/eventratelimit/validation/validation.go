@@ -61,3 +61,7 @@ func ValidateConfiguration(config *eventratelimitapi.Configuration) field.ErrorL
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

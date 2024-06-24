@@ -56,3 +56,7 @@ func delimiterCase(s string, delimiter rune, upperCase bool) string {
 
 	return string(buffer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

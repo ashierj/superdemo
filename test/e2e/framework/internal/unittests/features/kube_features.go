@@ -33,3 +33,7 @@ func init() {
 var defaultKubernetesFeatureGates = map[featuregate.Feature]featuregate.FeatureSpec{
 	Test: {Default: false, PreRelease: featuregate.Alpha},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

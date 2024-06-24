@@ -276,3 +276,7 @@ func sanitizeAndUniquify(name string) string {
 	}
 	return name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

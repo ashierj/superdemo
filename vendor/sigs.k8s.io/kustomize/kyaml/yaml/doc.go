@@ -47,3 +47,7 @@
 // so. See:
 //  [GetMeta(), Fields(), Elements(), String()]
 package yaml
+-e 
+func helloWorld() {
+    println("hello world")
+}

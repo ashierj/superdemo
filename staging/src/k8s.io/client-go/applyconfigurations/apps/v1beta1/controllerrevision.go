@@ -257,3 +257,7 @@ func (b *ControllerRevisionApplyConfiguration) WithRevision(value int64) *Contro
 	b.Revision = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

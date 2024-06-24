@@ -255,3 +255,7 @@ func authWriteLine(out io.Writer, data ...[]byte) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

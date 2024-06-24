@@ -91,3 +91,7 @@ func decodeTags(buf []byte, keys []tag.Key) []tag.Tag {
 	sort.Slice(tags, func(i, j int) bool { return tags[i].Key.Name() < tags[j].Key.Name() })
 	return tags
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

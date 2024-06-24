@@ -950,3 +950,7 @@ func (r *HTMLRenderer) writeTOC(w io.Writer, ast *Node) {
 	}
 	r.lastOutputLen = buf.Len()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

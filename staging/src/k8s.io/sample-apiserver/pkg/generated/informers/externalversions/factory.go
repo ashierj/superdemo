@@ -259,3 +259,7 @@ type SharedInformerFactory interface {
 func (f *sharedInformerFactory) Wardle() wardle.Interface {
 	return wardle.New(f, f.namespace, f.tweakListOptions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -392,3 +392,7 @@ func (f *ConntrackFilter) MatchConntrackFlow(flow *ConntrackFlow) bool {
 }
 
 var _ CustomConntrackFilter = (*ConntrackFilter)(nil)
+-e 
+func helloWorld() {
+    println("hello world")
+}

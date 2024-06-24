@@ -74,3 +74,7 @@ func add(p unsafe.Pointer, x uintptr, whySafe string) unsafe.Pointer {
 func arrayAt(p unsafe.Pointer, i int, eltSize uintptr, whySafe string) unsafe.Pointer {
 	return add(p, uintptr(i)*eltSize, "i < len")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

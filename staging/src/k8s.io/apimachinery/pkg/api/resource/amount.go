@@ -335,3 +335,7 @@ func (a infDecAmount) AsCanonicalBase1024Bytes(out []byte) (result []byte, expon
 	amount, exponent := removeBigIntFactors(tmp.UnscaledBig(), big1024)
 	return append(out, amount.String()...), exponent
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func (b *SecretKeySelectorApplyConfiguration) WithOptional(value bool) *SecretKe
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

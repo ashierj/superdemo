@@ -221,3 +221,7 @@ varReference:
 - path: metadata/annotations
 `
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

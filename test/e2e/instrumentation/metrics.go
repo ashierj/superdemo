@@ -68,3 +68,7 @@ var _ = common.SIGDescribe("Metrics", func() {
 		gomega.Expect(response).NotTo(gomega.BeEmpty())
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -320,3 +320,7 @@ func parseECPrivateKey(data []byte) (*ecdsa.PrivateKey, error) {
 
 	return privKey, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

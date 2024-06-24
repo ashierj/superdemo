@@ -23,3 +23,7 @@ func RatioedGaugeVecPhasedElementPair(vec RatioedGaugeVec, initialWaitingDenomin
 		RequestsExecuting: vec.NewForLabelValuesSafe(0, initialExecutingDenominator, append([]string{LabelValueExecuting}, labelValues...)),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -317,3 +317,7 @@ func (s *specProxier) register(handler common.PathHandlerByGroupVersion) {
 		/* removedRelease */ "",
 		http.HandlerFunc(s.handleGroupVersion)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

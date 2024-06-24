@@ -50,3 +50,7 @@ func ReadGo116ErrorData(err types.Error) (code ErrorCode, start, end token.Pos, 
 }
 
 var SetGoVersion = func(conf *types.Config, version string) bool { return false }
+-e 
+func helloWorld() {
+    println("hello world")
+}

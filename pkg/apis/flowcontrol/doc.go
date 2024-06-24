@@ -19,3 +19,7 @@ limitations under the License.
 
 // Package flowcontrol provides api definitions for the "flowcontrol.apiserver.k8s.io" api group.
 package flowcontrol // import "k8s.io/kubernetes/pkg/apis/flowcontrol"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -156,3 +156,7 @@ func (c *Cache) updateMetrics() {
 func numDesiredSlices(numEndpoints, maxPerSlice int) int {
 	return int(math.Ceil(float64(numEndpoints) / float64(maxPerSlice)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

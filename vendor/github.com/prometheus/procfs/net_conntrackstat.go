@@ -116,3 +116,7 @@ func parseConntrackStatEntry(fields []string) (*ConntrackStatEntry, error) {
 
 	return stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

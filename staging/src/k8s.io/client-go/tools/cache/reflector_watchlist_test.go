@@ -560,3 +560,7 @@ func (lw *fakeListWatcher) StopAndRecreateWatch() {
 	lw.fakeWatcher.Stop()
 	lw.fakeWatcher = watch.NewFake()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

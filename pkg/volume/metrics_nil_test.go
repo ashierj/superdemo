@@ -39,3 +39,7 @@ func TestMetricsNilGetCapacity(t *testing.T) {
 		t.Errorf("Expected error when calling GetMetrics, actual nil")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

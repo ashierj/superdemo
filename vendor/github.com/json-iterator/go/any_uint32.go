@@ -72,3 +72,7 @@ func (any *uint32Any) Parse() *Iterator {
 func (any *uint32Any) GetInterface() interface{} {
 	return any.val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

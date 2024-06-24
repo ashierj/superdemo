@@ -208,3 +208,7 @@ func TestNestedStrategicMergePatchWithEmpty(t *testing.T) {
 		)
 	require.NoError(t, err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -533,3 +533,7 @@ func appendAffix(dst []byte, f *Formatter, affix string, neg bool) []byte {
 	}
 	return dst
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

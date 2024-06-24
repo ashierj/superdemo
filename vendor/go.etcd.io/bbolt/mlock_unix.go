@@ -35,3 +35,7 @@ func munlock(db *DB, fileSize int) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

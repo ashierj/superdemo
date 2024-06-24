@@ -274,3 +274,7 @@ func BenchmarkTimingRatioHistogramVecElementSafeLate(b *testing.B) {
 		x = (x + i) % 60
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

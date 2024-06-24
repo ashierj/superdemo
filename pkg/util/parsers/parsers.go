@@ -52,3 +52,7 @@ func ParseImageName(image string) (string, string, string, error) {
 	}
 	return repoToPull, tag, digest, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

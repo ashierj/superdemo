@@ -608,3 +608,7 @@ func decomposeToLastBoundary(rb *reorderBuffer) {
 		cp = cp[info.size:]
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

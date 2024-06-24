@@ -245,3 +245,7 @@ func (b *CSINodeApplyConfiguration) WithSpec(value *CSINodeSpecApplyConfiguratio
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

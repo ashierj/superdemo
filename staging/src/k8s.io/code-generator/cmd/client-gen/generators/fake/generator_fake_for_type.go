@@ -584,3 +584,7 @@ func (c *Fake$.type|publicPlural$) Apply(ctx context.Context, $.type|private$Nam
 	return obj.(*$.resultType|raw$), err
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

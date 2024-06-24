@@ -197,3 +197,7 @@ const (
 func ExceptionEscaped(val bool) attribute.KeyValue {
 	return ExceptionEscapedKey.Bool(val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

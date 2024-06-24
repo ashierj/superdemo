@@ -66,3 +66,7 @@ func (in *TokenReview) APILifecycleReplacement() schema.GroupVersionKind {
 func (in *TokenReview) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

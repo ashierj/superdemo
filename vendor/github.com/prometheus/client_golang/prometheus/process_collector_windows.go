@@ -114,3 +114,7 @@ func (c *processCollector) processCollect(ch chan<- Metric) {
 func fileTimeToSeconds(ft windows.Filetime) float64 {
 	return float64(uint64(ft.HighDateTime)<<32+uint64(ft.LowDateTime)) / 1e7
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

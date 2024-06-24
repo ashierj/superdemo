@@ -154,3 +154,7 @@ func (t *TransformerConfig) Merge(input *TransformerConfig) (
 	merged.sortFields()
 	return merged, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

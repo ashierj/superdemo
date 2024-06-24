@@ -183,3 +183,7 @@ func (b byteBuffer) bigInt() *big.Int {
 func (b byteBuffer) toInt() int {
 	return int(b.bigInt().Int64())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

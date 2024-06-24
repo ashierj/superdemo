@@ -182,3 +182,7 @@ func New(spec v1.ContainerSpec) (*StatsSummary, error) {
 	summary.minuteSamples = NewSamplesBuffer(60 /* one hour */)
 	return &summary, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -14,3 +14,7 @@ type IntelRdt struct {
 	// default, and in "MBps" if MBA Software Controller is enabled.
 	MemBwSchema string `json:"memBwSchema,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

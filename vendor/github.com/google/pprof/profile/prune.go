@@ -176,3 +176,7 @@ func (p *Profile) PruneFrom(dropRx *regexp.Regexp) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -260,3 +260,7 @@ func modifyConfig(curr reflect.Value, steps *navigationSteps, propertyValue stri
 
 	panic(fmt.Errorf("unrecognized type: %v", actualCurrValue))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

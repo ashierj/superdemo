@@ -38,3 +38,7 @@ func (in *NodeLifecycleControllerConfiguration) DeepCopy() *NodeLifecycleControl
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -143,3 +143,7 @@ func GetCgroupParamString(path, file string) (string, error) {
 
 	return strings.TrimSpace(contents), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

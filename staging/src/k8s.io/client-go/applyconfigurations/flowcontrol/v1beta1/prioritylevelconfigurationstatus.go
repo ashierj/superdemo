@@ -42,3 +42,7 @@ func (b *PriorityLevelConfigurationStatusApplyConfiguration) WithConditions(valu
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

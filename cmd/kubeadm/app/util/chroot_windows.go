@@ -29,3 +29,7 @@ import (
 func Chroot(rootfs string) error {
 	return errors.New("chroot is not implemented on Windows")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

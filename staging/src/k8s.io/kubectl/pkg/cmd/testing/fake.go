@@ -835,3 +835,7 @@ func testDynamicResources() []*restmapper.APIGroupResources {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

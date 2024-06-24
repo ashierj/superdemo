@@ -164,3 +164,7 @@ func (gc *GarbageCollector) unblockOwnerReferencesJSONMergePatch(n *node) ([]byt
 	expectedObjectMeta.OwnerReferences = expectedOwners
 	return json.Marshal(objectForPatch{expectedObjectMeta})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

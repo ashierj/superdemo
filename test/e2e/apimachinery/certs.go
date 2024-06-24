@@ -100,3 +100,7 @@ func setupServerCert(namespaceName, serviceName string) *certContext {
 		signingCert: utils.EncodeCertPEM(signingCert),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

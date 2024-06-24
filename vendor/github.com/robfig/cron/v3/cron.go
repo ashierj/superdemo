@@ -353,3 +353,7 @@ func (c *Cron) removeEntry(id EntryID) {
 	}
 	c.entries = entries
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

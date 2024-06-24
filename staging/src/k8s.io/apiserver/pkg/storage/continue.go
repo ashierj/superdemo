@@ -91,3 +91,7 @@ func EncodeContinue(key, keyPrefix string, resourceVersion int64) (string, error
 	}
 	return base64.RawURLEncoding.EncodeToString(out), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

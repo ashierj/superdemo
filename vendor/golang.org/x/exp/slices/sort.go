@@ -126,3 +126,7 @@ func (r *xorshift) Next() uint64 {
 func nextPowerOfTwo(length int) uint {
 	return 1 << bits.Len(uint(length))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

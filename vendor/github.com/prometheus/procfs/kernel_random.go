@@ -61,3 +61,7 @@ func (fs FS) KernelRandom() (KernelRandom, error) {
 
 	return random, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

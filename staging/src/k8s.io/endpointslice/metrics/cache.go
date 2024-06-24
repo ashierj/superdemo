@@ -210,3 +210,7 @@ func numDesiredSlices(numEndpoints, maxEndpointsPerSlice int) int {
 	}
 	return int(math.Ceil(float64(numEndpoints) / float64(maxEndpointsPerSlice)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

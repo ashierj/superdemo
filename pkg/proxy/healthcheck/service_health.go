@@ -289,3 +289,7 @@ func (fake FakeServiceHealthServer) SyncServices(_ map[types.NamespacedName]uint
 func (fake FakeServiceHealthServer) SyncEndpoints(_ map[types.NamespacedName]int) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

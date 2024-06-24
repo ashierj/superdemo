@@ -103,3 +103,7 @@ func TestNonePolicyOptions(t *testing.T) {
 		t.Errorf("NewNonePolicy with (any) options failure. expected error but got none")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

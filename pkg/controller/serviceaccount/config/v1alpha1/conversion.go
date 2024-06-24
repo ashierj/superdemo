@@ -48,3 +48,7 @@ func Convert_v1alpha1_LegacySATokenCleanerConfiguration_To_config_LegacySATokenC
 func Convert_config_LegacySATokenCleanerConfiguration_To_v1alpha1_LegacySATokenCleanerConfiguration(in *config.LegacySATokenCleanerConfiguration, out *v1alpha1.LegacySATokenCleanerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_LegacySATokenCleanerConfiguration_To_v1alpha1_LegacySATokenCleanerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

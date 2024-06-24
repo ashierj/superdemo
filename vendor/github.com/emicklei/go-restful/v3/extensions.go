@@ -19,3 +19,7 @@ func (ep *ExtensionProperties) AddExtension(key string, value interface{}) {
 		ep.Extensions[key] = value
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

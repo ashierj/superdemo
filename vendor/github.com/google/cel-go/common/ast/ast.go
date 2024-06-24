@@ -454,3 +454,7 @@ func (v *maxIDVisitor) VisitEntryExpr(e EntryExpr) {
 		v.maxID = e.ID()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

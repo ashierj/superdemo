@@ -65,3 +65,7 @@ type AuthorizerAdapter struct {
 func (a AuthorizerAdapter) GetClusterRole(name string) (*rbacv1.ClusterRole, error) {
 	return a.Registry.GetClusterRole(genericapirequest.NewContext(), name, &metav1.GetOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

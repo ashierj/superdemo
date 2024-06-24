@@ -28,3 +28,7 @@ func TestRoundTripTypes(t *testing.T) {
 	// TODO: enable protobuf generation for the sample-apiserver
 	// roundtrip.RoundTripProtobufTestForAPIGroup(t, Install, wardlefuzzer.Funcs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

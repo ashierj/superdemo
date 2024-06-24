@@ -7,3 +7,7 @@ func MakeIncrementingIndexCounter() func() (int, error) {
 		return idx, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

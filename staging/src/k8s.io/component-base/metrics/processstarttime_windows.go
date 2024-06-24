@@ -32,3 +32,7 @@ func getProcessStart() (float64, error) {
 	}
 	return float64(creationTime.Nanoseconds() / 1e9), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

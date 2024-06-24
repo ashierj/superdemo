@@ -1050,3 +1050,7 @@ type TracingLinkInfo struct {
 }
 
 type XDPLinkInfo struct{ Ifindex uint32 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

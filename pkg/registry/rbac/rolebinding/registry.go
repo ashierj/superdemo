@@ -73,3 +73,7 @@ func (a AuthorizerAdapter) ListRoleBindings(namespace string) ([]*rbacv1.RoleBin
 	}
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

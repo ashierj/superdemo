@@ -121,3 +121,7 @@ func TestDryRunAllocateNext(t *testing.T) {
 		t.Errorf("expected %v free ports but got %v", freeAtStart, freeAtEnd)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

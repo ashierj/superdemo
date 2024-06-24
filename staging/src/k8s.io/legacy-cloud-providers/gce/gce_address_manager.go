@@ -200,3 +200,7 @@ func (am *addressManager) isManagedAddress(addr *compute.Address) bool {
 func ensureAddressDeleted(svc CloudAddressService, name, region string) error {
 	return ignoreNotFound(svc.DeleteRegionAddress(name, region))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (m *signingMethodNone) Sign(signingString string, key interface{}) (string,
 	}
 	return "", NoneSignatureTypeDisallowedError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

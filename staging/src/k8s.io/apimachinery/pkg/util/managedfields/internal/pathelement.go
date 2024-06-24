@@ -138,3 +138,7 @@ func PathElementString(pe fieldpath.PathElement) (string, error) {
 		return "", errors.New("Invalid type of path element")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

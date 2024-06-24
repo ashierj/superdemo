@@ -358,3 +358,7 @@ func validateInterface(iface string, fldPath *field.Path) field.ErrorList {
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

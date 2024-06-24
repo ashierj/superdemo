@@ -159,3 +159,7 @@ func autoConvert_config_LeaderMigrationConfiguration_To_v1alpha1_LeaderMigration
 func Convert_config_LeaderMigrationConfiguration_To_v1alpha1_LeaderMigrationConfiguration(in *config.LeaderMigrationConfiguration, out *LeaderMigrationConfiguration, s conversion.Scope) error {
 	return autoConvert_config_LeaderMigrationConfiguration_To_v1alpha1_LeaderMigrationConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

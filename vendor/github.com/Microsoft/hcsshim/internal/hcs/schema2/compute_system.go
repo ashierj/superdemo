@@ -24,3 +24,7 @@ type ComputeSystem struct {
 
 	ShouldTerminateOnLastHandleClosed bool `json:"ShouldTerminateOnLastHandleClosed,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

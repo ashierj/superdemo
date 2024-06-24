@@ -81,3 +81,7 @@ func ParseNodeIPAnnotation(nodeIP string) ([]net.IP, error) {
 	nodeIps, _, err := parseNodeIP(nodeIP, true, false)
 	return nodeIps, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

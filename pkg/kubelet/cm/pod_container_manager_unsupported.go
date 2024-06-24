@@ -24,3 +24,7 @@ type unsupportedPodContainerManager struct {
 }
 
 var _ PodContainerManager = &unsupportedPodContainerManager{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

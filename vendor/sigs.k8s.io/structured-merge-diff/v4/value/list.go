@@ -137,3 +137,7 @@ func ListCompareUsing(a Allocator, lhs, rhs List) int {
 		// The items are equal; continue.
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

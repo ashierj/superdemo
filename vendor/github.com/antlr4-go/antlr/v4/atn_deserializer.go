@@ -682,3 +682,7 @@ func (a *ATNDeserializer) lexerActionFactory(typeIndex, data1, data2 int) LexerA
 		panic(fmt.Sprintf("lexer action %d is invalid", typeIndex))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

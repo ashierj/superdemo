@@ -299,3 +299,7 @@ func (handler *deviceHandler) FindDevicesForISCSILun(targetIqn string, lun int) 
 
 	return devices, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

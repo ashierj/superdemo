@@ -71,3 +71,7 @@ func TestValueFuzz(t *testing.T) {
 		t.Errorf("x.Slice changed")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -69,3 +69,7 @@ func (kl *Kubelet) updatePodCIDR(ctx context.Context, cidr string) (bool, error)
 func (kl *Kubelet) GetPodDNS(pod *v1.Pod) (*runtimeapi.DNSConfig, error) {
 	return kl.dnsConfigurer.GetPodDNS(pod)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

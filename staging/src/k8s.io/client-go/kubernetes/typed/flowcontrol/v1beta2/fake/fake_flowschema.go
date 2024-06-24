@@ -184,3 +184,7 @@ func (c *FakeFlowSchemas) ApplyStatus(ctx context.Context, flowSchema *flowcontr
 	}
 	return obj.(*v1beta2.FlowSchema), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

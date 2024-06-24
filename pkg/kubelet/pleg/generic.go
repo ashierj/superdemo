@@ -595,3 +595,7 @@ func (pr podRecords) updateInternal(id types.UID, r *podRecord) {
 	r.old = r.current
 	r.current = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

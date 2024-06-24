@@ -154,3 +154,7 @@ func WriteError(lg *zap.Logger, w http.ResponseWriter, r *http.Request, err erro
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

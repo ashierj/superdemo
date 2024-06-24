@@ -18,3 +18,7 @@ limitations under the License.
 
 // This is a test package.
 package wholepkg
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -113,3 +113,7 @@ func GetCanonicalTypeName(model interface{}) string {
 	}
 	return path + "." + t.Name()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

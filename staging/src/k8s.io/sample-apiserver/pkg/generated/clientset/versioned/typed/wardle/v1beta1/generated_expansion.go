@@ -19,3 +19,7 @@ limitations under the License.
 package v1beta1
 
 type FlunderExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

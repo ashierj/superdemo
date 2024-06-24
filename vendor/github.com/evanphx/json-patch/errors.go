@@ -36,3 +36,7 @@ func NewArraySizeError(l, s int) *ArraySizeError {
 func (a *ArraySizeError) Error() string {
 	return fmt.Sprintf("Unable to create array of size %d, limit is %d", a.size, a.limit)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

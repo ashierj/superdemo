@@ -46,3 +46,7 @@ func (b *ServiceCIDRStatusApplyConfiguration) WithConditions(values ...*v1.Condi
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

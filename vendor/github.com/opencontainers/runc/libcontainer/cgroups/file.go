@@ -190,3 +190,7 @@ func openAndCheck(path string, flags int, mode os.FileMode) (*os.File, error) {
 
 	return fd, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

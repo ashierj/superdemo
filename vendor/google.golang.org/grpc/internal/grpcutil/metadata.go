@@ -38,3 +38,7 @@ func ExtraMetadata(ctx context.Context) (md metadata.MD, ok bool) {
 	md, ok = ctx.Value(mdExtraKey{}).(metadata.MD)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

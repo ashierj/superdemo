@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package scheme
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (b *ReplicaSetStatusApplyConfiguration) WithConditions(values ...*ReplicaSe
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

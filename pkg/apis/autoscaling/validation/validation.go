@@ -466,3 +466,7 @@ func validateMetricIdentifier(id autoscaling.MetricIdentifier, fldPath *field.Pa
 	}
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

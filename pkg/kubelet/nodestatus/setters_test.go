@@ -2255,3 +2255,7 @@ func makeDiskPressureCondition(pressure bool, transition, heartbeat time.Time) *
 		LastHeartbeatTime:  metav1.NewTime(heartbeat),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

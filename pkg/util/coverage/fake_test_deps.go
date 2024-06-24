@@ -105,3 +105,7 @@ func (fakeTestDeps) ResetCoverage() {}
 
 //nolint:unused // U1000 see comment above, we know it's unused normally.
 func (fakeTestDeps) SnapshotCoverage() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

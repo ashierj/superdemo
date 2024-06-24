@@ -22,3 +22,7 @@ import bolt "go.etcd.io/bbolt"
 var boltOpenOptions *bolt.Options
 
 func (bcfg *BackendConfig) mmapSize() int { return int(bcfg.MmapSize) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

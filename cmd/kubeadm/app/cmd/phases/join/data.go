@@ -44,3 +44,7 @@ type JoinData interface {
 	ManifestDir() string
 	CertificateWriteDir() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

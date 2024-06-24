@@ -928,3 +928,7 @@ func codeToString(s int) string {
 		return strconv.Itoa(s)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

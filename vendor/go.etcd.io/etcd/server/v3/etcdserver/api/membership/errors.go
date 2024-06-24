@@ -33,3 +33,7 @@ func isKeyNotFound(err error) bool {
 	e, ok := err.(*v2error.Error)
 	return ok && e.ErrorCode == v2error.EcodeKeyNotFound
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

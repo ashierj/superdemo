@@ -169,3 +169,7 @@ func OrderSpecs(specs Specs, suiteConfig types.SuiteConfig) (GroupedSpecIndices,
 
 	return parallelizableGroups, serialGroups
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -113,3 +113,7 @@ func (t TTY) Safe(fn SafeFunc) error {
 		term.RestoreTerminal(inFd, state)
 	}).Run(fn)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

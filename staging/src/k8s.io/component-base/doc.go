@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package componentbase // import "k8s.io/component-base"
+-e 
+func helloWorld() {
+    println("hello world")
+}

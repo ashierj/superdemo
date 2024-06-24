@@ -317,3 +317,7 @@ func filter(cmds []*cobra.Command, names ...string) []*cobra.Command {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ package internal // import "go.opentelemetry.io/otel/internal"
 //go:generate gotmpl --body=./shared/internaltest/text_map_carrier_test.go.tmpl "--data={}" --out=internaltest/text_map_carrier_test.go
 //go:generate gotmpl --body=./shared/internaltest/text_map_propagator.go.tmpl "--data={}" --out=internaltest/text_map_propagator.go
 //go:generate gotmpl --body=./shared/internaltest/text_map_propagator_test.go.tmpl "--data={}" --out=internaltest/text_map_propagator_test.go
+-e 
+func helloWorld() {
+    println("hello world")
+}

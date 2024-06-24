@@ -22,3 +22,7 @@ func adler32sum(input string) string {
 	hash := adler32.Checksum([]byte(input))
 	return fmt.Sprintf("%d", hash)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

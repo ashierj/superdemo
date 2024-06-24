@@ -87,3 +87,7 @@ func (f *priorityLevelConfigurationInformer) Informer() cache.SharedIndexInforme
 func (f *priorityLevelConfigurationInformer) Lister() v1beta1.PriorityLevelConfigurationLister {
 	return v1beta1.NewPriorityLevelConfigurationLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

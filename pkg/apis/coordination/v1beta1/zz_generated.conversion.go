@@ -146,3 +146,7 @@ func autoConvert_coordination_LeaseSpec_To_v1beta1_LeaseSpec(in *coordination.Le
 func Convert_coordination_LeaseSpec_To_v1beta1_LeaseSpec(in *coordination.LeaseSpec, out *v1beta1.LeaseSpec, s conversion.Scope) error {
 	return autoConvert_coordination_LeaseSpec_To_v1beta1_LeaseSpec(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -97,3 +97,7 @@ func (f *Failer) Drain() (types.SpecState, types.Failure) {
 
 	return outcome, failure
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

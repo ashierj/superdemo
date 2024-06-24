@@ -425,3 +425,7 @@ func NewS2ADialTLSContextFunc(opts *ClientOptions) func(ctx context.Context, net
 		return c, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

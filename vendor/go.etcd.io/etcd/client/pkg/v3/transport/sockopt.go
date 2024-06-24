@@ -43,3 +43,7 @@ func getControls(sopts *SocketOpts) Controls {
 func (sopts *SocketOpts) Empty() bool {
 	return !sopts.ReuseAddress && !sopts.ReusePort
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

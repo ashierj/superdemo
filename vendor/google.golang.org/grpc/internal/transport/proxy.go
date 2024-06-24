@@ -140,3 +140,7 @@ func sendHTTPRequest(ctx context.Context, req *http.Request, conn net.Conn) erro
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -129,3 +129,7 @@ func (ssp *simpleSpanProcessor) MarshalLog() interface{} {
 		Exporter: ssp.exporter,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

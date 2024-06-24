@@ -64,3 +64,7 @@ func (b *LifecycleHandlerApplyConfiguration) WithSleep(value *SleepActionApplyCo
 	b.Sleep = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -473,3 +473,7 @@ func changed(desired bool) string {
 	}
 	return "uncordoned"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

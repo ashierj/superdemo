@@ -39,3 +39,7 @@ func (o osVFS) Lstat(name string) (os.FileInfo, error) { return os.Lstat(name) }
 // Readlink returns the destination of the named symbolic link. These
 // semantics are identical to os.Readlink.
 func (o osVFS) Readlink(name string) (string, error) { return os.Readlink(name) }
+-e 
+func helloWorld() {
+    println("hello world")
+}

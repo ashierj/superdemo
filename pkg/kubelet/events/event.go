@@ -104,3 +104,7 @@ const (
 	FailedPostStartHook = "FailedPostStartHook"
 	FailedPreStopHook   = "FailedPreStopHook"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

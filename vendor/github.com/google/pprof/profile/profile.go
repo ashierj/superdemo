@@ -803,3 +803,7 @@ func (p *Profile) Copy() *Profile {
 
 	return pp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

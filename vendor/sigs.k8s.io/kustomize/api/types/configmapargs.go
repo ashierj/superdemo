@@ -8,3 +8,7 @@ type ConfigMapArgs struct {
 	// GeneratorArgs for the configmap.
 	GeneratorArgs `json:",inline,omitempty" yaml:",inline,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

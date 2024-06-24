@@ -541,3 +541,7 @@ func visit(expr ast.Expr, visitor astVisitor) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

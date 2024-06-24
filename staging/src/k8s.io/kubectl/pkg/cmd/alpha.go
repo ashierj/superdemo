@@ -44,3 +44,7 @@ func NewCmdAlpha(f cmdutil.Factory, streams genericiooptions.IOStreams) *cobra.C
 
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

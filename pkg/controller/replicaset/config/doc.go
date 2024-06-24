@@ -17,3 +17,7 @@ limitations under the License.
 // +k8s:deepcopy-gen=package
 
 package config // import "k8s.io/kubernetes/pkg/controller/replicaset/config"
+-e 
+func helloWorld() {
+    println("hello world")
+}

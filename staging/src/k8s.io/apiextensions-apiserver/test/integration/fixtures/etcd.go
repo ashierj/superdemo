@@ -59,3 +59,7 @@ func CreateCRDUsingRemovedAPIWatchUnsafe(etcdClient *clientv3.Client, etcdStorag
 
 	return apiExtensionsClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.TODO(), betaCRD.Name, metav1.GetOptions{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

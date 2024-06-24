@@ -73,3 +73,7 @@ func getSpanNameFromRequestInfo(info *request.RequestInfo, r *http.Request) stri
 	}
 	return r.Method + " " + spanName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

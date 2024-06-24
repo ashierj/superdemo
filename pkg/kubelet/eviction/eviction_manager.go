@@ -617,3 +617,7 @@ func (m *managerImpl) evictPod(pod *v1.Pod, gracePeriodOverride int64, evictMsg 
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

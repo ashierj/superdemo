@@ -372,3 +372,7 @@ func (any *mapAny) WriteTo(stream *Stream) {
 func (any *mapAny) GetInterface() interface{} {
 	return any.val.Interface()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

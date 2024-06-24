@@ -272,3 +272,7 @@ func (e *envLoader) CompileOptions() []cel.EnvOption {
 func (e *envLoader) ProgramOptions() []cel.ProgramOption {
 	return e.progOpts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

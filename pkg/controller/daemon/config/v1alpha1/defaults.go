@@ -34,3 +34,7 @@ func RecommendedDefaultDaemonSetControllerConfiguration(obj *kubectrlmgrconfigv1
 		obj.ConcurrentDaemonSetSyncs = 2
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

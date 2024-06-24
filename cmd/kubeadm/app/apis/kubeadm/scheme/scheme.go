@@ -48,3 +48,7 @@ func AddToScheme(scheme *runtime.Scheme) {
 	// make v1beta4 highest priority
 	utilruntime.Must(scheme.SetVersionPriority(v1beta3.SchemeGroupVersion, v1beta4.SchemeGroupVersion))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

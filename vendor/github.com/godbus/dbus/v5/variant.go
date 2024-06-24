@@ -148,3 +148,7 @@ func (v Variant) Value() interface{} {
 func (v Variant) Store(value interface{}) error {
 	return storeInterfaces(v.value, value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -183,3 +183,7 @@ func (s sortedExtKeyUsage) Swap(i, j int) {
 func (s sortedExtKeyUsage) Less(i, j int) bool {
 	return s[i] < s[j]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

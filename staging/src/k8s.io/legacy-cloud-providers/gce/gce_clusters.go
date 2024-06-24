@@ -105,3 +105,7 @@ func (g *Cloud) getClustersInLocation(zoneOrRegion string) ([]*container.Cluster
 
 	return list.Clusters, mc.Observe(nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

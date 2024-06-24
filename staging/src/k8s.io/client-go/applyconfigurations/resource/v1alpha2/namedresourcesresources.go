@@ -42,3 +42,7 @@ func (b *NamedResourcesResourcesApplyConfiguration) WithInstances(values ...*Nam
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

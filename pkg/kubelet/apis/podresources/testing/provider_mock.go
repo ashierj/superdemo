@@ -286,3 +286,7 @@ func (mr *MockDynamicResourcesProviderMockRecorder) GetDynamicResources(pod, con
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDynamicResources", reflect.TypeOf((*MockDynamicResourcesProvider)(nil).GetDynamicResources), pod, container)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

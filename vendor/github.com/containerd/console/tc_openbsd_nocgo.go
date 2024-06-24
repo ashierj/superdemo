@@ -45,3 +45,7 @@ func ptsname(f *os.File) (string, error) {
 func unlockpt(f *os.File) error {
 	panic("unlockpt() support requires cgo.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

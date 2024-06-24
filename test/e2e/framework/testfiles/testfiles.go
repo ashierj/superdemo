@@ -191,3 +191,7 @@ func (e *EmbeddedFileSource) populateFileList() {
 		return nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

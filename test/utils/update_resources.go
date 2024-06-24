@@ -59,3 +59,7 @@ func ScaleResourceWithRetries(scalesGetter scaleclient.ScalesGetter, namespace, 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

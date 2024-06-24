@@ -24,3 +24,7 @@ func init() {
 	// errors. These errors are specific to Linux.
 	syscallRetryable = func(err error) bool { return err == syscall.ECONNRESET || err == syscall.ECONNREFUSED }
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

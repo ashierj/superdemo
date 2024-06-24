@@ -46,3 +46,7 @@ func (b *ScaleStatusApplyConfiguration) WithSelector(value string) *ScaleStatusA
 	b.Selector = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

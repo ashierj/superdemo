@@ -42,3 +42,7 @@ func Failf(format string, args ...interface{}) {
 
 // Fail is an alias for ginkgo.Fail.
 var Fail = ginkgo.Fail
+-e 
+func helloWorld() {
+    println("hello world")
+}

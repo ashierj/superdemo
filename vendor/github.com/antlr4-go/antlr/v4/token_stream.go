@@ -19,3 +19,7 @@ type TokenStream interface {
 	GetTextFromRuleContext(RuleContext) string
 	GetTextFromTokens(Token, Token) string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

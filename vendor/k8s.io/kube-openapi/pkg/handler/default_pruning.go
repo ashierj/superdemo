@@ -206,3 +206,7 @@ func PruneDefaultsSchema(schema *spec.Schema) *spec.Schema {
 
 	return schema
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

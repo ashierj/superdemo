@@ -183,3 +183,7 @@ Resources
 (c) 2012-2015, http://ernestmicklei.com. MIT License
 */
 package restful
+-e 
+func helloWorld() {
+    println("hello world")
+}

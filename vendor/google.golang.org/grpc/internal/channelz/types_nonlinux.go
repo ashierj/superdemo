@@ -41,3 +41,7 @@ func (s *SocketOptionData) Getsockopt(fd uintptr) {
 		logger.Warning("Channelz: socket options are not supported on non-linux environments")
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

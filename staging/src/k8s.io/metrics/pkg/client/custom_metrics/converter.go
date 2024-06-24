@@ -120,3 +120,7 @@ func (c *MetricConverter) UnsafeConvertToVersionVia(obj runtime.Object, external
 
 	return objExt, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

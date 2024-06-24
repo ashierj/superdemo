@@ -79,3 +79,7 @@ func ProbeVolumePlugins(featureGate featuregate.FeatureGate) ([]volume.VolumePlu
 func GetDynamicPluginProber(pluginDir string, runner exec.Interface) volume.DynamicPluginProber {
 	return flexvolume.GetDynamicPluginProber(pluginDir, runner)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

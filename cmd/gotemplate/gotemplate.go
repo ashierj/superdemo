@@ -95,3 +95,7 @@ func indent(numSpaces int, content string) string {
 func trim(content string) string {
 	return strings.TrimSpace(content)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

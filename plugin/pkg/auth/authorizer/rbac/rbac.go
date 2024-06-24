@@ -223,3 +223,7 @@ type ClusterRoleBindingLister struct {
 func (l *ClusterRoleBindingLister) ListClusterRoleBindings() ([]*rbacv1.ClusterRoleBinding, error) {
 	return l.Lister.List(labels.Everything())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

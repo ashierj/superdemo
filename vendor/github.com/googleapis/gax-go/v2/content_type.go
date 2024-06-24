@@ -110,3 +110,7 @@ func DetermineContentType(media io.Reader) (io.Reader, string) {
 	// If content type could not be sniffed, reads from sniffer will eventually fail with an error.
 	return sniffer, ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

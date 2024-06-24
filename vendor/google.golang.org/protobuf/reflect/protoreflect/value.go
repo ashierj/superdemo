@@ -283,3 +283,7 @@ type Map interface {
 	// be preserved in marshaling or other operations.
 	IsValid() bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

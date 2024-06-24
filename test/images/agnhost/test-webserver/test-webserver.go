@@ -61,3 +61,7 @@ func main(cmd *cobra.Command, args []string) {
 
 	select {}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

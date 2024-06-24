@@ -842,3 +842,7 @@ func nodeConditionsHaveChanged(originalConditions []v1.NodeCondition, conditions
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

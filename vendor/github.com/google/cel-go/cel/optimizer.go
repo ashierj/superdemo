@@ -507,3 +507,7 @@ func (opt *optimizerExprFactory) sanitizeMacro(macroID int64, macroExpr ast.Expr
 	})
 	ast.PostOrderVisit(macroExpr, macroRefVisitor)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

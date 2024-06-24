@@ -64,3 +64,7 @@ func PruneNonNullableNullsWithoutDefaults(x interface{}, s *structuralschema.Str
 		// scalars, do nothing
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

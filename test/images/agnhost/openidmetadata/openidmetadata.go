@@ -220,3 +220,7 @@ func ensureWindowsDNSAvailability(issuer string) error {
 		return true, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

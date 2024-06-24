@@ -72,3 +72,7 @@ func (s *SamplesBuffer) RecentStats(n int) []*info.Usage {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

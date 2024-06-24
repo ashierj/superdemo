@@ -37,3 +37,7 @@ func (in *EndpointControllerConfiguration) DeepCopy() *EndpointControllerConfigu
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

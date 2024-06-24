@@ -174,3 +174,7 @@ func mergeBytesSlice(dst, src pointer, _ *coderFieldInfo, _ mergeOptions) {
 		*ds = append(*ds, append(emptyBuf[:], v...))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

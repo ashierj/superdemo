@@ -52,3 +52,7 @@ func assert(ok bool) {
 		panic("assertion failure")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

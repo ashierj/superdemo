@@ -46,3 +46,7 @@ func (b *ExternalMetricSourceApplyConfiguration) WithTarget(value *MetricTargetA
 	b.Target = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

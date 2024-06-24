@@ -47,3 +47,7 @@ func (f *FakeNetwork) InterfaceAddrs() ([]net.Addr, error) {
 	}
 	return addrs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

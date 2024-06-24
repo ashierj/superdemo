@@ -532,3 +532,7 @@ func (c *cacheWatcher) process(ctx context.Context, resourceVersion uint64) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

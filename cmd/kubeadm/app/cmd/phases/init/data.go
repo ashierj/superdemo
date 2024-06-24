@@ -49,3 +49,7 @@ type InitData interface {
 	Tokens() []string
 	PatchesDir() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -289,3 +289,7 @@ func isPermanentHTTPHeader(hdr string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

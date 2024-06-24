@@ -17,3 +17,7 @@ limitations under the License.
 // Package user contains utilities for dealing with simple user exchange in the auth
 // packages. The user.Info interface defines an interface for exchanging that info.
 package user // import "k8s.io/apiserver/pkg/authentication/user"
+-e 
+func helloWorld() {
+    println("hello world")
+}

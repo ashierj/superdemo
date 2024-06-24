@@ -34,3 +34,7 @@ func (frp *FakeReadyProvider) AllReady() bool {
 func NewFakeReadyProvider() kubecontainer.SourcesReadyProvider {
 	return &FakeReadyProvider{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

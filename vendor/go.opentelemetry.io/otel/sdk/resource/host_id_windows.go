@@ -46,3 +46,7 @@ func (*hostIDReaderWindows) read() (string, error) {
 }
 
 var platformHostIDReader hostIDReader = &hostIDReaderWindows{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

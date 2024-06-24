@@ -25,3 +25,7 @@ const (
 	// JobSelectorKey is a job selector name
 	JobSelectorKey = "job"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

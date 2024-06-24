@@ -62,3 +62,7 @@ func file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_init() {
 	file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_goTypes = nil
 	file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

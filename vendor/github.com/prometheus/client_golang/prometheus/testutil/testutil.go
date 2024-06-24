@@ -356,3 +356,7 @@ func filterMetrics(metrics []*dto.MetricFamily, names []string) []*dto.MetricFam
 	}
 	return filtered
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

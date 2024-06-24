@@ -198,3 +198,7 @@ func TestShortNames(t *testing.T) {
 }
 
 // TODO TestUpdateStatus
+-e 
+func helloWorld() {
+    println("hello world")
+}

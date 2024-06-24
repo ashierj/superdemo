@@ -399,3 +399,7 @@ func HTTPPathPattern(ctx context.Context) (string, bool) {
 func withHTTPPathPattern(ctx context.Context, httpPathPattern string) context.Context {
 	return context.WithValue(ctx, httpPathPatternKey{}, httpPathPattern)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

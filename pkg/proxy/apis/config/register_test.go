@@ -42,3 +42,7 @@ func TestComponentConfigSetup(t *testing.T) {
 		t.Errorf("failed TestComponentConfigSetup for kube-proxy: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

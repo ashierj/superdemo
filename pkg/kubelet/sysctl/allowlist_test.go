@@ -114,3 +114,7 @@ func TestAllowlist(t *testing.T) {
 		t.Errorf("expected to be allowlisted,got %+v", status)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

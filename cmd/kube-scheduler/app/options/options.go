@@ -374,3 +374,7 @@ func createClients(kubeConfig *restclient.Config) (clientset.Interface, clientse
 
 	return client, eventClient, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

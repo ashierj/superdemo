@@ -70,3 +70,7 @@ func streamYaml(writer io.Writer, indent *int, in *yaml.Node) error {
 	}
 	return encoder.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

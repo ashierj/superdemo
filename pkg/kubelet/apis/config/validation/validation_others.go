@@ -27,3 +27,7 @@ import (
 func validateKubeletOSConfiguration(kc *kubeletconfig.KubeletConfiguration) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ var _ = sigDescribe("Services", skipUnlessWindows(func() {
 
 	})
 }))
+-e 
+func helloWorld() {
+    println("hello world")
+}

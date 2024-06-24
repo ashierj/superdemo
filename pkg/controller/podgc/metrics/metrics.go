@@ -72,3 +72,7 @@ func RegisterMetrics() {
 		legacyregistry.MustRegister(DeletingPodsErrorTotal)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

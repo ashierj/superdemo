@@ -86,3 +86,7 @@ func (b *CustomResourceDefinitionNamesApplyConfiguration) WithCategories(values 
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

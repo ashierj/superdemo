@@ -40,3 +40,7 @@ func Test_NetworkPolicyRemovedFieldProtobufNumberReservation(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

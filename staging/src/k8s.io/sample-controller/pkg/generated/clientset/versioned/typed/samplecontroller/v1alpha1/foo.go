@@ -193,3 +193,7 @@ func (c *foos) Patch(ctx context.Context, name string, pt types.PatchType, data 
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

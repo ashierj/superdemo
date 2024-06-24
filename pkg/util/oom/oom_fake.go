@@ -33,3 +33,7 @@ func fakeApplyOOMScoreAdj(pid int, oomScoreAdj int) error {
 func fakeApplyOOMScoreAdjContainer(cgroupName string, oomScoreAdj, maxTries int) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

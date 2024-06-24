@@ -57,3 +57,7 @@ func registerMetrics() {
 		legacyregistry.MustRegister(initialNodeSyncDelay)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

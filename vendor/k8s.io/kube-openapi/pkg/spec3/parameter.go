@@ -145,3 +145,7 @@ type parameterPropsOmitZero struct {
 	Example         interface{}           `json:"example,omitempty"`
 	Examples        map[string]*Example   `json:"examples,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

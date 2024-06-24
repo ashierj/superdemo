@@ -260,3 +260,7 @@ func TestLocalEndpointRoundTrip(t *testing.T) {
 
 	assert.Equal(t, expectedAddress, address)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

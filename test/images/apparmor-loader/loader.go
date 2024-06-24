@@ -266,3 +266,7 @@ func parseProfileName(profileLine string) string {
 	}
 	return strings.TrimSpace(profileLine[:modeIndex])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

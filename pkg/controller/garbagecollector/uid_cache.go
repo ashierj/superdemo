@@ -49,3 +49,7 @@ func (c *ReferenceCache) Has(reference objectReference) bool {
 	_, found := c.cache.Get(reference)
 	return found
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

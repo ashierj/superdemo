@@ -77,3 +77,7 @@ func Errorf(l grpclog.DepthLoggerV2, id *Identifier, format string, args ...any)
 		Severity: CtError,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

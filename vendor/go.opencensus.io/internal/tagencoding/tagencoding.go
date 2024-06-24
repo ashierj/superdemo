@@ -73,3 +73,7 @@ func (vb *Values) ReadValue() []byte {
 func (vb *Values) Bytes() []byte {
 	return vb.Buffer[:vb.WriteIndex]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

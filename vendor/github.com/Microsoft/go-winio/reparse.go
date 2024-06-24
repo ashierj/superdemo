@@ -129,3 +129,7 @@ func EncodeReparsePoint(rp *ReparsePoint) []byte {
 	_ = binary.Write(&b, binary.LittleEndian, target16)
 	return b.Bytes()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

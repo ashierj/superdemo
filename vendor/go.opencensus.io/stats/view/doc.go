@@ -45,3 +45,7 @@ package view // import "go.opencensus.io/stats/view"
 
 // TODO(acetechnologist): Add a link to the language independent OpenCensus
 // spec when it is available.
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -66,3 +66,7 @@ func applyProfile(name string) error {
 
 	return changeOnExec(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

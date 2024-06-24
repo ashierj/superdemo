@@ -77,3 +77,7 @@ func ReaderAtToReader(ra io.ReaderAt, size int64) io.Reader {
 	}
 	return r
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

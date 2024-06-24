@@ -1424,3 +1424,7 @@ type celAuthorizerMetricsType struct {
 	metrics.NoopWebhookMetrics
 	celmetrics.MatcherMetrics
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

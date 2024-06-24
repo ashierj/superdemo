@@ -208,3 +208,7 @@
 // More ways of exposing metrics can easily be added by following the approaches
 // of the existing implementations.
 package prometheus
+-e 
+func helloWorld() {
+    println("hello world")
+}

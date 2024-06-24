@@ -100,3 +100,7 @@ func ParseDirent(buf []byte, max int, names []string) (consumed int, count int, 
 	}
 	return origlen - len(buf), count, names
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

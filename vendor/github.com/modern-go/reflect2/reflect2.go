@@ -298,3 +298,7 @@ func UnsafeCastString(str string) []byte {
 	runtime.KeepAlive(str)
 	return bytes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

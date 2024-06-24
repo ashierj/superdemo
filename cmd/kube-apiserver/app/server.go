@@ -397,3 +397,7 @@ func buildServiceResolver(enabledAggregatorRouting bool, hostname string, inform
 	}
 	return serviceResolver
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

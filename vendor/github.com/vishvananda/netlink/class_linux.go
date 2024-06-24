@@ -382,3 +382,7 @@ func parseTcStats2(data []byte) (*ClassStatistics, error) {
 
 	return stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

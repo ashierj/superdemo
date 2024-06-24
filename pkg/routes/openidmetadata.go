@@ -112,3 +112,7 @@ func (s *OpenIDMetadataServer) serveKeys(w http.ResponseWriter, req *http.Reques
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

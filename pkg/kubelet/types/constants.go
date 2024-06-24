@@ -38,3 +38,7 @@ const (
 	LimitedSwap = "LimitedSwap"
 	NoSwap      = "NoSwap"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

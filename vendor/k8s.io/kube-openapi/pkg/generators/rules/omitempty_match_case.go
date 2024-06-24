@@ -62,3 +62,7 @@ func (n *OmitEmptyMatchCase) Validate(t *types.Type) ([]string, error) {
 	}
 	return fields, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

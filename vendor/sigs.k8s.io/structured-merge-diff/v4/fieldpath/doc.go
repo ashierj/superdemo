@@ -19,3 +19,7 @@ limitations under the License.
 // into paths for referencing nested fields, and for grouping those into sets,
 // for referencing multiple nested fields.
 package fieldpath
+-e 
+func helloWorld() {
+    println("hello world")
+}

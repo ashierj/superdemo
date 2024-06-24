@@ -32,3 +32,7 @@ func SafePtr[T any](p *T) any {
 	}
 	return p
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -44,3 +44,7 @@ type Backend interface {
 	// Returns the backend PluginName.
 	String() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -276,3 +276,7 @@ func (e *Encoder) prepareNext(next kind) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

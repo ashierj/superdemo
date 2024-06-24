@@ -52,3 +52,7 @@ func BenchmarkCountBits(b *testing.B) {
 		countBits(bigN)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

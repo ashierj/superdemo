@@ -65,3 +65,7 @@ func NewPeerProxyHandler(informerFactory kubeinformers.SharedInformerFactory,
 		}})
 	return h
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

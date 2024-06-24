@@ -83,3 +83,7 @@ func (test getClustersTest) run(t *testing.T) {
 		return
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

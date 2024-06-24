@@ -65,3 +65,7 @@ func NewAlwaysDeny() admission.Interface {
 		"Please remove this controller from your configuration files and scripts.", PluginName)
 	return new(alwaysDeny)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ func (p *instrumentedScorePlugin) Score(ctx context.Context, state *framework.Cy
 	p.metric.Inc()
 	return p.ScorePlugin.Score(ctx, state, pod, nodeName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

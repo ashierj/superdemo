@@ -20,3 +20,7 @@ func newInterface(methods []*types.Func, embeddeds []types.Type) *types.Interfac
 	}
 	return types.NewInterface(methods, named)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

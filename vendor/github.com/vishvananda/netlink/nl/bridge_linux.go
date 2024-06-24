@@ -72,3 +72,7 @@ const (
 	RTEXT_FILTER_BRVLAN
 	RTEXT_FILTER_BRVLAN_COMPRESSED
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

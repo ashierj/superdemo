@@ -26,3 +26,7 @@ import (
 var (
 	progressSignals = []os.Signal{}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

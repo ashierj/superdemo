@@ -90,3 +90,7 @@ func New(ctx context.Context, config *runtime.Unknown, _ framework.Handle) (fram
 	mp := MultipointExample{}
 	return &mp, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

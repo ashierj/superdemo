@@ -163,3 +163,7 @@ func (e Error) WriteTo(w http.ResponseWriter) error {
 	_, err := w.Write([]byte(e.toJsonString() + "\n"))
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

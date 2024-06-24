@@ -29,3 +29,7 @@ func isOscStringTerminator(b byte) bool {
 
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

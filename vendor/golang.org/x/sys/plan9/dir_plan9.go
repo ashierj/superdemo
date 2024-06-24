@@ -210,3 +210,7 @@ func gstring(b []byte) (string, []byte, bool) {
 	}
 	return string(b[:n]), b[n:], true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

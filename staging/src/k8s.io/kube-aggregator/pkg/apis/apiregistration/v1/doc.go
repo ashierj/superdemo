@@ -35,3 +35,7 @@ limitations under the License.
 // there is only one condition named "Available", if true, it means the
 // api/server requests will be redirected to specified API server.
 package v1 // import "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

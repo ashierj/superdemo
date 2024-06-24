@@ -106,3 +106,7 @@ func toTyped(obj runtime.Object, objectType typed.ParseableType) (*typed.TypedVa
 		return objectType.FromStructured(o)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

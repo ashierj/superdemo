@@ -107,3 +107,7 @@ var TaggedStyle yaml.Style = yaml.TaggedStyle
 const (
 	MergeTag = "!!merge"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

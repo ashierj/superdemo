@@ -70,3 +70,7 @@ type ErrNoDescriber struct {
 func (e ErrNoDescriber) Error() string {
 	return fmt.Sprintf("no describer has been defined for %v", e.Types)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func (b *AWSElasticBlockStoreVolumeSourceApplyConfiguration) WithReadOnly(value 
 	b.ReadOnly = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -441,3 +441,7 @@ func parseProcNetstat(r io.Reader, fileName string) (ProcNetstat, error) {
 	}
 	return procNetstat, scanner.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

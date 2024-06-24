@@ -106,3 +106,7 @@ func MergeOutputPaths(cfg zap.Config) zap.Config {
 
 	return cfg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

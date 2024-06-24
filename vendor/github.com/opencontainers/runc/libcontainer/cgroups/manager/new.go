@@ -76,3 +76,7 @@ func getUnifiedPath(paths map[string]string) (string, error) {
 
 	return path, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

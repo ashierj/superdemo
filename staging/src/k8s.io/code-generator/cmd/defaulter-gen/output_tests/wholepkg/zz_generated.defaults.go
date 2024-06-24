@@ -83,3 +83,7 @@ func SetObjectDefaults_StructSlices(in *StructSlices) {
 func SetObjectDefaults_StructStructPrimitives(in *StructStructPrimitives) {
 	SetObjectDefaults_StructPrimitives(&in.StructField)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -586,3 +586,7 @@ func TestGetTargetNodeName(t *testing.T) {
 
 	forEachFeatureGate(t, testFun)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

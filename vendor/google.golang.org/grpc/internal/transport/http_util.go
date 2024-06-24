@@ -463,3 +463,7 @@ func parseDialTarget(target string) (string, string) {
 	}
 	return net, target
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

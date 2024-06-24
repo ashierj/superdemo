@@ -301,3 +301,7 @@ func (fac *baseExprFactory) newEntryExpr(id int64, e entryExprKindCase) EntryExp
 var (
 	defaultFactory = &baseExprFactory{}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

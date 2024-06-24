@@ -182,3 +182,7 @@ func WaitForJobState(ctx context.Context, c clientset.Interface, ns, jobName str
 			}, nil
 		}))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

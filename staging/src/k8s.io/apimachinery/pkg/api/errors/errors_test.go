@@ -703,3 +703,7 @@ func BenchmarkIsNotFoundWrappedErrors(b *testing.B) {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

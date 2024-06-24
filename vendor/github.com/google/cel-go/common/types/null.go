@@ -109,3 +109,7 @@ func (n Null) Type() ref.Type {
 func (n Null) Value() any {
 	return structpb.NullValue_NULL_VALUE
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

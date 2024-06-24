@@ -14,3 +14,7 @@ type IntStream interface {
 	Size() int
 	GetSourceName() string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

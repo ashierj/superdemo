@@ -15,3 +15,7 @@ func assert(b bool) {
 func errorf(format string, args ...interface{}) {
 	panic(fmt.Errorf(format, args...))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -520,3 +520,7 @@ func (k Kind) normalize() Kind {
 	}
 	return k
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

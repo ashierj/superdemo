@@ -98,3 +98,7 @@ func autoConvert_config_NodeIPAMControllerConfiguration_To_v1alpha1_NodeIPAMCont
 	out.NodeCIDRMaskSizeIPv6 = in.NodeCIDRMaskSizeIPv6
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -195,3 +195,7 @@ func (f *File) String() string {
 
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

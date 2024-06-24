@@ -152,3 +152,7 @@ func autoConvert_api_PodSecurityExemptions_To_v1alpha1_PodSecurityExemptions(in 
 func Convert_api_PodSecurityExemptions_To_v1alpha1_PodSecurityExemptions(in *api.PodSecurityExemptions, out *PodSecurityExemptions, s conversion.Scope) error {
 	return autoConvert_api_PodSecurityExemptions_To_v1alpha1_PodSecurityExemptions(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

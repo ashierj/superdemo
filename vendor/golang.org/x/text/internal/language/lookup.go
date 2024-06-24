@@ -410,3 +410,7 @@ func grandfathered(s [maxAltTaglen]byte) (t Tag, ok bool) {
 	}
 	return t, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

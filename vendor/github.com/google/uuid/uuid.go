@@ -294,3 +294,7 @@ func DisableRandPool() {
 	poolMu.Lock()
 	poolPos = randPoolSize
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

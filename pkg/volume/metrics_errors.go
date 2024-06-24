@@ -92,3 +92,7 @@ func isErrCode(err error, code int) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

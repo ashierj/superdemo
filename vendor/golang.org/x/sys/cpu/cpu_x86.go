@@ -149,3 +149,7 @@ func archInit() {
 func isSet(bitpos uint, value uint32) bool {
 	return value&(1<<bitpos) != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

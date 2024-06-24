@@ -100,3 +100,7 @@ func (entry *Entry) writerScanner(reader *io.PipeReader, printFunc func(args ...
 func writerFinalizer(writer *io.PipeWriter) {
 	writer.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

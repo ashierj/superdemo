@@ -1164,3 +1164,7 @@ func newHeader(s *EtcdServer) *pb.ResponseHeader {
 		RaftTerm:  s.Term(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

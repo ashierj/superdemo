@@ -57,3 +57,7 @@ func ExampleMustParse() {
 	// milliCores = 5300 (DecimalSI)
 	// milliCores = 5400 (DecimalSI)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

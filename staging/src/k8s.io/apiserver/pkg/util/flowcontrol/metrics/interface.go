@@ -65,3 +65,7 @@ type RatioedGaugePair struct {
 	// RequestsExecuting is given observations of the number of requests currently executing
 	RequestsExecuting RatioedGauge
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

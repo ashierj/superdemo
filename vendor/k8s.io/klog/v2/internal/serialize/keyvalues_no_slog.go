@@ -95,3 +95,7 @@ func (f Formatter) KVFormat(b *bytes.Buffer, k, v interface{}) {
 		f.formatAny(b, v)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

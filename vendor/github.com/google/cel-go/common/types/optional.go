@@ -106,3 +106,7 @@ func (o *Optional) Value() any {
 	}
 	return o.value.Value()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

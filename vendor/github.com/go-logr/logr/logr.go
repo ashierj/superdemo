@@ -518,3 +518,7 @@ type Marshaler interface {
 	// It may return any value of any type.
 	MarshalLog() any
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

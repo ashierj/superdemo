@@ -477,3 +477,7 @@ func rotateLessFunc[E any](data []E, a, m, b int, less func(a, b E) bool) {
 	// i == j
 	swapRangeLessFunc(data, m-i, m, i, less)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

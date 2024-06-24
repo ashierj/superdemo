@@ -80,3 +80,7 @@ func requestLogger(lg *zap.Logger, handler http.Handler) http.Handler {
 		handler.ServeHTTP(w, r)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

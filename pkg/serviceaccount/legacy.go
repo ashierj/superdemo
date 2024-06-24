@@ -205,3 +205,7 @@ func (v *legacyValidator) patchSecretWithLastUsedDate(ctx context.Context, secre
 func (v *legacyValidator) NewPrivateClaims() interface{} {
 	return &legacyPrivateClaims{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

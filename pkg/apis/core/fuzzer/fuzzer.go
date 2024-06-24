@@ -558,3 +558,7 @@ var Funcs = func(codecs runtimeserializer.CodecFactory) []interface{} {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

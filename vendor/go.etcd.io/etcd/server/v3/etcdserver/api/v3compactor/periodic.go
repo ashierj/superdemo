@@ -203,3 +203,7 @@ func (pc *Periodic) Resume() {
 	pc.paused = false
 	pc.mu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

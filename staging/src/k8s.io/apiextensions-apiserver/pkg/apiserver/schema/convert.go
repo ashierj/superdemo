@@ -288,3 +288,7 @@ func validateUnsupportedFields(s *apiextensions.JSONSchemaProps) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

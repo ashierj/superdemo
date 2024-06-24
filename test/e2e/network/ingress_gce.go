@@ -537,3 +537,7 @@ func detectNegAnnotation(ctx context.Context, f *framework.Framework, jig *e2ein
 		framework.ExpectNoError(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

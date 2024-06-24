@@ -434,3 +434,7 @@ func New(ctx context.Context, plArgs runtime.Object, fh framework.Handle, fts fe
 		fts:       fts,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

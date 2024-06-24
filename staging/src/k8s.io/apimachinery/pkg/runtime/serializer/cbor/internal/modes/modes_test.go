@@ -69,3 +69,7 @@ func assertIdenticalError[E error](expected E) func(*testing.T, error) {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -164,3 +164,7 @@ func (s *ProcSMapsRollup) addValue(k string, vUintBytes uint64) {
 		s.SwapPss += vUintBytes
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

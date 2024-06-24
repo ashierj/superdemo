@@ -79,3 +79,7 @@ func ReplaceOrAppendPodCondition(conditions []v1.PodCondition, condition *v1.Pod
 	}
 	return conditions
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

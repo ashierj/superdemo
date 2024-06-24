@@ -93,3 +93,7 @@ func (d *flexVolumeDetacher) UnmountDevice(deviceMountPath string) error {
 	}
 	return os.Remove(deviceMountPath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

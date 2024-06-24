@@ -91,3 +91,7 @@ func getCgroupV1ParentPath(mountpoint, root string) (string, error) {
 	}
 	return filepath.Join(mountpoint, relDir), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

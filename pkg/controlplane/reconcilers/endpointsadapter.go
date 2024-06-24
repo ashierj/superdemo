@@ -204,3 +204,7 @@ func setSkipMirrorTrue(e *corev1.Endpoints) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

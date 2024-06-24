@@ -21,3 +21,7 @@ func getCMTNumaNodeStats(numaPath string) (*CMTNumaNodeStats, error) {
 
 	return stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

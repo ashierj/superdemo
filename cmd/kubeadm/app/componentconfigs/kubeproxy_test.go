@@ -166,3 +166,7 @@ func TestKubeProxyFromCluster(t *testing.T) {
 		return kubeProxyHandler.FromCluster(client, testClusterCfg())
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

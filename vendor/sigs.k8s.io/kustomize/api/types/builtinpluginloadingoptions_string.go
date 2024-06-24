@@ -23,3 +23,7 @@ func (i BuiltinPluginLoadingOptions) String() string {
 	}
 	return _BuiltinPluginLoadingOptions_name[_BuiltinPluginLoadingOptions_index[i]:_BuiltinPluginLoadingOptions_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

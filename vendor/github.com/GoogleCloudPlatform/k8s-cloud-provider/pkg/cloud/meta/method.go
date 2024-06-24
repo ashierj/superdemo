@@ -335,3 +335,7 @@ func (m *Method) InterfaceFunc() string {
 		panic(fmt.Errorf("invalid method kind: %v", m.kind))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

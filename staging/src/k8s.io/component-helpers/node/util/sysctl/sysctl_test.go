@@ -44,3 +44,7 @@ func TestConvertSysctlVariableToDotsSeparator(t *testing.T) {
 		assert.Equalf(t, test.out, convertSysctlVal, "The sysctl variable was not converted correctly. got: %s, want: %s", convertSysctlVal, test.out)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -196,3 +196,7 @@ func (sh *suffixHandler) interpret(suffix suffix) (base, exponent int32, fmt For
 
 	return 0, 0, DecimalExponent, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

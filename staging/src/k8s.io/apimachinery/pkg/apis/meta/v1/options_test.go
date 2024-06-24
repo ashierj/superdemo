@@ -60,3 +60,7 @@ want: %v`, got, update)
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

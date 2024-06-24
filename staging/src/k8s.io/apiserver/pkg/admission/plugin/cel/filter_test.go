@@ -1158,3 +1158,7 @@ func endpointStatusUpdateAttributes() admission.Attributes {
 		attrs.GetObject(), attrs.GetObject(), attrs.GetKind(), attrs.GetNamespace(), attrs.GetName(),
 		attrs.GetResource(), "status", admission.Update, &metav1.UpdateOptions{}, false, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

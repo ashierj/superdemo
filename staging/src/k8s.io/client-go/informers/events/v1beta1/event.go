@@ -88,3 +88,7 @@ func (f *eventInformer) Informer() cache.SharedIndexInformer {
 func (f *eventInformer) Lister() v1beta1.EventLister {
 	return v1beta1.NewEventLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

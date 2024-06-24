@@ -167,3 +167,7 @@ func tryIndent(data []byte) []byte {
 	}
 	return data
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

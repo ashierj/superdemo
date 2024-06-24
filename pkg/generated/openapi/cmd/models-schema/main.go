@@ -89,3 +89,7 @@ func friendlyName(name string) string {
 	}
 	return strings.Join(nameParts, ".")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

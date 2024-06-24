@@ -475,3 +475,7 @@ func (s *policySource[P, B, E]) compilePolicyLocked(policySpec P) E {
 
 	return compiledPolicy.evaluator
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

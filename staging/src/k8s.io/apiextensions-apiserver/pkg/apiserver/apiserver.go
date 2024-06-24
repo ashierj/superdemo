@@ -288,3 +288,7 @@ func DefaultAPIResourceConfigSource() *serverstorage.ResourceConfig {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

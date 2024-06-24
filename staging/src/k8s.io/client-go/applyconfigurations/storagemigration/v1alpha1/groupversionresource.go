@@ -55,3 +55,7 @@ func (b *GroupVersionResourceApplyConfiguration) WithResource(value string) *Gro
 	b.Resource = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@ func (m *ConfigurationMap) Set(value string) error {
 func (*ConfigurationMap) Type() string {
 	return "mapStringString"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

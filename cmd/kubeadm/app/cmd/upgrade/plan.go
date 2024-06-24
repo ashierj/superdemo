@@ -382,3 +382,7 @@ func yesOrNo(b bool) string {
 	}
 	return "no"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

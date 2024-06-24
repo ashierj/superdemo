@@ -238,3 +238,7 @@ func (t *Trace) disableStep() {
 func (t *Trace) enableStep() {
 	t.stepDisabled = false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

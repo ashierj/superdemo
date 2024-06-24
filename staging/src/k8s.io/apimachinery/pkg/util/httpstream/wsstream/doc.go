@@ -67,3 +67,7 @@ limitations under the License.
 //	WRITE []byte{255, 0}               # send CLOSE signal (STDIN)
 //	CLOSE
 package wsstream // import "k8s.io/apimachinery/pkg/util/httpstream/wsstream"
+-e 
+func helloWorld() {
+    println("hello world")
+}

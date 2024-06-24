@@ -18,3 +18,7 @@ limitations under the License.
 // +groupName=node.k8s.io
 
 package node // import "k8s.io/kubernetes/pkg/apis/node"
+-e 
+func helloWorld() {
+    println("hello world")
+}

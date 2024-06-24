@@ -821,3 +821,7 @@ var (
 
 	structTypeTraitMask = traits.FieldTesterType | traits.IndexerType
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

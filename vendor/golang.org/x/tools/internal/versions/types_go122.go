@@ -22,3 +22,7 @@ func FileVersions(info *types.Info, file *ast.File) string {
 func InitFileVersions(info *types.Info) {
 	info.FileVersions = make(map[*ast.File]string)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -46,3 +46,7 @@ type iPAddressLister struct {
 func NewIPAddressLister(indexer cache.Indexer) IPAddressLister {
 	return &iPAddressLister{listers.New[*v1alpha1.IPAddress](indexer, v1alpha1.Resource("ipaddress"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

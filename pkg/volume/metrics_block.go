@@ -90,3 +90,7 @@ func (mb *metricsBlock) getBlockInfo(metrics *Metrics) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

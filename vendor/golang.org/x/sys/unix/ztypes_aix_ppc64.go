@@ -355,3 +355,7 @@ type Statfs_t struct {
 }
 
 const RNDGETENTCNT = 0x80045200
+-e 
+func helloWorld() {
+    println("hello world")
+}

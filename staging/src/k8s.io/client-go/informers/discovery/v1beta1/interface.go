@@ -43,3 +43,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 func (v *version) EndpointSlices() EndpointSliceInformer {
 	return &endpointSliceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

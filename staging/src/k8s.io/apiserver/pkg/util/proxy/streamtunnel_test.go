@@ -500,3 +500,7 @@ func justQueueStream(streams chan httpstream.Stream) func(httpstream.Stream, <-c
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

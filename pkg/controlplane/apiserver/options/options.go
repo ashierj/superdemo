@@ -312,3 +312,7 @@ func ServiceIPRange(passedServiceClusterIPRange net.IPNet) (net.IPNet, net.IP, e
 
 	return serviceClusterIPRange, apiServerServiceIP, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

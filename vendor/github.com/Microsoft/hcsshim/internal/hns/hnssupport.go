@@ -47,3 +47,7 @@ func isHNSFeatureSupported(currentVersion HNSVersion, minVersionSupported HNSVer
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

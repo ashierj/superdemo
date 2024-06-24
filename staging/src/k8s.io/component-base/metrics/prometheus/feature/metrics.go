@@ -51,3 +51,7 @@ func RecordFeatureInfo(ctx context.Context, name string, stage string, enabled b
 	}
 	featureInfo.WithContext(ctx).WithLabelValues(name, stage).Set(value)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

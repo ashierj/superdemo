@@ -766,3 +766,7 @@ func autoConvert_storage_VolumeNodeResources_To_v1_VolumeNodeResources(in *stora
 func Convert_storage_VolumeNodeResources_To_v1_VolumeNodeResources(in *storage.VolumeNodeResources, out *v1.VolumeNodeResources, s conversion.Scope) error {
 	return autoConvert_storage_VolumeNodeResources_To_v1_VolumeNodeResources(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

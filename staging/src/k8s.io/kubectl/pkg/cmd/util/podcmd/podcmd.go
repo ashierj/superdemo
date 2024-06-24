@@ -102,3 +102,7 @@ func AllContainerNames(pod *v1.Pod) string {
 	}
 	return strings.Join(containers, ", ")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

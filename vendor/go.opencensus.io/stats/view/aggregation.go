@@ -121,3 +121,7 @@ func LastValue() *Aggregation {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

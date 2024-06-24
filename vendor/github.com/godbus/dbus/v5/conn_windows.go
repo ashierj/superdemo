@@ -13,3 +13,7 @@ func getSystemBusPlatformAddress() string {
 	}
 	return defaultSystemBusAddress
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

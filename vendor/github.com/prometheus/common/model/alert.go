@@ -134,3 +134,7 @@ func (as Alerts) Status() AlertStatus {
 	}
 	return AlertResolved
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

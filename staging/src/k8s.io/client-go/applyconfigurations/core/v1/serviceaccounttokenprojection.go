@@ -55,3 +55,7 @@ func (b *ServiceAccountTokenProjectionApplyConfiguration) WithPath(value string)
 	b.Path = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

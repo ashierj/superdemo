@@ -384,3 +384,7 @@ func (p *gostring) Generate(file *generator.FileDescriptor) {
 func init() {
 	generator.RegisterPlugin(NewGoString())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

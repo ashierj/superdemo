@@ -93,3 +93,7 @@ func (r Reason) String() string {
 
 	panic(r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

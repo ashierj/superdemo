@@ -178,3 +178,7 @@ func getPrivateSSHKey(host string) (string, error) {
 
 	return "", nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

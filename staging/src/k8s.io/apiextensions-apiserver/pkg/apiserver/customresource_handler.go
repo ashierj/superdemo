@@ -1423,3 +1423,7 @@ func buildOpenAPIModelsForApply(staticOpenAPISpec map[string]*spec.Schema, crd *
 	}
 	return mergedOpenAPI.Components.Schemas, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

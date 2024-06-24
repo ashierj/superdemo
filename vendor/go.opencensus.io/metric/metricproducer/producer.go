@@ -26,3 +26,7 @@ type Producer interface {
 	// resource.
 	Read() []*metricdata.Metric
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

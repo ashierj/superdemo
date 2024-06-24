@@ -195,3 +195,7 @@ func (c *clusterRoleBindings) Apply(ctx context.Context, clusterRoleBinding *rba
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -71,3 +71,7 @@ func (a *attacherDefaults) MountDevice(spec *volume.Spec, devicePath string, dev
 
 	return diskMounter.FormatAndMount(devicePath, deviceMountPath, volSourceFSType, options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

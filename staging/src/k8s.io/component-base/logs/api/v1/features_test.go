@@ -45,3 +45,7 @@ func init() {
 	enabledFeatureGate = enabled
 	disabledFeatureGate = disabled
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

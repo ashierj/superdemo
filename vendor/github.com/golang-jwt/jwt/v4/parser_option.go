@@ -27,3 +27,7 @@ func WithoutClaimsValidation() ParserOption {
 		p.SkipClaimsValidation = true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

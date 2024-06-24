@@ -145,3 +145,7 @@ func newGroup() *Group {
 		functions: make(map[string]*decls.FunctionDecl),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

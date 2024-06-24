@@ -345,3 +345,7 @@ func equalServiceConfig(a, b serviceconfig.Config) bool {
 	// from unexported structs.
 	return reflect.DeepEqual(aa, bb)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

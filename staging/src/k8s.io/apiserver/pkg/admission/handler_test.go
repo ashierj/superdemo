@@ -55,3 +55,7 @@ func TestWaitForReady(t *testing.T) {
 func newFakeHandler() *Handler {
 	return NewHandler(Create, Update)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

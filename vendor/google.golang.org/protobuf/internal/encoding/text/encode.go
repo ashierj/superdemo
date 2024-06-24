@@ -270,3 +270,7 @@ func (e *Encoder) Reset(es encoderState) {
 func AppendString(b []byte, s string) []byte {
 	return appendString(b, s, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

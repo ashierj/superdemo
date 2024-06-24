@@ -645,3 +645,7 @@ func (w Waitmsg) String() string {
 	}
 	return str
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

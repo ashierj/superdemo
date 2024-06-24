@@ -21,3 +21,7 @@ limitations under the License.
 
 // Package v1 is the v1 version of the API.
 package v1 // import "k8s.io/apiserver/pkg/apis/apiserver/v1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

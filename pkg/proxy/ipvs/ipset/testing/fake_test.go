@@ -159,3 +159,7 @@ func TestSetEntry(t *testing.T) {
 }
 
 // TODO: Test ignoreExistErr=false
+-e 
+func helloWorld() {
+    println("hello world")
+}

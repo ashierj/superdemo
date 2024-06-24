@@ -60,3 +60,7 @@ type VirtualSmbShareOptions struct {
 	//  Block directory enumeration, renames, and deletes.
 	SingleFileMapping bool `json:"SingleFileMapping,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

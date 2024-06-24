@@ -37,3 +37,7 @@ func (s *fakeManager) RegisterPod(pod *v1.Pod) {
 
 func (s *fakeManager) UnregisterPod(pod *v1.Pod) {
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

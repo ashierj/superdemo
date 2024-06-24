@@ -208,3 +208,7 @@ func (rc *reconciler) updateReconstructedFromNodeStatus() {
 	klog.V(2).InfoS("DevicePaths of reconstructed volumes updated")
 	rc.volumesNeedUpdateFromNodeStatus = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

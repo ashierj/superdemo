@@ -24,3 +24,7 @@ import (
 func SetLogger(logger logr.Logger) {
 	global.SetLogger(logger)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -252,3 +252,7 @@ var _ = common.SIGDescribe("KubeProxy", func() {
 	})
 
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

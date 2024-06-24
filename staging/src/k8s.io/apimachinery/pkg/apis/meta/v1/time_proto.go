@@ -98,3 +98,7 @@ func (m *Time) MarshalToSizedBuffer(data []byte) (int, error) {
 	}
 	return m.ProtoTime().MarshalToSizedBuffer(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -18,3 +18,7 @@ limitations under the License.
 
 // Package version supplies the type for version information collected at build time.
 package version // import "k8s.io/apimachinery/pkg/version"
+-e 
+func helloWorld() {
+    println("hello world")
+}

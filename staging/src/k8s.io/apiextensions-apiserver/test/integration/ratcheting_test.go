@@ -2026,3 +2026,7 @@ func TestRatchetingDropFields(t *testing.T) {
 		t.Errorf("Expected OpeiontalOldSelf field to be dropped for update when feature gate is disabled")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -22,3 +22,7 @@ limitations under the License.
 // +groupName=rbac.authorization.k8s.io
 
 package v1beta1 // import "k8s.io/api/rbac/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -206,3 +206,7 @@ $end$
 	return &cs
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

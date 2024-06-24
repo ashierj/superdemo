@@ -160,3 +160,7 @@ func (g *gRPCService) interceptor(
 
 	return invoker(ctx, method, req, reply, cc, opts...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

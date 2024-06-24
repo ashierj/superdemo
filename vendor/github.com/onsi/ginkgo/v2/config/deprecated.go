@@ -67,3 +67,7 @@ type DefaultReporterConfigIsNoLongerAccessibleFromTheConfigPackageUseTheDSLsGink
 // Users who need access to Ginkgo's configuration should use the DSL's GinkgoConfiguration() method
 // These new unwieldy type names exist to give users a hint when they try to compile and the compilation fails
 var DefaultReporterConfig = DefaultReporterConfigIsNoLongerAccessibleFromTheConfigPackageUseTheDSLsGinkgoConfigurationFunctionInstead{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -757,3 +757,7 @@ func (r *DefaultReporter) codeLocationBlock(report types.SpecReport, highlightCo
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

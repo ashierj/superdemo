@@ -30,3 +30,7 @@ func alwaysDeny(ar v1.AdmissionReview) *v1.AdmissionResponse {
 	reviewResponse.Result = &metav1.Status{Message: "this webhook denies all requests"}
 	return &reviewResponse
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

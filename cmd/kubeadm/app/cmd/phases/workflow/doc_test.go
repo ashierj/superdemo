@@ -109,3 +109,7 @@ func ExampleRunner_Run() {
 	// Runs the workflow by passing a list of arguments
 	myWorkflowRunner.Run([]string{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

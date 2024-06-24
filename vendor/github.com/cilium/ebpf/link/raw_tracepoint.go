@@ -85,3 +85,7 @@ var _ Link = (*rawTracepoint)(nil)
 func (rt *rawTracepoint) Update(_ *ebpf.Program) error {
 	return fmt.Errorf("update raw_tracepoint: %w", ErrNotSupported)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

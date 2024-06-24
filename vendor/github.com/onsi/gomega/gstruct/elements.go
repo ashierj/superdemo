@@ -229,3 +229,7 @@ func (m *ElementsMatcher) NegatedFailureMessage(actual interface{}) (message str
 func (m *ElementsMatcher) Failures() []error {
 	return m.failures
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

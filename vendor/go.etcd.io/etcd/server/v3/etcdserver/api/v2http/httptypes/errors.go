@@ -49,3 +49,7 @@ func NewHTTPError(code int, m string) *HTTPError {
 		Code:    code,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

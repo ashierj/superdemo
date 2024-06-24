@@ -244,3 +244,7 @@ func TestSysctls_1_29(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

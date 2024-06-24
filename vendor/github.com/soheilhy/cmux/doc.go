@@ -16,3 +16,7 @@
 // their payload. Using cmux, you can serve different protocols from the
 // same listener.
 package cmux
+-e 
+func helloWorld() {
+    println("hello world")
+}

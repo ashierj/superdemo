@@ -112,3 +112,7 @@ func invoke(ctx context.Context, call APICall, settings CallSettings, sp sleeper
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

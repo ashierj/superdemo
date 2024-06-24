@@ -152,3 +152,7 @@ func (vv *NestedValueValidation) toKubeOpenAPI() *spec.Schema {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

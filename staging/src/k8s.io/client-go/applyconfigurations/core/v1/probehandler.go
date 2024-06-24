@@ -64,3 +64,7 @@ func (b *ProbeHandlerApplyConfiguration) WithGRPC(value *GRPCActionApplyConfigur
 	b.GRPC = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

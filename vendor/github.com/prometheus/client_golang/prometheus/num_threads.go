@@ -23,3 +23,7 @@ func getRuntimeNumThreads() float64 {
 	n, _ := runtime.ThreadCreateProfile(nil)
 	return float64(n)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

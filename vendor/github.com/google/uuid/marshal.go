@@ -36,3 +36,7 @@ func (uuid *UUID) UnmarshalBinary(data []byte) error {
 	copy(uuid[:], data)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

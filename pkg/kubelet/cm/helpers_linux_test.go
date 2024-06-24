@@ -872,3 +872,7 @@ func TestResourceConfigForPodWithEnforceMemoryQoS(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -220,3 +220,7 @@ func (c *FakeReplicationControllers) UpdateScale(ctx context.Context, replicatio
 	}
 	return obj.(*autoscalingv1.Scale), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

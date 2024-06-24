@@ -31,3 +31,7 @@ type TerminalSizeQueue interface {
 	// monitoring has been stopped.
 	Next() *TerminalSize
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

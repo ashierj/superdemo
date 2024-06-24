@@ -131,3 +131,7 @@ func (d dummyClock) Now() time.Time {
 func (d dummyClock) Since(t time.Time) time.Duration {
 	return time.Duration(1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

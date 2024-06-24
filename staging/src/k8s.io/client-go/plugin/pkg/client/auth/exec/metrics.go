@@ -109,3 +109,7 @@ func incrementCallsMetric(err error) {
 		metrics.ExecPluginCalls.Increment(failureExitCode, clientInternalError)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

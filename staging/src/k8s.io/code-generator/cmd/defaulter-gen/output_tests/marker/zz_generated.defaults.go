@@ -323,3 +323,7 @@ func SetObjectDefaults_DefaultedWithReference(in *DefaultedWithReference) {
 		in.ImportFromAliasCast = &ptrVar1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -88,3 +88,7 @@ func (f *podSchedulingContextInformer) Informer() cache.SharedIndexInformer {
 func (f *podSchedulingContextInformer) Lister() v1alpha2.PodSchedulingContextLister {
 	return v1alpha2.NewPodSchedulingContextLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -19,3 +19,7 @@ func walkFrames(pcs []uintptr, visit frameVisitor) {
 		visit(file, line, fn.Name(), pc-fn.Entry())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

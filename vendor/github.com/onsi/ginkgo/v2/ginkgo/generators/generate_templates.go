@@ -41,3 +41,7 @@ var _ = {{.GinkgoPackage}}Describe("{{.Subject}}", func() {
 	})
 })
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

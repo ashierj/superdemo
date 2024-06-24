@@ -414,3 +414,7 @@ func MarshalInitConfigurationToBytes(cfg *kubeadmapi.InitConfiguration, gv schem
 	}
 	return bytes.Join(allFiles, []byte(kubeadmconstants.YAMLDocumentSeparator)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

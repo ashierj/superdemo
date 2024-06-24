@@ -1464,3 +1464,7 @@ func GetConnection(ctx context.Context) net.Conn {
 func setConnection(ctx context.Context, conn net.Conn) context.Context {
 	return context.WithValue(ctx, connectionKey{}, conn)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

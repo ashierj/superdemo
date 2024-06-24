@@ -165,3 +165,7 @@ func IsRBACEnabled(ctx context.Context, crGetter v1rbac.ClusterRolesGetter) bool
 
 	return isRBACEnabled
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

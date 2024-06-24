@@ -517,3 +517,7 @@ func firstNonEmptyLine(scanner *bufio.Scanner) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

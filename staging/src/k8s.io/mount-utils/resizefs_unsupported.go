@@ -44,3 +44,7 @@ func (resizefs *ResizeFs) Resize(devicePath string, deviceMountPath string) (boo
 func (resizefs *ResizeFs) NeedResize(devicePath string, deviceMountPath string) (bool, error) {
 	return false, fmt.Errorf("NeedResize is not supported for this build")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func InvalidUTF8(name string) error {
 func RequiredNotSet(name string) error {
 	return New("required field %v not set", name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

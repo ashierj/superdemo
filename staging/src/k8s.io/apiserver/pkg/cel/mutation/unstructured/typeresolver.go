@@ -37,3 +37,7 @@ func (r *TypeResolver) Resolve(name string) (common.TypeRef, bool) {
 	}
 	return NewTypeRef(name), true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -411,3 +411,7 @@ func (f Filter) confirmNodeMatchesReferrer(node *yaml.RNode) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

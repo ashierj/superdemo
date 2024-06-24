@@ -172,3 +172,7 @@ var (
 	baseEnvs             = sync.Map{}
 	baseEnvsSingleflight = &singleflight.Group{}
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

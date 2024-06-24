@@ -127,3 +127,7 @@ func (g *Gomega) SetDefaultConsistentlyDuration(t time.Duration) {
 func (g *Gomega) SetDefaultConsistentlyPollingInterval(t time.Duration) {
 	g.DurationBundle.ConsistentlyPollingInterval = t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

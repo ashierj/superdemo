@@ -102,3 +102,7 @@ func TestCacheableObject(t *testing.T) {
 	serializer := runtime.NewBase64Serializer(&mockEncoder{}, nil)
 	runtimetesting.CacheableObjectTest(t, serializer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

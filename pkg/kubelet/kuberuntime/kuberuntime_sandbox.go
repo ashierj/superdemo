@@ -383,3 +383,7 @@ func (m *kubeGenericRuntimeManager) GetPortForward(ctx context.Context, podName,
 	}
 	return url.Parse(resp.Url)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

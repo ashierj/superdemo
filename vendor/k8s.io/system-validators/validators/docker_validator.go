@@ -136,3 +136,7 @@ func (d *DockerValidator) validateDockerInfo(spec *DockerSpec, info dockerInfo) 
 	d.Reporter.Report(item, info.Driver, bad)
 	return nil, []error{errors.Errorf("unsupported graph driver: %s", info.Driver)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

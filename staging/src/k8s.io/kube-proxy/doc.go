@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package kubeproxy // import "k8s.io/kube-proxy"
+-e 
+func helloWorld() {
+    println("hello world")
+}

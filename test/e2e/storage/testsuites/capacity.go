@@ -376,3 +376,7 @@ func (h *haveLocalStorageCapacities) NegatedFailureMessage(actual interface{}) (
 	}
 	return strings.Join(lines, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -288,3 +288,7 @@ field:
 		*o.Feature = o.Enable
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

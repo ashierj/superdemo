@@ -25,3 +25,7 @@ type HorizontalPodAutoscalerListerExpansion interface{}
 // HorizontalPodAutoscalerNamespaceListerExpansion allows custom methods to be added to
 // HorizontalPodAutoscalerNamespaceLister.
 type HorizontalPodAutoscalerNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

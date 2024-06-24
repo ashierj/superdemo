@@ -56,3 +56,7 @@ type streamCreator interface {
 type streamProtocolHandler interface {
 	stream(conn streamCreator) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

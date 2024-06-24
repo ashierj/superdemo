@@ -181,3 +181,7 @@ func (s *sourceImpl) findLine(characterOffset int32) (int32, int32) {
 	}
 	return line, s.lineOffsets[line-2]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

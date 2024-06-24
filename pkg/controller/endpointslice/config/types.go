@@ -40,3 +40,7 @@ type EndpointSliceControllerConfiguration struct {
 	// Default 0 value means that each pod update triggers an endpoint update.
 	EndpointUpdatesBatchPeriod metav1.Duration
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

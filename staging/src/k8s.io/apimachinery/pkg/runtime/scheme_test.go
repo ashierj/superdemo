@@ -1009,3 +1009,7 @@ func TestMetaValuesUnregisteredConvert(t *testing.T) {
 		t.Errorf("Expected %v, got %v", e, a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

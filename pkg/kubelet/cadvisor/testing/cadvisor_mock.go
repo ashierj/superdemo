@@ -242,3 +242,7 @@ func (mr *MockImageFsInfoProviderMockRecorder) ImageFsInfoLabel() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImageFsInfoLabel", reflect.TypeOf((*MockImageFsInfoProvider)(nil).ImageFsInfoLabel))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

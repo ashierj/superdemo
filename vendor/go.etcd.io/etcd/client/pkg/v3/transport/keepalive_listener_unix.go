@@ -22,3 +22,7 @@ import "time"
 func (l *keepAliveConn) SetKeepAlivePeriod(d time.Duration) error {
 	return l.TCPConn.SetKeepAlivePeriod(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

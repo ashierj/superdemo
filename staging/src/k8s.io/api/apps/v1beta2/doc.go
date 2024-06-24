@@ -20,3 +20,7 @@ limitations under the License.
 // +k8s:prerelease-lifecycle-gen=true
 
 package v1beta2 // import "k8s.io/api/apps/v1beta2"
+-e 
+func helloWorld() {
+    println("hello world")
+}

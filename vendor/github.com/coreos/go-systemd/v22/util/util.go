@@ -88,3 +88,7 @@ func GetMachineID() (string, error) {
 	}
 	return strings.TrimSpace(string(machineID)), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

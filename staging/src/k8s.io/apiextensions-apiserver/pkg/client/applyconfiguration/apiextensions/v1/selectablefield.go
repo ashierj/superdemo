@@ -37,3 +37,7 @@ func (b *SelectableFieldApplyConfiguration) WithJSONPath(value string) *Selectab
 	b.JSONPath = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -55,3 +55,7 @@ func (b *ResourceClaimParametersReferenceApplyConfiguration) WithName(value stri
 	b.Name = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

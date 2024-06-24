@@ -166,3 +166,7 @@ func TestRunEtcdAsNonRoot(t *testing.T) {
 	}
 	verifyFilePermissions(t, updatedFiles, wantUpdateFiles)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

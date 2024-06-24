@@ -25,3 +25,7 @@ type EventListerExpansion interface{}
 // EventNamespaceListerExpansion allows custom methods to be added to
 // EventNamespaceLister.
 type EventNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

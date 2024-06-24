@@ -275,3 +275,7 @@ func stripLeaveSlash(prefix string, h http.Handler) http.Handler {
 		h.ServeHTTP(w, req)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

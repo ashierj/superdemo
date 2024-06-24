@@ -899,3 +899,7 @@ func waitForAPIServerForever(client clientset.Interface, nodeName types.NodeName
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

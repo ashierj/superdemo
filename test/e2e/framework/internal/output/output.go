@@ -188,3 +188,7 @@ func normalizeInitFunctions(in string) string {
 	out := initFunc.ReplaceAllString(in, "<init.func>")
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

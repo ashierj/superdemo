@@ -36,3 +36,7 @@ func NewTestContext(tl TL) (logr.Logger, context.Context) {
 	return logger, ctx
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

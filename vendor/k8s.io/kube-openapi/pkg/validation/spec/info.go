@@ -217,3 +217,7 @@ func (i *Info) UnmarshalNextJSON(opts jsonv2.UnmarshalOptions, dec *jsonv2.Decod
 	i.InfoProps = x.InfoProps
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

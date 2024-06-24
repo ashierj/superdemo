@@ -64,3 +64,7 @@ func NewTypeRef(name string) *TypeRef {
 		celTypeType:   types.NewTypeTypeWithParam(objectType),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

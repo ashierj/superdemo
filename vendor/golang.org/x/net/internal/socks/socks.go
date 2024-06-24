@@ -315,3 +315,7 @@ func (up *UsernamePassword) Authenticate(ctx context.Context, rw io.ReadWriter, 
 	}
 	return errors.New("unsupported authentication method " + strconv.Itoa(int(auth)))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

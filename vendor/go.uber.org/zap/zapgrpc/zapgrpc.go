@@ -243,3 +243,7 @@ func sprintln(args []interface{}) string {
 	// Drop the new line character added by Sprintln
 	return s[:len(s)-1]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

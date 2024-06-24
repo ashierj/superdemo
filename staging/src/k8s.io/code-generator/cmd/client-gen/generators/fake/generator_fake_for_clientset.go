@@ -167,3 +167,7 @@ func (c *Clientset) $.GroupGoName$$.Version$() $.PackageAlias$.$.GroupGoName$$.V
 	return &fake$.PackageAlias$.Fake$.GroupGoName$$.Version${Fake: &c.Fake}
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

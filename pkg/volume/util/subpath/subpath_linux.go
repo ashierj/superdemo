@@ -607,3 +607,7 @@ func doSafeOpen(pathname string, base string) (int, error) {
 
 	return finalFD, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

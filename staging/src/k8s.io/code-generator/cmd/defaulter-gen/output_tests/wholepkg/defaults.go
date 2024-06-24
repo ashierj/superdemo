@@ -31,3 +31,7 @@ func SetDefaults_StructPrimitives(obj *StructPrimitives) {
 		*obj.BoolField = true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

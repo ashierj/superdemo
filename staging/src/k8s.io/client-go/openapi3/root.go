@@ -180,3 +180,7 @@ type GroupVersionNotFoundError struct {
 func (r *GroupVersionNotFoundError) Error() string {
 	return fmt.Sprintf("GroupVersion (%v) not found as OpenAPI V3 path", r.gv)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

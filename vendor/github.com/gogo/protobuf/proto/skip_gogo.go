@@ -117,3 +117,7 @@ func Skip(data []byte) (n int, err error) {
 	}
 	panic("unreachable")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

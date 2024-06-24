@@ -16,3 +16,7 @@ func Unparen(e ast.Expr) ast.Expr {
 		e = p.X
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

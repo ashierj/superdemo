@@ -166,3 +166,7 @@ func (s spanSnapshot) InstrumentationScope() instrumentation.Scope {
 func (s spanSnapshot) InstrumentationLibrary() instrumentation.Library {
 	return s.instrumentationScope
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

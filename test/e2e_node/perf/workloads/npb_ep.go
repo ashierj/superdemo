@@ -119,3 +119,7 @@ func (w npbEPWorkload) ExtractPerformanceFromLogs(logs string) (perf time.Durati
 
 	return perf, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

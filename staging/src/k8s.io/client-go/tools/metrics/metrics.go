@@ -209,3 +209,7 @@ func (noopTransportCache) Observe(int) {}
 type noopTransportCreateCalls struct{}
 
 func (noopTransportCreateCalls) Increment(string) {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

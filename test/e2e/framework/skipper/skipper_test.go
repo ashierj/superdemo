@@ -94,3 +94,7 @@ func TestSkip(t *testing.T) {
 
 	output.TestGinkgoOutput(t, expected, suiteConfig, reporterConfig)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

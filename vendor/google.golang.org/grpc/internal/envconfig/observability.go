@@ -40,3 +40,7 @@ var (
 	// deleted or changed.
 	ObservabilityConfigFile = os.Getenv(envObservabilityConfigFile)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

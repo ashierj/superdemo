@@ -521,3 +521,7 @@ func wsWrite(conn *websocket.Conn, channel byte, data []byte) error {
 	err := websocket.Message.Send(conn, frame)
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -97,3 +97,7 @@ var parserOnce sync.Once
 var parser *{{.smdParser|raw}}
 var schemaYAML = {{.yamlObject|raw}}(` + "`{{.schemaYAML}}`" + `)
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

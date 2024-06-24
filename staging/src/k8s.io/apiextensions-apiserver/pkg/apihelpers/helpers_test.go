@@ -597,3 +597,7 @@ func generateCRDwithCondition(conditions []apiextensionsv1.CustomResourceDefinit
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

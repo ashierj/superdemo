@@ -849,3 +849,7 @@ func TestUpdateNodeObjects(t *testing.T) {
 	}
 	wg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func (b *CSIVolumeSourceApplyConfiguration) WithNodePublishSecretRef(value *Loca
 	b.NodePublishSecretRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

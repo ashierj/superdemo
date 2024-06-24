@@ -428,3 +428,7 @@ func changeFileName(dir, from, to string, t *testing.T) {
 		t.Errorf("Fail to change file name: %s", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

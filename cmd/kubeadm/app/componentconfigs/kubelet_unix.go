@@ -61,3 +61,7 @@ func isServiceActive(name string) (bool, error) {
 	}
 	return initSystem.ServiceIsActive(name), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

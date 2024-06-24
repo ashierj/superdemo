@@ -248,3 +248,7 @@ func TestCompileRegex(t *testing.T) {
 		t.Errorf("Wrong regex returned: '%v': %v", uncompiledRegexes[1], regexes[1])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

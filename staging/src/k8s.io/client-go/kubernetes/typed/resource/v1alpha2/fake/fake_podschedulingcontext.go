@@ -195,3 +195,7 @@ func (c *FakePodSchedulingContexts) ApplyStatus(ctx context.Context, podScheduli
 	}
 	return obj.(*v1alpha2.PodSchedulingContext), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

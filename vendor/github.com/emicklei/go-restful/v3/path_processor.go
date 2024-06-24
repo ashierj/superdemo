@@ -72,3 +72,7 @@ func untokenizePath(offset int, parts []string) string {
 	}
 	return buffer.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

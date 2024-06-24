@@ -260,3 +260,7 @@ func adaptCheckToHandler(c func(r *http.Request) error) http.HandlerFunc {
 		}
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

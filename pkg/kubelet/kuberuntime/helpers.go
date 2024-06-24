@@ -332,3 +332,7 @@ func getAppArmorProfile(pod *v1.Pod, container *v1.Container) (*runtimeapi.Secur
 
 	return securityProfile, deprecatedProfile, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

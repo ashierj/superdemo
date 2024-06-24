@@ -329,3 +329,7 @@ var _ = common.SIGDescribe("Ingress API", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -26,3 +26,7 @@ func GetHNSGlobals() (*HNSGlobals, error) {
 
 	return globals, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

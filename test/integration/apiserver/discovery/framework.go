@@ -820,3 +820,7 @@ func FindGroupVersionV2Beta1(discovery apidiscoveryv2beta1.APIGroupDiscoveryList
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

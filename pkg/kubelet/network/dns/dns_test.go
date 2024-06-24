@@ -715,3 +715,7 @@ func newTestPods(count int) []*v1.Pod {
 	}
 	return pods
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

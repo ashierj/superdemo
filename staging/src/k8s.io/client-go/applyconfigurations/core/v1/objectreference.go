@@ -95,3 +95,7 @@ func (b *ObjectReferenceApplyConfiguration) WithFieldPath(value string) *ObjectR
 	b.FieldPath = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

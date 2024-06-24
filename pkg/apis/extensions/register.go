@@ -65,3 +65,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

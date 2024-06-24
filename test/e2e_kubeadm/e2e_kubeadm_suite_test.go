@@ -64,3 +64,7 @@ func TestE2E(t *testing.T) {
 	suiteConfig, reporterConfig := framework.CreateGinkgoConfig()
 	ginkgo.RunSpecs(t, "E2EKubeadm suite", suiteConfig, reporterConfig)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

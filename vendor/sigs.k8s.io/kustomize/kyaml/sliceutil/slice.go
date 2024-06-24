@@ -23,3 +23,7 @@ func Remove(s []string, r string) []string {
 	}
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

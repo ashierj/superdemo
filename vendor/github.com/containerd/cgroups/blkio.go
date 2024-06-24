@@ -359,3 +359,7 @@ func getDevices(r io.Reader) (map[deviceKey]string, error) {
 	}
 	return devices, s.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

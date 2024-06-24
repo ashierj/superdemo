@@ -57,3 +57,7 @@ var _ = SIGDescribe("stateful Upgrade", feature.StatefulUpgrade, func() {
 		})
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

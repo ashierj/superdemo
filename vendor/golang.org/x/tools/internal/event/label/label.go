@@ -213,3 +213,7 @@ func MergeMaps(srcs ...Map) Map {
 	}
 	return mapChain{maps: nonNil}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

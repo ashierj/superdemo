@@ -54,3 +54,7 @@ func Cluster(v string) string {
 	}
 	return fmt.Sprintf("%s.%s", vs[0], vs[1])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

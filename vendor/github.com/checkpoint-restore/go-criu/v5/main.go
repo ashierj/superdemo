@@ -262,3 +262,7 @@ func (c *Criu) IsCriuAtLeast(version int) (bool, error) {
 
 	return false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

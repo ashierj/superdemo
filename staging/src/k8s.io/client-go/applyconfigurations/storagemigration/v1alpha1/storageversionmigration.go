@@ -254,3 +254,7 @@ func (b *StorageVersionMigrationApplyConfiguration) WithStatus(value *StorageVer
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

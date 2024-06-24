@@ -50,3 +50,7 @@ func (pl *PrioritySort) Less(pInfo1, pInfo2 *framework.QueuedPodInfo) bool {
 func New(_ context.Context, _ runtime.Object, handle framework.Handle) (framework.Plugin, error) {
 	return &PrioritySort{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

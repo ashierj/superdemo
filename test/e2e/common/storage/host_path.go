@@ -196,3 +196,7 @@ func testPodWithHostVol(path string, source *v1.HostPathVolumeSource, privileged
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

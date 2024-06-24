@@ -261,3 +261,7 @@ func nativeTypeToCELType(t *testing.T, nativeType reflect.Type) *apiservercel.De
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

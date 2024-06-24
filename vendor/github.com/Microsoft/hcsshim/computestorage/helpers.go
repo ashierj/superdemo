@@ -191,3 +191,7 @@ func SetupUtilityVMBaseLayer(ctx context.Context, uvmPath, baseVhdPath, diffVhdP
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

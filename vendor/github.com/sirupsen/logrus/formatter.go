@@ -76,3 +76,7 @@ func prefixFieldClashes(data Fields, fieldMap FieldMap, reportCaller bool) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

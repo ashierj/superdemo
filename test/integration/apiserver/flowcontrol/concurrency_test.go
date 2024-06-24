@@ -328,3 +328,7 @@ func streamRequests(parallel int, request func(), wg *sync.WaitGroup, stopCh <-c
 		}()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

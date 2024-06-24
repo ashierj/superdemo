@@ -39,3 +39,7 @@ func (b *NamedResourcesIntSliceApplyConfiguration) WithInts(values ...int64) *Na
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

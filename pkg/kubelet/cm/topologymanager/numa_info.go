@@ -107,3 +107,7 @@ func (d NUMADistances) CalculateAverageFor(bm bitmask.BitMask) float64 {
 
 	return sum / count
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

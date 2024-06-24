@@ -293,3 +293,7 @@ func (o *OpenAPIService) RegisterOpenAPIV3VersionedService(servePath string, han
 	handler.HandlePrefix(servePath+"/", http.HandlerFunc(o.HandleGroupVersion))
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

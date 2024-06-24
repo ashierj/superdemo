@@ -671,3 +671,7 @@ func relativePath(wd, path string) string {
 	}
 	return relpath
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

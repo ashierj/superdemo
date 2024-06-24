@@ -277,3 +277,7 @@ func (s *disruptiveTestSuite) DefineTests(driver storageframework.TestDriver, pa
 		}(test)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

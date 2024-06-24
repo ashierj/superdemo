@@ -35,3 +35,7 @@ func (matcher *AssignableToTypeOfMatcher) FailureMessage(actual interface{}) str
 func (matcher *AssignableToTypeOfMatcher) NegatedFailureMessage(actual interface{}) string {
 	return format.Message(actual, fmt.Sprintf("not to be assignable to the type: %T", matcher.Expected))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

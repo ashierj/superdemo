@@ -290,3 +290,7 @@ func TestCreateServiceWithNamespace(t *testing.T) {
 		t.Errorf("expected output: %s, but got: %s", ns, buf.String())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -123,3 +123,7 @@ func (info Info) Complete() bool {
 		len(info.CertFile) > 0 ||
 		len(info.BearerToken) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

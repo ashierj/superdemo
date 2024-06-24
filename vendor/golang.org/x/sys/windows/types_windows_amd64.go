@@ -32,3 +32,7 @@ type JOBOBJECT_BASIC_LIMIT_INFORMATION struct {
 	PriorityClass           uint32
 	SchedulingClass         uint32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

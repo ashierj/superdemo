@@ -957,3 +957,7 @@ func Benchmark_ParseQuotedString(b *testing.B) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

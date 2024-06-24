@@ -14,3 +14,7 @@ type ContainerCredentialGuardInstance struct {
 	CredentialGuard *ContainerCredentialGuardState                 `json:"CredentialGuard,omitempty"`
 	HvSocketConfig  *ContainerCredentialGuardHvSocketServiceConfig `json:"HvSocketConfig,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

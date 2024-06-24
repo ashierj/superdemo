@@ -497,3 +497,7 @@ func TestCurrentNoFiles(t *testing.T) {
 		t.Fatalf("Got certificate, expected no certificate because the cert/key files don't exist.")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

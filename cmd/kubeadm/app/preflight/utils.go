@@ -43,3 +43,7 @@ func GetKubeletVersion(execer utilsexec.Interface) (*version.Version, error) {
 	}
 	return version.ParseSemantic(subs[0][1])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

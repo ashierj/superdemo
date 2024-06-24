@@ -98,3 +98,7 @@ func SetRawTerminal(fd uintptr) (*State, error) {
 func SetRawTerminalOutput(fd uintptr) (*State, error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

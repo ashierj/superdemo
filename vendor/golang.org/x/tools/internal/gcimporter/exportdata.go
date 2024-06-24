@@ -97,3 +97,7 @@ func FindExportData(r *bufio.Reader) (hdr string, size int64, err error) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

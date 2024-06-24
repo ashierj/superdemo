@@ -46,3 +46,7 @@ func (b *ResourceFilterApplyConfiguration) WithNamedResources(value *NamedResour
 	b.NamedResources = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

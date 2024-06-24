@@ -521,3 +521,7 @@ func (recorder recorderImplLogger) AnnotatedEventf(object runtime.Object, annota
 func (recorder recorderImplLogger) WithLogger(logger klog.Logger) EventRecorderLogger {
 	return recorderImplLogger{recorderImpl: recorder.recorderImpl, logger: logger}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

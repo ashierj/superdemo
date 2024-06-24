@@ -26,3 +26,7 @@ package preflight
 func (mc MemCheck) Check() (warnings, errorList []error) {
 	return nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

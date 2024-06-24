@@ -1886,3 +1886,7 @@ func makeStdBytesValueSliceUnmarshaler(sub *unmarshalInfo, name string) unmarsha
 		return b[x:], nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

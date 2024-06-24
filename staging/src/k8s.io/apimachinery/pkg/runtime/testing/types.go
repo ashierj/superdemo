@@ -334,3 +334,7 @@ func (u *Unstructured) SetGroupVersionKind(gvk schema.GroupVersionKind) {
 	u.Object["apiVersion"] = gvk.GroupVersion().String()
 	u.Object["kind"] = gvk.Kind
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

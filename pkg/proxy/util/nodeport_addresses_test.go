@@ -463,3 +463,7 @@ func TestContainsIPv4Loopback(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

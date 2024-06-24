@@ -53,3 +53,7 @@ func hasNamedMember(t *types.Type, name string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

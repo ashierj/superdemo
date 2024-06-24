@@ -67,3 +67,7 @@ needed. For example:
 	}
 */
 package grpc_middleware
+-e 
+func helloWorld() {
+    println("hello world")
+}

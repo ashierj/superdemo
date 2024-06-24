@@ -425,3 +425,7 @@ nameReference:
 )
 
 // LINT.ThenChange(/examples/transformerconfigs/README.md)
+-e 
+func helloWorld() {
+    println("hello world")
+}

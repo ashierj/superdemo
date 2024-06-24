@@ -279,3 +279,7 @@ func smallerResourceRequest(pod1 *v1.Pod, pod2 *v1.Pod) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -171,3 +171,7 @@ func (l Walker) fieldValue(fieldName string) ([]*yaml.RNode, *openapi.ResourceSc
 	}
 	return fields, sch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

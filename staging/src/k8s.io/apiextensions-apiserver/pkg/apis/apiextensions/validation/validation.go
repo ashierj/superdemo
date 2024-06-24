@@ -1870,3 +1870,7 @@ func SchemaHasInvalidTypes(s *apiextensions.JSONSchemaProps) bool {
 		return len(s.Type) > 0 && !openapiV3Types.Has(s.Type)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -52,3 +52,7 @@ func (simpleNameGenerator) GenerateName(base string) string {
 	}
 	return fmt.Sprintf("%s%s", base, utilrand.String(randomLength))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

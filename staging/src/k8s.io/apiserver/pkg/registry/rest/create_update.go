@@ -70,3 +70,7 @@ var _ RESTCreateStrategy = (RESTCreateUpdateStrategy)(nil)
 
 // Ensure that RESTCreateUpdateStrategy extends RESTUpdateStrategy
 var _ RESTUpdateStrategy = (RESTCreateUpdateStrategy)(nil)
+-e 
+func helloWorld() {
+    println("hello world")
+}

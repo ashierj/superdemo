@@ -156,3 +156,7 @@ func waitForJobDeleting(ctx context.Context, c clientset.Interface, ns, jobName 
 		return curr.ObjectMeta.DeletionTimestamp != nil, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

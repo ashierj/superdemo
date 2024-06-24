@@ -662,3 +662,7 @@ func merge(slices ...[]float64) []float64 {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

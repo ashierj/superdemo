@@ -467,3 +467,7 @@ func (c *containerLogManager) rotateLatestLog(ctx context.Context, id, log strin
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

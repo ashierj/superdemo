@@ -782,3 +782,7 @@ func inTimeZone(ts, tz ref.Val) (time.Time, error) {
 	timezone := time.FixedZone("", secondsEastOfUTC)
 	return t.In(timezone), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

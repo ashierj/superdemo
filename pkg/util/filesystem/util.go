@@ -25,3 +25,7 @@ import (
 func IsPathClean(path string) bool {
 	return filepath.ToSlash(filepath.Clean(path)) == filepath.ToSlash(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

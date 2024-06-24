@@ -166,3 +166,7 @@ func serializePathElementToWriter(w io.Writer, pe PathElement) error {
 	stream.SetBuffer(b[:0])
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

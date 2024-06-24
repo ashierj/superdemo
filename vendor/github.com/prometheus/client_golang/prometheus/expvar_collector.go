@@ -84,3 +84,7 @@ func (e *expvarCollector) Collect(ch chan<- Metric) {
 		processValue(v, 0)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

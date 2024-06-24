@@ -91,3 +91,7 @@ func (c *Cache) PodCount() (int, error) { return 0, nil }
 func (c *Cache) Dump() *internalcache.Dump {
 	return &internalcache.Dump{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -144,3 +144,7 @@ func CreateOrUpdateAnnotation(createAnnotation bool, obj runtime.Object, codec r
 	}
 	return updateApplyAnnotation(obj, codec)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

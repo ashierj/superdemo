@@ -37,3 +37,7 @@ var (
 	// AddToScheme adds api to a scheme
 	AddToScheme = localSchemeBuilder.AddToScheme
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

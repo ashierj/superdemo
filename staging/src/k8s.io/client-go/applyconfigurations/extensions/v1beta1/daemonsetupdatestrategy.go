@@ -50,3 +50,7 @@ func (b *DaemonSetUpdateStrategyApplyConfiguration) WithRollingUpdate(value *Rol
 	b.RollingUpdate = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

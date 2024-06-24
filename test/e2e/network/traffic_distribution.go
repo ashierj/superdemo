@@ -278,3 +278,7 @@ var _ = common.SIGDescribe("TrafficDistribution", func() {
 
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

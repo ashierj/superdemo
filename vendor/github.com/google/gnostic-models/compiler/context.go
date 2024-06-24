@@ -47,3 +47,7 @@ func (context *Context) Description() string {
 	}
 	return name
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -158,3 +158,7 @@ func check(ip string, pip string, nip string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

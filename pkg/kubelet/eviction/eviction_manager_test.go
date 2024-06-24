@@ -3003,3 +3003,7 @@ func TestManagerWithLocalStorageCapacityIsolationOpen(t *testing.T) {
 		t.Fatalf("Unexpected evicted pod (-want,+got):\n%s", diff)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

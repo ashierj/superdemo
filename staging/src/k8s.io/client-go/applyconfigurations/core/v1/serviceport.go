@@ -87,3 +87,7 @@ func (b *ServicePortApplyConfiguration) WithNodePort(value int32) *ServicePortAp
 	b.NodePort = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

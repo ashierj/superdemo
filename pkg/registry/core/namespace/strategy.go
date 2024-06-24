@@ -240,3 +240,7 @@ func NamespaceToSelectableFields(namespace *api.Namespace) fields.Set {
 	}
 	return generic.MergeFieldsSets(objectMetaFieldsSet, specificFieldsSet)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

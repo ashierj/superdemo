@@ -268,3 +268,7 @@ func TestStorageVersionMigrationWithCRD(t *testing.T) {
 		t.Fatalf("Failed to list CRs at version v2: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

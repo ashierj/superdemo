@@ -153,3 +153,7 @@ func Restore(chg Changer, cs pb.ConfState) (tracker.Config, tracker.ProgressMap,
 
 	return chain(chg, ops...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

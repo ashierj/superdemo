@@ -203,3 +203,7 @@ func waitForServiceResponding(ctx context.Context, c clientset.Interface, ns, na
 		return true, nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

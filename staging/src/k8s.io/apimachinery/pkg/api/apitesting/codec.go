@@ -114,3 +114,7 @@ func SchemeForOrDie(installFns ...InstallFunc) (*runtime.Scheme, runtimeserializ
 
 	return scheme, codecFactory
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

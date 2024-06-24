@@ -58,3 +58,7 @@ func NewDenyKeysFilter(keys ...Key) Filter {
 		return !ok
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

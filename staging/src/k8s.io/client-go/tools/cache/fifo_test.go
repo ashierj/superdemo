@@ -307,3 +307,7 @@ func TestFIFO_PopShouldUnblockWhenClosed(t *testing.T) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

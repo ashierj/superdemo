@@ -356,3 +356,7 @@ func ValidateAndCleanupLabel(label string, cl CodeLocation) (string, error) {
 	}
 	return out, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

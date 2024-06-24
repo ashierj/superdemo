@@ -216,3 +216,7 @@ func TestStartedAndCompletedOpenTelemetryTracing(t *testing.T) {
 		t.Fatalf("got %s; expected span.Name == my-filter", span.Name())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

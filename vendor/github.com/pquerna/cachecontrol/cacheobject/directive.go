@@ -545,3 +545,7 @@ func (cd *ResponseCacheDirectives) addPair(token string, v string) error {
 
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

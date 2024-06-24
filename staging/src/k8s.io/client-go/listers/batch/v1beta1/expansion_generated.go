@@ -25,3 +25,7 @@ type CronJobListerExpansion interface{}
 // CronJobNamespaceListerExpansion allows custom methods to be added to
 // CronJobNamespaceLister.
 type CronJobNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

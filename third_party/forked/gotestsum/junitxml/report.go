@@ -52,3 +52,7 @@ type JUnitFailure struct {
 	Type     string `xml:"type,attr"`
 	Contents string `xml:",chardata"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

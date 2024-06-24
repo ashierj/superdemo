@@ -156,3 +156,7 @@ func (s *FreezerGroup) GetState(path string) (configs.FreezerState, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

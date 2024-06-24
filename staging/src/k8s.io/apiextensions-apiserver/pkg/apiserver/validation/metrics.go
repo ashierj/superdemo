@@ -64,3 +64,7 @@ func (m *validationMetrics) Reset() []metrics.Registerable {
 	m.RatchetingTime = metrics.NewHistogram(m.RatchetingTime.HistogramOpts)
 	return []metrics.Registerable{m.RatchetingTime}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

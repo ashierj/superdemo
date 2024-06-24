@@ -192,3 +192,7 @@ func WarningsOnly(err error) []error {
 	}
 	return l.Warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

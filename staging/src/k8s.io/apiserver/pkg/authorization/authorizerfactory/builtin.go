@@ -93,3 +93,7 @@ func NewPrivilegedGroups(groups ...string) *privilegedGroupAuthorizer {
 		groups: groups,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

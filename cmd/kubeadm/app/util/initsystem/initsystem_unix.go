@@ -165,3 +165,7 @@ func GetInitSystem() (InitSystem, error) {
 
 	return nil, errors.New("no supported init system detected, skipping checking for services")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

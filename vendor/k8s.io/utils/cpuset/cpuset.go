@@ -254,3 +254,7 @@ func (s CPUSet) Clone() CPUSet {
 	}
 	return r
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

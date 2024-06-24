@@ -72,3 +72,7 @@ The GNU MO file specification is at
 http://www.gnu.org/software/gettext/manual/html_node/MO-Files.html.
 */
 package mo
+-e 
+func helloWorld() {
+    println("hello world")
+}

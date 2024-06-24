@@ -36,3 +36,7 @@ func NewSecureServingOptions() *genericoptions.SecureServingOptionsWithLoopback 
 	}
 	return o.WithLoopback()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

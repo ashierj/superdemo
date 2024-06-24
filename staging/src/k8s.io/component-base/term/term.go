@@ -37,3 +37,7 @@ func TerminalSize(w io.Writer) (int, int, error) {
 	}
 	return int(winsize.Width), int(winsize.Height), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

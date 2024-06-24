@@ -191,3 +191,7 @@ func TestAllocateReservedDynamicBlockExhausted(t *testing.T) {
 		t.Error("Allocator expected to be full")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

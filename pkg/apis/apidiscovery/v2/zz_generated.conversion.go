@@ -218,3 +218,7 @@ func autoConvert_apidiscovery_APIVersionDiscovery_To_v2_APIVersionDiscovery(in *
 func Convert_apidiscovery_APIVersionDiscovery_To_v2_APIVersionDiscovery(in *apidiscovery.APIVersionDiscovery, out *v2.APIVersionDiscovery, s conversion.Scope) error {
 	return autoConvert_apidiscovery_APIVersionDiscovery_To_v2_APIVersionDiscovery(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (f *storageClassInformer) Informer() cache.SharedIndexInformer {
 func (f *storageClassInformer) Lister() v1.StorageClassLister {
 	return v1.NewStorageClassLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -406,3 +406,7 @@ func httpError(rsp http.ResponseWriter, err error) {
 		http.StatusInternalServerError,
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

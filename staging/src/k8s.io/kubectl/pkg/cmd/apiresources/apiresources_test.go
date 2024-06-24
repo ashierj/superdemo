@@ -322,3 +322,7 @@ bazzes   b            somegroup/v1   true         Baz
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

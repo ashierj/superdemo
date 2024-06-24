@@ -383,3 +383,7 @@ func validPseudoPath(v string) bool {
 // makes that struct also non-comparable, and generally doesn't add
 // any size (as long as it's first).
 type incomparable [0]func()
+-e 
+func helloWorld() {
+    println("hello world")
+}

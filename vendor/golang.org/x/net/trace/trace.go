@@ -1128,3 +1128,7 @@ const pageHTML = `
 </html>
 {{end}} {{/* end of Epilog */}}
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

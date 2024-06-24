@@ -160,3 +160,7 @@ func parseSockstatProtocol(kvs map[string]int) NetSockstatProtocol {
 
 	return nsp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

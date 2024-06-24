@@ -27,3 +27,7 @@ func main() {
 	maxprocs.Set()
 	fmt.Print(runtime.GOMAXPROCS(0))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

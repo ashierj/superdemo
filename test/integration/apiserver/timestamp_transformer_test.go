@@ -148,3 +148,7 @@ func BenchmarkIgnoreManagedFieldsTimestampTransformerUnstructuredShortCircuit(b 
 func BenchmarkIgnoreManagedFieldsTimestampTransformerUnstructuredWorstCase(b *testing.B) {
 	doBench(b, true, false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

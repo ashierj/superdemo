@@ -182,3 +182,7 @@ func (processRuntimeDescriptionDetector) Detect(ctx context.Context) (*Resource,
 		semconv.ProcessRuntimeDescription(runtimeDescription),
 	), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

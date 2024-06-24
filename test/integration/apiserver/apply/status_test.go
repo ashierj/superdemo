@@ -215,3 +215,7 @@ func findManager(managedFields []metav1.ManagedFieldsEntry, manager string) bool
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

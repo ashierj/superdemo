@@ -70,3 +70,7 @@ func statPids(dirPath string, stats *cgroups.Stats) error {
 	stats.PidsStats.Limit = max
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

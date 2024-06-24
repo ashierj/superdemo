@@ -115,3 +115,7 @@ limitations under the License.
 // Run hack/update-cloudprovider-gce.sh to update the generated codes.
 //
 package cloud
+-e 
+func helloWorld() {
+    println("hello world")
+}

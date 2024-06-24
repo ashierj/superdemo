@@ -503,3 +503,7 @@ func setupBinaryFile(data []byte) func(*testing.T, *ConfigMapOptions) func() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

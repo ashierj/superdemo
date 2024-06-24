@@ -271,3 +271,7 @@ func managedByController(endpointSlice *discovery.EndpointSlice) bool {
 	managedBy, _ := endpointSlice.Labels[discovery.LabelManagedBy]
 	return managedBy == controllerName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

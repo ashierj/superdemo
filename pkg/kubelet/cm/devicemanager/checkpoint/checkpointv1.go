@@ -115,3 +115,7 @@ func (cp *DataV1) GetDataInLatestFormat() ([]PodDevicesEntry, map[string][]strin
 	}
 	return podDevs, cp.Data.RegisteredDevices
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

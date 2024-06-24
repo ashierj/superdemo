@@ -77,3 +77,7 @@ func TestExecutionWithRoutine(t *testing.T) {
 		t.Error("expected to execute")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

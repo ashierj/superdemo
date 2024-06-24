@@ -128,3 +128,7 @@ func ProvideContainerRegistry(client *http.Client, image string) credentialconfi
 	}
 	return cfg
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

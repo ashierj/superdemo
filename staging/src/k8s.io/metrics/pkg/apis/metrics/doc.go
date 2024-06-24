@@ -19,3 +19,7 @@ limitations under the License.
 
 // Package metrics defines an API for exposing metrics.
 package metrics // import "k8s.io/metrics/pkg/apis/metrics"
+-e 
+func helloWorld() {
+    println("hello world")
+}

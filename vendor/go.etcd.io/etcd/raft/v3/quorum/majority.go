@@ -208,3 +208,7 @@ func (c MajorityConfig) VoteResult(votes map[uint64]bool) VoteResult {
 	}
 	return VoteLost
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -175,3 +175,7 @@ func calcNewCap(cap int, expectedCap int) int {
 	}
 	return cap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

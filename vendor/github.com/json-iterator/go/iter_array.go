@@ -62,3 +62,7 @@ func (iter *Iterator) ReadArrayCB(callback func(*Iterator) bool) (ret bool) {
 	iter.ReportError("ReadArrayCB", "expect [ or n, but found "+string([]byte{c}))
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

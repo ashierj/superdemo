@@ -62,3 +62,7 @@ func ValidateKey(key string) error {
 	}
 	return fmt.Errorf("invalid key: %q", key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

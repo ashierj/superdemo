@@ -191,3 +191,7 @@ func (s *validatingAdmissionPolicyStatusStrategy) GetResetFields() map[fieldpath
 func NewStatusStrategy(policyStrategy *validatingAdmissionPolicyStrategy) *validatingAdmissionPolicyStatusStrategy {
 	return &validatingAdmissionPolicyStatusStrategy{validatingAdmissionPolicyStrategy: policyStrategy}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

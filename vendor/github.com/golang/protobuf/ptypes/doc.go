@@ -8,3 +8,7 @@
 // injected into the generated packages for each message type.
 // See the deprecation notice for each function for the suggested alternative.
 package ptypes
+-e 
+func helloWorld() {
+    println("hello world")
+}

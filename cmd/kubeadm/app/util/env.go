@@ -61,3 +61,7 @@ func MergeKubeadmEnvVars(envList ...[]kubeadmapi.EnvVar) []v1.EnvVar {
 	}
 	return merged
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

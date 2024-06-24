@@ -87,3 +87,7 @@ func (p *PatchStrategicMergeTransformerPlugin) Transform(m resmap.ResMap) error 
 func NewPatchStrategicMergeTransformerPlugin() resmap.TransformerPlugin {
 	return &PatchStrategicMergeTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

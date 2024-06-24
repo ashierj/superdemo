@@ -172,3 +172,7 @@ func (d *Rule) CgroupString() string {
 func (d *Rule) Mkdev() (uint64, error) {
 	return mkDev(d)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

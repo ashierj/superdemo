@@ -46,3 +46,7 @@ func (b *EventSourceApplyConfiguration) WithHost(value string) *EventSourceApply
 	b.Host = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

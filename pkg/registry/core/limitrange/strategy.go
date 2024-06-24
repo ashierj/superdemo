@@ -82,3 +82,7 @@ func (limitrangeStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime
 func (limitrangeStrategy) AllowUnconditionalUpdate() bool {
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

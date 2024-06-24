@@ -61,3 +61,7 @@ func startDisruptionController(ctx context.Context, controllerContext Controller
 	).Run(ctx)
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

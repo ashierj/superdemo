@@ -149,3 +149,7 @@ func (c *FakeRuntimeClasses) Apply(ctx context.Context, runtimeClass *nodev1alph
 	}
 	return obj.(*v1alpha1.RuntimeClass), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

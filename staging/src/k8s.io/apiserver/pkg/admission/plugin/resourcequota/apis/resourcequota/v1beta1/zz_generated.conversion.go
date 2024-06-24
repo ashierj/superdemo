@@ -105,3 +105,7 @@ func autoConvert_resourcequota_LimitedResource_To_v1beta1_LimitedResource(in *re
 func Convert_resourcequota_LimitedResource_To_v1beta1_LimitedResource(in *resourcequota.LimitedResource, out *LimitedResource, s conversion.Scope) error {
 	return autoConvert_resourcequota_LimitedResource_To_v1beta1_LimitedResource(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

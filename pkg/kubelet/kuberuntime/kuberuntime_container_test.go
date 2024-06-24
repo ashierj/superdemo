@@ -879,3 +879,7 @@ func TestUpdateContainerResources(t *testing.T) {
 	// Verify container is updated
 	assert.Contains(t, fakeRuntime.Called, "UpdateContainerResources")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

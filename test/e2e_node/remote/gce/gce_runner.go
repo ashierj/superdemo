@@ -761,3 +761,7 @@ func (g *GCERunner) rebootInstance(instance *gceInstance) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

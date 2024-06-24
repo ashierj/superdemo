@@ -44,3 +44,7 @@ func Parse(md metadata.MD) any {
 	}
 	return parser.Parse(md)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

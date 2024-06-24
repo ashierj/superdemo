@@ -195,3 +195,7 @@ func (c *FakeHorizontalPodAutoscalers) ApplyStatus(ctx context.Context, horizont
 	}
 	return obj.(*v2beta2.HorizontalPodAutoscaler), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

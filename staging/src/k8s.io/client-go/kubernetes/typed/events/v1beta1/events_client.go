@@ -105,3 +105,7 @@ func (c *EventsV1beta1Client) RESTClient() rest.Interface {
 	}
 	return c.restClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

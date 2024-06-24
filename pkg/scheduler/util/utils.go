@@ -188,3 +188,7 @@ func As[T any](oldObj, newobj interface{}) (T, T, error) {
 	}
 	return oldTyped, newTyped, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

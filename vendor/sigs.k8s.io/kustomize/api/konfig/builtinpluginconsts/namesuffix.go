@@ -9,3 +9,7 @@ nameSuffix:
 - path: metadata/name
 `
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ type RoleBindingListerExpansion interface{}
 // RoleBindingNamespaceListerExpansion allows custom methods to be added to
 // RoleBindingNamespaceLister.
 type RoleBindingNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

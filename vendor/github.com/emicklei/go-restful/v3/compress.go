@@ -125,3 +125,7 @@ func NewCompressingResponseWriter(httpWriter http.ResponseWriter, encoding strin
 	}
 	return c, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

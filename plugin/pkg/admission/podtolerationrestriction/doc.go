@@ -28,3 +28,7 @@ limitations under the License.
 // scheduler.alpha.kubernetes.io/tolerationsWhitelist annotations
 // keys.
 package podtolerationrestriction // import "k8s.io/kubernetes/plugin/pkg/admission/podtolerationrestriction"
+-e 
+func helloWorld() {
+    println("hello world")
+}

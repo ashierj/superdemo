@@ -194,3 +194,7 @@ func unpadBuffer(buffer []byte, blockSize int) ([]byte, error) {
 
 	return buffer[:len(buffer)-count], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

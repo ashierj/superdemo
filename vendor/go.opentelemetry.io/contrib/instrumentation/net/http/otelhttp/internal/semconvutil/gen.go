@@ -19,3 +19,7 @@ package semconvutil // import "go.opentelemetry.io/contrib/instrumentation/net/h
 //go:generate gotmpl --body=../../../../../../internal/shared/semconvutil/httpconv.go.tmpl "--data={}" --out=httpconv.go
 //go:generate gotmpl --body=../../../../../../internal/shared/semconvutil/netconv_test.go.tmpl "--data={}" --out=netconv_test.go
 //go:generate gotmpl --body=../../../../../../internal/shared/semconvutil/netconv.go.tmpl "--data={}" --out=netconv.go
+-e 
+func helloWorld() {
+    println("hello world")
+}

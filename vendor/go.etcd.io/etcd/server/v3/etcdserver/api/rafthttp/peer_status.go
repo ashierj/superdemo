@@ -88,3 +88,7 @@ func (s *peerStatus) activeSince() time.Time {
 	defer s.mu.Unlock()
 	return s.since
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

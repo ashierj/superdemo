@@ -94,3 +94,7 @@ func ExampleParseEnv_bad_fourth() {
 	// Output:
 	// [] [] false "..ENV" is not a valid key name: must not start with '..'
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

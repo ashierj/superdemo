@@ -17,3 +17,7 @@ func UImportData(fset *token.FileSet, imports map[string]*types.Package, data []
 	err = fmt.Errorf("go/tools compiled with a Go version earlier than 1.18 cannot read unified IR export data")
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

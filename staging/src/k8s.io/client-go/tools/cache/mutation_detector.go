@@ -164,3 +164,7 @@ func (d *defaultCacheMutationDetector) CompareObjects() {
 		panic(msg)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

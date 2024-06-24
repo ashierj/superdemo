@@ -358,3 +358,7 @@ var _ = SIGDescribe("GPUDevicePluginAcrossRecreate", feature.Recreate, func() {
 		testNvidiaGPUsJob(ctx, f)
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

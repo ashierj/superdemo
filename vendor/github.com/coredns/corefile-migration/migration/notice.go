@@ -46,3 +46,7 @@ const (
 	// The following statuses are used for selecting/filtering notifications
 	SevAll = "all" // show all statuses
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

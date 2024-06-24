@@ -127,3 +127,7 @@ func validateCredentialProviderConfig(config *kubeletconfig.CredentialProviderCo
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

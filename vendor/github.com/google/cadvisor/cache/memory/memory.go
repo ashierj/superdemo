@@ -140,3 +140,7 @@ func New(
 	}
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

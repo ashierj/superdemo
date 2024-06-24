@@ -183,3 +183,7 @@ func DecodeResponse(target interface{}, res *http.Response) error {
 	}
 	return json.NewDecoder(res.Body).Decode(target)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -207,3 +207,7 @@ func (r mapReflect) unorderedReflectZip(a Allocator, other *mapReflect, fn func(
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

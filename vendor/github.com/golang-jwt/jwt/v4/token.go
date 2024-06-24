@@ -141,3 +141,7 @@ func DecodeSegment(seg string) ([]byte, error) {
 	}
 	return encoding.DecodeString(seg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

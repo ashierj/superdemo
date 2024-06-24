@@ -81,3 +81,7 @@ func main() {
 	}
 	klog.V(2).Info("Completed successfully.")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

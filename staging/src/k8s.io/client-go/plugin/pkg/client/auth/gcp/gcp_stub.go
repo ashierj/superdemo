@@ -34,3 +34,7 @@ func newGCPAuthProvider(_ string, _ map[string]string, _ rest.AuthProviderConfig
 Please use the "gke-gcloud-auth-plugin" kubectl/client-go credential plugin instead.
 See https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke for further details`)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

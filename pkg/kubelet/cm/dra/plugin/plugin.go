@@ -208,3 +208,7 @@ func (h *RegistrationHandler) ValidatePlugin(pluginName string, endpoint string,
 func log(msg string, parts ...interface{}) string {
 	return fmt.Sprintf(fmt.Sprintf("%s: %s", DRAPluginName, msg), parts...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

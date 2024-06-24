@@ -17,3 +17,7 @@ func newPid(pid int) (Capabilities, error) {
 func newFile(path string) (Capabilities, error) {
 	return nil, errors.New("not supported")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

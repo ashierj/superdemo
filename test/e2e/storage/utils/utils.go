@@ -791,3 +791,7 @@ func GetSizeRangesIntersection(first e2evolume.SizeRange, second e2evolume.SizeR
 	}
 	return "", fmt.Errorf("intersection of size ranges %+v, %+v is null", first, second)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

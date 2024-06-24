@@ -61,3 +61,7 @@ func (b DefaultBinder) Bind(ctx context.Context, state *framework.CycleState, p 
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

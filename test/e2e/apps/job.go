@@ -1147,3 +1147,7 @@ func findConditionByType(list []batchv1.JobCondition, cType batchv1.JobCondition
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

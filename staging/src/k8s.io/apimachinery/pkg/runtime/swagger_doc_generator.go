@@ -260,3 +260,7 @@ func VerifySwaggerDocsExist(kubeTypes []KubeTypes, w io.Writer) (int, error) {
 	}
 	return missingDocs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

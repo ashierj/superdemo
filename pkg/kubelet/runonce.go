@@ -174,3 +174,7 @@ func (kl *Kubelet) getFailedContainers(ctx context.Context, pod *v1.Pod) ([]stri
 	}
 	return containerNames, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

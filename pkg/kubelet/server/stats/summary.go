@@ -152,3 +152,7 @@ func (sp *summaryProviderImpl) GetCPUAndMemoryStats(ctx context.Context) (*stats
 	}
 	return &summary, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

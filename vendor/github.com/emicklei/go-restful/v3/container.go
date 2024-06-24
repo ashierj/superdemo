@@ -448,3 +448,7 @@ func newBasicRequestResponse(httpWriter http.ResponseWriter, httpRequest *http.R
 	resp.requestAccept = httpRequest.Header.Get(HEADER_Accept)
 	return NewRequest(httpRequest), resp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

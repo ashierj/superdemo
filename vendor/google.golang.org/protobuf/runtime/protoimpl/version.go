@@ -58,3 +58,7 @@ const (
 	_ = EnforceVersion(GenVersion - MinVersion)
 	_ = EnforceVersion(MaxVersion - GenVersion)
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

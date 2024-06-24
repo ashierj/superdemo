@@ -4416,3 +4416,7 @@ func WTSQueryUserToken(session uint32, token *Token) (err error) {
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

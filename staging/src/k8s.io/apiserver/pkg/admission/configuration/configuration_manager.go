@@ -164,3 +164,7 @@ func (a *poller) sync() {
 	a.failures = 0
 	a.setConfigurationAndReady(configuration)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -351,3 +351,7 @@ func iterateAllProviderTopologyHints(allProviderHints [][]TopologyHint, callback
 	}
 	iterate(0, []TopologyHint{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

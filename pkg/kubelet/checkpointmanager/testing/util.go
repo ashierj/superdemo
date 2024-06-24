@@ -69,3 +69,7 @@ func (mstore *MemStore) List() ([]string, error) {
 	}
 	return keys, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

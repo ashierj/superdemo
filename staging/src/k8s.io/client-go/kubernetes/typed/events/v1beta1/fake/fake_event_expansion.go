@@ -64,3 +64,7 @@ func (c *FakeEvents) PatchWithEventNamespace(event *v1beta1.Event, data []byte) 
 
 	return obj.(*v1beta1.Event), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

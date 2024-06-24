@@ -54,3 +54,7 @@ func CheckCodec(c Codec, internalType Object, externalTypes ...schema.GroupVersi
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

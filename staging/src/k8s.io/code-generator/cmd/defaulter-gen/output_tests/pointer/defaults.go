@@ -31,3 +31,7 @@ func SetDefaults_Tpointer(obj *Tpointer) {
 		*obj.BoolField = true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

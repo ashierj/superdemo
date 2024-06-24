@@ -72,3 +72,7 @@ func createMounts(volumeName, volumeMountPath string, readOnly bool) []v1.Volume
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

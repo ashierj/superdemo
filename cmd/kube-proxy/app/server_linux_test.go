@@ -684,3 +684,7 @@ func TestProxyServer_platformSetup(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -138,3 +138,7 @@ func mustInt64orLeaseID(val interface{}) int64 {
 	}
 	return mustInt64(val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

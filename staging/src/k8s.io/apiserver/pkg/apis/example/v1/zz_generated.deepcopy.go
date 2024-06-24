@@ -163,3 +163,7 @@ func (in *PodStatus) DeepCopy() *PodStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

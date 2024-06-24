@@ -329,3 +329,7 @@ func (c *client) makeURLSegments(name string) []string {
 func isLikelyObjectMetadata(meta *metav1.PartialObjectMetadata) bool {
 	return len(meta.UID) > 0 || !meta.CreationTimestamp.IsZero() || len(meta.Name) > 0 || len(meta.GenerateName) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

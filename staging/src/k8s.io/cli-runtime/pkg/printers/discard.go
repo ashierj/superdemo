@@ -28,3 +28,7 @@ func NewDiscardingPrinter() ResourcePrinterFunc {
 		return nil
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

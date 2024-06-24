@@ -480,3 +480,7 @@ func generateAddresses(num int) []v1.EndpointAddress {
 	}
 	return addresses
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

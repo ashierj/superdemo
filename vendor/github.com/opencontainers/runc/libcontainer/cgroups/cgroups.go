@@ -57,3 +57,7 @@ type Manager interface {
 	// OOMKillCount reports OOM kill count for the cgroup.
 	OOMKillCount() (uint64, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

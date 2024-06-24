@@ -288,3 +288,7 @@ func getControllerPath(subsystem string, cgroups map[string]string) (string, err
 
 	return "", NewNotFoundError(subsystem)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

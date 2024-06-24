@@ -49,3 +49,7 @@ func Get(state resolver.State) *State {
 	s, _ := state.Attributes.Value(key).(*State)
 	return s
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1156,3 +1156,7 @@ var (
 	ErrIntOverflowAuth          = fmt.Errorf("proto: integer overflow")
 	ErrUnexpectedEndOfGroupAuth = fmt.Errorf("proto: unexpected end of group")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

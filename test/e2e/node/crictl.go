@@ -63,3 +63,7 @@ var _ = SIGDescribe("crictl", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

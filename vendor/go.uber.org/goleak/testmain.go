@@ -67,3 +67,7 @@ func VerifyTestMain(m TestingM, options ...Option) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

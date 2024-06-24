@@ -504,3 +504,7 @@ func IsValidSocketAddr(value string) []string {
 	errs = append(errs, IsValidIP(ip)...)
 	return errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

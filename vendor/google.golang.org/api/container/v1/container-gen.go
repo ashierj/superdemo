@@ -18646,3 +18646,7 @@ func (c *ProjectsZonesOperationsListCall) Do(opts ...googleapi.CallOption) (*Lis
 	// }
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

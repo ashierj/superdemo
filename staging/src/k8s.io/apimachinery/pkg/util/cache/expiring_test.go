@@ -319,3 +319,7 @@ func TestStressExpiringCache(t *testing.T) {
 		t.Errorf("unexpected cache size: got=%d, want=1", cache.Len())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

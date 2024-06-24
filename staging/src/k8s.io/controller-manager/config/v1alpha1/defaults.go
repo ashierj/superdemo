@@ -49,3 +49,7 @@ func RecommendedDefaultGenericControllerManagerConfiguration(obj *GenericControl
 	componentbaseconfigv1alpha1.RecommendedDefaultClientConnectionConfiguration(&obj.ClientConnection)
 	componentbaseconfigv1alpha1.RecommendedDefaultLeaderElectionConfiguration(&obj.LeaderElection)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

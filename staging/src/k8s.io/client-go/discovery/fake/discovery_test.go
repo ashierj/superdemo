@@ -63,3 +63,7 @@ func TestFakingServerVersionWithError(t *testing.T) {
 		t.Fatal("ServerVersion should return expected error, returned different error instead")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

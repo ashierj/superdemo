@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package cloudprovider
+-e 
+func helloWorld() {
+    println("hello world")
+}

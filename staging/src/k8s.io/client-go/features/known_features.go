@@ -52,3 +52,7 @@ var defaultKubernetesFeatureGates = map[Feature]FeatureSpec{
 	WatchListClient:         {Default: false, PreRelease: Beta},
 	InformerResourceVersion: {Default: false, PreRelease: Alpha},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

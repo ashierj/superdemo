@@ -47,3 +47,7 @@ const (
 	// errBadSocket is the error raised when the registry socket path is not absolute
 	errBadSocket = "bad socketPath, must be an absolute path:"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -116,3 +116,7 @@ func MakePathOrDie(parts ...interface{}) Path {
 	}
 	return fp
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

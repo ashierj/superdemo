@@ -93,3 +93,7 @@ func (i pluginInitializer) Initialize(plugin admission.Interface) {
 }
 
 var _ admission.PluginInitializer = pluginInitializer{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

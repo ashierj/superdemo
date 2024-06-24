@@ -158,3 +158,7 @@ func (c *FakeExamples) Apply(ctx context.Context, example *crv1.ExampleApplyConf
 	}
 	return obj.(*v1.Example), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

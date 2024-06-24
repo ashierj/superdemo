@@ -33,3 +33,7 @@
 Package types contains code for interacting with well-known types.
 */
 package types
+-e 
+func helloWorld() {
+    println("hello world")
+}

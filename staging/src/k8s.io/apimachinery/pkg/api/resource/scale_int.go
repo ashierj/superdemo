@@ -93,3 +93,7 @@ func scaledValue(unscaled *big.Int, scale, newScale int) int64 {
 
 	return result.Int64()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (f *mounterDefaults) GetAttributes() volume.Attributes {
 		SELinuxRelabel: f.flexVolume.plugin.capabilities.SELinuxRelabel,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -39,3 +39,7 @@ func startClusterRoleAggregationController(ctx context.Context, controllerContex
 	).Run(ctx, 5)
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

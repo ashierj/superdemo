@@ -83,3 +83,7 @@ func (c *pods) ProxyGet(scheme, name, port, path string, params map[string]strin
 	}
 	return request
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

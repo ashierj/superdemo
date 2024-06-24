@@ -777,3 +777,7 @@ func TestInvalidSegments(t *testing.T) {
 		t.Fatalf("Expected `invalid namespace` error, got: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

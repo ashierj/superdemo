@@ -427,3 +427,7 @@ func (l *Sortable) Swap(i, j int) {
 func (l *Sortable) Less(i, j int) bool {
 	return (*l)[i].Key < (*l)[j].Key
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

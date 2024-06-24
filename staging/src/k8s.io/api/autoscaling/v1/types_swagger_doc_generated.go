@@ -274,3 +274,7 @@ func (ScaleStatus) SwaggerDoc() map[string]string {
 }
 
 // AUTO-GENERATED FUNCTIONS END HERE
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -77,3 +77,7 @@ func didFunctionPanic(f func()) (didPanic bool, panicMessage interface{}) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

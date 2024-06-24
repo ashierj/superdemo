@@ -12,3 +12,7 @@ func (n *Namespace) Syscall() int {
 func (n *Namespaces) CloneFlags() uintptr {
 	panic("No namespace syscall support")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

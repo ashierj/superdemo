@@ -97,3 +97,7 @@ func initCipher(c *Cipher) {
 	copy(c.s2[0:], s2[0:])
 	copy(c.s3[0:], s3[0:])
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

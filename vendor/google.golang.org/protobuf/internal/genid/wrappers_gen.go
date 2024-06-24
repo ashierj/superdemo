@@ -173,3 +173,7 @@ const (
 const (
 	BytesValue_Value_field_number protoreflect.FieldNumber = 1
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

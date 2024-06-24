@@ -393,3 +393,7 @@ func (d *decoder) function() *Funcode {
 		HasKwargs:       hasKwargs,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

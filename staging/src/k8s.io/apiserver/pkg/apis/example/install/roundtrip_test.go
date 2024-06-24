@@ -27,3 +27,7 @@ func TestRoundTrip(t *testing.T) {
 	roundtrip.RoundTripTestForAPIGroup(t, Install, examplefuzzer.Funcs)
 	roundtrip.RoundTripProtobufTestForAPIGroup(t, Install, examplefuzzer.Funcs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -22,3 +22,7 @@ type ExternalDocumentation struct {
 	Description string `json:"description,omitempty"`
 	URL         string `json:"url,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

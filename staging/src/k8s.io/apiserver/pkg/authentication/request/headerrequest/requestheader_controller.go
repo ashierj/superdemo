@@ -335,3 +335,7 @@ func deserializeStrings(in string) ([]string, error) {
 	}
 	return ret, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

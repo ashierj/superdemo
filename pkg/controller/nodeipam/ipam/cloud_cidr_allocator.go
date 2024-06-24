@@ -376,3 +376,7 @@ func (ca *cloudCIDRAllocator) ReleaseCIDR(logger klog.Logger, node *v1.Node) err
 		"node", klog.KObj(node), "podCIDR", node.Spec.PodCIDR)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

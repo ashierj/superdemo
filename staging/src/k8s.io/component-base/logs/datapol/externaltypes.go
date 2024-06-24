@@ -47,3 +47,7 @@ func byType(t reflect.Type) []string {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

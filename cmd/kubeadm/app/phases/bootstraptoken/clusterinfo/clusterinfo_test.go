@@ -206,3 +206,7 @@ func newMockClientForTest(t *testing.T) *clientsetfake.Clientset {
 
 	return client
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

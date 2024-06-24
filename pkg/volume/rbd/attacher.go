@@ -267,3 +267,7 @@ func (detacher *rbdDetacher) UnmountDevice(deviceMountPath string) error {
 func (detacher *rbdDetacher) Detach(volumeName string, nodeName types.NodeName) error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

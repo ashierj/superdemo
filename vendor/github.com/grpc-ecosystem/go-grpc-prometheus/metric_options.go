@@ -39,3 +39,7 @@ func WithHistogramConstLabels(labels prom.Labels) HistogramOption {
 		o.ConstLabels = labels
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

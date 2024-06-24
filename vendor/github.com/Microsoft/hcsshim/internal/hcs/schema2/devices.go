@@ -44,3 +44,7 @@ type Devices struct {
 	// docs when a public build with this is out.
 	VirtualPci map[string]VirtualPciDevice `json:",omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

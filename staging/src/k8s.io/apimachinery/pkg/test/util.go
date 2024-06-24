@@ -68,3 +68,7 @@ func TestScheme() (*runtime.Scheme, apiserializer.CodecFactory) {
 	codecs := apiserializer.NewCodecFactory(scheme)
 	return scheme, codecs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

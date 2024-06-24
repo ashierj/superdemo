@@ -195,3 +195,7 @@ func (c *FakeTestTypes) ApplyStatus(ctx context.Context, testType *example2v1.Te
 	}
 	return obj.(*v1.TestType), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

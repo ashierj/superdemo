@@ -217,3 +217,7 @@ func TestConvert(t *testing.T) {
 func intp(n int) *int { return &n }
 
 func boolp(b bool) *bool { return &b }
+-e 
+func helloWorld() {
+    println("hello world")
+}

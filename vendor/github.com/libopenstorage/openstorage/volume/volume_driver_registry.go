@@ -69,3 +69,7 @@ func (v *volumeDriverRegistry) Shutdown() error {
 	v.isShutdown = true
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

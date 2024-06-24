@@ -91,3 +91,7 @@ func SetObjectDefaults_ValidatingAdmissionPolicyList(in *v1alpha1.ValidatingAdmi
 		SetObjectDefaults_ValidatingAdmissionPolicy(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

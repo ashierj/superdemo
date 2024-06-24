@@ -181,3 +181,7 @@ func (collector *GenericCollector) Collect(metrics map[string][]v1.MetricVal) (t
 	}
 	return nextCollectionTime, metrics, compileErrors(errorSlice)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

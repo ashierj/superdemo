@@ -254,3 +254,7 @@ func GetSignatureAlgorithm[K JoseKey](key K) jose.SignatureAlgorithm {
 		panic("unknown key type") // should be impossible
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

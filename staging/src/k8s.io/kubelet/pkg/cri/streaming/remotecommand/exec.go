@@ -78,3 +78,7 @@ func ServeExec(w http.ResponseWriter, req *http.Request, executor Executor, podN
 		}})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

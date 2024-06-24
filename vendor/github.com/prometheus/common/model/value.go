@@ -362,3 +362,7 @@ func (mat Matrix) String() string {
 
 	return strings.Join(strs, "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

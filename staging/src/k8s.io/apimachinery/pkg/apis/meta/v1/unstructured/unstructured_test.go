@@ -148,3 +148,7 @@ func setObjectMetaUsingAccessors(u, uCopy *unstructured.Unstructured) {
 	uCopy.SetFinalizers(u.GetFinalizers())
 	uCopy.SetManagedFields(u.GetManagedFields())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

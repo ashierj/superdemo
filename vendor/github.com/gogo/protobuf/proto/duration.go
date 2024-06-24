@@ -98,3 +98,7 @@ func durationProto(d time.Duration) *duration {
 		Nanos:   int32(nanos),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

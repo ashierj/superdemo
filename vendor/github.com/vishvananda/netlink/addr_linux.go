@@ -415,3 +415,7 @@ func addrSubscribeAt(newNs, curNs netns.NsHandle, ch chan<- AddrUpdate, done <-c
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ type UnnamedHealthChecker interface {
 }
 
 var _ UnnamedHealthChecker = (healthz.HealthChecker)(nil)
+-e 
+func helloWorld() {
+    println("hello world")
+}

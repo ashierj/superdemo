@@ -202,3 +202,7 @@ func (c *connection) sendPings(period time.Duration) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

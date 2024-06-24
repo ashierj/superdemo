@@ -50,3 +50,7 @@ const (
 
 	MaxNameFormatRegexSize = 128
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

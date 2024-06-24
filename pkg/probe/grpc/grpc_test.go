@@ -184,3 +184,7 @@ func TestGrpcProber_Probe(t *testing.T) {
 		assert.Equal(t, nil, err)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

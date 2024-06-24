@@ -111,3 +111,7 @@ func convertToExternalConfig(in internalRegistryConfig) (cfg credentialconfig.Re
 	}
 	return configMap
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

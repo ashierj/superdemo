@@ -246,3 +246,7 @@ func StartEtcd(tb testing.TB, etcdOutput io.Writer) {
 	}
 	tb.Cleanup(stop)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

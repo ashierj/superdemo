@@ -108,3 +108,7 @@ func (q *statsQueue) Clear() {
 	q.size = 0
 	q.totalReqSize = 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

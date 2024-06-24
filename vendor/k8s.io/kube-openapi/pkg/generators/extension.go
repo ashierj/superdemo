@@ -201,3 +201,7 @@ func validateMemberExtensions(extensions []extension, m *types.Member) []error {
 	}
 	return errors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

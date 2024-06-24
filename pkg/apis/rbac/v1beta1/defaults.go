@@ -47,3 +47,7 @@ func SetDefaults_Subject(obj *rbacv1beta1.Subject) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

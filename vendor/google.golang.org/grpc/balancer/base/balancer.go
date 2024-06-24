@@ -262,3 +262,7 @@ type errPicker struct {
 func (p *errPicker) Pick(info balancer.PickInfo) (balancer.PickResult, error) {
 	return balancer.PickResult{}, p.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

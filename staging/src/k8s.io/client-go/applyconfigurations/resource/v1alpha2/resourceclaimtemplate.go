@@ -247,3 +247,7 @@ func (b *ResourceClaimTemplateApplyConfiguration) WithSpec(value *ResourceClaimT
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

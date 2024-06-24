@@ -363,3 +363,7 @@ func (c *Context) Execute(key string) error {
 	}
 	return c.dec.Execute(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

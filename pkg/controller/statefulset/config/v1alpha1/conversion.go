@@ -38,3 +38,7 @@ func Convert_v1alpha1_StatefulSetControllerConfiguration_To_config_StatefulSetCo
 func Convert_config_StatefulSetControllerConfiguration_To_v1alpha1_StatefulSetControllerConfiguration(in *statefulsetconfig.StatefulSetControllerConfiguration, out *v1alpha1.StatefulSetControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_StatefulSetControllerConfiguration_To_v1alpha1_StatefulSetControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

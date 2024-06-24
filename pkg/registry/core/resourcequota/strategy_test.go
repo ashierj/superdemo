@@ -58,3 +58,7 @@ func TestResourceQuotaStrategy(t *testing.T) {
 		t.Errorf("ResourceQuota does not allow setting status on create")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

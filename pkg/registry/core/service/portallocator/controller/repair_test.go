@@ -386,3 +386,7 @@ func expectMetrics(t *testing.T, em testMetrics) {
 		t.Fatalf("metrics error: expected %v, received %v", em, m)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

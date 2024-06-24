@@ -19,3 +19,7 @@ func HttpMiddlewareHandlerToFilter(middleware HttpMiddlewareHandler) FilterFunct
 		middleware(next).ServeHTTP(resp.ResponseWriter, req.Request)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

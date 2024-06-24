@@ -178,3 +178,7 @@ func (b *JobSpecApplyConfiguration) WithManagedBy(value string) *JobSpecApplyCon
 	b.ManagedBy = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

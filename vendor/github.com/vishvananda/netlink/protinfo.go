@@ -60,3 +60,7 @@ func boolToByte(x bool) []byte {
 func byteToBool(x byte) bool {
 	return uint8(x) != 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

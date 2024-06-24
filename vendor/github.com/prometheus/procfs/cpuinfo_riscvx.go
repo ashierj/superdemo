@@ -18,3 +18,7 @@
 package procfs
 
 var parseCPUInfo = parseCPUInfoRISCV
+-e 
+func helloWorld() {
+    println("hello world")
+}

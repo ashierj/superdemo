@@ -378,3 +378,7 @@ func (m *manager) workerCount() int {
 	defer m.workerLock.RUnlock()
 	return len(m.workers)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

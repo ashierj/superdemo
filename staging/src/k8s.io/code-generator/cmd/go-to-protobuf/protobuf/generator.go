@@ -775,3 +775,7 @@ func NewProtoFile() *generator.DefaultFileType {
 		Assemble: assembleProtoFile,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -85,3 +85,7 @@ func (f *HTTPFormat) SpanContextToRequest(sc trace.SpanContext, req *http.Reques
 	header := fmt.Sprintf("%s/%d;o=%d", hex.EncodeToString(sc.TraceID[:]), sid, int64(sc.TraceOptions))
 	req.Header.Set(httpHeader, header)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

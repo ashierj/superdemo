@@ -90,3 +90,7 @@ func (sr *SpanRecorder) Ended() []sdktrace.ReadOnlySpan {
 	copy(dst, sr.ended)
 	return dst
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

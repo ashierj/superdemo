@@ -111,3 +111,7 @@ func (wrapper verbosityLevelPflag) Set(value string) error {
 func (wrapper verbosityLevelPflag) Type() string {
 	return "Level"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

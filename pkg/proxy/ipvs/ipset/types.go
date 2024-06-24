@@ -66,3 +66,7 @@ var ValidIPSetTypes = []Type{
 	HashIPPortNet,
 	HashIP,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

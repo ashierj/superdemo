@@ -43,3 +43,7 @@ func tryEnsureNamespace(client corev1client.NamespaceInterface, namespace string
 
 	return utilerrors.FilterOut(createErr, apierrors.IsAlreadyExists, apierrors.IsForbidden)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

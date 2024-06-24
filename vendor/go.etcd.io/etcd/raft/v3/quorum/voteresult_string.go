@@ -24,3 +24,7 @@ func (i VoteResult) String() string {
 	}
 	return _VoteResult_name[_VoteResult_index[i]:_VoteResult_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

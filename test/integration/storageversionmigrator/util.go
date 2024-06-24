@@ -1063,3 +1063,7 @@ func (svm *svmTest) validateRVAndGeneration(ctx context.Context, t *testing.T, c
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

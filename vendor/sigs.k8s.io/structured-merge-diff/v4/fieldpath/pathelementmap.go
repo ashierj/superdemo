@@ -112,3 +112,7 @@ func (s *PathElementMap) Get(pe PathElement) (interface{}, bool) {
 	}
 	return nil, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

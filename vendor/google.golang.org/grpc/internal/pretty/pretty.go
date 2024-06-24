@@ -80,3 +80,7 @@ func FormatJSON(b []byte) string {
 	}
 	return out.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

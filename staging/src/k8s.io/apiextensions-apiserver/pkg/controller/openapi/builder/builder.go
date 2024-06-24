@@ -635,3 +635,7 @@ func buildSelectableFields(crd *apiextensionsv1.CustomResourceDefinition, versio
 	}
 	return selectableFields
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -125,3 +125,7 @@ func ParseSI(input string) (float64, string, error) {
 	base, err := strconv.ParseFloat(found[1], 64)
 	return base * mag, unit, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

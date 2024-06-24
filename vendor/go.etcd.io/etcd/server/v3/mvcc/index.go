@@ -274,3 +274,7 @@ func (ti *treeIndex) Insert(ki *keyIndex) {
 	defer ti.Unlock()
 	ti.tree.ReplaceOrInsert(ki)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

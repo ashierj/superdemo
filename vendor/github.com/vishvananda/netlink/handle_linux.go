@@ -142,3 +142,7 @@ func (h *Handle) newNetlinkRequest(proto, flags int) *nl.NetlinkRequest {
 		Sockets: h.sockets,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

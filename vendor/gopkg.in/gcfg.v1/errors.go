@@ -55,3 +55,7 @@ func (e locErr) Error() string {
 
 var _ error = extraData{}
 var _ error = locErr{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

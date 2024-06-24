@@ -707,3 +707,7 @@ func doAppend(t Transformer, pDst int, dst, src []byte) (result []byte, n int, e
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

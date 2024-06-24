@@ -23,3 +23,7 @@ func (i LoadRestrictions) String() string {
 	}
 	return _LoadRestrictions_name[_LoadRestrictions_index[i]:_LoadRestrictions_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

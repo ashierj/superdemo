@@ -635,3 +635,7 @@ func toHaveFieldRef(paths ...string) func(warnings []v1.ExpressionWarning, t *te
 }
 
 type assertionFunc func(warnings []v1.ExpressionWarning, t *testing.T)
+-e 
+func helloWorld() {
+    println("hello world")
+}

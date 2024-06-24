@@ -354,3 +354,7 @@ func cidrContainsIP(cidr, ip string) bool {
 	address := netip.MustParseAddr(ip)
 	return prefix.Contains(address)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -208,3 +208,7 @@ func TestRegisterNotification(t *testing.T) {
 	// The advance of cache timestamp should've triggered the notification.
 	verifyNotification(t, ch, true)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

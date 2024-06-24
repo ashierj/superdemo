@@ -254,3 +254,7 @@ func (c *jobs) ApplyStatus(ctx context.Context, job *batchv1.JobApplyConfigurati
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -638,3 +638,7 @@ func getLivez(checkName string, clientConfig *rest.Config, excludes ...string) (
 	body, err := req.DoRaw(context.TODO()) // we can still have a response body during an error case
 	return string(body), err == nil, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

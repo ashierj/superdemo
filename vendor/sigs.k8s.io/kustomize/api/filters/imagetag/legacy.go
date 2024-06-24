@@ -102,3 +102,7 @@ func checkImageTagsFn(imageTag types.Image) fieldCallback {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

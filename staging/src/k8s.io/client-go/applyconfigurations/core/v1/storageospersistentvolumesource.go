@@ -73,3 +73,7 @@ func (b *StorageOSPersistentVolumeSourceApplyConfiguration) WithSecretRef(value 
 	b.SecretRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

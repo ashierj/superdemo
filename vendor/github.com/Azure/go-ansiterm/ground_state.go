@@ -22,3 +22,7 @@ func (gs groundState) Handle(b byte) (s state, e error) {
 
 	return gs, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

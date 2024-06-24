@@ -137,3 +137,7 @@ func sysctlTestPod(name string, sysctls map[string]string) *v1.Pod {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

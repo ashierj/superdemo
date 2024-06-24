@@ -300,3 +300,7 @@ func f32bitsToF16bits(u32 uint32) uint16 {
 	}
 	return uint16(halfSign | uHalfExp | halfCoef)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

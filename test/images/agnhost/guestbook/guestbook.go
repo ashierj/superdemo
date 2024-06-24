@@ -304,3 +304,7 @@ func getIP(hostPort string) (net.IP, error) {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 	return localAddr.IP, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

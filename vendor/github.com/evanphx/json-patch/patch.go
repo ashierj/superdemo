@@ -849,3 +849,7 @@ var (
 func decodePatchKey(k string) string {
 	return rfc6901Decoder.Replace(k)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

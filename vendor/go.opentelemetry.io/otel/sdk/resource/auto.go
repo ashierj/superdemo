@@ -106,3 +106,7 @@ func (e detectErrs) Unwrap() error {
 func (e detectErrs) Is(target error) bool {
 	return len(e) != 0 && errors.Is(e[0], target)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

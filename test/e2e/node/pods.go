@@ -815,3 +815,7 @@ func (v *podStartVerifier) VerifyFinal(scenario string, total time.Duration) (*v
 	framework.Logf("Pod %s on node %s %s total=%s run=%s execute=%s", pod.Name, pod.Spec.NodeName, scenario, total, v.completeDuration, v.duration)
 	return pod, errs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

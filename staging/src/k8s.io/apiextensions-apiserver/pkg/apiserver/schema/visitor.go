@@ -104,3 +104,7 @@ func (m *Visitor) visitNestedValueValidation(vv *NestedValueValidation) bool {
 
 	return ret
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

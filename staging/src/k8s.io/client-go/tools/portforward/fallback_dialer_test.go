@@ -58,3 +58,7 @@ func TestFallbackDialer(t *testing.T) {
 }
 
 func notCalled(err error) bool { return false }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -167,3 +167,7 @@ func writePolicy(t *testing.T, policy string) (string, error) {
 
 	return f.Name(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

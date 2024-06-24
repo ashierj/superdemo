@@ -83,3 +83,7 @@ func NewInTreeRegistry() runtime.Registry {
 
 	return registry
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

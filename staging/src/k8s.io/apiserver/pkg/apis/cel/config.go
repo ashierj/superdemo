@@ -43,3 +43,7 @@ const (
 	// by a messageExpression field
 	MaxEvaluatedMessageExpressionSizeBytes = 5 * 1024
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

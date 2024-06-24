@@ -19,3 +19,7 @@ This stand-alone package is utilized for dynamically generating/maintaining
 documentation on all parseable metrics in the Kubernetes code base.
 */
 package main
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -146,3 +146,7 @@ func TestClusterScopedOwners(t *testing.T) {
 		t.Fatalf("child with valid ownerRef is unexpectedly missing: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

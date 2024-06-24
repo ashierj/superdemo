@@ -94,3 +94,7 @@ func (p *SuffixTransformerPlugin) shouldSkip(id resid.ResId) bool {
 func NewSuffixTransformerPlugin() resmap.TransformerPlugin {
 	return &SuffixTransformerPlugin{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

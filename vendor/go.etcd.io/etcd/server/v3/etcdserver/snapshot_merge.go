@@ -83,3 +83,7 @@ func newSnapshotReaderCloser(lg *zap.Logger, snapshot backend.Snapshot) io.ReadC
 	}()
 	return pr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -157,3 +157,7 @@ func (a *simpleActivation) ResolveName(name string) (interface{}, bool) {
 func (a *simpleActivation) Parent() interpreter.Activation {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

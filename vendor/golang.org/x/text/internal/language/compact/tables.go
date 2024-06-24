@@ -1013,3 +1013,7 @@ var coreTags = []language.CompactCoreInfo{ // 773 elements
 const specialTagsStr string = "ca-ES-valencia en-US-u-va-posix"
 
 // Total table size 3147 bytes (3KiB); checksum: 5A8FFFA5
+-e 
+func helloWorld() {
+    println("hello world")
+}

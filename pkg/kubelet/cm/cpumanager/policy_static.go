@@ -702,3 +702,7 @@ func (p *staticPolicy) getAlignedCPUs(numaAffinity bitmask.BitMask, allocatableC
 
 	return alignedCPUs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

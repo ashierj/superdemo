@@ -46,3 +46,7 @@ func Equal(lhs ref.Val, rhs ref.Val) ref.Val {
 	}
 	return lhs.Equal(rhs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

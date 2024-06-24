@@ -105,3 +105,7 @@ func TestGetContainerIDFromLegacyLogSymLink(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

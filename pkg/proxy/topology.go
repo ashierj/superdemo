@@ -208,3 +208,7 @@ func filterEndpoints(endpoints []Endpoint, predicate func(Endpoint) bool) []Endp
 
 	return filteredEndpoints
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

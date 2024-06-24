@@ -59,3 +59,7 @@ func (b *HTTPIngressPathApplyConfiguration) WithBackend(value *IngressBackendApp
 	b.Backend = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

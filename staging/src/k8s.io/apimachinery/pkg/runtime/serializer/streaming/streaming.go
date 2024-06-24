@@ -134,3 +134,7 @@ func (e *encoder) Encode(obj runtime.Object) error {
 	e.buf.Reset()
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

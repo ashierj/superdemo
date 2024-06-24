@@ -88,3 +88,7 @@ func getServicePorts(spec corev1.ServiceSpec) []string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

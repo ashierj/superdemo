@@ -78,3 +78,7 @@ func (g gitIgnore) Match(path string, isDir bool) bool {
 	}
 	return g.ignorePatterns.match(relativePath, isDir)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

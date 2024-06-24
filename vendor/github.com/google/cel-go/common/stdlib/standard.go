@@ -659,3 +659,7 @@ func convertToType(t ref.Type) functions.UnaryOp {
 		return val.ConvertToType(t)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

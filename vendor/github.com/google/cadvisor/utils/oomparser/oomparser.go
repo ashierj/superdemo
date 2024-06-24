@@ -172,3 +172,7 @@ func (glogAdapter) Warningf(format string, args ...interface{}) {
 func (glogAdapter) Errorf(format string, args ...interface{}) {
 	klog.Warningf(format, args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

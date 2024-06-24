@@ -22,3 +22,7 @@ package is the W3C Trace Context encoding
 (https://www.w3.org/TR/baggage/).
 */
 package propagation // import "go.opentelemetry.io/otel/propagation"
+-e 
+func helloWorld() {
+    println("hello world")
+}

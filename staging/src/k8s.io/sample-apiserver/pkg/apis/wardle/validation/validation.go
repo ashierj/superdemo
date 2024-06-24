@@ -52,3 +52,7 @@ func ValidateFlunderSpec(s *wardle.FlunderSpec, fldPath *field.Path) field.Error
 
 	return allErrs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

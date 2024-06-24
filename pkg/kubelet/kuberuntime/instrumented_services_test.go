@@ -99,3 +99,7 @@ func TestStatus(t *testing.T) {
 	}
 	assert.Equal(t, expected, actural.Status)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

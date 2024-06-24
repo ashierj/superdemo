@@ -28,3 +28,7 @@ import (
 func init() {
 	ktesting.DefaultConfig.AddFlags(flag.CommandLine)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

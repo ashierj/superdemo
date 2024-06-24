@@ -39,3 +39,7 @@ func (cmsg *Cmsghdr) SetLen(length int) {
 // SYS___SYSCTL is used by syscall_bsd.go for all BSDs, but in modern versions
 // of openbsd/arm the syscall is called sysctl instead of __sysctl.
 const SYS___SYSCTL = SYS_SYSCTL
+-e 
+func helloWorld() {
+    println("hello world")
+}

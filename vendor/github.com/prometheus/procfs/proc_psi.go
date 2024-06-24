@@ -100,3 +100,7 @@ func parsePSIStats(r io.Reader) (PSIStats, error) {
 
 	return psiStats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

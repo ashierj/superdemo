@@ -56,3 +56,7 @@ func ByName(s string) (Severity, bool) {
 	}
 	return 0, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

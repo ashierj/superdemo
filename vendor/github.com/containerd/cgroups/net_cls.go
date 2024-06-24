@@ -59,3 +59,7 @@ func (n *netclsController) Create(path string, resources *specs.LinuxResources) 
 func (n *netclsController) Update(path string, resources *specs.LinuxResources) error {
 	return n.Create(path, resources)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

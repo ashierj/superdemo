@@ -19,3 +19,7 @@ limitations under the License.
 // ensure containers run with the desired QoS, and allocate compute resources like cpus, memory,
 // devices...
 package cm // import "k8s.io/kubernetes/pkg/kubelet/cm"
+-e 
+func helloWorld() {
+    println("hello world")
+}

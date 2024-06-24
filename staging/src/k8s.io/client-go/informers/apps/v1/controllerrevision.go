@@ -88,3 +88,7 @@ func (f *controllerRevisionInformer) Informer() cache.SharedIndexInformer {
 func (f *controllerRevisionInformer) Lister() v1.ControllerRevisionLister {
 	return v1.NewControllerRevisionLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

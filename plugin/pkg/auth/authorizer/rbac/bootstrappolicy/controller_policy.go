@@ -513,3 +513,7 @@ func ControllerRoleBindings() []rbacv1.ClusterRoleBinding {
 	_, controllerRoleBindings := buildControllerRoles()
 	return controllerRoleBindings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -108,3 +108,7 @@ func (a *instrumentedAuthenticator) AuthenticateToken(ctx context.Context, token
 func (a *instrumentedAuthenticator) HealthCheck() error {
 	return a.delegate.HealthCheck()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

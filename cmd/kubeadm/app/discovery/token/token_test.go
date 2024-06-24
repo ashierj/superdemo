@@ -311,3 +311,7 @@ func (c *fakeConfigMap) createOrUpdate(client clientset.Interface) error {
 		Data: c.data,
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

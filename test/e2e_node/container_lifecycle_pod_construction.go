@@ -400,3 +400,7 @@ func preparePod(pod *v1.Pod) {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

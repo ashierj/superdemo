@@ -24,3 +24,7 @@ type Stats interface {
 	// StoreStats returns statistics of the store backing this EtcdServer
 	StoreStats() []byte
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

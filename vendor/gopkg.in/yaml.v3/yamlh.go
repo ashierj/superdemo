@@ -805,3 +805,7 @@ type yaml_emitter_t struct {
 
 	document *yaml_document_t // The currently emitted document.
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

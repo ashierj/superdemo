@@ -189,3 +189,7 @@ func (i *iterator) Next() ref.Val {
 }
 
 var _ traits.Iterator = (*iterator)(nil)
+-e 
+func helloWorld() {
+    println("hello world")
+}

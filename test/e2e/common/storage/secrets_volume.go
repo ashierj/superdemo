@@ -716,3 +716,7 @@ func createNonOptionalSecretPodWithSecret(ctx context.Context, f *framework.Fram
 	pod = e2epod.NewPodClient(f).Create(ctx, pod)
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

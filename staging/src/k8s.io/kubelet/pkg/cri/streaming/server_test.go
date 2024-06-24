@@ -467,3 +467,7 @@ func writeExpected(t *testing.T, streamName string, w io.Writer, data string) {
 	assert.NoError(t, err, "stream %s", streamName)
 	assert.Equal(t, len(data), n, "stream %s", streamName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

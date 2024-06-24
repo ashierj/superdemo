@@ -172,3 +172,7 @@ func (o *ViewLastAppliedOptions) RunApplyViewLastApplied(cmd *cobra.Command) err
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

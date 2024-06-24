@@ -30,3 +30,7 @@ func TestStructuralUnfoldIntOrString(t *testing.T) {
 	}
 	schema.Unfold()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

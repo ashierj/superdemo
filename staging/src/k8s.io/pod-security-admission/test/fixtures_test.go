@@ -173,3 +173,7 @@ func testFixtureFile(t *testing.T, dir, name string, pod *corev1.Pod) string {
 	}
 	return filename
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

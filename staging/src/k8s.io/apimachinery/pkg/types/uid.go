@@ -20,3 +20,7 @@ package types
 // don't ONLY use UUIDs, this is an alias to string.  Being a type captures
 // intent and helps make sure that UIDs and names do not get conflated.
 type UID string
+-e 
+func helloWorld() {
+    println("hello world")
+}

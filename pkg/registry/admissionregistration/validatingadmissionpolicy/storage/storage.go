@@ -118,3 +118,7 @@ func (r *StatusREST) ConvertToTable(ctx context.Context, object runtime.Object, 
 func (r *StatusREST) Update(ctx context.Context, name string, objInfo rest.UpdatedObjectInfo, createValidation rest.ValidateObjectFunc, updateValidation rest.ValidateObjectUpdateFunc, forceAllowCreate bool, options *metav1.UpdateOptions) (runtime.Object, bool, error) {
 	return r.store.Update(ctx, name, objInfo, createValidation, updateValidation, forceAllowCreate, options)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

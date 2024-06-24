@@ -45,3 +45,7 @@ func PProfHandlers() map[string]http.Handler {
 
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

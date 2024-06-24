@@ -42,3 +42,7 @@ type PodSecurityExemptions struct {
 	Namespaces     []string `json:"namespaces,omitempty"`
 	RuntimeClasses []string `json:"runtimeClasses,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

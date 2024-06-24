@@ -289,3 +289,7 @@ func TestBroadcasterShutdownRace(t *testing.T) {
 	})
 	m.distributing.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

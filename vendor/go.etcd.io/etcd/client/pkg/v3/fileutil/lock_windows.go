@@ -124,3 +124,7 @@ func lockFileEx(h syscall.Handle, flags, locklow, lockhigh uint32, ol *syscall.O
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -149,3 +149,7 @@ func (c *FakeResourceClasses) Apply(ctx context.Context, resourceClass *resource
 	}
 	return obj.(*v1alpha2.ResourceClass), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -768,3 +768,7 @@ func TestStatelessGroupPriorityMinimum(t *testing.T) {
 	assert.Equal(t, decoded.Items[0].Name, "stable.example.com")
 	assert.Equal(t, decoded.Items[1].Name, "experimental.example.com")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

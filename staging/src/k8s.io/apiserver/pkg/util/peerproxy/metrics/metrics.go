@@ -54,3 +54,7 @@ func Register() {
 func IncPeerProxiedRequest(ctx context.Context, status string) {
 	peerProxiedRequestsTotal.WithContext(ctx).WithLabelValues(status).Add(1)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

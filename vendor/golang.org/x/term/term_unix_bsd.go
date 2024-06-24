@@ -10,3 +10,7 @@ import "golang.org/x/sys/unix"
 
 const ioctlReadTermios = unix.TIOCGETA
 const ioctlWriteTermios = unix.TIOCSETA
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -63,3 +63,7 @@ func defaultStreamServerInterceptor(ctx context.Context, ss StreamServer, _ *Str
 }
 
 type StreamClientInterceptor func(context.Context)
+-e 
+func helloWorld() {
+    println("hello world")
+}

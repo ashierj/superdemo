@@ -45,3 +45,7 @@ func (s *set) Values() (values []string) {
 func newSet() *set {
 	return &set{make(map[string]bool)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

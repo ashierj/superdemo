@@ -81,3 +81,7 @@ func (z *Lazy[T]) Get() (T, error) {
 	}
 	return e.get()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

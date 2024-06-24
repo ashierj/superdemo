@@ -101,3 +101,7 @@ func init() {
 	prometheus.MustRegister(snapshotTransferSec)
 	prometheus.MustRegister(isDefragActive)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

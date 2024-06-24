@@ -220,3 +220,7 @@ const (
 	opMiscTAX = 0x00
 	opMiscTXA = 0x80
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

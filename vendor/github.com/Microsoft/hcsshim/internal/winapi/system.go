@@ -50,3 +50,7 @@ type SYSTEM_PROCESS_INFORMATION struct {
 	WriteTransferCount           int64          // LARGE_INTEGER
 	OtherTransferCount           int64          // LARGE_INTEGER
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

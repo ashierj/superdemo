@@ -810,3 +810,7 @@ func getRbdImageInfo(deviceMountPath string) (*rbdImageInfo, error) {
 		name: deviceMountedPathSeps[1],
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

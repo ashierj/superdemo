@@ -170,3 +170,7 @@ func AsStrictDecodingError(err error) (*strictDecodingError, bool) {
 	strictErr, ok := err.(*strictDecodingError)
 	return strictErr, ok
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

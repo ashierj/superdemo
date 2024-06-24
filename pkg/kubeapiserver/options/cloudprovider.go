@@ -76,3 +76,7 @@ func (s *CloudProviderOptions) AddFlags(fs *pflag.FlagSet) {
 		"The path to the cloud provider configuration file. Empty string for no configuration file.")
 	fs.MarkDeprecated("cloud-config", "will be removed in a future version") // nolint: errcheck
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

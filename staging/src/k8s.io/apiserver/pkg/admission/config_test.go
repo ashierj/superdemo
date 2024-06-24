@@ -333,3 +333,7 @@ func equalJSON(a, b string) bool {
 	}
 	return reflect.DeepEqual(x, y)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

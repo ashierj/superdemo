@@ -572,3 +572,7 @@ func validateTrustBundle(path *field.Path, in string) field.ErrorList {
 
 	return allErrors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -96,3 +96,7 @@ func parseInterrupts(r io.Reader) (Interrupts, error) {
 
 	return interrupts, scanner.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

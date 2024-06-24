@@ -707,3 +707,7 @@ func constrainLabelValues(desc *Desc, lvs []string, curry []curriedLabelValue) [
 	}
 	return constrainedValues
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

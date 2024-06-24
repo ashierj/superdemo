@@ -95,3 +95,7 @@ func getLogFiles() logFiles {
 	}
 	return logs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

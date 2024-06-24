@@ -307,3 +307,7 @@ func (cs computeSource) Token() (*oauth2.Token, error) {
 		"oauth2.google.serviceAccount": acct,
 	}), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

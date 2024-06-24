@@ -42,3 +42,7 @@ func (b *EndpointHintsApplyConfiguration) WithForZones(values ...*ForZoneApplyCo
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

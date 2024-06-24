@@ -590,3 +590,7 @@ func (ctx ecEncrypterVerifier) verifyPayload(payload []byte, signature []byte, a
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -838,3 +838,7 @@ func getPeerAddress(peerAdvertiseAddress peerreconcilers.PeerAdvertiseAddress, p
 		return net.JoinHostPort(publicAddress.String(), strconv.Itoa(publicServicePort))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

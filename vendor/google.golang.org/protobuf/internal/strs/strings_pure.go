@@ -26,3 +26,7 @@ func (*Builder) AppendFullName(prefix pref.FullName, name pref.Name) pref.FullNa
 func (*Builder) MakeString(b []byte) string {
 	return string(b)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

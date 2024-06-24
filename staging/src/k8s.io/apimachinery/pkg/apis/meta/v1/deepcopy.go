@@ -44,3 +44,7 @@ func (in *TableRow) DeepCopy() *TableRow {
 	in.Object.DeepCopyInto(&out.Object)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

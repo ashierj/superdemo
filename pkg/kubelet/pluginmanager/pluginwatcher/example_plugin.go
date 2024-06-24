@@ -177,3 +177,7 @@ func (e *examplePlugin) Stop() error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -444,3 +444,7 @@ var transformerConfigurators = map[builtinhelpers.BuiltinPluginType]func(
 		return nil, fmt.Errorf("valueadd keyword not yet defined")
 	},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

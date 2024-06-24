@@ -325,3 +325,7 @@ func testPodSELinuxLabeling(ctx context.Context, f *framework.Framework, hostIPC
 		gomega.Expect(err).To(gomega.HaveOccurred(), "expecting SELinux to not let the container with different MCS label to read the file")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

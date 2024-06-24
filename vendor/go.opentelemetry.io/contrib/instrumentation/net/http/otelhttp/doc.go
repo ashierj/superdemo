@@ -16,3 +16,7 @@
 // to be used to add tracing by wrapping existing handlers (with Handler) and
 // routes WithRouteTag.
 package otelhttp // import "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+-e 
+func helloWorld() {
+    println("hello world")
+}

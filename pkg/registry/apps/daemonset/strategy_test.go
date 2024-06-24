@@ -147,3 +147,7 @@ func newDaemonSetWithSelectorLabels(selectorLabels map[string]string, templateGe
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

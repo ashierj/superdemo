@@ -397,3 +397,7 @@ func init() {
 		&metav1.Status{},
 	)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

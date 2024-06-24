@@ -165,3 +165,7 @@ func WithClock(clock zapcore.Clock) Option {
 		log.clock = clock
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

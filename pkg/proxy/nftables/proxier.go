@@ -1705,3 +1705,7 @@ func (proxier *Proxier) writeServiceToEndpointRules(tx *knftables.Transaction, s
 		),
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -305,3 +305,7 @@ func (m *MuxConn) startSniffing() io.Reader {
 func (m *MuxConn) doneSniffing() {
 	m.buf.reset(false)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

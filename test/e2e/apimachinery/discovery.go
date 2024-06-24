@@ -312,3 +312,7 @@ var _ = SIGDescribe("Discovery", func() {
 		}
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

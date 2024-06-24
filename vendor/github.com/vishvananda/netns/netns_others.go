@@ -58,3 +58,7 @@ func GetFromThread(pid, tid int) (NsHandle, error) {
 func GetFromDocker(id string) (NsHandle, error) {
 	return -1, ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -87,3 +87,7 @@ func (b *PersistentVolumeClaimConditionApplyConfiguration) WithMessage(value str
 	b.Message = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

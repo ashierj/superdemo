@@ -24,3 +24,7 @@ import (
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

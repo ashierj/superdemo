@@ -349,3 +349,7 @@ func (w yamlFrameWriter) Write(data []byte) (n int, err error) {
 	}
 	return w.w.Write(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

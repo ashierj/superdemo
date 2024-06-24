@@ -17,3 +17,7 @@ type MemoryStats struct {
 
 	MemoryUsagePrivateWorkingSetBytes uint64 `json:"MemoryUsagePrivateWorkingSetBytes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -84,3 +84,7 @@ type MetricListOptions struct {
 // AllObjects is a wildcard used to select metrics
 // for all objects matching the given label selector
 const AllObjects = "*"
+-e 
+func helloWorld() {
+    println("hello world")
+}

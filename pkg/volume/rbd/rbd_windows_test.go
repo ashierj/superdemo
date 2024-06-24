@@ -48,3 +48,7 @@ func getLoggedSource(devicePath string) (string, error) {
 	}
 	return volIds[0], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

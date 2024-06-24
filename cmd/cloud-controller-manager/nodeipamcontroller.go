@@ -234,3 +234,7 @@ func setNodeCIDRMaskSizes(cfg nodeipamconfig.NodeIPAMControllerConfiguration, cl
 	}
 	return sortedSizes(ipv4Mask, ipv6Mask), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

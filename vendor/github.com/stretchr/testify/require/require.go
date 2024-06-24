@@ -2029,3 +2029,7 @@ func Zerof(t TestingT, i interface{}, msg string, args ...interface{}) {
 	}
 	t.FailNow()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -48,3 +48,7 @@ func main() {
 	klog.Background().Info("klog.Background+logr.Logger.Info")
 	klog.FromContext(context.Background()).Info("klog.FromContext+logr.Logger.Info")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

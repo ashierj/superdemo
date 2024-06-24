@@ -249,3 +249,7 @@ func (a *AdmissionOptions) defaultEnabledPluginNames() []string {
 
 	return defaultOnPluginNames
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

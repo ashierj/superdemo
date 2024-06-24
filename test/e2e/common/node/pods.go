@@ -1143,3 +1143,7 @@ func checkPodListQuantity(f *framework.Framework, label string, quantity int) fu
 		return true, nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

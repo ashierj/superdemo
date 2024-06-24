@@ -1043,3 +1043,7 @@ spec:
 		t.Errorf("unexpected result:\n\tgot: %q\n\texpected: %q", got, expectedEtcdVersion)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

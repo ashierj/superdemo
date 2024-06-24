@@ -448,3 +448,7 @@ func Test_hasLoadBalancerPortsError(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

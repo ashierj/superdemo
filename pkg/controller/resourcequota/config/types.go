@@ -30,3 +30,7 @@ type ResourceQuotaControllerConfiguration struct {
 	// management, but more CPU (and network) load.
 	ConcurrentResourceQuotaSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

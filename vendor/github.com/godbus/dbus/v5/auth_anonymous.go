@@ -14,3 +14,7 @@ func (a *authAnonymous) FirstData() (name, resp []byte, status AuthStatus) {
 func (a *authAnonymous) HandleData(data []byte) (resp []byte, status AuthStatus) {
 	return nil, AuthError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

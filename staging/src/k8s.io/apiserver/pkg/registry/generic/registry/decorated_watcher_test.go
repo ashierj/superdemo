@@ -106,3 +106,7 @@ func expectErrorEvent(t *testing.T, dw *decoratedWatcher) {
 		t.Fatalf("timeout after %v", wait.ForeverTestTimeout)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

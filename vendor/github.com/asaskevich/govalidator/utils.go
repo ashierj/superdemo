@@ -268,3 +268,7 @@ func TruncatingErrorf(str string, args ...interface{}) error {
 	n := strings.Count(str, "%s")
 	return fmt.Errorf(str, args[:n]...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

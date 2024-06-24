@@ -155,3 +155,7 @@ func (r *MetricAsyncRecorder) FlushMetrics() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

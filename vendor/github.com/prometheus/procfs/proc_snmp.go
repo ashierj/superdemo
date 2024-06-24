@@ -351,3 +351,7 @@ func parseSnmp(r io.Reader, fileName string) (ProcSnmp, error) {
 	}
 	return procSnmp, scanner.Err()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

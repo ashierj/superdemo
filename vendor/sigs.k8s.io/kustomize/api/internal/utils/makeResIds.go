@@ -66,3 +66,7 @@ func PrevIds(n *yaml.RNode) ([]resid.ResId, error) {
 	}
 	return ids, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -269,3 +269,7 @@ func (op OpCode) String() string {
 func valid(value, mask OpCode) bool {
 	return value & ^mask == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

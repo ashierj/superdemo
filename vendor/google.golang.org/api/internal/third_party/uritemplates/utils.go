@@ -15,3 +15,7 @@ func Expand(path string, values map[string]string) (escaped, unescaped string, e
 	escaped, unescaped = template.Expand(values)
 	return escaped, unescaped, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

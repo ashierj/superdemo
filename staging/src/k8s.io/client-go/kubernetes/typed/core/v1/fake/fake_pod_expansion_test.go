@@ -49,3 +49,7 @@ func TestFakePodsGetLogs(t *testing.T) {
 		t.Fatal("Close response body:", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

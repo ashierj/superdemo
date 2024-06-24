@@ -452,3 +452,7 @@ func GetConfigMapWithShortRetry(client clientset.Interface, namespace, name stri
 	}
 	return nil, lastError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -438,3 +438,7 @@ func replaceRegistryInImageURLWithList(imageURL string, reg RegistryList) (strin
 
 	return fmt.Sprintf("%s/%s", registryAndUser, parts[countParts-1]), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

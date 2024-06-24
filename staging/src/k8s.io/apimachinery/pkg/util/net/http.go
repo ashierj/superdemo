@@ -697,3 +697,7 @@ func makeQuotedString(s string) string {
 	result.WriteRune('"')
 	return result.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

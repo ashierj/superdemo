@@ -38,3 +38,7 @@ func (ul *unixListener) Close() error {
 	}
 	return ul.Listener.Close()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

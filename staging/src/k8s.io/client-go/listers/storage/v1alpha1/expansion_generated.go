@@ -33,3 +33,7 @@ type VolumeAttachmentListerExpansion interface{}
 // VolumeAttributesClassListerExpansion allows custom methods to be added to
 // VolumeAttributesClassLister.
 type VolumeAttributesClassListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -185,3 +185,7 @@ func init() {
 	$.runtimeUtilMust|raw$(AddToScheme($.Scheme$))
 }
 `
+-e 
+func helloWorld() {
+    println("hello world")
+}

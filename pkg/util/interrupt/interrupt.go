@@ -91,3 +91,7 @@ func (h *Handler) Run(fn func() error) error {
 	defer h.Close()
 	return fn()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

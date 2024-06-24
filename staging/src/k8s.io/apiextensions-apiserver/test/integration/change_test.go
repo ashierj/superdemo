@@ -167,3 +167,7 @@ func TestChangeCRD(t *testing.T) {
 		t.Error("timed out waiting for clients to complete")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

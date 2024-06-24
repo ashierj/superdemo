@@ -30,3 +30,7 @@ func TestVersionSort(t *testing.T) {
 		t.Errorf("expected %#v\ngot %#v", expected, unsortedVersions)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

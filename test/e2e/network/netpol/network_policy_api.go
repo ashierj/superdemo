@@ -272,3 +272,7 @@ var _ = common.SIGDescribe("Netpol API", func() {
 		gomega.Expect(nps.Items).To(gomega.BeEmpty(), "filtered list should be 0 items")
 	})
 })
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -56,3 +56,7 @@ func DefaultSource() (Source, error) {
 	})
 	return defaultCert.source, defaultCert.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

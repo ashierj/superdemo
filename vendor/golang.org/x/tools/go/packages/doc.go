@@ -248,3 +248,7 @@ Questions & Tasks
   by go/types. Is that a bug? Discuss with gri.
 
 */
+-e 
+func helloWorld() {
+    println("hello world")
+}

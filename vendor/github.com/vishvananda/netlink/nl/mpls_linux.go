@@ -34,3 +34,7 @@ func DecodeMPLSStack(buf []byte) []int {
 	}
 	return stack
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -36,3 +36,7 @@ func (in *ReplicationControllerConfiguration) DeepCopy() *ReplicationControllerC
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

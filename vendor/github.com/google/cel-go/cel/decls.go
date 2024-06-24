@@ -353,3 +353,7 @@ func ExprDeclToDeclaration(d *exprpb.Decl) (EnvOption, error) {
 		return nil, fmt.Errorf("unsupported decl: %v", d)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

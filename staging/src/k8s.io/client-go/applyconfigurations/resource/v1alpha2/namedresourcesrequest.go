@@ -37,3 +37,7 @@ func (b *NamedResourcesRequestApplyConfiguration) WithSelector(value string) *Na
 	b.Selector = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

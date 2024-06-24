@@ -115,3 +115,7 @@ retryConnection:
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

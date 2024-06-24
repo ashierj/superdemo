@@ -147,3 +147,7 @@ func StringToInt64(name string, value map[string]int64, usage string) *map[strin
 func StringToInt64P(name, shorthand string, value map[string]int64, usage string) *map[string]int64 {
 	return CommandLine.StringToInt64P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

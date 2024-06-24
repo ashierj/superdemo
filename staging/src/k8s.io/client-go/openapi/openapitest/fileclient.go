@@ -94,3 +94,7 @@ func (f *fileGroupVersion) Schema(contentType string) ([]byte, error) {
 	}
 	return fs.ReadFile(f.f, f.filename)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -130,3 +130,7 @@ func IsNoMatchError(err error) bool {
 	}
 	return errors.Is(err, &NoResourceMatchError{}) || errors.Is(err, &NoKindMatchError{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

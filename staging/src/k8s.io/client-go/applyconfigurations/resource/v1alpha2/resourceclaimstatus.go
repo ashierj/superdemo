@@ -69,3 +69,7 @@ func (b *ResourceClaimStatusApplyConfiguration) WithDeallocationRequested(value 
 	b.DeallocationRequested = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

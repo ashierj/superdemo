@@ -26,3 +26,7 @@ func LayerExists(ctx context.Context, path string) (_ bool, err error) {
 	span.AddAttributes(trace.BoolAttribute("layer-exists", exists != 0))
 	return exists != 0, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

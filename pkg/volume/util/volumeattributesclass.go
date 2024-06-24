@@ -70,3 +70,7 @@ func GetDefaultVolumeAttributesClass(lister storagev1alpha1listers.VolumeAttribu
 func IsDefaultVolumeAttributesClassAnnotation(obj metav1.ObjectMeta) bool {
 	return obj.Annotations[AlphaIsDefaultVolumeAttributesClassAnnotation] == "true"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

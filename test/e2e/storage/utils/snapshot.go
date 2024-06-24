@@ -147,3 +147,7 @@ func GenerateSnapshotClassSpec(
 
 	return snapshotClass
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

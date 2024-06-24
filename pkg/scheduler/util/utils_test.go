@@ -542,3 +542,7 @@ func Test_As_KMetadata(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

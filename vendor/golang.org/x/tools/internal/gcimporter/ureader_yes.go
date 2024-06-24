@@ -726,3 +726,7 @@ func pkgScope(pkg *types.Package) *types.Scope {
 	}
 	return types.Universe
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -89,3 +89,7 @@ func cfmakeraw(t unix.Termios) unix.Termios {
 
 	return t
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

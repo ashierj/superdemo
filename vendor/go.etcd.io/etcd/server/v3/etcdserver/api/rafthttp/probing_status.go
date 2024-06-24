@@ -96,3 +96,7 @@ func monitorProbingStatus(lg *zap.Logger, s probing.Status, id string, roundTrip
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

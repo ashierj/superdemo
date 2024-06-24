@@ -86,3 +86,7 @@ func Uint(name string, value uint, usage string) *uint {
 func UintP(name, shorthand string, value uint, usage string) *uint {
 	return CommandLine.UintP(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -80,3 +80,7 @@ func (p *CachedOpenAPIParser) Parse() (Resources, error) {
 
 	return p.openAPIResources, p.err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

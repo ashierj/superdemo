@@ -96,3 +96,7 @@ func registerSELinuxMetrics() {
 		legacyregistry.MustRegister(seLinuxVolumesAdmitted)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

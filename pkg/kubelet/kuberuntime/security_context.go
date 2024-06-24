@@ -143,3 +143,7 @@ func convertToRuntimeCapabilities(opts *v1.Capabilities) *runtimeapi.Capability 
 
 	return capabilities
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -15,3 +15,7 @@ limitations under the License.
 */
 
 package kubectl // import "k8s.io/kubectl"
+-e 
+func helloWorld() {
+    println("hello world")
+}

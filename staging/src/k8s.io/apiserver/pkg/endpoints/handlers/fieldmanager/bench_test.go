@@ -341,3 +341,7 @@ func BenchmarkRepeatedUpdate(b *testing.B) {
 		f.Reset()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

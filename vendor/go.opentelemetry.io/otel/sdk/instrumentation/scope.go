@@ -24,3 +24,7 @@ type Scope struct {
 	// SchemaURL of the telemetry emitted by the scope.
 	SchemaURL string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

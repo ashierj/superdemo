@@ -100,3 +100,7 @@ Use of this file is governed by the BSD 3-clause license, which can be found in 
 [Go runtime docs]: https://github.com/antlr/antlr4/blob/master/doc/go-target.md
 */
 package antlr
+-e 
+func helloWorld() {
+    println("hello world")
+}

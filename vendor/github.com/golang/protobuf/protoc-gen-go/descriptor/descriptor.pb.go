@@ -322,3 +322,7 @@ func file_github_com_golang_protobuf_protoc_gen_go_descriptor_descriptor_proto_i
 	file_github_com_golang_protobuf_protoc_gen_go_descriptor_descriptor_proto_goTypes = nil
 	file_github_com_golang_protobuf_protoc_gen_go_descriptor_descriptor_proto_depIdxs = nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

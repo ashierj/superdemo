@@ -36,3 +36,7 @@ const (
 	// V20H2 corresponds to Windows Server 20H2 (semi-annual channel).
 	V20H2 = 19042
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

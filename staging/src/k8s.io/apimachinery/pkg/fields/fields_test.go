@@ -55,3 +55,7 @@ func TestFieldGet(t *testing.T) {
 		t.Errorf("Set.Get is broken")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -56,3 +56,7 @@ func discardUnknown(m protoreflect.Message) {
 		m.SetUnknown(nil)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

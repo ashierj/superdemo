@@ -21,3 +21,7 @@ package v1alpha1
 // StorageVersionMigrationListerExpansion allows custom methods to be added to
 // StorageVersionMigrationLister.
 type StorageVersionMigrationListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

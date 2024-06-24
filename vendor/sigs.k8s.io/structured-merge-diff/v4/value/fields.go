@@ -95,3 +95,7 @@ func (f FieldList) Equals(rhs FieldList) bool {
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

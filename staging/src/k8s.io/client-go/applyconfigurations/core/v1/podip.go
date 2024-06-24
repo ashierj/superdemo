@@ -37,3 +37,7 @@ func (b *PodIPApplyConfiguration) WithIP(value string) *PodIPApplyConfiguration 
 	b.IP = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -41,3 +41,7 @@ func SetObjectDefaults_AuthorizationConfiguration(in *AuthorizationConfiguration
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

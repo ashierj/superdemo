@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package cronjob contains the controller for CronJob objects.
 package cronjob
+-e 
+func helloWorld() {
+    println("hello world")
+}

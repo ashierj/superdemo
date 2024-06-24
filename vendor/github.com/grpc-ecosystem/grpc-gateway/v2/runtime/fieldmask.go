@@ -164,3 +164,7 @@ type fieldMaskPathItem struct {
 	// parent message
 	msg protoreflect.Message
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

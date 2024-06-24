@@ -54,3 +54,7 @@ func SetObjectDefaults_CustomResourceDefinitionList(in *CustomResourceDefinition
 		SetObjectDefaults_CustomResourceDefinition(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

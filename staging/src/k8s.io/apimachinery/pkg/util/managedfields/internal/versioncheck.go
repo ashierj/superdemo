@@ -50,3 +50,7 @@ func (f *versionCheckManager) Apply(liveObj, appliedObj runtime.Object, managed 
 	}
 	return f.fieldManager.Apply(liveObj, appliedObj, managed, fieldManager, force)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

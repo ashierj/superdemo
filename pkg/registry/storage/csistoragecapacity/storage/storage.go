@@ -58,3 +58,7 @@ func NewStorage(optsGetter generic.RESTOptionsGetter) (*CSIStorageCapacityStorag
 		CSIStorageCapacity: &REST{store},
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

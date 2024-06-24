@@ -435,3 +435,7 @@ func dataAsString(data []byte) string {
 	}
 	return dataString
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -267,3 +267,7 @@ func update(ctx context.Context, c clientset.Interface, ns, name string, replica
 	framework.Failf("failed to update statefulset  %q: %v", name, err)
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

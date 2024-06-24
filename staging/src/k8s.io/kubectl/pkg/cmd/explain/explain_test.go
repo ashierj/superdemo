@@ -316,3 +316,7 @@ func TestExplainOpenAPIV3DoesNotLoadOpenAPIV2Specs(t *testing.T) {
 	}
 	cmd.Run(cmd, []string{"pods"})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

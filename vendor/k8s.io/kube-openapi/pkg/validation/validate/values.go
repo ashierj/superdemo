@@ -384,3 +384,7 @@ func IsValueValidAgainstRange(val interface{}, typeName, format, prefix, path st
 	}
 	return errVal
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -206,3 +206,7 @@ func autoConvert_admission_AdmissionReview_To_v1beta1_AdmissionReview(in *admiss
 func Convert_admission_AdmissionReview_To_v1beta1_AdmissionReview(in *admission.AdmissionReview, out *v1beta1.AdmissionReview, s conversion.Scope) error {
 	return autoConvert_admission_AdmissionReview_To_v1beta1_AdmissionReview(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

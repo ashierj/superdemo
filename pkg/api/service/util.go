@@ -91,3 +91,7 @@ func NeedsHealthCheck(service *api.Service) bool {
 	}
 	return RequestsOnlyLocalTraffic(service)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

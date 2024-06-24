@@ -41,3 +41,7 @@ func NewFileRenewer(caCert *x509.Certificate, caKey crypto.Signer) *FileRenewer 
 func (r *FileRenewer) Renew(cfg *pkiutil.CertConfig) (*x509.Certificate, crypto.Signer, error) {
 	return pkiutil.NewCertAndKey(r.caCert, r.caKey, cfg)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

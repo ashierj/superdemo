@@ -86,3 +86,7 @@ func Uint16(name string, value uint16, usage string) *uint16 {
 func Uint16P(name, shorthand string, value uint16, usage string) *uint16 {
 	return CommandLine.Uint16P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

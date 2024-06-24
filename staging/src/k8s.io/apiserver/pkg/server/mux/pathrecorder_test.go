@@ -133,3 +133,7 @@ func TestPrefixHandlers(t *testing.T) {
 	http.Get(s.URL + "/secretPrefix/something")
 	assert.Equal(t, 2, secretPrefixCount)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

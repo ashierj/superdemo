@@ -260,3 +260,7 @@ func (a *Webhook) Dispatch(ctx context.Context, attr admission.Attributes, o adm
 	hooks := a.hookSource.Webhooks()
 	return a.dispatcher.Dispatch(ctx, attr, o, hooks)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

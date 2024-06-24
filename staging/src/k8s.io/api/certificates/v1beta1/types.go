@@ -262,3 +262,7 @@ const (
 	UsageMicrosoftSGC      KeyUsage = "microsoft sgc"
 	UsageNetscapeSGC       KeyUsage = "netscape sgc"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

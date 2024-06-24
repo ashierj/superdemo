@@ -57,3 +57,7 @@ func X25519(scalar, point []byte) ([]byte, error) {
 	var dst [32]byte
 	return x25519(&dst, scalar, point)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -68,3 +68,7 @@ func addCadvisorFlags(fs *pflag.FlagSet) {
 	// finally, add cadvisor flags to the provided flagset
 	fs.AddFlagSet(local)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -383,3 +383,7 @@ func (bw *balancerWrapper) UpdateAddresses(sc balancer.SubConn, addrs []resolver
 func (bw *balancerWrapper) Target() string {
 	return bw.gsb.cc.Target()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

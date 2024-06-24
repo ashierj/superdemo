@@ -65,3 +65,7 @@ type ResourceClassParametersNamespaceListerExpansion interface{}
 // ResourceSliceListerExpansion allows custom methods to be added to
 // ResourceSliceLister.
 type ResourceSliceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -90,3 +90,7 @@ func startSVMController(
 
 	return svmController, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

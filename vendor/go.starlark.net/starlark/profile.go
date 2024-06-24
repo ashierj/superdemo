@@ -447,3 +447,7 @@ func (e *protoEncoder) int(field uint, x int64) {
 	e.tag(field, 0) // varint
 	e.uvarint(uint64(x))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

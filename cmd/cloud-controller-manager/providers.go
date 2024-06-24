@@ -27,3 +27,7 @@ import (
 	// implementing an out-of-tree cloud-provider.
 	_ "k8s.io/legacy-cloud-providers/gce"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

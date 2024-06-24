@@ -95,3 +95,7 @@ func UniqueURLsFromFlag(fs *flag.FlagSet, urlsFlagName string) []url.URL {
 func UniqueURLsMapFromFlag(fs *flag.FlagSet, urlsFlagName string) map[string]struct{} {
 	return (*fs.Lookup(urlsFlagName).Value.(*UniqueURLs)).Values
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

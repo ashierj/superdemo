@@ -47,3 +47,7 @@ func FromContextOrDiscard(ctx context.Context) Logger {
 func NewContext(ctx context.Context, logger Logger) context.Context {
 	return context.WithValue(ctx, contextKey{}, logger)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

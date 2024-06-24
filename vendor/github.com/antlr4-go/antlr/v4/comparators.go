@@ -148,3 +148,7 @@ func (c *BaseATNConfigComparator[T]) Equals2(o1, o2 *ATNConfig) bool {
 func (c *BaseATNConfigComparator[T]) Hash1(o *ATNConfig) int {
 	return o.Hash()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

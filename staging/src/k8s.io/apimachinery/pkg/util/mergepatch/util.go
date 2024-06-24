@@ -131,3 +131,7 @@ func HasConflicts(left, right interface{}) (bool, error) {
 		return true, fmt.Errorf("unknown type: %v", reflect.TypeOf(left))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

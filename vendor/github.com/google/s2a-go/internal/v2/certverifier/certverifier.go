@@ -120,3 +120,7 @@ func VerifyServerCertificateChain(hostname string, verificationMode s2av2pb.Vali
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

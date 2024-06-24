@@ -72,3 +72,7 @@ func invoke(ctx context.Context, method string, req, reply any, cc *ClientConn, 
 	}
 	return cs.RecvMsg(reply)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

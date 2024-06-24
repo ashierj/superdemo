@@ -30,3 +30,7 @@ func stripComments(node *yaml.Node) {
 		stripComments(node.Content[i])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

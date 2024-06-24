@@ -33,3 +33,7 @@ func ConvertPodSysctlsVariableToDotsSeparator(securityContext *v1.PodSecurityCon
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

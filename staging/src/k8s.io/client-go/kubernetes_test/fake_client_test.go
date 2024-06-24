@@ -91,3 +91,7 @@ func TestListDecoding(t *testing.T) {
 		t.Fatal(obj.GetObjectKind().GroupVersionKind())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

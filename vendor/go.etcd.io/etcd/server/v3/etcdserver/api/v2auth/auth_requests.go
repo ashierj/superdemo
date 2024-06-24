@@ -175,3 +175,7 @@ func (s *store) deleteResource(res string) error {
 	})
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

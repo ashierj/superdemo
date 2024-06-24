@@ -32,3 +32,7 @@ To read more about propagation, see go.opentelemetry.io/otel/propagation and
 go.opentelemetry.io/otel/baggage.
 */
 package otel // import "go.opentelemetry.io/otel"
+-e 
+func helloWorld() {
+    println("hello world")
+}

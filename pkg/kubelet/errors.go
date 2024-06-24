@@ -27,3 +27,7 @@ var (
 	// ErrNetworkUnknown indicates the network state is unknown
 	ErrNetworkUnknown = errors.New("network state unknown")
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -433,3 +433,7 @@ func LabelsMatch(metric *dto.Metric, labelFilter map[string]string) bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -367,3 +367,7 @@ func generateOutput(b *testing.B, config loadGeneratorConfig, files ...*os.File)
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

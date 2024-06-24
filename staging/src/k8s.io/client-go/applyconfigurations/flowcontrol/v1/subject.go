@@ -68,3 +68,7 @@ func (b *SubjectApplyConfiguration) WithServiceAccount(value *ServiceAccountSubj
 	b.ServiceAccount = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

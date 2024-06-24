@@ -43,3 +43,7 @@ func RegisterExporter(e Exporter) {
 func UnregisterExporter(e Exporter) {
 	defaultWorker.UnregisterExporter(e)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -61,3 +61,7 @@ func SetArgValues(args []Arg, name, value string, nArgs int) []Arg {
 	args = append(args, Arg{Name: name, Value: value})
 	return args
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

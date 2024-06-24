@@ -353,3 +353,7 @@ func getRequestMetricsSnapshot(c clientset.Interface) (metricSnapshot, error) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -34,3 +34,7 @@ func getJournalWriteSyncer() (zapcore.WriteSyncer, error) {
 	}
 	return zapcore.AddSync(jw), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -186,3 +186,7 @@ func TestConvert_autoscaling_HorizontalPodAutoscalerSpec_To_v1_HorizontalPodAuto
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

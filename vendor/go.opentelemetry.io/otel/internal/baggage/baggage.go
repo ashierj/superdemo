@@ -41,3 +41,7 @@ type Property struct {
 	// have a value or if it was the zero-value.
 	HasValue bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

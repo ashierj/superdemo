@@ -77,3 +77,7 @@ func (wt *writeLatencyTracker) Write(bs []byte) (int, error) {
 
 	return wt.ResponseWriter.Write(bs)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

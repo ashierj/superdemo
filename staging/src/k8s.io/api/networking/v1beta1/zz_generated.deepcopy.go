@@ -448,3 +448,7 @@ func (in *IngressTLS) DeepCopy() *IngressTLS {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

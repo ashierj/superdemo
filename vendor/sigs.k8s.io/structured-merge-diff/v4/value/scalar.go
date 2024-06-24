@@ -48,3 +48,7 @@ func BoolCompare(lhs, rhs bool) int {
 	}
 	return 1
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

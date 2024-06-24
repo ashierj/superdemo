@@ -310,3 +310,7 @@ func shouldOmitManagedFields(ctx context.Context) bool {
 	// to retain the manage fields in the audit.
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

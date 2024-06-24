@@ -149,3 +149,7 @@ func RegisterMetrics() {
 		legacyregistry.MustRegister(ServicesCountByTrafficDistribution)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -189,3 +189,7 @@ func NewEncoder(w io.Writer, format Format) Encoder {
 	}
 	panic(fmt.Errorf("expfmt.NewEncoder: unknown format %q", format))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

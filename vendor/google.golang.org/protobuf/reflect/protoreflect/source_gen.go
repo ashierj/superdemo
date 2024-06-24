@@ -550,3 +550,7 @@ func (p *SourcePath) appendExtensionRangeOptions_Declaration(b []byte) []byte {
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -20,3 +20,7 @@ package dryrun
 func IsDryRun(flag []string) bool {
 	return len(flag) > 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

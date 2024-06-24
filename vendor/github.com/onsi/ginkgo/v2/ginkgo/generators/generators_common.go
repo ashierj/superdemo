@@ -74,3 +74,7 @@ func getBuildTags(tags string) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

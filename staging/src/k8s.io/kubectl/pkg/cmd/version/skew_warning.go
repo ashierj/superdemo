@@ -52,3 +52,7 @@ func printVersionSkewWarning(w io.Writer, clientVersion, serverVersion apimachin
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

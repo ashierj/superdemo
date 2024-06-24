@@ -289,3 +289,7 @@ func (ec *ephemeralController) handleVolume(ctx context.Context, pod *v1.Pod, vo
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

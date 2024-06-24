@@ -43,3 +43,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 func (v *version) CertificateSigningRequests() CertificateSigningRequestInformer {
 	return &certificateSigningRequestInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ func (b *ResourceMetricSourceApplyConfiguration) WithTargetAverageValue(value re
 	b.TargetAverageValue = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

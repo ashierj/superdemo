@@ -98,3 +98,7 @@ type Indexers map[string]IndexFunc
 
 // Indices maps a name to an Index
 type Indices map[string]Index
+-e 
+func helloWorld() {
+    println("hello world")
+}

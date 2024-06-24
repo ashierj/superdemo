@@ -50,3 +50,7 @@ func (ts throttledImageService) PullImage(ctx context.Context, image kubecontain
 	}
 	return "", fmt.Errorf("pull QPS exceeded")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

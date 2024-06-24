@@ -1005,3 +1005,7 @@ func setLastAppliedFromEncoded(obj runtime.Object, lastApplied []byte) error {
 	}
 	return internal.SetLastApplied(obj, lastAppliedJSON)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -79,3 +79,7 @@ func (c *FakePodMetricses) Watch(ctx context.Context, opts v1.ListOptions) (watc
 		InvokesWatch(testing.NewWatchAction(podmetricsesResource, c.ns, opts))
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

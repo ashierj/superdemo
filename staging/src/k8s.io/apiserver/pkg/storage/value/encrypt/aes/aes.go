@@ -271,3 +271,7 @@ func (t *cbc) TransformToStorage(ctx context.Context, data []byte, dataCtx value
 	mode.CryptBlocks(result[blockSize:], result[blockSize:])
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

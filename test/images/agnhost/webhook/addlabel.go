@@ -69,3 +69,7 @@ func addLabel(ar v1.AdmissionReview) *v1.AdmissionResponse {
 	}
 	return &reviewResponse
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

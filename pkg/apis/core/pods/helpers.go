@@ -95,3 +95,7 @@ func ConvertDownwardAPIFieldLabel(version, label, value string) (string, string,
 		return "", "", fmt.Errorf("field label not supported: %s", label)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

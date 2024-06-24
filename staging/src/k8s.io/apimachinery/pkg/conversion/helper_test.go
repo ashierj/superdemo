@@ -36,3 +36,7 @@ func TestEnforceNilPtr(t *testing.T) {
 		t.Errorf("Expected error on nil pointer")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

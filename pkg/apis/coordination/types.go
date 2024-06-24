@@ -67,3 +67,7 @@ type LeaseList struct {
 	// items is a list of schema objects.
 	Items []Lease
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

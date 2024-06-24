@@ -156,3 +156,7 @@ type notFoundGetter struct {
 func (g notFoundGetter) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
 	return nil, errors.NewNotFound(g.gr, name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

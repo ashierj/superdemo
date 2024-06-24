@@ -543,3 +543,7 @@ func TestInformerList(t *testing.T) {
 	_, err = myController.Informer().Namespaced("fakenamespace").Get("fakeobjectname")
 	require.True(t, k8serrors.IsNotFound(err))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

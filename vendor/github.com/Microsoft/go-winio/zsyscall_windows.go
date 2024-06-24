@@ -436,3 +436,7 @@ func wsaGetOverlappedResult(h syscall.Handle, o *syscall.Overlapped, bytes *uint
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

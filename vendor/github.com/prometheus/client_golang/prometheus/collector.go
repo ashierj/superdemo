@@ -126,3 +126,7 @@ type collectorMetric interface {
 	Metric
 	Collector
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

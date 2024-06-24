@@ -90,3 +90,7 @@ func HomeDir() string {
 	}
 	return os.Getenv("HOME")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

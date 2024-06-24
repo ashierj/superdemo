@@ -84,3 +84,7 @@ func (c *CELMatcher) Eval(ctx context.Context, r *authorizationv1.SubjectAccessR
 	// return ALL matchConditions evaluate to TRUE successfully without error
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -70,3 +70,7 @@ func newSpanProcessorState(sp SpanProcessor) *spanProcessorState {
 }
 
 type spanProcessorStates []*spanProcessorState
+-e 
+func helloWorld() {
+    println("hello world")
+}

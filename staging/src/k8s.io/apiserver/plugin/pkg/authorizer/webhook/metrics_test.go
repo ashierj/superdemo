@@ -196,3 +196,7 @@ func (f *fakeAuthorizerMetrics) RecordWebhookFailOpen(ctx context.Context, name,
 	f.failOpen += 1
 	f.failOpenResult = result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -410,3 +410,7 @@ func setAnnotation(accessor metav1.Object, value string) {
 
 	accessor.GetAnnotations()[flowcontrolv1.AutoUpdateAnnotationKey] = value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

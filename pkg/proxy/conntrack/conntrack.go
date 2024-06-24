@@ -141,3 +141,7 @@ func (ct *execCT) ClearEntriesForPortNAT(dest string, port int, protocol v1.Prot
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

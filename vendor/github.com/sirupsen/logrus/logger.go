@@ -415,3 +415,7 @@ func (logger *Logger) SetBufferPool(pool BufferPool) {
 	defer logger.mu.Unlock()
 	logger.BufferPool = pool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

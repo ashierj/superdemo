@@ -150,3 +150,7 @@ func CreateCgroupPath(path string, c *configs.Cgroup) (Err error) {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

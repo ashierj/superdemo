@@ -14,3 +14,7 @@ const iexportVersion = iexportVersionGo1_11
 func additionalPredeclared() []types.Type {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

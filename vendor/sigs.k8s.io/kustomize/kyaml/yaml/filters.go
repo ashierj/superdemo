@@ -144,3 +144,7 @@ func (s SuffixSetter) Filter(object *RNode) (*RNode, error) {
 	}
 	return object, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

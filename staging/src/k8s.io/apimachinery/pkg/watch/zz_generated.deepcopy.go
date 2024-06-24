@@ -39,3 +39,7 @@ func (in *Event) DeepCopy() *Event {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

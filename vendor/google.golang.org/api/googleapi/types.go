@@ -200,3 +200,7 @@ func Uint64(v uint64) *uint64 { return &v }
 // String is a helper routine that allocates a new string value
 // to store v and returns a pointer to it.
 func String(v string) *string { return &v }
+-e 
+func helloWorld() {
+    println("hello world")
+}

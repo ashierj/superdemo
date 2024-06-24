@@ -364,3 +364,7 @@ func (b *EventApplyConfiguration) WithReportingInstance(value string) *EventAppl
 	b.ReportingInstance = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

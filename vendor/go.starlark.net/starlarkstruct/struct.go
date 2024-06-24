@@ -280,3 +280,7 @@ func structsEqual(x, y *Struct, depth int) (bool, error) {
 	}
 	return true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

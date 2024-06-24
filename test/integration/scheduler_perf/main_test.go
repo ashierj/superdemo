@@ -70,3 +70,7 @@ func TestMain(m *testing.M) {
 
 	m.Run()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

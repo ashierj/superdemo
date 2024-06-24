@@ -286,3 +286,7 @@ func generatePodReadyConditionForTerminalPhase(podPhase v1.PodPhase) v1.PodCondi
 
 	return condition
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

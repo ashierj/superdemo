@@ -2438,3 +2438,7 @@ func validBuiltinTag(tagNum uint64, contentHead byte) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

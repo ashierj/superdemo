@@ -64,3 +64,7 @@ func (b *CinderVolumeSourceApplyConfiguration) WithSecretRef(value *LocalObjectR
 	b.SecretRef = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

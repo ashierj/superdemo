@@ -217,3 +217,7 @@ func aggregatedListKey(k *meta.Key) string {
 		return "unknownScope"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

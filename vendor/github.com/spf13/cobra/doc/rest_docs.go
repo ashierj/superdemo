@@ -184,3 +184,7 @@ func indentString(s, p string) string {
 	}
 	return string(res)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

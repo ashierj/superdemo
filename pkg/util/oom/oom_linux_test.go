@@ -105,3 +105,7 @@ func TestPidListerFailure(t *testing.T) {
 	_, err := getPids("/does/not/exist")
 	assert.True(t, cgroups.IsNotFound(err) || os.IsNotExist(err), "expected getPids to return not exists error. Got %v", err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

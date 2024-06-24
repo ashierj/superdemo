@@ -99,3 +99,7 @@ func xfrmMcastGroups(types []nl.XfrmMsgType) ([]uint, error) {
 
 	return groups, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1576,3 +1576,7 @@ type Condition struct {
 	// +kubebuilder:validation:MaxLength=32768
 	Message string `json:"message" protobuf:"bytes,6,opt,name=message"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -60,3 +60,7 @@ func (c NoNotify) PostSetupNamespaces() error {
 func (c NoNotify) PostResume() error {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

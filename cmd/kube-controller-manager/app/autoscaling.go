@@ -93,3 +93,7 @@ func startHPAControllerWithMetricsClient(ctx context.Context, controllerContext 
 	).Run(ctx, int(controllerContext.ComponentConfig.HPAController.ConcurrentHorizontalPodAutoscalerSyncs))
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

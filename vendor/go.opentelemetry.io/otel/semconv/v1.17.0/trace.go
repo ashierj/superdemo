@@ -3373,3 +3373,7 @@ func RPCJsonrpcErrorCode(val int) attribute.KeyValue {
 func RPCJsonrpcErrorMessage(val string) attribute.KeyValue {
 	return RPCJsonrpcErrorMessageKey.String(val)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

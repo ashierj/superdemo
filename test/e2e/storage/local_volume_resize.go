@@ -177,3 +177,7 @@ func setupExpandableLocalStorageClass(ctx context.Context, config *localTestConf
 	_, err := config.client.StorageV1().StorageClasses().Create(ctx, sc, metav1.CreateOptions{})
 	framework.ExpectNoError(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

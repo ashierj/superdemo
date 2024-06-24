@@ -88,3 +88,7 @@ func (f *limitRangeInformer) Informer() cache.SharedIndexInformer {
 func (f *limitRangeInformer) Lister() v1.LimitRangeLister {
 	return v1.NewLimitRangeLister(f.Informer().GetIndexer())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

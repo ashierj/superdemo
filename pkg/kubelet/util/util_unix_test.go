@@ -141,3 +141,7 @@ func TestLocalEndpoint(t *testing.T) {
 		assert.Equal(t, test.expectedFullPath, fullPath)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

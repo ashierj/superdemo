@@ -60,3 +60,7 @@ func (pl *SchedulingGates) EventsToRegister() []framework.ClusterEventWithHint {
 func New(_ context.Context, _ runtime.Object, _ framework.Handle) (framework.Plugin, error) {
 	return &SchedulingGates{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

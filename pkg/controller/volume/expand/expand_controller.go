@@ -476,3 +476,7 @@ func (expc *expandController) GetSubpather() subpath.Interface {
 	// not needed for expand controller
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

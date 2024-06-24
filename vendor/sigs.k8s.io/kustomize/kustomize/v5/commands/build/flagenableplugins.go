@@ -14,3 +14,7 @@ func AddFlagEnablePlugins(set *pflag.FlagSet) {
 		false,
 		"enable kustomize plugins")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -955,3 +955,7 @@ func prettyPrint(obj interface{}) string {
 	}
 	return string(buffer)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

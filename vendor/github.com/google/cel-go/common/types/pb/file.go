@@ -200,3 +200,7 @@ func collectExtensions(extensions protoreflect.ExtensionDescriptors, msgExtensio
 		msgExtensionMap[extendsMsg] = msgExts
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

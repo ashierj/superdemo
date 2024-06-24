@@ -246,3 +246,7 @@ func (al *ProcThreadAttributeListContainer) Delete() {
 func (al *ProcThreadAttributeListContainer) List() *ProcThreadAttributeList {
 	return al.data
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -105,3 +105,7 @@ func (b *DeploymentStatusApplyConfiguration) WithCollisionCount(value int32) *De
 	b.CollisionCount = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -37,3 +37,7 @@ func FromContext(ctx context.Context) Baggage {
 	// Delegate so any hooks for the OpenTracing bridge are handled.
 	return Baggage{list: baggage.ListFromContext(ctx)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

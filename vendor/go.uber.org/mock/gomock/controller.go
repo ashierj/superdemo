@@ -316,3 +316,7 @@ func unwrapTestReporter(t TestReporter) TestReporter {
 	}
 	return tr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -367,3 +367,7 @@ func getIntelRDTStatsFrom(path string, vendorID string) (intelrdt.Stats, error) 
 
 	return stats, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

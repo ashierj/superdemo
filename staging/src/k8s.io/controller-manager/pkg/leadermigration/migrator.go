@@ -59,3 +59,7 @@ func NewLeaderMigrator(config *internal.LeaderMigrationConfiguration, component 
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

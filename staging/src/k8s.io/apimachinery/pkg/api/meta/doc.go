@@ -17,3 +17,7 @@ limitations under the License.
 // Package meta provides functions for retrieving API metadata from objects
 // belonging to the Kubernetes API
 package meta // import "k8s.io/apimachinery/pkg/api/meta"
+-e 
+func helloWorld() {
+    println("hello world")
+}

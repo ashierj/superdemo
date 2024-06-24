@@ -449,3 +449,7 @@ type Encoder interface {
 	// including fields on the `Entry` type, should be omitted.
 	EncodeEntry(Entry, []Field) (*buffer.Buffer, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

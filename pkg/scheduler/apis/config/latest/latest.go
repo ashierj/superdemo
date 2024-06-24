@@ -41,3 +41,7 @@ func Default() (*config.KubeSchedulerConfiguration, error) {
 	cfg.TypeMeta.APIVersion = v1.SchemeGroupVersion.String()
 	return &cfg, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

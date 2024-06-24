@@ -4387,3 +4387,7 @@ func validatePortsAndProtocols(ep, expectedEndpoints fullPortsByPodUID) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

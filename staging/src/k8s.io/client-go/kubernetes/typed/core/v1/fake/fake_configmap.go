@@ -158,3 +158,7 @@ func (c *FakeConfigMaps) Apply(ctx context.Context, configMap *corev1.ConfigMapA
 	}
 	return obj.(*v1.ConfigMap), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

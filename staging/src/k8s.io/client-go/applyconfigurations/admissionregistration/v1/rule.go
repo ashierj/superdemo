@@ -74,3 +74,7 @@ func (b *RuleApplyConfiguration) WithScope(value v1.ScopeType) *RuleApplyConfigu
 	b.Scope = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

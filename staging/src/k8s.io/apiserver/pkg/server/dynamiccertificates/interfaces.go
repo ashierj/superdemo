@@ -66,3 +66,7 @@ type SNICertKeyContentProvider interface {
 	// SNINames provides names used for SNI. May return nil.
 	SNINames() []string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

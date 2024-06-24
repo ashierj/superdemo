@@ -103,3 +103,7 @@ func encodeMsgStr(v Message) string {
 	}
 	return v.MsgStr
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -128,3 +128,7 @@ type BaseContainer interface {
 	// Exec signals the container to exec the users process at the end of the init.
 	Exec() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

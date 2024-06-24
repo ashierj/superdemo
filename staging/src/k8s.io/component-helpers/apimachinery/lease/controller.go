@@ -244,3 +244,7 @@ func minDuration(a, b time.Duration) time.Duration {
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

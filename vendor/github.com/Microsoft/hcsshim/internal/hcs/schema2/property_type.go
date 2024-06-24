@@ -24,3 +24,7 @@ const (
 	PTProcessorTopology           PropertyType = "ProcessorTopology"
 	PTCPUGroup                    PropertyType = "CpuGroup"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

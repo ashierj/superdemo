@@ -159,3 +159,7 @@ func walkStmts(stmts []Stmt, f func(Node) bool) {
 		Walk(stmt, f)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

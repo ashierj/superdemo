@@ -37,3 +37,7 @@ func (b *IngressRuleValueApplyConfiguration) WithHTTP(value *HTTPIngressRuleValu
 	b.HTTP = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

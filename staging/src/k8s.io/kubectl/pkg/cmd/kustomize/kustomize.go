@@ -39,3 +39,7 @@ func NewCmdKustomize(streams genericiooptions.IOStreams) *cobra.Command {
 		},
 		streams.Out)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

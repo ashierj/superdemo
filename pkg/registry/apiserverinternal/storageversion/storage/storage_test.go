@@ -184,3 +184,7 @@ func newStorage(t *testing.T) (*REST, *StatusREST, *etcd3testing.EtcdTestServer)
 	}
 	return storageVersionStorage, statusStorage, server
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

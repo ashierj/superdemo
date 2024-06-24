@@ -168,3 +168,7 @@ func NewGetPrintFlags() *PrintFlags {
 		CustomColumnsFlags: NewCustomColumnsPrintFlags(),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

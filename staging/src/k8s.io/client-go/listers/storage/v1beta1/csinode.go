@@ -46,3 +46,7 @@ type cSINodeLister struct {
 func NewCSINodeLister(indexer cache.Indexer) CSINodeLister {
 	return &cSINodeLister{listers.New[*v1beta1.CSINode](indexer, v1beta1.Resource("csinode"))}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

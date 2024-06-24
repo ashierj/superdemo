@@ -183,3 +183,7 @@ func (i *exprInterpreter) NewInterpretable(
 		decorators...)
 	return p.Plan(checked.Expr())
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -733,3 +733,7 @@ func compareExpectedEvents(t *testing.T, expectedEvents, events []*EventBuilder)
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -334,3 +334,7 @@ func IsVIPMode(ing v1.LoadBalancerIngress) bool {
 	}
 	return *ing.IPMode == v1.LoadBalancerIPModeVIP
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -107,3 +107,7 @@ func (f *flexVolumeMounter) SetUpAt(dir string, mounterArgs volume.MounterArgs) 
 func (f *flexVolumeMounter) GetAttributes() volume.Attributes {
 	return (*mounterDefaults)(f).GetAttributes()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

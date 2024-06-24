@@ -827,3 +827,7 @@ func Test_managerImpl_processShutdownEvent(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

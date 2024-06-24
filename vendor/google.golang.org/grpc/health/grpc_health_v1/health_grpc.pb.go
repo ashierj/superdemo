@@ -235,3 +235,7 @@ var Health_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "grpc/health/v1/health.proto",
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

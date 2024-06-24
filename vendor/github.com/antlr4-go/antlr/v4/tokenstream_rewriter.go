@@ -660,3 +660,7 @@ func min(a, b int) int {
 		return b
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

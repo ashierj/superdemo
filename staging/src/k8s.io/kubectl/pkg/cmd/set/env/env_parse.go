@@ -136,3 +136,7 @@ func readEnv(r io.Reader, envVarType string) ([]v1.EnvVar, error) {
 
 	return env, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

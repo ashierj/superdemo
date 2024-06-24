@@ -247,3 +247,7 @@ func (m *Charmap) EncodeRune(r rune) (b byte, ok bool) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

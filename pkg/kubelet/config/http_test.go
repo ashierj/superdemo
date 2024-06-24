@@ -366,3 +366,7 @@ func TestURLWithHeader(t *testing.T) {
 		t.Errorf("Received wrong number of pods, expected one: %v", update.Pods)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

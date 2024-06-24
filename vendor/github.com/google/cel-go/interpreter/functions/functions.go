@@ -37,3 +37,7 @@ type BinaryOp = fn.BinaryOp
 // FunctionOp is a function with accepts zero or more arguments and produces
 // a value or error as a result.
 type FunctionOp = fn.FunctionOp
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -21,3 +21,7 @@ package v1alpha1
 type FischerExpansion interface{}
 
 type FlunderExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

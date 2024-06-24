@@ -672,3 +672,7 @@ type MemorySwapConfiguration struct {
 	// +optional
 	SwapBehavior string
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -64,3 +64,7 @@ func (m *OrMatcher) MatchMayChangeInTheFuture(actual interface{}) bool {
 		return false // none of were going to change
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

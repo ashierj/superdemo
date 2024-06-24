@@ -106,3 +106,7 @@ func isIPv6LoopbackSupported() (ipv6 bool, ipv6only bool, err error) {
 	ipv6only = ipv6 && !ipv4
 	return ipv6, ipv6only, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

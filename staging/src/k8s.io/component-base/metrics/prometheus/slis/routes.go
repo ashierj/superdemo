@@ -51,3 +51,7 @@ func (s SLIMetricsWithReset) Install(m mux) {
 		m.Handle("/metrics/slis", metrics.HandlerWithReset(Registry, metrics.HandlerOpts{}))
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

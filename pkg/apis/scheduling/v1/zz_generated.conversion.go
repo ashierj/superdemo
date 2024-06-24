@@ -111,3 +111,7 @@ func autoConvert_scheduling_PriorityClassList_To_v1_PriorityClassList(in *schedu
 func Convert_scheduling_PriorityClassList_To_v1_PriorityClassList(in *scheduling.PriorityClassList, out *v1.PriorityClassList, s conversion.Scope) error {
 	return autoConvert_scheduling_PriorityClassList_To_v1_PriorityClassList(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

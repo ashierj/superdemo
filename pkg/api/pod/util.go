@@ -1231,3 +1231,7 @@ func MarkPodProposedForResize(oldPod, newPod *api.Pod) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -380,3 +380,7 @@ func TestHeapAddAfterClose(t *testing.T) {
 		t.Errorf("expected heap closed error")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

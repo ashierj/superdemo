@@ -304,3 +304,7 @@ func (c *ConfigState) convertArgs(args []interface{}) (formatters []interface{})
 func NewDefaultConfig() *ConfigState {
 	return &ConfigState{Indent: " "}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

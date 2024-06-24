@@ -459,3 +459,7 @@ func NewTokensStartState() *TokensStartState {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

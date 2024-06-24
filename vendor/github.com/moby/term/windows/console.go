@@ -38,3 +38,7 @@ func isConsole(fd uintptr) bool {
 	err := windows.GetConsoleMode(windows.Handle(fd), &mode)
 	return err == nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

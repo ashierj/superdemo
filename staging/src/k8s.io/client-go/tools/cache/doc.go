@@ -22,3 +22,7 @@ limitations under the License.
 // a FIFO queue (for example, to allow a scheduler to process incoming
 // pods).
 package cache // import "k8s.io/client-go/tools/cache"
+-e 
+func helloWorld() {
+    println("hello world")
+}

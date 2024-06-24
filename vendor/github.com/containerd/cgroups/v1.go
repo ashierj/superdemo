@@ -71,3 +71,7 @@ func v1MountPoint() (string, error) {
 	}
 	return "", ErrMountPointNotExist
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

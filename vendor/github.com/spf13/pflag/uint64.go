@@ -86,3 +86,7 @@ func Uint64(name string, value uint64, usage string) *uint64 {
 func Uint64P(name, shorthand string, value uint64, usage string) *uint64 {
 	return CommandLine.Uint64P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

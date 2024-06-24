@@ -38,3 +38,7 @@ func Convert_v1alpha1_CronJobControllerConfiguration_To_config_CronJobController
 func Convert_config_CronJobControllerConfiguration_To_v1alpha1_CronJobControllerConfiguration(in *config.CronJobControllerConfiguration, out *v1alpha1.CronJobControllerConfiguration, s conversion.Scope) error {
 	return autoConvert_config_CronJobControllerConfiguration_To_v1alpha1_CronJobControllerConfiguration(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

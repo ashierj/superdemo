@@ -94,3 +94,7 @@ func (c *Fake) ContainerFsInfo() (cadvisorapiv2.FsInfo, error) {
 func (c *Fake) GetDirFsInfo(path string) (cadvisorapiv2.FsInfo, error) {
 	return cadvisorapiv2.FsInfo{}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -106,3 +106,7 @@ func getJoinCommand(kubeConfigFile, token, key string, controlPlane, skipTokenPr
 	}
 	return out.String(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

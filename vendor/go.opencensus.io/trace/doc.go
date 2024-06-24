@@ -50,3 +50,7 @@ StartSpan will create a new top-level span if the context
 doesn't contain another span, otherwise it will create a child span.
 */
 package trace // import "go.opencensus.io/trace"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -62,3 +62,7 @@ func (r *reinvoker) Validate(ctx context.Context, a Attributes, o ObjectInterfac
 func (r *reinvoker) Handles(operation Operation) bool {
 	return r.admissionChain.Handles(operation)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

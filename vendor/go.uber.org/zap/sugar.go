@@ -435,3 +435,7 @@ func (ps invalidPairs) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	}
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -146,3 +146,7 @@ func DiskUsage(path string) (UsageInfo, error) {
 
 	return usage, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

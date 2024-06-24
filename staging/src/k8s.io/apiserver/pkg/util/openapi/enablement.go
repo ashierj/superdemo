@@ -81,3 +81,7 @@ func pruneEnums(schema *spec.Schema) *spec.Schema {
 	}
 	return walker.WalkSchema(schema)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

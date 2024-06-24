@@ -933,3 +933,7 @@ func (c *RaftCluster) PushMembershipToStorage() {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

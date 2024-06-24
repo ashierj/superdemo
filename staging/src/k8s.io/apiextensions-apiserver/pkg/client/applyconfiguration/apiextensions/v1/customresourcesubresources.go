@@ -50,3 +50,7 @@ func (b *CustomResourceSubresourcesApplyConfiguration) WithScale(value *CustomRe
 	b.Scale = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

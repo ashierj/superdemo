@@ -129,3 +129,7 @@ func NewTimeoutContext() *TimeoutContext {
 func PollInterval() time.Duration {
 	return TestContext.timeouts.Poll
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

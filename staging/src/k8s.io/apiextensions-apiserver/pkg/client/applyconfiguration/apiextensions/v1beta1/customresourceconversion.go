@@ -61,3 +61,7 @@ func (b *CustomResourceConversionApplyConfiguration) WithConversionReviewVersion
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

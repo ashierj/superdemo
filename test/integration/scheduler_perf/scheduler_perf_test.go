@@ -27,3 +27,7 @@ import (
 func BenchmarkPerfScheduling(b *testing.B) {
 	benchmark.RunBenchmarkPerfScheduling(b, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

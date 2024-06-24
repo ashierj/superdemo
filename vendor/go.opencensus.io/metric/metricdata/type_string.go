@@ -14,3 +14,7 @@ func (i Type) String() string {
 	}
 	return _Type_name[_Type_index[i]:_Type_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

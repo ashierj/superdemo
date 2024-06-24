@@ -197,3 +197,7 @@ type errorDecoderV2 struct{}
 func (d *errorDecoderV2) decode(message []byte) error {
 	return fmt.Errorf("error executing remote command: %s", message)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

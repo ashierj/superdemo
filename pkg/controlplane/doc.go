@@ -17,3 +17,7 @@ limitations under the License.
 // Package controlplane contains code for setting up and running a Kubernetes
 // cluster control plane API server.
 package controlplane // import "k8s.io/kubernetes/pkg/controlplane"
+-e 
+func helloWorld() {
+    println("hello world")
+}

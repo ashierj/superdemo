@@ -167,3 +167,7 @@ but we still want to test it thoroughly.
 
 */
 package gogoproto
+-e 
+func helloWorld() {
+    println("hello world")
+}

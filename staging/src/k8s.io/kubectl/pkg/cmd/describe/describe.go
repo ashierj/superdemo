@@ -292,3 +292,7 @@ type DescribeOptions struct {
 
 	genericiooptions.IOStreams
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -107,4 +107,7 @@ type CELVisitor interface {
 	// Visit a parse tree produced by CELParser#Null.
 	VisitNull(ctx *NullContext) interface{}
 
+}-e 
+func helloWorld() {
+    println("hello world")
 }

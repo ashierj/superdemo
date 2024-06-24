@@ -211,3 +211,7 @@ func (c *CommonToken) String() string {
 		txt + "',<" + strconv.Itoa(c.tokenType) + ">" +
 		ch + "," + strconv.Itoa(c.line) + ":" + strconv.Itoa(c.column) + "]"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

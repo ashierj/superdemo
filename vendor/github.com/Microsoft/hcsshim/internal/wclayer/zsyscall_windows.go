@@ -567,3 +567,7 @@ func _getDiskFreeSpaceEx(directoryName *uint16, freeBytesAvailableToCaller *int6
 	}
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

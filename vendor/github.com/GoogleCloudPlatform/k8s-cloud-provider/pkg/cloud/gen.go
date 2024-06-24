@@ -40115,3 +40115,7 @@ func NewZonesResourceID(project, name string) *ResourceID {
 	key := meta.GlobalKey(name)
 	return &ResourceID{project, "zones", key}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

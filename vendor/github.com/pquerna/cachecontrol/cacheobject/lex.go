@@ -91,3 +91,7 @@ func httpUnquote(raw string) (eaten int, result string) {
 	}
 	return -1, ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

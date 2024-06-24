@@ -807,3 +807,7 @@ func getObjectName(obj runtime.Object) (string, error) {
 		name,
 	), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

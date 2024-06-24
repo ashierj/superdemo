@@ -587,3 +587,7 @@ func SetObjectDefaults_JobList(in *v1.JobList) {
 		SetObjectDefaults_Job(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

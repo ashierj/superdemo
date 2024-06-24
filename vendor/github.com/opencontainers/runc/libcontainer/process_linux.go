@@ -819,3 +819,7 @@ func initWaiter(r io.Reader) chan error {
 
 	return ch
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

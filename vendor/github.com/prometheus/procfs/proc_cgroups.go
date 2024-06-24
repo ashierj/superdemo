@@ -96,3 +96,7 @@ func (fs FS) CgroupSummarys() ([]CgroupSummary, error) {
 	}
 	return parseCgroupSummary(data)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

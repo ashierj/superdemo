@@ -163,3 +163,7 @@ func (m *FieldsMatcher) NegatedFailureMessage(actual interface{}) (message strin
 func (m *FieldsMatcher) Failures() []error {
 	return m.failures
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

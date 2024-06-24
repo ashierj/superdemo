@@ -297,3 +297,7 @@ func autoConvert_apiregistration_ServiceReference_To_v1_ServiceReference(in *api
 func Convert_apiregistration_ServiceReference_To_v1_ServiceReference(in *apiregistration.ServiceReference, out *ServiceReference, s conversion.Scope) error {
 	return autoConvert_apiregistration_ServiceReference_To_v1_ServiceReference(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

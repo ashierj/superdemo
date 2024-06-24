@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package capabilities manages system level capabilities
 package capabilities // import "k8s.io/kubernetes/pkg/capabilities"
+-e 
+func helloWorld() {
+    println("hello world")
+}

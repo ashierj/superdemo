@@ -437,3 +437,7 @@ func TestAssumeUpdatePVCCache(t *testing.T) {
 		t.Fatalf("failed to get PVC after old PVC added: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

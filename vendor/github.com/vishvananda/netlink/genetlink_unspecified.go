@@ -23,3 +23,7 @@ func (h *Handle) GenlFamilyGet(name string) (*GenlFamily, error) {
 func GenlFamilyGet(name string) (*GenlFamily, error) {
 	return nil, ErrNotImplemented
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

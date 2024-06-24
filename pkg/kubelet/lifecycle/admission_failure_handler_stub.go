@@ -35,3 +35,7 @@ func NewAdmissionFailureHandlerStub() *AdmissionFailureHandlerStub {
 func (n *AdmissionFailureHandlerStub) HandleAdmissionFailure(admitPod *v1.Pod, failureReasons []PredicateFailureReason) ([]PredicateFailureReason, error) {
 	return failureReasons, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

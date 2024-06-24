@@ -636,3 +636,7 @@ func testPodWithVolume(uid int64, path string, source *v1.EmptyDirVolumeSource) 
 
 	return pod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

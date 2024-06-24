@@ -16,3 +16,7 @@ type LinuxKernelDirect struct {
 
 	KernelCmdLine string `json:"KernelCmdLine,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

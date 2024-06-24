@@ -161,3 +161,7 @@ func (h *peerMemberPromoteHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		h.lg.Warn("failed to encode members response", zap.Error(err))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -201,3 +201,7 @@ func (w *freelistAllocator) allocListReflect() *listReflect {
 func (w *freelistAllocator) allocListReflectRange() *listReflectRange {
 	return w.listReflectRange.allocate().(*listReflectRange)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -50,3 +50,7 @@ func (b *CustomResourceConversionApplyConfiguration) WithWebhook(value *WebhookC
 	b.Webhook = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

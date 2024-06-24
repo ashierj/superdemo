@@ -242,3 +242,7 @@ var selfDescribedCBOR = []byte{0xd9, 0xd9, 0xf7}
 func (s *serializer) RecognizesData(data []byte) (ok, unknown bool, err error) {
 	return bytes.HasPrefix(data, selfDescribedCBOR), false, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

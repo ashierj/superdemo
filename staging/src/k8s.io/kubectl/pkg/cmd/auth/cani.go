@@ -432,3 +432,7 @@ func isKnownResourceVerb(s string) bool {
 func isKnownNonResourceVerb(s string) bool {
 	return nonResourceURLVerbs.Has(s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

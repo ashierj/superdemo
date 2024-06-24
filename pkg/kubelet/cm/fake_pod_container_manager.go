@@ -125,3 +125,7 @@ func (cm *FakePodContainerManager) SetPodCgroupConfig(_ *v1.Pod, _ v1.ResourceNa
 	cm.CalledFunctions = append(cm.CalledFunctions, "SetPodCgroupConfig")
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

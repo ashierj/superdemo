@@ -48,3 +48,7 @@ func RelabelNeeded(label string) bool {
 func IsShared(label string) bool {
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

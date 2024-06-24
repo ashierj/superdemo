@@ -540,3 +540,7 @@ var (
 	// ctxActivationPool is an internally managed pool of Activation values that expose a special #interrupted variable
 	ctxActivationPool = newCtxEvalActivationPool()
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

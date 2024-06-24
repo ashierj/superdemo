@@ -464,3 +464,7 @@ func (s KubeControllerManagerOptions) Config(allControllers []string, disabledBy
 
 	return c, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

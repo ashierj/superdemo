@@ -44,3 +44,7 @@ type Filter func(*http.Request) bool
 func newTracer(tp trace.TracerProvider) trace.Tracer {
 	return tp.Tracer(instrumentationName, trace.WithInstrumentationVersion(Version()))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

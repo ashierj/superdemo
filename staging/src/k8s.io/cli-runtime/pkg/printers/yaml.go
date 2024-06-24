@@ -83,3 +83,7 @@ func (p *YAMLPrinter) PrintObj(obj runtime.Object, w io.Writer) error {
 	_, err = fmt.Fprint(w, string(output))
 	return err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

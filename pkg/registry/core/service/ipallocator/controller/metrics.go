@@ -63,3 +63,7 @@ func registerMetrics() {
 		legacyregistry.MustRegister(clusterIPRepairReconcileErrors)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

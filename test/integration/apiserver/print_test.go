@@ -303,3 +303,7 @@ func createKubeConfig(url string) *clientcmdapi.Config {
 
 	return config
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

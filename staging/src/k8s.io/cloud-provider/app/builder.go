@@ -193,3 +193,7 @@ func (cb *CommandBuilder) BuildCommand() *cobra.Command {
 
 	return cmd
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

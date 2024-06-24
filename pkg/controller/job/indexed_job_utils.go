@@ -527,3 +527,7 @@ func completionModeStr(job *batch.Job) string {
 	}
 	return string(batch.NonIndexedCompletion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

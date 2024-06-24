@@ -6434,3 +6434,7 @@ const (
 	// the destination set to the node's IP and port or the pod's IP and port.
 	LoadBalancerIPModeProxy LoadBalancerIPMode = "Proxy"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

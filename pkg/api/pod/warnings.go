@@ -357,3 +357,7 @@ func warningsForWeightedPodAffinityTerms(terms []api.WeightedPodAffinityTerm, fi
 	}
 	return warnings
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

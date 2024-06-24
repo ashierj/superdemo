@@ -137,3 +137,7 @@ func buildMIC(sessionID string, username string, service string, authMethod stri
 	out = appendString(out, authMethod)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

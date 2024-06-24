@@ -1163,3 +1163,7 @@ func ListZonesInternalErrHook(ctx context.Context, fl *filter.F, m *cloud.MockZo
 func DeleteInstanceGroupInternalErrHook(ctx context.Context, key *meta.Key, m *cloud.MockInstanceGroups) (bool, error) {
 	return true, InternalServerError
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

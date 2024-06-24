@@ -313,3 +313,7 @@ func bootstrapClient(data JoinData) (clientset.Interface, error) {
 	}
 	return client, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

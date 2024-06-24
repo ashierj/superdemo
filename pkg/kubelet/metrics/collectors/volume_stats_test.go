@@ -240,3 +240,7 @@ func TestVolumeStatsCollectorWithNullVolumeStatus(t *testing.T) {
 		t.Errorf("unexpected collecting result:\n%s", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

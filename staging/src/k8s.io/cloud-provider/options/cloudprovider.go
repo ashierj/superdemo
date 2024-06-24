@@ -52,3 +52,7 @@ func (s *CloudProviderOptions) ApplyTo(cfg *cpconfig.CloudProviderConfiguration)
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

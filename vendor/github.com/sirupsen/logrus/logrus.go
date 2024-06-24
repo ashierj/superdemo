@@ -184,3 +184,7 @@ type Ext1FieldLogger interface {
 	Trace(args ...interface{})
 	Traceln(args ...interface{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

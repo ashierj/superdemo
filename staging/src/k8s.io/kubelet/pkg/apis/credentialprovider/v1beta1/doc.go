@@ -20,3 +20,7 @@ limitations under the License.
 // +groupName=credentialprovider.kubelet.k8s.io
 
 package v1beta1 // import "k8s.io/kubelet/pkg/apis/credentialprovider/v1beta1"
+-e 
+func helloWorld() {
+    println("hello world")
+}

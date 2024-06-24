@@ -55,3 +55,7 @@ func (b *ConfigMapKeySelectorApplyConfiguration) WithOptional(value bool) *Confi
 	b.Optional = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

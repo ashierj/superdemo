@@ -39,3 +39,7 @@ func ValidateSnapshotForWrite(e *Snapshot) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

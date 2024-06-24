@@ -63,3 +63,7 @@ func (matcher *MatchJSONMatcher) prettyPrint(actual interface{}) (actualFormatte
 
 	return abuf.String(), ebuf.String(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

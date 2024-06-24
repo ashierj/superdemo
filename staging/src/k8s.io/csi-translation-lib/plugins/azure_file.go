@@ -280,3 +280,7 @@ func getStorageAccountName(secretName string) (string, error) {
 	}
 	return matches[1], nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

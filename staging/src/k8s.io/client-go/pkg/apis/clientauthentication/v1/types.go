@@ -125,3 +125,7 @@ type Cluster struct {
 	// +optional
 	Config runtime.RawExtension `json:"config,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

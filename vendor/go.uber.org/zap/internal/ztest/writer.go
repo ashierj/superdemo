@@ -94,3 +94,7 @@ func (b *Buffer) Lines() []string {
 func (b *Buffer) Stripped() string {
 	return strings.TrimRight(b.String(), "\n")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -161,3 +161,7 @@ func (s *readonlyReferenceWalker) Start() {
 		s.walkOperation(pathItem.Put)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

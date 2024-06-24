@@ -1383,3 +1383,7 @@ var signalList = [...]struct {
 	{63, "SIGMAX32", "secure attention"},
 	{255, "SIGMAX", "signal 255"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

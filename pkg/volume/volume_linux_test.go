@@ -469,3 +469,7 @@ func verifyFileOwner(path string, uid, gid int) bool {
 
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

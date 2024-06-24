@@ -131,3 +131,7 @@ func (ca *cachingAuthorizer) Authorize(ctx context.Context, a authorizer.Attribu
 
 	return authorized, reason, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

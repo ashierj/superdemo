@@ -211,3 +211,7 @@ func unmarshalInlinedFallbackNext(uo UnmarshalOptions, dec *Decoder, va addressa
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -151,3 +151,7 @@ func (s Stats) cells() []table.Cell {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

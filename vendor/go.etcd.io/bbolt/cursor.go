@@ -418,3 +418,7 @@ func (r *elemRef) count() int {
 	}
 	return int(r.page.count)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

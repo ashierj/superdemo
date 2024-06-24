@@ -43,3 +43,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 func (v *version) StorageVersionMigrations() StorageVersionMigrationInformer {
 	return &storageVersionMigrationInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

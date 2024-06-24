@@ -22,3 +22,7 @@ import v1 "k8s.io/api/core/v1"
 type Watcher interface {
 	Start(ref *v1.ObjectReference) error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

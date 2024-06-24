@@ -281,3 +281,7 @@ func (s PatchMetaFromOpenAPI) Name() string {
 	schema := s.Schema
 	return schema.GetName()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

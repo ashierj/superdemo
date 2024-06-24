@@ -97,3 +97,7 @@ func (t *DaemonSetUpgradeTest) validateRunningDaemonSet(ctx context.Context, f *
 	err = e2edaemonset.CheckDaemonStatus(ctx, f, t.daemonSet.Name)
 	framework.ExpectNoError(err)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

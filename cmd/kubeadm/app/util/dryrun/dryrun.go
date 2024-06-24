@@ -169,3 +169,7 @@ func PrintFilesIfDryRunning(needPrintManifest bool, manifestDir string, outputWr
 
 	return PrintDryRunFiles(files, outputWriter)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

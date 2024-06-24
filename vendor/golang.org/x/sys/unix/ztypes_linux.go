@@ -5991,3 +5991,7 @@ type CachestatRange struct {
 	Off uint64
 	Len uint64
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

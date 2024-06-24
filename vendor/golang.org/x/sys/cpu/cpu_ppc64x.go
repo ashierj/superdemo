@@ -14,3 +14,7 @@ func initOptions() {
 		{Name: "scv", Feature: &PPC64.HasSCV},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

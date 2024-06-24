@@ -50,3 +50,7 @@ func (b *MetricIdentifierApplyConfiguration) WithSelector(value *v1.LabelSelecto
 	b.Selector = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

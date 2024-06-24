@@ -22,3 +22,7 @@ import (
 	// become a real import.
 	_ "k8s.io/apimachinery/pkg/runtime/serializer/cbor"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

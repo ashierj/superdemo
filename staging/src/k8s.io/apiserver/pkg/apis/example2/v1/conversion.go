@@ -33,3 +33,7 @@ func Convert_v1_ReplicaSetSpec_To_example_ReplicaSetSpec(in *ReplicaSetSpec, out
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

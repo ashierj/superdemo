@@ -29,3 +29,7 @@ type NamespaceControllerConfiguration struct {
 	// allowed to sync concurrently.
 	ConcurrentNamespaceSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

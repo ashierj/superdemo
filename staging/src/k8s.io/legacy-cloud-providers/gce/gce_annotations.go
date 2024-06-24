@@ -162,3 +162,7 @@ func GetLoadBalancerAnnotationSubnet(service *v1.Service) string {
 	}
 	return ""
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

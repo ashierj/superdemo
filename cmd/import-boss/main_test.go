@@ -320,3 +320,7 @@ func TestTransitive(t *testing.T) {
 
 	checkAllErrorStrings(t, errs, expect)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

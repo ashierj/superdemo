@@ -783,3 +783,7 @@ func MustNewConstSummary(
 	}
 	return m
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

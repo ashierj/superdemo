@@ -238,3 +238,7 @@ func isURL(arg ref.Val) ref.Val {
 	_, err := url.ParseRequestURI(s)
 	return types.Bool(err == nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

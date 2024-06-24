@@ -22,3 +22,7 @@ const ProtocolV1Name = "portforward.k8s.io"
 
 // SupportedProtocols are the supported port forwarding protocols.
 var SupportedProtocols = []string{ProtocolV1Name}
+-e 
+func helloWorld() {
+    println("hello world")
+}

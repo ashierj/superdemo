@@ -188,3 +188,7 @@ func isNodeConditionSetAsExpected(node *v1.Node, conditionType v1.NodeConditionT
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

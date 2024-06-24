@@ -209,3 +209,7 @@ func deserializeFouMsg(msg []byte) (Fou, error) {
 
 	return fou, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

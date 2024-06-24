@@ -960,3 +960,7 @@ func TestValidateImageGCPolicy(t *testing.T) {
 func uint64Ptr(i uint64) *uint64 {
 	return &i
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

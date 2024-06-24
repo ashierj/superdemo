@@ -71,3 +71,7 @@ func (v *version) StorageClasses() StorageClassInformer {
 func (v *version) VolumeAttachments() VolumeAttachmentInformer {
 	return &volumeAttachmentInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ type PluginHandler interface {
 	// been deleted.
 	DeRegisterPlugin(pluginName string)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

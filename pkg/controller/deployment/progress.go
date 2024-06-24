@@ -198,3 +198,7 @@ func (dc *DeploymentController) requeueStuckDeployment(ctx context.Context, d *a
 	dc.enqueueAfter(d, after+time.Second)
 	return after
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

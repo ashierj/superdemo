@@ -33,3 +33,7 @@ var Info = map[string]string{
 	"buildDate": BuildDate,
 	"goVersion": GoVersion,
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

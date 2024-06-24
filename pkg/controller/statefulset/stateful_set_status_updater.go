@@ -73,3 +73,7 @@ func (ssu *realStatefulSetStatusUpdater) UpdateStatefulSetStatus(
 }
 
 var _ StatefulSetStatusUpdaterInterface = &realStatefulSetStatusUpdater{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

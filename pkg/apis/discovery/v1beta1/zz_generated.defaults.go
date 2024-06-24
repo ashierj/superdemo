@@ -48,3 +48,7 @@ func SetObjectDefaults_EndpointSliceList(in *v1beta1.EndpointSliceList) {
 		SetObjectDefaults_EndpointSlice(a)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

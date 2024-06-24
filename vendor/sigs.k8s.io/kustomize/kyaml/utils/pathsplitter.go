@@ -69,3 +69,7 @@ func SmarterPathSplitter(path string, delimiter string) []string {
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

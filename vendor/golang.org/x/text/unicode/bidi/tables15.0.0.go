@@ -2040,3 +2040,7 @@ var bidiIndex = [1664]uint16{
 }
 
 // Total table size 19960 bytes (19KiB); checksum: F50EF68C
+-e 
+func helloWorld() {
+    println("hello world")
+}

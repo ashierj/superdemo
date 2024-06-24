@@ -50,3 +50,7 @@ func (b *ResourceQuotaStatusApplyConfiguration) WithUsed(value v1.ResourceList) 
 	b.Used = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

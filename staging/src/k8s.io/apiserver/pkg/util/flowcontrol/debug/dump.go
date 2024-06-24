@@ -64,3 +64,7 @@ type RequestDump struct {
 	UserName    string
 	RequestInfo request.RequestInfo
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

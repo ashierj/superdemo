@@ -50,3 +50,7 @@ func (b *AttachedVolumeApplyConfiguration) WithDevicePath(value string) *Attache
 	b.DevicePath = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -67,3 +67,7 @@ func CCMControllerAliases() map[string]string {
 	}
 
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

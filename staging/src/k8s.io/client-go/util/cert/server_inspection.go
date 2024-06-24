@@ -100,3 +100,7 @@ func GetServingCertificatesForURL(kubeConfigURL, serverName string) ([]*x509.Cer
 	}
 	return GetServingCertificates(apiserverURL.Host, serverName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

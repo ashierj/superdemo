@@ -610,3 +610,7 @@ func FiltersFromRequest(creq *pb.WatchCreateRequest) []mvcc.FilterFunc {
 	}
 	return filters
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

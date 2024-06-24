@@ -418,3 +418,7 @@ func stringSliceContains(slice []string, str string) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -7,3 +7,7 @@
 package registry
 
 //go:generate go run golang.org/x/sys/windows/mkwinsyscall -output zsyscall_windows.go syscall.go
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -22,3 +22,7 @@ import "net/url"
 func pathUnescape(path string) (string, error) {
 	return url.QueryUnescape(path)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

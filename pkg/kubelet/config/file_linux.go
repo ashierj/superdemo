@@ -152,3 +152,7 @@ func (s *sourceFile) consumeWatchEvent(e *watchEvent) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

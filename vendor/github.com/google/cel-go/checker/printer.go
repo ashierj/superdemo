@@ -72,3 +72,7 @@ func Print(e ast.Expr, checked *ast.AST) string {
 	a := &semanticAdorner{checked: checked}
 	return debug.ToAdornedDebugString(e, a)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

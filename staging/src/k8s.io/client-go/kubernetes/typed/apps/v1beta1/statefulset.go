@@ -254,3 +254,7 @@ func (c *statefulSets) ApplyStatus(ctx context.Context, statefulSet *appsv1beta1
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

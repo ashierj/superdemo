@@ -68,3 +68,7 @@ type ControllerRevisionNamespaceLister interface {
 type controllerRevisionNamespaceLister struct {
 	listers.ResourceIndexer[*v1beta1.ControllerRevision]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

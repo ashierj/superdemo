@@ -69,3 +69,7 @@ func ValidatePathNoBacksteps(targetPath string) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

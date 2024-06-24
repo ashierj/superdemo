@@ -52,3 +52,7 @@ func (r *ParamAdapter) DataType() string {
 func (r *ParamAdapter) AllowMultiple() bool {
 	return r.Param.Data().AllowMultiple
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

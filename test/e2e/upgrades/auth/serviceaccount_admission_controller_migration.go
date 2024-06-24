@@ -139,3 +139,7 @@ func createPod(ctx context.Context, f *framework.Framework, podName string) *v1.
 
 	return createdPod
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

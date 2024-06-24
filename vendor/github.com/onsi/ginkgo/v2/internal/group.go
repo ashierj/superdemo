@@ -381,3 +381,7 @@ func (g *group) run(specs Specs) {
 		g.suite.selectiveLock.Unlock()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

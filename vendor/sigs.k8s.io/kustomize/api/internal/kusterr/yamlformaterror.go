@@ -53,3 +53,7 @@ func isYAMLSyntaxError(e error) bool {
 func IsMalformedYAMLError(e error) bool {
 	return strings.Contains(e.Error(), "MalformedYAMLError")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

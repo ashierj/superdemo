@@ -345,3 +345,7 @@ func CompareUsing(a Allocator, lhs, rhs Value) int {
 	// Invalid Value-- nothing is set.
 	return 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

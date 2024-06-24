@@ -90,3 +90,7 @@ func (type2 *safeSliceType) Cap(obj interface{}) int {
 func (type2 *safeSliceType) UnsafeCap(ptr unsafe.Pointer) int {
 	panic("does not support unsafe operation")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -67,3 +67,7 @@ func (c *Call) done() {
 	c.Done <- c
 	c.ContextCancel()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

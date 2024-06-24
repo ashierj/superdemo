@@ -106,3 +106,7 @@ func matchOutputFile(t *testing.T, actual []byte, expectedFilePath string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

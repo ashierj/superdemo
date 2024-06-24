@@ -55,3 +55,7 @@ func (b *ServiceStatusApplyConfiguration) WithConditions(values ...*metav1.Condi
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

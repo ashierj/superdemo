@@ -661,3 +661,7 @@ func getKubemarkMasterComponentsResourceUsage(ctx context.Context) map[string]*k
 	}
 	return result
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

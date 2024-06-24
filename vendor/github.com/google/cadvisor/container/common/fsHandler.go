@@ -153,3 +153,7 @@ func (fh *realFsHandler) Usage() FsUsage {
 	defer fh.RUnlock()
 	return fh.usage
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

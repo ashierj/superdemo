@@ -76,3 +76,7 @@ func ConvertTestConfig(in *PerTestConfig) e2evolume.TestConfig {
 		ClientNodeSelection: in.ClientNodeSelection,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

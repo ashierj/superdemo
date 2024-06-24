@@ -129,3 +129,7 @@ func (s *GRPCService) Encrypt(ctx context.Context, req *kmsapi.EncryptRequest) (
 		Annotations: encRes.Annotations,
 	}, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

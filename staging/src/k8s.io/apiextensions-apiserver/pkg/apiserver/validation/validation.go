@@ -487,3 +487,7 @@ func convertJSONSchemaPropsOrStringArray(in *apiextensions.JSONSchemaPropsOrStri
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

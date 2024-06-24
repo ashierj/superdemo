@@ -42,3 +42,7 @@ func (b *PodFailurePolicyApplyConfiguration) WithRules(values ...*PodFailurePoli
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

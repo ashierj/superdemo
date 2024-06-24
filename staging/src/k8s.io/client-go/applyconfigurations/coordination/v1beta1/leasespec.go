@@ -77,3 +77,7 @@ func (b *LeaseSpecApplyConfiguration) WithLeaseTransitions(value int32) *LeaseSp
 	b.LeaseTransitions = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

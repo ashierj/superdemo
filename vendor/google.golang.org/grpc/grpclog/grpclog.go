@@ -130,3 +130,7 @@ func Printf(format string, args ...any) {
 func Println(args ...any) {
 	grpclog.Logger.Infoln(args...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

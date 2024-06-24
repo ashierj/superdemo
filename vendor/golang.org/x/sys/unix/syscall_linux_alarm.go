@@ -10,3 +10,7 @@ package unix
 // values.
 
 //sys	Alarm(seconds uint) (remaining uint, err error)
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -100,3 +100,7 @@ func (d *dbusConnManager) retryOnDisconnect(op func(*systemdDbus.Conn) error) er
 		d.resetConnection(conn)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

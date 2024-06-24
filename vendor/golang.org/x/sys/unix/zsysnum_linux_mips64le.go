@@ -367,3 +367,7 @@ const (
 	SYS_FUTEX_WAIT              = 5455
 	SYS_FUTEX_REQUEUE           = 5456
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -124,3 +124,7 @@ type DepthLoggerV2 interface {
 	// FatalDepth logs to FATAL log at the specified depth. Arguments are handled in the manner of fmt.Println.
 	FatalDepth(depth int, args ...any)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

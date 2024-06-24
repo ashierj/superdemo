@@ -290,3 +290,7 @@ func writeStringValue(b *bytes.Buffer, v string) {
 		b.WriteString("\n >")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

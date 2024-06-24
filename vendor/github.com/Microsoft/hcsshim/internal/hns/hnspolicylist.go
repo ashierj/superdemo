@@ -199,3 +199,7 @@ func AddRoute(endpoints []HNSEndpoint, destinationPrefix string, nextHop string,
 	policylist.Policies = append(policylist.Policies, jsonString)
 	return policylist.Create()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -98,3 +98,7 @@ func (m *namespacedMetrics) List(metricName string, metricSelector labels.Select
 
 	return res, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -158,3 +158,7 @@ func (c *FakeLimitRanges) Apply(ctx context.Context, limitRange *corev1.LimitRan
 	}
 	return obj.(*v1.LimitRange), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -139,3 +139,7 @@ func Indent(dst *bytes.Buffer, src []byte, prefix, indent string) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

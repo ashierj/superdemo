@@ -29,3 +29,7 @@ import (
 func SetSlogLogger(logger *slog.Logger) {
 	SetLoggerWithOptions(logr.FromSlogHandler(logger.Handler()), ContextualLogger(true))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -51,3 +51,7 @@ func TestPrivilegedGroupAuthorizer(t *testing.T) {
 		t.Errorf("failed")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

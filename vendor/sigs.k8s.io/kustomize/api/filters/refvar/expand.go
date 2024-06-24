@@ -145,3 +145,7 @@ func tryReadVariableName(input string) (string, bool, int) {
 		return string(operator) + string(input[0]), false, 1
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

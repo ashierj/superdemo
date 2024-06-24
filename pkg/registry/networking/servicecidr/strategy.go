@@ -149,3 +149,7 @@ func (serviceCIDRStatusStrategy) ValidateUpdate(ctx context.Context, obj, old ru
 func (serviceCIDRStatusStrategy) WarningsOnUpdate(ctx context.Context, obj, old runtime.Object) []string {
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -29,3 +29,7 @@ func appendLegacyProviderVolumes(allPlugins []volume.VolumePlugin, featureGate f
 	// no-op when we didn't compile in support for these
 	return allPlugins, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

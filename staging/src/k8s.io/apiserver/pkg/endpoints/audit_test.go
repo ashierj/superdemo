@@ -380,3 +380,7 @@ func testTimeout(t *testing.T) time.Duration {
 	}
 	return defaultTimeout
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

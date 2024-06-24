@@ -25,3 +25,7 @@ type decoder interface {
 	// decode decodes the message from an input stream.
 	decode() (raftpb.Message, error)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

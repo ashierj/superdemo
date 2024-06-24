@@ -233,3 +233,7 @@ func (noopMetric) Desc() *prometheus.Desc            { return nil }
 func (noopMetric) Write(*dto.Metric) error           { return nil }
 func (noopMetric) Describe(chan<- *prometheus.Desc)  {}
 func (noopMetric) Collect(chan<- prometheus.Metric)  {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

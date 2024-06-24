@@ -139,3 +139,7 @@ func (s DeprecatedSpecMeasurement) PrecisionFmt() string {
 
 	return "%." + str + "f"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

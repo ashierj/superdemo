@@ -209,3 +209,7 @@ const (
 // It currently has an experimental suffix which would be removed once
 // end-to-end testing of the policy is completed.
 const RLSLoadBalancingPolicyName = "rls_experimental"
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -509,3 +509,7 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatalf(`Expected number to be float64 but got "%T"`, otherType[123])
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

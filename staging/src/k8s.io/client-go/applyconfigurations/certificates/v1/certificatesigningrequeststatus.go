@@ -53,3 +53,7 @@ func (b *CertificateSigningRequestStatusApplyConfiguration) WithCertificate(valu
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

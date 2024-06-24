@@ -20,3 +20,7 @@ type IovSettings struct {
 	// The interrupt moderation mode for I/O virtualization (IOV) offloading.
 	InterruptModeration *InterruptModerationName `json:"InterruptModeration,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

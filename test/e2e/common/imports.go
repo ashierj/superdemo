@@ -22,3 +22,7 @@ import (
 	_ "k8s.io/kubernetes/test/e2e/common/node"
 	_ "k8s.io/kubernetes/test/e2e/common/storage"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -69,3 +69,7 @@ func (e *Event) Clone() *Event {
 func (e *Event) SetRefresh() {
 	e.Refresh = true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

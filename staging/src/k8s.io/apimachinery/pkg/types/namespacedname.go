@@ -48,3 +48,7 @@ func (n NamespacedName) MarshalLog() interface{} {
 		Namespace: n.Namespace,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

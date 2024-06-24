@@ -84,3 +84,7 @@ const (
 	// ServiceReachabilityShortPollTimeout is the maximum time in which service must be reachable during polling.
 	ServiceReachabilityShortPollTimeout = 2 * time.Minute
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

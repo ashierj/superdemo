@@ -289,3 +289,7 @@ func validateExtendedResourceName(path *field.Path, name v1.ResourceName) []erro
 	}
 	return validationErrors
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

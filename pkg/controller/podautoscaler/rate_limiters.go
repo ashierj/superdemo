@@ -55,3 +55,7 @@ func (r *FixedItemIntervalRateLimiter) Forget(item interface{}) {
 func NewDefaultHPARateLimiter(interval time.Duration) workqueue.RateLimiter {
 	return NewFixedItemIntervalRateLimiter(interval)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

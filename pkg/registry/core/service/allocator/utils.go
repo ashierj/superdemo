@@ -29,3 +29,7 @@ func countBits(n *big.Int) int {
 	}
 	return count
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

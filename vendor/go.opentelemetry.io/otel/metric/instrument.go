@@ -355,3 +355,7 @@ func WithAttributes(attributes ...attribute.KeyValue) MeasurementOption {
 	copy(cp, attributes)
 	return attrOpt{set: attribute.NewSet(cp...)}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -58,3 +58,7 @@ func applyFilterToSeq(filter yaml.Filter, node *yaml.RNode) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

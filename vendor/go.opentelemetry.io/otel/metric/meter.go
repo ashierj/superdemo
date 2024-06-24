@@ -210,3 +210,7 @@ type Registration interface {
 	// This method needs to be idempotent and concurrent safe.
 	Unregister() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

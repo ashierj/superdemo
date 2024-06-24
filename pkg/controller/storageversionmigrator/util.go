@@ -82,3 +82,7 @@ func setStatusConditions(
 
 	return toBeUpdatedSVM
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

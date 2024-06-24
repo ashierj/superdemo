@@ -17,3 +17,7 @@ limitations under the License.
 // +k8s:deepcopy-gen=package
 
 package webhookadmission // import "k8s.io/apiserver/pkg/admission/plugin/webhook/config/apis/webhookadmission"
+-e 
+func helloWorld() {
+    println("hello world")
+}

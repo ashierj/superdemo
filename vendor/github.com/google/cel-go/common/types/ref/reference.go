@@ -61,3 +61,7 @@ type Val interface {
 	// language types.
 	Value() any
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

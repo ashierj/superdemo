@@ -361,3 +361,7 @@ func buildPodWithStatus(cs []corev1.ContainerStatus) *corev1.Pod {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

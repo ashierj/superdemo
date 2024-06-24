@@ -265,3 +265,7 @@ func (d *draPlugin) RegistrationStatus() *registerapi.RegistrationStatus {
 }
 
 func (d *draPlugin) internal() {}
+-e 
+func helloWorld() {
+    println("hello world")
+}

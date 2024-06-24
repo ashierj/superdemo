@@ -302,3 +302,7 @@ var (
 	// RequestTypeRefresh refreshes the settings provided.
 	RequestTypeRefresh RequestType = "Refresh"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

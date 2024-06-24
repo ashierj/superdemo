@@ -187,3 +187,7 @@ func detectTooOldKubelets(newK8sVersion *version.Version, kubeletVersions map[st
 
 	return errors.Errorf("There are kubelets in this cluster that are too old that have these versions %v", tooOldKubeletVersions)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

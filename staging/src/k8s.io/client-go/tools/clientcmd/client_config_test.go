@@ -1078,3 +1078,7 @@ func TestMergeRawConfigDoOverride(t *testing.T) {
 		t.Errorf("Expected namespace %v, got %v", config.Contexts["clean"].Namespace, act.Contexts["clean"].Namespace)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

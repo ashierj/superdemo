@@ -5,3 +5,7 @@ package winapi
 const ALL_PROCESSOR_GROUPS = 0xFFFF
 
 //sys GetActiveProcessorCount(groupNumber uint16) (amount uint32) = kernel32.GetActiveProcessorCount
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1262,3 +1262,7 @@ func genClientCert(t *testing.T) ([]byte, []byte) {
 	return pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certRaw}),
 		pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: keyRaw})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -78,3 +78,7 @@ func (s *es2ecServerStream) Recv() (*v3electionpb.LeaderRequest, error) {
 	}
 	return v.(*v3electionpb.LeaderRequest), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

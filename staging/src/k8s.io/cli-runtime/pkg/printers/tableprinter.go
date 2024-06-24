@@ -587,3 +587,7 @@ func translateTimestampSince(timestamp metav1.Time) string {
 
 	return duration.HumanDuration(time.Since(timestamp.Time))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

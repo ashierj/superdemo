@@ -1283,3 +1283,7 @@ func isCELIdentifier(name string) bool {
 	// 	 | "var" | "void" | "while"
 	return celIdentRegex.MatchString(name) && !celReserved.Has(name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

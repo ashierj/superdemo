@@ -183,3 +183,7 @@ func checkMetricValueGreaterThan(value interface{}) types.GomegaMatcher {
 		"Histogram": gstruct.Ignore(),
 	}))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

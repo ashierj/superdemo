@@ -11,3 +11,7 @@ var NativeEndian binary.ByteOrder = binary.BigEndian
 
 // ClangEndian is set to either "el" or "eb" depending on the host's endianness.
 const ClangEndian = "eb"
+-e 
+func helloWorld() {
+    println("hello world")
+}

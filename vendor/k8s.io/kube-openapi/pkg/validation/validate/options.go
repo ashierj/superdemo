@@ -41,3 +41,7 @@ func SetContinueOnErrors(c bool) {
 	defaultOptsMutex.Lock()
 	defaultOpts.ContinueOnErrors = c
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

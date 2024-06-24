@@ -76,3 +76,7 @@ func TestMetricsCollected(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

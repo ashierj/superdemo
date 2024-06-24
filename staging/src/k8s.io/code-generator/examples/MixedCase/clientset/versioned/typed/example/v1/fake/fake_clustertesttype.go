@@ -218,3 +218,7 @@ func (c *FakeClusterTestTypes) CreateScale(ctx context.Context, clusterTestTypeN
 	}
 	return obj.(*autoscalingv1.Scale), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

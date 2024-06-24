@@ -96,3 +96,7 @@ func (in *CustomResourceDefinitionList) APILifecycleReplacement() schema.GroupVe
 func (in *CustomResourceDefinitionList) APILifecycleRemoved() (major, minor int) {
 	return 1, 22
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -27,3 +27,7 @@ import (
 func SetNumFiles(maxOpenFiles uint64) error {
 	return unix.Setrlimit(unix.RLIMIT_NOFILE, &unix.Rlimit{Max: maxOpenFiles, Cur: maxOpenFiles})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -256,3 +256,7 @@ func (b *ResourceClaimApplyConfiguration) WithStatus(value *ResourceClaimStatusA
 	b.Status = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -460,3 +460,7 @@ func (network *HostComputeNetwork) CreateRemoteEndpoint(endpoint *HostComputeEnd
 	endpoint.Flags = EndpointFlagsRemoteEndpoint | endpoint.Flags
 	return network.CreateEndpoint(endpoint)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

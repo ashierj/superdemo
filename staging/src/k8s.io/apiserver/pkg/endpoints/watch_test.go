@@ -1050,3 +1050,7 @@ func BenchmarkWatchCachingObjectProtobuf(b *testing.B) {
 
 	runWatchHTTPBenchmark(b, wrapCachingObject(items), "application/vnd.kubernetes.protobuf")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

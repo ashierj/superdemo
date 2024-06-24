@@ -28,3 +28,7 @@ func ParsePathGroupVersion(pgvString string) (gvPath string, gvString string) {
 		return strings.Join(subs[:length-2], "/"), strings.Join(subs[length-2:], "/")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

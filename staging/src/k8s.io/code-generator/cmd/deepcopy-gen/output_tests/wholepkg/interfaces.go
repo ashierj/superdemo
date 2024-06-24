@@ -19,3 +19,7 @@ package wholepkg
 type Selector interface {
 	DeepCopySelector() Selector
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

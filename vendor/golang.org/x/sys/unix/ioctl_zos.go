@@ -69,3 +69,7 @@ func IoctlGetTermios(fd int, req int) (*Termios, error) {
 	err := Tcgetattr(fd, &value)
 	return &value, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

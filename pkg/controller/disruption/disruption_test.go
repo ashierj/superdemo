@@ -1616,3 +1616,7 @@ func verifyEventEmitted(t *testing.T, dc *disruptionController, expectedEvent st
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

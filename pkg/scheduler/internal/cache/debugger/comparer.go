@@ -133,3 +133,7 @@ func compareStrings(actual, cached []string) (missed, redundant []string) {
 
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

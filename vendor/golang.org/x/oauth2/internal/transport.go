@@ -31,3 +31,7 @@ func ContextClient(ctx context.Context) *http.Client {
 	}
 	return http.DefaultClient
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

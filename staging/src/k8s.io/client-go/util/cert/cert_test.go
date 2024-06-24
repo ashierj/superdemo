@@ -44,3 +44,7 @@ func TestSelfSignedCertHasSAN(t *testing.T) {
 		t.Fatalf("self signed certificate has zero DNS names.")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

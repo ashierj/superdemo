@@ -86,3 +86,7 @@ func Int32(name string, value int32, usage string) *int32 {
 func Int32P(name, shorthand string, value int32, usage string) *int32 {
 	return CommandLine.Int32P(name, shorthand, value, usage)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -406,3 +406,7 @@ func TestKubectlCommandHeadersHooks(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

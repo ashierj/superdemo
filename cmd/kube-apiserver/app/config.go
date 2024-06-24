@@ -92,3 +92,7 @@ func NewConfig(opts options.CompletedOptions) (*Config, error) {
 
 	return c, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

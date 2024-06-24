@@ -20,3 +20,7 @@ import (
 	// All integration tests are expected to have logging flags.
 	_ "k8s.io/component-base/logs/testinit"
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -8,3 +8,7 @@ func eaccess(path string) error {
 	// and fixed in Go 1.20.2 by https://go.dev/cl/469956).
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

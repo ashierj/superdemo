@@ -108,3 +108,7 @@ func encodeCommentPoString(text string) string {
 	}
 	return buf.String()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

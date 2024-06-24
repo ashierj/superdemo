@@ -212,3 +212,7 @@ func (b *PodStatusApplyConfiguration) WithResourceClaimStatuses(values ...*PodRe
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

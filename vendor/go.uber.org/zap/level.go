@@ -151,3 +151,7 @@ func (lvl *AtomicLevel) UnmarshalText(text []byte) error {
 func (lvl AtomicLevel) MarshalText() (text []byte, err error) {
 	return lvl.Level().MarshalText()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

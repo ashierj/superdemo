@@ -45,3 +45,7 @@ func (c TableConvertor) ConvertToTable(ctx context.Context, obj runtime.Object, 
 	}
 	return c.TableGenerator.GenerateTable(obj, printers.GenerateOptions{Wide: true, NoHeaders: noHeaders})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1483,3 +1483,7 @@ func newInvalidFormatError(action string, t reflect.Type, format string) error {
 	err := fmt.Errorf("invalid format flag: %q", format)
 	return &SemanticError{action: action, GoType: t, Err: err}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

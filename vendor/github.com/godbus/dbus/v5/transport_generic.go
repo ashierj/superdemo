@@ -50,3 +50,7 @@ func (t genericTransport) SendMessage(msg *Message) error {
 	}
 	return msg.EncodeTo(t, nativeEndian)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

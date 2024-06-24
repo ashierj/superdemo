@@ -35,3 +35,7 @@ type LimitRangerActions interface {
 	// for any reason.
 	SupportsLimit(limitRange *corev1.LimitRange) bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

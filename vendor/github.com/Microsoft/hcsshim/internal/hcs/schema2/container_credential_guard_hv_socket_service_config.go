@@ -13,3 +13,7 @@ type ContainerCredentialGuardHvSocketServiceConfig struct {
 	ServiceId     string                 `json:"ServiceId,omitempty"`
 	ServiceConfig *HvSocketServiceConfig `json:"ServiceConfig,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

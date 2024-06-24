@@ -242,3 +242,7 @@ func createJobResource() *v1.Job {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

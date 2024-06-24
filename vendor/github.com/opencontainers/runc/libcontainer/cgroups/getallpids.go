@@ -25,3 +25,7 @@ func GetAllPids(path string) ([]int, error) {
 	})
 	return pids, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

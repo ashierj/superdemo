@@ -313,3 +313,7 @@ func parseJavaLocations(b []byte, locs map[uint64]*Location, p *Profile) error {
 
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

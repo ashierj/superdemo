@@ -735,3 +735,7 @@ func (cfg *SocketConfig) Listen(net string, laddr *SCTPAddr) (*SCTPListener, err
 func (cfg *SocketConfig) Dial(net string, laddr, raddr *SCTPAddr) (*SCTPConn, error) {
 	return dialSCTPExtConfig(net, laddr, raddr, cfg.InitMsg, cfg.Control)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

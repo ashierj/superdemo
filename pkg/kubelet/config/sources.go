@@ -65,3 +65,7 @@ func (s *sourcesImpl) AllReady() bool {
 	defer s.lock.RUnlock()
 	return s.sourcesReadyFn(s.sourcesSeen)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

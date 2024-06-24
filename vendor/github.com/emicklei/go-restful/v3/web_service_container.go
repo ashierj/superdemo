@@ -37,3 +37,7 @@ func Filter(filter FilterFunction) {
 func RegisteredWebServices() []*WebService {
 	return DefaultContainer.RegisteredWebServices()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

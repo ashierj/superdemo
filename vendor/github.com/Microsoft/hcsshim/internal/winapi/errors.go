@@ -13,3 +13,7 @@ const (
 func NTSuccess(status uint32) bool {
 	return status == 0
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -468,3 +468,7 @@ func TestReconcileHints_doesNotMutateUnchangedSlices(t *testing.T) {
 func ptrTo[T any](obj T) *T {
 	return &obj
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

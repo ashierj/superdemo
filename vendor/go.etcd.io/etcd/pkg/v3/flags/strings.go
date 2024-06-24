@@ -51,3 +51,7 @@ func NewStringsValue(s string) (ss *StringsValue) {
 func StringsFromFlag(fs *flag.FlagSet, flagName string) []string {
 	return []string(*fs.Lookup(flagName).Value.(*StringsValue))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

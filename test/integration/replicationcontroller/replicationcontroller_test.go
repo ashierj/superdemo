@@ -895,3 +895,7 @@ func TestFullyLabeledReplicas(t *testing.T) {
 		t.Fatalf("Failed to verify only one pod is fully labeled: %v", err)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

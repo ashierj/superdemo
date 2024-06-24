@@ -16,3 +16,7 @@ type MemoryInformationForVm struct {
 
 	VirtualNodes []VirtualNodeInfo `json:"VirtualNodes,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

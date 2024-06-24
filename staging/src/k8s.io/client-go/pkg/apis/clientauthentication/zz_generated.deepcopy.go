@@ -120,3 +120,7 @@ func (in *ExecCredentialStatus) DeepCopy() *ExecCredentialStatus {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

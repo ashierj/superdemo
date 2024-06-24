@@ -85,3 +85,7 @@ func HandlerWithReset(reg KubeRegistry, opts HandlerOpts) http.Handler {
 		defaultHandler.ServeHTTP(w, r)
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

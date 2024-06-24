@@ -6,3 +6,7 @@ package runtimeutil
 type DeferFailureFunction interface {
 	GetExit() error
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

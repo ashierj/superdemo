@@ -71,3 +71,7 @@ func (in *LeaderElectionConfiguration) DeepCopy() *LeaderElectionConfiguration {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

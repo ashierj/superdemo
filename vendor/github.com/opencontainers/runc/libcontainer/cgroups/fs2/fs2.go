@@ -257,3 +257,7 @@ func (m *manager) OOMKillCount() (uint64, error) {
 
 	return c, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

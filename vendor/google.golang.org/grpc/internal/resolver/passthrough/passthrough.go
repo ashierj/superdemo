@@ -62,3 +62,7 @@ func (*passthroughResolver) Close() {}
 func init() {
 	resolver.Register(&passthroughBuilder{})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

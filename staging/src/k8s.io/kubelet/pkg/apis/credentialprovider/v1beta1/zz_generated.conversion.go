@@ -135,3 +135,7 @@ func autoConvert_credentialprovider_CredentialProviderResponse_To_v1beta1_Creden
 func Convert_credentialprovider_CredentialProviderResponse_To_v1beta1_CredentialProviderResponse(in *credentialprovider.CredentialProviderResponse, out *CredentialProviderResponse, s conversion.Scope) error {
 	return autoConvert_credentialprovider_CredentialProviderResponse_To_v1beta1_CredentialProviderResponse(in, out, s)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

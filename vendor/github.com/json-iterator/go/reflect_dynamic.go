@@ -68,3 +68,7 @@ func (decoder *ifaceDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	}
 	iter.ReadVal(obj)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

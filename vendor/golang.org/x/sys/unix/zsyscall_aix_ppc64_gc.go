@@ -1186,3 +1186,7 @@ func callmmap64(addr uintptr, length uintptr, prot int, flags int, fd int, offse
 	r1, _, e1 = syscall6(uintptr(unsafe.Pointer(&libc_mmap64)), 6, addr, length, uintptr(prot), uintptr(flags), uintptr(fd), uintptr(offset))
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

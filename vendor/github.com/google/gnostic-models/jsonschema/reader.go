@@ -440,3 +440,7 @@ func (schema *Schema) schemaOrBooleanValue(v *yaml.Node) *SchemaOrBoolean {
 	}
 	return schemaOrBoolean
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

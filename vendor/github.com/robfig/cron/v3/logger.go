@@ -84,3 +84,7 @@ func formatTimes(keysAndValues []interface{}) []interface{} {
 	}
 	return formattedArgs
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

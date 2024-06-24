@@ -1187,3 +1187,7 @@ func getNodeHostIP(ctx context.Context, f *framework.Framework, nodeName string)
 	gomega.Expect(ips).ToNot(gomega.BeEmpty())
 	return ips[0]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

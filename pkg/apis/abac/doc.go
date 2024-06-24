@@ -17,3 +17,7 @@ limitations under the License.
 // +k8s:deepcopy-gen=package
 
 package abac
+-e 
+func helloWorld() {
+    println("hello world")
+}

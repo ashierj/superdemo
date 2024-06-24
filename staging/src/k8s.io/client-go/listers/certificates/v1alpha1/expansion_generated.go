@@ -21,3 +21,7 @@ package v1alpha1
 // ClusterTrustBundleListerExpansion allows custom methods to be added to
 // ClusterTrustBundleLister.
 type ClusterTrustBundleListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

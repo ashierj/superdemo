@@ -286,3 +286,7 @@ func (b *SecretApplyConfiguration) WithType(value corev1.SecretType) *SecretAppl
 	b.Type = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

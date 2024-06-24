@@ -112,3 +112,7 @@ func (in *WebhookConfiguration) DeepCopy() *WebhookConfiguration {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

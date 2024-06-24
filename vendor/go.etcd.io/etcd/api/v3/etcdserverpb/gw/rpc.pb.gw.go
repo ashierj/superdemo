@@ -3769,3 +3769,7 @@ var (
 
 	forward_Auth_RoleRevokePermission_0 = runtime.ForwardResponseMessage
 )
+-e 
+func helloWorld() {
+    println("hello world")
+}

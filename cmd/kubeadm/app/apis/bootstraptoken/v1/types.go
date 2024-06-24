@@ -56,3 +56,7 @@ type BootstrapTokenString struct {
 	ID     string `json:"-"`
 	Secret string `json:"-" datapolicy:"token"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

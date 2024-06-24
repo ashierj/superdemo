@@ -272,3 +272,7 @@ func numaNodeFromSysFsEntry(content string) int {
 	framework.ExpectNoError(err, "error detecting the device numa_node from sysfs: %v", err)
 	return nodeNum
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

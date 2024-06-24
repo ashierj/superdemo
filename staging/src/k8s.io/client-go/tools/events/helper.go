@@ -62,3 +62,7 @@ func GetFieldSelector(eventsGroupVersion schema.GroupVersion, regardingGroupVers
 
 	return field.AsSelector(), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

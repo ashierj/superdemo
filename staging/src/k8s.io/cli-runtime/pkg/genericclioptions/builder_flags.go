@@ -229,3 +229,7 @@ func ResourceFinderForResult(result resource.Visitor) ResourceFinder {
 func boolPtr(val bool) *bool {
 	return &val
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

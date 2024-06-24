@@ -92,3 +92,7 @@ func SetSpecEgressRules(rules ...networkingv1.NetworkPolicyEgressRule) SetFunc {
 		policy.Spec.Egress = append(policy.Spec.Egress, rules...)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

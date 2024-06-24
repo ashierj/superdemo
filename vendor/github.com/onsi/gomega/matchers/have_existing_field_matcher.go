@@ -34,3 +34,7 @@ func (matcher *HaveExistingFieldMatcher) FailureMessage(actual interface{}) (mes
 func (matcher *HaveExistingFieldMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return fmt.Sprintf("Expected\n%s\nnot to have field '%s'", format.Object(actual, 1), matcher.Field)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

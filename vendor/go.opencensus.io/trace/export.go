@@ -95,3 +95,7 @@ type SpanData struct {
 	// ChildSpanCount holds the number of child span created for this span.
 	ChildSpanCount int
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

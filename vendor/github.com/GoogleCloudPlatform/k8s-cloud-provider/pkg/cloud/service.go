@@ -105,3 +105,7 @@ func (s *Service) pollOperation(ctx context.Context, op operation) error {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -81,3 +81,7 @@ func (t *testLib) CompileOptions() []cel.EnvOption {
 func (*testLib) ProgramOptions() []cel.ProgramOption {
 	return []cel.ProgramOption{}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

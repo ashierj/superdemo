@@ -121,3 +121,7 @@ func fetchLabels(callExpr *ast.CallExpr) []string {
 	}
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

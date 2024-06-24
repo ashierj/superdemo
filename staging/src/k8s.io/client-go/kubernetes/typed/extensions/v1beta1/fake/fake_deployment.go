@@ -239,3 +239,7 @@ func (c *FakeDeployments) ApplyScale(ctx context.Context, deploymentName string,
 	}
 	return obj.(*v1beta1.Scale), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

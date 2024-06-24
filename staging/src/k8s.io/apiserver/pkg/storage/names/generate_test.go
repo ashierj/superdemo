@@ -27,3 +27,7 @@ func TestSimpleNameGenerator(t *testing.T) {
 		t.Errorf("unexpected name: %s", name)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

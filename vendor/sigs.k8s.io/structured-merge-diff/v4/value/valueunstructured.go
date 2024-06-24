@@ -176,3 +176,7 @@ func (v valueUnstructured) IsNull() bool {
 func (v valueUnstructured) Unstructured() interface{} {
 	return v.Value
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

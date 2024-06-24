@@ -32,3 +32,7 @@ func TestRoundTrip(t *testing.T) {
 	// will do just fine
 	roundtrip.RoundTripTestForScheme(t, scheme, nil)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

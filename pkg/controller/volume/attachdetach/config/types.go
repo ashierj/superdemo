@@ -34,3 +34,7 @@ type AttachDetachControllerConfiguration struct {
 	// enabled.
 	DisableForceDetachOnTimeout bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

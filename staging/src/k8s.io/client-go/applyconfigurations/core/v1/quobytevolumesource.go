@@ -82,3 +82,7 @@ func (b *QuobyteVolumeSourceApplyConfiguration) WithTenant(value string) *Quobyt
 	b.Tenant = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

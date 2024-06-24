@@ -155,3 +155,7 @@ func CurrentProcessUIDMap() ([]IDMap, error) {
 func CurrentProcessGIDMap() ([]IDMap, error) {
 	return ParseIDMapFile("/proc/self/gid_map")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -1387,3 +1387,7 @@ func _assert(condition bool, msg string, v ...interface{}) {
 		panic(fmt.Sprintf("assertion failed: "+msg, v...))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

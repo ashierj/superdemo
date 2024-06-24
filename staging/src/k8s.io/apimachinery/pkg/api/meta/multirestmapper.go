@@ -218,3 +218,7 @@ func (m MultiRESTMapper) Reset() {
 		MaybeResetRESTMapper(t)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

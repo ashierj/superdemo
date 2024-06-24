@@ -121,3 +121,7 @@ func (c *CycleState) Write(key StateKey, val StateData) {
 func (c *CycleState) Delete(key StateKey) {
 	c.storage.Delete(key)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

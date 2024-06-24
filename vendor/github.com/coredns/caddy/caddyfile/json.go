@@ -196,3 +196,7 @@ type EncodedServerBlock struct {
 	Keys []string        `json:"keys"`
 	Body [][]interface{} `json:"body"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -207,3 +207,7 @@ func (c *FakePods) UpdateEphemeralContainers(ctx context.Context, podName string
 	}
 	return obj.(*v1.Pod), err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

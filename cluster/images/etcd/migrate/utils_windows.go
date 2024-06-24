@@ -24,3 +24,7 @@ import "fmt"
 func copyDirectory(source string, dest string) error {
 	return fmt.Errorf("no support for windows")
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -314,3 +314,7 @@ func checkEvent(t *testing.T, recorder *record.FakeRecorder, expected string, sh
 		return true
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

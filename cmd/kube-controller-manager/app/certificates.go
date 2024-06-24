@@ -224,3 +224,7 @@ func startRootCACertificatePublisherController(ctx context.Context, controllerCo
 	go sac.Run(ctx, 1)
 	return nil, true, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

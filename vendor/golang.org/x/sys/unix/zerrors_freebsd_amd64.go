@@ -2037,3 +2037,7 @@ var signalList = [...]struct {
 	{32, "SIGTHR", "unknown signal"},
 	{33, "SIGLIBRT", "unknown signal"},
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -77,3 +77,7 @@ func quotaToMilliCPU(quota int64, period int64) int64 {
 	}
 	return (quota * milliCPUToCPU) / period
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

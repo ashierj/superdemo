@@ -16,3 +16,7 @@ limitations under the License.
 
 // Package systemd provides utility functions for kubelet to perform systemd related operations.
 package systemd
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -455,3 +455,7 @@ func (e *eventBroadcasterAdapterImpl) Shutdown() {
 		e.eventsv1Broadcaster.Shutdown()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

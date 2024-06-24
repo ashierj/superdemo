@@ -39,3 +39,7 @@ func EtcdHealthCheck(data []byte) error {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

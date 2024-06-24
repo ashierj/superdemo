@@ -24,3 +24,7 @@ import (
 func startExecutionTracerTask(ctx context.Context, name string) (context.Context, func()) {
 	return ctx, func() {}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

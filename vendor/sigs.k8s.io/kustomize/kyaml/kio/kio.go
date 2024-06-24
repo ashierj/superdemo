@@ -445,3 +445,7 @@ func formatInternalAnnotations(rn *yaml.RNode, useInternal, useLegacy bool) erro
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

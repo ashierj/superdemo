@@ -107,3 +107,7 @@ func getDeviceNameFromMount(mounter mount.Interface, mountPath, pluginMountDir s
 func (hu *HostUtil) GetSELinuxMountContext(pathname string) (string, error) {
 	return "", errUnsupported
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

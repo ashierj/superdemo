@@ -347,3 +347,7 @@ func (fl *fileLoader) httpClientGetContent(path string) ([]byte, error) {
 func (fl *fileLoader) Cleanup() error {
 	return fl.cleaner()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

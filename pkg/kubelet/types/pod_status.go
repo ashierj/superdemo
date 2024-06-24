@@ -54,3 +54,7 @@ func PodConditionSharedByKubelet(conditionType v1.PodConditionType) bool {
 	}
 	return false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

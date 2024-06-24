@@ -168,3 +168,7 @@ func BenchmarkDroppedRequestsTracker(b *testing.B) {
 	close(stopCh)
 	timeWg.Wait()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

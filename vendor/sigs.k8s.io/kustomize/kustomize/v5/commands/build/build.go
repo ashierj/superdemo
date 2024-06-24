@@ -156,3 +156,7 @@ func HonorKustomizeFlags(kOpts *krusty.Options, flags *flag.FlagSet) *krusty.Opt
 	kOpts.AddManagedbyLabel = isManagedByLabelEnabled()
 	return kOpts
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

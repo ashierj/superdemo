@@ -566,3 +566,7 @@ func registerCompletionFuncForGlobalFlags(cmd *cobra.Command, f cmdutil.Factory)
 			return utilcomp.ListUsersInConfig(toComplete), cobra.ShellCompDirectiveNoFileComp
 		}))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

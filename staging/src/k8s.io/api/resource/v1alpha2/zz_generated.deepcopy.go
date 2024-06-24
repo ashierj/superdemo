@@ -1124,3 +1124,7 @@ func (in *VendorParameters) DeepCopy() *VendorParameters {
 	in.DeepCopyInto(out)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

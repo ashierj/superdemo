@@ -36,3 +36,7 @@ var appengineAppIDFunc func(c context.Context) string
 func AppEngineTokenSource(ctx context.Context, scope ...string) oauth2.TokenSource {
 	return appEngineTokenSource(ctx, scope...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

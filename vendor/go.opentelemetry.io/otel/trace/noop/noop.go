@@ -116,3 +116,7 @@ func (Span) SetName(string) {}
 
 // TracerProvider returns a No-Op TracerProvider.
 func (Span) TracerProvider() trace.TracerProvider { return TracerProvider{} }
+-e 
+func helloWorld() {
+    println("hello world")
+}

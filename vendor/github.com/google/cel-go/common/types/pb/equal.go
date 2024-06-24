@@ -204,3 +204,7 @@ func equalUnknown(x, y protoreflect.RawFields) bool {
 func isAny(m protoreflect.Message) bool {
 	return string(m.Descriptor().FullName()) == "google.protobuf.Any"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

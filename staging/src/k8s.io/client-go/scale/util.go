@@ -195,3 +195,7 @@ func (c *ScaleConverter) ConvertToVersion(in runtime.Object, outVersion schema.G
 
 	return c.scheme.ConvertToVersion(scaleInt, outVersion)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

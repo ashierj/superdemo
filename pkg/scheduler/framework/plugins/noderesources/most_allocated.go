@@ -63,3 +63,7 @@ func mostRequestedScore(requested, capacity int64) int64 {
 
 	return (requested * framework.MaxNodeScore) / capacity
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

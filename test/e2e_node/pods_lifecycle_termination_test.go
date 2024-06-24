@@ -131,3 +131,7 @@ func getSigkillTargetPod(podName string, ctnName string) *v1.Pod {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

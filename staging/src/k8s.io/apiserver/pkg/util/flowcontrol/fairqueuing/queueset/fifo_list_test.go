@@ -298,3 +298,7 @@ func walkAll(l fifo) []*request {
 
 	return visited
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

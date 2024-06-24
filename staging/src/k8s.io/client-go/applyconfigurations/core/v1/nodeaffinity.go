@@ -51,3 +51,7 @@ func (b *NodeAffinityApplyConfiguration) WithPreferredDuringSchedulingIgnoredDur
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

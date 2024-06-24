@@ -63,3 +63,7 @@ type ServiceEndpoint struct {
 	Endpoint        string
 	ServicePortName ServicePortName
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

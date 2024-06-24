@@ -147,3 +147,7 @@ type warningHandler struct {
 func (w *warningHandler) HandleWarningHeader(code int, agent string, text string) {
 	w.warnings = append(w.warnings, text)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

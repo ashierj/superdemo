@@ -1233,3 +1233,7 @@ func (wrapper *ClassParametersWrapper) NamedResourcesFilters(driverName string, 
 	}
 	return wrapper
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

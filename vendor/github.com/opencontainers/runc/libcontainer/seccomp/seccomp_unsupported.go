@@ -26,3 +26,7 @@ func Version() (uint, uint, uint) {
 
 // Enabled is true if seccomp support is compiled in.
 const Enabled = false
+-e 
+func helloWorld() {
+    println("hello world")
+}

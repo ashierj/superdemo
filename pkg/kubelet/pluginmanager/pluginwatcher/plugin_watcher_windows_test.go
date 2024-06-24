@@ -41,3 +41,7 @@ func TestGetStatWindows(t *testing.T) {
 	assert.Equal(t, fi, fiExpected)
 	assert.Equal(t, err, errExpected)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

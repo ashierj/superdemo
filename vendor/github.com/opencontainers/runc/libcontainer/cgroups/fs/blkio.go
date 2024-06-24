@@ -309,3 +309,7 @@ func (s *BlkioGroup) detectWeightFilenames(path string) {
 		s.weightDeviceFilename = "blkio.bfq.weight_device"
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -10,3 +10,7 @@ import "syscall"
 
 type Errno = syscall.Errno
 type SysProcAttr = syscall.SysProcAttr
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -529,3 +529,7 @@ func waitChannelWithTimeout(ch <-chan interface{}, timeout time.Duration) error 
 		return fmt.Errorf("timeout after %v", timeout)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

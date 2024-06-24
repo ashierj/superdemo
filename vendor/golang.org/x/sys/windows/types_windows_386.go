@@ -33,3 +33,7 @@ type JOBOBJECT_BASIC_LIMIT_INFORMATION struct {
 	SchedulingClass         uint32
 	_                       uint32 // pad to 8 byte boundary
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

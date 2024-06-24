@@ -75,3 +75,7 @@ func (ws *randomWriteScheduler) Pop() (FrameWriteRequest, bool) {
 	}
 	return FrameWriteRequest{}, false
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

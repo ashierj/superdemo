@@ -222,3 +222,7 @@ func TestRotateShutsDownConnections(t *testing.T) {
 		t.Fatal("certificate rotated but client never reconnected with new cert")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

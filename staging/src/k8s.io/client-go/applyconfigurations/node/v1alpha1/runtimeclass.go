@@ -245,3 +245,7 @@ func (b *RuntimeClassApplyConfiguration) WithSpec(value *RuntimeClassSpecApplyCo
 	b.Spec = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

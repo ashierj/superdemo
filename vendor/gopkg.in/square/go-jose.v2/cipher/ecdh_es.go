@@ -84,3 +84,7 @@ func lengthPrefixed(data []byte) []byte {
 	copy(out[4:], data)
 	return out
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

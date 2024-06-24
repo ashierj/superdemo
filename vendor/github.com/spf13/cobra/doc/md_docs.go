@@ -154,3 +154,7 @@ func GenMarkdownTreeCustom(cmd *cobra.Command, dir string, filePrepender, linkHa
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

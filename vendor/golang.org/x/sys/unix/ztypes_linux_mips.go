@@ -695,3 +695,7 @@ type SysvShmDesc struct {
 	Ctime_high uint16
 	_          uint16
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

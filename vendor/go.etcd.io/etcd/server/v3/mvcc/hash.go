@@ -160,3 +160,7 @@ func (s *hashStorage) Hashes() []KeyValueHash {
 	s.hashMu.RUnlock()
 	return hashes
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

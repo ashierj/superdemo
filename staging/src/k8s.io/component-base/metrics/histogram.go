@@ -212,3 +212,7 @@ func (vc *HistogramVecWithContext) WithLabelValues(lvs ...string) ObserverMetric
 func (vc *HistogramVecWithContext) With(labels map[string]string) ObserverMetric {
 	return vc.HistogramVec.With(labels)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

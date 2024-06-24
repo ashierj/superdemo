@@ -784,3 +784,7 @@ func (gex dhGEXSHA) Server(c packetConn, randSource io.Reader, magics *handshake
 		Hash:      gex.hashFunc,
 	}, err
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

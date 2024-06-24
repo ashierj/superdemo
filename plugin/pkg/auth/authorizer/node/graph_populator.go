@@ -220,3 +220,7 @@ func (g *graphPopulator) deleteResourceSlice(obj interface{}) {
 	}
 	g.graph.DeleteResourceSlice(slice.Name)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -54,3 +54,7 @@ func (b *UncountedTerminatedPodsApplyConfiguration) WithFailed(values ...types.U
 	}
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

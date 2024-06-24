@@ -131,3 +131,7 @@ func (r *recorder) AddWarning(agent, text string) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

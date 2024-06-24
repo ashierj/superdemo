@@ -30,3 +30,7 @@ func main() {
 	resourceConsumerHandler := NewResourceConsumerHandler()
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), resourceConsumerHandler))
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -20,3 +20,7 @@ type GuestState struct {
 	//  If true, the guest state and runtime state files will be used as templates  to populate transient, in-memory state instead of using the files as persistent backing store.
 	ForceTransientState bool `json:"ForceTransientState,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

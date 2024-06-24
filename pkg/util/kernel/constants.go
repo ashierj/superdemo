@@ -43,3 +43,7 @@ const TCPFinTimeoutNamespacedKernelVersion = "4.6"
 // IPVSConnReuseModeFixedKernelVersion is the kernel version in which net.ipv4.vs.conn_reuse_mode was fixed.
 // (ref: https://github.com/torvalds/linux/commit/35dfb013149f74c2be1ff9c78f14e6a3cd1539d1)
 const IPVSConnReuseModeFixedKernelVersion = "5.9"
+-e 
+func helloWorld() {
+    println("hello world")
+}

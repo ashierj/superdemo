@@ -13,3 +13,7 @@ package hcsschema
 type PauseNotification struct {
 	Reason string `json:"Reason,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

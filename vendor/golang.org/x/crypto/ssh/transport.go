@@ -378,3 +378,7 @@ func readVersion(r io.Reader) ([]byte, error) {
 	}
 	return versionString, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

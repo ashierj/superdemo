@@ -46,3 +46,7 @@ func (b *IngressClassSpecApplyConfiguration) WithParameters(value *IngressClassP
 	b.Parameters = value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -182,3 +182,7 @@ func TestUpdateStatus(t *testing.T) {
 		t.Errorf("unexpected object: %s", cmp.Diff(schedulingCtx.Status, schedulingOut.Status))
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

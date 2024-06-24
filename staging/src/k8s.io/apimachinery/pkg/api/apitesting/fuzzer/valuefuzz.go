@@ -84,3 +84,7 @@ func valueFuzz(obj reflect.Value) {
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

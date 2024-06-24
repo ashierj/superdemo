@@ -19,3 +19,7 @@ func convertBytesToInteger(bytes []byte) int {
 	i, _ := strconv.Atoi(s)
 	return i
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

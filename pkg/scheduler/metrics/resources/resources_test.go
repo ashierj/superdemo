@@ -539,3 +539,7 @@ func Test_podResourceCollector_CollectWithStability(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

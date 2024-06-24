@@ -51,3 +51,7 @@ func verifyRunAsNonRoot(pod *v1.Pod, container *v1.Container, uid *int64, userna
 		return nil
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

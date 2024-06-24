@@ -25,3 +25,7 @@ type ExampleListerExpansion interface{}
 // ExampleNamespaceListerExpansion allows custom methods to be added to
 // ExampleNamespaceLister.
 type ExampleNamespaceListerExpansion interface{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

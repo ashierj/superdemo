@@ -27,3 +27,7 @@ func newTestRequestInfoResolver() *request.RequestInfoFactory {
 		GrouplessAPIPrefixes: sets.NewString("api"),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

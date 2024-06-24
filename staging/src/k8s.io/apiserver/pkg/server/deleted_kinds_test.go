@@ -370,3 +370,7 @@ func Test_shouldRemoveResource(t *testing.T) {
 		})
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

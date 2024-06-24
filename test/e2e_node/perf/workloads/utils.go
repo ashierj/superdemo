@@ -43,3 +43,7 @@ func getMatchingLineFromLog(log string, pattern string) (line string, err error)
 
 	return line, fmt.Errorf("line with pattern %v not found in log", pattern)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

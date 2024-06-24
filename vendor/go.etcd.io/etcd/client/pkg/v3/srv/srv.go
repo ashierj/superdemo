@@ -140,3 +140,7 @@ func GetSRVService(service, serviceName string, scheme string) (SRVService strin
 	}
 	return service
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

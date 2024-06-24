@@ -356,3 +356,7 @@ func NewCounterFunc(opts CounterOpts, function func() float64) CounterFunc {
 		opts.ConstLabels,
 	), CounterValue, function)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

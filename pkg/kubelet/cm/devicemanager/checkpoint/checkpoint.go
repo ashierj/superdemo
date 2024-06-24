@@ -107,3 +107,7 @@ func (cp *Data) VerifyChecksum() error {
 func (cp *Data) GetDataInLatestFormat() ([]PodDevicesEntry, map[string][]string) {
 	return cp.Data.PodDeviceEntries, cp.Data.RegisteredDevices
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

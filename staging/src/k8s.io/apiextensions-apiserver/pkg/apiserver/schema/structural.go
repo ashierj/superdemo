@@ -200,3 +200,7 @@ func (j JSON) DeepCopy() JSON {
 func (j JSON) DeepCopyInto(into *JSON) {
 	into.Object = runtime.DeepCopyJSONValue(j.Object)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

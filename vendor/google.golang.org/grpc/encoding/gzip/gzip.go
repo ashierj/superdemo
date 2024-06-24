@@ -130,3 +130,7 @@ type compressor struct {
 	poolCompressor   sync.Pool
 	poolDecompressor sync.Pool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

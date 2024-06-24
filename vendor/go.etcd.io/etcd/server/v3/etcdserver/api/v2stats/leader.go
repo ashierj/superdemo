@@ -133,3 +133,7 @@ func (fs *FollowerStats) Fail() {
 	defer fs.Unlock()
 	fs.Counts.Fail++
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

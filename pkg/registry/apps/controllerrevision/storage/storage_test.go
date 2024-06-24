@@ -184,3 +184,7 @@ func newObject() runtime.Object {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

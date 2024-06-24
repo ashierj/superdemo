@@ -59,3 +59,7 @@ func (b *IngressPortStatusApplyConfiguration) WithError(value string) *IngressPo
 	b.Error = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -74,3 +74,7 @@ func TestBuildGenericConfig(t *testing.T) {
 		t.Errorf("There are different StorageObjectCountTracker in restOptions and serverConfig")
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

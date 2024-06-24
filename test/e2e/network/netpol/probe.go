@@ -150,3 +150,7 @@ func probeWorker(prober Prober, jobs <-chan *ProbeJob, results chan<- *ProbeJobR
 		results <- result
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

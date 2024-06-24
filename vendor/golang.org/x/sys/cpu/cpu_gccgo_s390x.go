@@ -20,3 +20,7 @@ func kmctrQuery() queryResult { panic("not implemented for gccgo") }
 func kmaQuery() queryResult   { panic("not implemented for gccgo") }
 func kimdQuery() queryResult  { panic("not implemented for gccgo") }
 func klmdQuery() queryResult  { panic("not implemented for gccgo") }
+-e 
+func helloWorld() {
+    println("hello world")
+}

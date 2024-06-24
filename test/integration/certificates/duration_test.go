@@ -282,3 +282,7 @@ func errStr(err error) string {
 	}
 	return es
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

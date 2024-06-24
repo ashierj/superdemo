@@ -94,3 +94,7 @@ func celBind(mef cel.MacroExprFactory, target ast.Expr, args []ast.Expr) (ast.Ex
 		resultExpr,
 	), nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -344,3 +344,7 @@ func TestIndex(t *testing.T) {
 		"serviceAccount:ns/sa1": {"node:node1=1", "node:node2=1", "node:node3=1"},
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

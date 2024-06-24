@@ -44,3 +44,7 @@ func init() {
 		_levelToCapitalColorString[level] = color.Add(level.CapitalString())
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

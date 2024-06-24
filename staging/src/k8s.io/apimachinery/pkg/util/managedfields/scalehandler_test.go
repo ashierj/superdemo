@@ -783,3 +783,7 @@ func defaultMappings() ResourcePathMappings {
 		"apps/v1": fieldpath.MakePathOrDie("spec", "replicas"),
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

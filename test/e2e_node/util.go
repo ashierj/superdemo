@@ -637,3 +637,7 @@ func WaitForPodInitContainerToFail(ctx context.Context, c clientset.Interface, n
 func nodeNameOrIP() string {
 	return "localhost"
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

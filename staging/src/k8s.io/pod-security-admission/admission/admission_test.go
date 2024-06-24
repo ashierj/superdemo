@@ -1268,3 +1268,7 @@ func (a *testAttributes) GetOldObject() (runtime.Object, error) {
 		return a.AttributesRecord.GetOldObject()
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

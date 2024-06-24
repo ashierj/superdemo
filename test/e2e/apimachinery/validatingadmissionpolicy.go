@@ -1051,3 +1051,7 @@ func crontabExampleCRD() *apiextensionsv1.CustomResourceDefinition {
 		},
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

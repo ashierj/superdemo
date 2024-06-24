@@ -75,3 +75,7 @@ func UniqueStringsFromFlag(fs *flag.FlagSet, flagName string) []string {
 func UniqueStringsMapFromFlag(fs *flag.FlagSet, flagName string) map[string]struct{} {
 	return (*fs.Lookup(flagName).Value.(*UniqueStringsValue)).Values
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

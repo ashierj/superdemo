@@ -249,3 +249,7 @@ func VisitContainers(podSpec *corev1.PodSpec, mask ContainerType, visitor Contai
 	}
 	return true
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

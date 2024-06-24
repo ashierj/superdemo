@@ -28,3 +28,7 @@ func InstrumentationScope(il instrumentation.Scope) *commonpb.InstrumentationSco
 		Version: il.Version,
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

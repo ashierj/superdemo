@@ -47,3 +47,7 @@ func (s *cls2clc) MemberRemove(ctx context.Context, r *pb.MemberRemoveRequest, o
 func (s *cls2clc) MemberPromote(ctx context.Context, r *pb.MemberPromoteRequest, opts ...grpc.CallOption) (*pb.MemberPromoteResponse, error) {
 	return s.cls.MemberPromote(ctx, r)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

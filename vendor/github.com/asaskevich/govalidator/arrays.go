@@ -56,3 +56,7 @@ func Count(array []interface{}, iterator ConditionIterator) int {
 	}
 	return count
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

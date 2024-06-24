@@ -117,3 +117,7 @@ func (r *Resolver) ReportError(err error) {
 	r.CC.ReportError(err)
 	r.mu.Unlock()
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

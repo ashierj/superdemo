@@ -87,3 +87,7 @@ func SetReflectorMetricsProvider(metricsProvider MetricsProvider) {
 		metricsFactory.metricsProvider = metricsProvider
 	})
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

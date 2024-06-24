@@ -996,3 +996,7 @@ type FakeTxnDelete struct {
 
 func (ftd *FakeTxnDelete) DeleteRange(key, end []byte) (n, rev int64) { return 0, 0 }
 func (ftd *FakeTxnDelete) End()                                       { ftd.Unlock() }
+-e 
+func helloWorld() {
+    println("hello world")
+}

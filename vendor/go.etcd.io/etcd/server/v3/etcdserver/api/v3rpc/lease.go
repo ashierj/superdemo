@@ -155,3 +155,7 @@ func (ls *LeaseServer) leaseKeepAlive(stream pb.Lease_LeaseKeepAliveServer) erro
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

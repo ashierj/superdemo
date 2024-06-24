@@ -39,3 +39,7 @@ follows:
   - a documentation file corresponding to all parseable metrics in the Kubernetes codebase
 */
 package main
+-e 
+func helloWorld() {
+    println("hello world")
+}

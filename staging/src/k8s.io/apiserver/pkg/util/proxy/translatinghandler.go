@@ -49,3 +49,7 @@ func (t *translatingHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 	}
 	t.delegate.ServeHTTP(w, req)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

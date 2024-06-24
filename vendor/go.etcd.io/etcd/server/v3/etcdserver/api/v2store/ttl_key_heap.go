@@ -95,3 +95,7 @@ func (h *ttlKeyHeap) remove(n *node) {
 		heap.Remove(h, index)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

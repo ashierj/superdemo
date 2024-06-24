@@ -59,3 +59,7 @@ func (b *ResourceClaimSpecApplyConfiguration) WithAllocationMode(value resourcev
 	b.AllocationMode = &value
 	return b
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

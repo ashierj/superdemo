@@ -254,3 +254,7 @@ func (c *resourceClaims) ApplyStatus(ctx context.Context, resourceClaim *resourc
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

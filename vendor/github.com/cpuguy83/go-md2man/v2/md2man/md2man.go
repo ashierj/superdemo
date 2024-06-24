@@ -12,3 +12,7 @@ func Render(doc []byte) []byte {
 		[]blackfriday.Option{blackfriday.WithRenderer(renderer),
 			blackfriday.WithExtensions(renderer.GetExtensions())}...)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -23,3 +23,7 @@ func (i PluginRestrictions) String() string {
 	}
 	return _PluginRestrictions_name[_PluginRestrictions_index[i]:_PluginRestrictions_index[i+1]]
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

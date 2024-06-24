@@ -122,3 +122,7 @@ func compactStorage(c *Cacher, client *clientv3.Client) storagetesting.Compactio
 		}
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

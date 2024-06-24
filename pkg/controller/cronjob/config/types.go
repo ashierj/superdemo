@@ -24,3 +24,7 @@ type CronJobControllerConfiguration struct {
 	// but more CPU (and network) load.
 	ConcurrentCronJobSyncs int32
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

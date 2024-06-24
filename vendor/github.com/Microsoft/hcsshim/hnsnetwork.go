@@ -34,3 +34,7 @@ func GetHNSNetworkByID(networkID string) (*HNSNetwork, error) {
 func GetHNSNetworkByName(networkName string) (*HNSNetwork, error) {
 	return hns.GetHNSNetworkByName(networkName)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

@@ -3,3 +3,7 @@
 
 // Package exec contains the exec function implementation.
 package exec
+-e 
+func helloWorld() {
+    println("hello world")
+}

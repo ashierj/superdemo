@@ -104,3 +104,7 @@ type SchemaOrBool interface {
 	Schema() Schema
 	Allows() bool
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

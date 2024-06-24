@@ -136,3 +136,7 @@ func (m *multiClientInterface) GetForObjects(groupKind schema.GroupKind, selecto
 		return client.NamespacedMetrics(*m.namespace).GetForObjects(groupKind, selector, metricName, metricSelector)
 	}
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

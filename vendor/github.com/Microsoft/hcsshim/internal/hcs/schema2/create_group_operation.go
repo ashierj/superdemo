@@ -15,3 +15,7 @@ type CreateGroupOperation struct {
 	LogicalProcessorCount uint32   `json:"LogicalProcessorCount,omitempty"`
 	LogicalProcessors     []uint32 `json:"LogicalProcessors,omitempty"`
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

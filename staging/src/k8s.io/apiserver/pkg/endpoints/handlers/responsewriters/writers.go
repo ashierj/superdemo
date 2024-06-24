@@ -341,3 +341,7 @@ func WriteRawJSON(statusCode int, object interface{}, w http.ResponseWriter) {
 	w.WriteHeader(statusCode)
 	w.Write(output)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

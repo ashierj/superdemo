@@ -206,3 +206,7 @@ func (c *podTemplates) Apply(ctx context.Context, podTemplate *corev1.PodTemplat
 		Into(result)
 	return
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

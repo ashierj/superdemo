@@ -400,3 +400,7 @@ func GenericResizeFS(host volume.VolumeHost, pluginName, devicePath, deviceMount
 	resizer := mount.NewResizeFs(host.GetExec(pluginName))
 	return resizer.Resize(devicePath, deviceMountPath)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

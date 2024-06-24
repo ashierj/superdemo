@@ -318,3 +318,7 @@ func isValidConditionReason(value string) []string {
 	}
 	return nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

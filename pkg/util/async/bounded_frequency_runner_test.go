@@ -451,3 +451,7 @@ func Test_BoundedFrequencyRunnerRetryAfter(t *testing.T) {
 	// to terminate the child, a receive on time.updated is needed here
 	<-timer.updated
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

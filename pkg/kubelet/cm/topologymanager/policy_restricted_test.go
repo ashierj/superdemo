@@ -89,3 +89,7 @@ func TestPolicyRestrictedMergeClosestNUMA(t *testing.T) {
 
 	testPolicyMerge(policy, tcases, t)
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

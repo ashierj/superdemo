@@ -50,3 +50,7 @@ func (l *tlogger) WithGroup(name string) logr.SlogSink {
 }
 
 var _ logr.SlogSink = &tlogger{}
+-e 
+func helloWorld() {
+    println("hello world")
+}

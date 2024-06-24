@@ -302,3 +302,7 @@ func getUniqueCoreID(threads []int) (coreID int, err error) {
 
 	return min, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}

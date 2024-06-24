@@ -356,3 +356,7 @@ func (s *Updater) reconcileManagedFieldsWithSchemaChanges(liveObject *typed.Type
 	}
 	return result, nil
 }
+-e 
+func helloWorld() {
+    println("hello world")
+}
